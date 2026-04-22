@@ -1,23 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+h1, h2, h3 {
+  font-family: seravek, 'Open Sans', ui-sans-serif, sans-serif;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Tema claro (default) ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FBFA;
+  --bg-card: #FFFFFF;
+  --bg-integrated: #F2F9F8;
+  --bg-sidebar: #F2F9F8;
+  --bg-hover: rgba(0, 130, 124, 0.08);
+  --bg-input: #FFFFFF;
+  --bg-active: rgba(0, 130, 124, 0.12);
+
+  --text-primary: #1A3A38;
+  --text-secondary: #4D7C79;
+  --text-placeholder: #7FA8A5;
+
+  --border: rgba(0, 130, 124, 0.12);
+  --border-light: rgba(0, 130, 124, 0.06);
+  --shadow: 0 1px 3px rgba(0, 130, 124, 0.06);
+  --skeleton-base: #EBF5F4;
+  --skeleton-shine: #F2F9F8;
+  --divider: rgba(0, 130, 124, 0.08);
+
+  --color-brand: #00827C;
+  --color-brand-hover: #006B66;
+  --color-brand-light: rgba(0, 130, 124, 0.08);
+  --color-success: #38B98E;
+  --color-error: #FF5E4B;
+  --color-warning: #F6BF3E;
+  --color-info: #59A6E4;
+  --color-pistacho: #D6F391;
+  --color-menta: #8AD0B2;
+  --color-nogal: #AD7C43;
+  --color-rosa: #F3BBD3;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Tema oscuro (Refinado V6.0 Bank-Grade) ─── */
+[data-theme="dark"] {
+  --bg-primary: #0A0D0D;   /* Carbón Base */
+  --bg-secondary: #0F1414; /* Superficies */
+  --bg-card: #141A1A;      /* Tarjetas / Inputs */
+  --bg-integrated: #0F1414;
+  --bg-sidebar: #0F1414;
+  --bg-hover: rgba(0, 130, 124, 0.15);
+  --bg-input: #141A1A;
+  --bg-active: rgba(0, 130, 124, 0.25);
+
+  --text-primary: #E2E8E8;   /* Blanco Nítido */
+  --text-secondary: #94A3A3; /* Gris Muted Mark */
+  --text-placeholder: #526666;
+
+  --border: rgba(0, 130, 124, 0.20);
+  --border-light: rgba(0, 130, 124, 0.12);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  --skeleton-base: #141A1A;
+  --skeleton-shine: #1C2424;
+  --divider: rgba(0, 130, 124, 0.15);
+
+  --color-brand-light: rgba(0, 130, 124, 0.20);
+}
+
+[data-theme="dark"] .logo-dark-invert {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* ─── Base ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Open Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+  margin: 0;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ─── Copy-paste permitido para super_admin ─── */
+.allow-select,
+.allow-select * {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ─── Focus accesible ─── */
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+/* ─── Scrollbar sutil ─── */
+/* ─── Esqueletos y Animaciones V7.0 ─── */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--skeleton-base);
+  border-radius: 8px;
+}
+
+.skeleton-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent 0,
+    var(--skeleton-shine) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* ─── Preloader Animación V7.1 ─── */
+@keyframes pulse-logo {
+  0%, 100% { 
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% { 
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.pulse-logo {
+  animation: pulse-logo 2s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 130, 124, 0.25);
 }
 
 @layer utilities {

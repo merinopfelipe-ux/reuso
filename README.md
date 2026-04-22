@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Calculadora de Reúso — reuso.lurdes.co
 
-## Getting Started
+SaaS que mide, certifica y comunica el CO₂ evitado cuando personas y organizaciones reutilizan objetos. Genera certificados PDF e informes con QR verificable.
 
-First, run the development server:
+**Producto:** Grupo MLP S.A.S. · servicio@lurdes.co
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Stack Tecnológico
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Framework:** Next.js 14 App Router
+- **Lenguaje:** TypeScript
+- **Estilos:** Tailwind CSS
+- **Base de Datos / Backend:** Supabase (PostgreSQL + Auth + Storage)
+- **Despliegue:** Vercel
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Primeros Pasos (Setup Inicial)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Si eres un nuevo desarrollador integrándote al proyecto, sigue estos pasos:
 
-## Learn More
+1. **Instalar Dependencias**
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Variables de Entorno**
+   Copia el archivo de ejemplo para generar tu archivo local:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Rellena `.env.local` con tus claves reales. (Nunca subas tus claves a GitHub, este archivo está explícitamente excluido en el `.gitignore`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Base de Datos Inicial (Seed)**
+   Debes cargar la información base a Supabase (ej: Categorías e Items predeterminados). Esto se hace con un comando automatizado.
+   ```bash
+   npm run seed
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Correr el Proyecto**
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+## Comandos Disponibles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` — Inicia servidor de desarrollo en `localhost:3000`.
+- `npm run dev:clean` — Inicia dev limpiando caché `.next` (útil si eliminaste archivos masivos).
+- `npm run build` — Compila y empaqueta el sistema para producción. (Si falla, el sistema en vivo también fallará).
+- `npm run lint` — Checa errores de sintaxis y buenas prácticas.
+- `npm run seed` — Inserta los Datos Iniciales fundamentales en Supabase a través de `service_role`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Roles
+
+| Rol | Panel | Descripción |
+|-----|-------|-------------|
+| `super_admin` | `/admin` | Gestiona todo el sistema |
+| `empresa_admin` | `/empresa` | Su empresa, equipo, certificados |
+| `empleado` | `/dashboard` | Calcula, ve impacto de empresa |
+| `usuario_libre` | `/dashboard` | Plan Explora, sin empresa |
+
+## Migraciones SQL (Base de Datos a Mano)
+
+Si prefieres trabajar con SQL directamente:
+Ejecutar en Supabase Studio en orden desde `sql/001_` hasta `sql/013_`.
+
+## Checklist para Producción Final
+
+1. Ejecutar todas las migraciones SQL en Supabase en orden.
+2. Crear los buckets Storage en Supabase: `documentos`, `logos`, `firmas`.
+3. Validar las políticas RLS.
+4. Reemplazar `WA_NUMBER` en `src/lib/constants/contacto.ts`.
+5. Configurar las variables exactas del `env.example` en Vercel.
+6. Crear tu primer `super_admin` (registrándolo en la web y cambiándole el Rol manualmente en la BD desde Supabase usando una query UPDATE).

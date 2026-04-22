@@ -1,0 +1,135 @@
+---
+name: legales-reuso
+description: Decisiones técnico-legales del proyecto reuso.lurdes.co — aceptación de términos, versionado, rutas públicas y correo oficial
+---
+
+# Skill: Legales en reuso.lurdes.co
+
+## Correo oficial de contacto
+
+**SIEMPRE usar `servicio@lurdes.co`** — es el correo oficial de Grupo MLP S.A.S. para todos los contextos:
+- Links `mailto:` en páginas legales
+- Modal / página de ayuda
+- Mensajes de error en `error.tsx`
+- Cualquier comunicación al usuario en la UI
+
+**Nunca usar** `hola@reuso.lurdes.co` ni ningún otro correo inventado.
+
+---
+
+## Rutas legales — arquitectura en Next.js App Router
+
+Las páginas legales están en el grupo `(public)`:
+```
+src/app/(public)/
+  layout.tsx          ← layout mínimo, sin auth, con Footer reutilizado
+  legal/
+    reglamento/page.tsx
+    privacidad/page.tsx
+    medicion/page.tsx
+```
+
+### Middleware
+El middleware debe excluir `/legal/*` de la verificación de sesión:
+```typescript
+if (pathname.startsWith('/legal/')) return NextResponse.next()
+```
+
+### Footer en páginas legales
+Se reutiliza el mismo `<Footer>` del sistema, pero con props adaptadas:
+- `ip` → **fecha de última actualización** del documento (string estático, ej. `"05 de abril de 2026"`)
+- `lastVisit` → **correo de contacto** (`"servicio@lurdes.co"`)
+
+Esto permite reutilizar el Footer sin modificarlo, aprovechando que las páginas legales no tienen usuario autenticado (no hay IP real ni última visita).
+
+```tsx
+// En (public)/layout.tsx
+import { Footer } from '@/components/footer'
+
+// Server Component: obtener IP real del request
+const ip = headers().get('x-forwarded-for')?.split(',')[0] || '—'
+
+<Footer
+  ip="05 de abril de 2026"   // ← fecha de actualización del documento
+  lastVisit="servicio@lurdes.co"  // ← correo de contacto
+/>
+```
+
+---
+
+## acepta_terminos_at — fecha de aceptación de términos
+
+### Dónde se guarda
+- En `user_metadata` de Supabase Auth (`options.data.acepta_terminos_at`)
+- En la columna `acepta_terminos_at TIMESTAMPTZ` de la tabla `profiles`
+- El trigger `handle_new_user()` la mapea automáticamente desde `raw_user_meta_data`
+
+### Timezone
+```typescript
+const acepta_terminos_at = new Date(
+  new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' })
+).toISOString()
+```
+Colombia es UTC-5, sin horario de verano.
+
+### Inmutabilidad
+**Nunca actualizar** `acepta_terminos_at` después del registro inicial. Es evidencia legal de cuándo el usuario aceptó. Si los términos cambian y se requiere nueva aceptación, agregar una columna `acepta_terminos_v2_at` — no sobrescribir la original.
+
+### Versionado de términos (si aplica en el futuro)
+Si se necesita rastrear qué versión aceptó el usuario:
+```sql
+acepta_terminos_v  text DEFAULT '1.0',  -- versión del documento aceptado
+acepta_terminos_at timestamptz,          -- fecha de aceptación
+```
+El flujo de re-aceptación sería: mostrar banner → usuario acepta → guardar nueva versión + fecha. No forzar logout.
+
+---
+
+## Checkbox de términos en registro
+
+El checkbox debe tener 3 links que abren en pestaña nueva:
+```tsx
+<Link href="/legal/reglamento" target="_blank">reglamento</Link>
+<Link href="/legal/privacidad" target="_blank">política de privacidad</Link>
+<Link href="/legal/medicion" target="_blank">método de medición</Link>
+```
+
+Atributos requeridos: `required`, `aria-required="true"`.
+
+---
+
+## Submenú en páginas legales
+
+- El submenú va en la **DERECHA** del contenido (artículo primero, LegalSubmenu después en el flex).
+- Cada página legal define sus propias secciones en un array `SECCIONES` y usa `<LegalSubmenu>` de `src/components/legal-submenu.tsx`.
+- Incluir siempre `{ id: 'transparencia', label: 'Transparencia' }` como último ítem (apunta al aviso IA).
+- Las etiquetas de las secciones **no llevan números** (ej. "Objetivos", no "1. Objetivos").
+
+### Viñetas en listas legales
+Tailwind/Next.js resetea `list-style`. Siempre declarar explícitamente:
+```tsx
+const ul = { paddingLeft: 20, marginBottom: 16, listStyleType: 'disc' } as const
+```
+
+### Footer en páginas legales — correo clickable
+Pasar `lastVisitHref` al Footer para que el correo sea un enlace clickable:
+```tsx
+<Footer
+  ip="05 de abril de 2026"
+  lastVisit="servicio@lurdes.co"
+  ipLabel="Actualización:"
+  lastVisitLabel="Contacto:"
+  lastVisitHref="mailto:servicio@lurdes.co"
+/>
+```
+
+---
+
+## Contenido de los documentos
+
+Los documentos fuente están en `legal/`:
+- `terminos-condiciones-calculadora.docx` → `/legal/reglamento`
+- `politicas-tratamiento-datos.docx` → `/legal/privacidad`
+- `acuerdo-confidencialidad.docx` → disponible si se necesita
+
+El contenido se transcribe en voz activa y positiva, sin alterar el sentido legal. Los títulos de empresa se normalizan a "Grupo MLP S.A.S." en toda la UI.
