@@ -40,7 +40,7 @@ export function LegalSubmenu({ secciones, titulo = '' }: LegalSubmenuProps) {
       {titulo && (
         <p
           style={{
-            fontSize: 11,
+            fontSize: 14,
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.08em',

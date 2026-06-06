@@ -8,7 +8,7 @@ import { getIp } from '@/lib/admin-guard'
 const bodySchema = z.object({
   nombre: z.string().min(2).max(100).optional(),
   sector: z.string().min(1).max(80).nullable().optional(),
-  logo_url: z.string().url('URL de logo inválida.').nullable().optional(),
+  logo_url: z.url('URL de logo inválida.').nullable().optional(),
 })
 
 export async function PATCH(request: NextRequest) {

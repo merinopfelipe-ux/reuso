@@ -154,7 +154,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
-                <tr style={{ background: 'var(--bg-hover)' }}>
+                <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Empresa</SortTh>
                   <SortTh col="plan" sort={sort} onToggle={toggleSort}>Plan</SortTh>
                   <SortTh col="sector" sort={sort} onToggle={toggleSort}>Sector</SortTh>
@@ -186,7 +186,18 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.total_empleados}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-brand)', fontWeight: 600 }}>{emp.total_co2.toFixed(2)}</td>
                     <td style={{ padding: '12px 16px' }}>
-                      <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 600, background: emp.activa ? 'rgba(56,185,142,0.12)' : 'rgba(255,94,75,0.10)', color: emp.activa ? '#1F8C65' : '#CC3C2A' }}>
+                      <span style={{ 
+                        padding: '2px 10px', 
+                        borderRadius: 100, 
+                        fontSize: 10, 
+                        fontWeight: 800, 
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em',
+                        background: emp.activa ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)', 
+                        color: emp.activa ? 'var(--color-success-content)' : 'var(--color-error-content)',
+                        border: '1px solid currentColor',
+                        opacity: 0.9,
+                      }}>
                         {emp.activa ? 'Activa' : 'Inactiva'}
                       </span>
                     </td>

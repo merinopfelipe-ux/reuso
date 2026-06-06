@@ -12,8 +12,8 @@ import { waLink } from '@/lib/constants/contacto'
 const C = {
   brand: '#00827C',
   brandHover: '#006B66',
-  dark: '#1A3A38',
-  mid: '#4D7C79',
+  dark: '#474747',
+  mid: '#6B6B6B',
   light: 'rgba(0,130,124,0.06)',
   border: 'rgba(0,130,124,0.10)',
   borderMid: 'rgba(0,130,124,0.20)',
@@ -46,6 +46,16 @@ function WhatsAppButton() {
 }
 
 function PlanPrice({ plan, currency, billing }: { plan: (typeof PLANS)[0]; currency: string; billing: string }) {
+  if (plan.isFuture) {
+    return (
+      <div style={{ marginBottom: 24, minHeight: 62, display: 'flex', alignItems: 'center' }}>
+        <span style={{ 
+          fontSize: 14, fontWeight: 800, color: '#AD7C43', 
+          background: 'rgba(173,124,67,0.1)', padding: '6px 14px', borderRadius: 10 
+        }}>Disponible muy pronto</span>
+      </div>
+    )
+  }
   if (plan.priceMonthlyCOP === 0) {
     return (
       <div style={{ marginBottom: 24 }}>
@@ -116,7 +126,7 @@ export default function LandingPage() {
   const [billing, setBilling] = useState('monthly')
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FFFFFF' }}>
+    <div data-theme="light" style={{ minHeight: '100vh', background: '#FFFFFF' }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -189,7 +199,7 @@ export default function LandingPage() {
               no tira.
             </h1>
             <p style={{ fontSize: 16, color: C.mid, lineHeight: 1.75, marginBottom: 36, maxWidth: 480 }}>
-              La primera plataforma que certifica el CO₂ evitado al reutilizar. Rigor científico, certificados con QR verificable y reportes ESG listos para auditoría.
+              Transformamos tus iniciativas de sostenibilidad en confianza mediante un pasaporte digital inmutable, inteligencia artificial y acompañamiento estratégico. Hacemos visible el ahorro real de tu circularidad (E-ROI) y convertimos la transparencia en tu mayor ventaja competitiva.
             </p>
             <div className="hero-ctas" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
               <Link href="/registro" style={{
@@ -289,7 +299,7 @@ export default function LandingPage() {
               ].map((item, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 14, alignItems: 'flex-start' }}>
                   <X size={14} color="#EF4444" style={{ marginTop: 2, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, color: '#6B7280', lineHeight: 1.5 }}>{item}</span>
+                  <span style={{ fontSize: 13, color: C.mid, lineHeight: 1.5 }}>{item}</span>
                 </div>
               ))}
             </div>
@@ -532,9 +542,9 @@ export default function LandingPage() {
                 {plan.isFuture ? (
                   <div style={{
                     display: 'block', padding: '13px', borderRadius: 12,
-                    background: 'rgba(0,0,0,0.04)', border: `1px solid rgba(0,0,0,0.08)`,
-                    color: '#9CA3AF', fontSize: 13, fontWeight: 800,
-                    textAlign: 'center', cursor: 'not-allowed',
+                    background: 'rgba(0,130,124,0.05)', border: `1px solid ${C.border}`,
+                    color: C.mid, fontSize: 13, fontWeight: 800,
+                    textAlign: 'center', cursor: 'not-allowed', opacity: 0.6
                   }}>Próximamente</div>
                 ) : plan.id === 'free' || plan.id === 'lab' ? (
                   <Link href="/registro" style={{
@@ -584,12 +594,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{ background: C.dark, padding: '72px 24px 32px' }}>
+      <footer style={{ background: C.dark, padding: '72px 60px 32px' }}>
         <div className="footer-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: 48, marginBottom: 48 }}>
           <div>
             <Image src="/logo-completo.svg" alt="Reuso" width={140} height={40} style={{ height: 32, width: 'auto', filter: 'brightness(0) invert(1)', marginBottom: 20 }} />
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, maxWidth: 260 }}>
-              La plataforma líder en certificación de impacto ambiental por reúso en Latinoamérica. Un producto de Grupo MLP S.A.S.
+              La plataforma líder en certificación de impacto ambiental por reúso en Latinoamérica.
             </p>
           </div>
           <div>
@@ -627,15 +637,22 @@ export default function LandingPage() {
                 { label: 'Privacidad', href: '/legal/privacidad' },
               ].map((l, i) => (
                 <li key={i} style={{ marginBottom: 12 }}>
-                  <Link href={l.href} style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>{l.label}</Link>
+                  <Link href={l.href} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', textDecoration: 'none' }}>{l.label}</Link>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24 }}>
-          <p style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.18em', textAlign: 'center', margin: 0 }}>
-            © {new Date().getFullYear()} Grupo MLP S.A.S. · Medellín, Colombia
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src="/diseno/logo_gurpomlp.svg" 
+            alt="Grupo MLP" 
+            style={{ width: 180, height: 'auto', opacity: 0.6, filter: 'brightness(0) invert(1)' }} 
+          />
+          <div style={{ width: 1, height: 16, background: 'rgba(255,255,255,0.1)' }} />
+          <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0, fontWeight: 500 }}>
+            © {new Date().getFullYear()} · Todos los derechos reservados.
           </p>
         </div>
       </footer>

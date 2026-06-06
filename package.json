@@ -10,10 +10,10 @@
     "lint": "next lint",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "test": "playwright test",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "test:unit": "vitest run src/lib/calculos/"
   },
   "dependencies": {
-    "@infisical/sdk": "^5.0.1",
     "@marsidev/react-turnstile": "^1.5.0",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.10.0",
@@ -40,6 +40,7 @@
     "eslint-config-next": "14.2.35",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Power, Stack, Buildings, Tag, PencilSimple, Check, X } from '@phosphor-icons/react'
+import { Plus, Power, Stack, Check, X, Tag, Buildings, PencilSimple } from '@phosphor-icons/react'
 import type { ModuloConCategorias } from '@/types'
 import * as PhosphorIcons from '@phosphor-icons/react'
 

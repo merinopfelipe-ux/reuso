@@ -55,7 +55,24 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
-  const { modulo_id, activo } = parsed.data
+  const { modulo_id, activo, solo_contar } = parsed.data
+
+  // Si se está desactivando, contar usuarios que perderían acceso
+  let usuariosAfectados = 0
+  if (!activo) {
+    const { count } = await guard.adminClient
+      .from('modulos_usuarios')
+      .select('*', { count: 'exact', head: true })
+      .eq('modulo_id', modulo_id)
+      .eq('empresa_id', params.id)
+      .eq('activo', true)
+    usuariosAfectados = count ?? 0
+  }
+
+  // Modo solo_contar: devuelve el conteo sin modificar (para mostrar advertencia antes de confirmar)
+  if (solo_contar) {
+    return NextResponse.json({ ok: true, usuarios_afectados: usuariosAfectados })
+  }
 
   const { error } = await guard.adminClient
     .from('modulos_empresas')
@@ -68,12 +85,21 @@ export async function PATCH(
     return NextResponse.json({ error: 'Error al actualizar módulo de empresa.' }, { status: 500 })
   }
 
+  // Si se desactivó, también desactivar asignaciones de usuario
+  if (!activo) {
+    await guard.adminClient
+      .from('modulos_usuarios')
+      .update({ activo: false, updated_at: new Date().toISOString() })
+      .eq('modulo_id', modulo_id)
+      .eq('empresa_id', params.id)
+  }
+
   await logAuditoria(guard.adminClient, {
     user_id: guard.user.id,
     accion: activo ? 'activar_modulo_empresa' : 'desactivar_modulo_empresa',
-    detalle: { empresa_id: params.id, modulo_id },
+    detalle: { empresa_id: params.id, modulo_id, usuarios_afectados: usuariosAfectados },
     ip: getIp(request),
   })
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, usuarios_afectados: usuariosAfectados })
 }

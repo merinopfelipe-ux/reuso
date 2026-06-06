@@ -9,7 +9,7 @@ test.describe('super_admin', () => {
 
   test('01 — login aterriza en /admin con badge Super Admin', async ({ page }) => {
     await expect(page).toHaveURL(/\/admin/)
-    await expect(page.getByText(/super admin/i)).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/super admin/i).first()).toBeVisible({ timeout: 10_000 })
   })
 
   test('02 — KPIs del dashboard muestran números reales mayores a cero', async ({ page }) => {
@@ -60,7 +60,7 @@ test.describe('super_admin', () => {
     await page.waitForLoadState('load')
     await page.locator('table tbody tr').first().click()
 
-    const selectPlan = page.locator('select').filter({ hasText: /Explora|Circular|Impulso|Ilimitado/i }).first()
+    const selectPlan = page.locator('div[style*="width: 320"] select')
     await expect(selectPlan).toBeVisible({ timeout: 8_000 })
     const planOriginal = await selectPlan.inputValue()
 
@@ -71,7 +71,7 @@ test.describe('super_admin', () => {
     await page.reload()
     await page.waitForLoadState('load')
     await page.locator('table tbody tr').first().click()
-    const selectDespues = page.locator('select').filter({ hasText: /Explora|Circular|Impulso|Ilimitado/i }).first()
+    const selectDespues = page.locator('div[style*="width: 320"] select')
     await expect(selectDespues).toHaveValue(nuevoPlan, { timeout: 8_000 })
 
     await selectDespues.selectOption(planOriginal)

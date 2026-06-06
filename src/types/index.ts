@@ -160,3 +160,49 @@ export interface EmpresaConStats extends Empresa {
 export interface ModuloConActivo extends Modulo {
   activo_en_empresa: boolean
 }
+
+// ── DPP — Pasaporte Digital de Producto ──────────────────────────────────────
+
+export type EstadoDPP = 'activo' | 'en_reuso' | 'disposicion_final' | 'archivado'
+export type TipoDocumentoIngesta = 'factura_compra' | 'recibo_energia' | 'certificado_origen' | 'foto_objeto' | 'otro'
+export type EstadoOCR = 'pendiente' | 'procesando' | 'completado' | 'error'
+export type CategoriaDPP = 'mobiliario' | 'electronico' | 'textil' | 'embalaje' | 'maquinaria' | 'otro'
+
+export interface InputsFinancieros {
+  p_virgin_usd_kg: number
+  q_circular_kg: number
+  c_adquisicion: number
+  c_operacion: number
+  c_mantenimiento: number
+  c_disposicion: number
+  v_reventa: number
+  m_secundario_kg: number
+  m_renovable_kg: number
+  m_total_input_kg: number
+  n_ciclos: number
+  ahorro_operativo?: number
+  inversion_ce?: number
+  fp_ce?: number
+  fp_lineal?: number
+  c_impuesto_evitado?: number
+  moneda?: 'COP' | 'USD' | 'EUR'
+}
+
+export interface ResultadosFinancieros {
+  tco: number
+  tco_unitario: number
+  costo_evitado: number
+  e_roi: number
+  ice_porcentaje: number
+  inflow_circular_pct: number
+  desglose: {
+    tco_formula: string
+    costo_evitado_desglose: {
+      ahorro_material: number
+      ahorro_disposicion: number
+      ahorro_impuesto: number
+    }
+  }
+  narrativa: string
+  snapshot: InputsFinancieros & { calculado_at: string; version: string }
+}

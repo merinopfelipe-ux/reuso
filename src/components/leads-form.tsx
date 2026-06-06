@@ -16,6 +16,11 @@ export function LeadsForm() {
     interes: ''
   })
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -49,8 +54,8 @@ export function LeadsForm() {
         border: '1px dashed #38B98E'
       }}>
         <CheckCircle size={48} color="#38B98E" style={{ margin: '0 auto 16px' }} />
-        <h3 style={{ fontSize: 20, fontWeight: 700, color: '#1A3A38', margin: '0 0 8px' }}>¡Mensaje recibido!</h3>
-        <p style={{ fontSize: 14, color: '#4D7C79', margin: 0 }}>
+        <h3 style={{ fontSize: 20, fontWeight: 700, color: '#474747', margin: '0 0 8px' }}>¡Mensaje recibido!</h3>
+        <p style={{ fontSize: 14, color: '#6B6B6B', margin: 0 }}>
           Un consultor de impacto se pondrá en contacto contigo en las próximas 24 horas laborables.
         </p>
       </div>
@@ -62,28 +67,31 @@ export function LeadsForm() {
       background: '#fff',
       padding: '32px',
       borderRadius: 20,
-      boxShadow: '0 10px 40px rgba(0,0,0,0.04)',
+      boxShadow: '0 10px 40px rgba(0,130,124,0.06)',
       border: '1px solid rgba(0,130,124,0.08)'
     }}>
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#7FA8A5' }}>Nombre completo</label>
+            <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Nombre completo</label>
             <input
+              type="text"
+              name="nombre"
               required
               value={formData.nombre}
-              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
-              placeholder="Juan Pérez"
+              onChange={handleChange}
+              placeholder="Ej. Juan Pérez"
               style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
             />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#7FA8A5' }}>Email corporativo</label>
+            <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Email corporativo</label>
             <input
-              required
               type="email"
+              name="email"
+              required
               value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              onChange={handleChange}
               placeholder="juan@empresa.com"
               style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
             />
@@ -91,45 +99,48 @@ export function LeadsForm() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: '#7FA8A5' }}>Empresa</label>
+          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Empresa</label>
           <input
+            type="text"
+            name="empresa"
+            required
             value={formData.empresa}
-            onChange={e => setFormData({ ...formData, empresa: e.target.value })}
+            onChange={handleChange}
             placeholder="Nombre de tu organización"
             style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
           />
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: '#7FA8A5' }}>Plan de interés</label>
+          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Plan de interés</label>
           <select
+            name="interes"
             value={formData.interes}
-            onChange={e => setFormData({ ...formData, interes: e.target.value })}
-            style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none', background: '#fff', color: formData.interes ? '#1A3A38' : '#7FA8A5' }}
+            onChange={handleChange}
+            style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none', background: '#fff', color: formData.interes ? '#474747' : '#7FA8A5' }}
           >
-            <option value="">Selecciona un plan...</option>
-            <option value="Explora (Gratis)">Explora — Gratis</option>
-            <option value="Circular Lab">Circular Lab — $49.000 COP/mes</option>
-            <option value="Impulso Sostenible">Impulso Sostenible — $149.000 COP/mes</option>
-            <option value="Impacto Ilimitado">Impacto Ilimitado — $349.000 COP/mes</option>
-            <option value="Otro / Tengo preguntas">Otro / Tengo preguntas</option>
+            <option value="">Selecciona un plan</option>
+            <option value="pyme">Pyme - Desde $99/mes</option>
+            <option value="corporativo">Corporativo - Desde $299/mes</option>
+            <option value="enterprise">Enterprise - Personalizado</option>
           </select>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: '#7FA8A5' }}>Mensaje o requerimiento</label>
+          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Mensaje o requerimiento</label>
           <textarea
+            name="mensaje"
             required
             rows={4}
             value={formData.mensaje}
-            onChange={e => setFormData({ ...formData, mensaje: e.target.value })}
-            placeholder="Cuéntanos más sobre cómo podemos ayudarte..."
+            onChange={handleChange}
+            placeholder="Cuéntanos cómo podemos ayudarte..."
             style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none', resize: 'none' }}
           />
         </div>
 
         {error && (
-          <p style={{ fontSize: 13, color: '#EF4444', margin: 0, fontWeight: 600 }}>{error}</p>
+          <p style={{ fontSize: 14, color: '#EF4444', margin: 0, fontWeight: 600 }}>{error}</p>
         )}
 
         <button

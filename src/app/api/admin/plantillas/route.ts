@@ -3,14 +3,14 @@ import { requireSuperAdmin } from '@/lib/admin-guard'
 import { z } from 'zod'
 
 const patchSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.uuid().optional(),
   tipo: z.enum(['certificado', 'informe']),
   activa: z.boolean().optional(),
   encabezado_html: z.string().max(200).optional(),
   pie_legal: z.string().max(500).optional(),
   firmante_nombre: z.string().max(120).optional(),
   firmante_cargo: z.string().max(120).optional(),
-  firma_imagen_url: z.string().url().optional().or(z.literal('')),
+  firma_imagen_url: z.url().optional().or(z.literal('')),
 })
 
 export async function GET(request: NextRequest) {

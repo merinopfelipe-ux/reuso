@@ -18,15 +18,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'alertaId requerido.' }, { status: 400 })
   }
 
-  // Idempotente: ignorar duplicados por la constraint UNIQUE(alerta_id, user_id)
+  // 1. Verificar si ya existe
+  const { data: existe } = await supabase
+    .from('alertas_leidas')
+    .select('alerta_id')
+    .eq('alerta_id', alertaId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (existe) {
+    return NextResponse.json({ ok: true })
+  }
+
+  // 2. Insertar si no existe
   const { error } = await supabase
     .from('alertas_leidas')
-    .upsert(
-      { alerta_id: alertaId, user_id: user.id },
-      { onConflict: 'alerta_id,user_id', ignoreDuplicates: true }
-    )
+    .insert({ alerta_id: alertaId, user_id: user.id })
 
   if (error) {
+    console.error('Error Supabase marcar-leida:', error)
     return NextResponse.json({ error: 'Error al marcar alerta.' }, { status: 500 })
   }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -22,16 +22,67 @@ const labelStyle: React.CSSProperties = {
   marginBottom: 6,
 }
 
-const TIPOS = [
-  'Datos personales y privacidad',
-  'Términos y condiciones',
-  'Propiedad intelectual',
-  'Confidencialidad',
-  'Cookies',
-  'Otra consulta',
-]
+const TIPOS = {
+  ES: [
+    'Datos personales y privacidad',
+    'Términos y condiciones',
+    'Propiedad intelectual',
+    'Confidencialidad',
+    'Cookies',
+    'Otra consulta',
+  ],
+  ENG: [
+    'Personal data and privacy',
+    'Terms and conditions',
+    'Intellectual property',
+    'Confidentiality',
+    'Cookies',
+    'Other enquiry',
+  ],
+}
 
-export function DudasForm() {
+const TF = {
+  ES: {
+    nombre_label: 'Nombre completo',
+    nombre_placeholder: 'Tu nombre',
+    email_label: 'Correo electrónico',
+    email_placeholder: 'tu@correo.com',
+    tipo_label: 'Tipo de consulta',
+    tipo_placeholder: 'Selecciona un tipo',
+    mensaje_label: 'Mensaje',
+    mensaje_placeholder: 'Describe tu consulta con el mayor detalle posible...',
+    error_campos: 'Completa todos los campos para continuar.',
+    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a servicio@lurdes.co.',
+    enviando: 'Enviando...',
+    enviar: 'Enviar consulta',
+    exito: () =>
+      `Recibimos tu consulta. Te respondemos en un máximo de 10 días hábiles a`,
+    exitoPost: '.',
+  },
+  ENG: {
+    nombre_label: 'Full name',
+    nombre_placeholder: 'Your name',
+    email_label: 'Email address',
+    email_placeholder: 'you@email.com',
+    tipo_label: 'Type of enquiry',
+    tipo_placeholder: 'Select a type',
+    mensaje_label: 'Message',
+    mensaje_placeholder: 'Describe your query in as much detail as possible...',
+    error_campos: 'Please complete all fields to continue.',
+    error_envio: 'Something went wrong. Try again or email us at servicio@lurdes.co.',
+    enviando: 'Sending...',
+    enviar: 'Send enquiry',
+    exito: () =>
+      `We received your query. We will respond within 10 business days to`,
+    exitoPost: '.',
+  },
+}
+
+interface DudasFormProps {
+  lang?: 'ES' | 'ENG'
+}
+
+export function DudasForm({ lang = 'ES' }: DudasFormProps) {
   const [form, setForm] = useState({
     nombre: '',
     email: '',
@@ -42,6 +93,22 @@ export function DudasForm() {
   const [exito, setExito] = useState(false)
   const [error, setError] = useState('')
 
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme')
+      setIsDark(theme === 'dark')
+    }
+    checkTheme()
+    const observer = new MutationObserver(checkTheme)
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => observer.disconnect()
+  }, [])
+
+  const tf = TF[lang]
+  const tipos = TIPOS[lang]
+
   function set(campo: keyof typeof form) {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       setForm((prev) => ({ ...prev, [campo]: e.target.value }))
@@ -51,7 +118,7 @@ export function DudasForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.nombre || !form.email || !form.tipo || !form.mensaje) {
-      setError('Completa todos los campos para continuar.')
+      setError(tf.error_campos)
       return
     }
     setError('')
@@ -65,7 +132,7 @@ export function DudasForm() {
       if (!res.ok) throw new Error()
       setExito(true)
     } catch {
-      setError('Algo salió mal. Intenta de nuevo o escríbenos a servicio@lurdes.co.')
+      setError(tf.error_envio)
     } finally {
       setEnviando(false)
     }
@@ -85,8 +152,9 @@ export function DudasForm() {
           lineHeight: 1.6,
         }}
       >
-        Recibimos tu consulta. Te respondemos en un máximo de 10 días hábiles a{' '}
-        <strong>{form.email}</strong>.
+        {tf.exito()}{' '}
+        <strong>{form.email}</strong>
+        {tf.exitoPost}
       </div>
     )
   }
@@ -94,32 +162,32 @@ export function DudasForm() {
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <label style={labelStyle}>Nombre completo</label>
+        <label style={labelStyle}>{tf.nombre_label}</label>
         <input
           type="text"
           value={form.nombre}
           onChange={set('nombre')}
-          placeholder="Tu nombre"
+          placeholder={tf.nombre_placeholder}
           style={inputStyle}
         />
       </div>
 
       <div>
-        <label style={labelStyle}>Correo electrónico</label>
+        <label style={labelStyle}>{tf.email_label}</label>
         <input
           type="email"
           value={form.email}
           onChange={set('email')}
-          placeholder="tu@correo.com"
+          placeholder={tf.email_placeholder}
           style={inputStyle}
         />
       </div>
 
       <div>
-        <label style={labelStyle}>Tipo de consulta</label>
+        <label style={labelStyle}>{tf.tipo_label}</label>
         <select value={form.tipo} onChange={set('tipo')} style={inputStyle}>
-          <option value="">Selecciona un tipo</option>
-          {TIPOS.map((t) => (
+          <option value="">{tf.tipo_placeholder}</option>
+          {tipos.map((t) => (
             <option key={t} value={t}>
               {t}
             </option>
@@ -128,11 +196,11 @@ export function DudasForm() {
       </div>
 
       <div>
-        <label style={labelStyle}>Mensaje</label>
+        <label style={labelStyle}>{tf.mensaje_label}</label>
         <textarea
           value={form.mensaje}
           onChange={set('mensaje')}
-          placeholder="Describe tu consulta con el mayor detalle posible..."
+          placeholder={tf.mensaje_placeholder}
           rows={5}
           style={{ ...inputStyle, resize: 'vertical' }}
         />
@@ -152,7 +220,7 @@ export function DudasForm() {
           padding: '11px 24px',
           borderRadius: 10,
           background: enviando ? 'rgba(0,130,124,0.5)' : 'var(--color-brand)',
-          color: '#fff',
+          color: isDark ? '#000000' : '#fff',
           fontWeight: 600,
           fontSize: 14,
           border: 'none',
@@ -160,7 +228,7 @@ export function DudasForm() {
           transition: 'background 0.2s',
         }}
       >
-        {enviando ? 'Enviando...' : 'Enviar consulta'}
+        {enviando ? tf.enviando : tf.enviar}
       </button>
     </form>
   )

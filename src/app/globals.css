@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: seravek, 'Open Sans', ui-sans-serif, sans-serif;
 }
 
@@ -9,7 +11,8 @@ h1, h2, h3 {
 @tailwind utilities;
 
 /* ─── Tema claro (default) ─── */
-:root {
+:root,
+[data-theme="light"] {
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8FBFA;
   --bg-card: #FFFFFF;
@@ -19,8 +22,8 @@ h1, h2, h3 {
   --bg-input: #FFFFFF;
   --bg-active: rgba(0, 130, 124, 0.12);
 
-  --text-primary: #1A3A38;
-  --text-secondary: #4D7C79;
+  --text-primary: #474747;
+  --text-secondary: #474747;
   --text-placeholder: #7FA8A5;
 
   --border: rgba(0, 130, 124, 0.12);
@@ -41,31 +44,48 @@ h1, h2, h3 {
   --color-menta: #8AD0B2;
   --color-nogal: #AD7C43;
   --color-rosa: #F3BBD3;
+
+  --text-on-brand: #FFFFFF;
+  --color-success-content: #1F8C65;
+  --color-error-content: #CC3C2A;
+  --color-warning-content: #AD7C43;
+  --color-info-content: #2B7FBF;
 }
 
-/* ─── Tema oscuro (Refinado V6.0 Bank-Grade) ─── */
+/* ─── Tema oscuro (Protocolo Lurdes V12.3) ─── */
 [data-theme="dark"] {
-  --bg-primary: #0A0D0D;   /* Carbón Base */
-  --bg-secondary: #0F1414; /* Superficies */
-  --bg-card: #141A1A;      /* Tarjetas / Inputs */
-  --bg-integrated: #0F1414;
-  --bg-sidebar: #0F1414;
-  --bg-hover: rgba(0, 130, 124, 0.15);
-  --bg-input: #141A1A;
-  --bg-active: rgba(0, 130, 124, 0.25);
+  --bg-primary: #474747;
+  /* Negro Profundo Puro (Lurdes) */
+  --bg-secondary: #474747;
+  /* Integrado */
+  --bg-card: #525252;
+  --bg-integrated: #474747;
+  --bg-sidebar: #474747;
+  --bg-hover: rgba(214, 243, 145, 0.08);
+  --bg-input: #3D3D3D;
+  --bg-active: #474747;
 
-  --text-primary: #E2E8E8;   /* Blanco Nítido */
-  --text-secondary: #94A3A3; /* Gris Muted Mark */
-  --text-placeholder: #526666;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E0E0E0;
+  --text-placeholder: #888888;
+  --text-on-brand: #474747;
 
-  --border: rgba(0, 130, 124, 0.20);
-  --border-light: rgba(0, 130, 124, 0.12);
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  --skeleton-base: #141A1A;
-  --skeleton-shine: #1C2424;
-  --divider: rgba(0, 130, 124, 0.15);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
+  --shadow: 0 12px 60px rgba(0, 0, 0, 0.4);
+  --skeleton-base: #525252;
+  --skeleton-shine: #5A5A5A;
+  --divider: rgba(255, 255, 255, 0.06);
 
-  --color-brand-light: rgba(0, 130, 124, 0.20);
+  --color-brand: #D6F391;
+  --color-brand-light: rgba(214, 243, 145, 0.15);
+
+  --color-success-content: #D6F391;
+  --color-error-content: #FF9B9B;
+  --color-warning-content: #F6BF3E;
+  --color-info-content: #A0D2F9;
+
+  --btn-error-text: #474747;
 }
 
 [data-theme="dark"] .logo-dark-invert {
@@ -89,8 +109,6 @@ body {
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s, border-color 0.3s;
   margin: 0;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* ─── Copy-paste permitido para super_admin ─── */
@@ -109,8 +127,13 @@ body {
 /* ─── Scrollbar sutil ─── */
 /* ─── Esqueletos y Animaciones V7.0 ─── */
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .skeleton-shimmer {
@@ -128,22 +151,23 @@ body {
   bottom: 0;
   left: 0;
   transform: translateX(-100%);
-  background-image: linear-gradient(
-    90deg,
-    transparent 0,
-    var(--skeleton-shine) 50%,
-    transparent 100%
-  );
+  background-image: linear-gradient(90deg,
+      transparent 0,
+      var(--skeleton-shine) 50%,
+      transparent 100%);
   animation: shimmer 1.5s infinite;
 }
 
 /* ─── Preloader Animación V7.1 ─── */
 @keyframes pulse-logo {
-  0%, 100% { 
+
+  0%,
+  100% {
     transform: scale(0.95);
     opacity: 0.8;
   }
-  50% { 
+
+  50% {
     transform: scale(1.05);
     opacity: 1;
   }
@@ -157,13 +181,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 130, 124, 0.25);
 }

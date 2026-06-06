@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import { Leaf, Drop, Tree, Car, Shower, CircleNotch, CheckCircle, ArrowCounterClockwise, Medal, Image as ImageIcon } from '@phosphor-icons/react'
+import { Leaf, Drop, Tree, Car, Shower, CircleNotch, CheckCircle, ArrowCounterClockwise, Medal, Image as ImageIcon, IdentificationCard } from '@phosphor-icons/react'
 import { factorCo2PorKg } from '@/lib/calculos/co2'
 import type { Categoria, Item, Rol } from '@/types'
 
@@ -12,6 +12,7 @@ interface CategoriaConItems extends Categoria {
 interface Props {
   categorias: CategoriaConItems[]
   rol: Rol
+  onGuardado?: () => void
 }
 
 interface ResultadoGuardado {
@@ -78,14 +79,14 @@ function useAnimatedNumber(target: number, duration = 400) {
 }
 
 const BRAND = '#00827C'
-const BG_LIGHT = '#EBF5F4'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BG_LIGHT = 'var(--bg-integrated)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 
 // ── Componente principal ─────────────────────────────────────────────────────
 
-export function Calculadora({ categorias, rol }: Props) {
+export function Calculadora({ categorias, rol, onGuardado }: Props) {
   const [tabActivo, setTabActivo] = useState(categorias[0]?.id ?? '')
   const [pesos, setPesos] = useState<Record<string, number>>({})
   const [guardando, setGuardando] = useState(false)
@@ -153,12 +154,13 @@ export function Calculadora({ categorias, rol }: Props) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Error al guardar.')
       setResultado(data)
+      onGuardado?.()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error inesperado.')
     } finally {
       setGuardando(false)
     }
-  }, [pesos])
+  }, [pesos, onGuardado])
 
   const handleReset = useCallback(() => {
     setPesos({})
@@ -441,6 +443,41 @@ function ResultadoPanel({ resultado, onReset }: {
 }) {
   const [generandoCert, setGenerandoCert] = useState(false)
   const [certError, setCertError] = useState<string | null>(null)
+  const [showModalDpp, setShowModalDpp] = useState(false)
+  const [activosDpp, setActivosDpp] = useState<{ id: string; nombre: string; codigo_dpp: string }[]>([])
+  const [loadingDpp, setLoadingDpp] = useState(false)
+  const [activoSeleccionado, setActivoSeleccionado] = useState<string | null>(null)
+  const [asociando, setAsociando] = useState(false)
+
+  async function abrirModalDpp() {
+    setShowModalDpp(true)
+    setLoadingDpp(true)
+    try {
+      const res = await fetch('/api/dpp/activos?limit=50')
+      const data = await res.json() as { data?: { id: string; nombre: string; codigo_dpp: string }[] }
+      setActivosDpp(res.ok ? (data.data ?? []) : [])
+    } catch { setActivosDpp([]) }
+    setLoadingDpp(false)
+  }
+
+  async function asociarADpp() {
+    if (!activoSeleccionado) return
+    setAsociando(true)
+    try {
+      await fetch(`/api/dpp/activos/${activoSeleccionado}/ciclo`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          operacion_realizada: 'Cálculo CO₂ registrado en Calculadora de Reúso',
+          fecha_inicio: new Date().toISOString().slice(0, 10),
+          distancia_transporte_km: 0,
+        }),
+      })
+    } catch { /* silencioso */ }
+    setAsociando(false)
+    setShowModalDpp(false)
+    setActivoSeleccionado(null)
+  }
 
   const handleCertificado = async () => {
     setGenerandoCert(true)
@@ -540,6 +577,21 @@ function ResultadoPanel({ resultado, onReset }: {
         </button>
 
         <button
+          onClick={abrirModalDpp}
+          style={{
+            padding: '10px 20px', borderRadius: 10,
+            border: '1.5px solid rgba(0,130,124,0.40)',
+            background: 'transparent', color: '#00827C',
+            fontSize: 14, fontWeight: 600, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: "'Open Sans', sans-serif",
+          }}
+        >
+          <IdentificationCard size={16} />
+          Asocia a un Pasaporte DPP
+        </button>
+
+        <button
           onClick={onReset}
           style={{
             padding: '12px 20px', borderRadius: 10,
@@ -565,6 +617,52 @@ function ResultadoPanel({ resultado, onReset }: {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: '@keyframes spin { to { transform: rotate(360deg); } }' }} />
+
+      {showModalDpp && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 480, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 16px', fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
+              Asocia este cálculo a un activo circular
+            </h3>
+            {loadingDpp ? (
+              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Cargando activos...</p>
+            ) : activosDpp.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 12 }}>Primero registra un activo en Pasaportes DPP</p>
+                <a href="/empresa/dpp" style={{ color: '#00827C', fontWeight: 600, fontSize: 14 }}>Ir a Pasaportes DPP →</a>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+                  {activosDpp.map(a => (
+                    <button key={a.id} onClick={() => setActivoSeleccionado(a.id)}
+                      style={{
+                        padding: '12px 14px', borderRadius: 10,
+                        border: `2px solid ${activoSeleccionado === a.id ? '#00827C' : 'var(--border)'}`,
+                        background: activoSeleccionado === a.id ? 'rgba(0,130,124,0.08)' : 'var(--bg-card)',
+                        cursor: 'pointer', textAlign: 'left', width: '100%',
+                        fontFamily: "'Open Sans', sans-serif",
+                      }}>
+                      <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>{a.nombre}</p>
+                      <p style={{ margin: '2px 0 0', fontSize: 11, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{a.codigo_dpp}</p>
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button onClick={() => { setShowModalDpp(false); setActivoSeleccionado(null) }}
+                    style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif" }}>
+                    Cancelar
+                  </button>
+                  <button onClick={asociarADpp} disabled={!activoSeleccionado || asociando}
+                    style={{ background: '#00827C', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: !activoSeleccionado || asociando ? 0.6 : 1, fontFamily: "'Open Sans', sans-serif" }}>
+                    {asociando ? 'Asociando...' : 'Asocia el cálculo'}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

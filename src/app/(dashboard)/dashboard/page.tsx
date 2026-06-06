@@ -2,12 +2,10 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Mi impacto' }
 
 import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PanelCertificados } from '@/components/certificados/panel-certificados'
-import { Calculadora } from '@/components/calculadora/calculadora'
-import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
+import { CalculadoraConHistorial } from '@/components/calculadora/calculadora-con-historial'
 import { KpiCardAnimado, type IndicadorSemanal } from '@/components/dashboard/kpi-card-animado'
 import dynamic from 'next/dynamic'
 import { type PuntoMensualPersonal } from '@/components/dashboard/grafica-linea-personal'
@@ -128,12 +126,13 @@ function calcularPosicionRanking(
 function SectionCard({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
     <div
+      className="backdrop-blur-xl transition-all duration-300"
       style={{
-        background: 'var(--bg-card)',
-        border: '1px solid var(--border)',
-        borderRadius: 16,
-        padding: '20px',
-        boxShadow: 'var(--shadow)',
+        background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)',
+        border: '1px solid var(--border-light)',
+        borderRadius: '2rem',
+        padding: '24px',
+        boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)',
       }}
     >
       <p
@@ -330,7 +329,7 @@ export default async function DashboardPage() {
 
       {/* Saludo */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
           Hola, {saludo}
         </h1>
         <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
@@ -598,25 +597,26 @@ export default async function DashboardPage() {
             <a
               key={href}
               href={href}
+              className="group backdrop-blur-md hover:-translate-y-1 transition-all duration-300"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8,
-                padding: '16px',
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 14,
+                padding: '20px',
+                background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)',
+                border: '1px solid var(--border-light)',
+                borderRadius: 24,
+                boxShadow: '0 4px 16px rgba(0,130,124,0.04)',
                 textDecoration: 'none',
-                transition: 'border-color 0.2s',
                 userSelect: 'none',
               }}
             >
               <div style={{
-                width: 36, height: 36, borderRadius: 10,
+                width: 44, height: 44, borderRadius: '50%',
                 background: 'rgba(0,130,124,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Icon size={18} color="var(--color-brand)" />
+              }} className="group-hover:scale-110 transition-transform duration-300">
+                <Icon size={20} color="var(--color-brand)" />
               </div>
               <div>
                 <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</p>
@@ -627,27 +627,28 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Calculadora */}
-      {categorias.length > 0 && (
-        <Calculadora categorias={categorias} rol={rol} />
-      )}
-
-      {/* Historial o Onboarding */}
+      {/* Calculadora + Historial (wrapper cliente para refrescar tras guardar) */}
       {(totalObjetos ?? 0) === 0 ? (
-        <OnboardingCard />
+        <>
+          {categorias.length > 0 && (
+            <CalculadoraConHistorial
+              categorias={categorias}
+              rol={rol}
+              historialInicial={[]}
+              historialTotal={0}
+              nombresCategorias={nombresCategorias}
+            />
+          )}
+          <OnboardingCard />
+        </>
       ) : (
-        <Suspense fallback={
-          <div style={{ background: 'var(--bg-card)', borderRadius: 16, border: '1px solid var(--border)', height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 13, margin: 0 }}>Cargando historial...</p>
-          </div>
-        }>
-          <HistorialCalculos
-            calculos={historialData as Parameters<typeof HistorialCalculos>[0]['calculos']}
-            total={historialTotal}
-            rol={rol}
-            categorias={nombresCategorias}
-          />
-        </Suspense>
+        <CalculadoraConHistorial
+          categorias={categorias}
+          rol={rol}
+          historialInicial={historialData as Parameters<typeof CalculadoraConHistorial>[0]['historialInicial']}
+          historialTotal={historialTotal}
+          nombresCategorias={nombresCategorias}
+        />
       )}
 
       {/* Panel certificados */}

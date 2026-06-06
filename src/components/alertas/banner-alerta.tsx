@@ -59,22 +59,16 @@ export function BannerAlerta() {
         userSelect: 'none',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-        <Icono size={16} style={{ flexShrink: 0 }} />
-        <span style={{ fontWeight: 600, fontSize: 13, marginRight: 6, flexShrink: 0 }}>
-          {alerta.titulo}
-        </span>
-        <span
-          style={{
-            fontSize: 13,
-            opacity: 0.9,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {alerta.mensaje}
-        </span>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, minWidth: 0, flex: 1 }}>
+        <Icono size={16} style={{ flexShrink: 0, marginTop: 1 }} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
+          <span style={{ fontWeight: 700, fontSize: 13, color: 'inherit' }}>
+            {alerta.titulo}
+          </span>
+          <span style={{ fontSize: 13, opacity: 0.95, color: 'inherit', lineHeight: 1.4 }}>
+            {alerta.mensaje}
+          </span>
+        </div>
       </div>
       <button
         onClick={() => marcarLeida(alerta.id)}

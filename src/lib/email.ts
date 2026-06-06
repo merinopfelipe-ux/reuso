@@ -8,7 +8,7 @@ export async function enviarInvitacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'invitaciones@lurdes.co'
+  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@reuso.lurdes.co>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
   const link = `${APP_URL}/invitacion/${rawToken}`
 
@@ -63,7 +63,7 @@ export async function enviarNotificacionTicket(
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'invitaciones@lurdes.co'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
 
   await resend.emails.send({
     from: FROM,

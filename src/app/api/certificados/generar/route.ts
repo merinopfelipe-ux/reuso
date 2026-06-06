@@ -26,11 +26,11 @@ function checkRateLimit(userId: string): boolean {
 const schema = z.discriminatedUnion('tipo', [
   z.object({
     tipo: z.literal('certificado'),
-    empresa_id: z.string().uuid().nullable().optional(),
+    empresa_id: z.uuid().nullable().optional(),
   }),
   z.object({
     tipo: z.literal('informe'),
-    empresa_id: z.string().uuid().nullable().optional(),
+    empresa_id: z.uuid().nullable().optional(),
     fecha_inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     fecha_fin: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   }),

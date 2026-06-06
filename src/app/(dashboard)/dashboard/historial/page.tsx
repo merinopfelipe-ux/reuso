@@ -38,7 +38,10 @@ export default async function HistorialPage() {
       .order('orden', { ascending: true }),
   ])
 
-  const calculos = historialRes.data ?? []
+  const rawCalculos = historialRes.data ?? []
+  const calculos = rol === 'usuario_libre'
+    ? rawCalculos.slice(0, 15)
+    : rawCalculos
   const total = rol === 'usuario_libre'
     ? Math.min(historialRes.count ?? 0, 15)
     : (historialRes.count ?? 0)

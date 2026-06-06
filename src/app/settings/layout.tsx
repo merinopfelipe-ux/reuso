@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
+import { displayName } from '@/lib/display-name'
 import type { Metadata } from 'next'
 import type { Rol } from '@/types'
 
@@ -22,14 +23,12 @@ export default async function SettingsLayout({
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nombre, rol, empresa_id')
+    .select('nombre, apellido, apodo, rol, empresa_id, avatar_color, avatar_text')
     .eq('user_id', user.id)
     .single()
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
-  const meta = user.user_metadata || {}
-  const fallbackNombre = meta.first_name || meta.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Usuario'
-  const nombre = (perfil?.nombre && perfil.nombre.trim() !== '') ? perfil.nombre : fallbackNombre
+  const nombre = displayName(perfil ?? { nombre: user.email?.split('@')[0] })
 
   const head = headers()
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
@@ -52,6 +51,8 @@ export default async function SettingsLayout({
       nombre={nombre}
       rol={rol}
       empresaId={perfil?.empresa_id ?? null}
+      avatarColor={perfil?.avatar_color ?? undefined}
+      avatarText={perfil?.avatar_text ?? undefined}
       ip={ip}
       lastVisit={lastVisitFormatted}
     >

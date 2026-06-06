@@ -18,6 +18,7 @@ export function AlertasProvider({ children }: { children: React.ReactNode }) {
           ...a,
           leida: data.ids_leidas.includes(a.id),
         }))
+
         setAlertas(combinadas)
       } catch {
         // silenciar errores de red

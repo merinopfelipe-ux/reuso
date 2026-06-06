@@ -4,7 +4,7 @@ import { logAuditoria } from '@/lib/audit'
 import { z } from 'zod'
 
 const revocarSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   motivo_revocacion: z.string().min(10, 'El motivo debe tener al menos 10 caracteres.').max(500),
 })
 

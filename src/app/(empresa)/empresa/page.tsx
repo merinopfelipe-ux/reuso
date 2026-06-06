@@ -28,9 +28,9 @@ function KpiCard({ titulo, valor, unidad, icono: Icon, color }: {
   icono: React.ElementType; color: string
 }) {
   return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border)',
-      borderRadius: 12, padding: '18px 20px', boxShadow: 'var(--shadow)',
+    <div className="backdrop-blur-md transition-all duration-300 hover:-translate-y-1 group" style={{
+      background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)',
+      borderRadius: 24, padding: '20px 24px', boxShadow: '0 4px 16px rgba(0,130,124,0.04)',
       display: 'flex', alignItems: 'flex-start', gap: 14,
     }}>
       <div style={{
@@ -54,9 +54,9 @@ function KpiCard({ titulo, valor, unidad, icono: Icon, color }: {
 
 function SectionCard({ titulo, children }: { titulo: string; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border)',
-      borderRadius: 16, padding: '20px', boxShadow: 'var(--shadow)', marginBottom: 20,
+    <div className="backdrop-blur-xl transition-all duration-300" style={{
+      background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)',
+      borderRadius: '2rem', padding: '24px', boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)', marginBottom: 20,
     }}>
       <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {titulo}
@@ -221,7 +221,7 @@ export default async function EmpresaPage() {
   return (
     <div style={{ width: '100%' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 4px' }}>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)', margin: '0 0 4px' }}>
           Hola, {saludo}
         </h1>
         <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0 }}>
@@ -244,13 +244,13 @@ export default async function EmpresaPage() {
 
       {/* Ranking + Donut */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 20 }}>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow)' }}>
+        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Ranking del equipo
           </h2>
           <RankingEmpleados data={ranking} />
         </div>
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, boxShadow: 'var(--shadow)' }}>
+        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
           <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Materiales reutilizados
           </h2>

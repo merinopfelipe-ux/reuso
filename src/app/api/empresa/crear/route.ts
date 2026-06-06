@@ -9,7 +9,7 @@ import { randomBytes } from 'crypto'
 const bodySchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.').max(100),
   sector: z.string().min(1).max(80).optional(),
-  logo_url: z.string().url('URL de logo inválida.').nullable().optional(),
+  logo_url: z.url('URL de logo inválida.').nullable().optional(),
 })
 
 function generarSlug(nombre: string): string {

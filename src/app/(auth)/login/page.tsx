@@ -1,11 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { Eye, EyeSlash } from '@phosphor-icons/react'
+import {
+  Eye,
+  EyeSlash,
+  Envelope,
+  LockKey,
+  CaretLeft,
+  CaretRight,
+  CaretDown,
+  CircleNotch,
+  UserCircle,
+  Quotes,
+  Square,
+  CheckSquare,
+} from '@phosphor-icons/react'
+import { createClient } from '@/lib/supabase/client'
 import type { Rol } from '@/types'
 
 const REDIRECT: Record<Rol, string> = {
@@ -15,6 +29,91 @@ const REDIRECT: Record<Rol, string> = {
   usuario_libre: '/dashboard',
 }
 
+const T = {
+  ES: {
+    cuentaQ:    '¿Quieres crear una cuenta?',
+    registrate: 'Regístrate',
+    titulo:     'Bienvenido',
+    subtitulo:  'Ingresa tus datos para continuar.',
+    correoLabel:'Correo electrónico:',
+    correoPlaceholder: 'usuario@empresa.com',
+    passLabel:  'Contraseña:',
+    passPlaceholder: '••••••••',
+    recordarme: 'Recuérdame.',
+    olvidaste:  '¿Olvidaste tu contraseña?',
+    legalPre:   'Al acceder, acepto los',
+    legalLink:  'términos legales',
+    ingresar:   'Ingresar',
+    verificando:'Verificando...',
+    errorLegal: 'Debes aceptar los términos para ingresar.',
+    errorServer:'Error interno del servidor. Contacta a soporte.',
+    errorDatos: 'Verifica tus datos e intenta de nuevo.',
+    errorCorreo:'Completa el correo electrónico.',
+    errorPass:  'Completa la contraseña.',
+    copyright:  'Todos los derechos reservados.',
+    mostrarPass:'Mostrar contraseña',
+    ocultarPass:'Ocultar contraseña',
+    testimonios: [
+      { titulo: "Certificamos nuestro impacto ambiental con total transparencia.", texto: "Con Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.", cargo: "Directora de Sostenibilidad" },
+      { titulo: "Medimos y reportamos el ahorro de CO₂ con precisión.", texto: "Antes nuestros reportes de sostenibilidad eran estimaciones. Hoy generamos certificados con datos verificables y compartimos el impacto real de cada objeto reutilizado con un solo clic.", cargo: "Gerente de Operaciones" },
+      { titulo: "Integramos a todo el equipo en nuestra economía circular.", texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.", cargo: "Especialista en Economía Circular" },
+    ],
+  },
+  ENG: {
+    cuentaQ:    'Want to create an account?',
+    registrate: 'Sign up',
+    titulo:     'Welcome',
+    subtitulo:  'Enter your details to continue.',
+    correoLabel:'Email address:',
+    correoPlaceholder: 'user@company.com',
+    passLabel:  'Password:',
+    passPlaceholder: '••••••••',
+    recordarme: 'Remember me.',
+    olvidaste:  'Forgot your password?',
+    legalPre:   'By signing in, I accept the',
+    legalLink:  'legal terms',
+    ingresar:   'Sign in',
+    verificando:'Verifying...',
+    errorLegal: 'You must accept the terms to continue.',
+    errorServer:'Internal server error. Contact support.',
+    errorDatos: 'Check your credentials and try again.',
+    errorCorreo:'Complete your email address.',
+    errorPass:  'Complete your password.',
+    copyright:  'All rights reserved.',
+    mostrarPass:'Show password',
+    ocultarPass:'Hide password',
+    testimonios: [
+      { titulo: "We certified our environmental impact with full transparency.", texto: "With Reúso we certified all recovered furniture from our offices in record time. We now communicate avoided CO₂ with verifiable QR codes that build real trust with our clients.", cargo: "Sustainability Director" },
+      { titulo: "We measure and report CO₂ savings with precision.", texto: "Our sustainability reports used to be estimates. Today we generate verifiable certificates and share the real impact of every reused object with a single click.", cargo: "Operations Manager" },
+      { titulo: "We brought our entire team into our circular economy.", texto: "The control panel gives us full visibility into avoided emissions. Every employee logs their reuses and together we build a culture of measurable, certified environmental impact.", cargo: "Circular Economy Specialist" },
+    ],
+  },
+}
+
+const TESTIMONIOS = [
+  {
+    titulo: "Certificamos nuestro impacto ambiental con total transparencia.",
+    texto: "Con Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.",
+    autor: "Laura Méndez",
+    cargo: "Directora de Sostenibilidad",
+    initials: "LM", color: "#8AD0B2"
+  },
+  {
+    titulo: "Medimos y reportamos el ahorro de CO₂ con precisión.",
+    texto: "Antes nuestros reportes de sostenibilidad eran estimaciones. Hoy generamos certificados con datos verificables y compartimos el impacto real de cada objeto reutilizado con un solo clic.",
+    autor: "Carlos Ruiz",
+    cargo: "Gerente de Operaciones",
+    initials: "CR", color: "#00827C"
+  },
+  {
+    titulo: "Integramos a todo el equipo en nuestra economía circular.",
+    texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.",
+    autor: "Ana Gómez",
+    cargo: "Especialista en Economía Circular",
+    initials: "AG", color: "#D6F391"
+  }
+]
+
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -23,9 +122,86 @@ export default function LoginPage() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [aceptaLegal, setAceptaLegal] = useState(true)
+  const [legalError, setLegalError] = useState(false)
+  const [emailError, setEmailError] = useState(false)
+  const [passError, setPassError] = useState(false)
+  const [recordarme, setRecordarme] = useState(false)
+  const [idioma, setIdioma] = useState<'ES' | 'ENG'>('ES')
+  const [idiomaOpen, setIdiomaOpen] = useState(false)
+
+  useEffect(() => {
+    const guardado = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
+    if (guardado) {
+      setIdioma(guardado)
+    } else {
+      const sys = navigator.language?.toLowerCase() ?? ''
+      setIdioma(sys.startsWith('es') ? 'ES' : 'ENG')
+    }
+  }, [])
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => obs.disconnect()
+  }, [])
+
+  // Restaurar email guardado si el usuario marcó "Recuérdame"
+  useEffect(() => {
+    const saved = localStorage.getItem('reuso_email')
+    if (saved) {
+      setEmail(saved)
+      setRecordarme(true)
+    }
+  }, [])
+
+  // Carousel state
+  const [activeTestimonial, setActiveTestimonial] = useState(0)
+  const [navDir, setNavDir] = useState<'next' | 'prev'>('next')
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setNavDir('next')
+      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIOS.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const prevTestimonial = () => {
+    setNavDir('prev')
+    setActiveTestimonial((prev) => (prev - 1 + TESTIMONIOS.length) % TESTIMONIOS.length)
+  }
+
+  const nextTestimonial = () => {
+    setNavDir('next')
+    setActiveTestimonial((prev) => (prev + 1) % TESTIMONIOS.length)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+
+    const t = T[idioma]
+
+    let hasError = false
+    if (!email) { setEmailError(true); hasError = true }
+    if (!password) { setPassError(true); hasError = true }
+    if (!aceptaLegal) { setLegalError(true); hasError = true }
+    if (hasError) return
+
+    setEmailError(false)
+    setPassError(false)
+    setLegalError(false)
+
+    // Guardar o borrar el correo según "Recuérdame"
+    if (recordarme) {
+      localStorage.setItem('reuso_email', email)
+    } else {
+      localStorage.removeItem('reuso_email')
+    }
+
     const tokenParaEnviar = turnstileToken || 'skip'
     setLoading(true)
     setError('')
@@ -33,14 +209,29 @@ export default function LoginPage() {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, turnstile_token: tokenParaEnviar }),
+      body: JSON.stringify({ email, password, turnstile_token: tokenParaEnviar, acepta_legal: aceptaLegal }),
     })
-    const data = await res.json()
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      setError(t.errorServer);
+      setLoading(false);
+      return;
+    }
 
     if (!res.ok) {
-      setError(data.error ?? 'Verifica tus datos e intenta de nuevo.')
+      setError(data.error ?? t.errorDatos)
       setLoading(false)
       return
+    }
+
+    // Si no marcó "Recuérdame", cerrar sesión al cerrar el navegador
+    if (!recordarme) {
+      const supabase = createClient()
+      window.addEventListener('beforeunload', () => {
+        supabase.auth.signOut()
+      }, { once: true })
     }
 
     router.push(REDIRECT[data.rol as Rol] ?? '/dashboard')
@@ -48,312 +239,395 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        minHeight: '100vh',
-        fontFamily: "'Open Sans', sans-serif",
-      }}
-    >
-      {/* Panel izquierdo — verde */}
-      <div
-        style={{
-          flex: '0 0 55%',
-          background: 'linear-gradient(160deg, #004945 0%, #00827C 100%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 40px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-        className="login-left-panel"
-      >
-        {/* Círculo decorativo de fondo */}
-        <div
-          style={{
-            position: 'absolute',
-            width: 500,
-            height: 500,
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.04)',
-            top: -120,
-            right: -120,
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.04)',
-            bottom: -80,
-            left: -80,
-          }}
-        />
+    <main className="flex min-h-screen w-full font-sans bg-primary overflow-hidden">
 
-        {/* Logo */}
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-          <Image
-            src="/logo-completo.svg"
-            alt="Calculadora de Reúso"
-            width={240}
-            height={64}
-            style={{ filter: 'brightness(0) invert(1)', marginBottom: 16, objectFit: 'contain' }}
-          />
-          <p
-            style={{
-              color: 'rgba(255,255,255,0.75)',
-              fontSize: 16,
-              margin: 0,
-              maxWidth: 320,
-              lineHeight: 1.6,
-            }}
-          >
-            Cada objeto que reutilizas escribe una historia verde. Mídela, certifícala y compártela.
-          </p>
+      <style>{`
+        @keyframes slideInLeft   { from { opacity: 0; transform: translateX(-32px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInRight  { from { opacity: 0; transform: translateX(32px);  } to { opacity: 1; transform: translateX(0); } }
+        @keyframes testimonyNext { from { opacity: 0; transform: translateX(60px)  scale(0.96); filter: blur(4px); } to { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); } }
+        @keyframes testimonyPrev { from { opacity: 0; transform: translateX(-60px) scale(0.96); filter: blur(4px); } to { opacity: 1; transform: translateX(0) scale(1); filter: blur(0); } }
+        .anim-left       { animation: slideInLeft  0.6s cubic-bezier(0.22,1,0.36,1) both; }
+        .anim-right      { animation: slideInRight 0.6s cubic-bezier(0.22,1,0.36,1) both; }
+        .anim-t-next     { animation: testimonyNext 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+        .anim-t-prev     { animation: testimonyPrev 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+      `}</style>
 
-          {/* Stat decorativa */}
-          <div
-            style={{
-              marginTop: 48,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 16,
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: 12,
-              padding: '16px 24px',
-            }}
-          >
-            <span style={{ fontSize: 32, fontWeight: 700, color: '#D6F391' }}>
-              CO₂
-            </span>
-            <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 14, textAlign: 'left', lineHeight: 1.4 }}>
-              evitado<br />certificado
-            </span>
+      {/* Turnstile invisible — sin UI visible */}
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <Turnstile
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          options={{ size: 'invisible' }}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken('')}
+        />
+      )}
+
+      {/* ── PANEL IZQUIERDO — LOGIN (40%) ───────────────────────────── */}
+      <section className="anim-left w-full lg:w-[40%] flex flex-col justify-between relative overflow-y-auto z-10 bg-primary">
+
+        {/* Header */}
+        <header className="flex items-center justify-between w-full px-8 pt-8 md:px-12">
+          <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
+            <Image
+              src="/logo-icono.svg"
+              alt="Reúso"
+              width={26}
+              height={26}
+              className="object-contain"
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Panel derecho — form */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '48px 40px',
-          background: '#FFFFFF',
-          minHeight: '100vh',
-        }}
-      >
-        <div style={{ width: '100%', maxWidth: 360 }}>
-          <h2
-            style={{
-              fontSize: 40,
-              fontWeight: 700,
-              color: '#1A3A38',
-              margin: '0 0 8px',
-            }}
-          >
-            Bienvenido
-          </h2>
-          <p style={{ fontSize: 14, color: '#4D7C79', margin: '0 0 8px' }}>
-            Ingresa para ver tu impacto ambiental
-          </p>
-          <p style={{ fontSize: 14, color: '#1A3A38', margin: '0 0 32px', fontWeight: 500 }}>
-            ¿No tienes cuenta?{' '}
-            <Link href="#" style={{ color: '#00827C', textDecoration: 'none', fontWeight: 600 }}>
-              Regístrate
+          <p className="text-sm text-secondary font-medium hidden sm:block">
+            {T[idioma].cuentaQ}{' '}
+            <Link href="/registro" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline transition-colors">
+              {T[idioma].registrate}
             </Link>
           </p>
+        </header>
+
+        {/* Contenido principal */}
+        <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto my-12 px-8 md:px-12">
+
+          <div className="flex flex-col items-center text-center mb-10">
+            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mb-4 text-brand">
+              <UserCircle size={40} weight="light" />
+            </div>
+            <h1 className="text-3xl font-bold text-primary mb-1">{T[idioma].titulo}</h1>
+            <p className="text-secondary text-sm leading-relaxed max-w-[280px]">
+              {T[idioma].subtitulo}
+            </p>
+          </div>
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                padding: '12px 16px',
-                borderRadius: 8,
-                background: 'rgba(255,94,75,0.08)',
-                border: '1px solid rgba(255,94,75,0.25)',
-                color: '#FF5E4B',
-                fontSize: 13,
-                marginBottom: 20,
-              }}
-            >
+            <div role="alert" className="mb-6 p-3 rounded-md bg-error/10 border border-error/30 text-error text-sm text-center font-medium">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div>
-              <label
-                htmlFor="email"
-                style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1A3A38', marginBottom: 6 }}
-              >
-                Correo electrónico
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@correo.com"
-                required
-                autoComplete="email"
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  borderRadius: 8,
-                  border: '1px solid rgba(0,130,124,0.20)',
-                  background: '#FFFFFF',
-                  color: '#1A3A38',
-                  fontSize: 14,
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  boxSizing: 'border-box',
-                }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
-              />
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
+
+            {/* Campo Email */}
+            <div className="flex flex-col gap-2 relative group">
+              <div className="px-1">
+                <label htmlFor="email" className="text-sm font-semibold text-primary">
+                  {T[idioma].correoLabel}
+                </label>
+              </div>
+              <div className="relative flex items-center">
+                <div className="absolute left-4 text-secondary group-focus-within:text-brand transition-colors">
+                  <Envelope size={20} />
+                </div>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(false) }}
+                  placeholder={T[idioma].correoPlaceholder}
+                  autoComplete="email"
+                  className={`w-full py-3.5 pl-12 pr-4 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-none focus:ring-1 transition-all text-sm shadow-sm ${emailError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
+                />
+              </div>
+              {emailError && <p className="text-xs text-error px-1">{T[idioma].errorCorreo}</p>}
             </div>
 
-            <div>
-              <label
-                htmlFor="password"
-                style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1A3A38', marginBottom: 6 }}
-              >
-                Contraseña
-              </label>
-              <div style={{ position: 'relative' }}>
+            {/* Campo Contraseña */}
+            <div className="flex flex-col gap-2 relative group">
+              <div className="px-1">
+                <label htmlFor="password" className="text-sm font-semibold text-primary">
+                  {T[idioma].passLabel}
+                </label>
+              </div>
+              <div className="relative flex items-center">
+                <div className="absolute left-4 text-secondary group-focus-within:text-brand transition-colors">
+                  <LockKey size={20} />
+                </div>
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
+                  onChange={(e) => { setPassword(e.target.value); setPassError(false) }}
+                  placeholder={T[idioma].passPlaceholder}
                   autoComplete="current-password"
-                  style={{
-                    width: '100%',
-                    padding: '10px 40px 10px 14px',
-                    borderRadius: 8,
-                    border: '1px solid rgba(0,130,124,0.20)',
-                    background: '#FFFFFF',
-                    color: '#1A3A38',
-                    fontSize: 14,
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                    boxSizing: 'border-box',
-                  }}
-                  onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-                  onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+                  className={`w-full py-3.5 pl-12 pr-12 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-none focus:ring-1 transition-all text-sm shadow-sm ${passError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: 12,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'transparent',
-                    border: 'none',
-                    padding: 0,
-                    color: '#7FA8A5',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  className="absolute right-4 text-secondary hover:text-primary transition-colors flex items-center justify-center focus:outline-none"
+                  aria-label={showPassword ? T[idioma].ocultarPass : T[idioma].mostrarPass}
                 >
-                  {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              {passError && <p className="text-xs text-error px-1">{T[idioma].errorPass}</p>}
             </div>
 
-            {/* Turnstile */}
-            <Turnstile
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={(token) => setTurnstileToken(token)}
-              onExpire={() => setTurnstileToken('')}
-            />
+            {/* Recuérdame + ¿Olvidaste? */}
+            <div className="flex items-center justify-between mt-1 px-1">
+              <label
+                className="flex items-center gap-2 cursor-pointer group select-none"
+                onClick={() => setRecordarme(!recordarme)}
+              >
+                {recordarme
+                  ? <CheckSquare size={18} weight="duotone" className="text-brand flex-shrink-0" />
+                  : <Square size={18} weight="regular" className="text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
+                }
+                <span className="text-sm font-medium text-secondary group-hover:text-primary transition-colors">
+                  {T[idioma].recordarme}
+                </span>
+              </label>
+              <Link href="/recuperar" target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline transition-colors">
+                {T[idioma].olvidaste}
+              </Link>
+            </div>
 
+            {/* Checkbox legal (pre-marcado) */}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2 select-none px-1">
+                <button
+                  type="button"
+                  onClick={() => { setAceptaLegal(!aceptaLegal); setLegalError(false) }}
+                  className="flex-shrink-0 flex items-center focus:outline-none"
+                  aria-label="Aceptar términos legales"
+                >
+                  {aceptaLegal
+                    ? <CheckSquare size={18} weight="duotone" className="text-brand" />
+                    : <Square size={18} weight="regular" className={`transition-colors ${legalError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
+                  }
+                </button>
+                <span className="text-sm font-medium text-secondary">
+                  {T[idioma].legalPre}{' '}
+                  <Link href="/legal" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
+                    {T[idioma].legalLink}
+                  </Link>
+                  .
+                </span>
+              </div>
+              {legalError && <p className="text-xs text-error px-1">{T[idioma].errorLegal}</p>}
+            </div>
+
+            {/* Botón principal */}
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: 10,
-                background: loading ? '#4D7C79' : '#00827C',
-                color: '#ffffff',
-                fontSize: 15,
-                fontWeight: 600,
-                border: 'none',
-                cursor: loading ? 'not-allowed' : 'pointer',
-                transition: 'background 0.2s',
-                marginTop: 4,
-              }}
-              onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLElement).style.background = '#006B66' }}
-              onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLElement).style.background = '#00827C' }}
+              className={`w-full py-3.5 mt-2 rounded-btn font-bold text-[15px] transition-all flex items-center justify-center gap-2 shadow-card ${
+                loading
+                  ? 'bg-brand/60 text-white/80 cursor-not-allowed shadow-none'
+                  : 'bg-brand text-white hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0'
+              }`}
             >
-              {loading ? 'Accediendo...' : 'Acceso'}
+              {loading ? (
+                <>
+                  <CircleNotch size={18} className="animate-spin" />
+                  {T[idioma].verificando}
+                </>
+              ) : T[idioma].ingresar}
             </button>
 
-            <p style={{ margin: '12px 0 0', fontSize: 11, color: '#7FA8A5', textAlign: 'center', lineHeight: 1.6 }}>
-              Al acceder confirmas que conoces y aceptas nuestros{' '}
-              <Link href="/legal" style={{ color: '#00827C', fontWeight: 600, textDecoration: 'none' }}>
-                términos de uso, políticas de privacidad y demás condiciones legales
+            <p className="text-xs text-center text-secondary mt-2 sm:hidden">
+              {T[idioma].cuentaQ}{' '}
+              <Link href="/registro" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline transition-colors">
+                {T[idioma].registrate}
               </Link>
-              .
             </p>
           </form>
-
-          <Link
-            href="#"
-            style={{
-              display: 'block',
-              width: '100%',
-              padding: '12px',
-              borderRadius: 10,
-              background: '#F2F9F8',
-              color: '#1A3A38',
-              fontSize: 14,
-              fontWeight: 600,
-              textAlign: 'center',
-              textDecoration: 'none',
-              marginTop: 16,
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = '#EBF5F4' }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = '#F2F9F8' }}
-          >
-            ¿Has olvidado tu contraseña?
-          </Link>
         </div>
 
-        <p
-          style={{
-            position: 'absolute',
-            bottom: 16,
-            fontSize: 12,
-            color: '#7FA8A5',
-          }}
-        >
-          Desarrollado por Grupo MLP S.A.S.
-        </p>
-      </div>
+        {/* Footer */}
+        <footer style={{
+          padding: '28px 32px 32px',
+          background: `linear-gradient(0deg, rgba(214,243,145,${isDark ? '0.07' : '0.18'}) 0%, transparent 100%)`,
+          color: 'var(--text-secondary)',
+          fontSize: 12,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 16, flexWrap: 'wrap' }}>
 
-      <style>{`
-        @media (max-width: 767px) {
-          .login-left-panel { display: none !important; }
-        }
-      `}</style>
-    </div>
+            {/* Logo apilado sobre copyright */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/diseno/logo_gurpomlp.svg"
+                alt="Grupo MLP"
+                style={{
+                  width: 160, height: 'auto',
+                  opacity: isDark ? 0.9 : 1,
+                  filter: isDark ? 'brightness(0) invert(1)' : 'none',
+                }}
+              />
+              <p style={{ margin: 0, opacity: 0.6, fontSize: 11, fontWeight: 500 }}>
+                Grupo MLP ©{new Date().getFullYear()}. {T[idioma].copyright}
+              </p>
+            </div>
+
+            {/* Selector de idioma — dropdown */}
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => setIdiomaOpen(o => !o)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  fontSize: 11, fontWeight: 600, padding: '5px 10px',
+                  borderRadius: 6, border: '1px solid var(--border-light)',
+                  cursor: 'pointer', background: 'transparent',
+                  color: 'var(--text-secondary)', transition: 'all 0.2s',
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${idioma === 'ES' ? 'es' : 'gb'}.svg`}
+                  alt=""
+                  style={{
+                    width: 16,
+                    height: 11,
+                    borderRadius: '2px',
+                    objectFit: 'cover',
+                    border: '1px solid rgba(0,0,0,0.15)',
+                  }}
+                />
+                {idioma}
+                <CaretDown size={11} style={{ transform: idiomaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              </button>
+              {idiomaOpen && (
+                <div style={{
+                  position: 'absolute', bottom: '100%', right: 0, marginBottom: 4,
+                  background: 'var(--bg-card)', border: '1px solid var(--border-light)',
+                  borderRadius: 8, overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+                  minWidth: 110, zIndex: 10,
+                }}>
+                  {(['ES', 'ENG'] as const).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => { setIdioma(lang); setIdiomaOpen(false); localStorage.setItem('reuso_idioma', lang); window.dispatchEvent(new Event('reuso_idioma_change')) }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        width: '100%', padding: '8px 12px', border: 'none',
+                        background: idioma === lang ? 'var(--color-brand)' : 'transparent',
+                        color: idioma === lang ? '#fff' : 'var(--text-primary)',
+                        fontSize: 12, fontWeight: idioma === lang ? 600 : 400,
+                        cursor: 'pointer', textAlign: 'left',
+                      }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${lang === 'ES' ? 'es' : 'gb'}.svg`}
+                        alt=""
+                        style={{
+                          width: 16,
+                          height: 11,
+                          borderRadius: '2px',
+                          objectFit: 'cover',
+                          border: `1px solid ${idioma === lang ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.15)'}`,
+                        }}
+                      />
+                      <span>{lang === 'ES' ? 'Español' : 'English'}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          </div>
+        </footer>
+      </section>
+
+      {/* ── PANEL DERECHO — CARRUSEL (60%) ──────────────────────────── */}
+      <section className="anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-gradient-to-br from-[#004945] to-brand shadow-inner">
+
+        {/* Semicírculo decorativo */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-10 pointer-events-none">
+          <svg width="600" height="1200" viewBox="0 0 600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M600 0C268.629 0 0 268.629 0 600C0 931.371 268.629 1200 600 1200L600 0Z" fill="white"/>
+          </svg>
+        </div>
+
+        {/* Círculos decorativos de fondo */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] rounded-full bg-white/5 blur-3xl pointer-events-none" />
+
+        {/* Logo Reúso — siempre visible */}
+        <div className="absolute top-10 right-12 z-20">
+          <Image
+            src="/logo-completo.svg"
+            alt="Reúso"
+            width={120}
+            height={36}
+            className="brightness-0 invert opacity-90 hover:opacity-100 transition-opacity drop-shadow-lg"
+          />
+        </div>
+
+        {/* Contenido del carrusel */}
+        <div className="flex-1 flex flex-col justify-center items-center w-full px-16 lg:px-24 xl:px-32 relative z-10">
+
+          {/* Card testimonio — sombra siempre visible */}
+          <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
+            <div className="absolute -top-6 -left-6 bg-brand text-white p-4 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
+              <Quotes size={32} weight="fill" />
+            </div>
+
+            <div key={activeTestimonial} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} min-h-[220px] flex flex-col justify-center`}>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+                {T[idioma].testimonios[activeTestimonial].titulo}
+              </h2>
+              <p className="text-lg md:text-xl text-white/80 font-sans leading-relaxed">
+                &ldquo;{T[idioma].testimonios[activeTestimonial].texto}&rdquo;
+              </p>
+            </div>
+
+            <div key={`author-${activeTestimonial}`} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} flex items-center gap-4 mt-10`} style={{ animationDelay: '80ms' }}>
+              <div
+                className="w-14 h-14 rounded-full border-2 border-white/20 flex-shrink-0 flex items-center justify-center font-bold text-lg"
+                style={{ background: TESTIMONIOS[activeTestimonial].color, color: '#474747' }}
+              >
+                {TESTIMONIOS[activeTestimonial].initials}
+              </div>
+              <div>
+                <p className="text-white font-bold text-lg">{TESTIMONIOS[activeTestimonial].autor}</p>
+                <p className="text-white/60 font-medium text-sm">{T[idioma].testimonios[activeTestimonial].cargo}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Controles del carrusel */}
+          <div className="flex items-center justify-between w-full max-w-2xl mt-12 px-2">
+
+            {/* Dots */}
+            <div className="flex items-center gap-3">
+              {TESTIMONIOS.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveTestimonial(idx)}
+                  className={`h-2 rounded-full transition-all duration-300 ease-out focus:outline-none ${
+                    idx === activeTestimonial
+                      ? 'w-10 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                      : 'w-2 bg-white/30 hover:bg-white/50'
+                  }`}
+                  aria-label={`Ir al testimonio ${idx + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Flechas */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={prevTestimonial}
+                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label="Testimonio anterior"
+              >
+                <CaretLeft size={24} weight="bold" />
+              </button>
+              <button
+                onClick={nextTestimonial}
+                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
+                aria-label="Testimonio siguiente"
+              >
+                <CaretRight size={24} weight="bold" />
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
   )
 }

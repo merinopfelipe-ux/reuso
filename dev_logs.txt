@@ -1,0 +1,15 @@
+
+> reuso-app@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1198ms
+ ✓ Compiled /src/middleware in 208ms (125 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 4.2s (9709 modules)
+ GET /login 200 in 4317ms
+[?25h

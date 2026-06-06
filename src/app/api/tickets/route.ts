@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
   const rol = profile?.rol ?? 'usuario_libre'
 
   const { searchParams } = new URL(request.url)
-  const limit = parseInt(searchParams.get('limit') || '50')
+  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
 
   let query = supabase
     .from('tickets')

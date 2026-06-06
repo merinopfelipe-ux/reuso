@@ -11,6 +11,9 @@ const POST_SCHEMA = z.object({
   valor_objetivo: z.number().positive(),
   fecha_inicio: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   fecha_fin: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+}).refine(d => d.fecha_fin >= d.fecha_inicio, {
+  message: 'La fecha de fin debe ser posterior a la fecha de inicio.',
+  path: ['fecha_fin'],
 })
 
 export async function GET() {

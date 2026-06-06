@@ -15,6 +15,7 @@ export const patchModuloSchema = z.object({
 })
 
 export const patchModuloEmpresaSchema = z.object({
-  modulo_id: z.string().uuid(),
-  activo: z.boolean(),
+  modulo_id:   z.string().uuid(),
+  activo:      z.boolean(),
+  solo_contar: z.boolean().optional(), // solo devuelve el count de usuarios afectados sin modificar
 })

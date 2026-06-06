@@ -65,14 +65,15 @@ export default function RegistroPage() {
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: '10px 14px',
-    borderRadius: 8,
-    border: '1px solid rgba(0,130,124,0.20)',
-    background: '#FFFFFF',
+    padding: '14px 18px',
+    borderRadius: 24,
+    border: '1px solid rgba(255,255,255,0.8)',
+    background: 'rgba(255,255,255,0.7)',
+    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)',
     color: '#1A3A38',
     fontSize: 14,
     outline: 'none',
-    transition: 'border-color 0.2s',
+    transition: 'all 0.2s',
     boxSizing: 'border-box',
   }
 
@@ -91,12 +92,22 @@ export default function RegistroPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#FFFFFF',
+        background: 'linear-gradient(135deg, #F8FBFA 0%, #F2F9F8 100%)',
         fontFamily: "'Open Sans', sans-serif",
-        padding: '24px',
+        padding: '32px 24px',
       }}
     >
-      <div style={{ width: '100%', maxWidth: 400 }}>
+      <div 
+        className="backdrop-blur-xl"
+        style={{ 
+          width: '100%', 
+          maxWidth: 420, 
+          padding: 40,
+          background: 'rgba(255, 255, 255, 0.5)',
+          border: '1px solid rgba(255, 255, 255, 0.8)',
+          borderRadius: '2.5rem',
+          boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)'
+        }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <h2 style={{ fontSize: 32, fontWeight: 700, color: '#1A3A38', margin: '0 0 8px' }}>
             Crea tu cuenta
@@ -136,8 +147,8 @@ export default function RegistroPage() {
               required
               autoComplete="name"
               style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C'; e.currentTarget.style.background = '#FFFFFF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
             />
           </div>
 
@@ -152,8 +163,8 @@ export default function RegistroPage() {
               placeholder="Tu apellido"
               autoComplete="family-name"
               style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C'; e.currentTarget.style.background = '#FFFFFF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
             />
           </div>
 
@@ -174,8 +185,8 @@ export default function RegistroPage() {
               autoComplete="nickname"
               maxLength={15}
               style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C'; e.currentTarget.style.background = '#FFFFFF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
             />
           </div>
 
@@ -190,8 +201,8 @@ export default function RegistroPage() {
               placeholder="+57 300 0000000"
               autoComplete="tel"
               style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C'; e.currentTarget.style.background = '#FFFFFF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
             />
           </div>
 
@@ -207,8 +218,8 @@ export default function RegistroPage() {
               required
               autoComplete="email"
               style={inputStyle}
-              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C' }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = '#00827C'; e.currentTarget.style.background = '#FFFFFF'; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.8)'; e.currentTarget.style.background = 'rgba(255,255,255,0.7)'; }}
             />
           </div>
 
@@ -329,18 +340,20 @@ export default function RegistroPage() {
             disabled={loading}
             style={{
               width: '100%',
-              padding: '12px',
-              borderRadius: 10,
+              padding: '14px',
+              borderRadius: '9999px',
               background: loading ? '#4D7C79' : '#00827C',
               color: '#ffffff',
               fontSize: 15,
               fontWeight: 600,
               border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s',
+              transition: 'all 0.3s',
+              marginTop: 8,
+              boxShadow: loading ? 'none' : '0 8px 20px rgba(0,130,124,0.25)',
             }}
-            onMouseEnter={(e) => { if (!loading) (e.currentTarget as HTMLElement).style.background = '#006B66' }}
-            onMouseLeave={(e) => { if (!loading) (e.currentTarget as HTMLElement).style.background = '#00827C' }}
+            onMouseEnter={(e) => { if (!loading) { (e.currentTarget as HTMLElement).style.background = '#006B66'; (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' } }}
+            onMouseLeave={(e) => { if (!loading) { (e.currentTarget as HTMLElement).style.background = '#00827C'; (e.currentTarget as HTMLElement).style.transform = 'translateY(0)' } }}
           >
             {loading ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>

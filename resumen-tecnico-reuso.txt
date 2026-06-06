@@ -1,0 +1,243 @@
+RESUMEN TÉCNICO — CALCULADORA DE REÚSO (reuso.lurdes.co)
+Grupo MLP S.A.S · V14.8 · Junio 2026
+========================================================
+
+
+STACK TECNOLÓGICO
+-----------------
+
+Capa                     | Tecnología
+-------------------------|--------------------------------------------------
+Frontend                 | Next.js 14 (App Router), TypeScript, Tailwind CSS
+Base de datos            | Supabase (PostgreSQL managed)
+Autenticación            | Supabase Auth (JWT + Row Level Security)
+Almacenamiento archivos  | Supabase Storage (bucket privado "dpp")
+Backend                  | Next.js API Routes (serverless, Vercel)
+Validación               | Zod (esquemas en cada endpoint)
+Gestión de secretos      | Infisical (variables de entorno en producción)
+Email transaccional      | Resend
+Generación de PDFs       | jsPDF (client + server)
+Gráficas                 | Recharts
+Captcha                  | Cloudflare Turnstile
+Deploy                   | Vercel (serverless, CDN global)
+Tests unitarios          | Vitest
+Tests E2E                | Playwright
+IA — extracción visual   | Google Gemini 2.0 Flash (REST API)
+IA — fallback visual     | OpenRouter → Qwen-VL 8B (REST API)
+IA — validación          | Groq → LLaMA 3.3 70B (REST API, solo texto)
+
+
+ARQUITECTURA DE LA APLICACIÓN
+------------------------------
+
+reuso.lurdes.co
+├── /login                     Auth pública
+├── /registro                  Registro público (Turnstile)
+├── /verificar/[codigo]        Verificación pública de certificados CO2
+├── /pasaporte/[codigo]        Portal público del Pasaporte Digital (QR)
+├── /legal/*                   Módulo legal bilingüe ES/EN (7 documentos)
+│
+├── /dashboard                 Panel empleado y usuario libre
+│   └── Calculadora CO2, historial, metas personales
+│
+├── /empresa                   Panel empresa_admin
+│   ├── Panel de impacto (CO2, agua, equipo, certificados)
+│   ├── /empresa/equipo        Invitaciones y roles
+│   ├── /empresa/calculos      Historial de cálculos
+│   ├── /empresa/certificados  Certificados e informes PDF
+│   ├── /empresa/reportes      Gráficas Recharts (serie temporal, donut)
+│   ├── /empresa/metas         Metas ambientales con progreso
+│   └── /empresa/dpp           Módulo DPP (Pasaporte Digital)
+│       ├── /empresa/dpp/nuevo Formulario de creación de activo
+│       └── /empresa/dpp/[id]  Detalle: 4 tabs
+│                              (Pasaporte / Ciclos / Métricas / Documentos)
+│
+└── /admin                     Panel super_admin
+    ├── Empresas, usuarios, categorías, ítems, módulos
+    └── Leads, configuración del sistema
+
+
+BASE DE DATOS — 22 TABLAS EN SUPABASE
+--------------------------------------
+
+Módulo core (16 tablas):
+  profiles, empresas, invitaciones, modulos, modulos_empresa,
+  categorias, items, calculos, certificados, metas, tickets,
+  mensajes_ticket, alertas, leads, logs_auditoria, config_sistema
+
+Módulo DPP (5 tablas nuevas — Migración 017):
+
+  Tabla                    | Propósito
+  -------------------------|---------------------------------------------------
+  dpp_activos              | Objeto circular con código DPP único,
+                           | hash chain SHA-256, estado, QR
+  dpp_ciclos               | Cada reutilización: CO2 generado/evitado,
+                           | operación, evidencia
+  dpp_metricas_financieras | TCO, E-ROI, ICE — columna "tco" calculada
+                           | automáticamente por Postgres (GENERATED)
+  dpp_documentos_ingesta   | Facturas/fotos con estado OCR,
+                           | resultado IA, datos validados por usuario
+  dpp_verificaciones       | Log público de escaneos QR
+                           | (INSERT sin auth, SELECT solo admin/empresa)
+
+Seguridad: RLS habilitado en todas las tablas. Funciones helper
+get_my_rol() y get_my_empresa_id() para políticas eficientes.
+
+Columnas nuevas en tablas existentes:
+  - empresas: tiene_dpp, sector_dpp, moneda_preferida
+  - items: es_activo_circular, vida_util_anos, categoria_dpp
+
+
+MÓDULO DPP — FLUJO COMPLETO
+----------------------------
+
+1. empresa_admin CREA ACTIVO
+   → genera código DPP-2026-XXXX-ABCD12
+   → calcula hash SHA-256 encadenado con el DPP anterior (blockchain ligero)
+   → sube imagen → comprime a WebP (Canvas API, cliente)
+
+2. empleado REGISTRA CICLO
+   → operación realizada, fechas, distancia transporte
+   → CO2 ciclo = distancia × 0.21 kg/km (factor DEFRA)
+   → CO2 evitado = suma(material.peso_kg × material.factor_co2_kg)
+
+3. empresa_admin CALCULA MÉTRICAS FINANCIERAS
+   → ingresa costos en formulario de 3 grupos colapsables
+   → motor puro financiero.ts calcula: TCO, E-ROI, ICE, Inflow circular
+   → narrativa en voz activa generada automáticamente para el CFO
+   → PDF reporte descargable con jsPDF
+
+4. empresa_admin SUBE DOCUMENTO (factura/foto)
+   → upload a Supabase Storage privado
+   → POST /api/dpp/ingesta/procesar-ia
+       → Gemini 2.0 Flash lee la imagen
+         (prompt específico por tipo de documento)
+       → si confianza < 0.6 → fallback OpenRouter Qwen-VL
+       → si hay campos con confianza < 0.7 → Groq LLaMA valida coherencia
+   → usuario revisa tabla: campos, confianza % y destino DPP
+   → "Acepta y pre-llena las métricas" → Tab Métricas con valores cargados
+
+5. Patricia (consumidor) ESCANEA QR
+   → /pasaporte/[codigo] — ISR revalidate 3600, sin auth
+   → muestra: identidad, composición con fuentes, ciclos,
+     CO2 evitado, hash parcial
+   → botón "Compartir en WhatsApp" para marketing viral
+   → registra visita en dpp_verificaciones (fire-and-forget)
+
+
+MOTOR FINANCIERO (src/lib/calculos/financiero.ts)
+--------------------------------------------------
+
+Función pura sin efectos secundarios. 5 fórmulas:
+
+  Métrica           | Fórmula
+  ------------------|----------------------------------------------------------
+  TCO               | c_adquisicion + c_operacion + c_mantenimiento
+                    | + c_disposicion - v_reventa
+  TCO unitario      | TCO / max(n_ciclos, 1)
+  Costo evitado     | (p_virgin_usd_kg × q_circular_kg) + c_disposicion
+                    | + c_impuesto_evitado
+  E-ROI             | ((ahorro_operativo + costo_evitado) / inversion_ce) × 100
+  ICE               | ((fp_ce - fp_lineal) / fp_lineal) × 100
+  Inflow circular   | ((m_secundario + m_renovable) / m_total) × 100
+
+13 tests unitarios Vitest — 0 fallos.
+
+
+SISTEMA DE IA — 3 ROLES DISTINTOS (no intercambiables)
+--------------------------------------------------------
+
+  Proveedor    | Modelo          | Rol                        | Cuándo actúa
+  -------------|-----------------|----------------------------|----------------------
+  Gemini       | 2.0 Flash       | Extractor visual primario  | Siempre primero
+  OpenRouter   | Qwen-VL 8B      | Extractor visual alternativo | Si Gemini falla o
+               |                 |                            | confianza < 0.6
+  Groq         | LLaMA 3.3 70B   | Validador coherencia DPP   | Solo si campos con
+               |                 | (sin visión, solo texto)   | confianza < 0.7
+
+Prompts dinámicos por tipo de documento:
+  - factura_compra   → busca precio, precio/kg, cantidad
+  - recibo_energia   → busca costo total del servicio
+  - certificado_origen → busca pesos en kg, % reciclado
+  - foto_objeto      → busca peso en etiqueta o placa
+
+Parámetros: maxOutputTokens: 512, temperature: 0.
+Ninguna IA calcula fórmulas — eso lo hace financiero.ts.
+
+
+MÓDULO LEGAL (/legal/*)
+------------------------
+
+7 documentos bilingüe ES/EN:
+  Términos y Condiciones, Política de Privacidad, Tratamiento de Datos,
+  Política de Cookies (3 categorías GDPR), Reglamento de Uso,
+  Acuerdo de Confidencialidad, Uso de Inteligencia Artificial.
+
+Firma digital:
+  Canvas HTML5 (mouse/touch) → PDF jsPDF → Resend con BCC → log en BD.
+
+Cookie banner: 3 categorías (esencial/funcional/analítica), 3 botones,
+  localStorage "reuso_cookies_consent", migración desde clave antigua.
+
+
+ROLES Y PLANES
+--------------
+
+  Plan                  | Cálculos/mes | Certificados | Empleados
+  ----------------------|--------------|--------------|----------
+  Explora (free)        | 10           | 0            | 1
+  Circular Lab          | 200          | 2            | 5
+  Impulso Sostenible    | 200          | 2            | 10
+  Impacto Ilimitado     | Ilimitado    | Ilimitado    | Ilimitado
+
+4 roles RBAC: super_admin, empresa_admin, empleado, usuario_libre.
+Auth: Supabase JWT + Row Level Security en BD.
+
+
+INFRAESTRUCTURA Y PERFORMANCE
+------------------------------
+
+  Aspecto              | Detalle
+  ---------------------|------------------------------------------------------
+  Hosting              | Vercel (serverless, edge CDN)
+  Base de datos        | Supabase PostgreSQL (Bogotá / São Paulo)
+  Keepalive Supabase   | cron-job.org → /api/health cada 12h
+  Páginas públicas     | ISR revalidate: 3600 (/pasaporte, /verificar)
+  Rate limiting        | In-memory Map por IP: 3 req/min (público),
+                       | 10 docs IA/día por empresa
+  Seguridad PII        | Emails y teléfonos cifrados antes de BD
+  Cadena de bloques    | Hash SHA-256 encadenado en dpp_activos
+                       | (inmutabilidad verificable sin blockchain real)
+
+
+LO QUE NO USA EL SISTEMA
+--------------------------
+
+  - No usa React Query ni SWR (fetch directo con useEffect)
+  - No usa Prisma (queries directas con @supabase/supabase-js)
+  - No usa Redux ni Zustand (estado local con useState)
+  - No usa shadcn/ui ni Radix (design system propio con inline styles)
+  - No usa GraphQL (REST puro)
+  - No usa Docker (serverless Vercel)
+  - No usa Anthropic/Claude para ingesta (Gemini + OR + Groq)
+
+
+DESIGN SYSTEM PROPIO
+--------------------
+
+  Color brand principal : #00827C (teal)
+  Tipografía           : Open Sans únicamente
+  Iconos               : Phosphor Icons
+  Modo oscuro          : fondo #474747, brand pistacho #D6F391
+  Radios               : 12px cards, 10px botones, 8px inputs
+  Sin grises puros     : todos los colores derivan del brand #00827C
+
+
+INFORMACIÓN DEL PROYECTO
+-------------------------
+
+  Repositorio  : privado
+  Dominio      : reuso.lurdes.co
+  Empresa      : Grupo MLP S.A.S
+  Versión      : V14.8 (junio 2026)
+  Entorno      : producción activa

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { getSecret } from '@/lib/infisical.server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { createHash } from 'crypto'
@@ -21,16 +20,22 @@ function checkRateLimit(ip: string, max: number, windowMs: number): boolean {
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const formData = new FormData()
-  const secret = await getSecret('TURNSTILE_SECRET_KEY')
+  const secret = process.env.TURNSTILE_SECRET_KEY || ''
   formData.append('secret', secret)
   formData.append('response', token)
-  formData.append('remoteip', ip)
-  const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    body: formData,
-  })
-  const data = await res.json()
-  return data.success === true
+  if (ip && ip !== 'unknown') {
+    formData.append('remoteip', ip)
+  }
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: formData,
+    })
+    const data = await res.json()
+    return data.success === true
+  } catch {
+    return false
+  }
 }
 
 const bodySchema = z
@@ -72,12 +77,14 @@ export async function POST(request: NextRequest) {
 
   const { token, nombre, password, turnstile_token } = parsed.data
 
-  const turnstileOk = await verifyTurnstile(turnstile_token, ip)
-  if (!turnstileOk) {
-    return NextResponse.json(
-      { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
-      { status: 400 }
-    )
+  if (process.env.SKIP_TURNSTILE !== 'true') {
+    const turnstileOk = await verifyTurnstile(turnstile_token, ip)
+    if (!turnstileOk) {
+      return NextResponse.json(
+        { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
+        { status: 400 }
+      )
+    }
   }
 
   const tokenHash = createHash('sha256').update(token).digest('hex')

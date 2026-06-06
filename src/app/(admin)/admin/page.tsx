@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 export const metadata: Metadata = { title: 'Panel admin' }
 
 import { createClient } from '@/lib/supabase/server'
@@ -8,13 +9,6 @@ import { Users, Buildings, Calculator, Leaf } from '@/components/ui/icons'
 import dynamic from 'next/dynamic'
 import { KpiCard } from '@/components/admin/kpi-card'
 
-const ActivityChart = dynamic(
-  () => import('@/components/admin/activity-chart').then(m => ({ default: m.ActivityChart })),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 300, borderRadius: 16, background: '#EBF5F4' }} />,
-  }
-)
 import { displayName } from '@/lib/display-name'
 
 function formatFecha(iso: string): string {
@@ -70,6 +64,13 @@ export default async function AdminPage() {
     const dia = fecha.slice(0, 10)
     actividadMap.set(dia, (actividadMap.get(dia) ?? 0) + 1)
   }
+  const ActivityChart = dynamic(
+  () => import('@/components/admin/activity-chart').then(m => ({ default: m.ActivityChart })),
+  {
+    ssr: false,
+    loading: () => <div style={{ height: 300, borderRadius: 16, background: 'var(--bg-integrated)' }} />,
+  }
+)
   const actividadChart = Array.from(actividadMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([fecha, calculos]) => ({
@@ -79,23 +80,32 @@ export default async function AdminPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <span style={{
-          display: 'inline-block',
-          padding: '3px 10px', borderRadius: 100,
-          background: 'rgba(0,130,124,0.12)',
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
+            Hola, {saludo}
+          </h1>
+          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
+            ¡Juntos recuperamos el planeta!
+          </p>
+        </div>
+        <Link href="/admin/status" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 20,
+          padding: '8px 16px',
+          fontSize: 13,
+          fontWeight: 600,
           color: 'var(--color-brand)',
-          fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em',
-          marginBottom: 8,
+          textDecoration: 'none',
+          boxShadow: 'var(--shadow)'
         }}>
-          Super Admin · Sistema
-        </span>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: 'var(--text-primary)' }}>
-          Hola, {saludo}
-        </h1>
-        <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
-          ¡Juntos recuperamos el planeta!
-        </p>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#38B98E', display: 'inline-block' }}></span>
+          Estado de sistemas
+        </Link>
       </div>
 
       {/* KPI Cards */}
@@ -156,7 +166,7 @@ export default async function AdminPage() {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: 'var(--bg-hover)' }}>
+              <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                 {['Fecha', 'Usuario', 'Empresa', 'CO₂ (kg)'].map((h) => (
                   <th
                     key={h}
@@ -166,6 +176,9 @@ export default async function AdminPage() {
                       fontWeight: 600,
                       color: 'var(--text-secondary)',
                       whiteSpace: 'nowrap',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      fontSize: 11,
                     }}
                   >
                     {h}

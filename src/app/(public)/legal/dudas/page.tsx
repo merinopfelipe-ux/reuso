@@ -1,69 +1,62 @@
-import type { Metadata } from 'next'
-import Image from 'next/image'
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { X } from '@/components/ui/icons'
+import { LegalHeader } from '@/components/legal/legal-header'
 import { DudasForm } from './dudas-form'
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: 'Tengo una duda legal',
-  description: 'Envía tu consulta o comentario legal al equipo de Grupo MLP S.A.S.',
+const T = {
+  ES: {
+    inicio: 'Inicio',
+    legal: 'Legal',
+    breadcrumb: 'Duda legal',
+    titulo: 'Tengo una duda legal',
+    descripcion:
+      'Escríbenos con tu consulta o comentario. El equipo de Grupo MLP S.A.S. responde en un plazo máximo de 10 días hábiles.',
+    leeTabien: 'Lee también',
+    links: [
+      { href: '/legal/terminos', label: 'Términos y Condiciones' },
+      { href: '/legal/reglamento', label: 'Reglamento de Uso' },
+      { href: '/legal/confidencialidad', label: 'Confidencialidad' },
+    ],
+  },
+  ENG: {
+    inicio: 'Home',
+    legal: 'Legal',
+    breadcrumb: 'Legal enquiry',
+    titulo: 'I have a legal question',
+    descripcion:
+      'Send us your query or comment. The Grupo MLP S.A.S. team responds within a maximum of 10 business days.',
+    leeTabien: 'See also',
+    links: [
+      { href: '/legal/terminos', label: 'Terms & Conditions' },
+      { href: '/legal/reglamento', label: 'Terms of Use' },
+      { href: '/legal/confidencialidad', label: 'Confidentiality' },
+    ],
+  },
 }
 
 export default function DudasPage() {
+  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
+
+  useEffect(() => {
+    const checkIdioma = () => {
+      const saved = localStorage.getItem('reuso_idioma')
+      if (saved === 'ENG') setLang('ENG')
+      else if (saved === 'ES') setLang('ES')
+      else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
+    }
+    checkIdioma()
+    window.addEventListener('reuso_idioma_change', checkIdioma)
+    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
+  }, [])
+
+  const t = T[lang]
+
   return (
     <>
       {/* Header sticky — igual al de las demás páginas legales */}
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 50,
-          background: 'var(--bg-primary)',
-          borderBottom: '1px solid var(--border)',
-          padding: '0 32px',
-          height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 16,
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            position: 'relative',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            color: 'var(--text-secondary)',
-            textDecoration: 'none',
-            transition: 'background 0.2s, color 0.2s',
-            flexShrink: 0,
-          }}
-          className="legal-header-btn legal-header-btn--left"
-        >
-          <X size={18} />
-          <span className="legal-tooltip legal-tooltip--right">Volver al inicio</span>
-        </Link>
-
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
-          <Image
-            src="/logo-completo.svg"
-            alt="Calculadora de Reúso"
-            width={140}
-            height={40}
-            priority
-            style={{ objectFit: 'contain' }}
-          />
-        </Link>
-
-        {/* Espacio derecho (simétrico) */}
-        <div style={{ width: 36 }} />
-      </header>
+      <LegalHeader />
 
       {/* Contenido */}
       <div
@@ -86,14 +79,14 @@ export default function DudasPage() {
           }}
         >
           <Link href="/" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-            Inicio
+            {t.inicio}
           </Link>
           <span style={{ opacity: 0.4 }}>/</span>
           <Link href="/legal" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-            Legales
+            {t.legal}
           </Link>
           <span style={{ opacity: 0.4 }}>/</span>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Duda legal</span>
+          <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{t.breadcrumb}</span>
         </nav>
 
         <h1
@@ -105,7 +98,7 @@ export default function DudasPage() {
             lineHeight: 1.2,
           }}
         >
-          Tengo una duda legal
+          {t.titulo}
         </h1>
         <p
           style={{
@@ -115,11 +108,10 @@ export default function DudasPage() {
             marginBottom: 40,
           }}
         >
-          Escríbenos con tu consulta o comentario. El equipo de Grupo MLP S.A.S. responde en
-          un plazo máximo de 10 días hábiles.
+          {t.descripcion}
         </p>
 
-        <DudasForm />
+        <DudasForm lang={lang} />
 
         {/* Lee también */}
         <div
@@ -139,14 +131,10 @@ export default function DudasPage() {
               marginBottom: 14,
             }}
           >
-            Lee también
+            {t.leeTabien}
           </p>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            {[
-              { href: '/legal/terminos', label: 'Términos y Condiciones' },
-              { href: '/legal/reglamento', label: 'Reglamento de Uso' },
-              { href: '/legal/confidencialidad', label: 'Confidencialidad' },
-            ].map((item) => (
+            {t.links.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -169,32 +157,6 @@ export default function DudasPage() {
         </div>
       </div>
 
-      <style>{`
-        .legal-header-btn:hover {
-          background: var(--bg-hover) !important;
-          color: var(--color-brand) !important;
-        }
-        .legal-tooltip {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          background: var(--bg-primary);
-          color: var(--color-brand);
-          border: 1px solid var(--border);
-          box-shadow: 0 2px 8px rgba(0,130,124,0.10);
-          font-size: 11px;
-          font-weight: 600;
-          padding: 4px 9px;
-          border-radius: 6px;
-          white-space: nowrap;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.18s ease;
-          z-index: 100;
-        }
-        .legal-tooltip--right { left: calc(100% + 10px); }
-        .legal-header-btn:hover .legal-tooltip { opacity: 1; }
-      `}</style>
     </>
   )
 }

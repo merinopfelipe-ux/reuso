@@ -171,7 +171,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8,
-              background: 'var(--color-brand)', color: '#fff',
+              background: 'var(--color-brand)', color: 'var(--text-on-brand)',
               border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
             }}
           >
@@ -202,7 +202,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
             </div>
 
             {errorModal && (
-              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)', color: '#FF5E4B', fontSize: 13, marginBottom: 16 }}>
+              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,94,75,0.08)', border: '1px solid var(--color-error)', color: 'var(--color-error-content)', fontSize: 13, marginBottom: 16 }}>
                 {errorModal}
               </div>
             )}
@@ -261,10 +261,10 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: 'var(--bg-hover)' }}>
+              <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Empresa</th>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Empresa</th>
                 <SortTh col="rol" sort={sort} onToggle={toggleSort}>Rol</SortTh>
                 <SortTh col="created_at" sort={sort} onToggle={toggleSort}>Registro</SortTh>
               </tr>

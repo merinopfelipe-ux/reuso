@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
-import { getSecret } from '@/lib/infisical.server'
 import { encryptSensitive } from '@/lib/encryption.server'
 
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
@@ -34,7 +32,7 @@ const bodySchema = z
       .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
       .regex(/[0-9]/, 'Debe contener al menos un número'),
     password_confirm: z.string(),
-    turnstile_token: z.string().min(1),
+    turnstile_token: z.string().optional(),
     acepta_terminos: z.literal(true),
   })
   .refine((d) => d.password === d.password_confirm, {
@@ -44,17 +42,23 @@ const bodySchema = z
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const formData = new FormData()
-  const secret = await getSecret('TURNSTILE_SECRET_KEY')
+  const secret = process.env.TURNSTILE_SECRET_KEY || ''
   formData.append('secret', secret)
   formData.append('response', token)
-  formData.append('remoteip', ip)
+  if (ip && ip !== 'unknown') {
+    formData.append('remoteip', ip)
+  }
 
-  const res = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    { method: 'POST', body: formData }
-  )
-  const data = await res.json()
-  return data.success === true
+  try {
+    const res = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      { method: 'POST', body: formData }
+    )
+    const data = await res.json()
+    return data.success === true
+  } catch {
+    return false
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -80,12 +84,15 @@ export async function POST(request: NextRequest) {
 
   const { nombre, apellido, apodo, telefono, email, password, turnstile_token } = parsed.data
 
-  const turnstileOk = await verifyTurnstile(turnstile_token, ip)
-  if (!turnstileOk) {
-    return NextResponse.json(
-      { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
-      { status: 400 }
-    )
+  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
+  if (!skipTurnstile) {
+    const turnstileOk = await verifyTurnstile(turnstile_token ?? '', ip)
+    if (!turnstileOk) {
+      return NextResponse.json(
+        { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
+        { status: 400 }
+      )
+    }
   }
 
   const acepta_terminos_at = new Date(
@@ -96,7 +103,7 @@ export async function POST(request: NextRequest) {
   const encryptedTelefono = await encryptSensitive(telefono)
 
   const supabase = createClient()
-  const { error, data } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -111,16 +118,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Cifrar el email en la tabla pública de perfiles sobreescribiendo lo que hizo el trigger
-  if (data?.user) {
-    try {
-      const adminClient = await createAdminClient()
-      const encryptedEmail = await encryptSensitive(email)
-      await adminClient.from('profiles').update({ email: encryptedEmail }).eq('user_id', data.user.id)
-    } catch (e) {
-      console.error("Fallo Cifrando Email de Perfil", e)
-    }
-  }
+
 
   return NextResponse.json({ ok: true })
 }

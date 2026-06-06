@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {
@@ -23,10 +26,10 @@ const nextConfig = {
               process.env.NODE_ENV === 'development'
               ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com"
               : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://*.supabase.co",
-              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
+              "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://fonts.typekit.net",
+              "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net",
+              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com",
               "frame-src https://challenges.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",

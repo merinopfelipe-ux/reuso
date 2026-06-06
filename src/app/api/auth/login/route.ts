@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { getSecret } from '@/lib/infisical.server'
 import type { Rol } from '@/types'
 
 // Rate limiting en memoria: IP → { count, resetAt }
@@ -25,21 +24,28 @@ const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
   turnstile_token: z.string().min(1),
+  acepta_legal: z.boolean().optional(),
 })
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const formData = new FormData()
-  const secret = await getSecret('TURNSTILE_SECRET_KEY')
+  const secret = process.env.TURNSTILE_SECRET_KEY || ''
   formData.append('secret', secret)
   formData.append('response', token)
-  formData.append('remoteip', ip)
+  if (ip && ip !== 'unknown') {
+    formData.append('remoteip', ip)
+  }
 
-  const res = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    { method: 'POST', body: formData }
-  )
-  const data = await res.json()
-  return data.success === true
+  try {
+    const res = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      { method: 'POST', body: formData }
+    )
+    const data = await res.json()
+    return data.success === true
+  } catch {
+    return false
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -63,7 +69,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { email, password, turnstile_token } = parsed.data
+  const { email, password, turnstile_token, acepta_legal } = parsed.data
 
   // Verificar Turnstile
   const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
@@ -96,6 +102,14 @@ export async function POST(request: NextRequest) {
     .select('rol')
     .eq('user_id', data.user.id)
     .single()
+
+  // Registrar aceptación de compromisos legales si el usuario la confirmó
+  if (acepta_legal) {
+    await supabase
+      .from('profiles')
+      .update({ legal_aceptado_en: new Date().toISOString() })
+      .eq('user_id', data.user.id)
+  }
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
   return NextResponse.json({ rol })

@@ -96,8 +96,8 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
 
   const inputSt: React.CSSProperties = {
     width: '100%', padding: '9px 12px', borderRadius: 8,
-    border: '1px solid rgba(0,130,124,0.18)', background: '#FFFFFF',
-    color: '#1A3A38', fontSize: 14, outline: 'none',
+    border: '1px solid var(--border)', background: 'var(--bg-input)',
+    color: 'var(--text-primary)', fontSize: 14, outline: 'none',
     boxSizing: 'border-box', fontFamily: "'Open Sans', sans-serif",
   }
 

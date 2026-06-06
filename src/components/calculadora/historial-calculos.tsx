@@ -36,13 +36,14 @@ interface Props {
   rol: Rol
   categorias: string[]
   empresas?: { id: string; nombre: string }[]
+  refreshKey?: number
 }
 
 const BRAND = '#00827C'
-const BG_LIGHT = '#EBF5F4'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BG_LIGHT = 'var(--bg-integrated)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 const PAGE_SIZES = [10, 20, 50, 100]
 
 function formatFecha(iso: string) {
@@ -70,7 +71,7 @@ function resumenItems(detalle: Record<string, DetalleItem | string> | null): str
   return partes.join(', ')
 }
 
-export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol, categorias, empresas }: Props) {
+export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol, categorias, empresas, refreshKey }: Props) {
   const esUsuarioLibre = rol === 'usuario_libre'
   const mostrarUsuario = rol === 'super_admin' || rol === 'empresa_admin'
   const [detalleAbierto, setDetalleAbierto] = useState<CalculoFila | null>(null)
@@ -167,6 +168,14 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
       fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro)
     })
   }, [desde, hasta, categoria, busqueda, empresaFiltro, fetchHistorial]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Refrescar cuando se guarda un nuevo cálculo desde la Calculadora
+  useEffect(() => {
+    if (refreshKey === undefined || refreshKey === 0) return
+    startTransition(() => {
+      fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro)
+    })
+  }, [refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const limpiarFiltros = useCallback(() => {
     setDesde('')

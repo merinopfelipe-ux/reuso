@@ -118,7 +118,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
       <div style={{ marginBottom: 16 }}>
         <button
           onClick={() => setMostrarFormCat(!mostrarFormCat)}
-          style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}
+          style={{ ...btnBase, background: 'var(--color-brand)', color: 'var(--text-on-brand)', border: 'none' }}
         >
           <Plus size={15} /> Nueva categoría
         </button>
@@ -189,9 +189,11 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                 })()}
               </div>
               <span style={{
-                padding: '2px 10px', borderRadius: 100, fontSize: 11, fontWeight: 600,
-                background: cat.activa ? 'rgba(56,185,142,0.12)' : 'rgba(255,94,75,0.10)',
-                color: cat.activa ? '#1F8C65' : '#CC3C2A',
+                padding: '2px 10px', borderRadius: 100, fontSize: 10, fontWeight: 800,
+                textTransform: 'uppercase', letterSpacing: '0.04em',
+                background: cat.activa ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)',
+                color: cat.activa ? 'var(--color-success-content)' : 'var(--color-error-content)',
+                border: '1px solid currentColor', opacity: 0.9,
               }}>
                 {cat.activa ? 'Activa' : 'Inactiva'}
               </span>
@@ -209,9 +211,9 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
               <div style={{ borderTop: '1px solid var(--border)' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                   <thead>
-                    <tr style={{ background: 'var(--bg-hover)' }}>
+                    <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                       {['Nombre', 'Peso (kg)', 'CO₂/unidad', 'Confianza', 'Fuente', 'Estado'].map(h => (
-                        <th key={h} style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 12, whiteSpace: 'nowrap' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -227,7 +229,13 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <button onClick={() => toggleItem(item.id, item.activo)}
-                            style={{ ...btnBase, padding: '3px 10px', fontSize: 11, background: item.activo ? 'rgba(56,185,142,0.10)' : 'rgba(255,94,75,0.08)', color: item.activo ? '#1F8C65' : '#CC3C2A', border: 'none' }}>
+                            style={{ 
+                              ...btnBase, padding: '2px 10px', fontSize: 10, fontWeight: 800,
+                              textTransform: 'uppercase', letterSpacing: '0.04em',
+                              background: item.activo ? 'rgba(56,185,142,0.08)' : 'rgba(255,94,75,0.06)', 
+                              color: item.activo ? 'var(--color-success-content)' : 'var(--color-error-content)', 
+                              border: '1px solid currentColor', opacity: 0.9 
+                            }}>
                             {item.activo ? 'Activo' : 'Inactivo'}
                           </button>
                         </td>

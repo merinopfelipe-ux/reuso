@@ -6,7 +6,7 @@ import { z } from 'zod'
 const patchLeadSchema = z.object({
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).optional(),
   notas_admin: z.string().max(2000).optional(),
-  asignado_a: z.string().uuid().nullable().optional(),
+  asignado_a: z.uuid().nullable().optional(),
 })
 
 export async function GET(request: NextRequest) {

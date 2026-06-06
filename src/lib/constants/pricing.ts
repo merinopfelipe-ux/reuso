@@ -1,4 +1,4 @@
-import { Target, Flask, Lightning, ShieldCheck } from '@phosphor-icons/react'
+import { Target, Flask, Lightning, ShieldCheck, IdentificationCard } from '@phosphor-icons/react'
 
 export const CURRENCIES = {
   COP: { symbol: '$', code: 'COP', rate: 1, format: (n: number) => n.toLocaleString('es-CO') },
@@ -123,5 +123,10 @@ export const VALUE_PROPS = [
     Icon: Lightning,
     title: 'Implementación Flash',
     desc: 'Tu equipo midiendo impacto en menos de 24 horas. Interfaz intuitiva diseñada para la facilidad de uso.',
+  },
+  {
+    Icon: IdentificationCard,
+    title: 'Pasaporte Digital de Producto',
+    desc: 'Cada objeto reutilizado lleva un código QR que tus clientes verifican en segundos. Demuestra tu circularidad sin asomo de duda.',
   },
 ]

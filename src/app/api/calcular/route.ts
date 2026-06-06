@@ -13,7 +13,7 @@ const bodySchema = z.object({
   items: z
     .array(
       z.object({
-        id: z.string().uuid(),
+        id: z.uuid(),
         peso_kg: z.number().positive('El peso debe ser mayor a 0.').max(100000, 'Peso máximo 100.000 kg.'),
       })
     )
@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
     .in('id', itemIds)
     .eq('activo', true)
 
-  if (itemsError || !itemsDB || itemsDB.length === 0) {
-    return NextResponse.json({ error: 'No se encontraron los items indicados.' }, { status: 400 })
+  if (itemsError || !itemsDB || itemsDB.length !== itemsInput.length) {
+    return NextResponse.json({ error: 'Algunos de los objetos seleccionados no están disponibles o no se encontraron.' }, { status: 400 })
   }
 
   // Cargar nombres de categorías

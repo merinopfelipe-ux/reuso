@@ -12,7 +12,7 @@ import type { Plan } from '@/types'
 const bodySchema = z.object({
   email: z.string().email('Correo electrónico inválido.'),
   rol_asignado: z.enum(['empleado', 'empresa_admin']),
-  empresa_id: z.string().uuid(),
+  empresa_id: z.uuid(),
 })
 
 export async function POST(request: NextRequest) {

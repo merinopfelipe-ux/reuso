@@ -9,7 +9,7 @@ const bodySchema = z.object({
   apellido: z.string().max(100).optional().nullable(),
   apodo: z.string().max(15).optional().nullable(),
   rol: z.enum(['empleado', 'empresa_admin', 'super_admin']),
-  empresa_id: z.string().uuid().optional().nullable(),
+  empresa_id: z.uuid().optional().nullable(),
 })
 
 export async function POST(request: NextRequest) {

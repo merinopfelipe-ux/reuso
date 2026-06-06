@@ -1,26 +1,31 @@
 import type { Plan } from '@/types'
 
 const PLAN_CONFIG: Record<Plan, { label: string; bg: string; color: string }> = {
-  free:      { label: 'Explora',           bg: 'rgba(77,124,121,0.10)', color: '#4D7C79' },
-  lab:       { label: 'Circular Lab',      bg: 'rgba(0,130,124,0.12)',  color: '#00827C' },
-  impulso:   { label: 'Impulso Sostenible', bg: 'rgba(89,166,228,0.15)', color: '#2B7FBF' },
-  ilimitado: { label: 'Impacto Ilimitado', bg: 'rgba(26,58,56,0.12)',   color: '#1A3A38' },
+  free:      { label: 'Explora',           bg: 'var(--color-brand-light)', color: 'var(--color-success-content)' },
+  lab:       { label: 'Circular Lab',      bg: 'var(--color-brand-light)', color: 'var(--color-brand)' },
+  impulso:   { label: 'Impulso Sostenible', bg: 'rgba(89,166,228,0.15)',    color: 'var(--color-info-content)' },
+  ilimitado: { label: 'Impacto Ilimitado', bg: 'var(--bg-integrated)',     color: 'var(--color-success-content)' },
 }
 
 export function PlanBadge({ plan }: { plan: Plan }) {
   const { label, bg, color } = PLAN_CONFIG[plan]
   return (
     <span
+      className="plan-badge"
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         padding: '2px 10px',
         borderRadius: 100,
-        fontSize: 12,
-        fontWeight: 600,
+        fontSize: 11,
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.02em',
         background: bg,
         color,
         whiteSpace: 'nowrap',
+        border: '1px solid currentColor',
+        opacity: 0.9,
       }}
     >
       {label}

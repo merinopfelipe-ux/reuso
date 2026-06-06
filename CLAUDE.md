@@ -1,105 +1,101 @@
-# Calculadora de Reúso — Plataforma de Certificación de Impacto Ambiental por Reúso
+# CLAUDE.MD — Calculadora de Reúso
+V14.8 (2026-06-05) · reuso.lurdes.co · Grupo MLP S.A.S
+VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
-## Versión actual: V5.0 — Bloque 10 completo: Contenido + Plantillas + Certificados admin
+## 5 DIRECTRICES IRRENUNCIABLES
 
-## Qué es este proyecto
-SaaS que mide, certifica y comunica el CO₂ evitado cuando personas y organizaciones reutilizan objetos. Genera certificados PDF e informes con QR verificable. **Landing pública en `/`, login en `/login`.**
+0) FONDO INTERIOR BLANCO PURO: Dentro de la app autenticada el fondo de página es SIEMPRE #FFFFFF.
+   Prohibido usar #F5FAFA, #F2F9F8, #F8FBFA u otro tono como fondo de pantalla completa en rutas protegidas.
+   Solo se permiten fondos de color en: tarjetas internas, secciones destacadas, páginas públicas (landing, legal, status).
 
-## Stack
-Next.js 14 App Router · TypeScript · Tailwind CSS · Supabase (PostgreSQL + Auth + Storage + RLS) · Vercel (reuso.lurdes.co) · jsPDF · Recharts · Lucide React · Open Sans · Zod
+1) MOBILE-FIRST: Diseña 375px primero. Carga menos de 2s en 4G. Lighthouse mayor a 80.
+   Login a dashboard menos de 1s. Formulario a guardar menos de 2s. QR a pasaporte menos de 2s.
 
-## Estilo de comunicación obligatorio
-El usuario no es desarrollador, usa Mac, y aprende de forma empírica. SIEMPRE dar instrucciones paso a paso para Mac, numeradas, con el comando exacto entre comillas de código, indicando qué aparece en pantalla cuando sale bien. Nunca omitir pasos ni asumir conocimiento previo.
+2) USUARIO PRIMERO: Cada pantalla resuelve UN problema.
+   Sylvia (admin): menos de 4 min de login a reporte CFO listo.
+   Marco (empleado): menos de 90 seg para registrar un reúso.
+   Roberto (CFO): menos de 3 seg abre PDF, ve números grandes.
+   Patricia (consumidor): menos de 30 seg escanea QR y confía.
 
-## Comandos
-- `npm run dev` / `npm run dev:clean` → desarrollo local (usar clean si se modificaron muchos archivos)
-- `npm run build` → verificar antes de deploy · `vercel` → deploy
+3) VOZ ACTIVA: Imperativo directo, cercano, celebra logros.
+   SI "Evitaste 125 kg CO2" NO "Se evitaron 125 kg".
+   SI "Registra nuevo ciclo" NO "Un ciclo puede registrarse".
+   SI "Completa estos 3 campos" NO "Faltan campos por completar".
 
-## Arquitectura
-```
-app/(auth)/          → login, registro, invitación, recuperar (rutas públicas)
-app/(dashboard)/     → dashboard personal del empleado/usuario_libre
-app/(empresa)/       → vistas de empresa_admin
-app/(admin)/         → panel super_admin
-app/empresa/nueva/   → crear empresa (accesible a usuario_libre)
-app/verificar/       → verificación pública de certificados e informes
-app/api/             → API routes (server-side only)
-components/          → componentes reutilizables
-lib/plan-limits.ts   → checkLimiteEmpleados, checkLimiteCalculos, checkLimiteCertificados, checkLimiteInformes
-lib/constants/contacto.ts → WA_NUMBER centralizado (actualizar antes de producción)
-```
+4) CONFIANZA DATOS: Fuentes visibles, hash SHA-256, usuario SIEMPRE confirma.
+   OCR IA extrae, usuario valida (la IA nunca inventa).
+   Cada factor CO2 muestra su origen (ecoinvent, ELCD, DEFRA).
 
-## Roles y permisos (RBAC)
-- `super_admin` → /admin (gestiona TODO el sistema)
-- `empresa_admin` → /empresa (gestiona su empresa, invita empleados, genera certificados)
-- `empleado` → /dashboard (calcula, ve impacto de su empresa)
-- `usuario_libre` → /dashboard (calcula con límites del plan Explora, sin empresa)
+5) EFICIENCIA: Rápido, ligero, inteligente.
+   Prompts Claude Code: reutiliza código existente, no re-escribas.
+   Performance: menos de 2s carga, ISR en públicas, lazy-load.
+   Prohibido alucinar: no inventar colores, componentes ni factores.
 
-IMPORTANT: Verificar rol en CADA API route. NUNCA confiar solo en el frontend. Ver skill `seguridad-reuso`.
+## 🔒 REGLAS DE ORO — INQUEBRANTABLES
+1. **PROHIBIDO MODIFICAR LO QUE EL USUARIO NO PIDA ESPECÍFICAMENTE.** Seguir estrictamente las instrucciones sin cambios colaterales.
+2. **ZONA PROTEGIDA (CABECERO, SIDEBAR Y FLYOUT CONGELADOS).** Los siguientes archivos NO se pueden modificar visual o estructuralmente a menos que el usuario incluya la clave secreta **2680**:
+   - `src/components/header.tsx` — Cabecero
+   - `src/components/sidebar.tsx` — Sidebar y Flyout
+   - `src/components/footer.tsx` — Pie de página (Footer)
+   - globals.css o layout-shell.tsx que afecten visualmente al cabecero, sidebar o footer.
+3. **Obsidian Vault (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`):**
+   - Al INICIAR: leer STATE.md, diarios y conceptos.
+   - Al TERMINAR: registrar diario/YYYY-MM-DD.md, actualizar STATE.md y conceptos de patrones nuevos.
 
-## Documentos verificables (PRIORIDAD #1)
-- **CERTIFICADO** — acumulado desde el primer cálculo hasta HOY (sin selector fecha)
-- **INFORME** — rango de fechas seleccionable (inicio → fin)
-- Ambos: código `RCO2-XXXX-YYYY` + QR → `/verificar/[codigo]`. Generación server-side con jsPDF.
+## STACK, COMANDOS Y ARQUITECTURA
+- **Stack**: Next.js 14 App Router, TS, Tailwind, Supabase (Auth/Storage/RLS), jsPDF, Recharts, Zod.
+- **Comandos**: Local: `npm run dev` / `npm run dev:clean`. Build: `npm run build` · Deploy: `vercel`.
+- **Arquitectura**: (auth) `/login`, (dashboard) `/dashboard`, (empresa) `/empresa`, (admin) `/admin`, `/verificar/[codigo]`.
+- **Matar caché Next**: `pkill -f "next dev" && rm -rf .next` antes de build o de pedir revisión tras cambios en múltiples archivos.
 
-## Planes — nombres, IDs y límites
+## DESIGN SYSTEM (NO INVENTAR NADA)
+- Fuente autoridad: `src/design-system-SKILL-v3.md`. TODO color derivado de `#00827C`. Cero grises puros (#f5f5f5, #ccc, #333).
+- Tipografía: Open Sans únicamente, sin emojis. Iconos: Phosphor Icons. Banderas: lipis/flag-icons en SVG con `borderRadius: '3px'`.
+- OBLIGATORIO claro: fondos #FFFFFF/#F5FAFA/#F2F9F8, textos #1A3A38/#4D7C79/#7FA8A5, bordes rgba(0,130,124,0.12).
+- OBLIGATORIO oscuro (modo noche): fondos #474747 (negro noche), textos #FFFFFF (fuente blanca), resaltado #D6F391 (pistacho). Prohibido usar otros grises en el fondo de noche, solo #474747.
+- Acentos: brand #00827C, success #38B98E, error #FF5E4B, warning #F6BF3E, info #59A6E4.
+- Componentes SOLO: KPICard, DataTable, Badge, StatusBadge, EmptyState, LoadingSkeleton, Modal, AlertBanner, Tabs, Button.
+- Radios: 12px cards, 10px buttons, 8px inputs. Transiciones: 0.2s hovers, 0.3s modals. `user-select: auto` activo.
 
-| Display name | ID en BD | Cálculos/mes | Informes/mes | Certificados/mes | Cotizador | Empleados |
-|---|---|---|---|---|---|---|
-| Explora | `free` | 10 | 0 | 0 | No | 1 |
-| Circular Lab | `lab` | 200 | 5 | 2 | No | 5 |
-| Impulso Sostenible | `impulso` | 200 | 5 | 2 | Si | 10 |
-| Impacto Ilimitado | `ilimitado` | ∞ | ∞ | ∞ | Si | ∞ |
+## TABLAS SUPABASE
+- **Existentes (NO TOCAR)**: profiles, empresas, invitaciones, modulos, modulos_empresa, categorias, items, calculos, certificados, metas, tickets, mensajes_ticket, alertas, leads, logs_auditoria, config_sistema, log_firmas_confidencialidad.
+- **DPP (Migración 017 ✓)**: dpp_activos, dpp_ciclos, dpp_metricas_financieras, dpp_documentos_ingesta, dpp_verificaciones.
+- **Columnas nuevas (017 ✓)**: empresas (tiene_dpp, sector_dpp, moneda_preferida), items (es_activo_circular, vida_util_anos, categoria_dpp).
 
-- **Explora**: solo panel de control + calculadora. Sin certificados ni informes.
-- **Impulso Sostenible**: igual que Circular Lab + cotizador circular (en desarrollo, próximamente).
-- Los límites se verifican en `src/lib/plan-limits.ts` antes de cada inserción.
-- Nombres de display en `NOMBRES_PLAN` (plan-limits.ts). **NUNCA** usar el ID como label en la UI.
-- NO hay pasarela de pagos. El super_admin cambia el plan manualmente desde `/admin/empresas`.
+## ROLES, PLANES Y LÍMITES
+- **Roles (RBAC)**: super_admin (/admin), empresa_admin (/empresa), empleado (/dashboard), usuario_libre (/dashboard).
+- **Planes y límites mensuales**:
+  | Display name | ID en BD | Cálculos/mes | Informes/mes | Certificados/mes | Cotizador | Empleados |
+  |---|---|---|---|---|---|---|
+  | Explora | `free` | 10 | 0 | 0 | No | 1 |
+  | Circular Lab | `lab` | 200 | 5 | 2 | No | 5 |
+  | Impulso Sostenible | `impulso` | 200 | 5 | 2 | Si | 10 |
+  | Impacto Ilimitado | `ilimitado` | ∞ | ∞ | ∞ | Si | ∞ |
+- **Invitaciones**: (1) libre -> crea empresa -> empresa_admin, (2) admin -> invita por email -> token, (3) abre link -> empleado.
+- **Documentos**: Certificado (acumulado) / Informe (fechas) con código `RCO2-XXXX-YYYY` + QR.
 
-## Flujo de empresas e invitaciones
-1. `usuario_libre` (plan Explora) → `/empresa/nueva` → crea empresa → pasa a `empresa_admin`
-2. `empresa_admin` → `/empresa/equipo` → invita por email → recibe rawToken (efímero) → link copiable
-3. Invitado abre `/invitacion/[token]` → se registra → queda como `empleado`
-4. Token: `randomBytes(32)` hex → solo hash SHA-256 persiste en BD. Ver concepto `token-sha256-invitaciones`.
+## PROMPTS TRANSVERSALES CLAUDE CODE
+1. Lee `design-system-SKILL-v3.md` antes de escribir CSS.
+2. Reutiliza: co2.ts patrón, componentes design system, rutas /api/calcular patrón.
+3. Voz activa e imperativos en copy y errores: "Completa el nombre" no "Falta el nombre".
+4. Mobile-first estricto (375px a 768px a 1024px).
+5. Sin alucinaciones (enumera valores permitidos) and sin stack traces de BD en producción (usar mensajes genéricos).
+6. Rate limiting (endpoints públicos 3/min con `src/lib/rate-limit.ts`). Parámetros query validados con Zod.
 
-## Diseño y seguridad
-- **Colores**: Blanco puro (#FFFFFF) + brand (#00827C). **PROHIBIDO usar grises** (#f5f5f5, #e8e8e8, etc.).
-- **Mobile-first**. Open Sans es la ÚNICA fuente. NUNCA emojis en producción (solo Lucide React).
-- **`user-select: none`** en toda la UI autenticada. Solo el `super_admin` puede copiar/pegar.
-- **Copyright** "© Grupo MLP S.A.S." en footers y pies de documentos.
-- Ver skill `design-system` para sistema de colores completo, sidebar, layout y componentes.
-- Ver skill `seguridad-reuso` antes de implementar auth, API routes o consultas a BD.
+## PIVOT DPP — COMPLETO (V14.0 → V14.8)
+Pivot DPP completo. La Calculadora de Reúso ahora vende confianza, no solo cumplimiento. Motor CO₂ intacto, envuelto en pasaporte digital con métricas financieras (E-ROI, TCO), ingesta IA (Gemini→Qwen→Groq), verificación pública por QR y narrativa automática en voz activa para CFO.
 
-## Convenciones de código
-- TypeScript strict · Functional components · Server Components por defecto · `'use client'` solo para interactividad
-- Imports con alias `@/` · kebab-case para archivos · PascalCase para componentes · camelCase para variables
-- Zod en todas las API routes · No `any` → usar `unknown` + type guards · Sin `console.log` en producción
-- Idioma de la UI: **Español**
+| Bloque | Descripción | Estado |
+|---|---|---|
+| **DPP** | **Pasaporte Digital de Producto V1** | **✓ Completo** |
 
-## Skills disponibles (leer antes de implementar)
-- `modelo-negocio-reuso` → planes, límites, roles, diferencial (OBLIGATORIO antes de tocar planes o permisos)
-- `design-system` → colores, layout, sidebar, componentes reutilizables
-- `calculo-ambiental` → factores de emisión, lógica de cálculos, inmutabilidad (`factor_snapshot_json`)
-- `seguridad-reuso` → auth, RBAC, RLS, headers, rate limiting
+## MÓDULO COTIZADOR INTELIGENTE + CRM — COMPLETO (V6)
+Objetivo: CRM comercial con diagnóstico de muebles por IA visual. El cliente manda foto, la IA clasifica (viable, tipo, oficios), el motor determinista calcula precio + CO2, el comercial valida con toggles y envía propuesta web al cliente. Seguimiento de embudo y aprendizaje continuo.
+Regla de oro: la IA SOLO ve y clasifica (booleanos). NUNCA calcula precios. El código hace la matemática.
+Estado: Cotizador V6 2026-06-05 — Marca personalizable (logo, footer, WhatsApp, toggle Reúso). Migración 020: 4 columnas en empresas. API /api/cotizador/marca GET+PATCH. Página /empresa/configuracion/marca con canvas WebP y preview en vivo. Propuesta pública usa whatsapp_propuesta como destino del botón dudas; footer dinámico con nombre empresa. Modo noche auditado en todas las pantallas del módulo (1 fix en configuracion/modulos divisor). TypeScript limpio. Doc técnica: cotizador-crm-resumen.md. Sidebar dinámico pendiente: requiere clave 2680.
+Flujos: Cotizador IA (/empresa/cotizador) y DPP con IA (/empresa/dpp/nuevo) son independientes. La cotización migra a DPP solo si el comercial activa la casilla explícitamente.
+Tablas nuevas (migración 018 + 019 + 020): crm_cotizaciones, crm_clientes, crm_muebles_cotizados, crm_config_costos, cotizador_precios, cotizador_pipeline, modulos_usuarios + columnas marca en empresas.
+Keys requeridas: GEMINI_KEY, OR_KEY, GROQ_KEY, CRON_SECRET, NEXT_PUBLIC_BASE_URL (agregar a .env.local y variables de entorno en Vercel).
 
-## Documentación del vault (OBLIGATORIO al INICIAR y al TERMINAR cualquier tarea)
-**El vault de Obsidian está en:** `/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`
-**Al INICIAR:** leer `STATE.md` (proyecto), `Bobedas/Reuso/diario/YYYY-MM-DD.md` más reciente y `Bobedas/Reuso/conceptos/` relevantes.
-**Al TERMINAR:** crear/actualizar `Bobedas/Reuso/diario/YYYY-MM-DD.md` + `STATE.md` (proyecto) + nota en `Bobedas/Reuso/conceptos/` por cada patrón no obvio nuevo.
-Esta regla NO es opcional.
-
-## Versionado y caché
-IMPORTANT: Al terminar una sesión: (1) actualizar versión aquí, (2) `pkill -f "next dev" && rm -rf .next`, (3) `npm run dev:clean`.
-IMPORTANT: Ejecutar `pkill -f "next dev" && rm -rf .next` ANTES de pedirle al usuario que revise en el browser si se modificaron varios archivos.
-
-## Errores conocidos (NO repetir)
-- **`Cannot find module` / página sin CSS** → caché webpack corrupta. Matar proceso PRIMERO: `pkill -f "next dev"`, luego `rm -rf .next`, luego `npm run dev`.
-- **`unsafe-eval` en CSP** → Next.js solo lo necesita en dev. En next.config.mjs ya está condicionado a `NODE_ENV === 'development'`. NO volver a poner `unsafe-eval` sin condición.
-- **Endpoint `/api/admin/config/upload`** → Ya existe en `src/app/api/admin/config/upload/route.ts`. Valida MIME (PNG/JPG/SVG) y tamaño (2MB) server-side. NO duplicar validación de uploads en frontend solamente.
-- **`error.message` de Supabase en respuestas API** → Expone detalles internos. SIEMPRE usar mensajes genéricos en errores 500. Ya corregido en `/admin/legal`, `/leads/list`, `/profile`.
-- **Rate limiting en endpoints públicos** → `/api/leads` y `/api/legal/dudas` tienen rate limit 3/min. Cualquier endpoint público nuevo DEBE tener rate limit usando `src/lib/rate-limit.ts`.
-- **Parámetros de query sin validación Zod** → Los parámetros `formato` y `tipo` en rutas de exportación/reportes ya tienen `z.enum()`. Siempre validar con Zod, nunca asumir valores seguros de querystring.
-
-## Vault de Conocimiento
-Vault en `/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`. Notas atómicas en `conceptos/` (kebab-case, frontmatter YAML, wikilinks). Carpetas: `conceptos/`, `diario/`, `proyectos/`. Nota de inicio: `Reúso.md`.
+## PRINCIPIO FINAL
+No es proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.

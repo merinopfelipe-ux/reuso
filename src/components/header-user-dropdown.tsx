@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation'
 import { User, Gear, SignOut, UserCheck, Buildings } from '@phosphor-icons/react'
 import type { Rol } from '@/types'
 
+const ROL_LABELS: Record<string, string> = {
+  super_admin: 'Super Admin',
+  empresa_admin: 'Administrador',
+  empleado: 'Colaborador',
+  usuario_libre: 'Usuario',
+}
+
 interface HeaderUserDropdownProps {
   nombre: string
   rol?: Rol
@@ -79,9 +86,16 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
         }}
         className="profile-hover"
       >
-        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>
-          {nombre.split(' ')[0]}
-        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, textAlign: 'right' }}>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1 }}>
+            {nombre}
+          </p>
+          {rol && (
+            <p style={{ margin: '2px 0 0', fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'capitalize', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {ROL_LABELS[rol] || rol}
+            </p>
+          )}
+        </div>
         <div style={{
           width: 40, height: 40, borderRadius: '50%',
           background: avatarColor, color: '#1A3A38',
@@ -157,7 +171,7 @@ const itemStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px',
   background: 'transparent', border: 'none',
   cursor: 'pointer', textAlign: 'left',
-  fontSize: 13, color: 'var(--text-primary)',
+  fontSize: 14, color: 'var(--text-primary)',
   fontFamily: "'Open Sans', sans-serif",
   transition: 'background 0.15s',
 }

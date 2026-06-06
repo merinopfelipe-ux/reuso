@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { getSecret } from '../infisical.server'
 
 /**
  * Cliente Supabase con service_role key.
@@ -9,7 +8,7 @@ import { getSecret } from '../infisical.server'
 export async function createAdminClient() {
   return createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    (await getSecret("SUPABASE_SERVICE_ROLE_KEY")),
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       auth: {
         autoRefreshToken: false,
