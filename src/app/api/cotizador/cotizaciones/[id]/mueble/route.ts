@@ -106,8 +106,7 @@ export async function POST(
       .upload(nombreArchivo, buffer, { contentType: mime_type, upsert: false })
 
     if (!uploadError && uploadData) {
-      const { data: urlData } = adminClient.storage.from('cotizador').getPublicUrl(nombreArchivo)
-      imagen_url_final = urlData.publicUrl
+      imagen_url_final = nombreArchivo
     }
   }
 

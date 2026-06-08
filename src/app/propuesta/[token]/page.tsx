@@ -42,6 +42,17 @@ export default async function PropuestaPublicaPage({ params }: Props) {
     .eq('cotizacion_id', cot.id)
     .order('created_at')
 
+  // Generar signed URLs para imágenes de muebles almacenadas como paths de storage
+  const mueblesConUrls = await Promise.all(
+    (muebles ?? []).map(async (m) => {
+      if (m.imagen_url && !m.imagen_url.startsWith('http')) {
+        const { data } = await adminClient.storage.from('cotizador').createSignedUrl(m.imagen_url, 3600)
+        return { ...m, imagen_url: data?.signedUrl ?? null }
+      }
+      return m
+    })
+  )
+
   // Registrar apertura (no bloquea el render)
   const ahora = new Date().toISOString()
   await adminClient
@@ -79,7 +90,7 @@ export default async function PropuestaPublicaPage({ params }: Props) {
   return (
     <PropuestaClient
       cotizacion={cotNorm}
-      muebles={(muebles ?? []) as Parameters<typeof PropuestaClient>[0]['muebles']}
+      muebles={mueblesConUrls as Parameters<typeof PropuestaClient>[0]['muebles']}
       token={params.token}
     />
   )

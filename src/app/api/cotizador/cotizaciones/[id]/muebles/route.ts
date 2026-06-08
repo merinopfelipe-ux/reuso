@@ -36,5 +36,16 @@ export async function GET(
     return NextResponse.json({ error: 'Error al cargar los muebles.' }, { status: 500 })
   }
 
-  return NextResponse.json({ muebles: muebles ?? [] })
+  // Generar signed URLs para imágenes almacenadas como paths de storage
+  const mueblesConUrls = await Promise.all(
+    (muebles ?? []).map(async (m) => {
+      if (m.imagen_url && !m.imagen_url.startsWith('http')) {
+        const { data } = await adminClient.storage.from('cotizador').createSignedUrl(m.imagen_url, 3600)
+        return { ...m, imagen_url: data?.signedUrl ?? null }
+      }
+      return m
+    })
+  )
+
+  return NextResponse.json({ muebles: mueblesConUrls })
 }

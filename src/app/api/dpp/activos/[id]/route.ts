@@ -49,9 +49,16 @@ export async function GET(
       .eq('activo_id', id),
   ])
 
+  // Generar signed URL para imagen del activo si está almacenada como path de storage
+  let activoConUrl = activo
+  if (activo.imagen_url && !activo.imagen_url.startsWith('http')) {
+    const { data: imgUrl } = await adminClient.storage.from('dpp').createSignedUrl(activo.imagen_url, 3600)
+    activoConUrl = { ...activo, imagen_url: imgUrl?.signedUrl ?? activo.imagen_url }
+  }
+
   return NextResponse.json({
     data: {
-      activo,
+      activo: activoConUrl,
       ciclos: ciclosRes.data ?? [],
       metricas_recientes: metricasRes.data ?? null,
       documentos: documentosRes.data ?? [],

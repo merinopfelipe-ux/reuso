@@ -46,9 +46,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No se pudo subir la imagen.' }, { status: 500 })
   }
 
-  const { data: { publicUrl } } = guard.adminClient.storage
+  const { data: urlData, error: urlError } = await guard.adminClient.storage
     .from('firmas')
-    .getPublicUrl(data.path)
+    .createSignedUrl(data.path, 3600)
 
-  return NextResponse.json({ url: publicUrl })
+  if (urlError || !urlData) {
+    return NextResponse.json({ error: 'No se pudo generar el enlace de la imagen.' }, { status: 500 })
+  }
+
+  return NextResponse.json({ url: urlData.signedUrl })
 }

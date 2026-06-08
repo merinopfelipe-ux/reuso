@@ -196,8 +196,7 @@ export default function NuevoActivoDppPage() {
           .from('dpp')
           .upload(path, blob, { contentType: 'image/webp', upsert: false })
         if (uploadData) {
-          const { data: urlData } = supabase.storage.from('dpp').getPublicUrl(uploadData.path)
-          imagen_url = urlData.publicUrl
+          imagen_url = uploadData.path
         }
       } catch {
         // No bloquear si falla el upload de imagen
