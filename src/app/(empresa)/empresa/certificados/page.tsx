@@ -28,7 +28,15 @@ export default async function EmpresaCertificadosPage() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  const certificados = (certData ?? []) as unknown as Certificado[]
+  const certificados = (await Promise.all(
+    (certData ?? []).map(async (c) => {
+      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
+        const { data } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
+        return { ...c, pdf_url: data?.signedUrl ?? null }
+      }
+      return c
+    })
+  )) as unknown as Certificado[]
 
   return (
     <div style={{ width: '100%' }}>

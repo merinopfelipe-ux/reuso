@@ -29,6 +29,16 @@ export default async function AdminCertificadosPage() {
     .order('created_at', { ascending: false })
     .range(0, 29)
 
+  const dataConUrls = await Promise.all(
+    (data ?? []).map(async (c) => {
+      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
+        const { data: urlData } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
+        return { ...c, pdf_url: urlData?.signedUrl ?? null }
+      }
+      return c
+    })
+  )
+
   return (
     <div>
       <AdminPageHeader
@@ -37,7 +47,7 @@ export default async function AdminCertificadosPage() {
         showBack
       />
       <CertificadosAdminClient
-        certificados={(data ?? []) as unknown as Parameters<typeof CertificadosAdminClient>[0]['certificados']}
+        certificados={dataConUrls as unknown as Parameters<typeof CertificadosAdminClient>[0]['certificados']}
         total={count ?? 0}
       />
     </div>

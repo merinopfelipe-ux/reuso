@@ -117,6 +117,13 @@ export default async function VerificarPage({ params }: PageProps) {
     )
   }
 
+  // Generar signed URL para el PDF si está almacenado como path de storage
+  let certConUrl = cert
+  if (cert.pdf_url && !cert.pdf_url.startsWith('http')) {
+    const { data: imgUrl } = await adminClient.storage.from('documentos').createSignedUrl(cert.pdf_url, 3600)
+    certConUrl = { ...cert, pdf_url: imgUrl?.signedUrl ?? null }
+  }
+
   // ── Beneficiario ──────────────────────────────────────────────
   let beneficiario = 'Usuario verificado'
   if (cert.user_id) {
@@ -400,10 +407,10 @@ export default async function VerificarPage({ params }: PageProps) {
         </div>
 
         {/* Botón PDF */}
-        {cert.pdf_url && (
+        {certConUrl.pdf_url && (
           <div style={{ textAlign: 'center', marginBottom: 24 }}>
             <a
-              href={cert.pdf_url}
+              href={certConUrl.pdf_url}
               target="_blank"
               rel="noopener noreferrer"
               style={{

@@ -218,6 +218,16 @@ export default async function EmpresaPage() {
   const ranking = calcularRanking(todosCalculos, nombresMap)
   const donut = calcularDonut(todosCalculos)
 
+  const certDataConUrls = await Promise.all(
+    (certData ?? []).map(async (c) => {
+      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
+        const { data } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
+        return { ...c, pdf_url: data?.signedUrl ?? null }
+      }
+      return c
+    })
+  )
+
   return (
     <div style={{ width: '100%' }}>
       <div style={{ marginBottom: 24 }}>
@@ -276,7 +286,7 @@ export default async function EmpresaPage() {
 
       {/* Documentos */}
       <PanelCertificados
-        certificados={(certData ?? []) as Parameters<typeof PanelCertificados>[0]['certificados']}
+        certificados={certDataConUrls as Parameters<typeof PanelCertificados>[0]['certificados']}
         empresaId={empresaId}
         modo="empresa"
       />

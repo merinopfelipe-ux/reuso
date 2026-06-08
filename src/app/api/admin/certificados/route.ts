@@ -38,7 +38,17 @@ export async function GET(request: NextRequest) {
   const { data, count, error } = await q
   if (error) return NextResponse.json({ error: 'Error al leer certificados.' }, { status: 500 })
 
-  return NextResponse.json({ data, total: count ?? 0 })
+  const dataConUrls = await Promise.all(
+    (data ?? []).map(async (c) => {
+      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
+        const { data: urlData } = await guard.adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
+        return { ...c, pdf_url: urlData?.signedUrl ?? null }
+      }
+      return c
+    })
+  )
+
+  return NextResponse.json({ data: dataConUrls, total: count ?? 0 })
 }
 
 export async function PATCH(request: NextRequest) {

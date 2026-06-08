@@ -253,7 +253,7 @@ export async function POST(req: NextRequest) {
       fecha_fin: fechaFin,
       co2_total: co2Total,
       agua_total: aguaTotal,
-      pdf_url: pdfUrl,
+      pdf_url: storagePath,
       codigo_verificacion: codigoUUID,
       hash_integridad: hashIntegridad,
       beneficiario: esDocumentoEmpresa ? (empresaNombre ?? perfil?.nombre ?? user.email ?? 'Empresa') : (perfil?.nombre ?? user.email ?? 'Usuario'),
