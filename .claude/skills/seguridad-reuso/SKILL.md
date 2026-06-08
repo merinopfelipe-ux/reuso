@@ -1,9 +1,58 @@
 ---
 name: seguridad-reuso
-description: Reglas de seguridad obligatorias para reuso.lurdes.co. Aplicar SIEMPRE en cada archivo, API route, componente y configuración. Usar cuando se creen API routes, middleware, auth, validaciones, uploads, certificados, o cualquier lógica server-side.
+description: Seguridad para reuso.lurdes.co. Usar SIEMPRE cuando el usuario pida "revisión de bugs", "auditoría", "revisa seguridad", "busca vulnerabilidades", o al crear/modificar API routes, auth, storage, componentes con HTML de usuario, o lógica server-side.
 ---
 
-# Seguridad Calculadora de Reúso — Reglas obligatorias
+# Seguridad Calculadora de Reúso
+
+## CHECKLIST DE AUDITORÍA — Revisar en cada sesión de bugs
+
+1. **XSS** — `dangerouslySetInnerHTML` con datos de usuario (BD, inputs)
+   - Buscar en: `src/components/`, `src/app/`
+   - Fix: `DOMPurify.sanitize(valor)` en el API route antes de INSERT, y antes de renderizar
+   - Paquete: `isomorphic-dompurify`
+
+2. **IDOR** — `user_id`/`empresa_id` del body del cliente usado en queries
+   - Buscar: endpoints que lean `body.user_id`, `params.userId` sin comparar con sesión
+   - Fix: extraer siempre de `supabase.auth.getUser()` + join a profiles
+
+3. **Storage público para archivos privados**
+   - Buscar: `getPublicUrl()` en rutas de documentos de usuarios (certificados, DPP, firmas)
+   - Fix: `createSignedUrl(path, 60)` para uso inmediato; `createSignedUrl(path, 3600)` para descarga
+   - Buckets privados: `documentos`, `dpp`, `firmas` | Públicos: `logos`
+
+4. **Secretos en código cliente**
+   - Buscar: `NEXT_PUBLIC_` con keys reales; keys hardcodeadas en archivos con `'use client'`
+   - Solo permitido en NEXT_PUBLIC_: SUPABASE_URL, SUPABASE_ANON_KEY, TURNSTILE_SITE_KEY, BASE_URL
+
+5. **RLS con `USING (true)` en tablas de datos de usuarios**
+   - Buscar en `sql/`: `USING (true)` en tablas con user_id o empresa_id
+   - Excepciones legítimas: leads, dpp_verificaciones, contenido_landing, dpp_incidencias
+   - Sospechoso: CRM, DPP, calculos, certificados, profiles con USING (true)
+
+6. **adminClient en código cliente**
+   - Buscar: `createAdminClient` en archivos con `'use client'` o en `src/components/`
+   - Fix: mover a API route o Server Action
+
+7. **Endpoints POST/PATCH sin validación Zod**
+   - Buscar: handlers que lean `request.json()` sin `z.object().safeParse()`
+   - Especial: campos de texto libre (mensajes, notas, descripciones)
+
+8. **Rate limiting ausente en endpoints públicos**
+   - Verificar: `/api/leads`, `/api/auth/login`, `/api/auth/registro`
+   - Archivo: `src/lib/rate-limit.ts` — límite estándar: 3 req/min
+
+---
+
+## Hallazgos resueltos (V14.8 — 2026-06-08)
+- ✅ XSS en hilo-ticket.tsx → DOMPurify en API routes de tickets
+- ✅ Bucket `documentos` público → signed URLs (3600s)
+- ✅ TTL signed URL DPP 300s → 60s
+- ✅ Política RLS crm_cotizaciones_publico_token → eliminada
+
+---
+
+# Reglas de seguridad obligatorias
 
 ## Autenticación
 - Supabase Auth con cookies httpOnly (NO localStorage para tokens)

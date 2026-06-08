@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import DOMPurify from 'isomorphic-dompurify'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       ticket_id: params.id,
       user_id: user.id,
       es_admin: isSuper,
-      mensaje_html: parsed.data.mensaje_html
+      mensaje_html: DOMPurify.sanitize(parsed.data.mensaje_html)
     })
     .select('id')
     .single()

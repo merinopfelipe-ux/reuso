@@ -31,6 +31,11 @@ VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
    Performance: menos de 2s carga, ISR en públicas, lazy-load.
    Prohibido alucinar: no inventar colores, componentes ni factores.
 
+## 🔐 SEGURIDAD — REGLAS MÍNIMAS INQUEBRANTABLES
+- **NUNCA** renderizar HTML de usuario con `dangerouslySetInnerHTML` sin `DOMPurify.sanitize()` antes (en el API route, antes del INSERT).
+- **NUNCA** confiar en `user_id`/`empresa_id` del body del cliente: extraer siempre de la sesión de servidor (`supabase.auth.getUser()`).
+- **NUNCA** usar `getPublicUrl()` para archivos privados de usuarios: usar `createSignedUrl(ttl≤60s)`. Buckets privados: `documentos`, `dpp`, `firmas`.
+
 ## 🔒 REGLAS DE ORO — INQUEBRANTABLES
 1. **PROHIBIDO MODIFICAR LO QUE EL USUARIO NO PIDA ESPECÍFICAMENTE.** Seguir estrictamente las instrucciones sin cambios colaterales.
 2. **ZONA PROTEGIDA (CABECERO, SIDEBAR Y FLYOUT CONGELADOS).** Los siguientes archivos NO se pueden modificar visual o estructuralmente a menos que el usuario incluya la clave secreta **2680**:

@@ -237,10 +237,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Error al subir el documento. Intenta de nuevo.' }, { status: 500 })
   }
 
-  const { data: urlData } = adminClient.storage
+  const { data: urlData } = await adminClient.storage
     .from('documentos')
-    .getPublicUrl(storagePath)
-  const pdfUrl = urlData.publicUrl
+    .createSignedUrl(storagePath, 3600)
+  const pdfUrl = urlData?.signedUrl ?? ''
 
   // ── Persistir registro solo si storage tuvo éxito ────────────
   const { data: certRow, error: insertError } = await adminClient

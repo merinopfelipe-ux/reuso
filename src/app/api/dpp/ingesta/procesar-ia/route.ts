@@ -282,7 +282,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Descargar imagen vía URL firmada (5 min)
-    const { data: signedData } = await adminClient.storage.from('dpp').createSignedUrl(doc.archivo_url!, 300)
+    const { data: signedData } = await adminClient.storage.from('dpp').createSignedUrl(doc.archivo_url!, 60)
     if (!signedData?.signedUrl) throw new Error('No se pudo obtener URL del archivo.')
 
     const archivoRes = await fetch(signedData.signedUrl)
