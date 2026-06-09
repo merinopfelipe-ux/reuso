@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Medal, FileText, Download, ArrowSquareOut, X, Calendar, CircleNotch } from '@phosphor-icons/react'
 import type { Certificado } from '@/types'
 import { PopupAmbiental } from './popup-ambiental'
@@ -29,10 +29,13 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
   const [fechaFin, setFechaFin] = useState('')
   const [generando, setGenerando] = useState(false)
   const [error, setError] = useState('')
+  const isGeneratingRef = useRef(false)
   const [lista, setLista] = useState<Certificado[]>(certificados)
   const [descargaUrl, setDescargaUrl] = useState<string | null>(null)
 
   async function generar(tipo: 'certificado' | 'informe') {
+    if (isGeneratingRef.current) return
+    isGeneratingRef.current = true
     setGenerando(true)
     setError('')
 
@@ -53,14 +56,16 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
       })
       data = await res.json()
     } catch {
-      setError('Error de conexión al generar el documento. Intenta de nuevo.')
+      setError('Sin conexión. Verifica tu internet e intenta de nuevo.')
       setGenerando(false)
+      isGeneratingRef.current = false
       return
     }
 
     if (!res.ok) {
       setError((data.error as string) ?? 'Ocurrió un error al generar el documento.')
       setGenerando(false)
+      isGeneratingRef.current = false
       return
     }
 
@@ -87,6 +92,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
     setFechaInicio('')
     setFechaFin('')
     setGenerando(false)
+    isGeneratingRef.current = false
 
     // Abrir modal de descarga si se generó en lugar de tirar pdf defrente
     if (data.pdf_url) {

@@ -6,7 +6,14 @@ fecha: 2026-06-06
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V14.8 — Auditoría general: bugs, UX y optimización IA.**
+**V14.9 — Estandarización de Modo Claro y Noche (Fondos Puros).**
+
+## Sesión 2026-06-09 — Fondos Puros y CSS Variables
+- **Estandarización de Fondos en Todo el Sistema**: Se unificaron las páginas del cotizador de empresas y los componentes client del panel administrativo para que lean dinámicamente de las variables de tema global `--bg-primary` en lugar de sobreescribir con fondos claros `#F5FAFA` o negros intermedios `#474747` / `#525252`.
+- **Estructura C Dinámica en Admin**: Rediseñada la constante `C` en los 8 componentes client administrativos (`contenido-client.tsx`, `certificados-client.tsx`, `modulos-client.tsx`, `modulos-empresa-client.tsx`, `reportes-client.tsx`, `plantillas-client.tsx`, `leads-client.tsx`, `calculos-client.tsx`) para usar variables CSS nativas (`var(--color-brand)`, `var(--text-primary)`, `var(--text-secondary)`, `var(--border)`, `var(--bg-hover)`).
+- **Fondos de Tarjetas y Modales adaptables**: Reemplazados los fondos rígidos `background: '#fff'` de cards e inputs en favor de `var(--bg-card)` y `var(--bg-input)`.
+- **Correcciones en QA**: Ajustado el fondo de la pantalla de informe QA (`qa/page.tsx`) a `var(--bg-input)`.
+- **TypeScript y Build exitosos ✓**: El proyecto Next.js compila completamente sin errores con `npm run build`.
 
 ## Sesión 2026-06-06 — Limpieza + Rediseño QA
 - **L1 — `test_fallback.js` eliminado**: archivo exponía `TURNSTILE_SECRET_KEY` en console.log.

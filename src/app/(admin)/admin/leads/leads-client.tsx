@@ -6,8 +6,8 @@ import { Tray, Envelope, Buildings, Calendar, ChatCircle, CaretDown, CaretUp, Ph
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {
-  brand: '#00827C', dark: '#1A3A38', mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)', light: 'rgba(0,130,124,0.06)',
+  brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
+  border: 'var(--border)', light: 'var(--bg-hover)',
 }
 
 const ESTADOS = ['nuevo', 'contactado', 'convertido', 'descartado'] as const
@@ -88,7 +88,8 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
             <button key={e} onClick={() => setFiltroEstado(filtroEstado === e ? '' : e)}
               style={{
                 padding: '14px 16px', borderRadius: 12, border: `1.5px solid ${filtroEstado === e ? C.brand : C.border}`,
-                background: filtroEstado === e ? C.light : '#fff', cursor: 'pointer', textAlign: 'left',
+                background: filtroEstado === e ? C.light : 'var(--bg-card)', cursor: 'pointer', textAlign: 'left',
+                color: 'var(--text-primary)',
                 transition: 'all 0.2s',
               }}>
               <p style={{ fontSize: 26, fontWeight: 800, color: cfg.color, margin: '0 0 2px' }}>{conteos[e]}</p>
@@ -111,8 +112,8 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
             const abierto = expandido === lead.id
             return (
               <div key={lead.id} style={{
-                background: '#fff', borderRadius: 12, border: `1px solid ${C.border}`,
-                boxShadow: '0 2px 8px rgba(0,130,124,0.05)', overflow: 'hidden',
+                background: 'var(--bg-card)', borderRadius: 12, border: `1px solid ${C.border}`,
+                boxShadow: 'var(--shadow)', overflow: 'hidden',
               }}>
                 {/* Fila principal */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', alignItems: 'center', gap: 16, padding: '14px 18px' }}>
@@ -166,7 +167,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
 
                   {/* Expandir */}
                   <button onClick={() => setExpandido(abierto ? null : lead.id)}
-                    style={{ padding: 6, borderRadius: 8, border: `1px solid ${C.border}`, background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    style={{ padding: 6, borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                     {abierto ? <CaretUp size={15} color={C.mid} /> : <CaretDown size={15} color={C.mid} />}
                   </button>
                 </div>

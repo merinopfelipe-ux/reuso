@@ -96,10 +96,10 @@ export default function NuevaCotizacionPage() {
   // Tema
   const [isDark, setIsDark] = useState(false)
   useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains('dark'))
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
     check()
     const obs = new MutationObserver(check)
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     return () => obs.disconnect()
   }, [])
 
@@ -110,6 +110,14 @@ export default function NuevaCotizacionPage() {
       .then(d => { if (d.configs) setConfigs(d.configs) })
       .catch(() => {})
   }, [])
+
+  // Proteger trabajo no guardado: advertir al salir si hay muebles acumulados
+  useEffect(() => {
+    if (muebles.length === 0) return
+    const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [muebles.length])
 
   // Recalcular en tiempo real cuando cambian toggles
   useEffect(() => {
@@ -148,7 +156,13 @@ export default function NuevaCotizacionPage() {
       })
       const data = await res.json()
 
-      if (!res.ok) { setError(data.error ?? 'Error al analizar la imagen.'); setEstado('idle'); return }
+      if (!res.ok) {
+        setError(data.error ?? 'Error al analizar la imagen.')
+        setImagenPreview(null)
+        setEstado('idle')
+        if (inputFotoRef.current) inputFotoRef.current.value = ''
+        return
+      }
 
       const diag: DiagnosticoIA = data.diagnostico
       setDiagnostico(diag)
@@ -236,9 +250,9 @@ export default function NuevaCotizacionPage() {
 
   // ── Colores tema ──────────────────────────────────────────────────────────────
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/70' : 'text-[#474747]/70'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
 
   // Totales acumulados
   const totalPrecio = muebles.reduce((s, m) => s + m.precio_mueble, 0)
@@ -250,7 +264,7 @@ export default function NuevaCotizacionPage() {
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div className={`min-h-screen pb-32 ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+    <div className="min-h-screen pb-32 bg-[var(--bg-primary)]">
       <div className="max-w-lg mx-auto px-4 py-6">
         <AdminPageHeader titulo="Nueva cotización" showBack />
 
@@ -480,7 +494,7 @@ export default function NuevaCotizacionPage() {
 
       {/* Botones sticky en móvil */}
       {(estado === 'ajustando' || estado === 'guardando') && (
-        <div className={`fixed bottom-0 left-0 right-0 px-4 py-4 border-t ${isDark ? 'bg-[#474747] border-white/10' : 'bg-white border-[#00827C]/10'}`}>
+        <div className="fixed bottom-0 left-0 right-0 px-4 py-4 border-t bg-[var(--bg-primary)] border-[var(--border)]">
           <div className="max-w-lg mx-auto flex gap-3">
             <button
               onClick={handleAgregarMueble}
@@ -494,7 +508,7 @@ export default function NuevaCotizacionPage() {
               <button
                 onClick={handleGenerarPropuesta}
                 disabled={estado === 'guardando'}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:bg-[#C8E87A]' : 'bg-[#474747] text-white hover:bg-[#333333]'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${isDark ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90' : 'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90'}`}
               >
                 Genera la propuesta
                 <ArrowRight size={16} weight="bold" />

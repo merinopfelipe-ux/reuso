@@ -9,11 +9,15 @@ export async function POST(
   const adminClient = await createAdminClient()
 
   // Buscar cotización por token público
-  const { data: cot } = await adminClient
+  const { data: cot, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
     .select('id, estado, empresa_id, asesor_id, codigo_cotizacion, crm_clientes(nombre)')
     .eq('enlace_publico_token', params.token)
     .single()
+
+  if (fetchError) {
+    return NextResponse.json({ error: 'Error al verificar la propuesta.' }, { status: 500 })
+  }
 
   if (!cot) {
     return NextResponse.json({ error: 'Propuesta no encontrada.' }, { status: 404 })

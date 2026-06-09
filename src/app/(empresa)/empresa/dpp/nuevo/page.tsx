@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { createClient } from '@/lib/supabase/client'
@@ -41,16 +41,18 @@ function FilaMaterial({
   material,
   onChange,
   onRemove,
+  isMobile = false,
 }: {
   material: Material
   onChange: (m: Material) => void
   onRemove: () => void
+  isMobile?: boolean
 }) {
   return (
     <div
       style={{
         display: 'grid',
-        gridTemplateColumns: '2fr 1fr 1fr 2fr 1fr auto',
+        gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 2fr 1fr auto',
         gap: 8,
         marginBottom: 8,
         alignItems: 'center',
@@ -158,7 +160,15 @@ export default function NuevoActivoDppPage() {
   const [imagenPreview, setImagenPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check, { passive: true })
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   function handleImagenChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -391,7 +401,7 @@ export default function NuevoActivoDppPage() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 2fr 1fr auto',
+                gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 2fr 1fr auto',
                 gap: 8,
                 marginBottom: 4,
               }}
@@ -417,6 +427,7 @@ export default function NuevoActivoDppPage() {
             <FilaMaterial
               key={i}
               material={m}
+              isMobile={isMobile}
               onChange={(updated) =>
                 setMateriales((prev) => prev.map((x, j) => (j === i ? updated : x)))
               }

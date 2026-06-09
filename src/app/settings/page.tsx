@@ -86,9 +86,10 @@ export default function SettingsPage() {
         setTelefonoMasked(data.telefonoMasked ?? null)
         setRol(data.rol ?? '')
 
-        // Solo actualizar el selector de tema — NO re-aplicar el tema (ya lo gestiona el layout)
-        if (data.tema_preferido && !localStorage.getItem('theme')) {
+        // Inicializar el selector basándose en tema_preferido del perfil antes de recurrir a localStorage
+        if (data.tema_preferido) {
           setTema(data.tema_preferido as Tema)
+          applyTheme(data.tema_preferido as Tema)
         }
         setLoadingProfile(false)
       })
@@ -123,6 +124,21 @@ export default function SettingsPage() {
   function seleccionarTema(t: Tema) {
     setTema(t)
     applyTheme(t)
+    // Sincronizar la base de datos de Supabase en segundo plano al cambiar el tema
+    if (nombre.trim()) {
+      fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: nombre.trim(),
+          apellido: apellido.trim() || '',
+          apodo: usarPrimerNombre ? nombre.trim().split(' ')[0] : (apodo.trim() || nombre.trim().split(' ')[0]),
+          tema_preferido: t,
+          avatar_color: avatarColor,
+          avatar_text: avatarText,
+        }),
+      }).catch((err) => console.error('Error syncing theme preference:', err))
+    }
   }
 
   async function guardarDatos(e?: React.FormEvent) {

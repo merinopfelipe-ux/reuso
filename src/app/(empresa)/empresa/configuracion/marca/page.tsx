@@ -162,28 +162,26 @@ export default function ConfigMarcaPage() {
     }
   }
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/60' : 'text-[#474747]/60'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
-  const inputCls = `w-full px-3 py-2.5 rounded-[8px] text-sm border outline-none transition-colors
-    ${isDark
-      ? 'bg-[#5A5A5A] border-white/10 text-white placeholder:text-white/30 focus:border-white/30'
-      : 'bg-[#F5FAFA] border-[#00827C]/15 text-[#474747] placeholder:text-[#474747]/30 focus:border-[#00827C]/40'}`
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const inputCls = `w-full px-3 py-2.5 rounded-[8px] text-sm border border-[var(--border)] outline-none transition-colors
+    bg-[var(--bg-input)] text-[var(--text-primary)] placeholder:text-[var(--text-placeholder)] focus:border-[var(--color-brand)]`
 
   const logoMostrado = logoPreview ?? logoUrl
 
   if (cargando) {
     return (
-      <div className={`min-h-screen ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+      <div className="min-h-screen bg-[var(--bg-primary)]">
         <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
-          {[1,2,3].map(i => <div key={i} className={`h-20 rounded-[12px] animate-pulse ${isDark ? 'bg-white/05' : 'bg-[#00827C]/05'}`} />)}
+          {[1,2,3].map(i => <div key={i} className="h-20 rounded-[12px] animate-pulse bg-[var(--skeleton-base)]" />)}
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+    <div className="min-h-screen pb-20 bg-[var(--bg-primary)]">
       <div className="max-w-lg mx-auto px-4 py-6">
         <AdminPageHeader titulo="Personaliza tu marca" showBack />
         <p className={`text-sm mb-6 ${ts}`}>
@@ -191,8 +189,8 @@ export default function ConfigMarcaPage() {
         </p>
 
         {/* Preview de la propuesta */}
-        <div className={`rounded-[12px] border mb-6 overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'}`}>
-          <div className={`px-4 py-3 border-b flex items-center gap-2 ${isDark ? 'border-white/10' : 'border-[#00827C]/08'}`}>
+        <div className={`rounded-[12px] border mb-6 overflow-hidden bg-[var(--bg-card)] border-[var(--border)]`}>
+          <div className={`px-4 py-3 border-b flex items-center gap-2 border-[var(--border-light)]`}>
             <Eye size={14} className={ts} />
             <span className={`text-xs font-medium ${ts}`}>Vista previa de la propuesta</span>
           </div>
@@ -200,12 +198,12 @@ export default function ConfigMarcaPage() {
           <div className="p-4">
             <div className="flex items-center gap-3 mb-3">
               {logoMostrado ? (
-                <div className={`w-10 h-10 rounded-[8px] flex-shrink-0 overflow-hidden border ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+                <div className="w-10 h-10 rounded-[8px] flex-shrink-0 overflow-hidden border border-[var(--border)] bg-[var(--bg-input)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={logoMostrado} alt="Logo" className="w-full h-full object-contain" />
                 </div>
               ) : (
-                <div className={`w-10 h-10 rounded-[8px] flex-shrink-0 flex items-center justify-center border ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+                <div className="w-10 h-10 rounded-[8px] flex-shrink-0 flex items-center justify-center border border-[var(--border)] bg-[var(--bg-input)]">
                   <Buildings size={18} className={ts} />
                 </div>
               )}
@@ -214,10 +212,10 @@ export default function ConfigMarcaPage() {
                 <p className={`text-xs ${ts}`}>Hola Cliente, preparamos tu propuesta</p>
               </div>
             </div>
-            <div className={`rounded-[8px] p-3 ${isDark ? 'bg-[#5A5A5A]' : 'bg-[#F5FAFA]'}`}>
+            <div className="rounded-[8px] p-3 bg-[var(--bg-active)]">
               <p className={`text-xs font-semibold ${tp}`}>¿Tengo dudas?</p>
               {whatsapp && validarWhatsapp(whatsapp)
-                ? <p className={`text-xs mt-0.5 text-[#25D366]`}>→ WhatsApp {whatsapp}</p>
+                ? <p className="text-xs mt-0.5 text-[#25D366]">→ WhatsApp {whatsapp}</p>
                 : <p className={`text-xs mt-0.5 ${ts} italic`}>El botón &quot;Tengo dudas&quot; no aparecerá (sin WhatsApp)</p>
               }
             </div>
@@ -233,7 +231,7 @@ export default function ConfigMarcaPage() {
         <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
           <p className={`text-sm font-semibold mb-3 ${tp}`}>Logo de tu empresa</p>
           <div className="flex items-center gap-4">
-            <div className={`w-16 h-16 rounded-[10px] flex-shrink-0 overflow-hidden border flex items-center justify-center ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+            <div className="w-16 h-16 rounded-[10px] flex-shrink-0 overflow-hidden border border-[var(--border)] flex items-center justify-center bg-[var(--bg-input)]">
               {logoMostrado
                 ? <img src={logoMostrado} alt="Logo" className="w-full h-full object-contain" />  // eslint-disable-line @next/next/no-img-element
                 : <Camera size={22} className={ts} />

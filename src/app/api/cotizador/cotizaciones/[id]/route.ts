@@ -27,7 +27,7 @@ export async function GET(
   }
   const { empresa_id, adminClient } = auth
 
-  const { data: cotizacion } = await adminClient
+  const { data: cotizacion, error } = await adminClient
     .from('crm_cotizaciones')
     .select(`
       id, codigo_cotizacion, estado, subtotal, descuento, total,
@@ -41,6 +41,10 @@ export async function GET(
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .single()
+
+  if (error) {
+    return NextResponse.json({ error: 'Error al cargar la cotización.' }, { status: 500 })
+  }
 
   if (!cotizacion) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
@@ -63,12 +67,16 @@ export async function PATCH(
   const { user_id, empresa_id, adminClient } = auth
   const ip = getIp(request)
 
-  const { data: cotActual } = await adminClient
+  const { data: cotActual, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
-    .select('id, subtotal, descuento, total')
+    .select('id, estado, subtotal, descuento, total')
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .single()
+
+  if (fetchError) {
+    return NextResponse.json({ error: 'Error al verificar la cotización.' }, { status: 500 })
+  }
 
   if (!cotActual) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
@@ -81,6 +89,23 @@ export async function PATCH(
       { error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' },
       { status: 400 }
     )
+  }
+
+  // Validar transiciones de estado — evita revertir cotizaciones cerradas
+  if (parsed.data.estado) {
+    const VALID_TRANSITIONS: Record<string, string[]> = {
+      'por_cotizar':        ['enviada', 'cerrado_inviable'],
+      'enviada':            ['en_negociacion', 'por_cotizar', 'cerrado_perdido'],
+      'en_negociacion':     ['esperando_anticipo', 'cerrado_perdido'],
+      'esperando_anticipo': ['cerrado_ganado', 'cerrado_perdido'],
+      'cerrado_ganado':     [],
+      'cerrado_perdido':    [],
+      'cerrado_inviable':   [],
+    }
+    const estadoActual = (cotActual as { estado?: string }).estado ?? 'por_cotizar'
+    if (!VALID_TRANSITIONS[estadoActual]?.includes(parsed.data.estado)) {
+      return NextResponse.json({ error: 'Transición de estado no permitida.' }, { status: 409 })
+    }
   }
 
   const actualizar: Record<string, unknown> = { ...parsed.data, updated_at: new Date().toISOString() }

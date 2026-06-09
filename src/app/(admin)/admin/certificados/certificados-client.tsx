@@ -4,8 +4,8 @@ import { useState, useTransition } from 'react'
 import { Medal, ArrowSquareOut, XCircle, MagnifyingGlass } from '@phosphor-icons/react'
 
 const C = {
-  brand: '#00827C', dark: '#1A3A38', mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)', light: 'rgba(0,130,124,0.06)',
+  brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
+  border: 'var(--border)', light: 'var(--bg-hover)',
 }
 
 type Cert = {
@@ -77,26 +77,26 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
   return (
     <div style={{ paddingBottom: 40 }}>
       {toast && (
-        <div style={{ position: 'fixed', top: 24, right: 24, background: C.dark, color: '#fff', padding: '12px 20px', borderRadius: 12, fontSize: 13, fontWeight: 700, zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 24, right: 24, background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '12px 20px', borderRadius: 12, fontSize: 13, fontWeight: 700, zIndex: 1000 }}>
           {toast}
         </div>
       )}
 
       {/* Filtros */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20, alignItems: 'center' }}>
-        <div style={{ display: 'inline-flex', background: '#fff', padding: 4, borderRadius: 12, border: `1px solid ${C.border}` }}>
+        <div style={{ display: 'inline-flex', background: 'var(--bg-card)', padding: 4, borderRadius: 12, border: `1px solid ${C.border}` }}>
           {([['todos', `Todos (${total})`], ['validos', 'Válidos'], ['revocados', 'Revocados']] as const).map(([val, label]) => (
             <button key={val} onClick={() => setFiltro(val)} style={{
               padding: '7px 16px', borderRadius: 8, border: 'none', cursor: 'pointer',
               fontSize: 12, fontWeight: 700,
               background: filtro === val ? C.brand : 'transparent',
-              color: filtro === val ? '#fff' : C.mid,
+              color: filtro === val ? 'var(--text-on-brand)' : C.mid,
               transition: 'all 0.2s',
             }}>{label}</button>
           ))}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: '8px 14px', flex: 1, maxWidth: 360 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-input)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '8px 14px', flex: 1, maxWidth: 360 }}>
           <MagnifyingGlass size={15} color={C.mid} />
           <input value={busqueda} onChange={e => setBusqueda(e.target.value)}
             placeholder="Buscar por código, empresa o beneficiario..."
@@ -105,7 +105,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
       </div>
 
       {/* Tabla */}
-      <div style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 16, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -129,7 +129,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
               </tr>
             )}
             {visibles.map(cert => (
-              <tr key={cert.id} style={{ background: cert.revocado ? 'rgba(239,68,68,0.03)' : '#fff' }}>
+              <tr key={cert.id} style={{ background: cert.revocado ? 'rgba(239,68,68,0.03)' : 'var(--bg-primary)' }}>
                 <td style={tdStyle}>
                   <span style={{ fontFamily: 'monospace', fontSize: 12, fontWeight: 700, color: C.brand }}>{cert.codigo_verificacion}</span>
                 </td>
@@ -178,7 +178,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
       {/* Modal de revocación */}
       {modal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-          <div style={{ background: '#fff', borderRadius: 20, padding: 32, maxWidth: 480, width: '100%', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 20, padding: 32, maxWidth: 480, width: '100%', boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <h3 style={{ fontSize: 18, fontWeight: 900, color: C.dark, marginBottom: 8 }}>Revocar certificado</h3>
             <p style={{ fontSize: 13, color: C.mid, marginBottom: 4 }}>
               Código: <strong style={{ color: C.brand }}>{modal.codigo_verificacion}</strong>
@@ -191,10 +191,10 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
             </label>
             <textarea value={motivo} onChange={e => setMotivo(e.target.value)}
               placeholder="Ej: El documento contiene errores en los cálculos. Se emitirá uno nuevo."
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', minHeight: 100, resize: 'vertical', marginBottom: 20 }} />
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', minHeight: 100, resize: 'vertical', marginBottom: 20, background: 'var(--bg-input)' }} />
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
               <button onClick={() => { setModal(null); setMotivo('') }}
-                style={{ padding: '10px 22px', borderRadius: 10, border: `1px solid ${C.border}`, background: '#fff', color: C.dark, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                style={{ padding: '10px 22px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.dark, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                 Cancelar
               </button>
               <button onClick={() => startTransition(() => { revocar() })}

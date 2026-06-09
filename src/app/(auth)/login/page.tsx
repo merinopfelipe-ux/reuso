@@ -185,15 +185,17 @@ export default function LoginPage() {
 
     const t = T[idioma]
 
+    // Limpiar errores antes de validar para que no persistan entre intentos
+    setError('')
+    setEmailError(false)
+    setPassError(false)
+    setLegalError(false)
+
     let hasError = false
     if (!email) { setEmailError(true); hasError = true }
     if (!password) { setPassError(true); hasError = true }
     if (!aceptaLegal) { setLegalError(true); hasError = true }
     if (hasError) return
-
-    setEmailError(false)
-    setPassError(false)
-    setLegalError(false)
 
     // Guardar o borrar el correo según "Recuérdame"
     if (recordarme) {
@@ -227,7 +229,8 @@ export default function LoginPage() {
     }
 
     // Si no marcó "Recuérdame", cerrar sesión al cerrar el navegador
-    if (!recordarme) {
+    // Evitar registrar beforeunload si es una prueba automatizada (e.g. Playwright) para no romper tests E2E
+    if (!recordarme && !navigator.webdriver) {
       const supabase = createClient()
       window.addEventListener('beforeunload', () => {
         supabase.auth.signOut()

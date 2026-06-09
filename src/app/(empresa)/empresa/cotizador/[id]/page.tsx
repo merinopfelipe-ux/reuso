@@ -187,13 +187,13 @@ export default function DetalleCotizacionPage() {
     },
   ]
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/60' : 'text-[#474747]/60'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
 
   if (cargando) {
     return (
-      <div className={`min-h-screen ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+      <div className="min-h-screen bg-[var(--bg-primary)]">
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
           {[1,2,3].map(i => <div key={i} className={`h-24 rounded-[12px] animate-pulse ${isDark ? 'bg-white/05' : 'bg-[#00827C]/05'}`} />)}
         </div>
@@ -203,7 +203,7 @@ export default function DetalleCotizacionPage() {
 
   if (!cot) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
         <p className={ts}>Cotización no encontrada.</p>
       </div>
     )
@@ -213,7 +213,7 @@ export default function DetalleCotizacionPage() {
     Math.floor((Date.now() - new Date(cot.updated_at).getTime()) / 86_400_000) >= 2
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+    <div className="min-h-screen pb-20 bg-[var(--bg-primary)]">
       <div className="max-w-2xl mx-auto px-4 py-6">
 
         {/* Cabecero */}
@@ -244,7 +244,7 @@ export default function DetalleCotizacionPage() {
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors disabled:opacity-50 ${
                   cot.estado === e.key
                     ? 'bg-[#00827C] text-white'
-                    : isDark ? 'bg-white/10 text-white/60 hover:bg-white/15' : 'bg-[#F5FAFA] text-[#474747]/60 border border-[#00827C]/10 hover:bg-[#00827C]/08'
+                    : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-hover)]'
                 }`}
               >
                 {e.label}
@@ -341,7 +341,7 @@ export default function DetalleCotizacionPage() {
           <p className={`text-xs uppercase tracking-wide font-semibold mb-3 ${ts}`}>Enlace de propuesta</p>
           {enlace ? (
             <div className="space-y-2">
-              <div className={`flex items-center gap-2 rounded-[8px] border px-3 py-2 ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+              <div className="flex items-center gap-2 rounded-[8px] border px-3 py-2 border-[var(--border)] bg-[var(--bg-input)]">
                 <Link size={14} className={ts} />
                 <span className={`text-xs flex-1 truncate ${ts}`}>{enlace}</span>
                 <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
@@ -406,7 +406,7 @@ export default function DetalleCotizacionPage() {
       {/* Modal confirmación estado terminal */}
       {confirmarEstado && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className={`w-full max-w-sm rounded-[16px] border p-6 shadow-xl ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'}`}>
+          <div className="w-full max-w-sm rounded-[16px] border p-6 shadow-xl bg-[var(--bg-card)] border-[var(--border)]">
             <p className={`text-base font-bold mb-2 ${tp}`}>
               {confirmarEstado === 'cerrado_ganado' ? '¡Confirma el cierre ganado!' : 'Confirma el cambio de estado'}
             </p>
@@ -416,7 +416,7 @@ export default function DetalleCotizacionPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmarEstado(null)}
-                className={`flex-1 py-2.5 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-white/15 text-white/70 hover:bg-white/10' : 'border-[#00827C]/15 text-[#474747]/70 hover:bg-[#F5FAFA]'}`}
+                className="flex-1 py-2.5 rounded-full text-sm font-semibold border transition-colors border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
               >
                 Cancelar
               </button>
@@ -459,7 +459,7 @@ function CopyCard({ label, texto, isDark }: { label: string; texto: string; isDa
     })
   }
   return (
-    <div className={`rounded-[8px] p-3 ${isDark ? 'bg-[#5A5A5A]' : 'bg-[#F5FAFA]'}`}>
+    <div className="rounded-[8px] p-3 border border-[var(--border)] bg-[var(--bg-input)]">
       <div className="flex items-center justify-between mb-1.5">
         <span className={`text-xs font-semibold ${isDark ? 'text-white/70' : 'text-[#474747]/70'}`}>{label}</span>
         <button

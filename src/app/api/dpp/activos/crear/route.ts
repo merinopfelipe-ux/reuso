@@ -53,6 +53,11 @@ export async function POST(request: NextRequest) {
     if (!bodyEmpresaId) {
       return NextResponse.json({ error: 'Especifica la empresa para registrar el activo.' }, { status: 400 })
     }
+    // Verificar que la empresa existe antes de continuar
+    const { data: empExiste } = await adminClient.from('empresas').select('id').eq('id', bodyEmpresaId).single()
+    if (!empExiste) {
+      return NextResponse.json({ error: 'Empresa no encontrada.' }, { status: 404 })
+    }
     targetEmpresaId = bodyEmpresaId
   }
 

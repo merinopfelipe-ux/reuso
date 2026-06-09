@@ -34,15 +34,6 @@ export default function ConfigModulosPage() {
   const [asignaciones, setAsignaciones] = useState<Asignacion[]>([])
   const [cargando, setCargando] = useState(true)
   const [toggling, setToggling] = useState<string | null>(null)  // "userId-moduloId"
-  const [isDark, setIsDark] = useState(false)
-
-  useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains('dark'))
-    check()
-    const obs = new MutationObserver(check)
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    return () => obs.disconnect()
-  }, [])
 
   useEffect(() => {
     fetch('/api/empresa/modulos')
@@ -101,16 +92,16 @@ export default function ConfigModulosPage() {
     setToggling(null)
   }
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/60' : 'text-[#474747]/60'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
 
   // Módulos que NO tiene la empresa (para mostrar oportunidad de compra)
   // (la API solo devuelve los activos — si hay módulos conocidos que faltan, se muestran bloqueados)
   const tieneCoizador = modulos.some(m => m.clave === 'cotizador_crm')
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+    <div className="min-h-screen pb-20 bg-[var(--bg-primary)]">
       <div className="max-w-2xl mx-auto px-4 py-6">
         <AdminPageHeader titulo="Acceso a módulos" showBack />
         <p className={`text-sm mb-6 ${ts}`}>
@@ -120,7 +111,7 @@ export default function ConfigModulosPage() {
         {cargando ? (
           <div className="space-y-4">
             {[1,2].map(i => (
-              <div key={i} className={`h-32 rounded-[12px] animate-pulse ${isDark ? 'bg-white/05' : 'bg-[#00827C]/05'}`} />
+              <div key={i} className="h-32 rounded-[12px] animate-pulse bg-[var(--skeleton-base)]" />
             ))}
           </div>
         ) : (
@@ -128,7 +119,7 @@ export default function ConfigModulosPage() {
             {/* Módulos activos */}
             {modulos.map(modulo => (
               <div key={modulo.id} className={`rounded-[12px] border ${cardBg}`}>
-                <div className={`p-4 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                <div className="p-4 border-b border-[var(--border)]">
                   <div className="flex items-center gap-2">
                     <Leaf size={18} weight="duotone" className="text-[#00827C]" />
                     <p className={`text-sm font-bold ${tp}`}>{modulo.nombre}</p>
@@ -144,7 +135,7 @@ export default function ConfigModulosPage() {
                     <p className={`text-xs ${ts}`}>No hay miembros del equipo aún.</p>
                   </div>
                 ) : (
-                  <div className={`divide-y ${isDark ? 'divide-white/10' : 'divide-[#00827C]/08'}`}>
+                  <div className="divide-y divide-[var(--border)]">
                     {perfiles.map(p => {
                       const acceso = tieneAcceso(p.user_id, modulo.id)
                       const key = `${p.user_id}-${modulo.id}`
@@ -181,12 +172,12 @@ export default function ConfigModulosPage() {
 
             {/* Módulo Cotizador NO activo → oportunidad de venta */}
             {!tieneCoizador && (
-              <div className={`rounded-[12px] border ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'}`}>
-                <div className={`p-4 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+              <div className="rounded-[12px] border bg-[var(--bg-card)] border-[var(--border)]">
+                <div className="p-4 border-b border-[var(--border)]">
                   <div className="flex items-center gap-2">
                     <Lock size={18} weight="duotone" className={ts} />
                     <p className={`text-sm font-bold ${tp}`}>Cotizador CRM</p>
-                    <span className={`ml-auto text-xs px-2 py-0.5 rounded-full font-medium ${isDark ? 'bg-white/10 text-white/50' : 'bg-[#474747]/08 text-[#474747]/50'}`}>
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium bg-[var(--bg-active)] text-[var(--text-secondary)]">
                       No adquirido
                     </span>
                   </div>

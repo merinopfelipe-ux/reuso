@@ -2,22 +2,42 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import type { Rol } from '@/types'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-// Rate limiting en memoria: IP → { count, resetAt }
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
+async function checkRateLimit(ip: string, accion: string, max: number, windowMs: number): Promise<boolean> {
+  try {
+    const adminSupabase = await createAdminClient()
+    const cutoff = new Date(Date.now() - windowMs).toISOString()
 
-function checkRateLimit(ip: string, max: number, windowMs: number): boolean {
-  const now = Date.now()
-  const entry = rateLimitStore.get(ip)
+    const { count, error: countError } = await adminSupabase
+      .from('rate_limits')
+      .select('*', { count: 'exact', head: true })
+      .eq('ip', ip)
+      .eq('accion', accion)
+      .gt('creado_en', cutoff)
 
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + windowMs })
+    if (countError) {
+      console.error('Error counting rate limits:', countError)
+      return true // Fallback
+    }
+
+    if (count !== null && count >= max) {
+      return false
+    }
+
+    const { error: insertError } = await adminSupabase
+      .from('rate_limits')
+      .insert({ ip, accion })
+
+    if (insertError) {
+      console.error('Error inserting rate limit:', insertError)
+    }
+
+    return true
+  } catch (err) {
+    console.error('Rate limit system exception:', err)
     return true
   }
-  if (entry.count >= max) return false
-
-  entry.count++
-  return true
 }
 
 const bodySchema = z.object({
@@ -53,7 +73,8 @@ export async function POST(request: NextRequest) {
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 
   // Rate limit: 5/min por IP
-  if (!checkRateLimit(ip, 5, 60_000)) {
+  const allowed = process.env.SKIP_RATE_LIMIT === 'true' || await checkRateLimit(ip, 'login', 5, 60_000)
+  if (!allowed) {
     return NextResponse.json(
       { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
       { status: 429 }

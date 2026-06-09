@@ -41,12 +41,16 @@ export async function POST(
   const ip = getIp(request)
 
   // Verificar que la cotización existe y pertenece a esta empresa
-  const { data: cotizacion } = await adminClient
+  const { data: cotizacion, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
     .select('id, subtotal, descuento')
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .single()
+
+  if (fetchError) {
+    return NextResponse.json({ error: 'Error al verificar la cotización.' }, { status: 500 })
+  }
 
   if (!cotizacion) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
@@ -68,7 +72,7 @@ export async function POST(
   } = parsed.data
 
   // Buscar config de costos activa para este tipo de mueble
-  const { data: configRow } = await adminClient
+  const { data: configRow, error: configError } = await adminClient
     .from('crm_config_costos')
     .select('*')
     .eq('empresa_id', empresa_id)
@@ -76,12 +80,14 @@ export async function POST(
     .eq('activo', true)
     .single()
 
-  if (!configRow) {
+  if (configError || !configRow) {
     return NextResponse.json(
       { error: `Configura los precios para "${tipo_mueble}" antes de cotizar.` },
       { status: 422 }
     )
   }
+
+
 
   const config: ConfigCostosMueble = {
     tipo_mueble: configRow.tipo_mueble,
@@ -135,27 +141,15 @@ export async function POST(
     return NextResponse.json({ error: 'Error al guardar el mueble. Intenta de nuevo.' }, { status: 500 })
   }
 
-  // Actualizar totales de la cotización (SUM desde BD para evitar race conditions)
-  const { data: sumas } = await adminClient
-    .from('crm_muebles_cotizados')
-    .select('precio_mueble, co2_evitado_kg, agua_evitada_l')
-    .eq('cotizacion_id', params.id)
+  // Actualizar totales de la cotización de forma atómica (función SQL — evita race condition)
+  const { data: totalesActualizados } = await adminClient
+    .rpc('recalcular_totales_cotizacion', { p_cotizacion_id: params.id })
+    .single()
 
-  const subtotalNuevo = (sumas ?? []).reduce((s, m) => s + Number(m.precio_mueble), 0)
-  const co2Total = (sumas ?? []).reduce((s, m) => s + Number(m.co2_evitado_kg), 0)
-  const aguaTotal = (sumas ?? []).reduce((s, m) => s + Number(m.agua_evitada_l), 0)
+  const subtotalNuevo = Number((totalesActualizados as { subtotal: number } | null)?.subtotal ?? 0)
+  const co2Total = Number((totalesActualizados as { co2_evitado_total_kg: number } | null)?.co2_evitado_total_kg ?? 0)
+  const aguaTotal = Number((totalesActualizados as { agua_evitada_total_l: number } | null)?.agua_evitada_total_l ?? 0)
   const descuento = Number(cotizacion.descuento ?? 0)
-
-  await adminClient
-    .from('crm_cotizaciones')
-    .update({
-      subtotal: subtotalNuevo,
-      total: Math.max(0, subtotalNuevo - descuento),
-      co2_evitado_total_kg: parseFloat(co2Total.toFixed(4)),
-      agua_evitada_total_l: parseFloat(aguaTotal.toFixed(2)),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', params.id)
 
   // Si el humano corrigió la IA, guardar caso para aprendizaje
   if (fue_corregido_por_humano) {

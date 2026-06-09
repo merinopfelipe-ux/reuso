@@ -3,20 +3,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { createHash } from 'crypto'
-
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-
-function checkRateLimit(ip: string, max: number, windowMs: number): boolean {
-  const now = Date.now()
-  const entry = rateLimitStore.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateLimitStore.set(ip, { count: 1, resetAt: now + windowMs })
-    return true
-  }
-  if (entry.count >= max) return false
-  entry.count++
-  return true
-}
+import { rateLimit } from '@/lib/rate-limit'
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const formData = new FormData()
@@ -59,7 +46,8 @@ const bodySchema = z
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 
-  if (!checkRateLimit(ip, 3, 60_000)) {
+  const allowed = await rateLimit(`registro_invitacion:${ip}`, 3, 60_000)
+  if (!allowed) {
     return NextResponse.json(
       { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
       { status: 429 }
@@ -105,6 +93,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (new Date(invitacion.expires_at) < new Date()) {
+    // Marcar explícitamente como expirada para mantener el estado limpio en BD
+    await adminClient.from('invitaciones').update({ estado: 'expirada' }).eq('id', invitacion.id)
     return NextResponse.json({ error: 'Esta invitación ha expirado.' }, { status: 410 })
   }
 
@@ -136,6 +126,8 @@ export async function POST(request: NextRequest) {
     .eq('user_id', authData.user.id)
 
   if (profileError) {
+    // Rollback: Eliminar usuario de Supabase Auth para permitir reintentos
+    await adminClient.auth.admin.deleteUser(authData.user.id)
     return NextResponse.json({ error: 'Error al asignar el perfil. Contacta soporte.' }, { status: 500 })
   }
 

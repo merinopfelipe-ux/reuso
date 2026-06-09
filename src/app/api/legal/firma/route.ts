@@ -256,7 +256,8 @@ function generarPDF(data: z.infer<typeof schema>, fecha: string, ip: string, use
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  if (!rateLimit(`firma:${ip}`, 5, 60 * 60 * 1000)) {
+  const allowed = await rateLimit(`firma:${ip}`, 5, 60 * 60 * 1000)
+  if (!allowed) {
     return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta más tarde.' }, { status: 429 })
   }
 

@@ -62,7 +62,29 @@ export async function POST(
     composicion.reduce((sum, m) => sum + (m.peso_kg ?? 0) * (m.factor_co2_kg ?? 0), 0) * 10000
   ) / 10000
 
+  // Validar límite de ciclos
+  if ((activo.n_ciclos ?? 0) >= 999) {
+    return NextResponse.json({ error: 'Este activo ya alcanzó el máximo de 999 ciclos.' }, { status: 422 })
+  }
+
   const numero_ciclo = (activo.n_ciclos ?? 0) + 1
+
+  // Optimistic lock: incrementar n_ciclos solo si no cambió desde que lo leímos.
+  // Evita que dos requests simultáneos creen ciclos con el mismo numero_ciclo.
+  const { data: activoActualizado } = await adminClient
+    .from('dpp_activos')
+    .update({ n_ciclos: numero_ciclo, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('n_ciclos', activo.n_ciclos ?? 0)
+    .select('id')
+    .single()
+
+  if (!activoActualizado) {
+    return NextResponse.json(
+      { error: 'Conflicto al registrar el ciclo. Alguien más acaba de crear uno. Intenta de nuevo.' },
+      { status: 409 }
+    )
+  }
 
   const { data: ciclo, error: cicloError } = await adminClient
     .from('dpp_ciclos')
@@ -83,13 +105,13 @@ export async function POST(
     .single()
 
   if (cicloError || !ciclo) {
+    // Revertir el incremento si el INSERT falló
+    await adminClient
+      .from('dpp_activos')
+      .update({ n_ciclos: activo.n_ciclos ?? 0, updated_at: new Date().toISOString() })
+      .eq('id', id)
     return NextResponse.json({ error: 'Error al guardar el ciclo. Intenta de nuevo.' }, { status: 500 })
   }
-
-  await adminClient
-    .from('dpp_activos')
-    .update({ n_ciclos: numero_ciclo, updated_at: new Date().toISOString() })
-    .eq('id', id)
 
   await logAuditoria(adminClient, {
     user_id,

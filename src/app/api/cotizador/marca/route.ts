@@ -27,11 +27,15 @@ export async function GET() {
   if (!auth.ok) return NextResponse.json({ error: 'Sin permiso.' }, { status: auth.status })
   const { empresa_id, adminClient } = auth
 
-  const { data } = await adminClient
+  const { data, error } = await adminClient
     .from('empresas')
     .select('logo_propuesta_url, nombre_footer_propuesta, whatsapp_propuesta, mostrar_marca_reuso, nombre')
     .eq('id', empresa_id)
     .single()
+
+  if (error) {
+    return NextResponse.json({ error: 'Error al cargar la configuración de marca.' }, { status: 500 })
+  }
 
   return NextResponse.json(data ?? {})
 }

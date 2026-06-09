@@ -12,6 +12,8 @@ import {
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
 type Estado = 'pendiente' | 'ok' | 'falla' | 'omitir'
+type RolPrueba = 'super_admin' | 'empresa_admin' | 'empleado' | 'usuario_libre' | 'sin_sesion'
+type TemaPrueba = 'claro' | 'oscuro'
 
 interface Tarea {
   id: string
@@ -24,11 +26,111 @@ interface Tarea {
   estado: Estado
   notas: string
   critica: boolean
+  roles: RolPrueba[]
+  rolesProbados?: RolPrueba[]
+  temasProbados?: TemaPrueba[]
+}
+
+const ROL_LABELS: Record<RolPrueba, string> = {
+  super_admin: 'Super Admin',
+  empresa_admin: 'Empresa Admin',
+  empleado: 'Empleado',
+  usuario_libre: 'Usuario Libre',
+  sin_sesion: 'Sin sesión (Público)'
+}
+
+function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
+  // Panel Admin
+  if (categoria === 'Panel Admin' || id.startsWith('adm-')) return ['super_admin']
+  
+  // Panel Empresa
+  if (categoria === 'Panel Empresa' || id.startsWith('emp-')) {
+    if (id === 'emp-05' || id === 'emp-06') return ['empresa_admin', 'empleado']
+    return ['empresa_admin']
+  }
+  
+  // Dashboard
+  if (categoria === 'Dashboard' || id.startsWith('dash-')) return ['empleado']
+  
+  // Cotizador IA
+  if (categoria === 'Cotizador IA' || id.startsWith('cot-')) {
+    if (id === 'cot-07') return ['empresa_admin', 'sin_sesion']
+    return ['empresa_admin']
+  }
+  
+  // DPP / Pasaporte
+  if (categoria === 'DPP / Pasaporte' || id.startsWith('dpp-')) {
+    if (id === 'dpp-04' || id === 'dpp-07') return ['sin_sesion']
+    if (id === 'dpp-06') return ['empresa_admin', 'sin_sesion']
+    return ['empresa_admin']
+  }
+  
+  // Páginas Públicas
+  if (categoria === 'Páginas Públicas' || id.startsWith('pub-')) {
+    if (id === 'pub-01') return ['sin_sesion', 'super_admin']
+    if (id === 'pub-07') return ['usuario_libre']
+    return ['sin_sesion']
+  }
+  
+  // Modo Noche
+  if (categoria === 'Modo Noche' || id.startsWith('dark-')) {
+    if (id === 'dark-01') return ['sin_sesion']
+    if (id === 'dark-02' || id === 'dark-07') return ['empleado']
+    if (id === 'dark-03' || id === 'dark-04' || id === 'dark-05' || id === 'dark-08') return ['empresa_admin']
+    if (id === 'dark-06') return ['super_admin']
+    return ['empleado']
+  }
+  
+  // Rendimiento
+  if (categoria === 'Rendimiento' || id.startsWith('perf-')) {
+    if (id === 'perf-01') return ['empleado']
+    if (id === 'perf-05') return ['sin_sesion']
+    return ['empresa_admin']
+  }
+  
+  // Seguridad
+  if (categoria === 'Seguridad' || id.startsWith('seg-')) {
+    if (id === 'seg-01' || id === 'seg-03' || id === 'seg-06' || id === 'seg-08' || id === 'seg-09' || id === 'seg-10' || id === 'seg-11' || id === 'seg-12') return ['empleado']
+    if (id === 'seg-02' || id === 'seg-05') return ['sin_sesion']
+    if (id === 'seg-04') return ['empresa_admin']
+    if (id === 'seg-07') return ['super_admin', 'empresa_admin']
+    return ['empleado']
+  }
+  
+  // Alertas
+  if (categoria === 'Alertas' || id.startsWith('alerta-')) {
+    if (id === 'alerta-01') return ['super_admin', 'empleado']
+    return ['empleado']
+  }
+  
+  // Settings
+  if (categoria === 'Settings' || id.startsWith('set-')) return ['empleado']
+  
+  // Ayuda
+  if (categoria === 'Ayuda' || id.startsWith('ayuda-')) return ['empleado']
+  
+  // APIs & Validaciones
+  if (categoria === 'APIs & Validaciones' || id.startsWith('api-') || id.startsWith('auth-') || id.startsWith('emp-') || id.startsWith('dpl-')) {
+    if (id === 'api-01' || id === 'api-07' || id === 'auth-12') return ['empleado']
+    if (id === 'api-02' || id === 'api-04' || id === 'api-06' || id === 'emp-13') return ['empresa_admin']
+    if (id === 'api-03') return ['super_admin']
+    if (id === 'api-05' || id === 'dpl-09' || id === 'auth-11') return ['sin_sesion']
+  }
+  
+  // Autenticación
+  if (categoria === 'Autenticación' || id.startsWith('auth-')) {
+    if (id === 'auth-01') return ['empresa_admin']
+    if (id === 'auth-07') return ['sin_sesion', 'empleado']
+    if (id === 'auth-10') return ['usuario_libre']
+    return ['sin_sesion']
+  }
+  
+  return ['empleado']
 }
 
 // ── Definición completa de tareas ─────────────────────────────────────────────
 
-const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas'>[] = [
+const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
 
   // ══════════════════════════════════════════════════════════════════
   // 1. AUTENTICACIÓN
@@ -1084,27 +1186,30 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas'>[] = [
     esperado: 'El middleware o la validación interna de la página intercepta la falta de licencia del módulo y redirige al panel general /empresa con un query param explicativo (ej. /empresa?modulo_bloqueado=cotizador).',
   },
   {
-    id: 'seg-05', categoria: 'Seguridad', ruta: '/api/auth', critica: false,
-    titulo: 'Rate limit en login — 3 intentos por minuto',
-    descripcion: 'Verifica que la API de inicio de sesión de Supabase limite la tasa de reintentos rápidos.',
+    id: 'seg-05', categoria: 'Seguridad', ruta: '/api/auth', critica: true,
+    titulo: 'Rate limit en inicio de sesión (Login) — Control por IP (BD)',
+    descripcion: 'Verifica que el backend bloquee intentos repetidos de inicio de sesión desde la misma dirección IP tras superar 5 peticiones por minuto, usando la tabla persistente de rate limits.',
     pasos: [
-      'Ve a la página de /login.',
-      'Escribe contraseñas incorrectas y pulsa el botón "Ingresar" de forma rápida y repetida.',
-      'Ejecuta un 4.º intento en un lapso menor a 60 segundos.',
+      'Ve a la pantalla de /login en el navegador.',
+      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
+      'Ingresa un correo electrónico de prueba cualquiera y una contraseña incorrecta.',
+      'Haz clic en "Ingresar" de forma rápida y repetida por lo menos 6 veces en menos de un minuto.',
+      'Comprueba que a partir del 6.° intento el servidor responda con un código de estado HTTP 429 (Too Many Requests).',
     ],
-    esperado: 'A partir del 4.º intento fallido el sistema activa las medidas de seguridad del captcha Turnstile o devuelve un código de error de rate limit bloqueando temporalmente el formulario.',
+    esperado: 'El backend intercepta las peticiones tras el 5.° intento por minuto, registra el evento en la tabla `rate_limits` y responde con status 429 y el error: "Demasiados intentos. Intenta de nuevo en un momento."',
   },
   {
-    id: 'seg-06', categoria: 'Seguridad', ruta: '/api/dpp', critica: false,
-    titulo: 'RLS Supabase — usuario no ve datos de otra empresa',
-    descripcion: 'Comprueba las reglas de Row Level Security inyectadas en las consultas de base de datos.',
+    id: 'seg-06', categoria: 'Seguridad', ruta: '/api/dpp', critica: true,
+    titulo: 'Aislamiento de Tenancy (RLS) — Intento de elusión de filtros por REST API',
+    descripcion: 'Simula un ataque de filtración de datos donde un atacante intenta consultar registros de otras empresas llamando directamente a la API REST de base de datos de Supabase sin pasar por el frontend.',
     pasos: [
-      'Inicia sesión como empleado de la Empresa A y ve a /dashboard.',
-      'Valida que el historial solo liste tus propios registros.',
-      'Inicia sesión como empresa_admin de la Empresa B y ve a /empresa/calculos.',
-      'Comprueba que en ningún caso se listen transacciones de la Empresa A.',
+      'Inicia sesión en la aplicación con una cuenta de empleado de la Empresa A.',
+      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
+      'Busca cualquier petición dirigida a Supabase (ej. que contenga "supabase.co/rest/v1/") y cópiala como fetch (clic derecho -> Copy -> Copy as fetch).',
+      'Ve a la pestaña Console, pega el comando y modifícalo para consultar la tabla `calculos` sin filtros de empresa: cambia la URL del fetch a `https://<tu-subdominio-supabase>.supabase.co/rest/v1/calculos` (elimina parámetros de consulta después de calculos).',
+      'Ejecuta el fetch modificado y observa los registros devueltos.',
     ],
-    esperado: 'Las directivas de Row Level Security (RLS) en la base de datos aíslan por completo los datos, asegurando que un usuario nunca pueda consultar registros ajenos a su organización.',
+    esperado: 'Las directivas de Row Level Security (RLS) en la base de datos se aplican de forma implícita. La respuesta de la base de datos contiene únicamente los registros pertenecientes a la Empresa A del usuario autenticado; no expone ningún registro de la Empresa B.',
   },
   {
     id: 'seg-07', categoria: 'Seguridad', ruta: '/admin/usuarios', critica: false,
@@ -1290,6 +1395,31 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas'>[] = [
       'Comprueba en la consola la respuesta HTTP de ambos intentos.',
     ],
     esperado: 'Ambas peticiones son rechazadas por el backend con un código de estado HTTP 403 Forbidden o 401 Unauthorized (según el estado de la sesión), mostrando el mensaje "No autorizado" o "Inicia sesión para continuar" y protegiendo el recurso.',
+  },
+  {
+    id: 'seg-11', categoria: 'Seguridad', ruta: '/api/profile', critica: true,
+    titulo: 'Escalada de Privilegios — Alteración del rol de perfil (BD Trigger)',
+    descripcion: 'Verifica que el trigger de seguridad `trg_prevent_profile_elevation` en la base de datos bloquee de forma absoluta cualquier intento de un usuario cliente de cambiar su rol a super_admin o asociarse a otra empresa.',
+    pasos: [
+      'Inicia sesión en la aplicación con una cuenta de empleado.',
+      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
+      'Busca cualquier petición dirigida a Supabase (ej. que contenga "supabase.co/rest/v1/profiles") y cópiala como fetch (clic derecho -> Copy -> Copy as fetch).',
+      'Ve a la pestaña Console, pega el comando y modifícalo para realizar un PATCH: cambia el método a "PATCH" y añade un cuerpo `body: JSON.stringify({ rol: "super_admin" })`. Asegúrate de que la URL apunte a `/rest/v1/profiles?user_id=eq.<tu-user-id>`.',
+      'Ejecuta la petición en la consola y observa la respuesta del servidor.',
+    ],
+    esperado: 'La petición de actualización es rechazada por la base de datos. El servidor devuelve un código de estado HTTP 400 o un error SQL controlado con el mensaje exacto: "No tienes permisos para modificar el rol o la empresa de tu perfil."',
+  },
+  {
+    id: 'seg-12', categoria: 'Seguridad', ruta: '/api/profile/update-sensitive', critica: true,
+    titulo: 'Rate limit en Acciones Sensibles — Bloqueo de cambios de perfil (BD)',
+    descripcion: 'Verifica que el sistema de rate limit persistente bloquee cambios de datos sensibles (correo, teléfono o clave) tras acumular 5 intentos fallidos en la última hora por usuario.',
+    pasos: [
+      'Inicia sesión como empleado y ve a la ruta `/settings`.',
+      'En la sección de cambios de datos sensibles (como "Cambiar correo" o "Cambiar teléfono"), intenta realizar actualizaciones introduciendo una contraseña incorrecta.',
+      'Realiza 6 intentos de actualización fallidos consecutivos.',
+      'Observa la respuesta del servidor en la pestaña Network a partir del 6.° intento.',
+    ],
+    esperado: 'El sexto intento es rechazado automáticamente por la API del servidor con un código de estado HTTP 429 (Too Many Requests), mostrando el mensaje de error: "Demasiados intentos fallidos. Acciones sensibles bloqueadas por una hora."',
   },
   {
     id: 'api-06', categoria: 'APIs & Validaciones', ruta: '/api/cotizador/diagnostico', critica: true,
@@ -1487,7 +1617,14 @@ export default function QAPage() {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [tareas, setTareas] = useState<Tarea[]>(() =>
-    TAREAS_INICIALES.map(t => ({ ...t, estado: 'pendiente' as Estado, notas: '' }))
+    TAREAS_INICIALES.map(t => ({
+      ...t,
+      estado: 'pendiente' as Estado,
+      notas: '',
+      roles: getRolesForTaskId(t.id, t.categoria),
+      rolesProbados: [],
+      temasProbados: []
+    }))
   )
   const [expandida, setExpandida] = useState<string | null>(null)
   const [mostrarInforme, setMostrarInforme] = useState(false)
@@ -1513,10 +1650,10 @@ export default function QAPage() {
     try {
       const saved = localStorage.getItem(LS_KEY)
       if (saved) {
-        const parsed = JSON.parse(saved) as { id: string; estado: Estado; notas: string; ts?: number }[]
+        const parsed = JSON.parse(saved) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
         setTareas(prev => prev.map(t => {
           const s = parsed.find(p => p.id === t.id)
-          return s ? { ...t, estado: s.estado, notas: s.notas } : t
+          return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], temasProbados: s.temasProbados || [] } : t
         }))
         const savedTs = parsed[0]?.ts
         if (savedTs) setUltimoGuardado(new Date(savedTs))
@@ -1529,7 +1666,14 @@ export default function QAPage() {
     const ahora = new Date()
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(
-        data.map((t: Tarea) => ({ id: t.id, estado: t.estado, notas: t.notas, ts: ahora.getTime() }))
+        data.map((t: Tarea) => ({
+          id: t.id,
+          estado: t.estado,
+          notas: t.notas,
+          rolesProbados: t.rolesProbados || [],
+          temasProbados: t.temasProbados || [],
+          ts: ahora.getTime()
+        }))
       ))
       setUltimoGuardado(ahora)
       setSegundosRestantes(180)
@@ -1549,10 +1693,53 @@ export default function QAPage() {
   }, [guardar])
 
   const actualizar = (id: string, campo: 'estado' | 'notas', valor: string) =>
-    setTareas(prev => prev.map(t => t.id === id ? { ...t, [campo]: valor } : t))
+    setTareas(prev => {
+      const updated = prev.map(t => t.id === id ? { ...t, [campo]: valor } : t)
+      guardar(updated)
+      return updated
+    })
+
+  const toggleRolProbado = (id: string, rol: RolPrueba) => {
+    setTareas(prev => {
+      const updated = prev.map(t => {
+        if (t.id !== id) return t
+        const curr = t.rolesProbados || []
+        const next = curr.includes(rol)
+          ? curr.filter(r => r !== rol)
+          : [...curr, rol]
+        return { ...t, rolesProbados: next }
+      })
+      guardar(updated)
+      return updated
+    })
+  }
+
+  const toggleTemaProbado = (id: string, tema: TemaPrueba) => {
+    setTareas(prev => {
+      const updated = prev.map(t => {
+        if (t.id !== id) return t
+        const curr = t.temasProbados || []
+        const next = curr.includes(tema)
+          ? curr.filter(r => r !== tema)
+          : [...curr, tema]
+        return { ...t, temasProbados: next }
+      })
+      guardar(updated)
+      return updated
+    })
+  }
 
   const resetear = () => {
-    setTareas(TAREAS_INICIALES.map(t => ({ ...t, estado: 'pendiente' as Estado, notas: '' })))
+    const reseteadas = TAREAS_INICIALES.map(t => ({
+      ...t,
+      estado: 'pendiente' as Estado,
+      notas: '',
+      roles: getRolesForTaskId(t.id, t.categoria),
+      rolesProbados: [],
+      temasProbados: []
+    }))
+    setTareas(reseteadas)
+    guardar(reseteadas)
     setMostrarInforme(false)
   }
 
@@ -1577,7 +1764,7 @@ export default function QAPage() {
   const generarInforme = () => {
     const ahora = new Date().toLocaleString('es-CO', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     const lineas = [
-      `INFORME QA — Calculadora de Reúso V14.8`,
+      `INFORME QA — Calculadora de Reúso`,
       `Fecha: ${ahora}`,
       `${'─'.repeat(60)}`,
       `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${omitidas} omitidas · ${criticas} críticas fallidas`,
@@ -1590,7 +1777,10 @@ export default function QAPage() {
       lineas.push(`\n▸ ${cat.key.toUpperCase()} (${grupo.filter(t => t.estado === 'ok').length}/${grupo.length} ok)`)
       for (const t of grupo) {
         const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'omitir' ? '△' : '○'
+        const rolesStr = (t.rolesProbados || []).map(r => ROL_LABELS[r]).join(', ') || 'Ninguno'
+        const temasStr = (t.temasProbados || []).map(te => te === 'claro' ? 'Día' : 'Noche').join(', ') || 'Ninguno'
         lineas.push(`  ${ic} [${t.critica ? 'CRÍTICA' : 'normal '}] ${t.ruta.padEnd(35)} ${t.titulo}`)
+        lineas.push(`       Perfiles probados: ${rolesStr} | Temas probados: ${temasStr}`)
         if (t.notas.trim()) lineas.push(`       Notas: ${t.notas.trim()}`)
       }
     }
@@ -1664,7 +1854,7 @@ export default function QAPage() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <span className={`text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
-                  QA · V14.8
+                  Auditoría & QA
                 </span>
                 <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>
               </div>
@@ -1913,7 +2103,52 @@ export default function QAPage() {
                             </span>
                           )}
                         </div>
-                        <span className={`text-xs font-mono ${theme.textSecondary} opacity-70`}>{tarea.ruta}</span>
+                        <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
+                          <span className={`${theme.textSecondary} opacity-70`}>{tarea.ruta}</span>
+                          <span className="opacity-30">|</span>
+                          <div className="flex gap-1 flex-wrap items-center">
+                            {tarea.roles.map(rol => {
+                              const checked = (tarea.rolesProbados || []).includes(rol)
+                              return (
+                                <span
+                                  key={rol}
+                                  className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
+                                    checked
+                                      ? 'bg-[#38B98E]/15 border border-[#38B98E]/30 text-[#38B98E]'
+                                      : isDark
+                                      ? 'bg-white/5 border border-white/10 text-white/50'
+                                      : 'bg-black/[0.03] border border-black/10 text-black/50'
+                                  }`}
+                                >
+                                  {rol === 'sin_sesion' ? 'público' : rol.replace('_', ' ')}
+                                </span>
+                              )
+                            })}
+                            <span className="opacity-30 mx-1">|</span>
+                            <span
+                              className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
+                                (tarea.temasProbados || []).includes('claro')
+                                  ? 'bg-amber-500/15 border border-amber-500/30 text-amber-500'
+                                  : isDark
+                                  ? 'bg-white/5 border border-white/10 text-white/30'
+                                  : 'bg-black/[0.03] border border-black/10 text-black/30'
+                              }`}
+                            >
+                              Día
+                            </span>
+                            <span
+                              className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
+                                (tarea.temasProbados || []).includes('oscuro')
+                                  ? 'bg-indigo-500/15 border border-indigo-500/30 text-indigo-500'
+                                  : isDark
+                                  ? 'bg-white/5 border border-white/10 text-white/30'
+                                  : 'bg-black/[0.03] border border-black/10 text-black/30'
+                              }`}
+                            >
+                              Noche
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Botones de estado rápido */}
@@ -1977,6 +2212,76 @@ export default function QAPage() {
                         >
                           <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary}`}>Resultado esperado: </span>
                           <span className={`text-xs ${theme.textPrimary}`}>{tarea.esperado}</span>
+                        </div>
+
+                        {/* Checklist de Perfiles de Prueba */}
+                        <div className="mb-4">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
+                            Checklist de Perfiles (Marca los probados)
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {tarea.roles.map(rol => {
+                              const checked = (tarea.rolesProbados || []).includes(rol)
+                              return (
+                                <button
+                                  key={rol}
+                                  onClick={() => toggleRolProbado(tarea.id, rol)}
+                                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all hover:scale-105 active:scale-95 ${
+                                    checked
+                                      ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
+                                      : isDark
+                                      ? 'bg-[#474747] border-white/10 text-white/60 hover:text-white hover:border-white/20'
+                                      : 'bg-white border-black/10 text-black/60 hover:text-black hover:border-black/20'
+                                  }`}
+                                >
+                                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
+                                    checked ? 'bg-[#38B98E] border-[#38B98E] text-white' : 'border-current'
+                                  }`}>
+                                    {checked && <CheckCircle size={10} weight="fill" />}
+                                  </span>
+                                  <span>{ROL_LABELS[rol]}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Checklist de Temas de Prueba */}
+                        <div className="mb-4">
+                          <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
+                            Temas Probados (Marca los revisados)
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {(['claro', 'oscuro'] as TemaPrueba[]).map(tema => {
+                              const checked = (tarea.temasProbados || []).includes(tema)
+                              return (
+                                <button
+                                  key={tema}
+                                  onClick={() => toggleTemaProbado(tarea.id, tema)}
+                                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all hover:scale-105 active:scale-95 ${
+                                    checked
+                                      ? tema === 'claro'
+                                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-500'
+                                        : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
+                                      : isDark
+                                      ? 'bg-[#474747] border-white/10 text-white/60 hover:text-white hover:border-white/20'
+                                      : 'bg-white border-black/10 text-black/60 hover:text-black hover:border-black/20'
+                                  }`}
+                                >
+                                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
+                                    checked
+                                      ? tema === 'claro'
+                                        ? 'bg-amber-500 border-amber-500 text-white'
+                                        : 'bg-indigo-500 border-indigo-500 text-white'
+                                      : 'border-current'
+                                  }`}>
+                                    {checked && <CheckCircle size={10} weight="fill" />}
+                                  </span>
+                                  <span>{tema === 'claro' ? 'Modo Día (Claro)' : 'Modo Noche (Oscuro)'}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
                         </div>
 
                         {/* Notas */}
@@ -2076,7 +2381,7 @@ export default function QAPage() {
 
             <pre
               className={`flex-1 overflow-y-auto rounded-xl p-4 text-[10px] leading-relaxed whitespace-pre-wrap break-words font-mono border ${theme.textPrimary}`}
-              style={{ background: isDark ? 'rgba(0,0,0,0.25)' : '#F5FAFA', border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)'}` }}
+              style={{ background: 'var(--bg-input)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)'}` }}
             >
               {generarInforme()}
             </pre>

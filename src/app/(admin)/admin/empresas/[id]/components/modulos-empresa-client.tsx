@@ -6,12 +6,12 @@ import { Stack, Warning } from '@phosphor-icons/react'
 import type { ModuloConActivo } from '@/types'
 
 const C = {
-  brand: '#00827C',
-  dark: '#1A3A38',
-  mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)',
-  light: 'rgba(0,130,124,0.06)',
-  warning: '#F6BF3E',
+  brand: 'var(--color-brand)',
+  dark: 'var(--text-primary)',
+  mid: 'var(--text-secondary)',
+  border: 'var(--border)',
+  light: 'var(--bg-hover)',
+  warning: 'var(--color-warning)',
 }
 
 export function ModulosEmpresaClient({
@@ -90,8 +90,8 @@ export function ModulosEmpresaClient({
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
         }}>
           <div style={{
-            background: '#fff', borderRadius: 14, padding: 24, maxWidth: 380, width: '90%',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+            background: 'var(--bg-card)', borderRadius: 14, padding: 24, maxWidth: 380, width: '90%',
+            boxShadow: 'var(--shadow)', border: `1px solid ${C.border}`,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <Warning size={22} color={C.warning} weight="duotone" />
@@ -114,7 +114,7 @@ export function ModulosEmpresaClient({
                 onClick={() => setPendiente(null)}
                 style={{
                   flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                  border: `1px solid ${C.border}`, background: '#fff', color: C.dark, cursor: 'pointer',
+                  border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.dark, cursor: 'pointer',
                 }}
               >
                 Cancelar
@@ -139,7 +139,7 @@ export function ModulosEmpresaClient({
             display: 'flex', alignItems: 'center', gap: 12,
             padding: '10px 14px', borderRadius: 10,
             border: `1px solid ${m.activo_en_empresa ? 'rgba(0,130,124,0.25)' : C.border}`,
-            background: m.activo_en_empresa ? C.light : '#fff',
+            background: m.activo_en_empresa ? C.light : 'var(--bg-card)',
             transition: 'all 0.2s',
           }}>
             <Stack size={16} color={m.activo_en_empresa ? C.brand : C.mid} />
@@ -155,7 +155,7 @@ export function ModulosEmpresaClient({
                 cursor: toggling === m.id ? 'wait' : 'pointer',
                 border: 'none',
                 background: m.activo_en_empresa ? C.brand : 'rgba(0,130,124,0.10)',
-                color: m.activo_en_empresa ? '#fff' : C.brand,
+                color: m.activo_en_empresa ? 'var(--text-on-brand)' : C.brand,
                 transition: 'all 0.2s',
                 opacity: toggling === m.id ? 0.6 : 1,
               }}

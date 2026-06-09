@@ -225,7 +225,7 @@ export default function ManualDisenoPage() {
   ]
 
   return (
-    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#474747] text-white' : 'bg-white text-[#474747]'}`} style={{ overflowX: 'clip' }}>
+    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#000000] text-white' : 'bg-white text-[#474747]'}`} style={{ overflowX: 'clip' }}>
       
       {/* ESTILOS GLOBALES DE NAVEGACIÓN */}
       <style jsx global>{`
@@ -357,7 +357,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de color</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Profundo (#474747)</strong> es el fondo más oscuro permitido. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Profundo</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Profundo (#000000)</strong> es el fondo más oscuro permitido. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Profundo</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
           
           <div className="space-y-16">
             
@@ -366,7 +366,7 @@ export default function ManualDisenoPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
                   { name: 'Blanco Puro', hex: '#FFFFFF', border: true },
-                  { name: 'Negro Profundo', hex: '#474747' },
+                  { name: 'Negro Profundo', hex: '#000000' },
                   { name: 'Verde Sostenible', hex: '#00827C' },
                 ].map(color => (
                   <div key={color.name} className="flex flex-col gap-4">

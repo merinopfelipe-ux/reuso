@@ -97,22 +97,31 @@ export async function GET(request: NextRequest) {
       }
       case 'co2_por_modulo': {
         const { data: cats } = await c.from('categorias')
-          .select('id, modulo_id, modulos!categorias_modulo_id_fkey(nombre)')
-        const catMap = new Map(((cats ?? []) as unknown as { id: string; modulo_id: string | null; modulos: { nombre: string } | null }[]).map((c) => [c.id, { modulo_id: c.modulo_id, nombre: c.modulos?.nombre ?? 'Sin módulo' }]))
+          .select('nombre, modulos!categorias_modulo_id_fkey(nombre)')
+        interface CatRow {
+          nombre: string
+          modulos: { nombre: string } | null
+        }
+        const catMap = new Map(((cats ?? []) as unknown as CatRow[]).map((cat) => [cat.nombre, cat.modulos?.nombre ?? 'Sin módulo']))
 
         const { data: calcData } = await c.from('calculos')
-          .select('detalle_json, total_co2')
+          .select('detalle_json')
         const moduloMap = new Map<string, { nombre: string; total_co2: number }>()
-        for (const calc of (calcData ?? []) as { detalle_json: Record<string, unknown>; total_co2: number }[]) {
-          const detalles = calc.detalle_json as Record<string, unknown>
-          const items = detalles?.items as { categoria_id?: string }[] | undefined
-          if (!items?.length) continue
-          const catId = items[0]?.categoria_id
-          if (!catId) continue
-          const cat = catMap.get(catId)
-          const key = cat?.nombre ?? 'Sin módulo'
-          const prev = moduloMap.get(key) ?? { nombre: key, total_co2: 0 }
-          moduloMap.set(key, { ...prev, total_co2: prev.total_co2 + (calc.total_co2 ?? 0) })
+        for (const calc of (calcData ?? []) as { detalle_json: Record<string, unknown> | null }[]) {
+          const detalles = calc.detalle_json
+          if (!detalles) continue
+          for (const item of Object.values(detalles)) {
+            if (typeof item !== 'object' || item === null) continue
+            const typedItem = item as Record<string, unknown>
+            if (!('categoria' in typedItem)) continue
+            const catName = typedItem.categoria as string
+            const co2 = (typedItem.co2 as number) ?? 0
+            if (!catName) continue
+
+            const key = catMap.get(catName) ?? 'Sin módulo'
+            const prev = moduloMap.get(key) ?? { nombre: key, total_co2: 0 }
+            moduloMap.set(key, { ...prev, total_co2: prev.total_co2 + co2 })
+          }
         }
         data = Array.from(moduloMap.values()).sort((a, b) => b.total_co2 - a.total_co2)
         break

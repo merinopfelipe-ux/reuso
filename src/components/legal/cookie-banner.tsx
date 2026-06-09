@@ -176,14 +176,16 @@ export function CookieBanner() {
         maxWidth: 700,
         borderRadius: 20,
         overflow: 'hidden',
-        boxShadow: '0 8px 40px rgba(0,130,124,0.14), 0 2px 8px rgba(0,0,0,0.08)',
+        boxShadow: '0 8px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08)',
+        border: '1px solid var(--border)',
+        background: 'var(--bg-card)',
       }}
     >
       {/* Franja decorativa superior */}
-      <div style={{ height: 4, background: 'linear-gradient(90deg, #00827C 0%, #D6F391 50%, #00827C 100%)' }} />
+      <div style={{ height: 4, background: 'linear-gradient(90deg, var(--color-brand) 0%, var(--color-pistacho) 50%, var(--color-brand) 100%)' }} />
 
       {step === 'banner' && (
-        <div style={{ background: '#FFFFFF', padding: '20px 24px' }}>
+        <div style={{ background: 'var(--bg-card)', padding: '20px 24px' }}>
           {/* Encabezado */}
           <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 14 }}>
             <div
@@ -191,30 +193,30 @@ export function CookieBanner() {
                 width: 40,
                 height: 40,
                 borderRadius: 12,
-                background: 'rgba(0,130,124,0.10)',
+                background: 'var(--color-brand-light)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
               }}
             >
-              <Cookie size={20} color="#00827C" />
+              <Cookie size={20} color="var(--color-brand)" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: '#1a1a1a', lineHeight: 1.3 }}>
+              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                 {t.heading}
               </p>
-              <p style={{ margin: 0, fontSize: 13, color: '#555', lineHeight: 1.65 }}>
+              <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
                 {esColombia ? (
                   lang === 'ES'
                     ? 'Aceptamos cookies esenciales, funcionales y analíticas por defecto para optimizar la plataforma en Colombia bajo la Ley 1581 de 2012. Puedes personalizarlas o revocarlas aquí:'
                     : 'We accept essential, functional and analytical cookies by default to optimize the platform in Colombia under Law 1581 of 2012. You can customize or revoke them here:'
                 ) : t.text}{' '}
-                <Link href="/legal/privacidad" style={{ color: '#00827C', fontWeight: 600, textDecoration: 'underline' }}>
+                <Link href="/legal/privacidad" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
                   {t.privacidad}
                 </Link>
                 {' · '}
-                <Link href="/legal/cookies" style={{ color: '#00827C', fontWeight: 600, textDecoration: 'underline' }}>
+                <Link href="/legal/cookies" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
                   {t.politica}
                 </Link>
               </p>
@@ -238,10 +240,10 @@ export function CookieBanner() {
       )}
 
       {step === 'personalizar' && (
-        <div style={{ background: '#FFFFFF', padding: '20px 24px' }}>
+        <div style={{ background: 'var(--bg-card)', padding: '20px 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, justifyContent: 'space-between' }}>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: '#1a1a1a' }}>{t.personalizarTitle}</p>
-            <button onClick={() => setStep('banner')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#888' }}>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{t.personalizarTitle}</p>
+            <button onClick={() => setStep('banner')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-secondary)' }}>
               <X size={16} />
             </button>
           </div>
@@ -305,16 +307,16 @@ function ToggleRow({
         gap: 12,
         padding: '10px 12px',
         borderRadius: 10,
-        background: locked ? 'rgba(0,130,124,0.04)' : 'rgba(0,0,0,0.02)',
-        border: '1px solid rgba(0,130,124,0.10)',
+        background: locked ? 'var(--color-brand-light)' : 'var(--bg-hover)',
+        border: '1px solid var(--border)',
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#1a1a1a' }}>{label}</span>
-          {locked && <Lock size={12} color="#00827C" />}
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</span>
+          {locked && <Lock size={12} color="var(--color-brand)" />}
         </div>
-        <span style={{ fontSize: 12, color: '#666', lineHeight: 1.5 }}>{desc}</span>
+        <span style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{desc}</span>
       </div>
       {/* Toggle */}
       <button
@@ -328,7 +330,7 @@ function ToggleRow({
           height: 22,
           borderRadius: 11,
           border: 'none',
-          background: checked ? '#00827C' : '#ddd',
+          background: checked ? 'var(--color-brand)' : 'var(--border)',
           cursor: locked ? 'not-allowed' : 'pointer',
           position: 'relative',
           transition: 'background 0.2s',
@@ -359,14 +361,14 @@ const btnPrimary: React.CSSProperties = {
   gap: 6,
   padding: '8px 18px',
   borderRadius: 10,
-  background: '#00827C',
-  color: '#fff',
+  background: 'var(--color-brand)',
+  color: 'var(--text-on-brand)',
   fontSize: 13,
   fontWeight: 700,
   border: 'none',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
-  boxShadow: '0 2px 8px rgba(0,130,124,0.25)',
+  boxShadow: '0 2px 8px var(--border-light)',
 }
 
 const btnSecondary: React.CSSProperties = {
@@ -376,10 +378,10 @@ const btnSecondary: React.CSSProperties = {
   padding: '8px 16px',
   borderRadius: 10,
   background: 'transparent',
-  color: '#00827C',
+  color: 'var(--color-brand)',
   fontSize: 13,
   fontWeight: 600,
-  border: '1.5px solid rgba(0,130,124,0.40)',
+  border: '1.5px solid var(--color-brand)',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
 }
@@ -391,10 +393,10 @@ const btnGhost: React.CSSProperties = {
   padding: '8px 14px',
   borderRadius: 10,
   background: 'transparent',
-  color: '#666',
+  color: 'var(--text-secondary)',
   fontSize: 13,
   fontWeight: 500,
-  border: '1px solid rgba(0,0,0,0.12)',
+  border: '1px solid var(--border)',
   cursor: 'pointer',
   whiteSpace: 'nowrap',
 }

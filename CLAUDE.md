@@ -1,5 +1,5 @@
 # CLAUDE.MD — Calculadora de Reúso
-V14.8 (2026-06-05) · reuso.lurdes.co · Grupo MLP S.A.S
+V14.9 (2026-06-09) · reuso.lurdes.co · Grupo MLP S.A.S
 VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
 ## 5 DIRECTRICES IRRENUNCIABLES
@@ -87,12 +87,20 @@ VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 5. Sin alucinaciones (enumera valores permitidos) and sin stack traces de BD en producción (usar mensajes genéricos).
 6. Rate limiting (endpoints públicos 3/min con `src/lib/rate-limit.ts`). Parámetros query validados con Zod.
 
-## PIVOT DPP — COMPLETO (V14.0 → V14.8)
+## AUDITORÍA V14.9 — COMPLETA (2026-06-09)
+22 bugs corregidos: 4 críticos (race conditions, double-submit, dark mode), 8 medios (rate limit persistente, máquina de estados, hash DPP, invitaciones expiradas, CASCADE FK), 10 bajos (error boundaries, env vars, beforeunload, responsive). Migración 026 ejecutada ✓.
+
+## REGLA GENERAL PDF→TXT (V14.9)
+Todo PDF subido a la plataforma se convierte automáticamente a TXT estructurado (formato Benchmark) antes de almacenarse. Aplica a `POST /api/dpp/ingesta/subir`. La IA procesa texto plano en lugar de binario de visión → ahorra tokens. Utilidad: `src/lib/pdf-to-txt.ts`. Fallback automático si la conversión falla.
+
+## PIVOT DPP — COMPLETO (V14.0 → V14.9)
 Pivot DPP completo. La Calculadora de Reúso ahora vende confianza, no solo cumplimiento. Motor CO₂ intacto, envuelto en pasaporte digital con métricas financieras (E-ROI, TCO), ingesta IA (Gemini→Qwen→Groq), verificación pública por QR y narrativa automática en voz activa para CFO.
 
 | Bloque | Descripción | Estado |
 |---|---|---|
 | **DPP** | **Pasaporte Digital de Producto V1** | **✓ Completo** |
+| **Auditoría** | **22 bugs críticos/medios/bajos** | **✓ Completo** |
+| **PDF→TXT** | **Conversión universal en ingesta DPP** | **✓ Completo** |
 
 ## MÓDULO COTIZADOR INTELIGENTE + CRM — COMPLETO (V6)
 Objetivo: CRM comercial con diagnóstico de muebles por IA visual. El cliente manda foto, la IA clasifica (viable, tipo, oficios), el motor determinista calcula precio + CO2, el comercial valida con toggles y envía propuesta web al cliente. Seguimiento de embudo y aprendizaje continuo.

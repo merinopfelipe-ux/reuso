@@ -64,10 +64,10 @@ export default function PanelCotizadorPage() {
   const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains('dark'))
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
     check()
     const obs = new MutationObserver(check)
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     return () => obs.disconnect()
   }, [])
 
@@ -109,12 +109,12 @@ export default function PanelCotizadorPage() {
     )
   })
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/60' : 'text-[#474747]/60'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
 
   return (
-    <div className={`min-h-screen pb-20 ${isDark ? 'bg-[#474747]' : 'bg-[#F5FAFA]'}`}>
+    <div className="min-h-screen pb-20 bg-[var(--bg-primary)]">
       <div className="max-w-5xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <AdminPageHeader titulo="Cotizaciones" />
@@ -148,7 +148,7 @@ export default function PanelCotizadorPage() {
 
         {/* Filtros + búsqueda */}
         <div className={`rounded-[12px] border p-4 mb-4 flex flex-col sm:flex-row gap-3 ${cardBg}`}>
-          <div className={`flex items-center gap-2 flex-1 rounded-[8px] border px-3 py-2.5 ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+          <div className="flex items-center gap-2 flex-1 rounded-[8px] border border-[var(--border)] px-3 py-2.5 bg-[var(--bg-input)]">
             <MagnifyingGlass size={16} className={ts} />
             <input
               className={`flex-1 bg-transparent text-sm outline-none ${tp} placeholder:opacity-40`}
@@ -157,7 +157,7 @@ export default function PanelCotizadorPage() {
               onChange={e => setBusqueda(e.target.value)}
             />
           </div>
-          <div className={`flex items-center gap-2 rounded-[8px] border px-3 py-2.5 ${isDark ? 'border-white/10 bg-[#5A5A5A]' : 'border-[#00827C]/10 bg-[#F5FAFA]'}`}>
+          <div className="flex items-center gap-2 rounded-[8px] border border-[var(--border)] px-3 py-2.5 bg-[var(--bg-input)]">
             <Funnel size={16} className={ts} />
             <select
               className={`bg-transparent text-sm outline-none ${tp} cursor-pointer`}
@@ -216,19 +216,19 @@ export default function PanelCotizadorPage() {
 
 // ── Subcomponentes ─────────────────────────────────────────────────────────────
 
-function KpiCard({ icon, label, value, isDark }: { icon: React.ReactNode; label: string; value: string; isDark: boolean }) {
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/10'
+function KpiCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string; isDark: boolean }) {
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
   return (
     <div className={`rounded-[12px] border p-4 ${cardBg}`}>
       <div className="flex items-center gap-2 mb-1">{icon}
-        <span className={`text-xs ${isDark ? 'text-white/50' : 'text-[#474747]/50'}`}>{label}</span>
+        <span className="text-xs text-[var(--text-placeholder)]">{label}</span>
       </div>
-      <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{value}</p>
+      <p className="text-lg font-bold text-[var(--text-primary)]">{value}</p>
     </div>
   )
 }
 
-function TabBtn({ label, value, active, onClick, isDark, count }: {
+function TabBtn({ label, value, active, onClick, count }: {
   label: string; value: string; active: string; onClick: (v: string) => void; isDark: boolean; count: number
 }) {
   const isActive = active === value
@@ -238,7 +238,7 @@ function TabBtn({ label, value, active, onClick, isDark, count }: {
       className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
         isActive
           ? 'bg-[#00827C] text-white'
-          : isDark ? 'bg-white/10 text-white/60 hover:bg-white/15' : 'bg-white border border-[#00827C]/10 text-[#474747]/60 hover:bg-[#F5FAFA]'
+          : 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
       }`}
     >
       {label} {count > 0 && <span className={`ml-1 opacity-70`}>{count}</span>}
@@ -246,10 +246,10 @@ function TabBtn({ label, value, active, onClick, isDark, count }: {
   )
 }
 
-function CotizacionCard({ cot, isDark, onClick }: { cot: Cotizacion; isDark: boolean; onClick: () => void }) {
-  const cardBg = isDark ? 'bg-[#525252] border-white/10 hover:bg-[#5A5A5A]' : 'bg-white border-[#00827C]/10 hover:shadow-sm'
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/60' : 'text-[#474747]/60'
+function CotizacionCard({ cot, onClick }: { cot: Cotizacion; isDark: boolean; onClick: () => void }) {
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)] hover:bg-[var(--bg-hover)]'
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
 
   const estadoInfo = ESTADOS.find(e => e.key === cot.estado)
   const dias = diasDesde(cot.updated_at)

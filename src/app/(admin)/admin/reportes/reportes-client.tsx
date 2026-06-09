@@ -4,8 +4,8 @@ import { useState } from 'react'
 import { FileText, Download, CircleNotch, Buildings, TrendUp, ChartBar, Clock, Users, Headphones, Stack } from '@phosphor-icons/react'
 
 const C = {
-  brand: '#00827C', dark: '#1A3A38', mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)', light: 'rgba(0,130,124,0.06)',
+  brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
+  border: 'var(--border)', light: 'var(--bg-hover)',
 }
 
 const REPORTES = [
@@ -68,18 +68,18 @@ export function ReportesClient() {
     <div style={{ paddingBottom: 40 }}>
 
       {/* Filtros de período */}
-      <div style={{ background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 20px', marginBottom: 24, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 12, padding: '16px 20px', marginBottom: 24, display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: C.dark }}>Período (aplica a leads y tickets):</span>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
           <div>
             <label style={{ fontSize: 11, color: C.mid, display: 'block', marginBottom: 3 }}>Desde</label>
             <input type="date" value={desde} onChange={e => setDesde(e.target.value)}
-              style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none' }} />
+              style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', background: 'var(--bg-input)' }} />
           </div>
           <div>
             <label style={{ fontSize: 11, color: C.mid, display: 'block', marginBottom: 3 }}>Hasta</label>
             <input type="date" value={hasta} onChange={e => setHasta(e.target.value)}
-              style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none' }} />
+              style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', background: 'var(--bg-input)' }} />
           </div>
         </div>
       </div>
@@ -93,9 +93,9 @@ export function ReportesClient() {
           const cargandoEste = cargando === r.tipo
           return (
             <div key={r.tipo} style={{
-              background: '#fff', border: `1px solid ${C.border}`, borderRadius: 12,
+              background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 12,
               padding: 20, display: 'flex', flexDirection: 'column', gap: 12,
-              boxShadow: '0 2px 8px rgba(0,130,124,0.05)',
+              boxShadow: 'var(--shadow)',
             }}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: C.light, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -112,7 +112,7 @@ export function ReportesClient() {
                 style={{
                   padding: '8px 14px', borderRadius: 8, border: 'none',
                   background: cargandoEste ? C.light : C.brand,
-                  color: cargandoEste ? C.brand : '#fff',
+                  color: cargandoEste ? C.brand : 'var(--text-on-brand)',
                   fontSize: 12, fontWeight: 700, cursor: cargando ? 'wait' : 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
                   transition: 'all 0.2s',

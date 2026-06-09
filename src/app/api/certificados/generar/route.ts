@@ -7,20 +7,7 @@ import type { DesgloseCategoría } from '@/lib/pdf/generar-pdf'
 import { checkLimiteCertificados, checkLimiteInformes } from '@/lib/plan-limits'
 import type { Plan } from '@/types'
 import crypto from 'crypto'
-
-// ── Rate limiting en memoria (5 generaciones / hora / usuario) ──
-const rateLimitMap = new Map<string, number[]>()
-const RATE_LIMIT = 20
-const WINDOW_MS = 60 * 60 * 1000
-
-function checkRateLimit(userId: string): boolean {
-  const now = Date.now()
-  const hits = (rateLimitMap.get(userId) ?? []).filter(t => now - t < WINDOW_MS)
-  if (hits.length >= RATE_LIMIT) return false
-  hits.push(now)
-  rateLimitMap.set(userId, hits)
-  return true
-}
+import { rateLimit } from '@/lib/rate-limit'
 
 // ── Validación ───────────────────────────────────────────────────
 const schema = z.discriminatedUnion('tipo', [
@@ -49,7 +36,8 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
 
   // ── Rate limit ────────────────────────────────────────────────
-  if (!checkRateLimit(user.id)) {
+  const allowed = await rateLimit(`certificados_generar:${user.id}`, 5, 60 * 60 * 1000)
+  if (!allowed) {
     return NextResponse.json(
       { error: 'Límite alcanzado. Genera hasta 5 documentos por hora.' },
       { status: 429 }
@@ -264,7 +252,10 @@ export async function POST(req: NextRequest) {
 
   if (insertError || !certRow) {
     // El PDF ya existe en storage pero el registro falló — limpiar
-    await adminClient.storage.from('documentos').remove([storagePath])
+    const { error: removeError } = await adminClient.storage.from('documentos').remove([storagePath])
+    if (removeError) {
+      console.error('[cert/generar] PDF huérfano en storage — limpieza fallida:', storagePath, removeError)
+    }
     return NextResponse.json({ error: 'Error creando el registro del documento.' }, { status: 500 })
   }
 

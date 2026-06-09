@@ -21,9 +21,9 @@ CREATE POLICY "cotizador_read_empresa"
   ON storage.objects FOR SELECT TO authenticated
   USING (
     bucket_id = 'cotizador' AND
-    (storage.foldername(name))[2] = (
+    lower((storage.foldername(name))[2]) = lower((
       SELECT empresa_id::text FROM profiles WHERE user_id = auth.uid()
-    )
+    ))
   );
 
 CREATE POLICY "cotizador_super_admin_all"
@@ -53,9 +53,9 @@ CREATE POLICY "dpp_read_empresa"
       -- Ingestas: dpp/ingestas/{empresa_id}/...
       (
         (storage.foldername(name))[2] = 'ingestas' AND
-        (storage.foldername(name))[3] = (
+        lower((storage.foldername(name))[3]) = lower((
           SELECT empresa_id::text FROM profiles WHERE user_id = auth.uid()
-        )
+        ))
       )
       OR
       -- Imágenes de activos: dpp/imagenes/{timestamp}.webp
@@ -111,15 +111,15 @@ CREATE POLICY "documentos_read_propietario"
       -- Documentos de empresa: solo miembros de esa empresa
       (
         (storage.foldername(name))[2] = 'empresa' AND
-        (storage.foldername(name))[3] = (
+        lower((storage.foldername(name))[3]) = lower((
           SELECT empresa_id::text FROM profiles WHERE user_id = auth.uid()
-        )
+        ))
       )
       OR
       -- Documentos personales: solo el propio usuario
       (
         (storage.foldername(name))[2] = 'usuario' AND
-        (storage.foldername(name))[3] = auth.uid()::text
+        lower((storage.foldername(name))[3]) = lower(auth.uid()::text)
       )
     )
   );

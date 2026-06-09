@@ -15,12 +15,16 @@ export async function GET(
   const { empresa_id, adminClient } = auth
 
   // Verificar que la cotización pertenece a la empresa
-  const { data: cot } = await adminClient
+  const { data: cot, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
     .select('id')
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .single()
+
+  if (fetchError) {
+    return NextResponse.json({ error: 'Error al verificar la cotización.' }, { status: 500 })
+  }
 
   if (!cot) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })

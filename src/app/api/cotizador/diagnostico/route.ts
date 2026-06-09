@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 2. Rate limit — 5 diagnósticos por usuario por minuto
-  const allowed = rateLimit(`cotizador_diag_${auth.user_id}`, 5, 60_000)
+  const allowed = await rateLimit(`cotizador_diag:${auth.user_id}`, 5, 60_000)
   if (!allowed) {
     return NextResponse.json(
       { error: 'Demasiadas solicitudes. Espera un momento antes de analizar otra foto.' },
@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'URL de imagen inválida.' }, { status: 400 })
     }
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 8_000)
+    const timeoutId = setTimeout(() => controller.abort(), 5_000)
     try {
       const imgRes = await fetch(imagen_url!, { signal: controller.signal })
       clearTimeout(timeoutId)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { pdfATexto } from '@/lib/pdf-to-txt'
 
 const TIPOS_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'] as const
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
@@ -66,12 +67,34 @@ export async function POST(request: NextRequest) {
   }
 
   const nombreSanitizado = archivo.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100)
-  const storagePath = `dpp/ingestas/${activo.empresa_id}/${activo_id}/${Date.now()}_${nombreSanitizado}`
+  const baseTimestamp = Date.now()
 
   const buffer = Buffer.from(await archivo.arrayBuffer())
+
+  // Si es PDF → convertir a TXT estructurado para ahorrar tokens de IA
+  let storedBuffer: Buffer = buffer
+  let storedContentType: string = archivo.type
+  let storedNombreSanitizado = nombreSanitizado
+  let displayNombre = archivo.name.slice(0, 255)
+
+  if (archivo.type === 'application/pdf') {
+    try {
+      const txtContent = await pdfATexto(buffer, archivo.name)
+      storedBuffer = Buffer.from(txtContent, 'utf-8')
+      storedContentType = 'text/plain'
+      storedNombreSanitizado = nombreSanitizado.replace(/\.pdf$/i, '') + '.txt'
+      displayNombre = archivo.name.replace(/\.pdf$/i, '') + '.txt'
+    } catch (convErr) {
+      console.error('[dpp/ingesta/subir] Conversión PDF→TXT fallida, guardando PDF original:', convErr)
+      // fallback: guardar PDF original para no perder el documento
+    }
+  }
+
+  const storagePath = `dpp/ingestas/${activo.empresa_id}/${activo_id}/${baseTimestamp}_${storedNombreSanitizado}`
+
   const { error: uploadError } = await adminClient.storage
     .from('dpp')
-    .upload(storagePath, buffer, { contentType: archivo.type, upsert: false })
+    .upload(storagePath, storedBuffer, { contentType: storedContentType, upsert: false })
 
   if (uploadError) {
     return NextResponse.json({ error: 'Error al subir el archivo. Intenta de nuevo.' }, { status: 500 })
@@ -84,7 +107,7 @@ export async function POST(request: NextRequest) {
       empresa_id: activo.empresa_id,
       tipo,
       archivo_url: storagePath,
-      nombre_archivo: archivo.name.slice(0, 255),
+      nombre_archivo: displayNombre,
       estado_ocr: 'pendiente',
     })
     .select('id, tipo, nombre_archivo, estado_ocr, created_at')

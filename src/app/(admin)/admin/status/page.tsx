@@ -178,10 +178,10 @@ export default function AdminStatusPage() {
     }
   }
 
-  const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/70' : 'text-[#474747]/70'
-  const cardBg = isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/12'
-  const inputStyle = `w-full px-3 py-2 rounded-[8px] border outline-none text-sm ${isDark ? 'bg-[#5A5A5A] border-white/10 text-white' : 'bg-white border-[#00827C]/12 text-[#474747]'}`
+  const tp = 'text-[var(--text-primary)]'
+  const ts = 'text-[var(--text-secondary)]'
+  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const inputStyle = `w-full px-3 py-2 rounded-[8px] border outline-none text-sm bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]`
 
   const activos = incidentes.filter(i => i.estado !== 'resuelto')
   const historicos = incidentes.filter(i => i.estado === 'resuelto')

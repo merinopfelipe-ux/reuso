@@ -19,12 +19,16 @@ export async function POST(
   const ip = getIp(request)
 
   // Verificar que la cotización pertenece a esta empresa
-  const { data: cot } = await adminClient
+  const { data: cot, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
     .select('id, estado, enlace_publico_token, codigo_cotizacion')
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .single()
+
+  if (fetchError) {
+    return NextResponse.json({ error: 'Error al verificar la cotización.' }, { status: 500 })
+  }
 
   if (!cot) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })

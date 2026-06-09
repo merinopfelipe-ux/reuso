@@ -10,7 +10,8 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    if (!rateLimit(`status_sub_${getIp(request)}`, 3, 60_000)) {
+    const allowed = await rateLimit(`status_sub:${getIp(request)}`, 3, 60_000)
+    if (!allowed) {
       return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta en un momento.' }, { status: 429 })
     }
 

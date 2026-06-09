@@ -7,12 +7,12 @@ import type { ModuloConCategorias } from '@/types'
 import * as PhosphorIcons from '@phosphor-icons/react'
 
 const C = {
-  brand: '#00827C',
-  dark: '#1A3A38',
-  mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)',
-  light: 'rgba(0,130,124,0.06)',
-  hover: 'rgba(0,130,124,0.08)',
+  brand: 'var(--color-brand)',
+  dark: 'var(--text-primary)',
+  mid: 'var(--text-secondary)',
+  border: 'var(--border)',
+  light: 'var(--bg-hover)',
+  hover: 'var(--bg-hover)',
 }
 
 function LucidePreview({ name }: { name: string }) {
@@ -24,14 +24,14 @@ function LucidePreview({ name }: { name: string }) {
 const btnPrimary: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
   padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-  cursor: 'pointer', border: 'none', background: C.brand, color: '#fff',
+  cursor: 'pointer', border: 'none', background: C.brand, color: 'var(--text-on-brand)',
   transition: 'background 0.2s',
 }
 
 const btnSecondary: React.CSSProperties = {
   display: 'inline-flex', alignItems: 'center', gap: 6,
   padding: '6px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-  cursor: 'pointer', border: `1px solid ${C.border}`, background: '#fff',
+  cursor: 'pointer', border: `1px solid ${C.border}`, background: 'var(--bg-primary)',
   color: C.dark, transition: 'background 0.2s',
 }
 
@@ -168,10 +168,10 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {modulos.map((m) => (
           <div key={m.id} style={{
-            background: '#fff', border: `1px solid ${C.border}`,
+            background: 'var(--bg-card)', border: `1px solid ${C.border}`,
             borderRadius: 12, padding: 20,
             opacity: m.activo ? 1 : 0.55,
-            boxShadow: '0 2px 8px rgba(0,130,124,0.06)',
+            boxShadow: 'var(--shadow)',
           }}>
             {editandoId === m.id ? (
               /* Modo edición */
@@ -199,7 +199,7 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
                 />
                 {error && <p style={{ fontSize: 12, color: '#FF5E4B', marginBottom: 6 }}>{error}</p>}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button style={{ ...btnSecondary, background: C.brand, color: '#fff', border: 'none' }} disabled={guardando} onClick={() => guardarEdicion(m.id)}>
+                  <button style={{ ...btnSecondary, background: C.brand, color: 'var(--text-on-brand)', border: 'none' }} disabled={guardando} onClick={() => guardarEdicion(m.id)}>
                     <Check size={13} /> Guardar
                   </button>
                   <button style={btnSecondary} onClick={() => setEditandoId(null)}>

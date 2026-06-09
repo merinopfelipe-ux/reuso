@@ -97,6 +97,85 @@ function expandirCampos(raw: unknown): DatosExpandidos {
   }
 }
 
+// ── IA 1-texto: Gemini — extractor de texto puro (PDF ya convertido a TXT) ───
+
+const GEMINI_RESPONSE_SCHEMA = {
+  type: 'OBJECT',
+  properties: {
+    sum: { type: 'STRING', description: 'Un resumen de 1 línea del documento.' },
+    dtype: { type: 'STRING', description: 'El tipo de documento.' },
+    fields: {
+      type: 'ARRAY',
+      description: 'Campos de datos extraídos del documento.',
+      items: {
+        type: 'OBJECT',
+        properties: {
+          orig: { type: 'STRING', description: 'Nombre del campo original en el documento.' },
+          val:  { type: 'STRING', description: 'Valor extraído como texto.' },
+          num:  { type: 'NUMBER', description: 'Valor convertido a número, o null.' },
+          unit: { type: 'STRING', description: 'Unidad de medida (COP, USD, kg, kWh, etc.) o null.' },
+          conf: { type: 'NUMBER', description: 'Nivel de confianza de la extracción entre 0.0 y 1.0.' },
+          dest: { type: 'STRING', description: 'El campo de destino circular o "otro".' },
+        },
+        required: ['orig', 'val', 'num', 'unit', 'conf', 'dest'],
+      },
+    },
+  },
+  required: ['sum', 'dtype', 'fields'],
+}
+
+async function llamarGeminiTexto(textoDoc: string, system: string, user: string): Promise<IAResult> {
+  const key = process.env.GEMINI_KEY
+  if (!key) return { ok: false, json: null, proveedor: 'gemini' }
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: system }] },
+        contents: [{ role: 'user', parts: [{ text: `${user}\n\nDocumento:\n${textoDoc}` }] }],
+        generationConfig: {
+          maxOutputTokens: 512, temperature: 0,
+          responseMimeType: 'application/json',
+          responseSchema: GEMINI_RESPONSE_SCHEMA,
+        },
+      }),
+    })
+    if (!res.ok) return { ok: false, json: null, proveedor: 'gemini' }
+    const data = await res.json() as { candidates?: { content: { parts: { text: string }[] } }[] }
+    const txt = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
+    const parsed = parsearJSON(txt)
+    return parsed ? { ok: true, json: parsed, proveedor: 'gemini' } : { ok: false, json: null, proveedor: 'gemini' }
+  } catch { return { ok: false, json: null, proveedor: 'gemini' } }
+}
+
+// ── IA 2-texto: OpenRouter — fallback texto puro ─────────────────────────────
+
+async function llamarOpenRouterTexto(textoDoc: string, system: string, user: string): Promise<IAResult> {
+  const key = process.env.OR_KEY
+  if (!key) return { ok: false, json: null, proveedor: 'openrouter' }
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'qwen/qwen2.5-72b-instruct',
+        max_tokens: 512, temperature: 0,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user',   content: `${user}\n\nDocumento:\n${textoDoc}` },
+        ],
+      }),
+    })
+    if (!res.ok) return { ok: false, json: null, proveedor: 'openrouter' }
+    const data = await res.json() as { choices?: { message: { content: string } }[] }
+    const txt = data.choices?.[0]?.message?.content ?? ''
+    const parsed = parsearJSON(txt)
+    return parsed ? { ok: true, json: parsed, proveedor: 'openrouter' } : { ok: false, json: null, proveedor: 'openrouter' }
+  } catch { return { ok: false, json: null, proveedor: 'openrouter' } }
+}
+
 // ── IA 1: Gemini 2.0 Flash — extractor visual primario ───────────────────────
 
 async function llamarGemini(base64Data: string, mimeType: string, system: string, user: string): Promise<IAResult> {
@@ -121,30 +200,7 @@ async function llamarGemini(base64Data: string, mimeType: string, system: string
           maxOutputTokens: 512,
           temperature: 0,
           responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'OBJECT',
-            properties: {
-              sum: { type: 'STRING', description: 'Un resumen de 1 línea del documento.' },
-              dtype: { type: 'STRING', description: 'El tipo de documento.' },
-              fields: {
-                type: 'ARRAY',
-                description: 'Campos de datos extraídos del documento.',
-                items: {
-                  type: 'OBJECT',
-                  properties: {
-                    orig: { type: 'STRING', description: 'Nombre del campo original en el documento.' },
-                    val: { type: 'STRING', description: 'Valor extraído como texto.' },
-                    num: { type: 'NUMBER', description: 'Valor convertido a número, o null.' },
-                    unit: { type: 'STRING', description: 'Unidad de medida (COP, USD, kg, kWh, etc.) o null.' },
-                    conf: { type: 'NUMBER', description: 'Nivel de confianza de la extracción entre 0.0 y 1.0.' },
-                    dest: { type: 'STRING', description: 'El campo de destino circular o "otro".' }
-                  },
-                  required: ['orig', 'val', 'num', 'unit', 'conf', 'dest']
-                }
-              }
-            },
-            required: ['sum', 'dtype', 'fields']
-          }
+          responseSchema: GEMINI_RESPONSE_SCHEMA,
         },
       }),
     })
@@ -281,36 +337,63 @@ export async function POST(request: NextRequest) {
   await adminClient.from('dpp_documentos_ingesta').update({ estado_ocr: 'procesando' }).eq('id', documento_id)
 
   try {
-    // Descargar imagen vía URL firmada (5 min)
+    // Descargar archivo vía URL firmada (60s)
     const { data: signedData } = await adminClient.storage.from('dpp').createSignedUrl(doc.archivo_url!, 60)
     if (!signedData?.signedUrl) throw new Error('No se pudo obtener URL del archivo.')
 
     const archivoRes = await fetch(signedData.signedUrl)
     if (!archivoRes.ok) throw new Error('No se pudo descargar el archivo.')
-    const base64Data = Buffer.from(await archivoRes.arrayBuffer()).toString('base64')
-    const nombre = doc.nombre_archivo?.toLowerCase() ?? ''
-    let mimeType = 'image/jpeg'
-    if (nombre.endsWith('.png')) mimeType = 'image/png'
-    else if (nombre.endsWith('.pdf')) mimeType = 'application/pdf'
-    else if (nombre.endsWith('.webp')) mimeType = 'image/webp'
 
-    // Prompt específico al tipo de documento — no listas los 11 campos si solo 3 son relevantes
+    // Prompt específico al tipo de documento
     const { system, user } = construirPrompt(doc.tipo ?? 'otro')
 
-    // ── PASO 1: Gemini como extractor visual primario ─────────────────
-    let extraccion: IAResult = await llamarGemini(base64Data, mimeType, system, user)
+    const nombre = doc.nombre_archivo?.toLowerCase() ?? ''
+    const esTxt = nombre.endsWith('.txt')
 
-    // ── PASO 2: OpenRouter/Qwen si Gemini falla o confianza promedio < 0.6 ──
-    if (extraccion.ok) {
-      const campos = expandirCampos(extraccion.json).campos_extraidos
-      const promedio = campos.length > 0 ? campos.reduce((s, c) => s + c.confianza, 0) / campos.length : 0
-      if (promedio < 0.4) {
-        const fallback = await llamarOpenRouter(base64Data, mimeType, system, user)
+    let extraccion: IAResult
+
+    if (esTxt) {
+      // ── Flujo TXT: el PDF ya fue convertido en texto estructurado al subirse.
+      // Enviamos texto plano a la IA → sin tokens de visión → más barato.
+      const textoDoc = Buffer.from(await archivoRes.arrayBuffer()).toString('utf-8')
+
+      // PASO 1: Gemini modo texto
+      extraccion = await llamarGeminiTexto(textoDoc, system, user)
+
+      // PASO 2: OpenRouter texto si Gemini falla o confianza < 0.4
+      if (extraccion.ok) {
+        const campos = expandirCampos(extraccion.json).campos_extraidos
+        const promedio = campos.length > 0 ? campos.reduce((s, c) => s + c.confianza, 0) / campos.length : 0
+        if (promedio < 0.4) {
+          const fallback = await llamarOpenRouterTexto(textoDoc, system, user)
+          if (fallback.ok) extraccion = fallback
+        }
+      } else {
+        const fallback = await llamarOpenRouterTexto(textoDoc, system, user)
         if (fallback.ok) extraccion = fallback
       }
     } else {
-      const fallback = await llamarOpenRouter(base64Data, mimeType, system, user)
-      if (fallback.ok) extraccion = fallback
+      // ── Flujo visión: imágenes JPG/PNG — mantener pipeline original ──
+      const base64Data = Buffer.from(await archivoRes.arrayBuffer()).toString('base64')
+      let mimeType = 'image/jpeg'
+      if (nombre.endsWith('.png')) mimeType = 'image/png'
+      else if (nombre.endsWith('.webp')) mimeType = 'image/webp'
+
+      // PASO 1: Gemini visual primario
+      extraccion = await llamarGemini(base64Data, mimeType, system, user)
+
+      // PASO 2: OpenRouter/Qwen si Gemini falla o confianza promedio < 0.4
+      if (extraccion.ok) {
+        const campos = expandirCampos(extraccion.json).campos_extraidos
+        const promedio = campos.length > 0 ? campos.reduce((s, c) => s + c.confianza, 0) / campos.length : 0
+        if (promedio < 0.4) {
+          const fallback = await llamarOpenRouter(base64Data, mimeType, system, user)
+          if (fallback.ok) extraccion = fallback
+        }
+      } else {
+        const fallback = await llamarOpenRouter(base64Data, mimeType, system, user)
+        if (fallback.ok) extraccion = fallback
+      }
     }
 
     // ── PASO 3: Groq valida coherencia — SOLO si hay confianza baja < 0.7 ──

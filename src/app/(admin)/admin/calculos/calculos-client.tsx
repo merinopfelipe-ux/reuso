@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { Calculator, Warning, X, Check } from '@phosphor-icons/react'
 
 const C = {
-  brand: '#00827C', dark: '#1A3A38', mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)', light: 'rgba(0,130,124,0.06)',
-  error: '#FF5E4B',
+  brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
+  border: 'var(--border)', light: 'var(--bg-hover)',
+  error: 'var(--color-error)',
 }
 
 interface Calculo {
@@ -70,7 +70,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
         <div style={{ display: 'flex', gap: 6 }}>
           {(['todos', 'activo', 'anulado'] as const).map(f => (
             <button key={f} onClick={() => setFiltroEstado(f)}
-              style={{ padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: `1.5px solid ${filtroEstado === f ? C.brand : C.border}`, background: filtroEstado === f ? C.light : '#fff', color: filtroEstado === f ? C.brand : C.mid, transition: 'all 0.2s' }}>
+              style={{ padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: `1.5px solid ${filtroEstado === f ? C.brand : C.border}`, background: filtroEstado === f ? C.light : 'var(--bg-card)', color: filtroEstado === f ? C.brand : C.mid, transition: 'all 0.2s' }}>
               {f === 'todos' ? 'Todos' : f === 'activo' ? 'Activos' : 'Anulados'}
             </button>
           ))}
@@ -84,7 +84,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
           <p style={{ fontSize: 15, fontWeight: 600, color: C.dark }}>Sin resultados</p>
         </div>
       ) : (
-        <div style={{ background: '#fff', borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr style={{ background: C.light }}>
@@ -97,7 +97,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
               {filtrados.map((c, i) => {
                 const activo = (c.estado ?? 'activo') === 'activo'
                 return (
-                  <tr key={c.id} style={{ borderTop: `1px solid ${C.border}`, opacity: activo ? 1 : 0.55, background: i % 2 === 0 ? '#fff' : 'rgba(0,130,124,0.02)' }}>
+                  <tr key={c.id} style={{ borderTop: `1px solid ${C.border}`, opacity: activo ? 1 : 0.55, background: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-hover)' }}>
                     <td style={{ padding: '10px 14px', color: C.dark, whiteSpace: 'nowrap' }}>
                       {new Date(c.fecha).toLocaleDateString('es-CO')}
                     </td>
@@ -133,7 +133,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
       {/* Modal anulación */}
       {anulando && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 20 }}>
-          <div style={{ background: '#fff', borderRadius: 16, padding: 28, width: '100%', maxWidth: 440, boxShadow: '0 20px 60px rgba(0,130,124,0.15)' }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 440, boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <p style={{ fontSize: 16, fontWeight: 700, color: C.dark, margin: 0 }}>Anular cálculo</p>
               <button onClick={() => setAnulando(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
@@ -148,7 +148,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
               onChange={e => setMotivo(e.target.value)}
               placeholder="Describe el motivo de anulación..."
               rows={3}
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', background: 'var(--bg-input)' }}
             />
             {error && <p style={{ fontSize: 12, color: C.error, marginTop: 6 }}>{error}</p>}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
@@ -157,7 +157,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                 <Check size={14} /> {guardando ? 'Anulando...' : 'Confirmar anulación'}
               </button>
               <button onClick={() => setAnulando(null)}
-                style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${C.border}`, background: '#fff', color: C.mid, fontSize: 13, cursor: 'pointer' }}>
+                style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.mid, fontSize: 13, cursor: 'pointer' }}>
                 Cancelar
               </button>
             </div>

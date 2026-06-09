@@ -135,7 +135,11 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
     }
   }, [])
 
+  const isSubmittingRef = useRef(false)
+
   const handleGuardar = useCallback(async () => {
+    if (isSubmittingRef.current) return
+    isSubmittingRef.current = true
     setGuardando(true)
     setError(null)
 
@@ -156,9 +160,14 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
       setResultado(data)
       onGuardado?.()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error inesperado.')
+      if (e instanceof TypeError) {
+        setError('Sin conexión. Verifica tu internet e intenta de nuevo.')
+      } else {
+        setError(e instanceof Error ? e.message : 'Error inesperado.')
+      }
     } finally {
       setGuardando(false)
+      isSubmittingRef.current = false
     }
   }, [pesos, onGuardado])
 
@@ -450,7 +459,6 @@ function ResultadoPanel({ resultado, onReset }: {
   const [asociando, setAsociando] = useState(false)
 
   async function abrirModalDpp() {
-    setShowModalDpp(true)
     setLoadingDpp(true)
     try {
       const res = await fetch('/api/dpp/activos?limit=50')
@@ -458,6 +466,7 @@ function ResultadoPanel({ resultado, onReset }: {
       setActivosDpp(res.ok ? (data.data ?? []) : [])
     } catch { setActivosDpp([]) }
     setLoadingDpp(false)
+    setShowModalDpp(true)  // abre después de tener los datos
   }
 
   async function asociarADpp() {

@@ -26,17 +26,18 @@ function VerificarForm() {
 
   return (
     <main style={{
-      minHeight: '100vh', background: '#FFFFFF',
+      minHeight: '100vh', background: 'var(--bg-primary)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 20, fontFamily: "'Open Sans', sans-serif",
+      color: 'var(--text-primary)',
     }}>
       <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
         <div style={{ marginBottom: 32 }}>
-          <Image src="/logo-icono.svg" alt="Reuso" width={48} height={48} style={{ margin: '0 auto 16px' }} />
-          <h1 style={{ fontSize: 24, fontWeight: 800, color: '#1A3A38', margin: 0 }}>
+          <Image src="/logo-icono.svg" alt="Reuso" width={48} height={48} style={{ margin: '0 auto 16px' }} className="logo-dark-invert" />
+          <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
             Verificación de Certificados
           </h1>
-          <p style={{ fontSize: 14, color: '#4D7C79', marginTop: 8, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>
             Ingresa el código único del certificado para validar su autenticidad.
           </p>
         </div>
@@ -52,20 +53,20 @@ function VerificarForm() {
               width: '100%',
               padding: '16px 56px 16px 20px',
               borderRadius: 14,
-              border: '1px solid rgba(0,130,124,0.15)',
-              background: '#fff',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-input)',
               fontSize: 16,
               outline: 'none',
-              boxShadow: '0 4px 12px rgba(0,130,124,0.08)',
-              color: '#1A3A38',
+              boxShadow: 'var(--shadow)',
+              color: 'var(--text-primary)',
             }}
           />
           <button
             type="submit"
             style={{
               position: 'absolute', right: 8, top: 8, bottom: 8, width: 44,
-              background: '#00827C', border: 'none', borderRadius: 10,
-              color: '#fff', cursor: 'pointer',
+              background: 'var(--color-brand)', border: 'none', borderRadius: 10,
+              color: 'var(--text-on-brand)', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
           >
@@ -74,13 +75,13 @@ function VerificarForm() {
         </form>
 
         <div style={{ marginTop: 40, display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
-          <ShieldCheck size={18} color="#00827C" />
-          <span style={{ fontSize: 12, color: '#7FA8A5', fontWeight: 600, letterSpacing: 0.5 }}>
+          <ShieldCheck size={18} color="var(--color-brand)" />
+          <span style={{ fontSize: 12, color: 'var(--text-placeholder)', fontWeight: 600, letterSpacing: 0.5 }}>
             RESPALDADO POR SISTEMA DE SEGURIDAD PERMANENTE
           </span>
         </div>
 
-        <p style={{ marginTop: 24, fontSize: 12, color: '#7FA8A5', lineHeight: 1.6 }}>
+        <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-placeholder)', lineHeight: 1.6 }}>
           Si el certificado es válido, verás el impacto ambiental detallado y el sello de seguridad digital.
           Si fue revocado, el sistema te alertará de inmediato.
         </p>
@@ -92,8 +93,8 @@ function VerificarForm() {
 export default function VerificarManualPage() {
   return (
     <Suspense fallback={
-      <main style={{ minHeight: '100vh', background: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid rgba(0,130,124,0.2)', borderTopColor: '#00827C', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <main style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 32, height: 32, border: '3px solid var(--border)', borderTopColor: 'var(--color-brand)', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       </main>
     }>
       <VerificarForm />

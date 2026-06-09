@@ -5,8 +5,8 @@ import { FloppyDisk, ChatCircle, ChartBar, Question, Stack } from '@phosphor-ico
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {
-  brand: '#00827C', dark: '#1A3A38', mid: '#4D7C79',
-  border: 'rgba(0,130,124,0.12)', light: 'rgba(0,130,124,0.06)',
+  brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
+  border: 'var(--border)', light: 'var(--bg-hover)',
 }
 
 type ContenidoRow = { clave: string; valor_json: Record<string, unknown>; updated_at: string }
@@ -83,14 +83,14 @@ export function ContenidoClient({ contenido }: Props) {
   }
 
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }
-  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', background: '#fff' }
-  const cardStyle: React.CSSProperties = { background: '#fff', border: `1px solid ${C.border}`, borderRadius: 16, padding: 28 }
-  const btnStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 10, background: C.brand, color: '#fff', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }
+  const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', background: 'var(--bg-input)' }
+  const cardStyle: React.CSSProperties = { background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 28 }
+  const btnStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 10, background: C.brand, color: 'var(--text-on-brand)', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }
 
   return (
     <div style={{ padding: '0 0 40px' }}>
       {toast && (
-        <div style={{ position: 'fixed', top: 24, right: 24, background: C.dark, color: '#fff', padding: '12px 20px', borderRadius: 12, fontSize: 13, fontWeight: 700, zIndex: 1000 }}>
+        <div style={{ position: 'fixed', top: 24, right: 24, background: 'var(--text-primary)', color: 'var(--bg-primary)', padding: '12px 20px', borderRadius: 12, fontSize: 13, fontWeight: 700, zIndex: 1000 }}>
           {toast}
         </div>
       )}
@@ -216,7 +216,7 @@ export function ContenidoClient({ contenido }: Props) {
                 style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }} />
             </div>
             <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }) }}
-              style={{ ...btnStyle, background: '#fff', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
+              style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
               Agregar pregunta
             </button>
           </div>

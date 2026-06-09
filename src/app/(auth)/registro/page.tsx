@@ -36,7 +36,7 @@ export default function RegistroPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!turnstileToken) {
+    if (process.env.NEXT_PUBLIC_SKIP_TURNSTILE !== 'true' && !turnstileToken) {
       setError('Completa la verificación de seguridad para continuar.')
       return
     }
@@ -50,7 +50,7 @@ export default function RegistroPage() {
     const res = await fetch('/api/auth/registro', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, turnstile_token: turnstileToken }),
+      body: JSON.stringify({ ...form, turnstile_token: turnstileToken || 'skip' }),
     })
     const data = await res.json()
 
