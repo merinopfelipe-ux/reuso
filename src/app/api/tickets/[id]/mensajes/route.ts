@@ -10,9 +10,22 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  // Omitimos validación manual aquí asumiendo que el Frontend no expone threads inválidos,
-  // Para seguridad real en RLS, el user con RLS lee `tickets_mensajes`.
-  
+  const { data: profile } = await supabase
+    .from('profiles').select('rol, empresa_id').eq('user_id', user.id).single()
+
+  const { data: ticket } = await supabase
+    .from('tickets').select('user_id, empresa_id').eq('id', params.id).single()
+
+  if (!ticket) return NextResponse.json({ error: 'Ticket no encontrado' }, { status: 404 })
+
+  const isOwner    = ticket.user_id === user.id
+  const isEmpAdmin = profile?.rol === 'empresa_admin' && ticket.empresa_id === profile.empresa_id
+  const isSuper    = profile?.rol === 'super_admin'
+
+  if (!isOwner && !isEmpAdmin && !isSuper) {
+    return NextResponse.json({ error: 'Sin acceso a este ticket' }, { status: 403 })
+  }
+
   const { data, error } = await supabase
     .from('tickets_mensajes')
     .select('*, profiles:user_id (nombre, avatar_url, rol)')

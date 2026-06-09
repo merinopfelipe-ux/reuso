@@ -187,8 +187,21 @@ export async function POST(request: NextRequest) {
   if (imagen_base64) {
     base64 = imagen_base64
   } else {
+    // Anti-SSRF: solo se permiten URLs del dominio Supabase del proyecto
     try {
-      const imgRes = await fetch(imagen_url!)
+      const parsedUrl = new URL(imagen_url!)
+      const supabaseHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname
+      if (parsedUrl.hostname !== supabaseHost && !parsedUrl.hostname.endsWith(`.${supabaseHost}`)) {
+        return NextResponse.json({ error: 'URL de imagen no permitida.' }, { status: 400 })
+      }
+    } catch {
+      return NextResponse.json({ error: 'URL de imagen inválida.' }, { status: 400 })
+    }
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 8_000)
+    try {
+      const imgRes = await fetch(imagen_url!, { signal: controller.signal })
+      clearTimeout(timeoutId)
       if (!imgRes.ok) throw new Error('No se pudo descargar la imagen.')
       const buffer = await imgRes.arrayBuffer()
       if (buffer.byteLength > 4 * 1024 * 1024) {
@@ -196,6 +209,7 @@ export async function POST(request: NextRequest) {
       }
       base64 = Buffer.from(buffer).toString('base64')
     } catch {
+      clearTimeout(timeoutId)
       return NextResponse.json({ error: 'No se pudo acceder a la imagen indicada.' }, { status: 400 })
     }
   }

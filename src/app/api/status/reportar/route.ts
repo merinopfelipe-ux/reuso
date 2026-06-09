@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { enviarNotificacionTicket } from '@/lib/email'
+import DOMPurify from 'isomorphic-dompurify'
+import { rateLimit } from '@/lib/rate-limit'
+import { getIp } from '@/lib/admin-guard'
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -11,6 +14,10 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    if (!rateLimit(`status_reportar_${getIp(request)}`, 2, 60_000)) {
+      return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta en un momento.' }, { status: 429 })
+    }
+
     const body = await request.json().catch(() => null)
     const parsed = bodySchema.safeParse(body)
     if (!parsed.success) {
@@ -40,7 +47,10 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Insertar el mensaje fundacional del ticket en el hilo de chat
-    const mensajeHtml = `<p><strong>Reportado por el visitante:</strong> ${email}</p><p>${descripcion.replace(/\n/g, '<br/>')}</p>`
+    const emailSafe = email.replace(/[<>&"]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]!))
+    const mensajeHtml = DOMPurify.sanitize(
+      `<p><strong>Reportado por el visitante:</strong> ${emailSafe}</p><p>${descripcion.replace(/\n/g, '<br/>')}</p>`
+    )
     const { error: msgError } = await adminClient
       .from('tickets_mensajes')
       .insert({

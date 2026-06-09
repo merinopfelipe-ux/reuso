@@ -42,6 +42,16 @@ description: Seguridad para reuso.lurdes.co. Usar SIEMPRE cuando el usuario pida
    - Verificar: `/api/leads`, `/api/auth/login`, `/api/auth/registro`
    - Archivo: `src/lib/rate-limit.ts` — límite estándar: 3 req/min
 
+9. **SSRF — `fetch(url_del_usuario)` sin domain allowlist**
+   - Buscar: `fetch(` en API routes donde la URL viene de body/params
+   - Fix: validar que `new URL(url).hostname === supabaseHost` antes del fetch + `AbortController` con timeout 8s
+   - Riesgo: acceso a metadata cloud (169.254.169.254), servicios internos
+
+10. **XSS por template literals con datos de usuario**
+    - Buscar: `` `<p>${variableUsuario}</p> `` sin sanitizar en cualquier string HTML construido en server
+    - Fix: siempre `DOMPurify.sanitize(htmlString)` antes de insertar en BD
+    - Aplica aunque el campo sea un email o título "inofensivo"
+
 ---
 
 ## Hallazgos resueltos (V14.8 — 2026-06-08)
@@ -49,6 +59,14 @@ description: Seguridad para reuso.lurdes.co. Usar SIEMPRE cuando el usuario pida
 - ✅ Bucket `documentos` público → signed URLs (3600s)
 - ✅ TTL signed URL DPP 300s → 60s
 - ✅ Política RLS crm_cotizaciones_publico_token → eliminada
+- ✅ getPublicUrl en cotizador/dpp/firmas → paths en BD + signed URLs al leer
+- ✅ certificados.pdf_url guardaba URL firmada → ahora guarda path, URL se genera al servir
+- ✅ Políticas RLS storage.objects → migración 021 ejecutada
+- ✅ SSRF en cotizador/diagnostico → domain allowlist (supabase host) + timeout 8s
+- ✅ XSS almacenado en status/reportar → DOMPurify + escape de email
+- ✅ IDOR en tickets/[id]/mensajes GET → ownership check explícito
+- ✅ Sin rate limit en status/suscribirse y status/reportar → 3/min y 2/min
+- ✅ SVG sanitización regex frágil en admin/config/upload → DOMPurify con perfil SVG
 
 ---
 

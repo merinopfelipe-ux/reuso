@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin } from '@/lib/admin-guard'
+import DOMPurify from 'isomorphic-dompurify'
 
 const MIME_PERMITIDOS = ['image/png', 'image/jpeg', 'image/svg+xml']
 const MAX_BYTES = 2 * 1024 * 1024 // 2MB
@@ -35,12 +36,41 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  const bytes = new Uint8Array(buffer)
+  let fileIsValid = false
+  let uploadData: ArrayBuffer | Uint8Array = buffer
+
+  if (file.type === 'image/png') {
+    if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) {
+      fileIsValid = true
+    }
+  } else if (file.type === 'image/jpeg') {
+    if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) {
+      fileIsValid = true
+    }
+  } else if (file.type === 'image/svg+xml') {
+    const text = new TextDecoder('utf-8').decode(bytes)
+    if (text.toLowerCase().includes('<svg')) {
+      fileIsValid = true
+      // DOMPurify elimina scripts, eventos inline y javascript: — más robusto que regex
+      const sanitized = DOMPurify.sanitize(text, { USE_PROFILES: { svg: true, svgFilters: true } })
+      uploadData = new TextEncoder().encode(sanitized)
+    }
+  }
+
+  if (!fileIsValid) {
+    return NextResponse.json(
+      { error: 'Firma digital del archivo inválida o tipo no coincidente.' },
+      { status: 400 }
+    )
+  }
+
   const ext = file.type === 'image/svg+xml' ? 'svg' : file.type === 'image/png' ? 'png' : 'jpg'
   const fileName = `firma-${Date.now()}.${ext}`
 
   const { data, error } = await guard.adminClient.storage
     .from('firmas')
-    .upload(fileName, buffer, { contentType: file.type, upsert: false })
+    .upload(fileName, uploadData, { contentType: file.type, upsert: false })
 
   if (error) {
     return NextResponse.json({ error: 'No se pudo subir la imagen.' }, { status: 500 })

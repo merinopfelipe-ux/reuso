@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { rateLimit } from '@/lib/rate-limit'
+import { getIp } from '@/lib/admin-guard'
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -8,6 +10,10 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    if (!rateLimit(`status_sub_${getIp(request)}`, 3, 60_000)) {
+      return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta en un momento.' }, { status: 429 })
+    }
+
     const body = await request.json().catch(() => null)
     const parsed = bodySchema.safeParse(body)
     if (!parsed.success) {
