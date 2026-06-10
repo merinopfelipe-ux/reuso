@@ -55,6 +55,13 @@ const bodySchema = z
     password_confirm: z.string(),
     turnstile_token: z.string().optional(),
     acepta_terminos: z.literal(true),
+    // Campos de perfil (paso 2)
+    sector: z.string().max(50).optional(),
+    frecuencia_reuso: z.string().max(20).optional(),
+    motivacion: z.string().max(80).optional(),
+    quiere_asesoria: z.boolean().optional(),
+    // Código de empresa (paso 1)
+    codigo_empresa: z.string().max(10).regex(/^[A-Z0-9]*$/).optional(),
   })
   .refine((d) => d.password === d.password_confirm, {
     message: 'Las contraseñas no coinciden',
@@ -104,7 +111,8 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { nombre, apellido, apodo, telefono, email, password, turnstile_token } = parsed.data
+  const { nombre, apellido, apodo, telefono, email, password, turnstile_token,
+          sector, frecuencia_reuso, motivacion, quiere_asesoria, codigo_empresa } = parsed.data
 
   const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
   if (!skipTurnstile) {
@@ -129,7 +137,19 @@ export async function POST(request: NextRequest) {
     email,
     password,
     options: {
-      data: { nombre, apellido: apellido ?? null, apodo: apodo ?? null, telefono: encryptedTelefono ?? null, rol: 'usuario_libre', legal_aceptado_en },
+      data: {
+        nombre,
+        apellido: apellido ?? null,
+        apodo: apodo ?? null,
+        telefono: encryptedTelefono ?? null,
+        rol: 'usuario_libre',
+        legal_aceptado_en,
+        sector: sector ?? null,
+        frecuencia_reuso: frecuencia_reuso ?? null,
+        motivacion: motivacion ?? null,
+        quiere_asesoria: quiere_asesoria ?? false,
+        codigo_empresa: codigo_empresa ?? null,
+      },
     },
   })
 
