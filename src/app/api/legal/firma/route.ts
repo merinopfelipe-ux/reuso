@@ -323,7 +323,7 @@ export async function POST(req: NextRequest) {
       from: FROM,
       to: data.email,
       bcc: ['innovacion@lurdes.co'],
-      subject: 'Tu copia firmada del Acuerdo de Confidencialidad — Calculadora de Reúso',
+      subject: 'Tu Acuerdo de Confidencialidad está firmado',
       html: emailBase({
         subtitulo: 'Acuerdo de Confidencialidad firmado',
         filas: [

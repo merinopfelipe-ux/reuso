@@ -1,11 +1,13 @@
 ---
 name: email-design
 description: >
-  Diseño y voz de todos los correos del sistema Reúso. Plantilla base emailBase() en src/lib/email.ts.
+  Diseño y voz de todos los correos del sistema Calculadora de Reúso. Plantilla base emailBase() en src/lib/email.ts.
   Leer SIEMPRE antes de crear, modificar o agregar cualquier correo transaccional.
 ---
 
-# Diseño de correos — Reúso
+# Diseño de correos — Calculadora de Reúso
+
+**REGLA ABSOLUTA DE NOMBRE:** El producto se llama **Calculadora de Reúso**. Nunca escribir solo "Reúso" como nombre del producto en ningún correo, asunto, subtítulo ni texto visible.
 **Ley Madre de correos. Sin excepciones.**
 
 ---
@@ -118,15 +120,21 @@ emailBase({
 
 **Regla:** Asunto = verbo imperativo + contexto. Nunca empieces con "Notificación de..." ni el nombre del sistema.
 
+**Reglas de asunto:**
+- Sin guiones, sin emojis
+- Voz activa o imperativo directo
+- Mencionar "Calculadora de Reúso" solo si aporta contexto; no como muletilla al final
+- Entre 5 y 10 palabras
+
 | Correo | Asunto correcto | Asunto incorrecto |
 |--------|----------------|-------------------|
-| Confirmar registro | `Confirma tu correo — Calculadora de Reúso` | `Verificación de cuenta` |
-| Recuperar contraseña | `Tu código para crear nueva contraseña` | `Recuperación de contraseña — Calculadora de Reúso` |
-| Invitación equipo | `Te invitaron a unirte a [Empresa] en Reúso` | `Invitación de usuario` |
-| Ticket de soporte | `Nuevo ticket: [categoría]` | `Notificación de soporte` |
-| Respuesta ticket | `Respondieron tu consulta en Reúso` | `Actualización en ticket #123` |
-| Firma confidencialidad | `Tu copia del Acuerdo de Confidencialidad firmado` | `Documento generado` |
-| Cambio de correo | `Confirma tu nuevo correo en Reúso` | `Cambio de email` |
+| Confirmar registro | `Confirma tu correo para empezar` | `Verificación de cuenta — Calculadora de Reúso` |
+| Recuperar contraseña | `Tu código para crear una nueva contraseña` | `Recuperación de contraseña — Reúso` |
+| Invitación equipo | `[Empresa] te invitó a unirse a Calculadora de Reúso` | `Invitación de usuario — Reúso` |
+| Ticket de soporte | `Nuevo ticket recibido [categoría]` | `Notificación de soporte — Reúso` |
+| Respuesta ticket | `Respondieron tu consulta en Calculadora de Reúso` | `Actualización en ticket #123` |
+| Firma confidencialidad | `Tu Acuerdo de Confidencialidad está firmado` | `Documento generado — Reúso` |
+| Cambio de correo | `Confirma tu nuevo correo en Calculadora de Reúso` | `Cambio de email — Reúso` |
 
 ---
 

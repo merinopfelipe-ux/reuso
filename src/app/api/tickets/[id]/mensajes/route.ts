@@ -109,7 +109,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         await resend.emails.send({
           from: process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>',
           to: targetProfile.email,
-          subject: `Actualización en ticket: ${ticket.titulo}`,
+          subject: `Respondieron tu consulta en Calculadora de Reúso`,
           html: emailBase({
             subtitulo: 'Respuesta a tu solicitud de soporte',
             filas: [

@@ -53,7 +53,7 @@ export async function enviarInvitacion(
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Te invitaron a unirte a ${empresaNombre} en Calculadora de Reúso`,
+    subject: `${empresaNombre} te invitó a unirse a Calculadora de Reúso`,
     html: emailBase({
       subtitulo: 'Invitación al equipo',
       filas: [
@@ -77,7 +77,7 @@ export async function enviarNotificacionTicket(
   await resend.emails.send({
     from: FROM,
     to: destinatarios,
-    subject: `Nuevo ticket de ayuda — ${datos.categoria}`,
+    subject: `Nuevo ticket recibido ${datos.categoria}`,
     html: emailBase({
       subtitulo: 'Nuevo ticket de soporte',
       filas: [

@@ -2,6 +2,11 @@
 V14.9 (2026-06-09) · reuso.lurdes.co · Grupo MLP S.A.S
 VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
+## NOMBRE DEL PRODUCTO — REGLA ABSOLUTA
+El nombre es **Calculadora de Reúso**. NUNCA escribir solo "Reúso" como nombre del producto.
+Aplica a: UI, correos, documentación, commits, comentarios de código, respuestas al usuario, skills.
+Excepción técnica permitida: slugs de URL y variables en código (`reuso.lurdes.co`, `const reuso = ...`).
+
 ## 6 DIRECTRICES IRRENUNCIABLES
 
 0) FONDO INTERIOR BLANCO PURO: Dentro de la app autenticada el fondo de página es SIEMPRE #FFFFFF.
