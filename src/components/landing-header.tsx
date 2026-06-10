@@ -118,7 +118,7 @@ export function LandingHeader({
   if (!mounted) return null
 
   const liquidGlassClass = isDark 
-    ? 'bg-[#000000]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
+    ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
     : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   const filteredResults = searchResults.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -149,7 +149,7 @@ export function LandingHeader({
               <div className="transition-transform duration-300 group-hover:scale-110 group-active:scale-90">
                 {isMobileNavOpen ? <X size={20} weight="bold" /> : <List size={22} weight="bold" />}
               </div>
-              <span className="text-[9px] font-black tracking-widest uppercase opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
+              <span className="text-[9px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
             </button>
             <Link href={logoHref} className="flex items-center flex-shrink-0">
               <Image 
@@ -267,14 +267,14 @@ export function LandingHeader({
             }}
           >
             <div className="flex justify-between items-center mb-6">
-               <div className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
+               <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
                <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} weight="bold" /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                {menuGroups.map((group, gIdx) => (
                  <div key={gIdx} className="space-y-3">
-                   <div className={`text-[9px] uppercase tracking-widest font-black opacity-30 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{group.name}</div>
+                   <div className={`text-[9px] font-black opacity-30 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{group.name}</div>
                    <div className="flex flex-col gap-1">
                      {group.items.map((item, i) => (
                        <a

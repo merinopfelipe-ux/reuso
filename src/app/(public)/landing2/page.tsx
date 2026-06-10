@@ -187,7 +187,7 @@ export default function Landing2Page() {
   ]
 
   const liquidGlass = isDark
-    ? 'bg-[#000000]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
+    ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
     : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   const formatPrice = (plan: typeof PLANS[0]) => {
@@ -263,7 +263,7 @@ export default function Landing2Page() {
 
           {/* Texto izquierdo */}
           <div>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] uppercase tracking-widest mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
               <Leaf size={13} weight="fill" /> Economía circular con datos reales
             </div>
             <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-6 ${tp}`}>
@@ -293,7 +293,7 @@ export default function Landing2Page() {
 
             <div className="relative z-10 flex items-center justify-between mb-8">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-[#00827C] mb-0.5">Panel de Impacto</p>
+                <p className="text-[10px] font-black text-[#00827C] mb-0.5">Panel de Impacto</p>
                 <p className={`text-xs font-medium ${ts}`}>Último lote registrado · Hoy</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#D6F391] flex items-center justify-center">
@@ -308,7 +308,7 @@ export default function Landing2Page() {
                 { label: 'Ahorro', value: '+38%', unit: 'vs. compra nueva' },
               ].map((stat, i) => (
                 <div key={i} className={`glass-stat flex flex-col gap-1.5 p-4 rounded-2xl border ${isDark ? 'bg-white/5 border-white/8' : 'bg-white/30 border-[#00827C]/8'}`}>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-[#00827C]">{stat.label}</span>
+                  <span className="text-[9px] font-black text-[#00827C]">{stat.label}</span>
                   <span className={`glass-number text-3xl font-black leading-none ${tp}`}>{stat.value}</span>
                   <span className={`text-[10px] font-medium ${ts}`}>{stat.unit}</span>
                 </div>
@@ -317,7 +317,7 @@ export default function Landing2Page() {
 
             <div className={`relative z-10 mt-6 p-4 rounded-2xl border ${isDark ? 'bg-white/5 border-white/8' : 'bg-white/20 border-[#00827C]/8'}`}>
               <div className="flex justify-between items-center mb-2">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${ts}`}>Progreso circular del mes</span>
+                <span className={`text-[10px] font-bold ${ts}`}>Progreso circular del mes</span>
                 <span className="text-[10px] font-black text-[#00827C]">74%</span>
               </div>
               <div className="h-2 bg-[#00827C]/10 rounded-full overflow-hidden">
@@ -476,7 +476,7 @@ export default function Landing2Page() {
                 style={{ willChange: 'transform' }} />
 
               <div className="relative z-10">
-                <p className="text-[10px] font-black uppercase tracking-widest text-[#00827C] mb-1">Diagnóstico de impacto</p>
+                <p className="text-[10px] font-black text-[#00827C] mb-1">Diagnóstico de impacto</p>
                 <h3 className={`text-2xl font-black mb-2 ${tp}`}>{cat.h3}</h3>
                 <p className={`text-sm font-bold mb-8 pb-8 border-b ${ts} ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>{cat.ejemplo}</p>
 
@@ -484,7 +484,7 @@ export default function Landing2Page() {
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#00827C]/5 border-[#00827C]/10'}`}>
                     <div className="flex items-center gap-2 mb-3">
                       <Tree size={18} weight="duotone" className="text-[#00827C]" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#00827C]">Ahorra al planeta</span>
+                      <span className="text-[10px] font-black text-[#00827C]">Ahorra al planeta</span>
                     </div>
                     <div className={`glass-number text-4xl font-black mb-1 ${tp}`}>{cat.planeta.valor}</div>
                     <p className={`text-xs font-medium ${ts}`}>{cat.planeta.detalle}</p>
@@ -493,7 +493,7 @@ export default function Landing2Page() {
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/20' : 'bg-[#D6F391]/20 border-[#D6F391]/40'}`}>
                     <div className="flex items-center gap-2 mb-3">
                       <Calculator size={18} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#474747]'} />
-                      <span className={`text-[10px] font-black uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Ahorra al bolsillo</span>
+                      <span className={`text-[10px] font-black ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Ahorra al bolsillo</span>
                     </div>
                     <div className={`glass-number text-4xl font-black mb-1 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>{cat.bolsillo.valor}</div>
                     <p className={`text-xs font-medium ${ts}`}>{cat.bolsillo.detalle}</p>
@@ -585,7 +585,7 @@ export default function Landing2Page() {
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#474747] text-[#D6F391] text-[9px] font-black tracking-widest rounded-full whitespace-nowrap">MÁS POPULAR</div>
                 )}
                 <div className="mb-6">
-                  <p className={`text-[10px] font-black uppercase tracking-widest mb-1 opacity-60 ${ts}`}>{plan.tagline}</p>
+                  <p className={`text-[10px] font-black mb-1 opacity-60 ${ts}`}>{plan.tagline}</p>
                   <h3 className={`text-lg font-black mb-4 ${tp}`}>{plan.name}</h3>
                   <div className={`text-4xl font-black mb-0.5 ${tp}`}>{formatPrice(plan)}</div>
                   {plan.priceMonthlyCOP > 0 && <p className={`text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>}
@@ -637,7 +637,7 @@ export default function Landing2Page() {
               style={{ top: 'calc(50% - 7rem)', left: 'calc(50% - 7rem)', willChange: 'transform' }} />
 
             <div className="relative z-10">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] uppercase tracking-widest mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
                 <Leaf size={13} weight="fill" /> Para el planeta y el bolsillo
               </div>
               <h2 className={`text-4xl sm:text-5xl font-black tracking-tight mb-6 leading-tight ${tp}`}>
