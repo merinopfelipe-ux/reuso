@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { Eye, EyeSlash, CheckCircle, Leaf } from '@phosphor-icons/react'
+import { Eye, EyeSlash, CheckCircle, CircleNotch, Leaf } from '@phosphor-icons/react'
 
 interface Props {
   token: string
@@ -15,6 +15,7 @@ interface Props {
 const BRAND = '#00827C'
 
 export default function InvitacionForm({ token, email, empresaNombre, rolAsignado }: Props) {
+  const router = useRouter()
   const [form, setForm] = useState({ nombre: '', password: '', password_confirm: '', acepta_terminos: false })
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -48,6 +49,8 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
       return
     }
     setSuccess(true)
+    // Redirigir al login con aviso de éxito tras 2s
+    setTimeout(() => router.push('/login?invited=true'), 2000)
   }
 
   const inputStyle: React.CSSProperties = {
@@ -69,23 +72,14 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         <h2 style={{ color: BRAND, fontWeight: 700, fontSize: 22, margin: '0 0 8px' }}>
           ¡Cuenta creada!
         </h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: 24 }}>
-          Ya puedes ingresar a Calculadora de Reúso como parte de <strong>{empresaNombre}</strong>.
+        <p style={{ color: 'var(--text-muted)', marginBottom: 8, fontSize: 15 }}>
+          Ya puedes ingresar como parte de <strong>{empresaNombre}</strong>.
         </p>
-        <Link
-          href="/"
-          style={{
-            display: 'inline-block',
-            background: BRAND,
-            color: '#fff',
-            padding: '12px 32px',
-            borderRadius: 8,
-            fontWeight: 600,
-            textDecoration: 'none',
-          }}
-        >
-          Ingresar
-        </Link>
+        <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>
+          Redirigiendo al inicio de sesión...
+        </p>
+        <CircleNotch size={20} color={BRAND} style={{ animation: 'spin 1s linear infinite', margin: '0 auto' }} />
+        <style dangerouslySetInnerHTML={{ __html: `@keyframes spin { to { transform: rotate(360deg); } }` }} />
       </div>
     )
   }

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Key, CircleNotch, Eye, EyeSlash, CheckCircle } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // ── Constantes de estilo ────────────────────────────────────────────────────
 const BRAND = '#00827C'
@@ -296,11 +297,16 @@ function Wrapper({ children }: { children: React.ReactNode }) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#FFFFFF',
+      background: 'var(--background, #FFFFFF)',
       fontFamily: "'Open Sans', sans-serif",
       padding: '24px',
       userSelect: 'none',
+      position: 'relative',
     }}>
+      {/* Botón modo noche — esquina superior derecha */}
+      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
       <div style={{ width: '100%', maxWidth: 400 }}>
         {children}
       </div>

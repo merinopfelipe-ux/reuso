@@ -117,6 +117,17 @@ const TESTIMONIOS = [
 
 export default function LoginPage() {
   const router = useRouter()
+  const [invited, setInvited] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('invited') === 'true') {
+      setInvited(true)
+      // Limpiar el param de la URL sin recargar
+      window.history.replaceState({}, '', '/login')
+    }
+  }, [])
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -300,6 +311,12 @@ export default function LoginPage() {
               {T[idioma].subtitulo}
             </p>
           </div>
+
+          {invited && (
+            <div role="status" className="mb-6 p-3 rounded-md bg-brand/8 border border-brand/25 text-brand text-sm text-center font-medium">
+              Cuenta creada. Ya puedes ingresar con tu correo y contraseña.
+            </div>
+          )}
 
           {error && (
             <div role="alert" className="mb-6 p-3 rounded-md bg-error/10 border border-error/30 text-error text-sm text-center font-medium">
