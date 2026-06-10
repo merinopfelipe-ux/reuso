@@ -282,15 +282,14 @@ export default function LoginPage() {
 
         {/* Header */}
         <header className="flex items-center justify-between w-full px-8 pt-8 md:px-12">
-          <div className="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center">
-            <Image
-              src="/logo-icono.svg"
-              alt="Reúso"
-              width={26}
-              height={26}
-              className="object-contain"
-            />
-          </div>
+          <Image
+            src="/logo-completo.svg"
+            alt="Reúso"
+            width={140}
+            height={44}
+            className="object-contain"
+            style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+          />
           <p className="text-sm text-secondary font-medium hidden sm:block">
             {T[idioma].cuentaQ}{' '}
             <Link href="/registro" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline transition-colors">
@@ -433,7 +432,7 @@ export default function LoginPage() {
               className={`w-full py-3.5 mt-2 rounded-btn font-bold text-[15px] transition-all flex items-center justify-center gap-2 shadow-card ${
                 loading
                   ? 'bg-brand/60 text-white/80 cursor-not-allowed shadow-none'
-                  : 'bg-brand text-white hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0'
+                  : `bg-brand hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0 ${isDark ? 'text-[#474747] font-extrabold' : 'text-white'}`
               }`}
             >
               {loading ? (
@@ -479,9 +478,8 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Controles de accesibilidad — modo noche + idioma */}
+            {/* Controles de accesibilidad — idioma + modo noche */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <ThemeToggle />
 
             {/* Selector de idioma — dropdown */}
             <div style={{ position: 'relative' }}>
@@ -548,6 +546,8 @@ export default function LoginPage() {
                 </div>
               )}
             </div>
+
+              <ThemeToggle />
             </div>{/* cierra controles */}
 
           </div>
@@ -567,17 +567,6 @@ export default function LoginPage() {
         {/* Círculos decorativos de fondo */}
         <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-40 -left-20 w-[500px] h-[500px] rounded-full bg-white/5 blur-3xl pointer-events-none" />
-
-        {/* Logo Reúso — siempre visible */}
-        <div className="absolute top-10 right-12 z-20">
-          <Image
-            src="/logo-completo.svg"
-            alt="Reúso"
-            width={120}
-            height={36}
-            className="brightness-0 invert opacity-90 hover:opacity-100 transition-opacity drop-shadow-lg"
-          />
-        </div>
 
         {/* Contenido del carrusel */}
         <div className="flex-1 flex flex-col justify-center items-center w-full px-16 lg:px-24 xl:px-32 relative z-10">

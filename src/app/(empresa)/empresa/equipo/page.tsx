@@ -22,10 +22,10 @@ export default async function EmpresaEquipoPage() {
   const empresaId = perfil.empresa_id
   const rol = (perfil.rol ?? 'empresa_admin') as Rol
 
-  const [{ data: miembros }, { data: invitaciones }] = await Promise.all([
+  const [{ data: miembros }, { data: invitaciones }, { data: empresa }] = await Promise.all([
     adminClient
       .from('profiles')
-      .select('id, user_id, nombre, rol, created_at')
+      .select('id, user_id, nombre, rol, created_at, email')
       .eq('empresa_id', empresaId)
       .order('created_at', { ascending: true }),
     adminClient
@@ -34,17 +34,23 @@ export default async function EmpresaEquipoPage() {
       .eq('empresa_id', empresaId)
       .order('created_at', { ascending: false })
       .limit(50),
+    adminClient
+      .from('empresas')
+      .select('codigo_registro')
+      .eq('id', empresaId)
+      .single(),
   ])
 
   return (
     <div style={{ width: '100%' }}>
-      <AdminPageHeader titulo="Equipo" subtitulo="Miembros activos e invitaciones pendientes de tu organización." showBack />
+      <AdminPageHeader titulo="Equipo" subtitulo="Miembros activos e invitaciones de tu organización." showBack />
 
       <EquipoClient
         miembros={miembros ?? []}
         invitaciones={invitaciones ?? []}
         empresaId={empresaId}
         rolActual={rol}
+        codigoRegistro={empresa?.codigo_registro ?? null}
       />
     </div>
   )

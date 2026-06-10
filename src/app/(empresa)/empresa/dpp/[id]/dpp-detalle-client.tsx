@@ -167,7 +167,7 @@ function ModalResultadosIA({
 }) {
   const campos = resultado.campos_extraidos ?? []
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 640, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
         <h3 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
           Resultados de la extracción IA
@@ -186,7 +186,7 @@ function ModalResultadosIA({
               <thead>
                 <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
                   {['Campo en doc', 'Valor extraído', 'Confianza', 'Destino DPP'].map(h => (
-                    <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
+                    <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -557,7 +557,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
 
           {composicion.length > 0 && (
             <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
-              <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
                 Composición de materiales
               </p>
               <div style={{ overflowX: 'auto' }}>
@@ -565,7 +565,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                   <thead>
                     <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
                       {['Material', 'Peso kg', 'CO₂/kg', 'Fuente', 'Confianza'].map((h) => (
-                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -651,7 +651,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
           )}
 
           {showModalCiclo && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
               <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 520, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
                 <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
                   Registra un ciclo de reúso
@@ -852,7 +852,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
 
           {metricas.length > 0 && (
             <div style={{ marginTop: 32 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 12px' }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '0 0 12px' }}>
                 Historial de métricas
               </p>
               <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid var(--border)' }}>
@@ -860,7 +860,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                   <thead>
                     <tr style={{ background: 'var(--bg-secondary)' }}>
                       {['Fecha', 'TCO', 'Costo evitado', 'E-ROI %', 'ICE %', 'Versión'].map((h) => (
-                        <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>

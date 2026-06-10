@@ -71,7 +71,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
     showToast('Certificado revocado correctamente.')
   }
 
-  const thStyle: React.CSSProperties = { padding: '10px 14px', fontSize: 11, fontWeight: 700, color: C.mid, textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.06em', borderBottom: `1px solid ${C.border}`, whiteSpace: 'nowrap' }
+  const thStyle: React.CSSProperties = { padding: '10px 14px', fontSize: 11, fontWeight: 700, color: C.mid, textAlign: 'left', letterSpacing: '0.06em', borderBottom: `1px solid ${C.border}`, whiteSpace: 'nowrap' }
   const tdStyle: React.CSSProperties = { padding: '12px 14px', fontSize: 13, color: C.dark, borderBottom: `1px solid ${C.border}`, verticalAlign: 'middle' }
 
   return (
@@ -177,7 +177,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
 
       {/* Modal de revocación */}
       {modal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ background: 'var(--bg-card)', borderRadius: 20, padding: 32, maxWidth: 480, width: '100%', boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <h3 style={{ fontSize: 18, fontWeight: 900, color: C.dark, marginBottom: 8 }}>Revocar certificado</h3>
             <p style={{ fontSize: 13, color: C.mid, marginBottom: 4 }}>
@@ -186,7 +186,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
             <p style={{ fontSize: 13, color: C.mid, marginBottom: 20 }}>
               Esta acción no se puede deshacer. El certificado aparecerá como revocado en la página pública de verificación.
             </p>
-            <label style={{ fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6, letterSpacing: '0.06em' }}>
               Motivo de revocación (mín. 10 caracteres)
             </label>
             <textarea value={motivo} onChange={e => setMotivo(e.target.value)}

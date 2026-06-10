@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -8,20 +8,42 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import {
   ShieldCheck, Eye, EyeSlash, Square, CheckSquare,
   Buildings, EnvelopeSimple, Phone, User, CaretDown,
-  ArrowRight, ArrowLeft, X, Check, Headset,
+  ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle,
 } from '@phosphor-icons/react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 // ── Países para selector de indicativo ────────────────────────────────────────
 const PAISES = [
-  { code: 'co', name: 'Colombia',   dial: '+57'  },
-  { code: 'mx', name: 'México',     dial: '+52'  },
-  { code: 'ar', name: 'Argentina',  dial: '+54'  },
-  { code: 'cl', name: 'Chile',      dial: '+56'  },
-  { code: 'pe', name: 'Perú',       dial: '+51'  },
-  { code: 'ec', name: 'Ecuador',    dial: '+593' },
-  { code: 've', name: 'Venezuela',  dial: '+58'  },
-  { code: 'es', name: 'España',     dial: '+34'  },
-  { code: 'us', name: 'EE. UU.',    dial: '+1'   },
+  { code: 'co', name: 'Colombia',          dial: '+57'  },
+  { code: 'mx', name: 'México',            dial: '+52'  },
+  { code: 'ar', name: 'Argentina',         dial: '+54'  },
+  { code: 'cl', name: 'Chile',             dial: '+56'  },
+  { code: 'pe', name: 'Perú',             dial: '+51'  },
+  { code: 'ec', name: 'Ecuador',           dial: '+593' },
+  { code: 've', name: 'Venezuela',         dial: '+58'  },
+  { code: 'bo', name: 'Bolivia',           dial: '+591' },
+  { code: 'py', name: 'Paraguay',          dial: '+595' },
+  { code: 'uy', name: 'Uruguay',           dial: '+598' },
+  { code: 'br', name: 'Brasil',            dial: '+55'  },
+  { code: 'gt', name: 'Guatemala',         dial: '+502' },
+  { code: 'hn', name: 'Honduras',          dial: '+504' },
+  { code: 'sv', name: 'El Salvador',       dial: '+503' },
+  { code: 'ni', name: 'Nicaragua',         dial: '+505' },
+  { code: 'cr', name: 'Costa Rica',        dial: '+506' },
+  { code: 'pa', name: 'Panamá',           dial: '+507' },
+  { code: 'cu', name: 'Cuba',              dial: '+53'  },
+  { code: 'do', name: 'Rep. Dominicana',   dial: '+1'   },
+  { code: 'es', name: 'España',            dial: '+34'  },
+  { code: 'us', name: 'EE. UU.',           dial: '+1'   },
+  { code: 'ca', name: 'Canadá',           dial: '+1'   },
+  { code: 'fr', name: 'Francia',           dial: '+33'  },
+  { code: 'de', name: 'Alemania',          dial: '+49'  },
+  { code: 'it', name: 'Italia',            dial: '+39'  },
+  { code: 'gb', name: 'Reino Unido',       dial: '+44'  },
+  { code: 'pt', name: 'Portugal',          dial: '+351' },
+  { code: 'nl', name: 'Países Bajos',     dial: '+31'  },
+  { code: 'au', name: 'Australia',         dial: '+61'  },
+  { code: 'jp', name: 'Japón',            dial: '+81'  },
 ]
 
 // ── Opciones de perfil ────────────────────────────────────────────────────────
@@ -59,6 +81,7 @@ export default function RegistroPage() {
   const [indicativo, setIndicativo] = useState(PAISES[0])
   const [telefono, setTelefono] = useState('')
   const [mostrarPaises, setMostrarPaises] = useState(false)
+  const [busquedaPais, setBusquedaPais] = useState('')
   const [codigoEmpresa, setCodigoEmpresa] = useState('')
   const [codigoStatus, setCodigoStatus] = useState<'idle' | 'validando' | 'ok' | 'error'>('idle')
   const [codigoNombreEmpresa, setCodigoNombreEmpresa] = useState('')
@@ -77,7 +100,7 @@ export default function RegistroPage() {
   const [showPwd, setShowPwd] = useState(false)
   const [showPwdConf, setShowPwdConf] = useState(false)
   const [aceptaTerminos, setAceptaTerminos] = useState(false)
-  const [aceptaDatos, setAceptaDatos] = useState(false)
+  const [suscritoNewsletter, setSuscritoNewsletter] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [modalTerminos, setModalTerminos] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -134,8 +157,8 @@ export default function RegistroPage() {
 
   // ── Envío final ──────────────────────────────────────────────────────────────
   async function handleSubmit() {
-    if (!aceptaTerminos || !aceptaDatos) {
-      setError('Acepta los términos y el tratamiento de datos para continuar.')
+    if (!aceptaTerminos) {
+      setError('Acepta los términos y condiciones para continuar.')
       return
     }
     if (password !== passwordConfirm) {
@@ -191,14 +214,35 @@ export default function RegistroPage() {
     border-[rgba(0,130,124,0.20)]
   `
 
+  const [isDark, setIsDark] = useState(false)
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => obs.disconnect()
+  }, [])
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center font-sans"
-      style={{ background: 'linear-gradient(145deg, #F8FBFA 0%, #EEF7F6 60%, #FFFFFF 100%)', padding: '32px 16px' }}
+      style={{ background: isDark ? '#474747' : '#FFFFFF', padding: '32px 16px', position: 'relative' }}
     >
+      {/* Botón modo noche */}
+      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
+
       {/* Logo */}
       <div className="mb-6 flex items-center justify-center">
-        <Image src="/logo_gurpomlp.svg" alt="Reúso" width={120} height={40} priority />
+        <Image
+          src="/logo-completo.svg"
+          alt="Reúso"
+          width={140}
+          height={44}
+          priority
+          style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+        />
       </div>
 
       {/* Card */}
@@ -253,7 +297,7 @@ export default function RegistroPage() {
 
               {/* Nombre */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">Nombre</label>
+                <label className="text-xs font-semibold text-[#474747]/70">Nombre</label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
                   <input
@@ -269,7 +313,7 @@ export default function RegistroPage() {
 
               {/* Apellido */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">
+                <label className="text-xs font-semibold text-[#474747]/70">
                   Apellido <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
                 </label>
                 <div className="relative">
@@ -287,7 +331,7 @@ export default function RegistroPage() {
 
               {/* Email */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">Correo electrónico</label>
+                <label className="text-xs font-semibold text-[#474747]/70">Correo electrónico</label>
                 <div className="relative">
                   <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
                   <input
@@ -303,7 +347,7 @@ export default function RegistroPage() {
 
               {/* Teléfono */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">
+                <label className="text-xs font-semibold text-[#474747]/70">
                   Teléfono <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
                 </label>
                 <div className="flex gap-2">
@@ -311,7 +355,7 @@ export default function RegistroPage() {
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={() => setMostrarPaises(v => !v)}
+                      onClick={() => { setMostrarPaises(v => !v); setBusquedaPais('') }}
                       className="flex items-center gap-1.5 px-3 py-3.5 rounded-2xl border border-[rgba(0,130,124,0.20)] bg-white/70 hover:bg-white transition-all text-sm text-[#474747] min-w-[90px]"
                     >
                       <img
@@ -325,25 +369,38 @@ export default function RegistroPage() {
                       <CaretDown size={12} className="text-[#474747]/40" />
                     </button>
                     {mostrarPaises && (
-                      <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-[rgba(0,130,124,0.15)] rounded-2xl shadow-lg py-1 min-w-[160px]">
-                        {PAISES.map(p => (
-                          <button
-                            key={p.code}
-                            type="button"
-                            onClick={() => { setIndicativo(p); setMostrarPaises(false) }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#474747] hover:bg-[#00827C]/8 transition-colors"
-                          >
-                            <img
-                              src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${p.code}.svg`}
-                              alt={p.name}
-                              width={18}
-                              height={13}
-                              style={{ borderRadius: 3, objectFit: 'cover', flexShrink: 0 }}
-                            />
-                            <span className="text-xs font-medium">{p.name}</span>
-                            <span className="ml-auto text-xs text-[#474747]/50">{p.dial}</span>
-                          </button>
-                        ))}
+                      <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-[rgba(0,130,124,0.15)] rounded-2xl shadow-lg min-w-[200px]" style={{ maxHeight: 260, display: 'flex', flexDirection: 'column' }}>
+                        <div className="px-2 pt-2 pb-1 border-b border-[rgba(0,130,124,0.10)]">
+                          <input
+                            autoFocus
+                            type="text"
+                            value={busquedaPais}
+                            onChange={e => setBusquedaPais(e.target.value)}
+                            placeholder="Buscar país..."
+                            className="w-full px-3 py-1.5 rounded-xl border border-[rgba(0,130,124,0.20)] text-xs text-[#474747] outline-none focus:border-[#00827C]"
+                            onClick={e => e.stopPropagation()}
+                          />
+                        </div>
+                        <div style={{ overflowY: 'auto', flex: 1 }}>
+                          {PAISES.filter(p => p.name.toLowerCase().includes(busquedaPais.toLowerCase())).map(p => (
+                            <button
+                              key={p.code}
+                              type="button"
+                              onClick={() => { setIndicativo(p); setMostrarPaises(false); setBusquedaPais('') }}
+                              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#474747] hover:bg-[#00827C]/8 transition-colors"
+                            >
+                              <img
+                                src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${p.code}.svg`}
+                                alt={p.name}
+                                width={18}
+                                height={13}
+                                style={{ borderRadius: 3, objectFit: 'cover', flexShrink: 0 }}
+                              />
+                              <span className="text-xs font-medium">{p.name}</span>
+                              <span className="ml-auto text-xs text-[#474747]/50">{p.dial}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -361,10 +418,28 @@ export default function RegistroPage() {
                 </div>
               </div>
 
+              {/* Apodo */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-[#474747]/70">
+                    Apodo <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
+                  </label>
+                  <span className="text-[10px] text-[#474747]/40">{apodo.length}/15</span>
+                </div>
+                <input
+                  type="text"
+                  value={apodo}
+                  onChange={e => setApodo(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ.]/g, '').slice(0, 15))}
+                  placeholder="¿Cómo te llamamos?"
+                  autoComplete="nickname"
+                  className={inputBase}
+                />
+              </div>
+
               {/* Código de empresa */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">
+                  <label className="text-xs font-semibold text-[#474747]/70">
                     Código de empresa <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
                   </label>
                   <div className="relative">
@@ -448,7 +523,7 @@ export default function RegistroPage() {
 
               {/* Sector */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">¿En qué sector trabajas?</label>
+                <label className="text-xs font-semibold text-[#474747]/70">¿En qué sector trabajas?</label>
                 <div className="flex flex-wrap gap-2">
                   {SECTORES.map(s => (
                     <button
@@ -469,7 +544,7 @@ export default function RegistroPage() {
 
               {/* Frecuencia */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">¿Con qué frecuencia reutilizas?</label>
+                <label className="text-xs font-semibold text-[#474747]/70">¿Con qué frecuencia reutilizas?</label>
                 <div className="flex flex-wrap gap-2">
                   {FRECUENCIAS.map(f => (
                     <button
@@ -490,7 +565,7 @@ export default function RegistroPage() {
 
               {/* Motivación */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">¿Cuál es tu principal motivación?</label>
+                <label className="text-xs font-semibold text-[#474747]/70">¿Cuál es tu principal motivación?</label>
                 <div className="flex flex-col gap-2">
                   {MOTIVACIONES.map(m => (
                     <button
@@ -565,27 +640,9 @@ export default function RegistroPage() {
                 <p className="text-sm text-[#474747]/60">Elige una contraseña segura para proteger tu cuenta.</p>
               </div>
 
-              {/* Apodo (opcional) */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">
-                    Apodo <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
-                  </label>
-                  <span className="text-[10px] text-[#474747]/40">{apodo.length}/15</span>
-                </div>
-                <input
-                  type="text"
-                  value={apodo}
-                  onChange={e => setApodo(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ.]/g, '').slice(0, 15))}
-                  placeholder="¿Cómo te llamamos?"
-                  autoComplete="nickname"
-                  className={inputBase}
-                />
-              </div>
-
               {/* Contraseña */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">Contraseña</label>
+                <label className="text-xs font-semibold text-[#474747]/70">Contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwd ? 'text' : 'password'}
@@ -603,26 +660,38 @@ export default function RegistroPage() {
                     {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {/* Indicador de fortaleza */}
-                {password && (
-                  <div className="flex flex-col gap-1">
-                    <div className="h-1.5 bg-[rgba(0,130,124,0.10)] rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-300"
-                        style={{ width: fuerzaCfg.width, background: fuerzaCfg.color }}
-                      />
-                    </div>
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="font-semibold" style={{ color: fuerzaCfg.color }}>{fuerzaCfg.label}</span>
-                      <span className="text-[#474747]/40">Mín. 8 chars · una mayúscula · un número</span>
-                    </div>
+                {/* Indicador de fortaleza + reglas */}
+                <div className="flex flex-col gap-1.5 mt-0.5">
+                  <div className="h-1.5 bg-[rgba(0,130,124,0.10)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{ width: password ? fuerzaCfg.width : '0%', background: fuerzaCfg.color }}
+                    />
                   </div>
-                )}
+                  {password && (
+                    <span className="text-xs font-semibold" style={{ color: fuerzaCfg.color }}>{fuerzaCfg.label}</span>
+                  )}
+                  <div className="flex flex-col gap-1 mt-0.5">
+                    {[
+                      { ok: password.length >= 8,   texto: 'Mínimo 8 caracteres' },
+                      { ok: /[A-Z]/.test(password),  texto: 'Una letra mayúscula' },
+                      { ok: /[0-9]/.test(password),  texto: 'Un número' },
+                    ].map(({ ok, texto }) => (
+                      <div key={texto} className="flex items-center gap-1.5">
+                        {ok
+                          ? <CheckCircle size={13} weight="duotone" className="text-[#38B98E] flex-shrink-0" />
+                          : <Circle size={13} weight="regular" className="text-[#474747]/25 flex-shrink-0" />
+                        }
+                        <span className={`text-xs ${ok ? 'text-[#38B98E]' : 'text-[#474747]/40'}`}>{texto}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* Confirmar contraseña */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70 uppercase tracking-wide">Confirmar contraseña</label>
+                <label className="text-xs font-semibold text-[#474747]/70">Confirmar contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwdConf ? 'text' : 'password'}
@@ -647,7 +716,7 @@ export default function RegistroPage() {
                 )}
               </div>
 
-              {/* Checkbox Términos */}
+              {/* Checkbox único: términos + privacidad + datos (obligatorio) */}
               <label
                 className="flex items-start gap-2.5 cursor-pointer select-none group"
                 onClick={() => {
@@ -661,32 +730,28 @@ export default function RegistroPage() {
                 }
                 <span className="text-sm text-[#474747]/70 group-hover:text-[#474747] transition-colors leading-snug">
                   He leído y acepto los{' '}
-                  <span
-                    className="text-[#00827C] font-semibold hover:underline"
-                    onClick={e => { e.stopPropagation(); window.open('/legal', '_blank') }}
-                  >
-                    términos, privacidad y condiciones legales
+                  <span className="text-[#00827C] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal', '_blank') }}>
+                    términos y privacidad
+                  </span>
+                  {' '}y el{' '}
+                  <span className="text-[#00827C] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal/datos', '_blank') }}>
+                    tratamiento de mis datos
                   </span>
                 </span>
               </label>
 
-              {/* Checkbox Tratamiento de datos */}
+              {/* Checkbox newsletter (opcional) */}
               <label
                 className="flex items-start gap-2.5 cursor-pointer select-none group"
-                onClick={() => setAceptaDatos(v => !v)}
+                onClick={() => setSuscritoNewsletter(v => !v)}
               >
-                {aceptaDatos
+                {suscritoNewsletter
                   ? <CheckSquare size={20} weight="duotone" className="text-[#00827C] flex-shrink-0 mt-0.5" />
                   : <Square size={20} weight="regular" className="text-[#474747]/40 flex-shrink-0 mt-0.5 group-hover:text-[#00827C]/60 transition-colors" />
                 }
                 <span className="text-sm text-[#474747]/70 group-hover:text-[#474747] transition-colors leading-snug">
-                  Acepto el tratamiento de mis datos personales según la{' '}
-                  <span
-                    className="text-[#00827C] font-semibold hover:underline"
-                    onClick={e => { e.stopPropagation(); window.open('/legal/datos', '_blank') }}
-                  >
-                    política de datos
-                  </span>
+                  Quiero recibir novedades sobre economía circular{' '}
+                  <span className="text-[#474747]/40 font-normal">(opcional)</span>
                 </span>
               </label>
 

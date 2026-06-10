@@ -239,15 +239,16 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-09', categoria: 'Autenticación', ruta: '/login', critica: false,
-    titulo: 'Ataque de Fuerza Bruta / Multi-login simultáneo',
-    descripcion: 'Evalúa la tolerancia del backend de login ante peticiones masivas concurrentes en ráfaga (fuerza bruta).',
+    titulo: 'Límite de intentos de inicio de sesión (fuerza bruta)',
+    descripcion: 'Verifica que el backend bloquee la IP después de 5 intentos fallidos consecutivos de login en 60 segundos.',
     pasos: [
-      'Abre /login. Abre DevTools en el navegador (Mac: Cmd+Option+I / Windows: F12) y ve a la pestaña "Consola" (Console).',
-      'Haz clic en el campo de la consola. Chrome puede mostrar el mensaje "Escribe \'allow pasting\'" — si aparece, escribe exactamente las palabras allow pasting y presiona Enter antes de pegar cualquier código.',
-      'Pega el siguiente script en la consola y presiona Enter: for(let i=0;i<15;i++){fetch(\'/api/auth/login\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({email:\'bruteforce@test.com\',password:\'wrong\'})}).then(r=>console.log(\'Intento\',(i+1),r.status))}',
-      'Observa los códigos de estado en la consola. Los primeros deben ser 401 (credenciales incorrectas) y a partir del 4.o o 5.o debe aparecer 429 (demasiadas solicitudes).',
+      'Ve a /login en Chrome.',
+      'Abre DevTools con Cmd+Option+I (Mac) o F12 (Windows) y haz clic en la pestaña Consola.',
+      'Chrome puede mostrar el aviso "Don\'t paste code you don\'t understand". Si aparece, escribe exactamente: allow pasting — y presiona Enter. Luego pega el script.',
+      'Copia y pega este script en la consola, luego presiona Enter: [...Array(6)].forEach((_,i)=>setTimeout(()=>fetch(\'/api/auth/login\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({email:\'test@fail.com\',password:\'wrong\'+i,turnstile_token:\'skip\'})}).then(r=>r.json()).then(d=>console.log(\'Intento\'+(i+1)+\':\',d.error||\'ok\')),i*800))',
+      'Espera 7 segundos. Los primeros intentos deben mostrar "Credenciales incorrectas". El intento 6 debe mostrar algo como "Demasiados intentos. Intenta de nuevo en un momento."',
     ],
-    esperado: 'El sistema limita las peticiones de forma activa. Al menos a partir de la 4.ª o 5.ª petición consecutiva en el mismo segundo se recibe un código de error 429 (Too Many Requests) o se activa la validación Turnstile.',
+    esperado: 'Los primeros 5 intentos retornan 401 con mensaje de credenciales incorrectas. El intento 6 retorna 429 con mensaje de demasiados intentos.',
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1534,16 +1535,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-11', categoria: 'Autenticación', ruta: '/registro', critica: true,
-    titulo: 'Autenticación — Resistencia ante el bloqueo o caída de Cloudflare Turnstile',
-    descripcion: 'Valida que el sistema de registro y login permanezca hermético si un atacante intenta saltarse o simular la validación del Captcha de Cloudflare bloqueando su carga.',
+    titulo: 'Resistencia al bloqueo de Cloudflare Turnstile',
+    descripcion: 'Verifica que el formulario de registro permita enviar el formulario aunque el widget de Turnstile no cargue (falla abierta — no bloquea al usuario).',
     pasos: [
-      'Abre /registro. Abre DevTools (Mac: Cmd+Option+I / Windows: F12) y ve a la pestaña "Red" (Network).',
-      'En la lista de peticiones, busca una que contenga "challenges.cloudflare.com" o "turnstile". Haz clic derecho sobre esa fila y selecciona "Bloquear URL de solicitud" (puede decir "Block request URL" en inglés).',
-      'Si la opción de bloquear no aparece: en Chrome, ve a Ajustes (tres puntos) > Más herramientas > Bloqueo de solicitudes de red y añade el patrón *challenges.cloudflare.com*.',
-      'Recarga la página /registro con el bloqueo activo. El widget de Turnstile no debe cargarse.',
-      'Rellena todos los campos del formulario e intenta hacer clic en "Crear cuenta". Verifica que el sistema muestra un error indicando que la verificación de seguridad es requerida y no envía el registro.',
+      'Ve a /registro en Chrome y completa el Paso 1 (datos) y el Paso 2 (perfil) hasta llegar al Paso 3 (contraseña).',
+      'Abre DevTools con Cmd+Option+I (Mac) o F12. Ve a la pestaña Red (Network).',
+      'Escribe turnstile en el campo de filtro de Network.',
+      'Recarga la página con Cmd+R. Aparecerán peticiones a challenges.cloudflare.com.',
+      'Haz clic derecho sobre la primera petición de Turnstile y selecciona "Bloquear URL de solicitud" (Block request URL). Si no aparece esa opción, ve a Ajustes en DevTools (ícono de engranaje) > pestaña Throttling > Network conditions y activa "Offline" solo para la URL de Turnstile.',
+      'Recarga de nuevo. El widget de Turnstile no debe aparecer en el Paso 3.',
+      'Rellena todos los campos del Paso 3 con una contraseña fuerte (ej. Test1234) y acepta los términos. Haz clic en "Crear cuenta".',
     ],
-    esperado: 'El sistema detecta la falta del token de verificación de Turnstile. El backend rechaza la petición con un error controlado (ej. 400 "Verificación de seguridad requerida") y el formulario no procesa el registro.',
+    esperado: 'El formulario procesa el envío aunque Turnstile no cargó. El sistema no bloquea al usuario por falla del captcha. La cuenta se crea o se muestra error de validación de datos — nunca un error de "verificación de seguridad requerida".',
   },
   {
     id: 'emp-13', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/marca', critica: false,
@@ -1910,7 +1913,7 @@ export default function QAPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-fullr border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
                   Auditoría & QA
                 </span>
                 <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>
@@ -2036,7 +2039,7 @@ export default function QAPage() {
               className={`border ${theme.headerBg} rounded-2xl p-4 transition-all`}
               style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
             >
-              <h2 className={`text-sm font-semibold uppercase tracking-wider ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
+              <h2 className={`text-sm font-semiboldr ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
                 <span>Módulos del sistema</span>
                 <span className={`text-[10px] lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
               </h2>
@@ -2072,7 +2075,7 @@ export default function QAPage() {
 
                       <div className="pl-2.5 flex items-start justify-between gap-2">
                         <span
-                          className="text-xs font-bold uppercase px-1.5 py-0.5 rounded tracking-wide flex items-center gap-1"
+                          className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide flex items-center gap-1"
                           style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
                         >
                           <Icon size={11} weight="duotone" />
@@ -2128,7 +2131,7 @@ export default function QAPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
                     <catActual.icono size={16} weight="duotone" style={{ color: catActual.color }} />
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: catActual.color }}>
+                    <span className="text-xs font-boldr" style={{ color: catActual.color }}>
                       {catActual.key}
                     </span>
                   </div>
@@ -2196,7 +2199,7 @@ export default function QAPage() {
                               return (
                                 <span
                                   key={rol}
-                                  className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
+                                  className={`text-[9px] px-1.5 py-0.2 rounded font-semiboldr ${
                                     checked
                                       ? 'bg-[#38B98E]/15 border border-[#38B98E]/30 text-[#38B98E]'
                                       : isDark
@@ -2217,7 +2220,7 @@ export default function QAPage() {
                               return (
                                 <span
                                   key={campo}
-                                  className="text-[9px] px-1.5 rounded font-semibold uppercase tracking-wider flex items-center gap-0.5"
+                                  className="text-[9px] px-1.5 rounded font-semiboldr flex items-center gap-0.5"
                                   style={{
                                     background: color ? `${color}18` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                                     border: `1px solid ${color ? `${color}40` : isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'}`,
@@ -2276,7 +2279,7 @@ export default function QAPage() {
                         {/* Pasos */}
                         {tarea.pasos.length > 0 && (
                           <div className="mb-4">
-                            <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>Pasos</p>
+                            <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-2`}>Pasos</p>
                             <div
                               className="rounded-xl p-4"
                               style={{ background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,130,124,0.03)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.08)'}` }}
@@ -2295,13 +2298,13 @@ export default function QAPage() {
                           className="rounded-xl px-4 py-3 mb-4"
                           style={{ background: isDark ? 'rgba(214,243,145,0.04)' : 'rgba(0,130,124,0.04)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.10)'}` }}
                         >
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary}`}>Resultado esperado: </span>
+                          <span className={`text-[10px] font-boldr ${theme.textSecondary}`}>Resultado esperado: </span>
                           <span className={`text-xs ${theme.textPrimary}`}>{tarea.esperado}</span>
                         </div>
 
                         {/* Checklist de Perfiles de Prueba */}
                         <div className="mb-4">
-                          <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
+                          <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-2`}>
                             Checklist de Perfiles (Marca los probados)
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -2337,7 +2340,7 @@ export default function QAPage() {
                           const valorActual = tarea[campo] ?? 'pendiente'
                           return (
                             <div key={campo} className="mb-3">
-                              <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-1.5`}>
+                              <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-1.5`}>
                                 {esDia ? '☀ Resultado Modo Día' : '☾ Resultado Modo Noche'}
                               </p>
                               <div className="flex gap-1.5 flex-wrap">
@@ -2366,7 +2369,7 @@ export default function QAPage() {
                         })}
 
                         {/* Notas */}
-                        <label className={`block text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
+                        <label className={`block text-[10px] font-boldr ${theme.textSecondary} mb-2`}>
                           Tus apuntes
                         </label>
                         <textarea
@@ -2384,7 +2387,7 @@ export default function QAPage() {
                         />
 
                         {/* Veredicto general */}
-                        <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mt-4 mb-2`}>
+                        <p className={`text-[10px] font-boldr ${theme.textSecondary} mt-4 mb-2`}>
                           Veredicto general de la prueba
                         </p>
                         <div className="flex gap-2 flex-wrap">
@@ -2498,7 +2501,7 @@ export default function QAPage() {
               ].map(m => (
                 <div key={m.l} className="flex-1 text-center py-3 px-2 rounded-xl" style={{ background: `${m.c}12`, border: `1px solid ${m.c}25` }}>
                   <p className="m-0 text-2xl font-bold" style={{ color: m.c }}>{m.v}</p>
-                  <p className="m-0 text-[9px] font-bold uppercase tracking-wide" style={{ color: m.c }}>{m.l}</p>
+                  <p className="m-0 text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
                 </div>
               ))}
             </div>

@@ -59,9 +59,7 @@ export default function RecuperarPage() {
     setLoading(true)
     setError('')
 
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: undefined, // usamos OTP, no link mágico
-    })
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim())
 
     setLoading(false)
 

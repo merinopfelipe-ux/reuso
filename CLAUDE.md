@@ -2,7 +2,7 @@
 V14.9 (2026-06-09) · reuso.lurdes.co · Grupo MLP S.A.S
 VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
-## 5 DIRECTRICES IRRENUNCIABLES
+## 6 DIRECTRICES IRRENUNCIABLES
 
 0) FONDO INTERIOR BLANCO PURO: Dentro de la app autenticada el fondo de página es SIEMPRE #FFFFFF.
    Prohibido usar #F5FAFA, #F2F9F8, #F8FBFA u otro tono como fondo de pantalla completa en rutas protegidas.
@@ -26,7 +26,12 @@ VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
    OCR IA extrae, usuario valida (la IA nunca inventa).
    Cada factor CO2 muestra su origen (ecoinvent, ELCD, DEFRA).
 
-5) EFICIENCIA: Rápido, ligero, inteligente.
+5) SIN MAYÚSCULAS SOSTENIDAS: NUNCA usar `text-transform: uppercase` ni clase `uppercase` de Tailwind en texto visible de UI.
+   Aplica a labels, títulos, botones, badges, cabeceras de tabla y cualquier texto que el usuario vea.
+   Los textos van en Title Case ("Nombre") o Sentence case ("Correo electrónico") según corresponda.
+   Solo se permite `textTransform: 'capitalize'` para nombres y roles generados dinámicamente.
+
+6) EFICIENCIA: Rápido, ligero, inteligente.
    Prompts Claude Code: reutiliza código existente, no re-escribas.
    Performance: menos de 2s carga, ISR en públicas, lazy-load.
    Prohibido alucinar: no inventar colores, componentes ni factores.

@@ -72,15 +72,6 @@ export async function POST(request: NextRequest) {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 
-  // Rate limit: 5/min por IP
-  const allowed = process.env.SKIP_RATE_LIMIT === 'true' || await checkRateLimit(ip, 'login', 5, 60_000)
-  if (!allowed) {
-    return NextResponse.json(
-      { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
-      { status: 429 }
-    )
-  }
-
   const body = await request.json().catch(() => null)
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) {
@@ -92,16 +83,26 @@ export async function POST(request: NextRequest) {
 
   const { email, password, turnstile_token, acepta_legal } = parsed.data
 
-  // Verificar Turnstile
+  // Rate limit y Turnstile en paralelo
+  const skipRateLimit = process.env.SKIP_RATE_LIMIT === 'true'
   const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
-  if (!skipTurnstile) {
-    const turnstileOk = await verifyTurnstile(turnstile_token, ip)
-    if (!turnstileOk) {
-      return NextResponse.json(
-        { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
-        { status: 400 }
-      )
-    }
+
+  const [allowed, turnstileOk] = await Promise.all([
+    skipRateLimit ? Promise.resolve(true) : checkRateLimit(ip, 'login', 5, 60_000),
+    skipTurnstile ? Promise.resolve(true) : verifyTurnstile(turnstile_token, ip),
+  ])
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
+      { status: 429 }
+    )
+  }
+  if (!turnstileOk) {
+    return NextResponse.json(
+      { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
+      { status: 400 }
+    )
   }
 
   const supabase = createClient()

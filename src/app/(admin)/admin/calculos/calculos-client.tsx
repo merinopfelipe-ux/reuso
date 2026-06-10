@@ -89,7 +89,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
             <thead>
               <tr style={{ background: C.light }}>
                 {['Fecha', 'Usuario', 'Empresa', 'CO₂eq', 'Agua', 'Estado', 'Acción'].map(h => (
-                  <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
+                  <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -132,7 +132,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
 
       {/* Modal anulación */}
       {anulando && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: 20 }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2500, padding: 20 }}>
           <div style={{ background: 'var(--bg-card)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 440, boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <p style={{ fontSize: 16, fontWeight: 700, color: C.dark, margin: 0 }}>Anular cálculo</p>

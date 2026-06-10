@@ -24,23 +24,23 @@ async function verificarAccesoCotizador(
     .single()
   if (!modulo) return false
 
-  // Verificar empresa
-  const { data: me } = await supabase
-    .from('modulos_empresas')
-    .select('activo')
-    .eq('modulo_id', modulo.id)
-    .eq('empresa_id', empresaId)
-    .single()
+  // Verificar empresa y usuario en paralelo (ambos necesitan modulo.id)
+  const [{ data: me }, { data: mu }] = await Promise.all([
+    supabase
+      .from('modulos_empresas')
+      .select('activo')
+      .eq('modulo_id', modulo.id)
+      .eq('empresa_id', empresaId)
+      .single(),
+    supabase
+      .from('modulos_usuarios')
+      .select('activo')
+      .eq('user_id', userId)
+      .eq('modulo_id', modulo.id)
+      .eq('empresa_id', empresaId)
+      .single(),
+  ])
   if (!me || !me.activo) return false
-
-  // Verificar usuario (si existe restricción explícita)
-  const { data: mu } = await supabase
-    .from('modulos_usuarios')
-    .select('activo')
-    .eq('user_id', userId)
-    .eq('modulo_id', modulo.id)
-    .eq('empresa_id', empresaId)
-    .single()
   if (!mu) return true   // sin restricción → hereda acceso empresa
   return mu.activo === true
 }
