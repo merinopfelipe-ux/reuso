@@ -187,7 +187,7 @@ export default function AdminStatusPage() {
   const historicos = incidentes.filter(i => i.estado === 'resuelto')
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto">
       <AdminPageHeader
         titulo="Estado de la Calculadora"
         subtitulo="Publica y administra incidentes en tiempo real para la página de estado pública"

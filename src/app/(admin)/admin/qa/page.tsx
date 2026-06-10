@@ -6,7 +6,7 @@ import {
   ArrowCounterClockwise, Warning, Lightning, Lock, Moon, ChartBar,
   Robot, FileText, Storefront, Buildings, Bell,
   ShieldCheck, Globe, Gear, BookOpen,
-  MagnifyingGlass, CaretDown, CaretUp, FloppyDisk,
+  MagnifyingGlass, CaretDown, CaretUp, FloppyDisk, X,
 } from '@phosphor-icons/react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -140,11 +140,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     titulo: 'Login válido — tiempo de respuesta',
     descripcion: 'Mide el tiempo de respuesta real del endpoint de autenticación desde que el usuario hace clic en "Ingresar" hasta que es redirigido completamente al panel /empresa.',
     pasos: [
-      'Abre la consola de desarrollo (F12 o Ctrl+Shift+I / Cmd+Opt+I) -> pestaña Network (Red) -> activa "Preserve log" y haz clic en la papelera para limpiar el historial.',
-      'Ingresa un email y contraseña válidos correspondientes a una cuenta de rol empresa_admin (ej. admin@empresa.com / admin123).',
-      'Haz clic en "Ingresar" e inicia un cronómetro manualmente o inspecciona la petición POST /api/auth/login en la pestaña Network.',
-      'Verifica el tiempo de finalización del render de la ruta /empresa en el panel de Network de DevTools.',
-      'Anota los milisegundos exactos medidos en el campo de "Tus apuntes".',
+      'Abre /login en Chrome o Safari. Abre DevTools DENTRO DEL NAVEGADOR (NO en la terminal): Mac: Cmd+Option+I / Windows: F12. Ve a la pestaña "Red" (Network).',
+      'Activa "Preserve log" (casilla arriba en la barra de Network) y haz clic en el ícono de papelera para limpiar el historial de peticiones.',
+      'Ingresa un email y contraseña válidos de una cuenta empresa_admin y haz clic en "Ingresar".',
+      'En la pestaña Network, busca la fila que dice "login" o "POST /api/auth/login". Haz clic en ella y mira la columna "Time" (Tiempo) — ese es el tiempo de respuesta del servidor.',
+      'Anota los milisegundos medidos en el campo de apuntes. Luego observa que la página redirigió a /empresa correctamente.',
     ],
     esperado: 'Redirección exitosa a /empresa en menos de 1000 milisegundos sin bloqueos visuales ni spinners infinitos.',
   },
@@ -191,11 +191,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     titulo: 'Registro libre — flujo completo',
     descripcion: 'Completa el proceso de creación de una nueva cuenta libre, validando la interacción del captcha Cloudflare Turnstile y la redirección final.',
     pasos: [
-      'Abre /registro en una ventana de incógnito del navegador.',
-      'Rellena todos los campos obligatorios: Nombre Completo, Correo de pruebas, Apodo y Contraseña segura.',
-      'Selecciona el checkbox de términos y condiciones y el de tratamiento de datos.',
-      'Completa la verificación de seguridad del widget Cloudflare Turnstile.',
-      'Envía el formulario haciendo clic en "Crear cuenta" y observa la redirección.',
+      'Abre /registro en una ventana de incógnito del navegador (Cmd+Shift+N en Mac / Ctrl+Shift+N en Windows).',
+      'Completa los campos en este orden: "Nombre" (ej. Prueba), "Apellido" (ej. QA), "Correo electrónico" (usa un correo real que puedas revisar), "Apodo" (ej. testerqa), "Contraseña" (mínimo 8 caracteres, una mayúscula y un número).',
+      'Busca los dos checkboxes de verificación (muestran un cuadrado o tilde verde): marca "Acepto los términos y condiciones" y "Acepto el tratamiento de datos". Ambos son OBLIGATORIOS.',
+      'El widget de Cloudflare Turnstile puede marcarse automáticamente en verde. Si no se marca solo, haz clic en el cuadro verde de verificación.',
+      'Haz clic en "Crear cuenta" y observa si eres redirigido a una pantalla de confirmación.',
     ],
     esperado: 'Redirección automática a /confirmar-email?email=... mostrando un banner de éxito indicando que se debe revisar la bandeja de entrada para verificar la cuenta.',
   },
@@ -241,10 +241,10 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     titulo: 'Ataque de Fuerza Bruta / Multi-login simultáneo',
     descripcion: 'Evalúa la tolerancia del backend de login ante peticiones masivas concurrentes en ráfaga (fuerza bruta).',
     pasos: [
-      'Abre /login y presiona F12 para abrir DevTools.',
-      'Ve a la pestaña Console y ejecuta el siguiente script para simular 15 intentos simultáneos de login:',
-      'for(let i=0; i<15; i++) { fetch(\'/api/auth/login\', {method:\'POST\', headers:{\'Content-Type\':\'application/json\'}, body: JSON.stringify({email:\'bruteforce_test@reuso.com\', password:\'wrongpassword\'})}).then(r=>console.log(`Intento ${i+1}:`, r.status)) }',
-      'Comprueba en la consola la respuesta de las llamadas.',
+      'Abre /login. Abre DevTools en el navegador (Mac: Cmd+Option+I / Windows: F12) y ve a la pestaña "Consola" (Console).',
+      'Haz clic en el campo de la consola. Chrome puede mostrar el mensaje "Escribe \'allow pasting\'" — si aparece, escribe exactamente las palabras allow pasting y presiona Enter antes de pegar cualquier código.',
+      'Pega el siguiente script en la consola y presiona Enter: for(let i=0;i<15;i++){fetch(\'/api/auth/login\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({email:\'bruteforce@test.com\',password:\'wrong\'})}).then(r=>console.log(\'Intento\',(i+1),r.status))}',
+      'Observa los códigos de estado en la consola. Los primeros deben ser 401 (credenciales incorrectas) y a partir del 4.o o 5.o debe aparecer 429 (demasiadas solicitudes).',
     ],
     esperado: 'El sistema limita las peticiones de forma activa. Al menos a partir de la 4.ª o 5.ª petición consecutiva en el mismo segundo se recibe un código de error 429 (Too Many Requests) o se activa la validación Turnstile.',
   },
@@ -1487,10 +1487,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     titulo: 'Flujo de Onboarding Incompleto — Bloqueo de rutas privadas',
     descripcion: 'Asegura que los usuarios que inicien la creación de una empresa pero no terminen el formulario de onboarding queden bloqueados en la ruta de configuración inicial, impidiendo el bypass a /empresa o /dashboard.',
     pasos: [
-      'Crea una cuenta nueva libre registrándote en /registro y confirma tu cuenta.',
-      'Inicia sesión con esta nueva cuenta; el sistema detectará que no perteneces a ninguna empresa y te redirigirá a /empresa/nueva.',
-      'Estando en la pantalla /empresa/nueva, intenta forzar la navegación escribiendo en la URL del navegador /empresa o /dashboard directamente.',
-      'Comprueba a qué página te redirige de forma automática el middleware de Next.js.',
+      'Abre /registro en una ventana de incógnito y crea una cuenta nueva con un email de prueba (ej. qa_onboarding@tudominio.com). Necesitas acceso a ese correo para confirmar la cuenta.',
+      'Confirma la cuenta haciendo clic en el enlace que llega al correo de prueba.',
+      'Inicia sesión con esa cuenta nueva. El sistema debe detectar que no tienes empresa vinculada y redirigirte automáticamente a /empresa/nueva.',
+      'Estando en /empresa/nueva (sin completar el formulario), ve a la barra de direcciones del navegador, escribe directamente https://reuso.lurdes.co/empresa y presiona Enter.',
+      'Verifica que el middleware te devuelve a /empresa/nueva en lugar de mostrarte el panel de empresa.',
     ],
     esperado: 'El middleware detecta la ausencia de una organización vinculada a la sesión y te redirige de inmediato a /empresa/nueva con un mensaje indicando que debes completar el registro de tu empresa para poder ingresar al panel. No se renderizan los componentes internos de /empresa ni de /dashboard.',
   },
@@ -1535,11 +1536,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     titulo: 'Autenticación — Resistencia ante el bloqueo o caída de Cloudflare Turnstile',
     descripcion: 'Valida que el sistema de registro y login permanezca hermético si un atacante intenta saltarse o simular la validación del Captcha de Cloudflare bloqueando su carga.',
     pasos: [
-      'Ve a la pantalla de /registro.',
-      'Abre las DevTools, ve a la pestaña Network, haz clic derecho en el script de carga de Turnstile (challenges.cloudflare.com/turnstile/v0/api.js) y selecciona "Block request URL".',
-      'Recarga la página de registro. El widget de Turnstile no se cargará o fallará.',
-      'Rellena todos los campos e intenta forzar el envío del formulario.',
-      'Revisa si la UI te permite hacer clic y, en caso de que se envíe la petición HTTP, revisa que el backend devuelva un código de error de captcha requerido.',
+      'Abre /registro. Abre DevTools (Mac: Cmd+Option+I / Windows: F12) y ve a la pestaña "Red" (Network).',
+      'En la lista de peticiones, busca una que contenga "challenges.cloudflare.com" o "turnstile". Haz clic derecho sobre esa fila y selecciona "Bloquear URL de solicitud" (puede decir "Block request URL" en inglés).',
+      'Si la opción de bloquear no aparece: en Chrome, ve a Ajustes (tres puntos) > Más herramientas > Bloqueo de solicitudes de red y añade el patrón *challenges.cloudflare.com*.',
+      'Recarga la página /registro con el bloqueo activo. El widget de Turnstile no debe cargarse.',
+      'Rellena todos los campos del formulario e intenta hacer clic en "Crear cuenta". Verifica que el sistema muestra un error indicando que la verificación de seguridad es requerida y no envía el registro.',
     ],
     esperado: 'El sistema detecta la falta del token de verificación de Turnstile. El backend rechaza la petición con un error controlado (ej. 400 "Verificación de seguridad requerida") y el formulario no procesa el registro.',
   },
@@ -1609,6 +1610,20 @@ const ESTADO_CFG: Record<Estado, { label: string; color: string; icono: typeof C
   omitir:    { label: 'Omitir',    color: '#F6BF3E',               icono: Warning },
 }
 
+interface QAIntento {
+  id: string
+  ts: string
+  etiqueta: string
+  alcance: 'completo' | string
+  tareas: { id: string; estado: Estado; notas: string }[]
+}
+
+interface QAStore {
+  intentos: QAIntento[]
+  borrador: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
+}
+
+const LS_KEY_V3 = 'reuso_qa_v3'
 const LS_KEY = 'reuso_qa_v2'
 
 // ── Componente ─────────────────────────────────────────────────────────────────
@@ -1628,6 +1643,8 @@ export default function QAPage() {
   )
   const [expandida, setExpandida] = useState<string | null>(null)
   const [mostrarInforme, setMostrarInforme] = useState(false)
+  const [mostrarHistorial, setMostrarHistorial] = useState<string | null>(null) // null | 'completo' | nombreCategoria
+  const [intentos, setIntentos] = useState<QAIntento[]>([])
   const [categoriaActiva, setCategoriaActiva] = useState(CATEGORIAS[0].key)
   const [busqueda, setBusqueda] = useState('')
   const [ultimoGuardado, setUltimoGuardado] = useState<Date | null>(null)
@@ -1648,9 +1665,25 @@ export default function QAPage() {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(LS_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
+      // Cargar v3 (tiene borrador + historial de intentos)
+      const savedV3 = localStorage.getItem(LS_KEY_V3)
+      if (savedV3) {
+        const store = JSON.parse(savedV3) as { intentos?: QAIntento[]; borrador?: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[] }
+        if (store.borrador?.length) {
+          setTareas(prev => prev.map(t => {
+            const s = store.borrador!.find(p => p.id === t.id)
+            return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], temasProbados: s.temasProbados || [] } : t
+          }))
+          const ts = store.borrador[0]?.ts
+          if (ts) setUltimoGuardado(new Date(ts))
+        }
+        if (store.intentos?.length) setIntentos(store.intentos)
+        return
+      }
+      // Migración desde v2
+      const savedV2 = localStorage.getItem(LS_KEY)
+      if (savedV2) {
+        const parsed = JSON.parse(savedV2) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
         setTareas(prev => prev.map(t => {
           const s = parsed.find(p => p.id === t.id)
           return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], temasProbados: s.temasProbados || [] } : t
@@ -1665,21 +1698,44 @@ export default function QAPage() {
     const data = tareasList ?? tareasPendientesRef.current
     const ahora = new Date()
     try {
-      localStorage.setItem(LS_KEY, JSON.stringify(
-        data.map((t: Tarea) => ({
-          id: t.id,
-          estado: t.estado,
-          notas: t.notas,
-          rolesProbados: t.rolesProbados || [],
-          temasProbados: t.temasProbados || [],
-          ts: ahora.getTime()
-        }))
-      ))
+      const borrador = data.map((t: Tarea) => ({
+        id: t.id, estado: t.estado, notas: t.notas,
+        rolesProbados: t.rolesProbados || [],
+        temasProbados: t.temasProbados || [],
+        ts: ahora.getTime()
+      }))
+      const storeRaw = localStorage.getItem(LS_KEY_V3)
+      const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { intentos?: QAIntento[] }) : {}
+      localStorage.setItem(LS_KEY_V3, JSON.stringify({ intentos: storeExistente.intentos || [], borrador }))
       setUltimoGuardado(ahora)
       setSegundosRestantes(180)
       setGuardadoReciente(true)
       setTimeout(() => setGuardadoReciente(false), 2000)
     } catch { /* ignorar */ }
+  }, [])
+
+  const guardarIntento = useCallback((alcance: 'completo' | string) => {
+    const data = tareasPendientesRef.current
+    const tareasSnap = alcance === 'completo'
+      ? data
+      : data.filter(t => t.categoria === alcance)
+    setIntentos(prev => {
+      const numeroSiguiente = prev.filter(i => i.alcance === alcance).length + 1
+      const nuevo: QAIntento = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        ts: new Date().toISOString(),
+        etiqueta: `Intento ${numeroSiguiente}`,
+        alcance,
+        tareas: tareasSnap.map(t => ({ id: t.id, estado: t.estado, notas: t.notas }))
+      }
+      const actualizados = [nuevo, ...prev]
+      try {
+        const storeRaw = localStorage.getItem(LS_KEY_V3)
+        const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { borrador?: unknown }) : {}
+        localStorage.setItem(LS_KEY_V3, JSON.stringify({ ...storeExistente, intentos: actualizados }))
+      } catch { /* ignorar */ }
+      return actualizados
+    })
   }, [])
 
   useEffect(() => {
@@ -1833,15 +1889,16 @@ export default function QAPage() {
   const catActual = CATEGORIAS.find(c => c.key === categoriaActiva)!
 
   return (
-    <div className={`min-h-screen ${theme.bg} ${theme.textPrimary} font-sans antialiased p-4 md:p-6 lg:p-8 relative overflow-hidden transition-colors duration-500`}>
+    <div className={`min-h-screen ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
 
-      {/* Blobs de fondo */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob"
-          style={{ backgroundColor: theme.glowColor }} />
-        <div className={`absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full filter blur-[110px] animate-blob animation-delay-2000 ${isDark ? 'bg-[#D6F391]/10' : 'bg-[#38B98E]/10'}`} />
-        <div className={`absolute top-[40%] left-[20%] w-[350px] h-[350px] rounded-full filter blur-[100px] animate-blob animation-delay-4000 ${isDark ? 'bg-[#D6F391]/5' : 'bg-[#59A6E4]/5'}`} />
-      </div>
+      {/* Blobs de fondo — solo en modo noche (directriz #0: fondo blanco puro en luz) */}
+      {isDark && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob bg-[#D6F391]" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full filter blur-[110px] animate-blob animation-delay-2000 bg-[#D6F391]/10" />
+          <div className="absolute top-[40%] left-[20%] w-[350px] h-[350px] rounded-full filter blur-[100px] animate-blob animation-delay-4000 bg-[#D6F391]/5" />
+        </div>
+      )}
 
       <div className="relative z-10 max-w-7xl mx-auto">
 
@@ -1941,14 +1998,20 @@ export default function QAPage() {
                 <ArrowCounterClockwise size={13} /> Reiniciar
               </button>
               <button
-                onClick={() => guardar()}
+                onClick={() => { guardar(); guardarIntento('completo') }}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${
                   guardadoReciente
                     ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
                     : `${theme.cardBg} ${theme.textSecondary}`
                 }`}
               >
-                <FloppyDisk size={13} /> Guardar
+                <FloppyDisk size={13} /> Guardar general
+              </button>
+              <button
+                onClick={() => setMostrarHistorial('completo')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+              >
+                <FileText size={13} /> Historial ({intentos.filter(i => i.alcance === 'completo').length})
               </button>
               <button
                 onClick={() => setMostrarInforme(true)}
@@ -1956,7 +2019,7 @@ export default function QAPage() {
                   isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
                 }`}
               >
-                <FileText size={13} /> Informe
+                <FileText size={13} /> Informe final
               </button>
             </div>
           </div>
@@ -1976,19 +2039,30 @@ export default function QAPage() {
                 <span className={`text-[10px] lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
               </h2>
               <div className="flex flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1">
-                {CATEGORIAS.map(cat => {
+                {CATEGORIAS.map((cat, catIdx) => {
                   const isActive = categoriaActiva === cat.key
                   const ct = tareas.filter(t => t.categoria === cat.key)
                   const cOk = ct.filter(t => t.estado === 'ok').length
                   const cFail = ct.filter(t => t.estado === 'falla').length
-                  const isDone = cOk === ct.length && ct.length > 0
+                  const isDone = ct.length > 0 && ct.every(t => t.estado !== 'pendiente')
                   const Icon = cat.icono
+                  // Locking: categoría 0 siempre disponible; N solo si N-1 está completada
+                  const prevDone = catIdx === 0 || CATEGORIAS.slice(0, catIdx).every(prevCat => {
+                    const prevTareas = tareas.filter(t => t.categoria === prevCat.key)
+                    return prevTareas.length > 0 && prevTareas.every(t => t.estado !== 'pendiente')
+                  })
+                  const isLocked = !prevDone
 
                   return (
                     <button
                       key={cat.key}
-                      onClick={() => { setCategoriaActiva(cat.key); setExpandida(null) }}
-                      className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 relative group flex flex-col gap-1.5 ${isActive ? theme.sidebarActiveBg : theme.sidebarInactiveBg}`}
+                      onClick={() => { if (!isLocked) { setCategoriaActiva(cat.key); setExpandida(null) } }}
+                      disabled={isLocked}
+                      className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 relative group flex flex-col gap-1.5 ${
+                        isLocked
+                          ? `${isDark ? 'bg-transparent border-white/5 opacity-40' : 'bg-[#f9f9f9] border-[rgba(0,130,124,0.04)] opacity-50'} cursor-not-allowed`
+                          : isActive ? theme.sidebarActiveBg : theme.sidebarInactiveBg
+                      }`}
                     >
                       {/* Barra lateral de color */}
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl transition-all"
@@ -2003,11 +2077,17 @@ export default function QAPage() {
                           {cat.key.split(' ')[0]}
                         </span>
                         <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-80`}>
-                          <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
-                            {cOk}/{ct.length}
-                          </span>
-                          {isDone && <CheckCircle size={11} weight="fill" className="text-[#38B98E]" />}
-                          {cFail > 0 && <XCircle size={11} weight="fill" className="text-[#FF5E4B]" />}
+                          {isLocked ? (
+                            <Lock size={12} className="opacity-60" />
+                          ) : (
+                            <>
+                              <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
+                                {cOk}/{ct.length}
+                              </span>
+                              {isDone && <CheckCircle size={11} weight="fill" className="text-[#38B98E]" />}
+                              {cFail > 0 && <XCircle size={11} weight="fill" className="text-[#FF5E4B]" />}
+                            </>
+                          )}
                         </div>
                       </div>
 
@@ -2330,6 +2410,35 @@ export default function QAPage() {
                 )
               })}
             </div>
+
+            {/* ── Footer del módulo activo ─────────────────────────────── */}
+            <div className={`border ${theme.headerBg} rounded-2xl px-5 py-4 flex flex-col sm:flex-row items-center justify-between gap-3`}>
+              <div className={`text-xs ${theme.textSecondary}`}>
+                {intentos.filter(i => i.alcance === categoriaActiva).length > 0
+                  ? `${intentos.filter(i => i.alcance === categoriaActiva).length} intento(s) guardado(s) para este módulo`
+                  : 'Sin intentos guardados para este módulo'}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <button
+                  onClick={() => { guardar(); guardarIntento(categoriaActiva) }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+                >
+                  <FloppyDisk size={13} /> Guardar módulo
+                </button>
+                <button
+                  onClick={() => setMostrarHistorial(categoriaActiva)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+                >
+                  <FileText size={13} /> Ver historial ({intentos.filter(i => i.alcance === categoriaActiva).length})
+                </button>
+                <button
+                  onClick={() => setMostrarInforme(true)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
+                >
+                  <FileText size={13} /> Informe parcial
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -2337,19 +2446,21 @@ export default function QAPage() {
       {/* ── Modal de informe ─────────────────────────────────────────────────── */}
       {mostrarInforme && (
         <div
-          className="fixed inset-0 bg-black/55 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
           onClick={() => setMostrarInforme(false)}
         >
           <div
             onClick={e => e.stopPropagation()}
-            className={`rounded-2xl p-6 max-w-2xl w-full max-h-[88vh] flex flex-col gap-4 border ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
+            className={`rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col border overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
+            style={{ animation: 'modalIn 0.2s ease-out' }}
           >
-            <div className="flex items-center justify-between">
+            {/* Header del modal */}
+            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
               <div>
                 <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>Informe de QA</h2>
                 <p className={`text-xs ${theme.textSecondary} mt-0.5`}>{revisadas}/{total} revisadas · {criticas} críticas fallidas</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
                 <button
                   onClick={() => navigator.clipboard.writeText(generarInforme())}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${theme.cardBg} ${theme.textSecondary}`}
@@ -2362,8 +2473,16 @@ export default function QAPage() {
                 >
                   <DownloadSimple size={12} /> .txt
                 </button>
+                <button
+                  onClick={() => setMostrarInforme(false)}
+                  className={`ml-1 flex items-center justify-center w-10 h-10 rounded-xl border ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                  aria-label="Cerrar"
+                >
+                  <X size={20} />
+                </button>
               </div>
             </div>
+            <div className="flex flex-col gap-4 p-6 overflow-y-auto flex-1">
 
             <div className="flex gap-3">
               {[
@@ -2402,6 +2521,99 @@ export default function QAPage() {
                   ? `${total - revisadas} prueba(s) aún pendientes.`
                   : 'Todas las pruebas aprobadas. Sistema listo.'}
               </p>
+            </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal de historial ───────────────────────────────────────────────────── */}
+      {mostrarHistorial && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
+          onClick={() => setMostrarHistorial(null)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className={`rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
+            style={{ animation: 'modalIn 0.2s ease-out' }}
+          >
+            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
+              <div>
+                <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>
+                  {mostrarHistorial === 'completo' ? 'Historial general' : `Historial — ${mostrarHistorial}`}
+                </h2>
+                <p className={`text-xs ${theme.textSecondary} mt-0.5`}>
+                  {intentos.filter(i => i.alcance === mostrarHistorial).length} intento(s) guardado(s)
+                </p>
+              </div>
+              <button
+                onClick={() => setMostrarHistorial(null)}
+                className={`flex items-center justify-center w-10 h-10 rounded-xl border ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                aria-label="Cerrar"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 p-4 flex flex-col gap-3">
+              {intentos.filter(i => i.alcance === mostrarHistorial).length === 0 ? (
+                <p className={`text-sm text-center py-8 ${theme.textSecondary} opacity-60`}>
+                  Aún no hay intentos guardados. Usa &quot;Guardar módulo&quot; o &quot;Guardar general&quot; para crear un snapshot.
+                </p>
+              ) : intentos.filter(i => i.alcance === mostrarHistorial).map(intento => {
+                const okCount = intento.tareas.filter(t => t.estado === 'ok').length
+                const failCount = intento.tareas.filter(t => t.estado === 'falla').length
+                const pct = intento.tareas.length > 0 ? Math.round((okCount / intento.tareas.length) * 100) : 0
+                const fecha = new Date(intento.ts).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                const textoDescarga = [
+                  `INTENTO QA — ${intento.etiqueta}`,
+                  `Alcance: ${intento.alcance}`,
+                  `Fecha: ${fecha}`,
+                  `Resultado: ${okCount} ok · ${failCount} fallas · ${pct}%`,
+                  '─'.repeat(50),
+                  ...intento.tareas.map(t => {
+                    const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'omitir' ? '△' : '○'
+                    return `${ic} ${t.id}${t.notas ? `\n   Notas: ${t.notas}` : ''}`
+                  })
+                ].join('\n')
+
+                return (
+                  <div
+                    key={intento.id}
+                    className={`rounded-xl border p-4 flex flex-col gap-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#f9fefe] border-[rgba(0,130,124,0.10)]'}`}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <span className={`text-sm font-bold ${theme.textTitle}`}>{intento.etiqueta}</span>
+                        <span className={`ml-2 text-xs ${theme.textSecondary} opacity-60`}>{fecha}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${pct === 100 ? 'bg-[#38B98E]/15 text-[#38B98E]' : failCount > 0 ? 'bg-[#FF5E4B]/15 text-[#FF5E4B]' : 'bg-[#F6BF3E]/15 text-[#F6BF3E]'}`}>
+                          {okCount}/{intento.tareas.length} ok · {pct}%
+                        </span>
+                        <button
+                          onClick={() => {
+                            const blob = new Blob([textoDescarga], { type: 'text/plain' })
+                            const a = document.createElement('a')
+                            a.href = URL.createObjectURL(blob)
+                            a.download = `qa-${intento.alcance.replace(/\s+/g, '-').toLowerCase()}-intento${intentos.filter(i => i.alcance === mostrarHistorial).indexOf(intento) + 1}.txt`
+                            a.click()
+                            URL.revokeObjectURL(a.href)
+                          }}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs ${theme.cardBg} ${theme.textSecondary} hover:opacity-80`}
+                        >
+                          <DownloadSimple size={12} /> .txt
+                        </button>
+                      </div>
+                    </div>
+                    {failCount > 0 && (
+                      <p className="text-xs text-[#FF5E4B] opacity-80">
+                        {failCount} falla(s): {intento.tareas.filter(t => t.estado === 'falla').map(t => t.id).join(', ')}
+                      </p>
+                    )}
+                  </div>
+                )
+              })}
             </div>
           </div>
         </div>
