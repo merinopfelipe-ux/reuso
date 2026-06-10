@@ -112,6 +112,7 @@ emailBase({
 | Reset Password | Al pedir recuperar contraseña |
 | Magic Link | Login sin contraseña (desactivado, pero debe tener template) |
 | Change Email Address | Al cambiar el correo de la cuenta |
+| Reauthentication | Al pedir verificación de identidad antes de operación sensible |
 | Invite User | Invitación nativa de Supabase (no usada, pero debe tener template) |
 
 ---
