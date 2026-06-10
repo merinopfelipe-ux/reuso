@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import { emailBase } from '@/lib/email'
 import DOMPurify from 'isomorphic-dompurify'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -109,8 +110,14 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
           from: process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>',
           to: targetProfile.email,
           subject: `Actualización en ticket: ${ticket.titulo}`,
-          html: `<p>Hola ${targetProfile.nombre},</p>
-                 <p>El administrador respondió a tu consulta. Recrea en tu panel para ver más.</p>`
+          html: emailBase({
+            subtitulo: 'Respuesta a tu solicitud de soporte',
+            filas: [
+              { label: 'Usuario', valor: targetProfile.nombre ?? '' },
+              { label: 'Ticket',  valor: ticket.titulo ?? '' },
+            ],
+            descripcion: 'El administrador respondió a tu consulta. Ingresa a tu panel para leer la respuesta.',
+          })
         })
       } catch (e) {
         console.error('Mail error', e)

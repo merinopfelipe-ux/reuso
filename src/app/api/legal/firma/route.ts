@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { Resend } from 'resend'
+import { emailBase } from '@/lib/email'
 import jsPDF from 'jspdf'
 import crypto from 'crypto'
 import { rateLimit } from '@/lib/rate-limit'
@@ -323,31 +324,15 @@ export async function POST(req: NextRequest) {
       to: data.email,
       bcc: ['innovacion@lurdes.co'],
       subject: 'Tu copia firmada del Acuerdo de Confidencialidad — Calculadora de Reúso',
-      html: `
-        <div style="font-family:'Open Sans',sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;">
-          <div style="text-align:center;margin-bottom:24px;">
-            <h1 style="color:#00827C;font-size:22px;margin:0;font-weight:700;">Calculadora de Reúso</h1>
-            <p style="color:#888;font-size:12px;margin:4px 0 0;">Grupo MLP S.A.S.</p>
-          </div>
-          <p style="color:#333;font-size:15px;line-height:1.6;">Hola <strong>${data.nombre}</strong>,</p>
-          <p style="color:#555;font-size:14px;line-height:1.6;">
-            Has firmado digitalmente el <strong>Acuerdo de Confidencialidad</strong> de Calculadora de Reúso.
-            Adjuntamos una copia en PDF para tus registros.
-          </p>
-          <div style="background:#f6faf9;border-left:3px solid #00827C;padding:12px 16px;margin-top:16px;">
-            <p style="color:#333;font-size:13px;margin:0;">
-              <strong>Verificación de autenticidad:</strong> Puedes comprobar la validez de este documento en cualquier momento ingresando su código único en <a href="https://reuso.lurdes.co/verificar" style="color:#00827C;">reuso.lurdes.co/verificar</a>.
-            </p>
-          </div>
-          <p style="color:#888;font-size:12px;line-height:1.5;margin-top:16px;">
-            Fecha: ${fecha}
-          </p>
-          <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
-          <p style="color:#aaa;font-size:11px;text-align:center;margin:0;">
-            © Grupo MLP S.A.S. · Medellín, Colombia · reuso.lurdes.co
-          </p>
-        </div>
-      `,
+      html: emailBase({
+        subtitulo: 'Acuerdo de Confidencialidad firmado',
+        filas: [
+          { label: 'Nombre', valor: data.nombre },
+          { label: 'Correo', valor: data.email },
+          { label: 'Fecha',  valor: fecha },
+        ],
+        descripcion: `Has firmado digitalmente el Acuerdo de Confidencialidad de Calculadora de Reúso. Adjuntamos una copia en PDF.<br><br>Puedes verificar la autenticidad del documento en <a href="https://reuso.lurdes.co/verificar" style="color:#00827C;">reuso.lurdes.co/verificar</a>.`,
+      }),
       attachments: [
         {
           filename: 'acuerdo-confidencialidad-reuso.pdf',
