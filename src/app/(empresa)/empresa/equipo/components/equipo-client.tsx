@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { UserPlus, Envelope, Clock, CheckCircle, XCircle, Users, CircleNotch, Copy, Check, Link } from '@phosphor-icons/react'
+import { UserPlus, Envelope, Clock, CheckCircle, XCircle, Users, CircleNotch, Copy, Check, Link, Trash } from '@phosphor-icons/react'
 import type { Rol } from '@/types'
 
 interface Miembro {
@@ -68,6 +68,21 @@ export function EquipoClient({ miembros, invitaciones: invitacionesIniciales, em
   const [invitaciones, setInvitaciones] = useState<Invitacion[]>(invitacionesIniciales)
   const [linkInvitacion, setLinkInvitacion] = useState<string | null>(null)
   const [copiado, setCopiado] = useState(false)
+  const [eliminando, setEliminando] = useState<string | null>(null)
+
+  const handleEliminar = useCallback(async (id: string) => {
+    setEliminando(id)
+    setError(null)
+    try {
+      const res = await fetch(`/api/empresa/invitaciones/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setInvitaciones(prev => prev.filter(i => i.id !== id))
+    } catch {
+      setError('No se pudo eliminar la invitación.')
+    } finally {
+      setEliminando(null)
+    }
+  }, [])
 
   async function copiarLink() {
     if (!linkInvitacion) return
@@ -243,13 +258,31 @@ export function EquipoClient({ miembros, invitaciones: invitacionesIniciales, em
                     </div>
                   </div>
 
-                  <span style={{
-                    fontSize: 11, fontWeight: 700, borderRadius: 100,
-                    padding: '3px 10px',
-                    background: `${cfg.color}18`, color: cfg.color,
-                  }}>
-                    {cfg.label}
-                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      fontSize: 11, fontWeight: 700, borderRadius: 100,
+                      padding: '3px 10px',
+                      background: `${cfg.color}18`, color: cfg.color,
+                    }}>
+                      {cfg.label}
+                    </span>
+                    <button
+                      onClick={() => handleEliminar(inv.id)}
+                      disabled={eliminando === inv.id}
+                      style={{
+                        padding: '5px 10px', borderRadius: 8,
+                        border: '1px solid rgba(255,94,75,0.25)',
+                        background: 'rgba(255,94,75,0.06)', color: '#FF5E4B',
+                        fontSize: 12, fontWeight: 600, cursor: eliminando === inv.id ? 'not-allowed' : 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0,
+                      }}
+                    >
+                      {eliminando === inv.id
+                        ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} />
+                        : <Trash size={13} />}
+                      Eliminar
+                    </button>
+                  </div>
                 </div>
               )
             })}

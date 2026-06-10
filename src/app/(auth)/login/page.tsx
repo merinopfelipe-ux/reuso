@@ -20,6 +20,7 @@ import {
   CheckSquare,
 } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { ThemeToggle } from '@/components/theme-toggle'
 import type { Rol } from '@/types'
 
 const REDIRECT: Record<Rol, string> = {
@@ -461,6 +462,10 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Controles de accesibilidad — modo noche + idioma */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ThemeToggle />
+
             {/* Selector de idioma — dropdown */}
             <div style={{ position: 'relative' }}>
               <button
@@ -526,6 +531,7 @@ export default function LoginPage() {
                 </div>
               )}
             </div>
+            </div>{/* cierra controles */}
 
           </div>
         </footer>
