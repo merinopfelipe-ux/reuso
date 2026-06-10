@@ -3,17 +3,17 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   CheckCircle, XCircle, Circle, ClipboardText, DownloadSimple,
-  ArrowCounterClockwise, Warning, Lightning, Lock, Moon, ChartBar,
+  ArrowCounterClockwise, Lightning, Lock, Moon, ChartBar,
   Robot, FileText, Storefront, Buildings, Bell,
   ShieldCheck, Globe, Gear, BookOpen,
   MagnifyingGlass, CaretDown, CaretUp, FloppyDisk, X,
+  MinusCircle, Question, Sun,
 } from '@phosphor-icons/react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
-type Estado = 'pendiente' | 'ok' | 'falla' | 'omitir'
+type Estado = 'pendiente' | 'ok' | 'falla' | 'parcial' | 'no_clara'
 type RolPrueba = 'super_admin' | 'empresa_admin' | 'empleado' | 'usuario_libre' | 'sin_sesion'
-type TemaPrueba = 'claro' | 'oscuro'
 
 interface Tarea {
   id: string
@@ -28,7 +28,8 @@ interface Tarea {
   critica: boolean
   roles: RolPrueba[]
   rolesProbados?: RolPrueba[]
-  temasProbados?: TemaPrueba[]
+  resultado_dia?: Estado
+  resultado_noche?: Estado
 }
 
 const ROL_LABELS: Record<RolPrueba, string> = {
@@ -1604,10 +1605,11 @@ const CATEGORIAS = [
 ]
 
 const ESTADO_CFG: Record<Estado, { label: string; color: string; icono: typeof CheckCircle }> = {
-  pendiente: { label: 'Pendiente', color: 'rgba(255,255,255,0.3)', icono: Circle },
-  ok:        { label: 'OK',        color: '#38B98E',               icono: CheckCircle },
-  falla:     { label: 'Falla',     color: '#FF5E4B',               icono: XCircle },
-  omitir:    { label: 'Omitir',    color: '#F6BF3E',               icono: Warning },
+  pendiente: { label: 'Pendiente',           color: 'rgba(128,128,128,0.4)', icono: Circle },
+  ok:        { label: 'Aprobada',            color: '#38B98E',               icono: CheckCircle },
+  falla:     { label: 'Falla',               color: '#FF5E4B',               icono: XCircle },
+  parcial:   { label: 'Cumple parcialmente', color: '#F6BF3E',               icono: MinusCircle },
+  no_clara:  { label: 'No es clara',         color: '#59A6E4',               icono: Question },
 }
 
 interface QAIntento {
@@ -1620,7 +1622,7 @@ interface QAIntento {
 
 interface QAStore {
   intentos: QAIntento[]
-  borrador: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
+  borrador: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[]
 }
 
 const LS_KEY_V3 = 'reuso_qa_v3'
@@ -1638,7 +1640,8 @@ export default function QAPage() {
       notas: '',
       roles: getRolesForTaskId(t.id, t.categoria),
       rolesProbados: [],
-      temasProbados: []
+      resultado_dia: 'pendiente' as Estado,
+      resultado_noche: 'pendiente' as Estado,
     }))
   )
   const [expandida, setExpandida] = useState<string | null>(null)
@@ -1668,11 +1671,11 @@ export default function QAPage() {
       // Cargar v3 (tiene borrador + historial de intentos)
       const savedV3 = localStorage.getItem(LS_KEY_V3)
       if (savedV3) {
-        const store = JSON.parse(savedV3) as { intentos?: QAIntento[]; borrador?: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[] }
+        const store = JSON.parse(savedV3) as { intentos?: QAIntento[]; borrador?: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[] }
         if (store.borrador?.length) {
           setTareas(prev => prev.map(t => {
             const s = store.borrador!.find(p => p.id === t.id)
-            return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], temasProbados: s.temasProbados || [] } : t
+            return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], resultado_dia: s.resultado_dia, resultado_noche: s.resultado_noche } : t
           }))
           const ts = store.borrador[0]?.ts
           if (ts) setUltimoGuardado(new Date(ts))
@@ -1683,10 +1686,10 @@ export default function QAPage() {
       // Migración desde v2
       const savedV2 = localStorage.getItem(LS_KEY)
       if (savedV2) {
-        const parsed = JSON.parse(savedV2) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; temasProbados?: TemaPrueba[]; ts?: number }[]
+        const parsed = JSON.parse(savedV2) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; ts?: number }[]
         setTareas(prev => prev.map(t => {
           const s = parsed.find(p => p.id === t.id)
-          return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], temasProbados: s.temasProbados || [] } : t
+          return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [] } : t
         }))
         const savedTs = parsed[0]?.ts
         if (savedTs) setUltimoGuardado(new Date(savedTs))
@@ -1701,7 +1704,8 @@ export default function QAPage() {
       const borrador = data.map((t: Tarea) => ({
         id: t.id, estado: t.estado, notas: t.notas,
         rolesProbados: t.rolesProbados || [],
-        temasProbados: t.temasProbados || [],
+        resultado_dia: t.resultado_dia,
+        resultado_noche: t.resultado_noche,
         ts: ahora.getTime()
       }))
       const storeRaw = localStorage.getItem(LS_KEY_V3)
@@ -1770,16 +1774,9 @@ export default function QAPage() {
     })
   }
 
-  const toggleTemaProbado = (id: string, tema: TemaPrueba) => {
+  const actualizarModo = (id: string, modo: 'resultado_dia' | 'resultado_noche', valor: Estado) => {
     setTareas(prev => {
-      const updated = prev.map(t => {
-        if (t.id !== id) return t
-        const curr = t.temasProbados || []
-        const next = curr.includes(tema)
-          ? curr.filter(r => r !== tema)
-          : [...curr, tema]
-        return { ...t, temasProbados: next }
-      })
+      const updated = prev.map(t => t.id !== id ? t : { ...t, [modo]: valor })
       guardar(updated)
       return updated
     })
@@ -1792,7 +1789,8 @@ export default function QAPage() {
       notas: '',
       roles: getRolesForTaskId(t.id, t.categoria),
       rolesProbados: [],
-      temasProbados: []
+      resultado_dia: 'pendiente' as Estado,
+      resultado_noche: 'pendiente' as Estado,
     }))
     setTareas(reseteadas)
     guardar(reseteadas)
@@ -1803,9 +1801,10 @@ export default function QAPage() {
   const total     = tareas.length
   const oks       = tareas.filter(t => t.estado === 'ok').length
   const fallas    = tareas.filter(t => t.estado === 'falla').length
-  const omitidas  = tareas.filter(t => t.estado === 'omitir').length
+  const parciales = tareas.filter(t => t.estado === 'parcial').length
+  const no_claras = tareas.filter(t => t.estado === 'no_clara').length
   const criticas  = tareas.filter(t => t.critica && t.estado === 'falla').length
-  const revisadas = oks + fallas + omitidas
+  const revisadas = oks + fallas + parciales + no_claras
   const progreso  = Math.round((revisadas / total) * 100)
 
   // Tareas de la categoría activa, filtradas por búsqueda
@@ -1823,7 +1822,7 @@ export default function QAPage() {
       `INFORME QA — Calculadora de Reúso`,
       `Fecha: ${ahora}`,
       `${'─'.repeat(60)}`,
-      `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${omitidas} omitidas · ${criticas} críticas fallidas`,
+      `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${parciales} parciales · ${no_claras} instrucciones poco claras · ${criticas} críticas fallidas`,
       `Cobertura: ${progreso}% (${revisadas}/${total} revisadas)`,
       `${'─'.repeat(60)}`,
     ]
@@ -1832,11 +1831,12 @@ export default function QAPage() {
       if (!grupo.length) continue
       lineas.push(`\n▸ ${cat.key.toUpperCase()} (${grupo.filter(t => t.estado === 'ok').length}/${grupo.length} ok)`)
       for (const t of grupo) {
-        const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'omitir' ? '△' : '○'
+        const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'parcial' ? '△' : t.estado === 'no_clara' ? '?' : '○'
         const rolesStr = (t.rolesProbados || []).map(r => ROL_LABELS[r]).join(', ') || 'Ninguno'
-        const temasStr = (t.temasProbados || []).map(te => te === 'claro' ? 'Día' : 'Noche').join(', ') || 'Ninguno'
+        const diaStr = t.resultado_dia ? ESTADO_CFG[t.resultado_dia].label : 'Sin evaluar'
+        const nocheStr = t.resultado_noche ? ESTADO_CFG[t.resultado_noche].label : 'Sin evaluar'
         lineas.push(`  ${ic} [${t.critica ? 'CRÍTICA' : 'normal '}] ${t.ruta.padEnd(35)} ${t.titulo}`)
-        lineas.push(`       Perfiles probados: ${rolesStr} | Temas probados: ${temasStr}`)
+        lineas.push(`       Perfiles probados: ${rolesStr} | Día: ${diaStr} | Noche: ${nocheStr}`)
         if (t.notas.trim()) lineas.push(`       Notas: ${t.notas.trim()}`)
       }
     }
@@ -1952,7 +1952,9 @@ export default function QAPage() {
                     {' · '}
                     <span className="text-[#FF5E4B] font-semibold">{fallas} fallas</span>
                     {' · '}
-                    <span className="text-[#F6BF3E] font-semibold">{omitidas} omitidas</span>
+                    <span className="text-[#F6BF3E] font-semibold">{parciales} parciales</span>
+                    {' · '}
+                    <span className="text-[#59A6E4] font-semibold">{no_claras} poco claras</span>
                   </div>
                 </div>
               </div>
@@ -2044,12 +2046,12 @@ export default function QAPage() {
                   const ct = tareas.filter(t => t.categoria === cat.key)
                   const cOk = ct.filter(t => t.estado === 'ok').length
                   const cFail = ct.filter(t => t.estado === 'falla').length
-                  const isDone = ct.length > 0 && ct.every(t => t.estado !== 'pendiente')
+                  const isDone = ct.length > 0 && ct.every(t => t.estado === 'ok')
                   const Icon = cat.icono
-                  // Locking: categoría 0 siempre disponible; N solo si N-1 está completada
+                  // Locking: categoría 0 siempre disponible; N solo si N-1 está completada con todas en OK
                   const prevDone = catIdx === 0 || CATEGORIAS.slice(0, catIdx).every(prevCat => {
                     const prevTareas = tareas.filter(t => t.categoria === prevCat.key)
-                    return prevTareas.length > 0 && prevTareas.every(t => t.estado !== 'pendiente')
+                    return prevTareas.length > 0 && prevTareas.every(t => t.estado === 'ok')
                   })
                   const isLocked = !prevDone
 
@@ -2152,8 +2154,10 @@ export default function QAPage() {
                   ? isDark ? 'border-[#FF5E4B]/30' : 'border-[#FF5E4B]/25'
                   : tarea.estado === 'ok'
                   ? isDark ? 'border-[#38B98E]/30' : 'border-[#38B98E]/25'
-                  : tarea.estado === 'omitir'
+                  : tarea.estado === 'parcial'
                   ? isDark ? 'border-[#F6BF3E]/25' : 'border-[#F6BF3E]/20'
+                  : tarea.estado === 'no_clara'
+                  ? isDark ? 'border-[#59A6E4]/25' : 'border-[#59A6E4]/20'
                   : isDark ? 'border-[#D6F391]/10' : 'border-[rgba(0,130,124,0.10)]'
 
                 return (
@@ -2205,35 +2209,36 @@ export default function QAPage() {
                               )
                             })}
                             <span className="opacity-30 mx-1">|</span>
-                            <span
-                              className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
-                                (tarea.temasProbados || []).includes('claro')
-                                  ? 'bg-amber-500/15 border border-amber-500/30 text-amber-500'
-                                  : isDark
-                                  ? 'bg-white/5 border border-white/10 text-white/30'
-                                  : 'bg-black/[0.03] border border-black/10 text-black/30'
-                              }`}
-                            >
-                              Día
-                            </span>
-                            <span
-                              className={`text-[9px] px-1.5 py-0.2 rounded font-semibold uppercase tracking-wider ${
-                                (tarea.temasProbados || []).includes('oscuro')
-                                  ? 'bg-indigo-500/15 border border-indigo-500/30 text-indigo-500'
-                                  : isDark
-                                  ? 'bg-white/5 border border-white/10 text-white/30'
-                                  : 'bg-black/[0.03] border border-black/10 text-black/30'
-                              }`}
-                            >
-                              Noche
-                            </span>
+                            {/* Indicadores día/noche */}
+                            {(['resultado_dia', 'resultado_noche'] as const).map(campo => {
+                              const val = tarea[campo]
+                              const label = campo === 'resultado_dia' ? '☀ Día' : '☾ Noche'
+                              const color = val === 'ok' ? '#38B98E' : val === 'falla' ? '#FF5E4B' : val === 'parcial' ? '#F6BF3E' : val === 'no_clara' ? '#59A6E4' : undefined
+                              return (
+                                <span
+                                  key={campo}
+                                  className="text-[9px] px-1.5 rounded font-semibold uppercase tracking-wider flex items-center gap-0.5"
+                                  style={{
+                                    background: color ? `${color}18` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                                    border: `1px solid ${color ? `${color}40` : isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'}`,
+                                    color: color ?? (isDark ? 'rgba(255,255,255,0.30)' : 'rgba(0,0,0,0.30)'),
+                                  }}
+                                >
+                                  {label}
+                                  {val === 'ok' && <CheckCircle size={8} weight="fill" />}
+                                  {val === 'falla' && <XCircle size={8} weight="fill" />}
+                                  {val === 'parcial' && <MinusCircle size={8} weight="fill" />}
+                                  {val === 'no_clara' && <Question size={8} weight="fill" />}
+                                </span>
+                              )
+                            })}
                           </div>
                         </div>
                       </div>
 
                       {/* Botones de estado rápido */}
                       <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
-                        {(['ok', 'falla', 'omitir', 'pendiente'] as Estado[]).map(est => {
+                        {(['ok', 'falla', 'parcial', 'no_clara', 'pendiente'] as Estado[]).map(est => {
                           const Ic = ESTADO_CFG[est].icono
                           const activo = tarea.estado === est
                           return (
@@ -2326,43 +2331,39 @@ export default function QAPage() {
                           </div>
                         </div>
 
-                        {/* Checklist de Temas de Prueba */}
-                        <div className="mb-4">
-                          <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
-                            Temas Probados (Marca los revisados)
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {(['claro', 'oscuro'] as TemaPrueba[]).map(tema => {
-                              const checked = (tarea.temasProbados || []).includes(tema)
-                              return (
-                                <button
-                                  key={tema}
-                                  onClick={() => toggleTemaProbado(tarea.id, tema)}
-                                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all hover:scale-105 active:scale-95 ${
-                                    checked
-                                      ? tema === 'claro'
-                                        ? 'bg-amber-500/10 border-amber-500/30 text-amber-500'
-                                        : 'bg-indigo-500/10 border-indigo-500/30 text-indigo-500'
-                                      : isDark
-                                      ? 'bg-[#474747] border-white/10 text-white/60 hover:text-white hover:border-white/20'
-                                      : 'bg-white border-black/10 text-black/60 hover:text-black hover:border-black/20'
-                                  }`}
-                                >
-                                  <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
-                                    checked
-                                      ? tema === 'claro'
-                                        ? 'bg-amber-500 border-amber-500 text-white'
-                                        : 'bg-indigo-500 border-indigo-500 text-white'
-                                      : 'border-current'
-                                  }`}>
-                                    {checked && <CheckCircle size={10} weight="fill" />}
-                                  </span>
-                                  <span>{tema === 'claro' ? 'Modo Día (Claro)' : 'Modo Noche (Oscuro)'}</span>
-                                </button>
-                              )
-                            })}
-                          </div>
-                        </div>
+                        {/* Resultado por modo — Día y Noche */}
+                        {(['resultado_dia', 'resultado_noche'] as const).map(campo => {
+                          const esDia = campo === 'resultado_dia'
+                          const valorActual = tarea[campo] ?? 'pendiente'
+                          return (
+                            <div key={campo} className="mb-3">
+                              <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-1.5`}>
+                                {esDia ? '☀ Resultado Modo Día' : '☾ Resultado Modo Noche'}
+                              </p>
+                              <div className="flex gap-1.5 flex-wrap">
+                                {(['ok', 'falla', 'parcial', 'no_clara'] as Estado[]).map(est => {
+                                  const Ic = ESTADO_CFG[est].icono
+                                  const activo = valorActual === est
+                                  return (
+                                    <button
+                                      key={est}
+                                      onClick={() => actualizarModo(tarea.id, campo, est)}
+                                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:scale-105 active:scale-95"
+                                      style={{
+                                        background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}15`,
+                                        color: activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color,
+                                        border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
+                                      }}
+                                    >
+                                      <Ic size={10} weight="fill" />
+                                      {ESTADO_CFG[est].label}
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })}
 
                         {/* Notas */}
                         <label className={`block text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mb-2`}>
@@ -2382,24 +2383,27 @@ export default function QAPage() {
                           }}
                         />
 
-                        {/* Botones de estado grandes */}
-                        <div className="flex gap-2 mt-3">
-                          {(['ok', 'falla', 'omitir'] as Estado[]).map(est => {
+                        {/* Veredicto general */}
+                        <p className={`text-[10px] font-bold uppercase tracking-wider ${theme.textSecondary} mt-4 mb-2`}>
+                          Veredicto general de la prueba
+                        </p>
+                        <div className="flex gap-2 flex-wrap">
+                          {(['ok', 'falla', 'parcial', 'no_clara'] as Estado[]).map(est => {
                             const Ic = ESTADO_CFG[est].icono
                             const activo = tarea.estado === est
                             return (
                               <button
                                 key={est}
                                 onClick={() => { actualizar(tarea.id, 'estado', est); setExpandida(null) }}
-                                className="flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-105 active:scale-95"
+                                className="flex-1 min-w-[120px] py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-105 active:scale-95"
                                 style={{
-                                  background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}18`,
-                                  color: activo ? '#fff' : ESTADO_CFG[est].color,
-                                  border: 'none',
+                                  background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}15`,
+                                  color: activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color,
+                                  border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                 }}
                               >
-                                <Ic size={12} weight="fill" />
-                                {est === 'ok' ? 'Aprobada' : est === 'falla' ? 'Falla' : 'Omitir'}
+                                <Ic size={13} weight="fill" />
+                                {ESTADO_CFG[est].label}
                               </button>
                             )
                           })}
@@ -2486,10 +2490,11 @@ export default function QAPage() {
 
             <div className="flex gap-3">
               {[
-                { l: 'Aprobadas', v: oks,     c: '#38B98E' },
-                { l: 'Fallas',    v: fallas,   c: '#FF5E4B' },
-                { l: 'Omitidas',  v: omitidas, c: '#F6BF3E' },
-                { l: 'Críticas ✗',v: criticas, c: '#FF5E4B' },
+                { l: 'Aprobadas', v: oks,       c: '#38B98E' },
+                { l: 'Fallas',    v: fallas,     c: '#FF5E4B' },
+                { l: 'Parciales', v: parciales,  c: '#F6BF3E' },
+                { l: 'Poco claras', v: no_claras, c: '#59A6E4' },
+                { l: 'Críticas ✗', v: criticas,  c: '#FF5E4B' },
               ].map(m => (
                 <div key={m.l} className="flex-1 text-center py-3 px-2 rounded-xl" style={{ background: `${m.c}12`, border: `1px solid ${m.c}25` }}>
                   <p className="m-0 text-2xl font-bold" style={{ color: m.c }}>{m.v}</p>
@@ -2572,7 +2577,7 @@ export default function QAPage() {
                   `Resultado: ${okCount} ok · ${failCount} fallas · ${pct}%`,
                   '─'.repeat(50),
                   ...intento.tareas.map(t => {
-                    const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'omitir' ? '△' : '○'
+                    const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'parcial' ? '△' : t.estado === 'no_clara' ? '?' : '○'
                     return `${ic} ${t.id}${t.notas ? `\n   Notas: ${t.notas}` : ''}`
                   })
                 ].join('\n')
