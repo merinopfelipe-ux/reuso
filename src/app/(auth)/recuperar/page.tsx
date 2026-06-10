@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Key, CircleNotch, Eye, EyeSlash, CheckCircle } from '@phosphor-icons/react'
@@ -8,18 +8,18 @@ import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 // ── Constantes de estilo ────────────────────────────────────────────────────
-const BRAND = '#00827C'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const TEXT_LIGHT = '#7FA8A5'
+const BRAND = 'var(--color-brand)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const TEXT_LIGHT = 'var(--text-placeholder)'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 14px',
   borderRadius: 8,
-  border: '1.5px solid rgba(0,130,124,0.20)',
-  background: '#FFFFFF',
-  color: TEXT_DARK,
+  border: '1px solid var(--border)',
+  background: 'var(--bg-input)',
+  color: 'var(--text-primary)',
   fontSize: 14,
   outline: 'none',
   transition: 'border-color 0.2s',
@@ -31,7 +31,7 @@ const labelStyle: React.CSSProperties = {
   display: 'block',
   fontSize: 12,
   fontWeight: 600,
-  color: TEXT_MED,
+  color: 'var(--text-secondary)',
   marginBottom: 6,
 }
 
@@ -51,6 +51,15 @@ export default function RecuperarPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [exito, setExito] = useState(false)
+  const [isDark, setIsDark] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => obs.disconnect()
+  }, [])
 
   // ── Paso 1: solicitar código ──────────────────────────────────────────────
   async function handleSolicitarCodigo(e: React.FormEvent) {
@@ -59,7 +68,7 @@ export default function RecuperarPage() {
     setLoading(true)
     setError('')
 
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim())
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase())
 
     setLoading(false)
 
@@ -93,7 +102,7 @@ export default function RecuperarPage() {
 
     // Verificar OTP primero — esto inicia una sesión temporal
     const { error: otpErr } = await supabase.auth.verifyOtp({
-      email: email.trim(),
+      email: email.trim().toLowerCase(),
       token,
       type: 'recovery',
     })
@@ -129,11 +138,11 @@ export default function RecuperarPage() {
   // ── Estado de éxito ───────────────────────────────────────────────────────
   if (exito) {
     return (
-      <Wrapper>
+      <Wrapper isDark={isDark}>
         <div style={{ textAlign: 'center' }}>
           <div style={{
             width: 72, height: 72, borderRadius: '50%',
-            background: 'rgba(0,130,124,0.10)',
+            background: 'var(--color-brand-light)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 20px',
           }}>
@@ -146,7 +155,7 @@ export default function RecuperarPage() {
             Tu contraseña se cambió correctamente. Redirigiendo...
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: 12 }}>
-            <CircleNotch size={20} color={BRAND} style={{ animation: 'spin 1s linear infinite' }} />
+            <CircleNotch size={20} color={BRAND} className="animate-spin" />
           </div>
         </div>
       </Wrapper>
@@ -156,7 +165,7 @@ export default function RecuperarPage() {
   // ── Paso 1 ────────────────────────────────────────────────────────────────
   if (paso === 'email') {
     return (
-      <Wrapper>
+      <Wrapper isDark={isDark}>
         <Icono />
         <h2 style={{ fontSize: 22, fontWeight: 700, color: TEXT_DARK, margin: '0 0 8px', textAlign: 'center' }}>
           Recuperar contraseña
@@ -180,12 +189,12 @@ export default function RecuperarPage() {
               autoFocus
               autoComplete="email"
               style={inputStyle}
-              onFocus={e => { e.currentTarget.style.borderColor = BRAND }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-brand)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
             />
           </div>
 
-          <BtnPrimario loading={loading} texto="Enviar código" />
+          <BtnPrimario loading={loading} texto="Enviar código" isDark={isDark} />
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: TEXT_LIGHT }}>
@@ -199,7 +208,7 @@ export default function RecuperarPage() {
 
   // ── Paso 2 ────────────────────────────────────────────────────────────────
   return (
-    <Wrapper>
+    <Wrapper isDark={isDark}>
       <Icono />
       <h2 style={{ fontSize: 22, fontWeight: 700, color: TEXT_DARK, margin: '0 0 8px', textAlign: 'center' }}>
         Ingresa el código
@@ -226,8 +235,8 @@ export default function RecuperarPage() {
             autoFocus
             autoComplete="one-time-code"
             style={{ ...inputStyle, textAlign: 'center', fontSize: 18, fontWeight: 700, letterSpacing: '0.15em' }}
-            onFocus={e => { e.currentTarget.style.borderColor = BRAND }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-brand)' }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
           />
         </div>
 
@@ -244,8 +253,8 @@ export default function RecuperarPage() {
               required
               autoComplete="new-password"
               style={{ ...inputStyle, paddingRight: 40 }}
-              onFocus={e => { e.currentTarget.style.borderColor = BRAND }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-brand)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
             />
             <TogglePass show={showPass} onClick={() => setShowPass(v => !v)} />
           </div>
@@ -264,14 +273,14 @@ export default function RecuperarPage() {
               required
               autoComplete="new-password"
               style={{ ...inputStyle, paddingRight: 40 }}
-              onFocus={e => { e.currentTarget.style.borderColor = BRAND }}
-              onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
+              onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-brand)' }}
+              onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
             />
             <TogglePass show={showPassConfirm} onClick={() => setShowPassConfirm(v => !v)} />
           </div>
         </div>
 
-        <BtnPrimario loading={loading} texto="Cambiar contraseña" />
+        <BtnPrimario loading={loading} texto="Cambiar contraseña" isDark={isDark} />
       </form>
 
       <div style={{ textAlign: 'center', marginTop: 16 }}>
@@ -288,29 +297,33 @@ export default function RecuperarPage() {
 
 // ── Sub-componentes ──────────────────────────────────────────────────────────
 
-function Wrapper({ children }: { children: React.ReactNode }) {
+function Wrapper({ children, isDark }: { children: React.ReactNode; isDark: boolean }) {
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'var(--background, #FFFFFF)',
+      background: 'var(--bg-primary)',
       fontFamily: "'Open Sans', sans-serif",
       padding: '24px',
-      userSelect: 'none',
+      userSelect: 'auto',
       position: 'relative',
     }}>
-      {/* Botón modo noche — esquina superior derecha */}
       <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
         <ThemeToggle />
       </div>
       <div style={{ width: '100%', maxWidth: 400 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-completo.svg"
+            alt="Calculadora de Reúso"
+            style={{ height: 36, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+          />
+        </div>
         {children}
       </div>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-      `}} />
     </div>
   )
 }
@@ -319,7 +332,7 @@ function Icono() {
   return (
     <div style={{
       width: 64, height: 64, borderRadius: '50%',
-      background: 'rgba(0,130,124,0.10)',
+      background: 'var(--color-brand-light)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       margin: '0 auto 20px',
     }}>
@@ -333,15 +346,15 @@ function ErrorBox({ mensaje }: { mensaje: string }) {
   return (
     <div style={{
       padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-      background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)',
-      color: '#FF5E4B', fontSize: 13,
+      background: 'rgba(255, 94, 75, 0.1)', border: '1px solid var(--color-error)',
+      color: 'var(--color-error-content, #FF5E4B)', fontSize: 13,
     }}>
       {mensaje}
     </div>
   )
 }
 
-function BtnPrimario({ loading, texto }: { loading: boolean; texto: string }) {
+function BtnPrimario({ loading, texto, isDark }: { loading: boolean; texto: string; isDark: boolean }) {
   return (
     <button
       type="submit"
@@ -349,8 +362,9 @@ function BtnPrimario({ loading, texto }: { loading: boolean; texto: string }) {
       style={{
         width: '100%', padding: '12px',
         borderRadius: 10,
-        background: loading ? 'rgba(0,130,124,0.35)' : BRAND,
-        color: '#ffffff', fontSize: 15, fontWeight: 600,
+        background: loading ? 'var(--border)' : isDark ? '#D6F391' : 'var(--color-brand)',
+        color: loading ? 'var(--text-secondary)' : isDark ? '#474747' : '#ffffff',
+        fontSize: 15, fontWeight: 600,
         border: 'none',
         cursor: loading ? 'not-allowed' : 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -358,7 +372,7 @@ function BtnPrimario({ loading, texto }: { loading: boolean; texto: string }) {
       }}
     >
       {loading
-        ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Procesando...</>
+        ? <><CircleNotch size={16} className="animate-spin" /> Procesando...</>
         : texto}
     </button>
   )

@@ -48,14 +48,14 @@ const T = {
     verificando:'Verificando...',
     errorLegal: 'Debes aceptar los términos para ingresar.',
     errorServer:'Error interno del servidor. Contacta a soporte.',
-    errorDatos: 'Verifica tus datos e intenta de nuevo.',
+    errorDatos: 'Credenciales incorrectas. Verifica tu email y contraseña.',
     errorCorreo:'Completa el correo electrónico.',
     errorPass:  'Completa la contraseña.',
     copyright:  'Todos los derechos reservados.',
     mostrarPass:'Mostrar contraseña',
     ocultarPass:'Ocultar contraseña',
     testimonios: [
-      { titulo: "Certificamos nuestro impacto ambiental con total transparencia.", texto: "Con Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.", cargo: "Directora de Sostenibilidad" },
+      { titulo: "Certificamos nuestro impacto ambiental con total transparencia.", texto: "Con Calculadora de Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.", cargo: "Directora de Sostenibilidad" },
       { titulo: "Medimos y reportamos el ahorro de CO₂ con precisión.", texto: "Antes nuestros reportes de sostenibilidad eran estimaciones. Hoy generamos certificados con datos verificables y compartimos el impacto real de cada objeto reutilizado con un solo clic.", cargo: "Gerente de Operaciones" },
       { titulo: "Integramos a todo el equipo en nuestra economía circular.", texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.", cargo: "Especialista en Economía Circular" },
     ],
@@ -94,7 +94,7 @@ const T = {
 const TESTIMONIOS = [
   {
     titulo: "Certificamos nuestro impacto ambiental con total transparencia.",
-    texto: "Con Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.",
+    texto: "Con Calculadora de Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.",
     autor: "Laura Méndez",
     cargo: "Directora de Sostenibilidad",
     initials: "LM", color: "#8AD0B2"
@@ -432,7 +432,7 @@ export default function LoginPage() {
               className={`w-full py-3.5 mt-2 rounded-btn font-bold text-[15px] transition-all flex items-center justify-center gap-2 shadow-card ${
                 loading
                   ? 'bg-brand/60 text-white/80 cursor-not-allowed shadow-none'
-                  : `bg-brand hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0 ${isDark ? 'text-[#474747] font-extrabold' : 'text-white'}`
+                  : `bg-brand hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0 ${isDark ? 'text-black font-extrabold' : 'text-white'}`
               }`}
             >
               {loading ? (

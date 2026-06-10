@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Buildings, Leaf } from '@/components/ui/icons'
+import { ThemeToggle } from '@/components/theme-toggle'
 import NuevaEmpresaForm from './components/nueva-empresa-form'
 
-const BRAND = '#00827C'
 
 export default async function NuevaEmpresaPage() {
   const supabase = createClient()
@@ -29,33 +29,47 @@ export default async function NuevaEmpresaPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: 24,
-      background: 'var(--background)',
+      background: 'var(--bg-primary)',
+      position: 'relative',
     }}>
+      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
+
       <div style={{
-        background: 'var(--surface)',
+        background: 'var(--bg-card)',
         borderRadius: 16,
         padding: '40px 32px',
         maxWidth: 480,
         width: '100%',
         boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        border: '1px solid var(--border)',
       }}>
+        <div style={{ textAlign: 'center', marginBottom: 8 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-completo.svg"
+            alt="Calculadora de Reúso"
+            style={{ height: 32, marginBottom: 20 }}
+          />
+        </div>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{
             width: 56,
             height: 56,
             borderRadius: '50%',
-            background: `${BRAND}20`,
+            background: 'var(--color-brand-light)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 12px',
           }}>
-            <Buildings size={28} color={BRAND} />
+            <Buildings size={28} color="var(--color-brand)" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text)', margin: '0 0 6px' }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px' }}>
             Crea tu empresa
           </h1>
-          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: 15 }}>
+          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 15 }}>
             Registra tu organización y empieza a medir el impacto de tu equipo
           </p>
         </div>
@@ -68,8 +82,8 @@ export default async function NuevaEmpresaPage() {
           borderTop: '1px solid var(--border)',
           textAlign: 'center',
         }}>
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-            <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: BRAND }} />
+          <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
+            <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: 'var(--color-brand)' }} />
             © Grupo MLP S.A.S.
           </p>
         </div>

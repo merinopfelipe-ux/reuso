@@ -12,6 +12,10 @@ import {
 } from '@phosphor-icons/react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
+function normalizeStr(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
+
 // ── Países para selector de indicativo ────────────────────────────────────────
 const PAISES = [
   { code: 'co', name: 'Colombia',          dial: '+57'  },
@@ -102,7 +106,6 @@ export default function RegistroPage() {
   const [aceptaTerminos, setAceptaTerminos] = useState(false)
   const [suscritoNewsletter, setSuscritoNewsletter] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
-  const [modalTerminos, setModalTerminos] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -165,8 +168,16 @@ export default function RegistroPage() {
       setError('Las contraseñas no coinciden.')
       return
     }
-    if (fuerza < 2) {
-      setError('La contraseña es muy débil. Usa mínimo 8 caracteres, una mayúscula y un número.')
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.')
+      return
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError('La contraseña debe incluir al menos una letra mayúscula.')
+      return
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('La contraseña debe incluir al menos un número.')
       return
     }
     if (process.env.NEXT_PUBLIC_SKIP_TURNSTILE !== 'true' && !turnstileToken) {
@@ -208,10 +219,10 @@ export default function RegistroPage() {
 
   // ── Estilos compartidos ──────────────────────────────────────────────────────
   const inputBase = `
-    w-full px-4 py-3.5 rounded-2xl border bg-white/70 text-[#474747] text-sm
-    placeholder-[#474747]/30 outline-none transition-all duration-200
-    focus:border-[#00827C] focus:bg-white focus:ring-1 focus:ring-[#00827C]/20
-    border-[rgba(0,130,124,0.20)]
+    w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition-all duration-200
+    bg-[var(--bg-input)] text-[var(--text-primary)] border-[var(--border)]
+    placeholder-[var(--text-placeholder)]/50
+    focus:border-[var(--color-brand)] focus:ring-1 focus:ring-[var(--color-brand)]/20
   `
 
   const [isDark, setIsDark] = useState(false)
@@ -228,7 +239,7 @@ export default function RegistroPage() {
       className="min-h-screen flex flex-col items-center justify-center font-sans"
       style={{ background: isDark ? '#474747' : '#FFFFFF', padding: '32px 16px', position: 'relative' }}
     >
-      {/* Botón modo noche */}
+      {/* ThemeToggle fijo esquina superior derecha */}
       <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
         <ThemeToggle />
       </div>
@@ -247,10 +258,10 @@ export default function RegistroPage() {
 
       {/* Card */}
       <div
-        className="w-full max-w-md backdrop-blur-xl"
+        className="w-full max-w-md backdrop-blur-xl animate-fade-in"
         style={{
-          background: 'rgba(255,255,255,0.75)',
-          border: '1px solid rgba(255,255,255,0.9)',
+          background: isDark ? '#474747' : '#FFFFFF',
+          border: isDark ? '1px solid var(--border)' : '1px solid rgba(0, 130, 124, 0.12)',
           borderRadius: '2.5rem',
           boxShadow: '0 8px 40px rgba(0,130,124,0.08)',
           overflow: 'hidden',
@@ -259,18 +270,18 @@ export default function RegistroPage() {
         {/* ── Barra de progreso ─────────────────────────────────────────────── */}
         <div className="px-8 pt-8 pb-0">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5 text-xs text-[#00827C] font-semibold">
+            <div className="flex items-center gap-1.5 text-xs text-[var(--color-brand)] font-semibold">
               <ShieldCheck size={14} weight="duotone" />
               <span>Estás en un entorno seguro</span>
             </div>
-            <span className="text-xs text-[#474747]/50 font-medium">Paso {paso} de 3</span>
+            <span className="text-xs text-[var(--text-secondary)]/50 font-medium">Paso {paso} de 3</span>
           </div>
           <div className="flex gap-1.5">
             {[1, 2, 3].map(n => (
               <div
                 key={n}
                 className="flex-1 h-1.5 rounded-full transition-all duration-500"
-                style={{ background: n <= paso ? '#00827C' : 'rgba(0,130,124,0.12)' }}
+                style={{ background: n <= paso ? 'var(--color-brand)' : 'var(--border)' }}
               />
             ))}
           </div>
@@ -279,7 +290,7 @@ export default function RegistroPage() {
         <div className="px-8 py-7">
           {/* ── Error global ─────────────────────────────────────────────────── */}
           {error && (
-            <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl bg-[#FF5E4B]/8 border border-[#FF5E4B]/20 text-[#FF5E4B] text-sm">
+            <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl bg-[var(--color-error)]/8 border border-[var(--color-error)]/25 text-[var(--color-error-content)] text-sm">
               <X size={16} className="flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -291,15 +302,15 @@ export default function RegistroPage() {
           {paso === 1 && (
             <div className="flex flex-col gap-5">
               <div>
-                <h1 className="text-2xl font-bold text-[#474747] mb-1">Crea tu cuenta</h1>
-                <p className="text-sm text-[#474747]/60">Empieza a medir tu impacto ambiental.</p>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Crea tu cuenta</h1>
+                <p className="text-sm text-[var(--text-secondary)]/80">Empieza a medir tu impacto ambiental.</p>
               </div>
 
               {/* Nombre */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70">Nombre</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Nombre</label>
                 <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
+                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
                     type="text"
                     value={nombre}
@@ -313,11 +324,11 @@ export default function RegistroPage() {
 
               {/* Apellido */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70">
-                  Apellido <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                  Apellido <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
                 </label>
                 <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
+                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
                     type="text"
                     value={apellido}
@@ -331,9 +342,9 @@ export default function RegistroPage() {
 
               {/* Email */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70">Correo electrónico</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Correo electrónico</label>
                 <div className="relative">
-                  <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
+                  <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
                     type="email"
                     value={email}
@@ -347,8 +358,8 @@ export default function RegistroPage() {
 
               {/* Teléfono */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70">
-                  Teléfono <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                  Teléfono <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
                 </label>
                 <div className="flex gap-2">
                   {/* Selector de país */}
@@ -356,7 +367,18 @@ export default function RegistroPage() {
                     <button
                       type="button"
                       onClick={() => { setMostrarPaises(v => !v); setBusquedaPais('') }}
-                      className="flex items-center gap-1.5 px-3 py-3.5 rounded-2xl border border-[rgba(0,130,124,0.20)] bg-white/70 hover:bg-white transition-all text-sm text-[#474747] min-w-[90px]"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        padding: '14px 12px',
+                        borderRadius: 16,
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg-input)',
+                        color: 'var(--text-primary)',
+                        minWidth: 90,
+                      }}
+                      className="transition-all"
                     >
                       <img
                         src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${indicativo.code}.svg`}
@@ -366,28 +388,60 @@ export default function RegistroPage() {
                         style={{ borderRadius: 3, objectFit: 'cover' }}
                       />
                       <span className="text-xs font-semibold">{indicativo.dial}</span>
-                      <CaretDown size={12} className="text-[#474747]/40" />
+                      <CaretDown size={12} style={{ color: 'var(--text-placeholder)' }} />
                     </button>
                     {mostrarPaises && (
-                      <div className="absolute top-full left-0 mt-1 z-50 bg-white border border-[rgba(0,130,124,0.15)] rounded-2xl shadow-lg min-w-[200px]" style={{ maxHeight: 260, display: 'flex', flexDirection: 'column' }}>
-                        <div className="px-2 pt-2 pb-1 border-b border-[rgba(0,130,124,0.10)]">
+                      <div
+                        style={{
+                          maxHeight: 260,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border)',
+                          borderRadius: 16,
+                          boxShadow: 'var(--shadow)',
+                        }}
+                        className="absolute top-full left-0 mt-1 z-50 min-w-[200px]"
+                      >
+                        <div style={{ padding: '8px 8px 4px', borderBottom: '1px solid var(--border)' }}>
                           <input
                             autoFocus
                             type="text"
                             value={busquedaPais}
                             onChange={e => setBusquedaPais(e.target.value)}
                             placeholder="Buscar país..."
-                            className="w-full px-3 py-1.5 rounded-xl border border-[rgba(0,130,124,0.20)] text-xs text-[#474747] outline-none focus:border-[#00827C]"
+                            style={{
+                              width: '100%',
+                              padding: '6px 12px',
+                              borderRadius: 12,
+                              border: '1px solid var(--border)',
+                              background: 'var(--bg-input)',
+                              color: 'var(--text-primary)',
+                              fontSize: 12,
+                              outline: 'none',
+                            }}
                             onClick={e => e.stopPropagation()}
                           />
                         </div>
                         <div style={{ overflowY: 'auto', flex: 1 }}>
-                          {PAISES.filter(p => p.name.toLowerCase().includes(busquedaPais.toLowerCase())).map(p => (
+                          {PAISES.filter(p => normalizeStr(p.name).includes(normalizeStr(busquedaPais))).map(p => (
                             <button
                               key={p.code}
                               type="button"
                               onClick={() => { setIndicativo(p); setMostrarPaises(false); setBusquedaPais('') }}
-                              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-[#474747] hover:bg-[#00827C]/8 transition-colors"
+                              style={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 10,
+                                padding: '8px 12px',
+                                background: 'transparent',
+                                border: 'none',
+                                textAlign: 'left',
+                                cursor: 'pointer',
+                                color: 'var(--text-primary)',
+                              }}
+                              className="hover:bg-[var(--bg-hover)] transition-colors"
                             >
                               <img
                                 src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${p.code}.svg`}
@@ -397,7 +451,7 @@ export default function RegistroPage() {
                                 style={{ borderRadius: 3, objectFit: 'cover', flexShrink: 0 }}
                               />
                               <span className="text-xs font-medium">{p.name}</span>
-                              <span className="ml-auto text-xs text-[#474747]/50">{p.dial}</span>
+                              <span className="ml-auto text-xs text-[var(--text-secondary)]/50">{p.dial}</span>
                             </button>
                           ))}
                         </div>
@@ -405,7 +459,7 @@ export default function RegistroPage() {
                     )}
                   </div>
                   <div className="relative flex-1">
-                    <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
+                    <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                     <input
                       type="tel"
                       value={telefono}
@@ -421,10 +475,10 @@ export default function RegistroPage() {
               {/* Apodo */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[#474747]/70">
-                    Apodo <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                    Apodo <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
                   </label>
-                  <span className="text-[10px] text-[#474747]/40">{apodo.length}/15</span>
+                  <span className="text-[10px] text-[var(--text-secondary)]/40">{apodo.length}/15</span>
                 </div>
                 <input
                   type="text"
@@ -439,28 +493,28 @@ export default function RegistroPage() {
               {/* Código de empresa */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold text-[#474747]/70">
-                    Código de empresa <span className="font-normal normal-case text-[#474747]/40">(opcional)</span>
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                    Código de empresa <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
                   </label>
                   <div className="relative">
                     <button
                       type="button"
                       onMouseEnter={() => setMostrarTooltip(true)}
                       onMouseLeave={() => setMostrarTooltip(false)}
-                      className="w-4 h-4 rounded-full border border-[#00827C]/40 text-[#00827C]/60 flex items-center justify-center text-[10px] font-bold hover:border-[#00827C] transition-colors"
+                      className="w-4 h-4 rounded-full border border-[var(--color-brand)]/40 text-[var(--color-brand)]/60 flex items-center justify-center text-[10px] font-bold hover:border-[var(--color-brand)] transition-colors"
                     >
                       ?
                     </button>
                     {mostrarTooltip && (
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-[#474747] text-white text-xs rounded-xl px-3 py-2 w-56 shadow-lg">
-                        Si tu empresa ya usa Reúso y te dio un código, ingrésalo aquí para vincularte automáticamente como empleado.
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#474747]" />
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] text-xs rounded-xl px-3 py-2 w-56 shadow-lg">
+                        Si tu empresa ya usa Calculadora de Reúso y te dio un código, ingrésalo aquí para vincularte automáticamente como empleado.
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--bg-card)]" />
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="relative">
-                  <Buildings size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00827C]/50" />
+                  <Buildings size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
                     type="text"
                     value={codigoEmpresa}
@@ -478,7 +532,7 @@ export default function RegistroPage() {
                     }`}
                   />
                   {codigoStatus === 'validando' && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-[#00827C] border-t-transparent rounded-full animate-spin" />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-[var(--color-brand)] border-t-transparent rounded-full animate-spin" />
                   )}
                   {codigoStatus === 'ok' && (
                     <Check size={16} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-[#38B98E]" />
@@ -498,15 +552,15 @@ export default function RegistroPage() {
               <button
                 type="button"
                 onClick={avanzarPaso1}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#00827C] text-white font-bold text-sm hover:bg-[#006B66] active:scale-95 transition-all mt-2"
-                style={{ boxShadow: '0 6px 20px rgba(0,130,124,0.25)' }}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2"
+                style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
               >
                 Siguiente <ArrowRight size={16} weight="bold" />
               </button>
 
-              <p className="text-center text-xs text-[#474747]/50 mt-1">
+              <p className="text-center text-xs text-[var(--text-secondary)]/50 mt-1">
                 ¿Ya tienes cuenta?{' '}
-                <Link href="/login" className="text-[#00827C] font-semibold hover:underline">Ingresa</Link>
+                <Link href="/login" className="text-[var(--color-brand)] font-semibold hover:underline">Ingresa</Link>
               </p>
             </div>
           )}
@@ -517,13 +571,13 @@ export default function RegistroPage() {
           {paso === 2 && (
             <div className="flex flex-col gap-6">
               <div>
-                <h1 className="text-2xl font-bold text-[#474747] mb-1">Cuéntanos sobre ti</h1>
-                <p className="text-sm text-[#474747]/60">Personalizamos tu experiencia con estas respuestas.</p>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Cuéntanos sobre ti</h1>
+                <p className="text-sm text-[var(--text-secondary)]/80">Personalizamos tu experiencia con estas respuestas.</p>
               </div>
 
               {/* Sector */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70">¿En qué sector trabajas?</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas?</label>
                 <div className="flex flex-wrap gap-2">
                   {SECTORES.map(s => (
                     <button
@@ -532,8 +586,8 @@ export default function RegistroPage() {
                       onClick={() => setSector(s)}
                       className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
                         sector === s
-                          ? 'bg-[#00827C] text-white border-[#00827C]'
-                          : 'bg-white text-[#474747]/70 border-[rgba(0,130,124,0.20)] hover:border-[#00827C] hover:text-[#00827C]'
+                          ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] border-[var(--color-brand)]'
+                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]'
                       }`}
                     >
                       {s}
@@ -544,7 +598,7 @@ export default function RegistroPage() {
 
               {/* Frecuencia */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70">¿Con qué frecuencia reutilizas?</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Con qué frecuencia reutilizas?</label>
                 <div className="flex flex-wrap gap-2">
                   {FRECUENCIAS.map(f => (
                     <button
@@ -553,8 +607,8 @@ export default function RegistroPage() {
                       onClick={() => setFrecuencia(f)}
                       className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
                         frecuencia === f
-                          ? 'bg-[#00827C] text-white border-[#00827C]'
-                          : 'bg-white text-[#474747]/70 border-[rgba(0,130,124,0.20)] hover:border-[#00827C] hover:text-[#00827C]'
+                          ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] border-[var(--color-brand)]'
+                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]'
                       }`}
                     >
                       {f}
@@ -565,7 +619,7 @@ export default function RegistroPage() {
 
               {/* Motivación */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[#474747]/70">¿Cuál es tu principal motivación?</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Cuál es tu principal motivación?</label>
                 <div className="flex flex-col gap-2">
                   {MOTIVACIONES.map(m => (
                     <button
@@ -574,8 +628,8 @@ export default function RegistroPage() {
                       onClick={() => setMotivacion(m)}
                       className={`w-full px-4 py-2.5 rounded-2xl text-sm font-semibold border text-left transition-all ${
                         motivacion === m
-                          ? 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]'
-                          : 'bg-white text-[#474747]/70 border-[rgba(0,130,124,0.15)] hover:border-[#00827C]/50'
+                          ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)] border-[var(--color-brand)]'
+                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)]/50'
                       }`}
                     >
                       {motivacion === m && <Check size={14} weight="bold" className="inline mr-2" />}
@@ -589,20 +643,20 @@ export default function RegistroPage() {
               <div
                 className={`flex items-center justify-between gap-4 px-4 py-3.5 rounded-2xl border cursor-pointer transition-all ${
                   quiereAsesoria
-                    ? 'bg-[#00827C]/8 border-[#00827C]'
-                    : 'bg-white border-[rgba(0,130,124,0.15)] hover:border-[#00827C]/40'
+                    ? 'bg-[var(--color-brand-light)] border-[var(--color-brand)]'
+                    : 'bg-[var(--bg-input)] border-[var(--border)] hover:border-[var(--color-brand)]/40'
                 }`}
                 onClick={() => setQuiereAsesoria(v => !v)}
               >
                 <div className="flex items-center gap-3">
-                  <Headset size={20} weight="duotone" className={quiereAsesoria ? 'text-[#00827C]' : 'text-[#474747]/40'} />
+                  <Headset size={20} weight="duotone" className={quiereAsesoria ? 'text-[var(--color-brand)]' : 'text-[var(--text-placeholder)]'} />
                   <div>
-                    <p className="text-sm font-semibold text-[#474747]">Asesoría personalizada</p>
-                    <p className="text-xs text-[#474747]/50">Un experto te guía en tu proceso de reúso</p>
+                    <p className="text-sm font-semibold text-[var(--text-primary)]">Asesoría personalizada</p>
+                    <p className="text-xs text-[var(--text-secondary)]/60">Un experto te guía en tu proceso de reúso</p>
                   </div>
                 </div>
                 <div
-                  className={`w-11 h-6 rounded-full transition-all flex items-center px-0.5 ${quiereAsesoria ? 'bg-[#00827C]' : 'bg-[#474747]/15'}`}
+                  className={`w-11 h-6 rounded-full transition-all flex items-center px-0.5 ${quiereAsesoria ? 'bg-[var(--color-brand)]' : 'bg-[var(--border)]'}`}
                 >
                   <div
                     className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${quiereAsesoria ? 'translate-x-5' : 'translate-x-0'}`}
@@ -614,15 +668,15 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(1) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[rgba(0,130,124,0.25)] text-[#00827C] font-semibold text-sm hover:bg-[#00827C]/8 transition-all"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
                 >
                   <ArrowLeft size={15} weight="bold" /> Atrás
                 </button>
                 <button
                   type="button"
                   onClick={avanzarPaso2}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[#00827C] text-white font-bold text-sm hover:bg-[#006B66] active:scale-95 transition-all"
-                  style={{ boxShadow: '0 6px 20px rgba(0,130,124,0.25)' }}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all"
+                  style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                 >
                   Siguiente <ArrowRight size={16} weight="bold" />
                 </button>
@@ -636,13 +690,13 @@ export default function RegistroPage() {
           {paso === 3 && (
             <div className="flex flex-col gap-5">
               <div>
-                <h1 className="text-2xl font-bold text-[#474747] mb-1">Crea tu contraseña</h1>
-                <p className="text-sm text-[#474747]/60">Elige una contraseña segura para proteger tu cuenta.</p>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Crea tu contraseña</h1>
+                <p className="text-sm text-[var(--text-secondary)]/80">Elige una contraseña segura para proteger tu cuenta.</p>
               </div>
 
               {/* Contraseña */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[#474747]/70">Contraseña</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwd ? 'text' : 'password'}
@@ -655,14 +709,14 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwd(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#474747]/40 hover:text-[#00827C] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors"
                   >
                     {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {/* Indicador de fortaleza + reglas */}
                 <div className="flex flex-col gap-1.5 mt-0.5">
-                  <div className="h-1.5 bg-[rgba(0,130,124,0.10)] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-300"
                       style={{ width: password ? fuerzaCfg.width : '0%', background: fuerzaCfg.color }}
@@ -671,18 +725,28 @@ export default function RegistroPage() {
                   {password && (
                     <span className="text-xs font-semibold" style={{ color: fuerzaCfg.color }}>{fuerzaCfg.label}</span>
                   )}
-                  <div className="flex flex-col gap-1 mt-0.5">
+                  {/* Normas de contraseña destacadas */}
+                  <div
+                    style={{
+                      background: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,130,124,0.03)',
+                      border: '1px dashed var(--border)',
+                      borderRadius: 12,
+                      padding: 12,
+                      marginTop: 8,
+                    }}
+                    className="flex flex-col gap-2"
+                  >
                     {[
                       { ok: password.length >= 8,   texto: 'Mínimo 8 caracteres' },
                       { ok: /[A-Z]/.test(password),  texto: 'Una letra mayúscula' },
                       { ok: /[0-9]/.test(password),  texto: 'Un número' },
                     ].map(({ ok, texto }) => (
-                      <div key={texto} className="flex items-center gap-1.5">
+                      <div key={texto} className="flex items-center gap-2">
                         {ok
-                          ? <CheckCircle size={13} weight="duotone" className="text-[#38B98E] flex-shrink-0" />
-                          : <Circle size={13} weight="regular" className="text-[#474747]/25 flex-shrink-0" />
+                          ? <CheckCircle size={14} weight="duotone" className="text-[#38B98E] flex-shrink-0" />
+                          : <Circle size={14} weight="regular" className="text-secondary opacity-40 flex-shrink-0" />
                         }
-                        <span className={`text-xs ${ok ? 'text-[#38B98E]' : 'text-[#474747]/40'}`}>{texto}</span>
+                        <span className={`text-xs font-medium ${ok ? 'text-[#38B98E]' : 'text-secondary opacity-70'}`}>{texto}</span>
                       </div>
                     ))}
                   </div>
@@ -691,7 +755,7 @@ export default function RegistroPage() {
 
               {/* Confirmar contraseña */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#474747]/70">Confirmar contraseña</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Confirmar contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwdConf ? 'text' : 'password'}
@@ -706,7 +770,7 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwdConf(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[#474747]/40 hover:text-[#00827C] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors"
                   >
                     {showPwdConf ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
@@ -719,22 +783,19 @@ export default function RegistroPage() {
               {/* Checkbox único: términos + privacidad + datos (obligatorio) */}
               <label
                 className="flex items-start gap-2.5 cursor-pointer select-none group"
-                onClick={() => {
-                  if (!aceptaTerminos) setModalTerminos(true)
-                  else setAceptaTerminos(false)
-                }}
+                onClick={() => setAceptaTerminos(!aceptaTerminos)}
               >
                 {aceptaTerminos
-                  ? <CheckSquare size={20} weight="duotone" className="text-[#00827C] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} weight="regular" className="text-[#474747]/40 flex-shrink-0 mt-0.5 group-hover:text-[#00827C]/60 transition-colors" />
+                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
+                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
                 }
-                <span className="text-sm text-[#474747]/70 group-hover:text-[#474747] transition-colors leading-snug">
+                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
                   He leído y acepto los{' '}
-                  <span className="text-[#00827C] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal', '_blank') }}>
+                  <span className="text-[var(--color-brand)] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal', '_blank') }}>
                     términos y privacidad
                   </span>
                   {' '}y el{' '}
-                  <span className="text-[#00827C] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal/datos', '_blank') }}>
+                  <span className="text-[var(--color-brand)] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal/datos', '_blank') }}>
                     tratamiento de mis datos
                   </span>
                 </span>
@@ -746,12 +807,12 @@ export default function RegistroPage() {
                 onClick={() => setSuscritoNewsletter(v => !v)}
               >
                 {suscritoNewsletter
-                  ? <CheckSquare size={20} weight="duotone" className="text-[#00827C] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} weight="regular" className="text-[#474747]/40 flex-shrink-0 mt-0.5 group-hover:text-[#00827C]/60 transition-colors" />
+                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
+                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
                 }
-                <span className="text-sm text-[#474747]/70 group-hover:text-[#474747] transition-colors leading-snug">
+                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
                   Quiero recibir novedades sobre economía circular{' '}
-                  <span className="text-[#474747]/40 font-normal">(opcional)</span>
+                  <span className="text-[var(--text-secondary)]/40 font-normal">(opcional)</span>
                 </span>
               </label>
 
@@ -768,7 +829,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(2) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[rgba(0,130,124,0.25)] text-[#00827C] font-semibold text-sm hover:bg-[#00827C]/8 transition-all"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
                 >
                   <ArrowLeft size={15} weight="bold" /> Atrás
                 </button>
@@ -778,10 +839,10 @@ export default function RegistroPage() {
                   disabled={loading}
                   className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm transition-all active:scale-95"
                   style={{
-                    background: loading ? '#4D7C79' : '#00827C',
-                    color: '#fff',
+                    background: loading ? 'var(--border)' : 'var(--color-brand)',
+                    color: 'var(--text-on-brand, #ffffff)',
                     cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 6px 20px rgba(0,130,124,0.25)',
+                    boxShadow: loading ? 'none' : '0 6px 20px var(--color-brand-light)',
                   }}
                 >
                   {loading ? 'Creando cuenta...' : 'Crear cuenta'}
@@ -792,54 +853,9 @@ export default function RegistroPage() {
         </div>
       </div>
 
-      {/* ── Modal de términos y condiciones ───────────────────────────────────── */}
-      {modalTerminos && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={() => setModalTerminos(false)}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl flex flex-col items-center gap-5 text-center"
-            style={{ animation: 'modalIn 0.2s ease-out' }}
-          >
-            <div className="w-14 h-14 rounded-full bg-[#00827C]/10 flex items-center justify-center">
-              <ShieldCheck size={28} weight="duotone" className="text-[#00827C]" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-[#474747] mb-1">Términos y condiciones</h3>
-              <p className="text-sm text-[#474747]/60 leading-relaxed">
-                ¿Confirmas que has leído y aceptas los{' '}
-                <Link href="/legal" target="_blank" className="text-[#00827C] font-semibold hover:underline">
-                  términos de uso, privacidad y condiciones legales
-                </Link>{' '}
-                de la Calculadora de Reúso?
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 w-full">
-              <button
-                type="button"
-                onClick={() => { setAceptaTerminos(true); setModalTerminos(false) }}
-                className="w-full py-3 rounded-full bg-[#00827C] text-white font-bold text-sm hover:bg-[#006B66] transition-all"
-                style={{ boxShadow: '0 4px 12px rgba(0,130,124,0.20)' }}
-              >
-                Acepto los términos
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAceptaTerminos(false)
-                  setModalTerminos(false)
-                  router.push('/')
-                }}
-                className="w-full py-3 rounded-full border border-[rgba(0,130,124,0.20)] text-[#474747]/60 font-semibold text-sm hover:bg-[#f5f5f5] transition-all"
-              >
-                No acepto
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)', opacity: 0.6, textAlign: 'center' }}>
+        Grupo MLP ©{new Date().getFullYear()}. Todos los derechos reservados.
+      </p>
     </div>
   )
 }

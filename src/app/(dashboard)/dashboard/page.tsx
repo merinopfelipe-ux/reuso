@@ -12,9 +12,9 @@ import { type PuntoMensualPersonal } from '@/components/dashboard/grafica-linea-
 import { OnboardingCard } from '@/components/dashboard/onboarding-card'
 
 const GraficaLineaPersonal = dynamic(() => import('@/components/dashboard/grafica-linea-personal'), {
-  ssr: false, loading: () => <div style={{ height: 200, borderRadius: 12, background: '#EBF5F4' }} />, })
+  ssr: false, loading: () => <div style={{ height: 200, borderRadius: 12, background: 'var(--border)' }} />, })
 const DonutCategorias = dynamic(() => import('@/components/empresa/donut-categorias'), {
-  ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: '#EBF5F4' }} />, })
+  ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: 'var(--border)' }} />, })
 import { Buildings, Package, ClockCounterClockwise, Lifebuoy, ArrowRight, Star } from '@/components/ui/icons'
 import type { Certificado, Rol } from '@/types'
 import { displayName } from '@/lib/display-name'
@@ -141,7 +141,7 @@ function SectionCard({ titulo, children }: { titulo: string; children: React.Rea
           fontWeight: 700,
           color: 'var(--text-primary)',
           margin: '0 0 12px',
-          textTransform: 'uppercase',
+          
           letterSpacing: '0.04em',
         }}
       >
