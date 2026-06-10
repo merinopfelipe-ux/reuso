@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Buildings, CreditCard, Calendar, Info } from '@/components/ui/icons'
 import ConfiguracionClient from './components/configuracion-client'
+import { CodigoRegistroClient } from './components/codigo-registro-client'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 const PLAN_LABELS: Record<string, string> = {
@@ -39,7 +40,7 @@ export default async function EmpresaConfiguracionPage() {
 
   const { data: empresa } = await adminClient
     .from('empresas')
-    .select('id, nombre, slug, plan, activa, sector, logo_url, created_at')
+    .select('id, nombre, slug, plan, activa, sector, logo_url, created_at, codigo_registro')
     .eq('id', perfil.empresa_id)
     .single()
 
@@ -147,6 +148,11 @@ export default async function EmpresaConfiguracionPage() {
           </div>
         ))}
       </div>
+
+      {/* Código de empresa — solo empresa_admin */}
+      {esAdmin && (
+        <CodigoRegistroClient codigoInicial={empresa.codigo_registro ?? null} />
+      )}
 
       {/* Formulario editable — solo empresa_admin */}
       {esAdmin && (
