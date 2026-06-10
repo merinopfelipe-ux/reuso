@@ -22,7 +22,7 @@ h3 {
   --bg-input: #FFFFFF;
   --bg-active: rgba(0, 130, 124, 0.12);
 
-  --text-primary: #000000;
+  --text-primary: #474747;
   --text-secondary: #474747;
   --text-placeholder: #7FA8A5;
 
@@ -55,8 +55,8 @@ h3 {
 
 /* ─── Tema oscuro (Protocolo Lurdes V12.3) ─── */
 [data-theme="dark"] {
-  --bg-primary: #000000;
-  /* Negro Profundo Puro (Lurdes) */
+  --bg-primary: #474747;
+  /* Negro Lurdes (Noche) */
   --bg-secondary: #0A0E0D;
   /* Integrado */
   --bg-card: #121615;
@@ -69,7 +69,7 @@ h3 {
   --text-primary: #FFFFFF;
   --text-secondary: #E0E0E0;
   --text-placeholder: #888888;
-  --text-on-brand: #000000;
+  --text-on-brand: #474747;
 
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.04);
@@ -86,7 +86,7 @@ h3 {
   --color-warning-content: #F6BF3E;
   --color-info-content: #A0D2F9;
 
-  --btn-error-text: #000000;
+  --btn-error-text: #474747;
   --scrollbar-thumb-hover: rgba(214, 243, 145, 0.3);
 }
 

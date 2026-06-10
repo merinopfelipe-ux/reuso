@@ -225,7 +225,7 @@ export default function ManualDisenoPage() {
   ]
 
   return (
-    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#000000] text-white' : 'bg-white text-[#474747]'}`} style={{ overflowX: 'clip' }}>
+    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#474747] text-white' : 'bg-white text-[#474747]'}`} style={{ overflowX: 'clip' }}>
       
       {/* ESTILOS GLOBALES DE NAVEGACIÓN */}
       <style jsx global>{`
@@ -339,7 +339,7 @@ export default function ManualDisenoPage() {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
               <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
-              <span className={`text-xs font-bold uppercase tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+              <span className={`text-xs font-bold tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
                 Catálogo de Sistema de Diseño
               </span>
             </div>
@@ -357,16 +357,16 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de color</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Profundo (#000000)</strong> es el fondo más oscuro permitido. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Profundo</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Lurdes (#474747)</strong> es el fondo de página en modo noche. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Lurdes</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
           
           <div className="space-y-16">
             
             <div className="mb-12">
-              <h3 className={`text-xs uppercase tracking-widest font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>A. Identidad y Fondo</h3>
+              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>A. Identidad y Fondo</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                 {[
                   { name: 'Blanco Puro', hex: '#FFFFFF', border: true },
-                  { name: 'Negro Profundo', hex: '#000000' },
+                  { name: 'Negro Lurdes', hex: '#474747' },
                   { name: 'Verde Sostenible', hex: '#00827C' },
                 ].map(color => (
                   <div key={color.name} className="flex flex-col gap-4">
@@ -392,7 +392,7 @@ export default function ManualDisenoPage() {
             </div>
 
             <div className="mb-12">
-              <h3 className={`text-xs uppercase tracking-widest font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>B. Familias Secundarias (Acentos)</h3>
+              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>B. Familias Secundarias (Acentos)</h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                 {[
                   { name: 'Nogal Hogar', hex: '#AD7C43' },
@@ -423,7 +423,7 @@ export default function ManualDisenoPage() {
             </div>
 
             <div className="mb-12">
-              <h3 className={`text-xs uppercase tracking-widest font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>C. Estados Semánticos Web</h3>
+              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>C. Estados Semánticos Web</h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                 {[
                   { name: 'Éxito', hex: '#38B98E' },
@@ -453,21 +453,21 @@ export default function ManualDisenoPage() {
 
             {/* D. Liquid Glass — Especificación Técnica */}
             <div className="mb-8">
-              <h3 className={`text-xs uppercase tracking-widest font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>Liquid Glass — Especificación Técnica</h3>
+              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>Liquid Glass — Especificación Técnica</h3>
               <div className={`p-8 rounded-[2.5rem] relative overflow-hidden group/glass ${liquidGlassClass}`}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                   <div className="glass-stat flex flex-col gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Transparencia</span>
+                    <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Transparencia</span>
                     <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>65%</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>bg-white/35 (Día) · bg-[#D6F391]/08 (Noche)</span>
                     </div>
                     <div className="glass-stat flex flex-col gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Blur</span>
+                    <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Blur</span>
                     <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>60px</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>backdrop-blur-[60px] · saturate(200%)</span>
                     </div>
                     <div className="glass-stat flex flex-col gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Borde</span>
+                    <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Borde</span>
                     <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>10%</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>border-[#00827C]/10 (Día) · border-white/10 (Noche)</span>
                   </div>
@@ -500,39 +500,39 @@ export default function ManualDisenoPage() {
           </p>
           <div className={`p-10 md:p-14 rounded-[2.5rem] space-y-12 ${liquidGlassClass} border-[#00827C]/10`}>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Gran Formato (Display)</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Gran Formato (Display)</div>
                 <div className="md:col-span-9"><h1 className={`text-6xl md:text-7xl font-bold tracking-tighter ${isDark ? 'text-white' : 'text-[#474747]'}`}>El Futuro es Ahora</h1></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Título Principal (H1)</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Título Principal (H1)</div>
                 <div className="md:col-span-9"><h1 className={`text-4xl md:text-5xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tu impacto ambiental real</h1></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Subtítulo (H2)</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Subtítulo (H2)</div>
                 <div className="md:col-span-9"><h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Categorías de impacto mitigado</h2></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Sección (H3)</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Sección (H3)</div>
                 <div className="md:col-span-9"><h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Asignación criptográfica de tokens</h3></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Etiqueta Micro</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Etiqueta Micro</div>
                 <div className="md:col-span-9">
                   <div className="flex items-center gap-3">
                      <span className="w-2 h-2 rounded-full bg-[#00827C]" />
-                     <span className={`text-[11px] font-bold uppercase tracking-[0.2em] ${isDark ? 'text-white' : 'text-[#474747]'}`}>Términos y Condiciones</span>
+                     <span className={`text-[11px] font-bold tracking-[0.2em] ${isDark ? 'text-white' : 'text-[#474747]'}`}>Términos y Condiciones</span>
                   </div>
                 </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Monoespaciada</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Monoespaciada</div>
                 <div className="md:col-span-9">
                   <code className={`text-sm font-mono ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>var(--color-brand): #00827C</code>
                   <p className={`text-xs mt-2 ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>JetBrains Mono · Tokens técnicos y código</p>
                 </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest uppercase ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cuerpo (Body)</div>
+                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cuerpo (Body)</div>
                 <div className="md:col-span-9 space-y-4">
                   <p className={`text-lg leading-relaxed ${isDark ? 'text-white' : 'text-[#474747]'}`}>Este es un texto normal donde aseguramos la lectura prolongada sin cansar la vista. Se utiliza principalmente en descripciones y noticias de la red.</p>
                   <p className={`text-lg leading-relaxed font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Y esto es el cuerpo de texto en su variante negrita o Bold, utilizado para destacar datos críticos en informes.</p>
@@ -548,32 +548,32 @@ export default function ManualDisenoPage() {
           </div>
           <div className={`p-12 rounded-[3.5rem] grid grid-cols-2 md:grid-cols-3 gap-12 border border-[#00827C]/10 ${isDark ? 'bg-[#D6F391]/05' : 'bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)]`}>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>1. Primario Reúso</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>1. Primario Reúso</span>
                 <button className={`px-8 py-4 rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white shadow-[0_8px_20px_rgba(0,130,124,0.2)]'}`}>Acción Primaria</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>2. Secundario Claro</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>2. Secundario Claro</span>
                 <button className={`px-8 py-4 rounded-full font-bold transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#00827C]/5 text-[#474747] hover:bg-[#00827C]/10'}`}>Ver Reportes</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>3. Contorno (Institucional)</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>3. Contorno (Institucional)</span>
                 <button className={`px-8 py-4 bg-transparent border-2 font-bold rounded-full transition-all ${isDark ? 'border-[#D6F391] text-[#D6F391] hover:bg-[#D6F391] hover:text-[#474747]' : 'border-[#00827C] text-[#00827C] hover:bg-[#00827C] hover:text-white'}`}>Pide tu seguro</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>4. Enlace Icono (Fantasma)</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>4. Enlace Icono (Fantasma)</span>
                 <button className={`px-4 py-2 font-bold rounded-full transition-colors flex items-center gap-2 group ${isDark ? 'text-[#D6F391] hover:bg-white/10' : 'text-[#00827C] hover:bg-[#00827C]/10'}`}>Saber más <ArrowRight size={16} weight="bold" className="group-hover:translate-x-1 transition-transform"/></button>
               </div>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>5. Alerta / Feedback</span>
-                <button className={`px-8 py-4 rounded-full font-bold transition-all uppercase text-[12px] tracking-wide border ${isDark ? 'bg-[#F6BF3E]/20 border-[#F6BF3E]/40 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border border-[#F6BF3E]/30 text-[#AD7C43] hover:bg-[#F6BF3E]/20'}`}>Validando emisión...</button>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>5. Alerta / Feedback</span>
+                <button className={`px-8 py-4 rounded-full font-bold transition-all text-[12px] tracking-wide border ${isDark ? 'bg-[#F6BF3E]/20 border-[#F6BF3E]/40 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border border-[#F6BF3E]/30 text-[#AD7C43] hover:bg-[#F6BF3E]/20'}`}>Validando emisión...</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>6. Flotante Celeste Acción</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>6. Flotante Celeste Acción</span>
                 <button className="w-16 h-16 bg-[#59A6E4] text-white rounded-full flex items-center justify-center font-bold shadow-[0_12px_24px_rgba(89,166,228,0.3)] hover:scale-110 active:scale-95 transition-transform"><Plus size={24} weight="bold"/></button>
               </div>
               <div className="flex flex-col gap-4 items-start md:col-span-3">
                 <div className="flex items-center gap-4 mb-4">
-                  <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>7. Línea Inferior (Tab) — Con y Sin Icono</span>
+                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>7. Línea Inferior (Tab) — Con y Sin Icono</span>
                 </div>
                 <div className="flex flex-col gap-8 w-full">
                   <div className="flex gap-8">
@@ -598,7 +598,7 @@ export default function ManualDisenoPage() {
           
           {/* A. FORMAS DE TARJETA FIRMA */}
           <div className="mb-16">
-            <h3 className={`text-xs uppercase tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Geometrías de Firma Reúso</h3>
+            <h3 className={`text-xs tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Geometrías de Firma Reúso</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-center">
                
                <div className="flex flex-col gap-6">
@@ -606,7 +606,7 @@ export default function ManualDisenoPage() {
                     <h4 className={`text-2xl font-bold mb-2 ${isDark ? 'text-[#474747]' : 'text-white'}`}>Marco Hero Estadio</h4>
                     <p className={`text-xs leading-relaxed max-w-[200px] ${isDark ? 'text-[#D6F391]/60' : 'text-white/40'}`}>Radio 40px &bull; bg {isDark ? 'Blanco Puro' : 'Negro Lurdes'} &bull; sombra 0 24 48 / 0.08 &bull; contenedor multimedia</p>
                  </div>
-                 <div className="text-center"><span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Héroe Estadio</span></div>
+                 <div className="text-center"><span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Héroe Estadio</span></div>
                </div>
 
                {/* 2. Tarjeta Retrato Circular — Botón en el borde exterior */}
@@ -620,7 +620,7 @@ export default function ManualDisenoPage() {
                     </button>
                   </div>
                   <div className="text-center">
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-1`}>&bull; Retrato Circular</span>
+                    <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-1`}>&bull; Retrato Circular</span>
                     <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Curva Orgánica Firma</div>
                   </div>
                 </div>
@@ -630,17 +630,17 @@ export default function ManualDisenoPage() {
                  <div className={`w-full h-64 rounded-[120px] border border-[#00827C]/10 shadow-[0_24px_48px_rgba(0,130,124,0.06)] flex items-center justify-center p-12 text-center transition-transform hover:rotate-1 duration-500 ${isDark ? 'bg-white/10' : 'bg-[#FCFBFA]'}`}>
                     <div className="flex flex-col items-center">
                       <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fila Editorial Cápsula</h4>
-                      <p className={`text-[10px] uppercase tracking-widest font-bold ${isDark ? 'text-white/40' : 'text-[#00827C]/40'}`}>Radio 999px &bull; bg Blanco Roto &bull; sombra 0 24 48 / 0.08</p>
+                      <p className={`text-[10px] font-bold ${isDark ? 'text-white/40' : 'text-[#00827C]/40'}`}>Radio 999px &bull; bg Blanco Roto &bull; sombra 0 24 48 / 0.08</p>
                     </div>
                  </div>
-                 <div className="text-center"><span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Cápsula editorial</span></div>
+                 <div className="text-center"><span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Cápsula editorial</span></div>
                </div>
 
             </div>
           </div>
 
           <div className="mb-8">
-            <h3 className={`text-xs uppercase tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. Indicadores KPI Administrativos</h3>
+            <h3 className={`text-xs tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. Indicadores KPI Administrativos</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { title: 'Usuarios registrados', val: '4', icon: Users, c: 'bg-[#00827C]' },
@@ -658,7 +658,7 @@ export default function ManualDisenoPage() {
                        <span className={`text-3xl font-bold tracking-tighter ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>{k.val}</span>
                        <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#38B98E]'}`}>+4,5%</span>
                      </div>
-                     <span className={`text-[10px] mt-1 uppercase font-bold tracking-widest ${isDark ? 'text-white/20' : 'text-[#00827C]/40'}`}>{k.extra || 'esta semana'}</span>
+                     <span className={`text-[10px] mt-1 font-bold tracking-widest ${isDark ? 'text-white/20' : 'text-[#00827C]/40'}`}>{k.extra || 'esta semana'}</span>
                    </div>
                 </div>
               ))}
@@ -674,15 +674,15 @@ export default function ManualDisenoPage() {
           <div className={`p-10 rounded-[3.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05 backdrop-blur-md' : 'border-[#00827C]/10 bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] max-w-4xl`}>
              <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div className="flex flex-col gap-2">
-                 <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Nombre Completo</span>
+                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Nombre Completo</span>
                  <input type="text" placeholder="Ej. Juan Pérez" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
                <div className="flex flex-col gap-2">
-                 <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Correo Institucional</span>
+                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Correo Institucional</span>
                  <input type="email" placeholder="usuario@lurdes.co" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
                <div className="flex flex-col gap-2 relative">
-                 <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Contraseña Institucional</span>
+                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Contraseña Institucional</span>
                  <div className="relative">
                    <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                    <button type="button" onClick={() => setShowPwd(!showPwd)} className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${isDark ? 'text-[#D6F391]/60 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/50 hover:bg-[#00827C]/10 hover:text-[#00827C]'}`}>
@@ -694,7 +694,7 @@ export default function ManualDisenoPage() {
                  <div className={`w-full h-[54px] flex items-center px-6 rounded-full border font-bold text-sm ${isDark ? 'bg-[#38B98E]/10 border-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#00827C]'}`}>&#10003; Validación exitosa</div>
                </div>
                <div className="flex flex-col gap-2 md:col-span-2">
-                 <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Mensaje de Impacto</span>
+                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Mensaje de Impacto</span>
                  <textarea placeholder="Cuéntanos tu objetivo..." className={`p-4 rounded-2xl border transition-all h-32 resize-none ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
              </form>
@@ -721,7 +721,7 @@ export default function ManualDisenoPage() {
                   <div className={`w-16 h-16 transition-all ${isDark ? 'bg-white/10 border border-[#D6F391]/30' : 'bg-[#00827C]/10 border border-[#00827C]/30'} ${rad.cls}`} />
                   <div className="text-center">
                     <div className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{rad.r}</div>
-                    <div className={`text-[9px] uppercase tracking-widest ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>{rad.label}</div>
+                    <div className={`text-[9px] ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>{rad.label}</div>
                   </div>
                 </div>
               ))}
@@ -791,7 +791,7 @@ export default function ManualDisenoPage() {
                  <div className={`glass-shimmer-text text-5xl font-black tracking-tight mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>
                    Liquid Glass
                  </div>
-                 <p className={`glass-subtitle text-sm font-bold uppercase tracking-[0.3em] ${isDark ? 'text-[#D6F391]/60' : 'text-[#00827C]/40'}`}>Transparencia &middot; Blur &middot; Saturación</p>
+                 <p className={`glass-subtitle text-sm font-bold tracking-[0.3em] ${isDark ? 'text-[#D6F391]/60' : 'text-[#00827C]/40'}`}>Transparencia &middot; Blur &middot; Saturación</p>
                </div>
             </div>
           </div>
@@ -811,9 +811,9 @@ export default function ManualDisenoPage() {
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className={`${isDark ? 'bg-white/10' : 'bg-[#EBF5F4]'} border-b border-[#00827C]/10`}>
-                  <th className={`px-6 py-4 text-left font-bold uppercase tracking-widest text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Categoría</th>
-                  <th className={`px-6 py-4 text-left font-bold uppercase tracking-widest text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Estado</th>
-                  <th className={`px-6 py-4 text-right font-bold uppercase tracking-widest text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cifra de Impacto</th>
+                  <th className={`px-6 py-4 text-left font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Categoría</th>
+                  <th className={`px-6 py-4 text-left font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Estado</th>
+                  <th className={`px-6 py-4 text-right font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cifra de Impacto</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#00827C]/5">
@@ -821,7 +821,7 @@ export default function ManualDisenoPage() {
                   <tr key={i} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-[#00827C]/5'}`}>
                     <td className={`px-6 py-5 font-semibold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Textiles Reutilizados</td>
                     <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase border ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391] border-[#D6F391]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/20'}`}>Activo</span>
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold border ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391] border-[#D6F391]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/20'}`}>Activo</span>
                     </td>
                     <td className={`px-6 py-5 text-right font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>-42.8kg CO&#8322;</td>
                   </tr>
@@ -847,7 +847,7 @@ export default function ManualDisenoPage() {
             {DESIGN_TOKENS.map((group) => (
               <div key={group.category}>
                 <div className="flex items-center gap-3 mb-6">
-                  <h3 className={`text-xs font-black uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>{group.category}</h3>
+                  <h3 className={`text-xs font-black ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>{group.category}</h3>
                   <div className={`flex-1 h-px ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -891,7 +891,7 @@ export default function ManualDisenoPage() {
                             </div>
                           )}
                           {(previewType === 'anim-in' || previewType === 'anim-glow' || previewType === 'anim-shimmer' || previewType === 'anim-pulse') && (
-                            <div className={`text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${isDark ? 'bg-[#D6F391]/15 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'} ${previewType === 'anim-shimmer' ? 'glass-shimmer-text' : previewType === 'anim-pulse' ? 'glass-subtitle' : previewType === 'anim-glow' ? 'glass-number' : 'glass-stat'}`}>
+                            <div className={`text-xs font-black px-3 py-1.5 rounded-full ${isDark ? 'bg-[#D6F391]/15 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'} ${previewType === 'anim-shimmer' ? 'glass-shimmer-text' : previewType === 'anim-pulse' ? 'glass-subtitle' : previewType === 'anim-glow' ? 'glass-number' : 'glass-stat'}`}>
                               Aa
                             </div>
                           )}
@@ -929,7 +929,7 @@ export default function ManualDisenoPage() {
               href="https://phosphoricons.com/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#00827C]/5 text-[#00827C] hover:bg-[#00827C]/10'}`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-black transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#00827C]/5 text-[#00827C] hover:bg-[#00827C]/10'}`}
             >
               Explorar librería Phosphor <ArrowRight size={16} weight="bold" />
             </a>
@@ -938,7 +938,7 @@ export default function ManualDisenoPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Light (Delgado)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Light (Delgado)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
                   <Icon key={i} size={28} weight="light" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
@@ -947,7 +947,7 @@ export default function ManualDisenoPage() {
               <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Decorativo &middot; Fondos &middot; Ilustraciones</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (Normal)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (Normal)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
                   <Icon key={i} size={28} weight="regular" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
@@ -956,7 +956,7 @@ export default function ManualDisenoPage() {
               <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Interfaz general &middot; Navegación &middot; Formularios</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (Bicromático)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (Bicromático)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
                   <Icon key={i} size={28} weight="duotone" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
@@ -979,7 +979,7 @@ export default function ManualDisenoPage() {
             ].map((icon, idx) => (
               <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#00827C]/10'}`}>
                 <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#00827C]'} transition-colors mb-4`} weight="regular" />
-                <span className={`text-[10px] font-bold uppercase tracking-tighter ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{icon.n}</span>
+                <span className={`text-[10px] font-bold tracking-tighter ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{icon.n}</span>
               </div>
             ))}
           </div>
@@ -1083,17 +1083,17 @@ export default function ManualDisenoPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className={`p-8 rounded-[2.5rem] ${liquidGlassClass}`}>
                <div className={`text-5xl font-black mb-4 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>7</div>
-               <div className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Máximo de Ítems</div>
+               <div className={`text-sm font-bold ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Máximo de Ítems</div>
                <p className={`text-sm leading-relaxed ${isDark ? 'text-white/60' : ''}`}>No más de 7 puntos de acceso de primer nivel por perfil para evitar el scroll vertical en el sidebar.</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] ${liquidGlassClass}`}>
                <div className={`text-5xl font-black mb-4 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>22</div>
-               <div className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Caracteres Máximos</div>
+               <div className={`text-sm font-bold ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Caracteres Máximos</div>
                <p className={`text-sm leading-relaxed ${isDark ? 'text-white/60' : ''}`}>Etiquetas breves que garantizan que el nombre no se rompa ni genere ruido visual excesivo.</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] ${liquidGlassClass}`}>
                <div className={`text-5xl font-black mb-4 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>2</div>
-               <div className={`text-sm font-bold uppercase tracking-widest ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Palabras Máximas</div>
+               <div className={`text-sm font-bold ${isDark ? 'text-white/30' : 'opacity-40'} mb-3`}>Palabras Máximas</div>
                <p className={`text-sm leading-relaxed ${isDark ? 'text-white/60' : ''}`}>Nombres tan claros que permiten una identificación periférica sin necesidad de lectura analítica.</p>
             </div>
           </div>
@@ -1144,9 +1144,9 @@ export default function ManualDisenoPage() {
 
               return (
                 <div key={plan.id} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col h-full ${plan.popular ? (isDark ? 'bg-white/10 border-[#D6F391]/40 shadow-[0_20px_50px_rgba(214,243,145,0.1)]' : 'bg-white border-[#00827C]/30 shadow-[0_20px_50px_rgba(0,130,124,0.1)]') : (isDark ? 'bg-[#D6F391]/05 border-white/10' : 'bg-white/80 border-[#00827C]/10 backdrop-blur-md')}`}>
-                  {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#474747] text-[#D6F391] text-[9px] font-bold tracking-[0.3em] rounded-full shadow-lg whitespace-nowrap uppercase">LO MÁS BUSCADO</div>}
+                  {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#474747] text-[#D6F391] text-[9px] font-bold tracking-[0.3em] rounded-full shadow-lg whitespace-nowrap">LO MÁS BUSCADO</div>}
                   <div className="mb-8">
-                    <span className={`text-[10px] font-black tracking-widest uppercase opacity-40 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{plan.tagline}</span>
+                    <span className={`text-[10px] font-black tracking-widest opacity-40 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{plan.tagline}</span>
                     <h3 className={`text-3xl font-black mt-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{formattedPrice}</h3>
                     {plan.id !== 'free' && <div className={`text-[10px] mt-1 font-bold ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{isYearly ? 'al año' : 'mensual'}</div>}
                   </div>
@@ -1163,10 +1163,10 @@ export default function ManualDisenoPage() {
             <table className="w-full text-sm min-w-[800px]">
               <thead>
                 <tr className={isDark ? 'bg-[#4D4D4D]' : 'bg-[#EBF5F4]'}>
-                  <th className={`px-6 py-5 text-left font-bold text-[11px] uppercase tracking-widest ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>Característica</th>
+                  <th className={`px-6 py-5 text-left font-bold text-[11px] ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>Característica</th>
                   {PRICING_PLANS.map((p: typeof PLANS[0]) => (
                     <th key={p.id} className={`px-4 py-5 text-center ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
-                      <div className="font-bold text-[11px] uppercase tracking-widest">{p.name}</div>
+                      <div className="font-bold text-[11px]">{p.name}</div>
                       <div className={`text-[10px] font-normal mt-1 ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>
                         {p.id === 'free' ? 'Gratis' : `${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].symbol}${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].format((p.priceMonthlyCOP * CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].rate) * (isYearly ? 10 : 1))}/${isYearly ? 'año' : 'mes'}`}
                       </div>

@@ -220,7 +220,7 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
           padding: '11px 24px',
           borderRadius: 10,
           background: enviando ? 'rgba(0,130,124,0.5)' : 'var(--color-brand)',
-          color: isDark ? '#000000' : '#fff',
+          color: isDark ? '#474747' : '#fff',
           fontWeight: 600,
           fontSize: 14,
           border: 'none',

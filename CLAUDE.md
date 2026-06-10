@@ -2,6 +2,14 @@
 V14.9 (2026-06-09) · reuso.lurdes.co · Grupo MLP S.A.S
 VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
+## COLOR NEGRO — REGLA ABSOLUTA
+El negro del sistema es **#474747** (Negro Lurdes). PROHIBIDO usar `#000000` (negro puro) en ningún contexto de UI.
+- Fondo de página en noche: `#474747`
+- Texto sobre pistacho/brand: `#474747`
+- CSS variables en `globals.css`: `--bg-primary`, `--text-on-brand`, `--btn-error-text` → siempre `#474747`
+- Excepción única: overlays de Liquid Glass con opacidad `bg-[#000000]/35` (no es fondo sólido, es semitransparente)
+- Si en algún edit aparece `#000000` sin `/XX` de opacidad → es un bug, corrígelo de inmediato a `#474747`.
+
 ## NOMBRE DEL PRODUCTO — REGLA ABSOLUTA
 El nombre es **Calculadora de Reúso**. NUNCA escribir solo "Reúso" como nombre del producto.
 Aplica a: UI, correos, documentación, commits, comentarios de código, respuestas al usuario, skills.
