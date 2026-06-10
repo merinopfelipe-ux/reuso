@@ -151,6 +151,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
   }
 
   const handleMouseEnterFlyout = () => {
+    if (isMobile) return
     if (leaveTimeout) {
       clearTimeout(leaveTimeout)
       setLeaveTimeout(null)
@@ -189,6 +190,11 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
   return (
     <>
     <aside 
+      onClick={() => {
+        if (isMobile && !isExpanded) {
+          setIsExpanded(true)
+        }
+      }}
       onMouseEnter={handleMouseEnterRail}
       onMouseLeave={handleMouseLeaveRail}
       className={`hidden md:flex fixed left-0 top-0 h-screen flex-col ${isExpanded ? 'w-[220px]' : (sidebarWidth + 'px')}`}
@@ -228,11 +234,19 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           return (
             <div key={idx} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
               <div 
-                onClick={() => {
+                onClick={(e) => {
+                  if (isMobile && !isExpanded) {
+                    e.stopPropagation()
+                    setIsExpanded(true)
+                    return
+                  }
                   if (item.subItems) {
                     setActiveSubmenu(isInteracting ? null : item.label)
                   } else if (item.href && item.href !== '#') {
                     router.push(item.href)
+                    if (isMobile) {
+                      setIsExpanded(false)
+                    }
                   }
                 }}
                 className={`clean-item-nav ${(isDirectActive || hasActiveSub) ? 'reuso-nav-active' : ''}`}
@@ -290,10 +304,6 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         }
 
         .liquid-base-context {
-          background: #F7FAF9 !important; /* Verde Musgo muy claro en día V13.6.1 */
-        }
-
-        [data-theme="dark"] .liquid-base-context {
           background: var(--bg-primary) !important;
         }
 
@@ -471,6 +481,21 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             )
           })}
         </div>
+      )}
+      {/* Overlay para cerrar submenú en móvil/tablet */}
+      {isMobile && activeSubmenu && (
+        <div 
+          onClick={() => {
+            setActiveSubmenu(null)
+            setIsExpanded(false)
+          }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 850,
+            background: 'rgba(0,0,0,0.1)',
+          }}
+        />
       )}
     </>
   )

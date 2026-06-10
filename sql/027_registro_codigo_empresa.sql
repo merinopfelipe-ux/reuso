@@ -15,7 +15,7 @@ AS $$
   SELECT id, nombre
   FROM empresas
   WHERE codigo_registro = upper(trim(p_codigo))
-    AND activo = true
+    AND activa = true
   LIMIT 1;
 $$;
 
