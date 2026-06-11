@@ -19,7 +19,7 @@ interface HeaderUserDropdownProps {
   avatarText?: string
 }
 
-export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avatarText }: HeaderUserDropdownProps) {
+export function HeaderUserDropdown({ nombre, rol, avatarColor = '#8AD0B2', avatarText }: HeaderUserDropdownProps) {
   const [open, setOpen] = useState(false)
   const [modoEmpleado, setModoEmpleado] = useState(false)
   const ref = useRef<HTMLDivElement>(null)

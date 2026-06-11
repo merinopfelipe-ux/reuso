@@ -73,7 +73,7 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
     <footer
       style={{
         padding: isMobile ? '32px 24px' : '40px 60px',
-        background: `linear-gradient(0deg, rgba(214, 243, 145, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`, 
+        background: `linear-gradient(0deg, rgba(138, 208, 178, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`, 
         color: 'var(--text-secondary)',
         fontSize: isMobile ? 11 : 12,
         width: '100%',

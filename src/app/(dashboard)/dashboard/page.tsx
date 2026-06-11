@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Mi impacto' }
 
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PanelCertificados } from '@/components/certificados/panel-certificados'
@@ -540,7 +541,7 @@ export default async function DashboardPage() {
               </p>
             </div>
           </div>
-          <a
+          <Link
             href="/empresa/nueva"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -554,7 +555,7 @@ export default async function DashboardPage() {
             }}
           >
             Crear mi empresa <ArrowRight size={14} />
-          </a>
+          </Link>
         </div>
       )}
 
@@ -594,7 +595,7 @@ export default async function DashboardPage() {
             { href: '/dashboard/historial', label: 'Mi historial', icon: ClockCounterClockwise, desc: 'Ver cálculos anteriores' },
             { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy, desc: 'Abrir ticket' },
           ].map(({ href, label, icon: Icon, desc }) => (
-            <a
+            <Link
               key={href}
               href={href}
               className="group backdrop-blur-md hover:-translate-y-1 transition-all duration-300"
@@ -622,7 +623,7 @@ export default async function DashboardPage() {
                 <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{label}</p>
                 <p style={{ margin: '2px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>{desc}</p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       )}

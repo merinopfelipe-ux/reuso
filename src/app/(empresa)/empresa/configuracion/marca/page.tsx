@@ -333,7 +333,7 @@ export default function ConfigMarcaPage() {
           disabled={guardando}
           className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${
             isDark
-              ? 'bg-[#D6F391] text-[#474747] hover:bg-[#C8E87A]'
+              ? 'bg-[#8AD0B2] text-[#474747] hover:bg-[#C8E87A]'
               : 'bg-[#00827C] text-white hover:bg-[#006B66]'
           }`}
         >

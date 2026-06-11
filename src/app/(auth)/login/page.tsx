@@ -111,7 +111,7 @@ const TESTIMONIOS = [
     texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.",
     autor: "Ana Gómez",
     cargo: "Especialista en Economía Circular",
-    initials: "AG", color: "#D6F391"
+    initials: "AG", color: "#8AD0B2"
   }
 ]
 

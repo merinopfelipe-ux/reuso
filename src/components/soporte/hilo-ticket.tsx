@@ -117,7 +117,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
             {/* Cabecera */}
             <div style={{ padding: '20px 24px', borderBottom: `1px solid ${BORDER}`, flexShrink: 0, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
               <div>
-                <span style={{ fontSize: 11, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>TICKET #{ticket.id.slice(0, 8)}</span>
+                <span style={{ fontSize: 11, color: TEXT_MED, letterSpacing: '0.04em', fontWeight: 600 }}>TICKET #{ticket.id.slice(0, 8)}</span>
                 <h3 style={{ margin: '4px 0', fontSize: 18, color: TEXT_DARK, lineHeight: 1.3 }}>{ticket.titulo}</h3>
                 <span style={{ fontSize: 13, color: TEXT_MED }}>
                   Creado por {ticket.profiles_user?.nombre} &middot; Estado: <strong>{ticket.estado.replace('_', ' ')}</strong>

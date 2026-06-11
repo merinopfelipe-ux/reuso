@@ -50,6 +50,7 @@ export default async function NuevaEmpresaPage() {
           <img
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
+            className="logo-dark-invert"
             style={{ height: 32, marginBottom: 20 }}
           />
         </div>

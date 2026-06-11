@@ -9,7 +9,7 @@ import { PageSubmenu } from '@/components/page-submenu'
 type Tema = 'light' | 'dark' | 'system'
 
 const AVATAR_COLORS = [
-  { hex: '#D6F391', label: 'Pistacho' },
+  { hex: '#8AD0B2', label: 'Pistacho' },
   { hex: '#8AD0B2', label: 'Menta' },
   { hex: '#AD7C43', label: 'Nogal' },
   { hex: '#F3BBD3', label: 'Rosa' },
@@ -35,7 +35,7 @@ export default function SettingsPage() {
   const [emailMasked, setEmailMasked] = useState('')
   const [telefonoMasked, setTelefonoMasked] = useState<string | null>(null)
   const [rol, setRol] = useState('')
-  const [avatarColor, setAvatarColor] = useState('#D6F391')
+  const [avatarColor, setAvatarColor] = useState('#8AD0B2')
   const [avatarText, setAvatarText] = useState('')
   const [notificaciones, setNotificaciones] = useState({
     impacto_critico: true,
@@ -730,7 +730,7 @@ export default function SettingsPage() {
               pointerEvents: 'auto',
               display: 'flex', alignItems: 'center', gap: 10,
               padding: '12px 36px',
-              background: saved ? 'var(--color-success, #38B98E)' : isDark ? '#D6F391' : 'var(--color-brand)',
+              background: saved ? 'var(--color-success, #38B98E)' : isDark ? '#8AD0B2' : 'var(--color-brand)',
               color: isDark ? '#474747' : '#fff',
               border: 'none',
               borderRadius: 100,

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import {
   UserPlus, Envelope, Clock, CheckCircle, XCircle, Users, CircleNotch,
   Copy, Check, Link, Trash, PencilSimple, X, WarningCircle,
@@ -33,11 +34,11 @@ interface Props {
   codigoRegistro?: string | null
 }
 
-const BRAND = '#00827C'
-const BG_LIGHT = '#EBF5F4'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BRAND = 'var(--color-brand)'
+const BG_LIGHT = 'var(--bg-active)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 
 const ROL_LABELS: Record<string, string> = {
   empresa_admin: 'Administrador',
@@ -46,11 +47,11 @@ const ROL_LABELS: Record<string, string> = {
   super_admin: 'Super admin',
 }
 
-const ROL_COLORS: Record<string, string> = {
-  empresa_admin: '#00827C',
-  empleado: '#38B98E',
-  usuario_libre: '#59A6E4',
-  super_admin: '#AD7C43',
+const ROL_STYLE: Record<string, { color: string; bg: string }> = {
+  empresa_admin: { color: 'var(--color-brand)', bg: 'var(--color-brand-light)' },
+  empleado:      { color: 'var(--color-success-content, #38B98E)', bg: 'rgba(56,185,142,0.1)' },
+  usuario_libre: { color: 'var(--color-info-content, #59A6E4)', bg: 'rgba(89,166,228,0.1)' },
+  super_admin:   { color: 'var(--color-nogal, #AD7C43)', bg: 'rgba(173,124,67,0.1)' },
 }
 
 const ESTADO_CONFIG: Record<string, { color: string; label: string; icono: React.ElementType }> = {
@@ -90,6 +91,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
   // ── Editar miembro ───────────────────────────────────────────────────────────
   const [editandoMiembro, setEditandoMiembro]   = useState<string | null>(null)
   const [editNombreMiembro, setEditNombreMiembro] = useState('')
+  const [editEmailMiembro, setEditEmailMiembro]   = useState('')
   const [guardandoMiembro, setGuardandoMiembro] = useState(false)
 
   // ── Editar invitación ────────────────────────────────────────────────────────
@@ -165,21 +167,25 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
   const handleGuardarMiembro = useCallback(async (id: string) => {
     if (!editNombreMiembro.trim()) return
     setGuardandoMiembro(true)
+    setError(null)
     try {
       const res = await fetch(`/api/empresa/miembros/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: editNombreMiembro }),
+        body: JSON.stringify({ nombre: editNombreMiembro.trim(), email: editEmailMiembro.trim() }),
       })
-      if (!res.ok) throw new Error()
-      setMiembros(prev => prev.map(m => m.id === id ? { ...m, nombre: editNombreMiembro.trim() } : m))
+      if (!res.ok) {
+        const errData = await res.json()
+        throw new Error(errData.error ?? 'Error al actualizar.')
+      }
+      setMiembros(prev => prev.map(m => m.id === id ? { ...m, nombre: editNombreMiembro.trim(), email: editEmailMiembro.trim() } : m))
       setEditandoMiembro(null)
-    } catch {
-      setError('No se pudo actualizar el nombre.')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo actualizar el miembro.')
     } finally {
       setGuardandoMiembro(false)
     }
-  }, [editNombreMiembro])
+  }, [editNombreMiembro, editEmailMiembro])
 
   // ── Handlers — Editar email invitación ───────────────────────────────────────
   const handleGuardarInv = useCallback(async (id: string) => {
@@ -266,21 +272,35 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       {editandoMiembro === m.id ? (
-                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                          <input
-                            autoFocus
-                            value={editNombreMiembro}
-                            onChange={e => setEditNombreMiembro(e.target.value)}
-                            onKeyDown={e => { if (e.key === 'Enter') handleGuardarMiembro(m.id); if (e.key === 'Escape') setEditandoMiembro(null) }}
-                            style={{ padding: '4px 8px', borderRadius: 6, border: `1.5px solid ${BRAND}`, fontSize: 13, outline: 'none', flex: 1 }}
-                          />
-                          <button onClick={() => handleGuardarMiembro(m.id)} disabled={guardandoMiembro}
-                            style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                            {guardandoMiembro ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={13} />}
-                          </button>
-                          <button onClick={() => setEditandoMiembro(null)} style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
-                            <X size={13} />
-                          </button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+                          <div style={{ display: 'flex', gap: 6 }}>
+                            <input
+                              autoFocus
+                              placeholder="Nombre"
+                              value={editNombreMiembro}
+                              onChange={e => setEditNombreMiembro(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') handleGuardarMiembro(m.id); if (e.key === 'Escape') setEditandoMiembro(null) }}
+                              style={{ padding: '6px 10px', borderRadius: 6, border: `1.5px solid ${BRAND}`, background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none', flex: 1 }}
+                            />
+                            <input
+                              placeholder="Email"
+                              type="email"
+                              value={editEmailMiembro}
+                              onChange={e => setEditEmailMiembro(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') handleGuardarMiembro(m.id); if (e.key === 'Escape') setEditandoMiembro(null) }}
+                              style={{ padding: '6px 10px', borderRadius: 6, border: `1.5px solid ${BRAND}`, background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none', flex: 1 }}
+                            />
+                          </div>
+                          <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                            <button onClick={() => handleGuardarMiembro(m.id)} disabled={guardandoMiembro}
+                              style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              {guardandoMiembro ? <CircleNotch size={12} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={12} />}
+                              Guardar
+                            </button>
+                            <button onClick={() => setEditandoMiembro(null)} style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 12px', fontSize: 12, fontWeight: 600, cursor: 'pointer', color: TEXT_MED }}>
+                              Cancelar
+                            </button>
+                          </div>
                         </div>
                       ) : (
                         <>
@@ -292,15 +312,22 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, borderRadius: 100, padding: '3px 10px', background: `${ROL_COLORS[m.rol] ?? '#4D7C79'}18`, color: ROL_COLORS[m.rol] ?? TEXT_MED }}>
+                    <span style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      borderRadius: 100,
+                      padding: '3px 10px',
+                      background: ROL_STYLE[m.rol]?.bg ?? 'var(--bg-active)',
+                      color: ROL_STYLE[m.rol]?.color ?? 'var(--text-secondary)'
+                    }}>
                       {ROL_LABELS[m.rol] ?? m.rol}
                     </span>
 
                     {m.rol !== 'super_admin' && editandoMiembro !== m.id && (
                       <>
                         <button
-                          onClick={() => { setEditandoMiembro(m.id); setEditNombreMiembro(m.nombre) }}
-                          title="Editar nombre"
+                          onClick={() => { setEditandoMiembro(m.id); setEditNombreMiembro(m.nombre); setEditEmailMiembro(m.email ?? '') }}
+                          title="Editar miembro"
                           style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '5px', cursor: 'pointer', color: TEXT_MED, display: 'flex', alignItems: 'center' }}
                         >
                           <PencilSimple size={13} />
@@ -434,7 +461,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
       )}
 
       {/* ── Modal invitar ────────────────────────────────────────────────────── */}
-      {modalOpen && (
+      {modalOpen && typeof document !== 'undefined' && createPortal(
         <div style={{
           position: 'fixed', inset: 0, zIndex: 2500,
           background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
@@ -511,9 +538,8 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                   Comparte este link por WhatsApp, email o el medio que prefieras. Expira en 7 días.
                 </p>
                 {codigoRegistro && (
-                  <p style={{ fontSize: 11, color: TEXT_MED, margin: '6px 0 0' }}>
-                    También puede registrarse en reuso.lurdes.co/registro con el código de empresa:{' '}
-                    <strong style={{ color: BRAND, fontFamily: 'monospace' }}>{codigoRegistro}</strong>
+                  <p style={{ fontSize: 11, color: TEXT_MED, margin: '6px 0 0', lineHeight: 1.4 }}>
+                    Como alternativa, el colaborador puede registrarse manualmente ingresando a <strong>reuso.lurdes.co/registro</strong> (o escaneando el código QR de la empresa) e ingresando el código abreviado de registro: <strong style={{ color: BRAND, fontFamily: 'monospace', fontSize: 12 }}>{codigoRegistro}</strong>
                   </p>
                 )}
               </div>
@@ -524,7 +550,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                 <button
                   onClick={handleInvitar}
                   disabled={!emailInvitar || enviando}
-                  style={{ flex: 1, padding: '11px', borderRadius: 8, border: 'none', background: emailInvitar && !enviando ? BRAND : BG_LIGHT, color: emailInvitar && !enviando ? '#fff' : TEXT_MED, fontSize: 14, fontWeight: 600, cursor: emailInvitar && !enviando ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  style={{ flex: 1, padding: '11px', borderRadius: 8, border: 'none', background: emailInvitar && !enviando ? BRAND : BG_LIGHT, color: emailInvitar && !enviando ? 'var(--text-on-brand)' : TEXT_MED, fontSize: 14, fontWeight: 600, cursor: emailInvitar && !enviando ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                 >
                   {enviando ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Generando...</> : 'Generar invitación'}
                 </button>
@@ -538,13 +564,14 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
             ) : (
               <button
                 onClick={() => { setModalOpen(false); setLinkInvitacion(null); setError(null); setEmailInvitar('') }}
-                style={{ width: '100%', padding: '11px', borderRadius: 8, border: 'none', background: BRAND, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                style={{ width: '100%', padding: '11px', borderRadius: 8, border: 'none', background: BRAND, color: 'var(--text-on-brand)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
                 Listo
               </button>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>

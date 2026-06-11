@@ -110,7 +110,7 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
             fontWeight: 600,
             color: 'var(--text-secondary)',
             margin: '0 0 4px',
-            textTransform: 'uppercase',
+            
             letterSpacing: '0.05em',
           }}
         >

@@ -7,7 +7,7 @@ import {
   Robot, FileText, Storefront, Buildings, Bell,
   ShieldCheck, Globe, Gear, BookOpen,
   MagnifyingGlass, CaretDown, CaretUp, FloppyDisk, X,
-  MinusCircle, Question, Sun,
+  MinusCircle, Question,
 } from '@phosphor-icons/react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -999,7 +999,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Inspecciona el fondo de la página, los colores de los KPIs, el historial de cálculos, las etiquetas y las gráficas.',
       'Realiza un nuevo registro de cálculo en el formulario.',
     ],
-    esperado: 'El color de fondo se renderiza en gris oscuro #474747, los textos se muestran en color blanco, y los acentos interactivos usan el color verde pistacho #D6F391. No aparecen tarjetas con fondos verdes oscuros o bordes descuadrados.',
+    esperado: 'El color de fondo se renderiza en gris oscuro #474747, los textos se muestran en color blanco, y los acentos interactivos usan el color verde pistacho #8AD0B2. No aparecen tarjetas con fondos verdes oscuros o bordes descuadrados.',
   },
   {
     id: 'dark-03', categoria: 'Modo Noche', ruta: '/empresa', critica: false,
@@ -1598,7 +1598,7 @@ const CATEGORIAS = [
   { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43' },
   { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2' },
   { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3' },
-  { key: 'Modo Noche',          icono: Moon,         color: '#D6F391' },
+  { key: 'Modo Noche',          icono: Moon,         color: '#8AD0B2' },
   { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B' },
   { key: 'Seguridad',           icono: ShieldCheck,  color: '#FF5E4B' },
   { key: 'Alertas',             icono: Bell,         color: '#F6BF3E' },
@@ -1623,10 +1623,7 @@ interface QAIntento {
   tareas: { id: string; estado: Estado; notas: string }[]
 }
 
-interface QAStore {
-  intentos: QAIntento[]
-  borrador: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[]
-}
+
 
 const LS_KEY_V3 = 'reuso_qa_v3'
 const LS_KEY = 'reuso_qa_v2'
@@ -1864,7 +1861,7 @@ export default function QAPage() {
   if (!mounted) {
     return (
       <div className="min-h-screen bg-[#474747] text-white flex items-center justify-center font-sans">
-        <div className="text-sm text-[#D6F391]">Cargando QA...</div>
+        <div className="text-sm text-[#8AD0B2]">Cargando QA...</div>
       </div>
     )
   }
@@ -1875,17 +1872,17 @@ export default function QAPage() {
     textPrimary:       isDark ? 'text-white'                             : 'text-[#474747]',
     textSecondary:     isDark ? 'text-white/70'                          : 'text-[#00827C]/70',
     textTitle:         isDark ? 'text-white'                             : 'text-[#474747]',
-    headerBg:          isDark ? 'bg-[#D6F391]/[0.08] backdrop-blur-md border-[#D6F391]/15'
+    headerBg:          isDark ? 'bg-[#8AD0B2]/[0.08] backdrop-blur-md border-[#8AD0B2]/15'
                               : 'bg-white/60 backdrop-blur-md border-[rgba(0,130,124,0.12)]',
-    cardBg:            isDark ? 'bg-[#D6F391]/[0.05] backdrop-blur-sm border-[#D6F391]/10'
+    cardBg:            isDark ? 'bg-[#8AD0B2]/[0.05] backdrop-blur-sm border-[#8AD0B2]/10'
                               : 'bg-white/50 backdrop-blur-sm border-[rgba(0,130,124,0.10)]',
-    sidebarActiveBg:   isDark ? 'bg-[#474747] border-[#D6F391]/25 shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
+    sidebarActiveBg:   isDark ? 'bg-[#474747] border-[#8AD0B2]/25 shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
                               : 'bg-[#e2f3f1]/80 border-[#00827C] shadow-[0_4px_12px_rgba(0,130,124,0.12)]',
-    sidebarInactiveBg: isDark ? 'bg-transparent border-[#D6F391]/[0.05] hover:border-[#D6F391]/15 hover:bg-[#D6F391]/[0.08]'
+    sidebarInactiveBg: isDark ? 'bg-transparent border-[#8AD0B2]/[0.05] hover:border-[#8AD0B2]/15 hover:bg-[#8AD0B2]/[0.08]'
                               : 'bg-white/30 border-[rgba(0,130,124,0.06)] hover:bg-[#f2f9f8]/60 hover:border-[rgba(0,130,124,0.15)]',
-    inputBg:           isDark ? 'bg-[#D6F391]/[0.05] border-[#D6F391]/15' : 'bg-white/60 border-[rgba(0,130,124,0.12)]',
-    divider:           isDark ? 'border-[#D6F391]/[0.08]'               : 'border-[rgba(0,130,124,0.08)]',
-    glowColor:         isDark ? '#D6F391'                                : '#38B98E',
+    inputBg:           isDark ? 'bg-[#8AD0B2]/[0.05] border-[#8AD0B2]/15' : 'bg-white/60 border-[rgba(0,130,124,0.12)]',
+    divider:           isDark ? 'border-[#8AD0B2]/[0.08]'               : 'border-[rgba(0,130,124,0.08)]',
+    glowColor:         isDark ? '#8AD0B2'                                : '#38B98E',
     shadow:            isDark ? 'rgba(0,0,0,0.25)'                      : 'rgba(0,130,124,0.06)',
   }
 
@@ -1897,9 +1894,9 @@ export default function QAPage() {
       {/* Blobs de fondo — solo en modo noche (directriz #0: fondo blanco puro en luz) */}
       {isDark && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob bg-[#D6F391]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full filter blur-[110px] animate-blob animation-delay-2000 bg-[#D6F391]/10" />
-          <div className="absolute top-[40%] left-[20%] w-[350px] h-[350px] rounded-full filter blur-[100px] animate-blob animation-delay-4000 bg-[#D6F391]/5" />
+          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob bg-[#8AD0B2]" />
+          <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full filter blur-[110px] animate-blob animation-delay-2000 bg-[#8AD0B2]/10" />
+          <div className="absolute top-[40%] left-[20%] w-[350px] h-[350px] rounded-full filter blur-[100px] animate-blob animation-delay-4000 bg-[#8AD0B2]/5" />
         </div>
       )}
 
@@ -1913,7 +1910,7 @@ export default function QAPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className={`text-xs font-semibold px-3 py-1 rounded-fullr border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-fullr border ${isDark ? 'bg-[#8AD0B2]/10 border-[#8AD0B2]/40 text-[#8AD0B2]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
                   Auditoría & QA
                 </span>
                 <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>
@@ -1931,15 +1928,15 @@ export default function QAPage() {
               {/* Progress circular */}
               <div
                 className={`border ${theme.cardBg} rounded-xl p-4 flex items-center gap-4 min-w-[240px] transition-all`}
-                style={{ borderColor: isDark ? '#D6F391' : 'rgba(0,130,124,0.18)' }}
+                style={{ borderColor: isDark ? '#8AD0B2' : 'rgba(0,130,124,0.18)' }}
               >
                 <div className="relative w-16 h-16 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90">
                     <circle cx="32" cy="32" r="28"
-                      className={isDark ? 'stroke-[#D6F391]/20' : 'stroke-[#e2f3f1]'}
+                      className={isDark ? 'stroke-[#8AD0B2]/20' : 'stroke-[#e2f3f1]'}
                       strokeWidth="6" fill="transparent" />
                     <circle cx="32" cy="32" r="28"
-                      className={isDark ? 'stroke-[#D6F391]' : 'stroke-[#38B98E]'}
+                      className={isDark ? 'stroke-[#8AD0B2]' : 'stroke-[#38B98E]'}
                       strokeWidth="6" fill="transparent"
                       strokeDasharray={175.9}
                       strokeDashoffset={175.9 - (175.9 * progreso) / 100}
@@ -1968,7 +1965,7 @@ export default function QAPage() {
           <div className={`mt-6 pt-6 border-t ${theme.divider} flex flex-col sm:flex-row gap-4 items-center justify-between`}>
             {/* Estado de guardado */}
             <div className={`flex items-center gap-2 text-xs ${theme.textSecondary}`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
+              <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-[#8AD0B2]' : 'bg-[#00827C]'}`} />
               {guardadoReciente ? (
                 <span className="text-[#38B98E] font-semibold flex items-center gap-1">
                   <CheckCircle size={12} weight="fill" /> Guardado
@@ -1993,7 +1990,7 @@ export default function QAPage() {
                   placeholder="Buscar prueba..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className={`w-full pl-9 pr-3 py-1.5 ${theme.inputBg} border rounded-lg text-sm ${theme.textPrimary} ${isDark ? 'placeholder-[#D6F391]/50 focus:border-[#D6F391]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
+                  className={`w-full pl-9 pr-3 py-1.5 ${theme.inputBg} border rounded-lg text-sm ${theme.textPrimary} ${isDark ? 'placeholder-[#8AD0B2]/50 focus:border-[#8AD0B2]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
                 />
               </div>
               <button
@@ -2021,7 +2018,7 @@ export default function QAPage() {
               <button
                 onClick={() => setMostrarInforme(true)}
                 className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${
-                  isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
+                  isDark ? 'bg-[#8AD0B2] text-[#474747]' : 'bg-[#00827C] text-white'
                 }`}
               >
                 <FileText size={13} /> Informe final
@@ -2096,7 +2093,7 @@ export default function QAPage() {
                         </div>
                       </div>
 
-                      <div className={`pl-2.5 font-semibold text-sm ${theme.textTitle} ${isDark ? 'group-hover:text-[#D6F391]' : 'group-hover:text-[#38B98E]'} transition-colors leading-tight`}>
+                      <div className={`pl-2.5 font-semibold text-sm ${theme.textTitle} ${isDark ? 'group-hover:text-[#8AD0B2]' : 'group-hover:text-[#38B98E]'} transition-colors leading-tight`}>
                         {cat.key}
                       </div>
 
@@ -2161,7 +2158,7 @@ export default function QAPage() {
                   ? isDark ? 'border-[#F6BF3E]/25' : 'border-[#F6BF3E]/20'
                   : tarea.estado === 'no_clara'
                   ? isDark ? 'border-[#59A6E4]/25' : 'border-[#59A6E4]/20'
-                  : isDark ? 'border-[#D6F391]/10' : 'border-[rgba(0,130,124,0.10)]'
+                  : isDark ? 'border-[#8AD0B2]/10' : 'border-[rgba(0,130,124,0.10)]'
 
                 return (
                   <div
@@ -2440,7 +2437,7 @@ export default function QAPage() {
                 </button>
                 <button
                   onClick={() => setMostrarInforme(true)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-[#8AD0B2]/20 text-[#8AD0B2]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
                 >
                   <FileText size={13} /> Informe parcial
                 </button>
@@ -2462,7 +2459,7 @@ export default function QAPage() {
             style={{ animation: 'modalIn 0.2s ease-out' }}
           >
             {/* Header del modal */}
-            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
+            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#8AD0B2]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
               <div>
                 <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>Informe de QA</h2>
                 <p className={`text-xs ${theme.textSecondary} mt-0.5`}>{revisadas}/{total} revisadas · {criticas} críticas fallidas</p>
@@ -2476,7 +2473,7 @@ export default function QAPage() {
                 </button>
                 <button
                   onClick={descargar}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer ${isDark ? 'bg-[#8AD0B2] text-[#474747]' : 'bg-[#00827C] text-white'}`}
                 >
                   <DownloadSimple size={12} /> .txt
                 </button>
@@ -2546,7 +2543,7 @@ export default function QAPage() {
             className={`rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
             style={{ animation: 'modalIn 0.2s ease-out' }}
           >
-            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
+            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#8AD0B2]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
               <div>
                 <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>
                   {mostrarHistorial === 'completo' ? 'Historial general' : `Historial — ${mostrarHistorial}`}

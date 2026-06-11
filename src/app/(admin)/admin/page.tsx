@@ -176,7 +176,7 @@ export default async function AdminPage() {
                       fontWeight: 600,
                       color: 'var(--text-secondary)',
                       whiteSpace: 'nowrap',
-                      textTransform: 'uppercase',
+                      
                       letterSpacing: '0.05em',
                       fontSize: 11,
                     }}

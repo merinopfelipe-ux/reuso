@@ -192,11 +192,11 @@ export function DesignSystemHeader({
                   setTimeout(() => document.getElementById('search-input')?.focus(), 100);
                 }
               }}
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#8AD0B2] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
             >
               {searchOpen ? <X size={16} weight="bold" /> : <MagnifyingGlass size={16} weight="bold" />}
             </button>
-            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
+            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#8AD0B2] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
               {isDark ? <Sun size={16} weight="bold" /> : <Moon size={16} weight="bold" />}
             </button>
           </div>
@@ -233,7 +233,7 @@ export function DesignSystemHeader({
                       className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${isDark ? 'hover:bg-white/10 text-white/80' : 'hover:bg-[#00827C]/5 text-[#474747] hover:text-[#00827C]'}`}
                       onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
                     >
-                      <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'} opacity-40`} />
+                      <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#8AD0B2]' : 'bg-[#00827C]'} opacity-40`} />
                       <span className="font-bold text-sm">{r.title}</span>
                     </a>
                   ))}
@@ -262,7 +262,7 @@ export function DesignSystemHeader({
             }}
           >
             <div className="flex justify-between items-center mb-6">
-               <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
+               <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#8AD0B2]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
                <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} weight="bold" /></button>
             </div>
             
@@ -276,7 +276,7 @@ export function DesignSystemHeader({
                          key={i}
                          href={item.link}
                          onClick={() => setIsMobileNavOpen(false)}
-                         className={`block py-3 px-4 rounded-xl text-[13px] font-bold tracking-tight transition-all active:scale-95 ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/70 hover:bg-[#00827C]/5 hover:text-[#00827C]'}`}
+                         className={`block py-3 px-4 rounded-xl text-[13px] font-bold tracking-tight transition-all active:scale-95 ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#8AD0B2]' : 'text-[#00827C]/70 hover:bg-[#00827C]/5 hover:text-[#00827C]'}`}
                        >
                          {item.name}
                        </a>
@@ -311,7 +311,7 @@ export function DesignSystemHeader({
                   key={i}
                   href={item.link}
                   onClick={() => setActiveMenu(null)}
-                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#1A3A38]/70 hover:bg-[#00827C]/08 hover:text-[#00827C]'}`}
+                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#8AD0B2]' : 'text-[#1A3A38]/70 hover:bg-[#00827C]/08 hover:text-[#00827C]'}`}
                 >
                   {item.name}
                 </a>

@@ -269,7 +269,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                       top: '25%', 
                       bottom: '25%', 
                       width: 4, 
-                      background: isDark ? '#D6F391' : '#006B66',
+                      background: isDark ? '#8AD0B2' : '#006B66',
                       borderRadius: '0 4px 4px 0',
                       transition: 'all 0.4s cubic-bezier(0.22, 1, 0.36, 1)'
                     }} />
@@ -333,7 +333,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         .flyout-item-sustainable:nth-child(6) { animation-delay: 0.18s; }
 
         .clean-item-nav:hover, .flyout-item-sustainable:hover {
-          background: rgba(214, 243, 145, 0.2) !important; /* Pistacho muy traslúcido Día V13.7 */
+          background: rgba(138, 208, 178, 0.2) !important; /* Pistacho muy traslúcido Día V13.7 */
         }
 
         [data-theme="dark"] .clean-item-nav:hover, [data-theme="dark"] .flyout-item-sustainable:hover {
@@ -362,8 +362,8 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         }
 
         [data-theme="dark"] .reuso-nav-active .active-indicator-pill {
-          background: #D6F391 !important; /* Pistacho en Noche V13.9 */
-          box-shadow: 0 0 10px rgba(214, 243, 145, 0.4);
+          background: #8AD0B2 !important; /* Pistacho en Noche V13.9 */
+          box-shadow: 0 0 10px rgba(138, 208, 178, 0.4);
         }
 
         .master-flyout-ref {
@@ -390,8 +390,8 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             height: 48,
             borderRadius: isExpanded ? 14 : 22,
             background: 'transparent',
-            border: isExpanded ? `1.5px solid ${isDark ? '#D6F391' : '#006B66'}` : '1.5px solid transparent', // Estilo Outline V13.14
-            color: isDark ? '#D6F391' : '#006B66',
+            border: isExpanded ? `1.5px solid ${isDark ? '#8AD0B2' : '#006B66'}` : '1.5px solid transparent', // Estilo Outline V13.14
+            color: isDark ? '#8AD0B2' : '#006B66',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -408,7 +408,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           <span style={{ 
             fontSize: '13px', 
             fontWeight: 900, 
-            textTransform: 'uppercase', 
+            
             letterSpacing: '0.1em',
             opacity: isExpanded ? 1 : 0,
             maxWidth: isExpanded ? 200 : 0,
@@ -452,9 +452,9 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             padding: '0 24px', 
             fontSize: '12px', 
             fontWeight: 900, 
-            textTransform: 'uppercase', 
+            
             letterSpacing: '0.25em', 
-            color: isDark ? '#D6F391' : '#006B66',
+            color: isDark ? '#8AD0B2' : '#006B66',
             marginBottom: '32px',
             background: 'transparent',
             display: 'block'

@@ -5,7 +5,7 @@ VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 ## COLOR NEGRO — REGLA ABSOLUTA
 El negro del sistema es **#474747** (Negro Lurdes). PROHIBIDO usar `#000000` (negro puro) en ningún contexto de UI.
 - Fondo de página en noche: `#474747`
-- Texto sobre pistacho/brand: `#474747`
+- Texto sobre menta/brand: `#474747`
 - CSS variables en `globals.css`: `--bg-primary`, `--text-on-brand`, `--btn-error-text` → siempre `#474747`
 - Sin excepciones. Ni siquiera en overlays semitransparentes: Liquid Glass noche usa `bg-[#474747]/35`.
 - Si en cualquier archivo aparece `#000000` → es un bug, corrígelo de inmediato a `#474747`.
@@ -75,7 +75,7 @@ Excepción técnica permitida: slugs de URL y variables en código (`reuso.lurde
 - Fuente autoridad: `src/design-system-SKILL-v3.md`. TODO color derivado de `#00827C`. Cero grises puros (#f5f5f5, #ccc, #333).
 - Tipografía: Open Sans únicamente, sin emojis. Iconos: Phosphor Icons. Banderas: lipis/flag-icons en SVG con `borderRadius: '3px'`.
 - OBLIGATORIO claro: fondos #FFFFFF/#F5FAFA/#F2F9F8, textos #1A3A38/#4D7C79/#7FA8A5, bordes rgba(0,130,124,0.12).
-- OBLIGATORIO oscuro (modo noche): fondos #474747 (negro noche), textos #FFFFFF (fuente blanca), resaltado #D6F391 (pistacho). Prohibido usar otros grises en el fondo de noche, solo #474747.
+- OBLIGATORIO oscuro (modo noche): fondos #474747 (negro noche), textos #FFFFFF (fuente blanca), resaltado #8AD0B2 (menta). Prohibido usar otros grises en el fondo de noche, solo #474747.
 - Acentos: brand #00827C, success #38B98E, error #FF5E4B, warning #F6BF3E, info #59A6E4.
 - Componentes SOLO: KPICard, DataTable, Badge, StatusBadge, EmptyState, LoadingSkeleton, Modal, AlertBanner, Tabs, Button.
 - Radios: 12px cards, 10px buttons, 8px inputs. Transiciones: 0.2s hovers, 0.3s modals. `user-select: auto` activo.

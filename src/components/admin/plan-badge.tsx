@@ -19,7 +19,7 @@ export function PlanBadge({ plan }: { plan: Plan }) {
         borderRadius: 100,
         fontSize: 11,
         fontWeight: 700,
-        textTransform: 'uppercase',
+        
         letterSpacing: '0.02em',
         background: bg,
         color,

@@ -94,7 +94,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
 
   const { bottomItems, drawerItems } = getMobileConfig()
 
-  const activeColor = isDark ? '#D6F391' : '#006B66'
+  const activeColor = isDark ? '#8AD0B2' : '#006B66'
   const inactiveColor = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)'
   const liquidGlassStyle: React.CSSProperties = {
     position: 'fixed',

@@ -95,7 +95,7 @@ export function ListaTickets({ esAdmin }: Props) {
           ) : (
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
-                <tr style={{ background: 'var(--bg-integrated)', textAlign: 'left', color: 'var(--text-secondary)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '1px solid var(--border)' }}>
+                <tr style={{ background: 'var(--bg-integrated)', textAlign: 'left', color: 'var(--text-secondary)', fontSize: 11, letterSpacing: '0.04em', borderBottom: '1px solid var(--border)' }}>
                   <th style={{ padding: '12px 20px', fontWeight: 700 }}>Asunto</th>
                   <th style={{ padding: '12px 20px', fontWeight: 700 }}>Estado</th>
                   <th style={{ padding: '12px 20px', fontWeight: 700, textAlign: 'right' }}>Actualizado</th>
@@ -119,7 +119,7 @@ export function ListaTickets({ esAdmin }: Props) {
                         background: LABEL_COLORS[ticket.estado].bg,
                         color: LABEL_COLORS[ticket.estado].text,
                         padding: '3px 10px', borderRadius: 20, fontSize: 10, fontWeight: 800,
-                        textTransform: 'uppercase', letterSpacing: '0.04em',
+                        letterSpacing: '0.04em',
                         border: '1px solid currentColor',
                         opacity: 0.9
                       }}>

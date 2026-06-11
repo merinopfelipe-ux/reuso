@@ -280,7 +280,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
           display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end',
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 130 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, letterSpacing: '0.04em' }}>
               Desde
             </label>
             <div style={{ position: 'relative' }}>
@@ -301,7 +301,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 130 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, letterSpacing: '0.04em' }}>
               Hasta
             </label>
             <div style={{ position: 'relative' }}>
@@ -323,7 +323,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
           {categorias.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 150 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, letterSpacing: '0.04em' }}>
                 Categoría
               </label>
               <select
@@ -344,7 +344,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
           {empresas && empresas.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 160 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED, letterSpacing: '0.04em' }}>
                 Empresa
               </label>
               <select
@@ -542,7 +542,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
           flexShrink: 0,
         }}>
           <div>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: TEXT_MED, letterSpacing: '0.05em' }}>
               Detalle del cálculo
             </p>
             <p style={{ margin: '2px 0 0', fontSize: 16, fontWeight: 700, color: TEXT_DARK }}>
@@ -604,7 +604,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
           {/* Tabla de items */}
           {items.length > 0 && (
             <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_MED, textTransform: 'uppercase', letterSpacing: '0.04em', margin: '0 0 10px' }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_MED, letterSpacing: '0.04em', margin: '0 0 10px' }}>
                 Materiales reutilizados
               </p>
               <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: 'hidden' }}>
@@ -643,7 +643,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
           <div style={{ marginTop: 24, padding: '16px', borderRadius: 12, background: 'rgba(0,130,124,0.03)', border: '1px dashed rgba(0,130,124,0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <ShieldCheck size={14} color={BRAND} />
-              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: TEXT_DARK, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: TEXT_DARK, letterSpacing: '0.04em' }}>
                 Protección de Seguridad Permanente
               </p>
             </div>
