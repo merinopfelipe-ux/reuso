@@ -21,7 +21,7 @@ export function PopupAmbiental({ url, onClose }: Props) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div
-        style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(2px)' }}
+        style={{ position: 'absolute', inset: 0, background: 'rgba(71,71,71,0.4)', backdropFilter: 'blur(2px)' }}
         onClick={onClose}
       />
       <div style={{

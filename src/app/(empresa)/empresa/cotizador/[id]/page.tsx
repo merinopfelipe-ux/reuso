@@ -405,7 +405,7 @@ export default function DetalleCotizacionPage() {
 
       {/* Modal confirmación estado terminal */}
       {confirmarEstado && (
-        <div className="fixed inset-0 z-[2500] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+        <div className="fixed inset-0 z-[2500] flex items-center justify-center p-4 bg-[#474747]/60 backdrop-blur-md">
           <div className="w-full max-w-sm rounded-[16px] border p-6 shadow-xl bg-[var(--bg-card)] border-[var(--border)]">
             <p className={`text-base font-bold mb-2 ${tp}`}>
               {confirmarEstado === 'cerrado_ganado' ? '¡Confirma el cierre ganado!' : 'Confirma el cambio de estado'}

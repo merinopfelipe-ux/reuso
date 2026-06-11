@@ -177,7 +177,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
             style={{
               position: 'fixed',
               inset: 0,
-              background: 'rgba(0, 0, 0, 0.4)',
+              background: 'rgba(71, 71, 71, 0.4)',
               backdropFilter: 'blur(2px)',
               zIndex: 9998,
             }}

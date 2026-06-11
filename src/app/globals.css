@@ -57,14 +57,14 @@ h3 {
 [data-theme="dark"] {
   --bg-primary: #474747;
   /* Negro Lurdes (Noche) */
-  --bg-secondary: #0A0E0D;
-  /* Integrado */
-  --bg-card: #121615;
-  --bg-integrated: #0A0E0D;
-  --bg-sidebar: #050807;
+  --bg-secondary: #525252;
+  /* Nivel 1 — cards y paneles */
+  --bg-card: #525252;
+  --bg-integrated: #525252;
+  --bg-sidebar: #474747;
   --bg-hover: rgba(214, 243, 145, 0.08);
-  --bg-input: #1A1F1E;
-  --bg-active: #181F1D;
+  --bg-input: #5A5A5A;
+  --bg-active: rgba(214, 243, 145, 0.12);
 
   --text-primary: #FFFFFF;
   --text-secondary: #E0E0E0;
@@ -73,9 +73,9 @@ h3 {
 
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.04);
-  --shadow: 0 12px 60px rgba(0, 0, 0, 0.4);
-  --skeleton-base: #1F2423;
-  --skeleton-shine: #2F3635;
+  --shadow: 0 12px 60px rgba(71, 71, 71, 0.4);
+  --skeleton-base: #525252;
+  --skeleton-shine: #5A5A5A;
   --divider: rgba(255, 255, 255, 0.06);
 
   --color-brand: #D6F391;

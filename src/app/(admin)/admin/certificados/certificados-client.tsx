@@ -177,7 +177,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
 
       {/* Modal de revocación */}
       {modal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ background: 'var(--bg-card)', borderRadius: 20, padding: 32, maxWidth: 480, width: '100%', boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <h3 style={{ fontSize: 18, fontWeight: 900, color: C.dark, marginBottom: 8 }}>Revocar certificado</h3>
             <p style={{ fontSize: 13, color: C.mid, marginBottom: 4 }}>

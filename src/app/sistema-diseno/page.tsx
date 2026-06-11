@@ -602,7 +602,7 @@ export default function ManualDisenoPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-center">
                
                <div className="flex flex-col gap-6">
-                 <div className="aspect-square w-full rounded-[40px] shadow-[0_24px_48px_rgba(0,0,0,0.4)] p-10 flex flex-col justify-end transition-transform hover:-translate-y-2 duration-500" style={{ backgroundColor: isDark ? '#FFFFFF' : '#474747' }}>
+                 <div className="aspect-square w-full rounded-[40px] shadow-[0_24px_48px_rgba(71,71,71,0.4)] p-10 flex flex-col justify-end transition-transform hover:-translate-y-2 duration-500" style={{ backgroundColor: isDark ? '#FFFFFF' : '#474747' }}>
                     <h4 className={`text-2xl font-bold mb-2 ${isDark ? 'text-[#474747]' : 'text-white'}`}>Marco Hero Estadio</h4>
                     <p className={`text-xs leading-relaxed max-w-[200px] ${isDark ? 'text-[#D6F391]/60' : 'text-white/40'}`}>Radio 40px &bull; bg {isDark ? 'Blanco Puro' : 'Negro Lurdes'} &bull; sombra 0 24 48 / 0.08 &bull; contenedor multimedia</p>
                  </div>
@@ -1011,7 +1011,7 @@ export default function ManualDisenoPage() {
               ].map((card, i) => (
                 <div key={i} className={`group shrink-0 w-[calc(100vw-80px)] max-w-xs md:w-auto snap-center overflow-hidden rounded-[2rem] hover:-translate-y-2 transition-all duration-500 ${isDark ? 'bg-[#D6F391]/05 border border-white/10' : 'bg-white shadow-[0_8px_32px_rgba(0,130,124,0.08)] border border-[#00827C]/8'}`}>
                   <div className={`w-full h-48 bg-gradient-to-br ${card.gradient} relative overflow-hidden`}>
-                    <div className="absolute inset-0 bg-black/5 group-hover:bg-black/0 transition-all duration-500" />
+                    <div className="absolute inset-0 bg-[#474747]/5 group-hover:bg-[#474747]/0 transition-all duration-500" />
                     <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/20 rounded-full backdrop-blur-md flex items-center justify-center">
                       <Leaf size={20} weight="fill" className="text-white" />
                     </div>

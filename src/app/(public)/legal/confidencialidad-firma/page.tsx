@@ -582,7 +582,7 @@ function FirmaSection({ tf }: { tf: typeof T['ES']['firma'] }) {
             position: 'fixed',
             inset: 0,
             zIndex: 500,
-            background: 'rgba(0,0,0,0.40)',
+            background: 'rgba(71,71,71,0.40)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

@@ -356,7 +356,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         [data-theme="dark"] .reuso-nav-active {
           background: var(--bg-primary) !important;
           color: var(--text-primary) !important;
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+          box-shadow: 0 12px 40px rgba(71, 71, 71, 0.4) !important;
           border: 1px solid rgba(255,255,255,0.1);
           border-right: none !important; /* Unión con contenido V13.4 */
         }

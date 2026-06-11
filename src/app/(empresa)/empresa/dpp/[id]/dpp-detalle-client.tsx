@@ -167,7 +167,7 @@ function ModalResultadosIA({
 }) {
   const campos = resultado.campos_extraidos ?? []
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
       <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 640, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
         <h3 style={{ margin: '0 0 6px', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
           Resultados de la extracción IA
@@ -651,7 +651,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
           )}
 
           {showModalCiclo && (
-            <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
+            <div style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
               <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 520, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '90vh', overflowY: 'auto' }}>
                 <h3 style={{ margin: '0 0 20px', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
                   Registra un ciclo de reúso

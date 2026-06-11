@@ -2453,7 +2453,7 @@ export default function QAPage() {
       {/* ── Modal de informe ─────────────────────────────────────────────────── */}
       {mostrarInforme && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
           onClick={() => setMostrarInforme(false)}
         >
           <div
@@ -2538,7 +2538,7 @@ export default function QAPage() {
       {/* ── Modal de historial ───────────────────────────────────────────────────── */}
       {mostrarHistorial && (
         <div
-          className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
           onClick={() => setMostrarHistorial(null)}
         >
           <div

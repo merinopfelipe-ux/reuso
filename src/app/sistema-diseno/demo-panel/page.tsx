@@ -31,7 +31,7 @@ export default function LayoutDemoPage() {
     backgroundColor: bgGlass,
     border: `1px solid ${borderGlass}`,
     boxShadow: isDark 
-      ? '0 8px 32px 0 rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255,255,255,0.05)' 
+      ? '0 8px 32px 0 rgba(71, 71, 71, 0.8), inset 0 0 0 1px rgba(255,255,255,0.05)' 
       : 'inset 2px 2px 10px rgba(255,255,255,0.05), 0 8px 32px 0 rgba(0, 0, 0, 0.25)',
     borderRadius: '16px'
   }
@@ -60,7 +60,7 @@ export default function LayoutDemoPage() {
             style={{ color: '#FFFFFF' }}
           >
             <List size={22} weight="bold" />
-            <span className="text-[11px] font-black tracking-widest uppercase opacity-90">Menú</span>
+            <span className="text-[11px] font-black tracking-widest opacity-90">Menú</span>
           </button>
           
           <div className="flex items-center gap-3 select-none">
@@ -69,7 +69,7 @@ export default function LayoutDemoPage() {
              </div>
              <div className="flex flex-col leading-[1.1]">
                <span className="text-lg font-bold tracking-tighter" style={{ color: '#FFFFFF' }}>REÚSO</span>
-               <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60" style={{ color: colorPistacho }}>Sostenible</span>
+               <span className="text-[10px] font-bold tracking-[0.1em] opacity-60" style={{ color: colorPistacho }}>Sostenible</span>
              </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function LayoutDemoPage() {
           <div className="flex items-center gap-3 pl-6 border-l border-white/15">
              <div className="flex flex-col items-end">
                <span className="text-sm font-bold text-white">Pipe Merino</span>
-               <span className="text-[10px] font-bold opacity-50 uppercase tracking-widest text-white/70">Master Admin</span>
+               <span className="text-[10px] font-bold opacity-50 text-white/70">Master Admin</span>
              </div>
              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm bg-[#D6F391] text-[#474747]">P</div>
           </div>
@@ -185,7 +185,7 @@ export default function LayoutDemoPage() {
               {/* Reflejo de cristal */}
               <div className="absolute inset-0 pointer-events-none z-[-1]" 
                    style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%)' }} />
-              <div className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest opacity-40 border-b border-white/10 mb-6">
+              <div className="px-4 py-3 text-[11px] font-bold opacity-40 border-b border-white/10 mb-6">
                 {openSubmenu}
               </div>
               <div className="flex flex-col gap-1">

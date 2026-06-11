@@ -437,7 +437,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
       {modalOpen && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 2500,
-          background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
+          background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: 20,
         }}>
