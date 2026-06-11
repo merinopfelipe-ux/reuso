@@ -271,7 +271,7 @@ export default function NuevaCotizacionPage() {
         {/* Lista de muebles agregados */}
         {muebles.length > 0 && (
           <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold mb-3 ${ts}`}>
+            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${ts}`}>
               {muebles.length} {muebles.length === 1 ? 'mueble agregado' : 'muebles agregados'}
             </p>
             <div className="space-y-2">
@@ -379,7 +379,7 @@ export default function NuevaCotizacionPage() {
             {/* Diagnóstico */}
             <div className={`rounded-[12px] border p-4 ${cardBg}`}>
               <div className="flex items-center gap-2 mb-3">
-                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isDark ? 'bg-[#8AD0B2]/15 text-[#8AD0B2]' : 'bg-[#00827C]/08 text-[#00827C]'}`}>
+                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${isDark ? 'bg-[#D6F391]/15 text-[#D6F391]' : 'bg-[#00827C]/08 text-[#00827C]'}`}>
                   {diagnostico.categoria}
                 </span>
                 <span className={`text-sm font-semibold ${tp}`}>{diagnostico.tipo}</span>
@@ -438,7 +438,7 @@ export default function NuevaCotizacionPage() {
             {resultado && (
               <>
                 <div className={`rounded-[12px] border p-4 ${cardBg}`}>
-                  <p className={`text-xs font-semibold mb-1 ${ts}`}>Precio estimado</p>
+                  <p className={`text-xs uppercase tracking-wide font-semibold mb-1 ${ts}`}>Precio estimado</p>
                   <p className="text-3xl font-bold text-[#00827C]">{formatCOP(resultado.precio_mueble)}</p>
                   {resultado.desglose.length > 0 && (
                     <div className="mt-2 space-y-0.5">
@@ -456,27 +456,27 @@ export default function NuevaCotizacionPage() {
                 </div>
 
                 {/* Contraprestación ambiental */}
-                <div className={`rounded-[12px] p-4 ${isDark ? 'bg-[#8AD0B2]/15 border border-[#8AD0B2]/20' : 'bg-[#8AD0B2] border border-[#8AD0B2]'}`}>
-                  <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#8AD0B2]' : 'text-[#1A3A38]'}`}>
+                <div className={`rounded-[12px] p-4 ${isDark ? 'bg-[#D6F391]/15 border border-[#D6F391]/20' : 'bg-[#D6F391] border border-[#D6F391]'}`}>
+                  <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>
                     Contraprestación ambiental
                   </p>
                   <div className="flex gap-6">
                     <div className="flex items-center gap-2">
-                      <Leaf size={20} weight="duotone" className={isDark ? 'text-[#8AD0B2]' : 'text-[#1A3A38]'} />
+                      <Leaf size={20} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
                       <div>
-                        <p className={`text-lg font-bold ${isDark ? 'text-[#8AD0B2]' : 'text-[#1A3A38]'}`}>{resultado.co2_evitado_kg.toFixed(1)} kg</p>
-                        <p className={`text-xs ${isDark ? 'text-[#8AD0B2]/70' : 'text-[#1A3A38]/70'}`}>CO2 evitado</p>
+                        <p className={`text-lg font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>{resultado.co2_evitado_kg.toFixed(1)} kg</p>
+                        <p className={`text-xs ${isDark ? 'text-[#D6F391]/70' : 'text-[#1A3A38]/70'}`}>CO2 evitado</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Drop size={20} weight="duotone" className={isDark ? 'text-[#8AD0B2]' : 'text-[#1A3A38]'} />
+                      <Drop size={20} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
                       <div>
-                        <p className={`text-lg font-bold ${isDark ? 'text-[#8AD0B2]' : 'text-[#1A3A38]'}`}>{resultado.agua_evitada_l.toFixed(0)} L</p>
-                        <p className={`text-xs ${isDark ? 'text-[#8AD0B2]/70' : 'text-[#1A3A38]/70'}`}>agua ahorrada</p>
+                        <p className={`text-lg font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>{resultado.agua_evitada_l.toFixed(0)} L</p>
+                        <p className={`text-xs ${isDark ? 'text-[#D6F391]/70' : 'text-[#1A3A38]/70'}`}>agua ahorrada</p>
                       </div>
                     </div>
                   </div>
-                  <p className={`text-xs mt-2 ${isDark ? 'text-[#8AD0B2]/70' : 'text-[#1A3A38]/70'}`}>
+                  <p className={`text-xs mt-2 ${isDark ? 'text-[#D6F391]/70' : 'text-[#1A3A38]/70'}`}>
                     Equivale a {resultado.equivalencias.arboles} {resultado.equivalencias.arboles === 1 ? 'árbol' : 'árboles'} al año
                   </p>
                 </div>

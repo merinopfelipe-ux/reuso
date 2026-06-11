@@ -41,7 +41,7 @@ function KpiCard({ titulo, valor, unidad, icono: Icon, color }: {
         <Icon size={20} color={color} />
       </div>
       <div>
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', margin: '0 0 4px', letterSpacing: '0.05em' }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           {titulo}
         </p>
         <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1 }}>
@@ -58,7 +58,7 @@ function SectionCard({ titulo, children }: { titulo: string; children: React.Rea
       background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)',
       borderRadius: '2rem', padding: '24px', boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)', marginBottom: 20,
     }}>
-      <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', letterSpacing: '0.05em' }}>
+      <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {titulo}
       </h2>
       {children}
@@ -255,13 +255,13 @@ export default async function EmpresaPage() {
       {/* Ranking + Donut */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 20 }}>
         <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', letterSpacing: '0.05em' }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Ranking del equipo
           </h2>
           <RankingEmpleados data={ranking} />
         </div>
         <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', letterSpacing: '0.05em' }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Materiales reutilizados
           </h2>
           <DonutCategorias data={donut} />

@@ -247,7 +247,7 @@ export default function Landing2Page() {
         searchResults={searchResults}
         extraActions={
           <>
-            <Link href="/login" className={`hidden sm:inline-flex px-4 py-2 rounded-full border text-sm font-bold transition-all ${isDark ? 'border-[#8AD0B2]/20 text-white hover:bg-[#8AD0B2]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
+            <Link href="/login" className={`hidden sm:inline-flex px-4 py-2 rounded-full border text-sm font-bold transition-all ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
               Entrar
             </Link>
             <Link href="/registro" className="px-4 sm:px-5 py-2 rounded-full bg-[#00827C] text-white text-sm font-bold hover:bg-[#006B66] transition-all shadow-[0_4px_16px_rgba(0,130,124,0.25)] whitespace-nowrap">
@@ -263,7 +263,7 @@ export default function Landing2Page() {
 
           {/* Texto izquierdo */}
           <div>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#8AD0B2]/10 border-[#8AD0B2]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
               <Leaf size={13} weight="fill" /> Economía circular con datos reales
             </div>
             <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-6 ${tp}`}>
@@ -276,7 +276,7 @@ export default function Landing2Page() {
               <a href="#planes" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#00827C] text-white font-bold text-base hover:bg-[#006B66] transition-all shadow-[0_8px_32px_rgba(0,130,124,0.3)] hover:shadow-[0_12px_40px_rgba(0,130,124,0.4)] hover:-translate-y-0.5">
                 Iniciar mi primer diagnóstico <ArrowRight size={18} weight="bold" />
               </a>
-              <a href="#proceso" className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border font-bold text-base transition-all ${isDark ? 'border-[#8AD0B2]/20 text-[#8AD0B2] hover:bg-[#8AD0B2]/5' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}>
+              <a href="#proceso" className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border font-bold text-base transition-all ${isDark ? 'border-[#D6F391]/20 text-[#D6F391] hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}>
                 Ver cómo funciona
               </a>
             </div>
@@ -296,7 +296,7 @@ export default function Landing2Page() {
                 <p className="text-[10px] font-black text-[#00827C] mb-0.5">Panel de Impacto</p>
                 <p className={`text-xs font-medium ${ts}`}>Último lote registrado · Hoy</p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-[#8AD0B2] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-[#D6F391] flex items-center justify-center">
                 <Leaf size={16} weight="fill" className="text-[#474747]" />
               </div>
             </div>
@@ -321,7 +321,7 @@ export default function Landing2Page() {
                 <span className="text-[10px] font-black text-[#00827C]">74%</span>
               </div>
               <div className="h-2 bg-[#00827C]/10 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-[#00827C] to-[#8AD0B2] rounded-full" style={{ width: '74%' }} />
+                <div className="h-full bg-gradient-to-r from-[#00827C] to-[#D6F391] rounded-full" style={{ width: '74%' }} />
               </div>
             </div>
           </div>
@@ -391,7 +391,7 @@ export default function Landing2Page() {
                 className="absolute -top-8 -right-8 w-32 h-32 bg-[#8AD0B2]/40 blur-[40px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
               <div data-blob data-mx="-0.04" data-my="-0.04" data-ms="-0.01"
-                className="absolute -bottom-8 -left-8 w-28 h-28 bg-[#8AD0B2]/35 blur-[35px] rounded-full pointer-events-none"
+                className="absolute -bottom-8 -left-8 w-28 h-28 bg-[#D6F391]/35 blur-[35px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
               <div className="relative z-10 flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center">
@@ -472,7 +472,7 @@ export default function Landing2Page() {
                 className="absolute -top-12 -right-12 w-48 h-48 bg-[#59A6E4]/30 blur-[60px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
               <div data-blob data-mx="-0.05" data-my="-0.05" data-ms="-0.01"
-                className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#8AD0B2]/30 blur-[55px] rounded-full pointer-events-none"
+                className="absolute -bottom-12 -left-12 w-44 h-44 bg-[#D6F391]/30 blur-[55px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
 
               <div className="relative z-10">
@@ -490,12 +490,12 @@ export default function Landing2Page() {
                     <p className={`text-xs font-medium ${ts}`}>{cat.planeta.detalle}</p>
                   </div>
 
-                  <div className={`p-6 rounded-2xl border ${isDark ? 'bg-[#8AD0B2]/10 border-[#8AD0B2]/20' : 'bg-[#8AD0B2]/20 border-[#8AD0B2]/40'}`}>
+                  <div className={`p-6 rounded-2xl border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/20' : 'bg-[#D6F391]/20 border-[#D6F391]/40'}`}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Calculator size={18} weight="duotone" className={isDark ? 'text-[#8AD0B2]' : 'text-[#474747]'} />
-                      <span className={`text-[10px] font-black ${isDark ? 'text-[#8AD0B2]' : 'text-[#474747]'}`}>Ahorra al bolsillo</span>
+                      <Calculator size={18} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#474747]'} />
+                      <span className={`text-[10px] font-black ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Ahorra al bolsillo</span>
                     </div>
-                    <div className={`glass-number text-4xl font-black mb-1 ${isDark ? 'text-[#8AD0B2]' : 'text-[#474747]'}`}>{cat.bolsillo.valor}</div>
+                    <div className={`glass-number text-4xl font-black mb-1 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>{cat.bolsillo.valor}</div>
                     <p className={`text-xs font-medium ${ts}`}>{cat.bolsillo.detalle}</p>
                   </div>
                 </div>
@@ -582,7 +582,7 @@ export default function Landing2Page() {
                 style={{ animationDelay: `${i * 0.08}s` }}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#474747] text-[#8AD0B2] text-[9px] font-black tracking-widest rounded-full whitespace-nowrap">MÁS POPULAR</div>
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#474747] text-[#D6F391] text-[9px] font-black tracking-widest rounded-full whitespace-nowrap">MÁS POPULAR</div>
                 )}
                 <div className="mb-6">
                   <p className={`text-[10px] font-black mb-1 opacity-60 ${ts}`}>{plan.tagline}</p>
@@ -637,7 +637,7 @@ export default function Landing2Page() {
               style={{ top: 'calc(50% - 7rem)', left: 'calc(50% - 7rem)', willChange: 'transform' }} />
 
             <div className="relative z-10">
-              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#8AD0B2]/10 border-[#8AD0B2]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
+              <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
                 <Leaf size={13} weight="fill" /> Para el planeta y el bolsillo
               </div>
               <h2 className={`text-4xl sm:text-5xl font-black tracking-tight mb-6 leading-tight ${tp}`}>

@@ -82,7 +82,7 @@ export function ContenidoClient({ contenido }: Props) {
     showToast('Guardado correctamente.')
   }
 
-  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6, letterSpacing: '0.06em' }
+  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }
   const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', background: 'var(--bg-input)' }
   const cardStyle: React.CSSProperties = { background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 28 }
   const btnStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 10, background: C.brand, color: 'var(--text-on-brand)', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }

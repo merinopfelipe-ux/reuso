@@ -123,7 +123,7 @@ export function LegalHeader() {
           color: #FFFFFF;
         }
         [data-theme="dark"] .legal-header-btn:hover {
-          background: #8AD0B2;
+          background: #D6F391;
           color: #474747;
           border-color: transparent;
         }

@@ -537,7 +537,7 @@ function FirmaSection({ tf }: { tf: typeof T['ES']['firma'] }) {
     fontWeight: 700,
     color: 'var(--text-secondary)',
     marginBottom: 6,
-    
+    textTransform: 'uppercase',
     letterSpacing: '0.06em',
   }
 

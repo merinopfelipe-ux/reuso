@@ -190,7 +190,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
               </div>
               <span style={{
                 padding: '2px 10px', borderRadius: 100, fontSize: 10, fontWeight: 800,
-                letterSpacing: '0.04em',
+                textTransform: 'uppercase', letterSpacing: '0.04em',
                 background: cat.activa ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)',
                 color: cat.activa ? 'var(--color-success-content)' : 'var(--color-error-content)',
                 border: '1px solid currentColor', opacity: 0.9,
@@ -213,7 +213,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                   <thead>
                     <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                       {['Nombre', 'Peso (kg)', 'CO₂/unidad', 'Confianza', 'Fuente', 'Estado'].map(h => (
-                        <th key={h} style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap', letterSpacing: '0.05em' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -231,7 +231,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                           <button onClick={() => toggleItem(item.id, item.activo)}
                             style={{ 
                               ...btnBase, padding: '2px 10px', fontSize: 10, fontWeight: 800,
-                              letterSpacing: '0.04em',
+                              textTransform: 'uppercase', letterSpacing: '0.04em',
                               background: item.activo ? 'rgba(56,185,142,0.08)' : 'rgba(255,94,75,0.06)', 
                               color: item.activo ? 'var(--color-success-content)' : 'var(--color-error-content)', 
                               border: '1px solid currentColor', opacity: 0.9 

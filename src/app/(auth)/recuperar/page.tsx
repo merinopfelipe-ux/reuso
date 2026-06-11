@@ -194,7 +194,7 @@ export default function RecuperarPage() {
             />
           </div>
 
-          <BtnPrimario loading={loading} texto="Enviar código" />
+          <BtnPrimario loading={loading} texto="Enviar código" isDark={isDark} />
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: TEXT_LIGHT }}>
@@ -280,7 +280,7 @@ export default function RecuperarPage() {
           </div>
         </div>
 
-        <BtnPrimario loading={loading} texto="Cambiar contraseña" />
+        <BtnPrimario loading={loading} texto="Cambiar contraseña" isDark={isDark} />
       </form>
 
       <div style={{ textAlign: 'center', marginTop: 16 }}>
@@ -354,7 +354,7 @@ function ErrorBox({ mensaje }: { mensaje: string }) {
   )
 }
 
-function BtnPrimario({ loading, texto }: { loading: boolean; texto: string }) {
+function BtnPrimario({ loading, texto, isDark }: { loading: boolean; texto: string; isDark: boolean }) {
   return (
     <button
       type="submit"
@@ -362,8 +362,8 @@ function BtnPrimario({ loading, texto }: { loading: boolean; texto: string }) {
       style={{
         width: '100%', padding: '12px',
         borderRadius: 10,
-        background: loading ? 'var(--border)' : 'var(--color-brand)',
-        color: loading ? 'var(--text-secondary)' : 'var(--text-on-brand)',
+        background: loading ? 'var(--border)' : isDark ? '#D6F391' : 'var(--color-brand)',
+        color: loading ? 'var(--text-secondary)' : isDark ? '#474747' : '#ffffff',
         fontSize: 15, fontWeight: 600,
         border: 'none',
         cursor: loading ? 'not-allowed' : 'pointer',

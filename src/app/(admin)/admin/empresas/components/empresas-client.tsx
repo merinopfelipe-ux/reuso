@@ -191,7 +191,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                         borderRadius: 100, 
                         fontSize: 10, 
                         fontWeight: 800, 
-                        
+                        textTransform: 'uppercase',
                         letterSpacing: '0.04em',
                         background: emp.activa ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)', 
                         color: emp.activa ? 'var(--color-success-content)' : 'var(--color-error-content)',

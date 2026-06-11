@@ -358,7 +358,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
           <span>© Todos los derechos reservados. {empresaNombre}</span>
           {mostrarMarcaReuso && (
             <span className="text-white/40">
-              Hecho con <span className="text-[#8AD0B2]">Calculadora de Reúso</span> · reuso.lurdes.co
+              Hecho con <span className="text-[#D6F391]">Calculadora de Reúso</span> · reuso.lurdes.co
             </span>
           )}
         </div>

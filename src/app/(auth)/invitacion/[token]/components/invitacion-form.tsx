@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { Eye, EyeSlash, CheckCircle, CircleNotch, Leaf } from '@phosphor-icons/react'
@@ -62,7 +62,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
     color: 'var(--text)',
     fontSize: 15,
     outline: 'none',
-    userSelect: 'auto',
+    userSelect: 'none',
   }
 
   if (success) {

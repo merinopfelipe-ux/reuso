@@ -62,18 +62,16 @@ export async function PATCH(
   }
 
   const body = await req.json()
-  const { nombre, email } = body
-
-  // Al menos uno debe venir
-  if (!nombre && !email) {
-    return NextResponse.json({ error: 'Datos no suministrados.' }, { status: 400 })
+  const { nombre } = body
+  if (!nombre || typeof nombre !== 'string' || !nombre.trim()) {
+    return NextResponse.json({ error: 'Nombre requerido.' }, { status: 400 })
   }
 
   const adminClient = await createAdminClient()
 
   const { data: miembro } = await adminClient
     .from('profiles')
-    .select('id, empresa_id, user_id, email')
+    .select('id, empresa_id')
     .eq('id', params.id)
     .single()
 
@@ -82,46 +80,12 @@ export async function PATCH(
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 })
   }
 
-  const updateFields: Record<string, string> = {}
+  const { error } = await adminClient
+    .from('profiles')
+    .update({ nombre: nombre.trim() })
+    .eq('id', params.id)
 
-  if (nombre !== undefined) {
-    if (typeof nombre !== 'string' || !nombre.trim()) {
-      return NextResponse.json({ error: 'Nombre no válido.' }, { status: 400 })
-    }
-    updateFields.nombre = nombre.trim()
-  }
-
-  if (email !== undefined) {
-    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      return NextResponse.json({ error: 'Email no válido.' }, { status: 400 })
-    }
-    const emailNormalizado = email.trim().toLowerCase()
-    
-    // Si el email es distinto al actual, actualizar en auth
-    if (emailNormalizado !== miembro.email?.toLowerCase()) {
-      const { error: authError } = await adminClient.auth.admin.updateUserById(miembro.user_id, {
-        email: emailNormalizado,
-        email_confirm: true, // Auto-confirmar el cambio
-      })
-      if (authError) {
-        console.error('Error updating auth email:', authError)
-        return NextResponse.json({ error: authError.message ?? 'No se pudo actualizar el email de autenticación.' }, { status: 500 })
-      }
-      updateFields.email = emailNormalizado
-    }
-  }
-
-  if (Object.keys(updateFields).length > 0) {
-    const { error } = await adminClient
-      .from('profiles')
-      .update(updateFields)
-      .eq('id', params.id)
-
-    if (error) {
-      console.error('Error updating profiles table:', error)
-      return NextResponse.json({ error: 'No se pudo actualizar el perfil.' }, { status: 500 })
-    }
-  }
+  if (error) return NextResponse.json({ error: 'No se pudo actualizar el nombre.' }, { status: 500 })
 
   return NextResponse.json({ ok: true })
 }

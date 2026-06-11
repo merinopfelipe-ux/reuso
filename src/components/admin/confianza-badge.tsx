@@ -17,7 +17,7 @@ export function ConfianzaBadge({ nivel }: { nivel: NivelConfianza }) {
         borderRadius: 100,
         fontSize: 10,
         fontWeight: 800,
-        
+        textTransform: 'uppercase',
         letterSpacing: '0.04em',
         background: bg,
         color,

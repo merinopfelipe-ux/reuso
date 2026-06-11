@@ -260,7 +260,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             <span className="menu-label-tech" style={{
               fontSize: '9px',
               fontWeight: 900,
-              
+              textTransform: 'uppercase',
               letterSpacing: '0.15em',
               opacity: 0.9,
               color: primaryColor // Dinámico V13.6
@@ -316,14 +316,14 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                   width: 36,
                   height: 36,
                   borderRadius: '50%',
-                  background: avatarColor || '#8AD0B2',
+                  background: avatarColor || '#D6F391',
                   color: '#1A3A38',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: 14,
                   fontWeight: 800,
-                  boxShadow: `0 4px 10px ${(avatarColor || '#8AD0B2').slice(0, 7)}40`,
+                  boxShadow: `0 4px 10px ${(avatarColor || '#D6F391').slice(0, 7)}40`,
                   cursor: 'pointer',
                   overflow: 'hidden',
                 }}
@@ -426,7 +426,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                     <>
                       {resultados.usuarios.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Usuarios</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Usuarios</p>
                           {resultados.usuarios.map((u) => (
                             <button key={u.id} onClick={() => navegarA(`/admin/usuarios?search=${encodeURIComponent(u.nombre ?? '')}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
@@ -439,20 +439,20 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                       )}
                       {resultados.empresas.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Empresas</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Empresas</p>
                           {resultados.empresas.map((e) => (
                             <button key={e.id} onClick={() => navegarA(`/admin/empresas/${e.id}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
                               <Buildings size={14} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
                               <span style={{ fontSize: 14, color: 'var(--text-primary)', fontWeight: 600 }}>{e.nombre}</span>
-                              <span style={{ fontSize: 14, color: '#8AD0B2', background: 'rgba(0,130,124,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 'auto', textTransform: 'capitalize' }}>{e.plan}</span>
+                              <span style={{ fontSize: 14, color: '#D6F391', background: 'rgba(0,130,124,0.1)', padding: '2px 8px', borderRadius: 6, marginLeft: 'auto', textTransform: 'capitalize' }}>{e.plan}</span>
                             </button>
                           ))}
                         </div>
                       )}
                       {resultados.calculos.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Cálculos</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Cálculos</p>
                           {resultados.calculos.map((c) => (
                             <button key={c.id} onClick={() => navegarA(rol === 'super_admin' || rol === 'empresa_admin' ? `/empresa/objetos?search=${encodeURIComponent(searchValue)}` : `/dashboard?search=${encodeURIComponent(searchValue)}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>

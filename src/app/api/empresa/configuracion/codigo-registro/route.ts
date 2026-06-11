@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -9,7 +9,7 @@ function generarCodigo(): string {
   return code
 }
 
-export async function POST() {
+export async function POST(_req: NextRequest) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
@@ -51,7 +51,7 @@ export async function POST() {
   return NextResponse.json({ codigo })
 }
 
-export async function DELETE() {
+export async function DELETE(_req: NextRequest) {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })

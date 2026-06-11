@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, Leaf } from '@phosphor-icons/react'
 
+const BRAND = '#00827C'
 
 const SECTORES = [
   'Tecnología',
@@ -24,11 +25,12 @@ const inputStyle: React.CSSProperties = {
   width: '100%',
   padding: '10px 14px',
   borderRadius: 8,
-  border: '1px solid var(--border)',
-  background: 'var(--bg-input)',
-  color: 'var(--text-primary)',
+  border: '1.5px solid var(--border)',
+  background: 'var(--surface)',
+  color: 'var(--text)',
   fontSize: 15,
   outline: 'none',
+  userSelect: 'none',
   boxSizing: 'border-box',
 }
 
@@ -111,8 +113,8 @@ export default function NuevaEmpresaForm() {
             width: 96,
             height: 96,
             borderRadius: 16,
-            background: logoPreview ? 'transparent' : 'var(--color-brand-light)',
-            border: '2px dashed var(--color-brand)',
+            background: logoPreview ? 'transparent' : `${BRAND}15`,
+            border: `2px dashed ${BRAND}60`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -125,7 +127,7 @@ export default function NuevaEmpresaForm() {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={logoPreview} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : (
-            <Upload size={28} color="var(--color-brand)" />
+            <Upload size={28} color={BRAND} />
           )}
         </div>
         <button
@@ -133,8 +135,8 @@ export default function NuevaEmpresaForm() {
           onClick={() => fileRef.current?.click()}
           style={{
             background: 'none',
-            border: '1.5px solid var(--color-brand)',
-            color: 'var(--color-brand)',
+            border: `1.5px solid ${BRAND}`,
+            color: BRAND,
             borderRadius: 8,
             padding: '6px 16px',
             fontSize: 13,
@@ -186,13 +188,12 @@ export default function NuevaEmpresaForm() {
 
       {error && (
         <p style={{
-          color: 'var(--color-error-content, #FF5E4B)',
+          color: '#e53e3e',
           fontSize: 14,
           margin: 0,
           padding: '8px 12px',
-          background: 'rgba(255, 94, 75, 0.1)',
+          background: '#fff5f5',
           borderRadius: 6,
-          border: '1px solid var(--color-error)',
         }}>
           {error}
         </p>
@@ -202,8 +203,8 @@ export default function NuevaEmpresaForm() {
         type="submit"
         disabled={loading || uploading}
         style={{
-          background: loading || uploading ? 'var(--border)' : 'var(--color-brand)',
-          color: 'var(--text-on-brand, #ffffff)',
+          background: loading || uploading ? `${BRAND}80` : BRAND,
+          color: '#fff',
           border: 'none',
           borderRadius: 8,
           padding: '13px',
@@ -216,8 +217,8 @@ export default function NuevaEmpresaForm() {
         {uploading ? 'Subiendo logo…' : loading ? 'Creando empresa…' : 'Crear empresa'}
       </button>
 
-      <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
-        <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: 'var(--color-brand)' }} />
+      <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
+        <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: BRAND }} />
         Tu empresa comenzará en plan Free. El equipo de Calculadora de Reúso te contactará para ampliar el plan.
       </p>
     </form>

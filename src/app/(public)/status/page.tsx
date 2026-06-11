@@ -965,7 +965,7 @@ export default function StatusPage() {
                     </h4>
                     <span style={{
                       fontSize: 11,
-                      
+                      textTransform: 'uppercase',
                       fontWeight: 700,
                       background: `${SEVERIDAD_COLOR[i.severidad]}1A`,
                       color: SEVERIDAD_COLOR[i.severidad],
