@@ -184,8 +184,8 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
       {/* Modal nuevo usuario */}
       {modalOpen && (
         <div style={{
-          position: 'fixed', inset: 0, zIndex: 1000,
-          background: 'rgba(0,0,0,0.45)',
+          position: 'fixed', inset: 0, zIndex: 2500,
+          background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(8px)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: 24,
         }}>
