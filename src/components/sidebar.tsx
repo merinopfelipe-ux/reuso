@@ -256,7 +256,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                   position: 'relative', transition: 'background 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, color 0.25s ease',
                   alignSelf: 'flex-end', marginLeft: 12, borderLeft: 'none',
                   borderRadius: '16px 0 0 16px', 
-                  background: (isDirectActive || hasActiveSub) ? 'var(--color-active-nav)' : 'transparent',
+                  background: (isDirectActive || hasActiveSub) ? 'var(--color-active-nav)' : 'rgba(214,243,145,0.13)',
                   boxShadow: (isDirectActive || hasActiveSub) ? '0 4px 20px rgba(0, 0, 0, 0.12)' : 'none',
                   color: (isDirectActive || hasActiveSub) ? 'var(--color-text-nav-active)' : fixedColor,
                 }}
@@ -333,11 +333,15 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         .flyout-item-sustainable:nth-child(6) { animation-delay: 0.18s; }
 
         .clean-item-nav:hover, .flyout-item-sustainable:hover {
-          background: rgba(214, 243, 145, 0.2) !important; /* Pistacho muy traslúcido Día V13.7 */
+          background: rgba(214, 243, 145, 0.28) !important;
+        }
+
+        [data-theme="dark"] .clean-item-nav:not(.reuso-nav-active) {
+          background: rgba(214, 243, 145, 0.08) !important;
         }
 
         [data-theme="dark"] .clean-item-nav:hover, [data-theme="dark"] .flyout-item-sustainable:hover {
-          background: rgba(255, 255, 255, 0.1) !important;
+          background: rgba(214, 243, 145, 0.18) !important;
         }
 
         /* Visibilidad Dinámica V13.6 */
@@ -354,11 +358,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         }
 
         [data-theme="dark"] .reuso-nav-active {
-          background: var(--bg-primary) !important;
-          color: var(--text-primary) !important;
-          box-shadow: 0 12px 40px rgba(71, 71, 71, 0.4) !important;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-right: none !important; /* Unión con contenido V13.4 */
+          background: #FFFFFF !important;
+          color: var(--color-text-nav-active) !important;
+          box-shadow: 0 4px 20px rgba(71, 71, 71, 0.25) !important;
+          border: none !important;
         }
 
         [data-theme="dark"] .reuso-nav-active .active-indicator-pill {
