@@ -105,8 +105,8 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(500px, 100vw)', background: 'var(--bg-card)', zIndex: 101, display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 40px rgba(0,0,0,0.1)' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.3)', backdropFilter: 'blur(8px)', zIndex: 2500 }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 'min(500px, 100vw)', background: 'var(--bg-card)', zIndex: 2501, display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 40px rgba(0,0,0,0.1)' }}>
         
         {loading ? (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -194,8 +194,8 @@ function ModalCrearTicket({ onClose, onCreado }: { onClose: () => void, onCreado
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 100 }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 500, padding: 24, zIndex: 101, boxShadow: 'var(--shadow)' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.3)', backdropFilter: 'blur(8px)', zIndex: 2500 }} />
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 500, padding: 24, zIndex: 2501, boxShadow: 'var(--shadow)' }}>
         <h3 style={{ margin: '0 0 16px', fontSize: 18, color: 'var(--text-primary)', fontWeight: 700 }}>Nuevo Ticket</h3>
         
         {error && <div style={{ background: 'rgba(255,94,75,0.1)', color: 'var(--color-error-content)', border: '1px solid var(--color-error)', fontSize: 13, padding: 12, borderRadius: 8, marginBottom: 16 }}>{error}</div>}
