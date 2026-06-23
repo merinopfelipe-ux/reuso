@@ -6,9 +6,10 @@ import { ToastProvider } from '@/components/toast-provider'
 import { CookieBanner } from '@/components/legal/cookie-banner'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://reuso.lurdes.co'),
   title: {
-    default: 'reuso.lurdes.co — Certificación de Impacto Ambiental',
-    template: '%s — reuso.lurdes.co',
+    default: 'reuso.lurdes.co - Certificación de Impacto Ambiental',
+    template: '%s - reuso.lurdes.co',
   },
   description: 'Mide, certifica y comunica el CO₂ evitado cuando reutilizas objetos.',
   robots: { index: false, follow: false },
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     apple: '/logo-icono.svg',
   },
   openGraph: {
-    title: 'reuso.lurdes.co — Certificación de Impacto Ambiental',
+    title: 'reuso.lurdes.co - Certificación de Impacto Ambiental',
     description: 'Mide, certifica y comunica el CO₂ evitado cuando reutilizas objetos.',
     url: 'https://reuso.lurdes.co',
     siteName: 'reuso.lurdes.co',

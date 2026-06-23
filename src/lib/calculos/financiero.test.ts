@@ -21,7 +21,7 @@ const SILLA_MADERA: Parameters<typeof calcularMetricasFinancieras>[0] = {
   moneda: 'COP',
 }
 
-describe('calcularMetricasFinancieras — silla de madera COP', () => {
+describe('calcularMetricasFinancieras - silla de madera COP', () => {
   const res = calcularMetricasFinancieras(SILLA_MADERA)
 
   it('calcula TCO correctamente', () => {
@@ -44,7 +44,7 @@ describe('calcularMetricasFinancieras — silla de madera COP', () => {
     expect(res.e_roi).toBeGreaterThan(100)
   })
 
-  it('calcula ICE negativo — mejora ambiental', () => {
+  it('calcula ICE negativo - mejora ambiental', () => {
     // ((12 - 30) / 30) * 100 = -60
     expect(res.ice_porcentaje).toBe(-60)
   })

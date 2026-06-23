@@ -153,7 +153,7 @@ async function llamarOpenRouter(
 // ── Handler principal ─────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
-  // 1. Auth — empresa_admin o empleado
+  // 1. Auth - empresa_admin o empleado
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 2. Rate limit — 5 diagnósticos por usuario por minuto
+  // 2. Rate limit - 5 diagnósticos por usuario por minuto
   const allowed = await rateLimit(`cotizador_diag:${auth.user_id}`, 5, 60_000)
   if (!allowed) {
     return NextResponse.json(
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // 9. Retornar — la IA solo diagnostica, el humano decide qué hacer con esto
+  // 9. Retornar - la IA solo diagnostica, el humano decide qué hacer con esto
   return NextResponse.json({
     diagnostico: diagnosticoParsed.data,
     few_shot_usado: fewShotUsado,

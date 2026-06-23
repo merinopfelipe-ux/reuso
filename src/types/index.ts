@@ -161,7 +161,7 @@ export interface ModuloConActivo extends Modulo {
   activo_en_empresa: boolean
 }
 
-// ── DPP — Pasaporte Digital de Producto ──────────────────────────────────────
+// ── DPP - Pasaporte Digital de Producto ──────────────────────────────────────
 
 export type EstadoDPP = 'activo' | 'en_reuso' | 'disposicion_final' | 'archivado'
 export type TipoDocumentoIngesta = 'factura_compra' | 'recibo_energia' | 'certificado_origen' | 'foto_objeto' | 'otro'

@@ -9,7 +9,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column' }}>
-      {/* Sin header global — cada página legal gestiona su propio header sticky */}
+      {/* Sin header global - cada página legal gestiona su propio header sticky */}
       <main style={{ flex: 1 }}>
         {children}
       </main>

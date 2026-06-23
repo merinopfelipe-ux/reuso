@@ -61,6 +61,7 @@ export default async function AdminPage() {
   // Agrupar actividad por día
   const actividadMap = new Map<string, number>()
   for (const { fecha } of actividadData ?? []) {
+    if (!fecha) continue
     const dia = fecha.slice(0, 10)
     actividadMap.set(dia, (actividadMap.get(dia) ?? 0) + 1)
   }
@@ -176,8 +177,6 @@ export default async function AdminPage() {
                       fontWeight: 600,
                       color: 'var(--text-secondary)',
                       whiteSpace: 'nowrap',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
                       fontSize: 11,
                     }}
                   >
@@ -209,13 +208,13 @@ export default async function AdminPage() {
                     className="hover-row"
                   >
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                      {formatFecha(c.fecha as string)}
+                      {c.fecha ? formatFecha(c.fecha) : '-'}
                     </td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>
-                      {(c.profiles as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '—'}
+                      {(c.profiles as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
                     </td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                      {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '—'}
+                      {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
                     </td>
                     <td style={{ padding: '12px 16px', fontWeight: 700, color: 'var(--color-brand)' }}>
                       {Number(c.total_co2).toFixed(3)} kg

@@ -18,12 +18,12 @@ test.describe('usuario_libre', () => {
     await page.waitForLoadState('load')
   })
 
-  test('01 — login aterriza en /dashboard con saludo', async ({ page }) => {
+  test('dash-01 - login aterriza en /dashboard con saludo', async ({ page }) => {
     await expect(page).toHaveURL(/\/dashboard/)
     await expect(page.getByText(/hola/i).first()).toBeVisible()
   })
 
-  test('02 — peso cero no habilita el botón guardar', async ({ page }) => {
+  test('dash-02 - peso cero no habilita el botón guardar', async ({ page }) => {
     const boton = page.locator('button').filter({ hasText: /Ropa y Textiles|Muebles/i }).first()
     await expect(boton).toBeVisible({ timeout: 10_000 })
     await boton.click()
@@ -33,7 +33,7 @@ test.describe('usuario_libre', () => {
     await expect(page.locator('button:has-text("Guardar cálculo")')).toBeDisabled({ timeout: 3_000 })
   })
 
-  test('03 — guardar cálculo persiste en historial tras recargar', async ({ page }) => {
+  test('dash-03 - guardar cálculo persiste en historial tras recargar', async ({ page }) => {
     await seleccionarCategoriaYPeso(page, '2')
     const botonGuardar = page.locator('button:has-text("Guardar cálculo")')
     await expect(botonGuardar).toBeEnabled({ timeout: 5_000 })
@@ -45,7 +45,7 @@ test.describe('usuario_libre', () => {
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('04 — total CO₂ en tiempo real es mayor que cero', async ({ page }) => {
+  test('dash-04 - total CO₂ en tiempo real es mayor que cero', async ({ page }) => {
     await seleccionarCategoriaYPeso(page, '5')
     const totalCO2 = page.locator('text=/\\d+\\.\\d+ kg CO₂/').first()
     await expect(totalCO2).toBeVisible({ timeout: 5_000 })
@@ -54,7 +54,7 @@ test.describe('usuario_libre', () => {
     expect(numero).toBeGreaterThan(0)
   })
 
-  test('05 — "Calcular más objetos" limpia el panel de resultado', async ({ page }) => {
+  test('dash-05 - "Calcular más objetos" limpia el panel de resultado', async ({ page }) => {
     await seleccionarCategoriaYPeso(page, '2')
     await page.locator('button:has-text("Guardar cálculo")').click()
     await expect(page.getByText('¡Cálculo guardado!')).toBeVisible({ timeout: 15_000 })
@@ -62,7 +62,7 @@ test.describe('usuario_libre', () => {
     await expect(page.getByText('¡Cálculo guardado!')).not.toBeVisible({ timeout: 5_000 })
   })
 
-  test('06 — plan Explora bloquea certificados con mensaje exacto', async ({ page }) => {
+  test('dash-06 - plan Explora bloquea certificados con mensaje exacto', async ({ page }) => {
     await page.goto('/dashboard/certificados')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Generar certificado")').click()
@@ -71,7 +71,7 @@ test.describe('usuario_libre', () => {
     ).toBeVisible({ timeout: 10_000 })
   })
 
-  test('07 — plan Explora bloquea informes con mensaje exacto', async ({ page }) => {
+  test('dash-07 - plan Explora bloquea informes con mensaje exacto', async ({ page }) => {
     await page.goto('/dashboard/certificados')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Generar informe")').click()
@@ -85,7 +85,7 @@ test.describe('usuario_libre', () => {
     ).toBeVisible({ timeout: 10_000 })
   })
 
-  test('08 — historial de usuario_libre tiene máximo 15 filas', async ({ page }) => {
+  test('dash-08 - historial de usuario_libre tiene máximo 15 filas', async ({ page }) => {
     await page.goto('/dashboard/historial')
     await page.waitForLoadState('load')
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
@@ -93,7 +93,7 @@ test.describe('usuario_libre', () => {
     expect(filas).toBeLessThanOrEqual(15)
   })
 
-  test('09 — modal informe abre con campos fecha y cierra correctamente', async ({ page }) => {
+  test('dash-09 - modal informe abre con campos fecha y cierra correctamente', async ({ page }) => {
     await page.goto('/dashboard/certificados')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Generar informe")').click()
@@ -102,7 +102,7 @@ test.describe('usuario_libre', () => {
     await expect(page.locator('input[type="date"]').first()).not.toBeVisible({ timeout: 5_000 })
   })
 
-  test('10 — ticket de soporte persiste tras recargar', async ({ page }) => {
+  test('dash-10 - ticket de soporte persiste tras recargar', async ({ page }) => {
     await page.goto('/dashboard/soporte')
     await page.waitForLoadState('load')
     const tituloUnico = `E2E soporte ${Date.now()}`
@@ -118,19 +118,19 @@ test.describe('usuario_libre', () => {
     await expect(page.getByText(tituloUnico)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('11 — /empresa/nueva accesible para usuario_libre', async ({ page }) => {
+  test('dash-11 - /empresa/nueva accesible para usuario_libre', async ({ page }) => {
     await page.goto('/empresa/nueva')
     await page.waitForLoadState('load')
     await expect(page).not.toHaveURL(/\/login/)
   })
 
-  test('12 — /admin bloqueado por URL directa', async ({ page }) => {
+  test('dash-12 - /admin bloqueado por URL directa', async ({ page }) => {
     await page.goto('/admin')
     await page.waitForURL(/(?!.*\/admin)/, { timeout: 8_000 })
     expect(page.url()).not.toMatch(/\/admin/)
   })
 
-  test('13 — API /api/calcular rechaza petición sin autenticación', async ({ browser }) => {
+  test('dash-13 - API /api/calcular rechaza petición sin autenticación', async ({ browser }) => {
     const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await ctx.newPage()
     const res = await page.request.post('/api/calcular', {
@@ -140,7 +140,7 @@ test.describe('usuario_libre', () => {
     await ctx.close()
   })
 
-  test('14 — logout invalida la sesión correctamente', async ({ page }) => {
+  test('dash-14 - logout invalida la sesión correctamente', async ({ page }) => {
     await page.request.post('/api/auth/logout')
     await page.goto('/dashboard')
     await page.waitForURL(/\/login/, { timeout: 10_000 })

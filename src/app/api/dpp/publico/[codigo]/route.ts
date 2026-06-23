@@ -59,7 +59,7 @@ export async function GET(
     // Nota: el hash real incluye un campo `timestamp` que no almacenamos por separado,
     // por lo que no podemos comparar 1:1. Registramos el hash parcial para trazabilidad.
     if (!activo.hash_integridad.startsWith(hashVerif.slice(0, 8))) {
-      console.warn('[dpp/publico] Hash parcial no coincide para', activo.codigo_dpp, '— posible modificación en BD')
+      console.warn('[dpp/publico] Hash parcial no coincide para', activo.codigo_dpp, '- posible modificación en BD')
     }
   }
 

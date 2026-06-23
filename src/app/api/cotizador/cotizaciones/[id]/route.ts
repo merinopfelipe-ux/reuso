@@ -91,7 +91,7 @@ export async function PATCH(
     )
   }
 
-  // Validar transiciones de estado — evita revertir cotizaciones cerradas
+  // Validar transiciones de estado - evita revertir cotizaciones cerradas
   if (parsed.data.estado) {
     const VALID_TRANSITIONS: Record<string, string[]> = {
       'por_cotizar':        ['enviada', 'cerrado_inviable'],

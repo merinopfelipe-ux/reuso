@@ -138,20 +138,20 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-01', categoria: 'Autenticación', ruta: '/login', critica: true,
-    titulo: 'Login válido — tiempo de respuesta',
+    titulo: 'Login válido. Tiempo de respuesta',
     descripcion: 'Mide el tiempo de respuesta real del endpoint de autenticación desde que el usuario hace clic en "Ingresar" hasta que es redirigido completamente al panel /empresa.',
     pasos: [
       'Abre /login en Chrome o Safari. Abre DevTools DENTRO DEL NAVEGADOR (NO en la terminal): Mac: Cmd+Option+I / Windows: F12. Ve a la pestaña "Red" (Network).',
       'Activa "Preserve log" (casilla arriba en la barra de Network) y haz clic en el ícono de papelera para limpiar el historial de peticiones.',
       'Ingresa un email y contraseña válidos de una cuenta empresa_admin y haz clic en "Ingresar".',
-      'En la pestaña Network, busca la fila que dice "login" o "POST /api/auth/login". Haz clic en ella y mira la columna "Time" (Tiempo) — ese es el tiempo de respuesta del servidor.',
+      'En la pestaña Network, busca la fila que dice "login" o "POST /api/auth/login". Haz clic en ella y mira la columna "Time" (Tiempo). Allí observas el tiempo de respuesta del servidor.',
       'Anota los milisegundos medidos en el campo de apuntes. Luego observa que la página redirigió a /empresa correctamente.',
     ],
     esperado: 'Redirección exitosa a /empresa en menos de 1000 milisegundos sin bloqueos visuales ni spinners infinitos.',
   },
   {
     id: 'auth-02', categoria: 'Autenticación', ruta: '/login', critica: true,
-    titulo: 'Login inválido — mensaje de error correcto',
+    titulo: 'Login inválido - mensaje de error correcto',
     descripcion: 'Verifica que el sistema maneja de forma segura las credenciales incorrectas, no revela información sensible sobre la existencia del usuario y rehabilita el botón de login.',
     pasos: [
       'Ingresa un email registrado en el sistema pero coloca una contraseña errónea y haz clic en "Ingresar".',
@@ -176,7 +176,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-04', categoria: 'Autenticación', ruta: '/login', critica: false,
-    titulo: 'Recuérdame — persistencia del email',
+    titulo: 'Recuérdame - persistencia del email',
     descripcion: 'Verifica la retención segura del email del usuario en el navegador para facilitar el acceso rápido en visitas posteriores.',
     pasos: [
       'En el formulario de /login, ingresa un correo de prueba.',
@@ -189,7 +189,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-05', categoria: 'Autenticación', ruta: '/registro', critica: true,
-    titulo: 'Registro libre — flujo completo',
+    titulo: 'Registro libre - flujo completo',
     descripcion: 'Completa el proceso de creación de una nueva cuenta libre, validando la interacción del captcha Cloudflare Turnstile y la redirección final.',
     pasos: [
       'Abre /registro en una ventana de incógnito del navegador (Cmd+Shift+N en Mac / Ctrl+Shift+N en Windows).',
@@ -244,7 +244,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Ve a /login en Chrome.',
       'Abre DevTools con Cmd+Option+I (Mac) o F12 (Windows) y haz clic en la pestaña Consola.',
-      'Chrome puede mostrar el aviso "Don\'t paste code you don\'t understand". Si aparece, escribe exactamente: allow pasting — y presiona Enter. Luego pega el script.',
+      'Chrome puede mostrar el aviso "Don\'t paste code you don\'t understand". Si aparece, escribe exactamente: allow pasting - y presiona Enter. Luego pega el script.',
       'Copia y pega este script en la consola, luego presiona Enter: [...Array(6)].forEach((_,i)=>setTimeout(()=>fetch(\'/api/auth/login\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({email:\'test@fail.com\',password:\'wrong\'+i,turnstile_token:\'skip\'})}).then(r=>r.json()).then(d=>console.log(\'Intento\'+(i+1)+\':\',d.error||\'ok\')),i*800))',
       'Espera 7 segundos. Los primeros intentos deben mostrar "Credenciales incorrectas". El intento 6 debe mostrar algo como "Demasiados intentos. Intenta de nuevo en un momento."',
     ],
@@ -256,7 +256,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'adm-01', categoria: 'Panel Admin', ruta: '/admin', critica: true,
-    titulo: 'Dashboard admin — KPIs y carga',
+    titulo: 'Dashboard admin - KPIs y carga',
     descripcion: 'Inicia sesión como super_admin, navega a /admin y comprueba la correcta visualización de los 4 paneles de KPI (Usuarios totales, Empresas registradas, Cálculos completados, Emisiones CO₂ evitadas).',
     pasos: [
       'Inicia sesión como super_admin.',
@@ -265,11 +265,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Despliega la consola de red de DevTools para revisar que la petición a la API de estadísticas no retorne error 500 y complete en menos de 1.5s.',
       'Observa el gráfico de actividad de los últimos 30 días y la tabla con los cálculos más recientes.',
     ],
-    esperado: 'Todos los KPIs numéricos muestran valores reales cargados de la base de datos (no 0, ni nulo, ni guiones "—"). El gráfico renderiza correctamente y la tabla lista los últimos cálculos realizados.',
+    esperado: 'Todos los KPIs numéricos muestran valores reales cargados de la base de datos (no 0, ni nulo, ni guiones "-"). El gráfico renderiza correctamente y la tabla lista los últimos cálculos realizados.',
   },
   {
     id: 'adm-02', categoria: 'Panel Admin', ruta: '/admin/usuarios', critica: true,
-    titulo: 'Gestión de usuarios — buscar, filtrar y editar',
+    titulo: 'Gestión de usuarios - buscar, filtrar y editar',
     descripcion: 'Navega a /admin/usuarios, busca un usuario por nombre parcial, filtra por rol empresa_admin y edita su apodo de forma persistente.',
     pasos: [
       'Navega a /admin/usuarios desde el sidebar o menú superior.',
@@ -306,7 +306,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-05', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
-    titulo: 'Categorías — crear, editar y desactivar',
+    titulo: 'Categorías - crear, editar y desactivar',
     descripcion: 'Administra las categorías ecológicas del sistema, creando una nueva categoría de pruebas y luego desactivándola globalmente.',
     pasos: [
       'Ve a /admin/categorias.',
@@ -333,7 +333,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-07', categoria: 'Panel Admin', ruta: '/admin/certificados', critica: false,
-    titulo: 'Certificados emitidos — búsqueda y verificación',
+    titulo: 'Certificados emitidos - búsqueda y verificación',
     descripcion: 'Localiza un certificado emitido y verifica su hash RCO2 único a través del portal de validación pública.',
     pasos: [
       'Ve a la ruta /admin/certificados.',
@@ -345,7 +345,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-08', categoria: 'Panel Admin', ruta: '/admin/tickets', critica: true,
-    titulo: 'Tickets de soporte — ver y responder',
+    titulo: 'Tickets de soporte - ver y responder',
     descripcion: 'Abre el buzón de soporte técnico, lee un ticket pendiente, publica una respuesta y actualiza su estado de atención.',
     pasos: [
       'Navega a /admin/tickets.',
@@ -358,7 +358,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-09', categoria: 'Panel Admin', ruta: '/admin/leads', critica: false,
-    titulo: 'Leads — lista y exportación',
+    titulo: 'Leads - lista y exportación',
     descripcion: 'Inspecciona y descarga la lista de contactos e interesados comerciales recopilados desde la landing pública.',
     pasos: [
       'Navega a /admin/leads.',
@@ -370,7 +370,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-10', categoria: 'Panel Admin', ruta: '/admin/alertas', critica: false,
-    titulo: 'Alertas del sistema — crear y marcar leída',
+    titulo: 'Alertas del sistema - crear y marcar leída',
     descripcion: 'Publica una alerta global y comprueba que se despliegue en la sesión de los usuarios finales y desaparezca al marcarla leída.',
     pasos: [
       'Ve a /admin/alertas.',
@@ -384,7 +384,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-11', categoria: 'Panel Admin', ruta: '/admin/modulos', critica: false,
-    titulo: 'Módulos del sistema — activar/desactivar globalmente',
+    titulo: 'Módulos del sistema - activar/desactivar globalmente',
     descripcion: 'Verifica la disponibilidad global y estados de los módulos core de la aplicación.',
     pasos: [
       'Inicia sesión como super_admin y dirígete a /admin/modulos.',
@@ -396,7 +396,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-12', categoria: 'Panel Admin', ruta: '/admin/logs', critica: false,
-    titulo: 'Logs de auditoría — trazabilidad',
+    titulo: 'Logs de auditoría - trazabilidad',
     descripcion: 'Ejecuta una acción administrativa crítica y comprueba que quede registrada en la bitácora de eventos del sistema.',
     pasos: [
       'Realiza una acción administrativa (ej. desactiva temporalmente una categoría o modifica el plan de una empresa).',
@@ -407,7 +407,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-13', categoria: 'Panel Admin', ruta: '/admin/reportes', critica: false,
-    titulo: 'Reportes admin — resumen global de impacto',
+    titulo: 'Reportes admin - resumen global de impacto',
     descripcion: 'Verifica la integridad de las estadísticas e informes globales consolidados presentados al administrador.',
     pasos: [
       'Ve a /admin/reportes.',
@@ -418,7 +418,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-14', categoria: 'Panel Admin', ruta: '/admin/configuracion', critica: false,
-    titulo: 'Configuración del sistema — parámetros globales',
+    titulo: 'Configuración del sistema - parámetros globales',
     descripcion: 'Modifica parámetros operativos de la plataforma y valida su persistencia.',
     pasos: [
       'Entra a /admin/configuracion.',
@@ -430,7 +430,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-15', categoria: 'Panel Admin', ruta: '/admin/plantillas', critica: false,
-    titulo: 'Plantillas de email — vista y edición',
+    titulo: 'Plantillas de email - vista y edición',
     descripcion: 'Accede y edita los contenidos HTML de las notificaciones por correo electrónico enviadas por el sistema.',
     pasos: [
       'Ve a /admin/plantillas.',
@@ -458,7 +458,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'emp-01', categoria: 'Panel Empresa', ruta: '/empresa', critica: true,
-    titulo: 'Dashboard empresa — KPIs y gráficas',
+    titulo: 'Dashboard empresa - KPIs y gráficas',
     descripcion: 'Inicia sesión como empresa_admin, navega a /empresa y comprueba la correcta visualización de las tarjetas de KPI para CO₂ evitado, agua ahorrada, peso total reusado y número de cálculos.',
     pasos: [
       'Inicia sesión como empresa_admin.',
@@ -507,7 +507,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-05', categoria: 'Panel Empresa', ruta: '/empresa/equipo', critica: true,
-    titulo: 'Gestión del equipo — lista y desactivar usuario',
+    titulo: 'Gestión del equipo - lista y desactivar usuario',
     descripcion: 'Inactiva la cuenta de un empleado de la organización y valida que su acceso sea revocado de inmediato.',
     pasos: [
       'Dirígete a /empresa/equipo.',
@@ -519,7 +519,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-06', categoria: 'Panel Empresa', ruta: '/empresa/metas', critica: false,
-    titulo: 'Metas — crear, progreso y eliminar',
+    titulo: 'Metas - crear, progreso y eliminar',
     descripcion: 'Configura un objetivo corporativo de reducción de emisiones y comprueba la acumulación automática del progreso.',
     pasos: [
       'Navega a /empresa/metas.',
@@ -531,7 +531,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-07', categoria: 'Panel Empresa', ruta: '/empresa/objetos', critica: false,
-    titulo: 'Objetos de la empresa — lista de ítems',
+    titulo: 'Objetos de la empresa - lista de ítems',
     descripcion: 'Verifica la integridad del inventario de activos ecológicos declarados por la empresa.',
     pasos: [
       'Navega a /empresa/objetos.',
@@ -553,7 +553,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-09', categoria: 'Panel Empresa', ruta: '/empresa/configuracion', critica: false,
-    titulo: 'Configuración de la empresa — datos básicos',
+    titulo: 'Configuración de la empresa - datos básicos',
     descripcion: 'Modifica la información general de la empresa y verifica la propagación en cascada de los cambios.',
     pasos: [
       'Entra a /empresa/configuracion.',
@@ -565,7 +565,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-10', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/modulos', critica: false,
-    titulo: 'Módulos de la empresa — ver acceso',
+    titulo: 'Módulos de la empresa - ver acceso',
     descripcion: 'Inspecciona las licencias de módulos y la asignación manual por usuario.',
     pasos: [
       'Inicia sesión como empresa_admin y navega a /empresa/configuracion/modulos desde la barra lateral de configuración.',
@@ -577,7 +577,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'emp-11', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/marca', critica: false,
-    titulo: 'Marca personalizada — logo y WhatsApp',
+    titulo: 'Marca personalizada - logo y WhatsApp',
     descripcion: 'Sube la identidad gráfica corporativa y comprueba su inclusión en la propuesta comercial externa.',
     pasos: [
       'Navega a /empresa/configuracion/marca.',
@@ -628,7 +628,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dash-03', categoria: 'Dashboard', ruta: '/dashboard/historial', critica: false,
-    titulo: 'Historial personal — filtros y búsqueda',
+    titulo: 'Historial personal - filtros y búsqueda',
     descripcion: 'Realiza búsquedas detalladas y filtros de categorías en la bitácora personal del empleado.',
     pasos: [
       'Inicia sesión como empleado y ve a /dashboard.',
@@ -663,7 +663,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dash-06', categoria: 'Dashboard', ruta: '/dashboard/soporte', critica: false,
-    titulo: 'Soporte del empleado — crear y ver ticket',
+    titulo: 'Soporte del empleado - crear y ver ticket',
     descripcion: 'Genera una incidencia técnica como empleado y valida el flujo bidireccional de comentarios con el administrador.',
     pasos: [
       'Ve a la sección /dashboard/soporte.',
@@ -691,7 +691,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: true,
-    titulo: 'Panel CRM — lista de cotizaciones y filtros',
+    titulo: 'Panel CRM - lista de cotizaciones y filtros',
     descripcion: 'Comprueba el tablero general del CRM del cotizador, filtros por estados y búsquedas rápidas.',
     pasos: [
       'Entra a /empresa/cotizador.',
@@ -703,7 +703,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-02', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Diagnóstico IA — mueble viable',
+    titulo: 'Diagnóstico IA - mueble viable',
     descripcion: 'Somete una fotografía válida de madera maciza para validar el acierto del modelo de visión.',
     pasos: [
       'Dirígete a /empresa/cotizador/nueva.',
@@ -715,7 +715,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Diagnóstico IA — mueble inviable (MDF)',
+    titulo: 'Diagnóstico IA - mueble inviable (MDF)',
     descripcion: 'Somete una foto de un mueble de aglomerado/MDF y valida el rechazo controlado del sistema.',
     pasos: [
       'En el formulario de nueva cotización, sube una foto de un mueble fabricado en aglomerado, melamina o MDF en mal estado.',
@@ -725,7 +725,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-04', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Imagen mayor a 10 MB — validación',
+    titulo: 'Imagen mayor a 10 MB - validación',
     descripcion: 'Intenta forzar la carga de un archivo mayor al límite estipulado.',
     pasos: [
       'En el área de subida de fotos del cotizador, intenta seleccionar una imagen pesada que supere los 10 megabytes (MB).',
@@ -734,7 +734,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-05', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Rate limit — 5 diagnósticos por minuto',
+    titulo: 'Rate limit - 5 diagnósticos por minuto',
     descripcion: 'Comprueba las protecciones de tasa de uso (rate limit) de la API de diagnóstico de imágenes.',
     pasos: [
       'Prepara 6 imágenes de prueba diferentes de muebles.',
@@ -758,7 +758,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-07', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: true,
-    titulo: 'Detalle de cotización — generar enlace público',
+    titulo: 'Detalle de cotización - generar enlace público',
     descripcion: 'Genera el token y URL de propuesta comercial y valida su legibilidad sin sesión.',
     pasos: [
       'Selecciona una cotización guardada y haz clic para ver su detalle en /empresa/cotizador/[id].',
@@ -834,7 +834,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dpp-03', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: false,
-    titulo: 'Ingesta IA desde imagen — extracción de campos',
+    titulo: 'Ingesta IA desde imagen - extracción de campos',
     descripcion: 'Somete una etiqueta técnica e inspecciona la precarga inteligente de especificaciones.',
     pasos: [
       'En el formulario de creación de nuevo DPP, sube una imagen o fotografía de una ficha de especificaciones técnicas o etiqueta del mueble.',
@@ -857,7 +857,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dpp-05', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
-    titulo: 'Detalle DPP — editar y agregar ciclo',
+    titulo: 'Detalle DPP - editar y agregar ciclo',
     descripcion: 'Registra un evento de mantenimiento y valida su inserción cronológica en el histórico del DPP.',
     pasos: [
       'Abre la vista detallada de un pasaporte digital en /empresa/dpp/[id].',
@@ -885,7 +885,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'pub-01', categoria: 'Páginas Públicas', ruta: '/', critica: false,
-    titulo: 'Landing page — carga y formulario de contacto',
+    titulo: 'Landing page - carga y formulario de contacto',
     descripcion: 'Navega en modo incógnito, comprueba la carga de la landing y envía un lead de contacto.',
     pasos: [
       'Abre una pestaña de incógnito y navega a la raíz del sitio /.',
@@ -897,7 +897,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'pub-02', categoria: 'Páginas Públicas', ruta: '/legal', critica: false,
-    titulo: 'Páginas legales — todas accesibles',
+    titulo: 'Páginas legales - todas accesibles',
     descripcion: 'Comprueba el acceso libre de sesión a términos y condiciones y el panel de consentimiento de cookies.',
     pasos: [
       'Cierra la sesión activa en el navegador.',
@@ -952,7 +952,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'pub-07', categoria: 'Páginas Públicas', ruta: '/empresa/nueva', critica: false,
-    titulo: 'Crear empresa nueva — flujo de onboarding',
+    titulo: 'Crear empresa nueva - flujo de onboarding',
     descripcion: 'Completa el onboarding de creación de empresa y promoción de rol de usuario.',
     pasos: [
       'Inicia sesión con un usuario recién registrado que aún no pertenezca a ninguna organización.',
@@ -964,7 +964,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'pub-08', categoria: 'Páginas Públicas', ruta: '/status', critica: false,
-    titulo: 'Widget Diagnóstico de Conexión en Vivo — Simulación de desconexión parcial',
+    titulo: 'Widget Diagnóstico de Conexión en Vivo - Simulación de desconexión parcial',
     descripcion: 'Comprueba el comportamiento adaptativo del widget de ping en tiempo real simulando cortes de red.',
     pasos: [
       'Abre la página pública /status en incógnito y localiza el panel de "Diagnóstico de Red en Vivo".',
@@ -1047,7 +1047,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dark-07', categoria: 'Modo Noche', ruta: '/settings', critica: false,
-    titulo: 'Settings — toggle de modo noche persiste',
+    titulo: 'Settings - toggle de modo noche persiste',
     descripcion: 'Valida que el estado del tema persista al cerrar la sesión o reiniciar la pestaña.',
     pasos: [
       'Ve a /settings.',
@@ -1189,7 +1189,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'seg-05', categoria: 'Seguridad', ruta: '/api/auth', critica: true,
-    titulo: 'Rate limit en inicio de sesión (Login) — Control por IP (BD)',
+    titulo: 'Rate limit en inicio de sesión (Login) - Control por IP (BD)',
     descripcion: 'Verifica que el backend bloquee intentos repetidos de inicio de sesión desde la misma dirección IP tras superar 5 peticiones por minuto, usando la tabla persistente de rate limits.',
     pasos: [
       'Ve a la pantalla de /login en el navegador.',
@@ -1202,7 +1202,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'seg-06', categoria: 'Seguridad', ruta: '/api/dpp', critica: true,
-    titulo: 'Aislamiento de Tenancy (RLS) — Intento de elusión de filtros por REST API',
+    titulo: 'Aislamiento de Tenancy (RLS) - Intento de elusión de filtros por REST API',
     descripcion: 'Simula un ataque de filtración de datos donde un atacante intenta consultar registros de otras empresas llamando directamente a la API REST de base de datos de Supabase sin pasar por el frontend.',
     pasos: [
       'Inicia sesión en la aplicación con una cuenta de empleado de la Empresa A.',
@@ -1278,7 +1278,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'set-01', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Editar perfil — nombre, apodo y teléfono',
+    titulo: 'Editar perfil - nombre, apodo y teléfono',
     descripcion: 'Modifica datos de perfil y valida la reactividad del saludo del dashboard.',
     pasos: [
       'Ve a /settings.',
@@ -1306,7 +1306,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'ayuda-01', categoria: 'Ayuda', ruta: '/ayuda', critica: false,
-    titulo: 'Centro de ayuda — carga y búsqueda',
+    titulo: 'Centro de ayuda - carga y búsqueda',
     descripcion: 'Valida las búsquedas inteligentes sobre la base de conocimientos.',
     pasos: [
       'Navega a /ayuda.',
@@ -1317,7 +1317,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-01', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
-    titulo: 'API calcular — validación de campos obligatorios',
+    titulo: 'API calcular - validación de campos obligatorios',
     descripcion: 'Somete el endpoint de cálculo a payloads nulos o vacíos en la consola.',
     pasos: [
       'Inicia sesión como empleado en /dashboard y abre la consola de DevTools.',
@@ -1328,7 +1328,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-02', categoria: 'APIs & Validaciones', ruta: '/api/metas', critica: false,
-    titulo: 'API metas — validar fecha_fin >= fecha_inicio',
+    titulo: 'API metas - validar fecha_fin >= fecha_inicio',
     descripcion: 'Valida el bloqueo del formulario al introducir fechas invertidas.',
     pasos: [
       'Navega al formulario de creación de metas en /empresa/metas.',
@@ -1339,7 +1339,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-03', categoria: 'APIs & Validaciones', ruta: '/api/tickets', critica: false,
-    titulo: 'API tickets — paginación con límite máximo',
+    titulo: 'API tickets - paginación con límite máximo',
     descripcion: 'Comprueba el límite de seguridad contra denegaciones de servicio en consultas masivas.',
     pasos: [
       'Inicia sesión como super_admin y abre la pestaña Console de DevTools.',
@@ -1350,7 +1350,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-04', categoria: 'APIs & Validaciones', ruta: '/api/cotizador/diagnostico', critica: false,
-    titulo: 'API diagnóstico — fallback a OpenRouter si Gemini falla',
+    titulo: 'API diagnóstico - fallback a OpenRouter si Gemini falla',
     descripcion: 'Comprueba la resiliencia del diagnóstico forzando el fallo de la clave API de Gemini.',
     pasos: [
       'Edita temporalmente el archivo .env.local y modifica el valor de GEMINI_KEY por uno incorrecto para forzar el fallo de conexión con Google Gemini.',
@@ -1387,7 +1387,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'seg-10', categoria: 'Seguridad', ruta: '/api/admin/status/incidentes/[id]', critica: true,
-    titulo: 'Escalada de Privilegios — Bypass de RBAC en APIs administrativas',
+    titulo: 'Escalada de Privilegios - Bypass de RBAC en APIs administrativas',
     descripcion: 'Comprueba la hermeticidad y robustez de los endpoints administrativos mediante intentos de llamadas cruzadas con tokens de roles con menor jerarquía.',
     pasos: [
       'Inicia sesión en el sistema con una cuenta de rol empleado (ej. empleado@empresa.com).',
@@ -1400,7 +1400,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'seg-11', categoria: 'Seguridad', ruta: '/api/profile', critica: true,
-    titulo: 'Escalada de Privilegios — Alteración del rol de perfil (BD Trigger)',
+    titulo: 'Escalada de Privilegios - Alteración del rol de perfil (BD Trigger)',
     descripcion: 'Verifica que el trigger de seguridad `trg_prevent_profile_elevation` en la base de datos bloquee de forma absoluta cualquier intento de un usuario cliente de cambiar su rol a super_admin o asociarse a otra empresa.',
     pasos: [
       'Inicia sesión en la aplicación con una cuenta de empleado.',
@@ -1413,7 +1413,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'seg-12', categoria: 'Seguridad', ruta: '/api/profile/update-sensitive', critica: true,
-    titulo: 'Rate limit en Acciones Sensibles — Bloqueo de cambios de perfil (BD)',
+    titulo: 'Rate limit en Acciones Sensibles - Bloqueo de cambios de perfil (BD)',
     descripcion: 'Verifica que el sistema de rate limit persistente bloquee cambios de datos sensibles (correo, teléfono o clave) tras acumular 5 intentos fallidos en la última hora por usuario.',
     pasos: [
       'Inicia sesión como empleado y ve a la ruta `/settings`.',
@@ -1425,7 +1425,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-06', categoria: 'APIs & Validaciones', ruta: '/api/cotizador/diagnostico', critica: true,
-    titulo: 'Subida de Archivos — Validación de tipos MIME reales (Magic Numbers)',
+    titulo: 'Subida de Archivos - Validación de tipos MIME reales (Magic Numbers)',
     descripcion: 'Verifica que el servicio de procesamiento de imágenes para cotizaciones y DPP rechace archivos maliciosos renombrados con extensiones permitidas (ej. scripts camuflados en .png o .jpg).',
     pasos: [
       'En tu máquina, crea un archivo de texto con contenido de script ejecutable (por ejemplo: <?php echo "malware"; ?> o un script Bash) y cámbiale el nombre para que tenga extensión de imagen (ej. archivo_malicioso.jpg o test.png).',
@@ -1437,7 +1437,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'perf-07', categoria: 'Rendimiento', ruta: '/empresa/dpp/nuevo', critica: false,
-    titulo: 'Resiliencia de Red — Recuperación del formulario DPP ante fallos de conexión',
+    titulo: 'Resiliencia de Red - Recuperación del formulario DPP ante fallos de conexión',
     descripcion: 'Pone a prueba el comportamiento y persistencia de datos de la interfaz al experimentar una caída de red intermedia durante el registro de un Pasaporte Digital.',
     pasos: [
       'Ve al formulario de creación de pasaporte digital en /empresa/dpp/nuevo.',
@@ -1451,7 +1451,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'perf-08', categoria: 'Rendimiento', ruta: '/empresa/certificados', critica: false,
-    titulo: 'Estrés de Memoria — Generación concurrente de múltiples PDFs',
+    titulo: 'Estrés de Memoria - Generación concurrente de múltiples PDFs',
     descripcion: 'Evalúa el impacto en la CPU y RAM del hilo principal del navegador al ejecutar peticiones repetidas de renderizado de PDFs.',
     pasos: [
       'Navega a /empresa/certificados donde esté la opción para generar PDFs oficiales.',
@@ -1462,7 +1462,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-11', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Colisión de Edición — Conflicto de guardado concurrente (Optimistic Locking)',
+    titulo: 'Colisión de Edición - Conflicto de guardado concurrente (Optimistic Locking)',
     descripcion: 'Verifica que el sistema prevenga la pérdida accidental de datos comerciales cuando dos comerciales editan simultáneamente la misma cotización.',
     pasos: [
       'Abre el detalle de la misma cotización (ej. /empresa/cotizador/123) en dos ventanas del navegador distintas y de forma paralela.',
@@ -1486,7 +1486,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-10', categoria: 'Autenticación', ruta: '/empresa/nueva', critica: true,
-    titulo: 'Flujo de Onboarding Incompleto — Bloqueo de rutas privadas',
+    titulo: 'Flujo de Onboarding Incompleto - Bloqueo de rutas privadas',
     descripcion: 'Asegura que los usuarios que inicien la creación de una empresa pero no terminen el formulario de onboarding queden bloqueados en la ruta de configuración inicial, impidiendo el bypass a /empresa o /dashboard.',
     pasos: [
       'Abre /registro en una ventana de incógnito y crea una cuenta nueva con un email de prueba (ej. qa_onboarding@tudominio.com). Necesitas acceso a ese correo para confirmar la cuenta.',
@@ -1499,7 +1499,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Sanitización de Archivos — Inyección de XSS vía SVG/XML vectoriales',
+    titulo: 'Sanitización de Archivos - Inyección de XSS vía SVG/XML vectoriales',
     descripcion: 'Verifica que al subir archivos SVG o vectoriales (como logos o fotos de muebles en formatos que admiten código estructurado) el sistema neutralice scripts JavaScript embebidos antes de procesarlos o renderizarlos.',
     pasos: [
       'Crea un archivo de texto con extensión .svg (ej. exploit.svg) que contenga código XML con un script inyectado: <svg xmlns="http://www.w3.org/2000/svg" onload="alert(\'SVG_XSS\')"><rect width="100" height="100" fill="red"/></svg>.',
@@ -1511,7 +1511,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'api-07', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
-    titulo: 'Valores Límite Calculadora — Redondeos, desbordes y números negativos',
+    titulo: 'Valores Límite Calculadora - Redondeos, desbordes y números negativos',
     descripcion: 'Somete al motor de cálculo ecológico a valores numéricos extremos o inválidos de peso para validar la visualización en ApexCharts y KPIs sin NaN o deformaciones visuales.',
     pasos: [
       'Inicia sesión como empleado y ve a /dashboard.',
@@ -1523,7 +1523,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'dpl-09', categoria: 'APIs & Validaciones', ruta: '/legal/confidencialidad-firma', critica: false,
-    titulo: 'Firma Digital — Inyección de Base64 corrupto o de gran tamaño',
+    titulo: 'Firma Digital - Inyección de Base64 corrupto o de gran tamaño',
     descripcion: 'Verifica que la API de procesamiento de firmas y el compilador jsPDF del servidor controlen excepciones ante strings de dibujo corruptos o excesivamente pesados.',
     pasos: [
       'Ve a la página pública del Acuerdo de Confidencialidad en /legal/confidencialidad-firma.',
@@ -1536,7 +1536,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   {
     id: 'auth-11', categoria: 'Autenticación', ruta: '/registro', critica: true,
     titulo: 'Resistencia al bloqueo de Cloudflare Turnstile',
-    descripcion: 'Verifica que el formulario de registro permita enviar el formulario aunque el widget de Turnstile no cargue (falla abierta — no bloquea al usuario).',
+    descripcion: 'Verifica que el formulario de registro permita enviar el formulario aunque el widget de Turnstile no cargue (falla abierta - no bloquea al usuario).',
     pasos: [
       'Ve a /registro en Chrome y completa el Paso 1 (datos) y el Paso 2 (perfil) hasta llegar al Paso 3 (contraseña).',
       'Abre DevTools con Cmd+Option+I (Mac) o F12. Ve a la pestaña Red (Network).',
@@ -1546,11 +1546,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Recarga de nuevo. El widget de Turnstile no debe aparecer en el Paso 3.',
       'Rellena todos los campos del Paso 3 con una contraseña fuerte (ej. Test1234) y acepta los términos. Haz clic en "Crear cuenta".',
     ],
-    esperado: 'El formulario procesa el envío aunque Turnstile no cargó. El sistema no bloquea al usuario por falla del captcha. La cuenta se crea o se muestra error de validación de datos — nunca un error de "verificación de seguridad requerida".',
+    esperado: 'El formulario procesa el envío aunque Turnstile no cargó. El sistema no bloquea al usuario por falla del captcha. La cuenta se crea o se muestra error de validación de datos - nunca un error de "verificación de seguridad requerida".',
   },
   {
     id: 'emp-13', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/marca', critica: false,
-    titulo: 'Marca Personalizada — Ratios de aspecto y dimensiones extremas en Logo',
+    titulo: 'Marca Personalizada - Ratios de aspecto y dimensiones extremas en Logo',
     descripcion: 'Evalúa la flexibilidad y resiliencia del procesador de marca en cliente al subir imágenes con dimensiones desproporcionadas.',
     pasos: [
       'Navega a /empresa/configuracion/marca.',
@@ -1562,7 +1562,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'auth-12', categoria: 'Autenticación', ruta: '/dashboard', critica: true,
-    titulo: 'Concurrencia de Sesión — Cierre de sesión en multi-pestaña',
+    titulo: 'Concurrencia de Sesión - Cierre de sesión en multi-pestaña',
     descripcion: 'Verifica que el sistema maneje adecuadamente la invalidación del token de sesión en múltiples pestañas abiertas simultáneamente, previniendo operaciones fantasma o estados inconsistentes.',
     pasos: [
       'Abre dos pestañas del navegador en /dashboard con la misma sesión de empleado activa.',
@@ -1575,7 +1575,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'perf-09', categoria: 'Rendimiento', ruta: '/empresa', critica: false,
-    titulo: 'Renderizado Reactivo — Estrés por cambio de tamaño de ventana (Resize Flood)',
+    titulo: 'Renderizado Reactivo - Estrés por cambio de tamaño de ventana (Resize Flood)',
     descripcion: 'Verifica que las librerías gráficas (ApexCharts/Recharts) en el dashboard de la empresa y del empleado implementen debounce en el redibujado para prevenir el congelamiento del hilo principal del navegador.',
     pasos: [
       'Inicia sesión como administrador de empresa y navega a /empresa (donde se cargan los gráficos de CO₂ y categorías).',
@@ -1822,7 +1822,7 @@ export default function QAPage() {
   const generarInforme = () => {
     const ahora = new Date().toLocaleString('es-CO', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
     const lineas = [
-      `INFORME QA — Calculadora de Reúso`,
+      `INFORME QA - Calculadora de Reúso`,
       `Fecha: ${ahora}`,
       `${'─'.repeat(60)}`,
       `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${parciales} parciales · ${no_claras} instrucciones poco claras · ${criticas} críticas fallidas`,
@@ -1894,7 +1894,7 @@ export default function QAPage() {
   return (
     <div className={`min-h-screen ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
 
-      {/* Blobs de fondo — solo en modo noche (directriz #0: fondo blanco puro en luz) */}
+      {/* Blobs de fondo - solo en modo noche (directriz #0: fondo blanco puro en luz) */}
       {isDark && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob bg-[#D6F391]" />
@@ -1919,7 +1919,7 @@ export default function QAPage() {
                 <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>
               </div>
               <h1 className={`text-3xl font-bold tracking-tight ${theme.textTitle} mb-2`}>
-                Panel de Pruebas — Reúso
+                Panel de Pruebas - Reúso
               </h1>
               <p className={`${theme.textSecondary} text-sm max-w-xl`}>
                 {total} pruebas en {CATEGORIAS.length} módulos. Guarda tus apuntes y genera el informe final.
@@ -2334,7 +2334,7 @@ export default function QAPage() {
                           </div>
                         </div>
 
-                        {/* Resultado por modo — Día y Noche */}
+                        {/* Resultado por modo - Día y Noche */}
                         {(['resultado_dia', 'resultado_noche'] as const).map(campo => {
                           const esDia = campo === 'resultado_dia'
                           const valorActual = tarea[campo] ?? 'pendiente'
@@ -2549,7 +2549,7 @@ export default function QAPage() {
             <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
               <div>
                 <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>
-                  {mostrarHistorial === 'completo' ? 'Historial general' : `Historial — ${mostrarHistorial}`}
+                  {mostrarHistorial === 'completo' ? 'Historial general' : `Historial - ${mostrarHistorial}`}
                 </h2>
                 <p className={`text-xs ${theme.textSecondary} mt-0.5`}>
                   {intentos.filter(i => i.alcance === mostrarHistorial).length} intento(s) guardado(s)
@@ -2574,7 +2574,7 @@ export default function QAPage() {
                 const pct = intento.tareas.length > 0 ? Math.round((okCount / intento.tareas.length) * 100) : 0
                 const fecha = new Date(intento.ts).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                 const textoDescarga = [
-                  `INTENTO QA — ${intento.etiqueta}`,
+                  `INTENTO QA - ${intento.etiqueta}`,
                   `Alcance: ${intento.alcance}`,
                   `Fecha: ${fecha}`,
                   `Resultado: ${okCount} ok · ${failCount} fallas · ${pct}%`,

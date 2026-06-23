@@ -7,24 +7,24 @@ test.describe('super_admin', () => {
     await page.goto('/admin')
   })
 
-  test('01 — login aterriza en /admin con badge Super Admin', async ({ page }) => {
+  test('adm-01 - login aterriza en /admin con badge Super Admin', async ({ page }) => {
     await expect(page).toHaveURL(/\/admin/)
     await expect(page.getByText(/super admin/i).first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('02 — KPIs del dashboard muestran números reales mayores a cero', async ({ page }) => {
+  test('adm-02 - KPIs del dashboard muestran números reales mayores a cero', async ({ page }) => {
     await expect(page.getByText(/usuarios registrados/i)).toBeVisible({ timeout: 10_000 })
     const numeros = page.locator('text=/^\\d+$|^\\d+\\.\\d+ t$/').first()
     await expect(numeros).toBeVisible({ timeout: 8_000 })
   })
 
-  test('03 — empresas: tabla tiene al menos 1 fila', async ({ page }) => {
+  test('adm-03 - empresas: tabla tiene al menos 1 fila', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForLoadState('load')
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('04 — empresas: buscar por nombre exacto devuelve esa empresa', async ({ page }) => {
+  test('adm-04 - empresas: buscar por nombre exacto devuelve esa empresa', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForLoadState('load')
     const primeraFila = page.locator('table tbody tr').first()
@@ -38,7 +38,7 @@ test.describe('super_admin', () => {
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 5_000 })
   })
 
-  test('05 — notas de empresa persisten tras guardar y recargar', async ({ page }) => {
+  test('adm-05 - notas de empresa persisten tras guardar y recargar', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForLoadState('load')
     await page.locator('table tbody tr').first().click()
@@ -55,7 +55,7 @@ test.describe('super_admin', () => {
     await expect(page.locator('textarea').first()).toHaveValue(notaUnica, { timeout: 8_000 })
   })
 
-  test('06 — cambio de plan persiste en lista tras recargar', async ({ page }) => {
+  test('adm-06 - cambio de plan persiste en lista tras recargar', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForLoadState('load')
     await page.locator('table tbody tr').first().click()
@@ -78,7 +78,7 @@ test.describe('super_admin', () => {
     await page.waitForTimeout(1500)
   })
 
-  test('07 — usuarios: tabla carga y búsqueda filtra', async ({ page }) => {
+  test('adm-07 - usuarios: tabla carga y búsqueda filtra', async ({ page }) => {
     await page.goto('/admin/usuarios')
     await page.waitForLoadState('load')
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
@@ -89,7 +89,7 @@ test.describe('super_admin', () => {
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 5_000 })
   })
 
-  test('08 — crear usuario y aparece en tabla buscándolo por email', async ({ page }) => {
+  test('adm-08 - crear usuario y aparece en tabla buscándolo por email', async ({ page }) => {
     await page.goto('/admin/usuarios')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Nuevo usuario")').click()
@@ -110,7 +110,7 @@ test.describe('super_admin', () => {
     await expect(page.getByText(emailUnico)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('09 — plantilla: firmante persiste tras guardar y recargar', async ({ page }) => {
+  test('adm-09 - plantilla: firmante persiste tras guardar y recargar', async ({ page }) => {
     await page.goto('/admin/plantillas')
     await page.waitForLoadState('load')
     const inputFirmante = page.getByPlaceholder('Ej: María López')
@@ -133,7 +133,7 @@ test.describe('super_admin', () => {
     await page.locator('button:has-text("Guardar plantilla")').click()
   })
 
-  test('10 — exportar empresas devuelve status 200', async ({ page }) => {
+  test('adm-10 - exportar empresas devuelve status 200', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForLoadState('load')
     const [download] = await Promise.all([
@@ -146,7 +146,7 @@ test.describe('super_admin', () => {
     }
   })
 
-  test('11 — leads: cambio de estado persiste tras recargar', async ({ page }) => {
+  test('adm-11 - leads: cambio de estado persiste tras recargar', async ({ page }) => {
     await page.goto('/admin/leads')
     await page.waitForLoadState('load')
     const primerSelect = page.locator('select').first()
@@ -168,7 +168,7 @@ test.describe('super_admin', () => {
     await page.waitForTimeout(1000)
   })
 
-  test('12 — CICLO COMPLETO: generar cert → revocar → verificar "Revocado"', async ({ browser }) => {
+  test('adm-12 - CICLO COMPLETO: generar cert → revocar → verificar "Revocado"', async ({ browser }) => {
     const ctxEA = await browser.newContext({ storageState: 'playwright/.auth/empresa-admin.json' })
     const pageEA = await ctxEA.newPage()
     await pageEA.goto('/empresa')
@@ -217,7 +217,7 @@ test.describe('super_admin', () => {
     await ctxPublico.close()
   })
 
-  test('13 — revocar con motivo corto es rechazado', async ({ page }) => {
+  test('adm-13 - revocar con motivo corto es rechazado', async ({ page }) => {
     await page.goto('/admin/certificados')
     await page.waitForLoadState('load')
     const botonRevocar = page.locator('button[title="Revocar"]').first()
@@ -238,7 +238,7 @@ test.describe('super_admin', () => {
     }
   })
 
-  test('14 — API admin rechaza a no-super_admin con 401', async ({ browser }) => {
+  test('adm-14 - API admin rechaza a no-super_admin con 401', async ({ browser }) => {
     const ctx = await browser.newContext({ storageState: { cookies: [], origins: [] } })
     const page = await ctx.newPage()
     const res = await page.request.patch('/api/admin/empresas/00000000-0000-0000-0000-000000000000', {

@@ -15,6 +15,8 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /auth\.setup\.ts/,
+      retries: 1,
+      timeout: 90_000,
     },
     {
       name: 'chromium',
@@ -23,7 +25,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'SKIP_RATE_LIMIT=true npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 120_000,

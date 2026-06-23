@@ -18,7 +18,7 @@ export function createClient() {
               cookieStore.set(name, value, options)
             )
           } catch {
-            // En Server Components el set no está disponible — ignorar
+            // En Server Components el set no está disponible - ignorar
           }
         },
       },

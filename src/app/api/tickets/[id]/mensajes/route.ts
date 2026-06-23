@@ -79,7 +79,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
 
   if (error) return NextResponse.json({ error: 'Fallo al enviar mensaje' }, { status: 500 })
 
-  // 3. Marcar ticket actualizado — solo super_admin cambia estado a en_proceso
+  // 3. Marcar ticket actualizado - solo super_admin cambia estado a en_proceso
   const updatePayload: Record<string, string> = { updated_at: new Date().toISOString() }
   if (isSuper) updatePayload.estado = 'en_proceso'
   await adminClient.from('tickets').update(updatePayload).eq('id', params.id)

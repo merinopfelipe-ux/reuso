@@ -62,7 +62,7 @@ export async function POST(
 
   const resultados = calcularMetricasFinancieras(parsed.data)
 
-  // tco es GENERATED en BD — no se inserta directamente
+  // tco es GENERATED en BD - no se inserta directamente
   const { data: metrica, error: insertError } = await adminClient
     .from('dpp_metricas_financieras')
     .insert({

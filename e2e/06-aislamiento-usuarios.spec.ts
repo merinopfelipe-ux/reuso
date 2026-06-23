@@ -67,6 +67,7 @@ async function iniciarSesion(page: any, email: string) {
   
   await page.locator('#email').fill(email)
   await page.locator('#password').fill(password)
+  await page.getByRole('button', { name: /aceptar términos legales/i }).click()
   
   // Activar "Recuérdame" para evitar que el evento beforeunload cierre la sesión en page.goto()
   await page.getByText(/Recuérdame|Remember me/i).first().click().catch(() => {})

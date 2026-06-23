@@ -157,7 +157,7 @@ export async function GET(request: NextRequest) {
   let buffer: Buffer
   if (formato === 'csv') buffer = generarCSV(filas)
   else if (formato === 'xlsx') buffer = generarXLSX(filas)
-  else buffer = generarPDF(filas, 'reuso.lurdes.co — Historial de Cálculos')
+  else buffer = generarPDF(filas, 'reuso.lurdes.co - Historial de Cálculos')
 
   return new Response(new Uint8Array(buffer), {
     headers: {

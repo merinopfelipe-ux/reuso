@@ -175,7 +175,7 @@ export default function DetalleCotizacionPage() {
   const copys = [
     {
       label: 'Presentación de propuesta',
-      texto: `Hola ${clienteNombre}, preparé tu propuesta de restauración. Al restaurar tus muebles evitas ${co2.toFixed(1)} kg de CO2 — lo mismo que ${arboles} ${arboles === 1 ? 'árbol' : 'árboles'} al año. Tu inversión: ${formatCOP(total)}. Revisa tu propuesta aquí: ${enlace ?? '(enlace pendiente)'}`,
+      texto: `Hola ${clienteNombre}, preparé tu propuesta de restauración. Al restaurar tus muebles evitas ${co2.toFixed(1)} kg de CO2 - lo mismo que ${arboles} ${arboles === 1 ? 'árbol' : 'árboles'} al año. Tu inversión: ${formatCOP(total)}. Revisa tu propuesta aquí: ${enlace ?? '(enlace pendiente)'}`,
     },
     {
       label: 'Seguimiento (sin respuesta)',

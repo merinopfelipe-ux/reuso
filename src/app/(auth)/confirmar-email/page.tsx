@@ -1,35 +1,13 @@
 'use client'
 
-import { useState, useRef, useEffect, Suspense } from 'react'
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { CheckCircle, CircleNotch, Envelope } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
+import { OTPInput } from '@/components/otp-input'
+import { ThemeToggle } from '@/components/theme-toggle'
 
-// ── Constantes de estilo ────────────────────────────────────────────────────
-const BRAND = '#00827C'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const TEXT_LIGHT = '#7FA8A5'
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '12px 16px',
-  borderRadius: 8,
-  border: '1.5px solid rgba(0,130,124,0.20)',
-  background: '#FFFFFF',
-  color: TEXT_DARK,
-  fontSize: 18,
-  fontWeight: 700,
-  letterSpacing: '0.15em',
-  textAlign: 'center',
-  outline: 'none',
-  transition: 'border-color 0.2s',
-  boxSizing: 'border-box' as const,
-  fontFamily: "'Open Sans', sans-serif",
-}
-
-// ── Componente interno (usa useSearchParams) ────────────────────────────────
 function ConfirmarEmailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -41,12 +19,17 @@ function ConfirmarEmailContent() {
   const [error, setError] = useState('')
   const [exito, setExito] = useState(false)
   const [cooldown, setCooldown] = useState(0)
+  const [isDark, setIsDark] = useState(false)
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  const supabase = createClient()
+  const supabaseRef = useRef(createClient())
 
   useEffect(() => {
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     return () => {
+      obs.disconnect()
       if (cooldownRef.current) clearInterval(cooldownRef.current)
     }
   }, [])
@@ -55,26 +38,19 @@ function ConfirmarEmailContent() {
     setCooldown(120)
     cooldownRef.current = setInterval(() => {
       setCooldown(prev => {
-        if (prev <= 1) {
-          clearInterval(cooldownRef.current!)
-          return 0
-        }
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0 }
         return prev - 1
       })
     }, 1000)
   }
 
-  async function handleConfirmar(e: React.FormEvent) {
-    e.preventDefault()
+  const confirmar = useCallback(async () => {
     const token = codigo.trim()
-    if (token.length < 6) {
-      setError('Ingresa el código de 6 dígitos que recibiste.')
-      return
-    }
+    if (token.length !== 6 || loading || exito) return
     setLoading(true)
     setError('')
 
-    const { error: err } = await supabase.auth.verifyOtp({
+    const { error: err } = await supabaseRef.current.auth.verifyOtp({
       email: emailParam,
       token,
       type: 'email',
@@ -82,25 +58,32 @@ function ConfirmarEmailContent() {
 
     if (err) {
       const msg = err.message?.toLowerCase() ?? ''
-      if (msg.includes('expired') || msg.includes('invalid')) {
-        setError('El código no es válido o ya expiró. Solicita uno nuevo.')
-      } else {
-        setError('No pudimos verificar el código. Intenta de nuevo.')
-      }
+      setError(
+        msg.includes('expired') || msg.includes('invalid')
+          ? 'El código no es válido o ya expiró. Solicita uno nuevo.'
+          : 'No pudimos verificar el código. Intenta de nuevo.'
+      )
       setLoading(false)
       return
     }
 
     setExito(true)
     setTimeout(() => router.push('/login'), 2500)
-  }
+  }, [codigo, loading, exito, emailParam, router])
+
+  useEffect(() => {
+    if (codigo.length === 6) {
+      const t = setTimeout(confirmar, 300)
+      return () => clearTimeout(t)
+    }
+  }, [codigo, confirmar])
 
   async function handleReenviar() {
     if (cooldown > 0 || !emailParam) return
     setReenviando(true)
     setError('')
 
-    const { error: err } = await supabase.auth.resend({
+    const { error: err } = await supabaseRef.current.auth.resend({
       type: 'signup',
       email: emailParam,
     })
@@ -113,13 +96,19 @@ function ConfirmarEmailContent() {
     iniciarCooldown()
   }
 
-  // ── Estado de éxito ───────────────────────────────────────────────────────
+  const BRAND = isDark ? '#D6F391' : '#00827C'
+  const TEXT_DARK = isDark ? '#FFFFFF' : '#1A3A38'
+  const TEXT_MED = isDark ? 'rgba(255,255,255,0.70)' : '#4D7C79'
+  const TEXT_LIGHT = isDark ? 'rgba(255,255,255,0.40)' : '#7FA8A5'
+  const ERROR_BG = isDark ? 'rgba(255,94,75,0.12)' : 'rgba(255,94,75,0.08)'
+  const ERROR_BORDER = isDark ? 'rgba(255,94,75,0.40)' : 'rgba(255,94,75,0.25)'
+
   if (exito) {
     return (
       <div style={{ textAlign: 'center' }}>
         <div style={{
           width: 72, height: 72, borderRadius: '50%',
-          background: 'rgba(0,130,124,0.10)',
+          background: isDark ? 'rgba(214,243,145,0.12)' : 'rgba(0,130,124,0.10)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           margin: '0 auto 20px',
         }}>
@@ -138,13 +127,11 @@ function ConfirmarEmailContent() {
     )
   }
 
-  // ── Formulario ────────────────────────────────────────────────────────────
   return (
     <>
-      {/* Icono */}
       <div style={{
         width: 64, height: 64, borderRadius: '50%',
-        background: 'rgba(0,130,124,0.10)',
+        background: isDark ? 'rgba(214,243,145,0.12)' : 'rgba(0,130,124,0.10)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         margin: '0 auto 20px',
       }}>
@@ -160,36 +147,22 @@ function ConfirmarEmailContent() {
         Ingrésalo para activar tu cuenta.
       </p>
 
-      {/* Error */}
       {error && (
         <div style={{
           padding: '10px 14px', borderRadius: 8, marginBottom: 16,
-          background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)',
+          background: ERROR_BG, border: `1px solid ${ERROR_BORDER}`,
           color: '#FF5E4B', fontSize: 13,
         }}>
           {error}
         </div>
       )}
 
-      <form onSubmit={handleConfirmar} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <form onSubmit={e => { e.preventDefault(); confirmar() }} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: TEXT_MED, marginBottom: 8, textAlign: 'center' }}>
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED, margin: '0 0 12px', textAlign: 'center' }}>
             Código de verificación
-          </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            maxLength={6}
-            value={codigo}
-            onChange={e => setCodigo(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            placeholder="000000"
-            autoFocus
-            autoComplete="one-time-code"
-            style={inputStyle}
-            onFocus={e => { e.currentTarget.style.borderColor = BRAND }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,130,124,0.20)' }}
-          />
+          </p>
+          <OTPInput value={codigo} onChange={setCodigo} isDark={isDark} disabled={loading} />
         </div>
 
         <button
@@ -198,8 +171,11 @@ function ConfirmarEmailContent() {
           style={{
             width: '100%', padding: '12px',
             borderRadius: 10,
-            background: loading || codigo.length < 6 ? 'rgba(0,130,124,0.35)' : BRAND,
-            color: '#ffffff', fontSize: 15, fontWeight: 600,
+            background: loading || codigo.length < 6
+              ? (isDark ? 'rgba(214,243,145,0.25)' : 'rgba(0,130,124,0.35)')
+              : BRAND,
+            color: isDark && codigo.length === 6 && !loading ? '#474747' : '#ffffff',
+            fontSize: 15, fontWeight: 600,
             border: 'none',
             cursor: loading || codigo.length < 6 ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -207,12 +183,11 @@ function ConfirmarEmailContent() {
           }}
         >
           {loading
-            ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Verificando...</>
+            ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} color="currentColor" /> Verificando...</>
             : 'Confirmar cuenta'}
         </button>
       </form>
 
-      {/* Reenviar */}
       <div style={{ textAlign: 'center', marginTop: 20 }}>
         <p style={{ fontSize: 13, color: TEXT_LIGHT, margin: '0 0 6px' }}>
           ¿No recibiste el código?
@@ -227,11 +202,7 @@ function ConfirmarEmailContent() {
             padding: 0,
           }}
         >
-          {reenviando
-            ? 'Enviando...'
-            : cooldown > 0
-              ? `Reenviar en ${cooldown}s`
-              : 'Reenviar código'}
+          {reenviando ? 'Enviando...' : cooldown > 0 ? `Reenviar en ${cooldown}s` : 'Reenviar código'}
         </button>
       </div>
 
@@ -244,7 +215,6 @@ function ConfirmarEmailContent() {
   )
 }
 
-// ── Página principal (envuelve en Suspense por useSearchParams) ──────────────
 export default function ConfirmarEmailPage() {
   return (
     <div style={{
@@ -252,14 +222,25 @@ export default function ConfirmarEmailPage() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#FFFFFF',
       fontFamily: "'Open Sans', sans-serif",
       padding: '24px',
       userSelect: 'none',
+      background: 'var(--bg-primary)',
     }}>
+      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
+        <ThemeToggle />
+      </div>
       <div style={{ width: '100%', maxWidth: 400 }}>
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-completo.svg"
+            alt="Calculadora de Reúso"
+            style={{ height: 36 }}
+          />
+        </div>
         <Suspense fallback={
-          <div style={{ textAlign: 'center', color: TEXT_MED, fontSize: 14 }}>Cargando...</div>
+          <div style={{ textAlign: 'center', color: '#4D7C79', fontSize: 14 }}>Cargando...</div>
         }>
           <ConfirmarEmailContent />
         </Suspense>

@@ -97,7 +97,7 @@ export default function ConfigModulosPage() {
   const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
 
   // Módulos que NO tiene la empresa (para mostrar oportunidad de compra)
-  // (la API solo devuelve los activos — si hay módulos conocidos que faltan, se muestran bloqueados)
+  // (la API solo devuelve los activos - si hay módulos conocidos que faltan, se muestran bloqueados)
   const tieneCoizador = modulos.some(m => m.clave === 'cotizador_crm')
 
   return (

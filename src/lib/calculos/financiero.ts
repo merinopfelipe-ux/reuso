@@ -24,7 +24,7 @@ function generarNarrativa(
 
   if (res.e_roi > 0) {
     if (res.e_roi >= 100) {
-      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)}% — cada peso invertido generó más de uno de retorno.`)
+      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)}%. Cada peso que inviertes genera más de uno de retorno.`)
     } else {
       partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)}%.`)
     }

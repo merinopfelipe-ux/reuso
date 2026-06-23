@@ -46,7 +46,7 @@ function generarPDF(data: z.infer<typeof schema>, fecha: string, ip: string, use
   doc.setTextColor(255, 255, 255)
   doc.setFontSize(11)
   doc.setFont('Open Sans', 'bold')
-  doc.text('Calculadora de Reúso — Grupo MLP S.A.S.', margin, 12)
+  doc.text('Calculadora de Reúso - Grupo MLP S.A.S.', margin, 12)
 
   // Título
   doc.setTextColor(0, 130, 124)
@@ -79,7 +79,7 @@ function generarPDF(data: z.infer<typeof schema>, fecha: string, ip: string, use
     doc.setTextColor(255, 255, 255)
     doc.setFontSize(9)
     doc.setFont('Open Sans', 'bold')
-    doc.text('Acuerdo de Confidencialidad — Calculadora de Reúso', margin, 9)
+    doc.text('Acuerdo de Confidencialidad - Calculadora de Reúso', margin, 9)
   }
 
   const secciones = [
@@ -199,7 +199,7 @@ function generarPDF(data: z.infer<typeof schema>, fecha: string, ip: string, use
   doc.setFontSize(9)
   const campos: [string, string][] = [
     ['Nombre completo', data.nombre],
-    ['Documento de identidad', `${NOMBRES_TIPO[data.tipoIdentidad] ?? data.tipoIdentidad} — N° ${data.numeroIdentidad}`],
+    ['Documento de identidad', `${NOMBRES_TIPO[data.tipoIdentidad] ?? data.tipoIdentidad} - N° ${data.numeroIdentidad}`],
     ['Correo electrónico', data.email],
     ['Teléfono', `${data.indicativo} ${data.telefono}`],
     ['Fecha y hora de firma', fecha],
@@ -306,7 +306,7 @@ export async function POST(req: NextRequest) {
       user_agent: userAgent,
     })
   } catch {
-    // El log es no crítico — continuar aunque falle
+    // El log es no crítico - continuar aunque falle
   }
 
   // Enviar email (opcional y no-bloqueante para desarrollo y tolerancia a fallos)

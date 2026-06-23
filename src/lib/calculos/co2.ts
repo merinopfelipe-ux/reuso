@@ -6,7 +6,7 @@ export interface ItemCalculo {
   peso_kg_input: number
   /** Factor de CO₂ por UNIDAD (de BD) */
   co2_por_unidad: number
-  /** Peso de una unidad en kg (de BD) — usado para derivar co2/kg */
+  /** Peso de una unidad en kg (de BD) - usado para derivar co2/kg */
   peso_kg_unidad: number
 }
 

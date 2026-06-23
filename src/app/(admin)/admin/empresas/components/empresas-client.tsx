@@ -182,7 +182,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                   >
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{emp.nombre}</td>
                     <td style={{ padding: '12px 16px' }}><PlanBadge plan={emp.plan} /></td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.sector ?? '—'}</td>
+                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.sector ?? '-'}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.total_empleados}</td>
                     <td style={{ padding: '12px 16px', color: 'var(--color-brand)', fontWeight: 600 }}>{emp.total_co2.toFixed(2)}</td>
                     <td style={{ padding: '12px 16px' }}>

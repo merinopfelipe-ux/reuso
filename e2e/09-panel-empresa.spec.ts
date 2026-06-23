@@ -4,15 +4,15 @@ test.describe('empresa_admin', () => {
   test.use({ storageState: 'playwright/.auth/empresa-admin.json' })
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/empresa')
+    await page.goto('/empresa', { waitUntil: 'domcontentloaded' })
   })
 
-  test('01 — login aterriza en /empresa con KPI visible', async ({ page }) => {
+  test('emp-01 - login aterriza en /empresa con KPI visible', async ({ page }) => {
     await expect(page).toHaveURL(/\/empresa/)
     await expect(page.locator('text=/CO₂|impacto|equipo/i').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('02 — cálculo persiste en /empresa/calculos tras recargar', async ({ page }) => {
+  test('emp-02 - cálculo persiste en /empresa/calculos tras recargar', async ({ page }) => {
     const boton = page.locator('button').filter({ hasText: /Ropa y Textiles|Muebles/i }).first()
     await expect(boton).toBeVisible({ timeout: 10_000 })
     await boton.click()
@@ -27,7 +27,7 @@ test.describe('empresa_admin', () => {
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('03 — certificado generado es verificable en /verificar', async ({ page }) => {
+  test('emp-03 - certificado generado es verificable en /verificar', async ({ page }) => {
     const botonCert = page.locator('button:has-text("Generar certificado")').first()
     await expect(botonCert).toBeVisible({ timeout: 10_000 })
 
@@ -45,7 +45,7 @@ test.describe('empresa_admin', () => {
     await expect(page.getByText(/kilogramos CO₂-eq/i).first()).toBeVisible({ timeout: 5_000 })
   })
 
-  test('04 — informe generado con fechas es verificable en /verificar', async ({ page }) => {
+  test('emp-04 - informe generado con fechas es verificable en /verificar', async ({ page }) => {
     const botonInforme = page.locator('button:has-text("Generar informe")').first()
     await expect(botonInforme).toBeVisible({ timeout: 10_000 })
     await botonInforme.click()
@@ -67,7 +67,7 @@ test.describe('empresa_admin', () => {
     await expect(page.getByText(/Informe de Impacto/i).first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('05 — invitación persiste en lista de equipo', async ({ page }) => {
+  test('emp-05 - invitación persiste en lista de equipo', async ({ page }) => {
     await page.goto('/empresa/equipo')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Invitar")').click()
@@ -82,7 +82,7 @@ test.describe('empresa_admin', () => {
     await expect(page.getByText(emailInvitado)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('06 — nombre de empresa persiste tras guardar y recargar', async ({ page }) => {
+  test('emp-06 - nombre de empresa persiste tras guardar y recargar', async ({ page }) => {
     await page.goto('/empresa/configuracion')
     await page.waitForLoadState('load')
     const inputNombre = page.locator('input[name="nombre"]')
@@ -105,7 +105,7 @@ test.describe('empresa_admin', () => {
     await page.locator('button:has-text("Guardar cambios")').click()
   })
 
-  test('07 — meta persiste tras crear y desaparece tras eliminar', async ({ page }) => {
+  test('emp-07 - meta persiste tras crear y desaparece tras eliminar', async ({ page }) => {
     await page.goto('/empresa')
     await page.waitForLoadState('load')
 
@@ -135,19 +135,19 @@ test.describe('empresa_admin', () => {
     await expect(page.getByText(tituloMeta)).not.toBeVisible()
   })
 
-  test('08 — reportes muestran datos numéricos reales', async ({ page }) => {
+  test('emp-08 - reportes muestran datos numéricos reales', async ({ page }) => {
     await page.goto('/empresa/reportes')
     await page.waitForLoadState('load')
     await expect(page.locator('text=/\\d+\\.\\d+|\\d+ kg/').first()).toBeVisible({ timeout: 15_000 })
   })
 
-  test('09 — /admin bloqueado para empresa_admin', async ({ page }) => {
+  test('emp-09 - /admin bloqueado para empresa_admin', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForURL(/(?!.*\/admin)/, { timeout: 8_000 })
     expect(page.url()).not.toMatch(/\/admin/)
   })
 
-  test('10 — API admin rechaza a empresa_admin con 401 o 403', async ({ page }) => {
+  test('emp-10 - API admin rechaza a empresa_admin con 401 o 403', async ({ page }) => {
     const res = await page.request.patch('/api/admin/empresas/00000000-0000-0000-0000-000000000000', {
       data: { plan: 'ilimitado' },
     })

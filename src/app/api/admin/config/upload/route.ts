@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     const text = new TextDecoder('utf-8').decode(bytes)
     if (text.toLowerCase().includes('<svg')) {
       fileIsValid = true
-      // DOMPurify elimina scripts, eventos inline y javascript: — más robusto que regex
+      // DOMPurify elimina scripts, eventos inline y javascript: - más robusto que regex
       const sanitized = DOMPurify.sanitize(text, { USE_PROFILES: { svg: true, svgFilters: true } })
       uploadData = new TextEncoder().encode(sanitized)
     }

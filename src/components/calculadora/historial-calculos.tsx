@@ -61,7 +61,7 @@ function itemsDeDetalle(detalle: Record<string, DetalleItem | string> | null): D
 
 function resumenItems(detalle: Record<string, DetalleItem | string> | null): string {
   const items = itemsDeDetalle(detalle)
-  if (items.length === 0) return '—'
+  if (items.length === 0) return '-'
   const primeros = items.slice(0, 3)
   const partes = primeros.map((e) => {
     if (e.peso_kg != null) return `${e.peso_kg} kg ${e.nombre}`
@@ -433,7 +433,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                   </td>
                   {mostrarUsuario && (
                     <td style={{ padding: '10px 16px', color: TEXT_MED }}>
-                      {c.usuario_nombre ?? '—'}
+                      {c.usuario_nombre ?? '-'}
                     </td>
                   )}
                   <td style={{ padding: '10px 16px', color: TEXT_MED, maxWidth: 280 }}>

@@ -26,8 +26,8 @@ type Cert = {
 type Props = { certificados: Cert[]; total: number }
 
 function getNombreEmpresa(cert: Cert): string {
-  if (!cert.empresas) return '—'
-  if (Array.isArray(cert.empresas)) return cert.empresas[0]?.nombre ?? '—'
+  if (!cert.empresas) return '-'
+  if (Array.isArray(cert.empresas)) return cert.empresas[0]?.nombre ?? '-'
   return cert.empresas.nombre
 }
 

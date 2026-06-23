@@ -21,7 +21,7 @@ const T = {
       { id: 'ley', label: 'Ley aplicable' },
     ],
     resumen:
-      'Al registrarte o usar la Calculadora de Reúso aceptas estas condiciones. Son las reglas del juego: qué puedes hacer, qué no, y qué hacemos nosotros. Lo más importante: no puedes copiar, replicar ni extraer la metodología de cálculo. Tus datos están protegidos por la Ley 1581 (Colombia). Si estás en Europa, también aplica el RGPD; si estás en California, el CCPA.',
+      'Al registrarte o usar la Calculadora de Reúso aceptas estas condiciones. Aquí definimos las reglas de uso y nuestras políticas. Lo más importante es que no debes copiar, replicar ni extraer la metodología de cálculo. Protegemos tus datos bajo la Ley 1581 (Colombia). Si resides en Europa, aplicamos el RGPD. Si resides en California, aplicamos la CCPA.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Política de Privacidad' },
       { href: '/legal/datos', label: 'Tratamiento de Datos' },
@@ -122,7 +122,7 @@ const T = {
       { id: 'ley', label: 'Applicable law' },
     ],
     resumen:
-      'By signing up or using the Reuse Calculator you accept these terms. These are the rules: what you can do, what you cannot, and what we do. Most importantly: you may not copy, replicate or extract the calculation methodology. Your data is protected by Colombia\'s Law 1581. If you are in Europe, the GDPR also applies; if you are in California, the CCPA applies.',
+      'By registering or using the Reuse Calculator you accept these conditions. Here we define the terms of use and our policies. Most importantly, you must not copy, replicate, or extract the calculation methodology. We protect your data under Law 1581 (Colombia). If you reside in Europe, the GDPR applies. If you reside in California, the CCPA applies.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy' },
       { href: '/legal/datos', label: 'Data Processing' },

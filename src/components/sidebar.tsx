@@ -1,4 +1,4 @@
-// 🔒 ARCHIVO PROTEGIDO — NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
+// 🔒 ARCHIVO PROTEGIDO - NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -51,6 +51,8 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/logs', label: 'Auditoría' },
         { href: '/admin/alertas', label: 'Alertas' },
         { href: '/admin/configuracion', label: 'Configuración' },
+        { href: '/admin/qa', label: 'QA' },
+        { href: '/admin/status', label: 'Estado' },
       ]
     },
     { 
@@ -125,7 +127,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
 
   async function handleLogout() {
     await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/')
+    router.push('/login')
     router.refresh()
   }
 
@@ -256,7 +258,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                   position: 'relative', transition: 'background 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, color 0.25s ease',
                   alignSelf: 'flex-end', marginLeft: 12, borderLeft: 'none',
                   borderRadius: '16px 0 0 16px', 
-                  background: (isDirectActive || hasActiveSub) ? 'var(--color-active-nav)' : 'rgba(214,243,145,0.13)',
+                  background: (isDirectActive || hasActiveSub) ? 'var(--color-active-nav)' : 'transparent',
                   boxShadow: (isDirectActive || hasActiveSub) ? '0 4px 20px rgba(0, 0, 0, 0.12)' : 'none',
                   color: (isDirectActive || hasActiveSub) ? 'var(--color-text-nav-active)' : fixedColor,
                 }}
@@ -306,6 +308,12 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         .liquid-base-context {
           background: var(--bg-primary) !important;
         }
+        [data-theme="light"] .liquid-base-context {
+          background: rgba(71, 71, 71, 0.03) !important;
+        }
+        [data-theme="dark"] .liquid-base-context {
+          background: rgba(214, 243, 145, 0.03) !important;
+        }
 
         @keyframes slideIn { 
           from { opacity: 0; transform: translateX(-8px) scale(0.98); }
@@ -333,11 +341,11 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         .flyout-item-sustainable:nth-child(6) { animation-delay: 0.18s; }
 
         .clean-item-nav:hover, .flyout-item-sustainable:hover {
-          background: rgba(214, 243, 145, 0.28) !important;
+          background: rgba(214, 243, 145, 0.48) !important;
         }
 
         [data-theme="dark"] .clean-item-nav:not(.reuso-nav-active) {
-          background: rgba(214, 243, 145, 0.08) !important;
+          background: transparent !important;
         }
 
         [data-theme="dark"] .clean-item-nav:hover, [data-theme="dark"] .flyout-item-sustainable:hover {
@@ -358,15 +366,25 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         }
 
         [data-theme="dark"] .reuso-nav-active {
-          background: #FFFFFF !important;
-          color: var(--color-text-nav-active) !important;
-          box-shadow: 0 4px 20px rgba(71, 71, 71, 0.25) !important;
+          background: #474747 !important;
+          color: #FFFFFF !important;
+          box-shadow: 0 4px 20px rgba(71, 71, 71, 0.4) !important;
           border: none !important;
         }
 
+        [data-theme="dark"] .reuso-nav-active span,
+        [data-theme="dark"] .reuso-nav-active svg {
+          color: #FFFFFF !important;
+        }
+
         [data-theme="dark"] .reuso-nav-active .active-indicator-pill {
-          background: #D6F391 !important; /* Pistacho en Noche V13.9 */
+          background: #D6F391 !important;
           box-shadow: 0 0 10px rgba(214, 243, 145, 0.4);
+        }
+
+        [data-theme="dark"] .flyout-item-sustainable.reuso-nav-active {
+          background: #474747 !important;
+          box-shadow: 0 0 16px rgba(214, 243, 145, 0.25), 0 4px 12px rgba(71, 71, 71, 0.4) !important;
         }
 
         .master-flyout-ref {
@@ -422,7 +440,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
       </div>
     </aside>
 
-      {/* FLYOUT — FUERA del aside para que backdrop-filter funcione V13.29 */}
+      {/* FLYOUT - FUERA del aside para que backdrop-filter funcione V13.29 */}
       {activeSubmenu && navItems.find(i => i.label === activeSubmenu)?.subItems && (
         <div 
           className="master-flyout-ref"
@@ -439,10 +457,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             padding: '100px 12px 40px 12px',
             animation: 'slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             pointerEvents: 'auto',
-            // LIQUID GLASS V13.30 — blur sutil
+            // LIQUID GLASS V13.30 - blur sutil
             backdropFilter: 'blur(8px) saturate(180%)',
             WebkitBackdropFilter: 'blur(8px) saturate(180%)',
-            background: isDark ? 'var(--bg-primary)' : 'rgba(255, 255, 255, 0.5)',
+            background: isDark ? 'rgba(71, 71, 71, 0.45)' : 'rgba(255, 255, 255, 0.45)',
             borderLeft: isDark 
               ? '1px solid rgba(255, 255, 255, 0.15)' 
               : '1px solid rgba(0, 130, 124, 0.1)',
@@ -455,8 +473,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             padding: '0 24px', 
             fontSize: '12px', 
             fontWeight: 900, 
-            textTransform: 'uppercase', 
-            letterSpacing: '0.25em', 
+            letterSpacing: '0.05em',
             color: isDark ? '#D6F391' : '#006B66',
             marginBottom: '32px',
             background: 'transparent',

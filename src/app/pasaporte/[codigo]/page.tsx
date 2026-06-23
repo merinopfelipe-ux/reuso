@@ -37,7 +37,7 @@ const CONFIANZA_COLOR: Record<string, string> = {
 }
 
 function formatFecha(iso: string | null) {
-  if (!iso) return '—'
+  if (!iso) return '-'
   return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .eq('codigo_dpp', params.codigo)
     .single()
 
-  if (!activo) return { title: 'Pasaporte Digital — Reúso' }
+  if (!activo) return { title: 'Pasaporte Digital - Reúso' }
 
   let empresaNombre = 'Reúso'
   if (activo.empresa_id) {
@@ -66,10 +66,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return {
-    title: `${activo.nombre} — Pasaporte Digital`,
+    title: `${activo.nombre} - Pasaporte Digital`,
     description: `Activo circular verificado por ${empresaNombre}. ${activo.n_ciclos} ciclos de reúso registrados.`,
     openGraph: {
-      title: `${activo.nombre} — Pasaporte Digital · Reúso`,
+      title: `${activo.nombre} - Pasaporte Digital · Reúso`,
       description: `Activo circular verificado por ${empresaNombre}. ${activo.n_ciclos} ciclos de reúso registrados.`,
       images: [{ url: activo.imagen_url ?? '/og-image.png', width: 1200, height: 630 }],
     },
@@ -163,7 +163,7 @@ export default async function PasaportePage({ params }: PageProps) {
       {/* ── CONTENIDO ── */}
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '24px 16px 40px' }}>
 
-        {/* ── 2. HERO CARD — IDENTIDAD ── */}
+        {/* ── 2. HERO CARD - IDENTIDAD ── */}
         <div style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
@@ -243,7 +243,7 @@ export default async function PasaportePage({ params }: PageProps) {
                         <td style={{ padding: '9px 10px', fontWeight: 600, color: 'var(--text-primary)' }}>{m.material}</td>
                         <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.peso_kg}</td>
                         <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.factor_co2_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '—'}</td>
+                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '-'}</td>
                         <td style={{ padding: '9px 10px' }}>
                           {m.nivel_confianza ? (
                             <span style={{
@@ -253,7 +253,7 @@ export default async function PasaportePage({ params }: PageProps) {
                             }}>
                               {m.nivel_confianza}
                             </span>
-                          ) : '—'}
+                          ) : '-'}
                         </td>
                       </tr>
                     ))}
@@ -328,7 +328,7 @@ export default async function PasaportePage({ params }: PageProps) {
                 { icon: Leaf, color: '#38B98E', value: co2_evitado_total.toFixed(1), label: 'kg CO₂e evitados' },
                 { icon: Tree, color: '#00827C', value: eq.arboles, label: 'árboles protegidos' },
                 { icon: Drop, color: '#59A6E4', value: eq.duchas, label: 'duchas de 10 min' },
-                { icon: Car, color: '#F6BF3E', value: eq.coches > 0.01 ? eq.coches : '—', label: eq.coches > 0.01 ? 'km en coche' : 'impacto en transporte' },
+                { icon: Car, color: '#F6BF3E', value: eq.coches > 0.01 ? eq.coches : '-', label: eq.coches > 0.01 ? 'km en coche' : 'impacto en transporte' },
               ].map(({ icon: Icon, color, value, label }, i) => (
                 <div key={i} style={{
                   background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -369,7 +369,7 @@ export default async function PasaportePage({ params }: PageProps) {
               </p>
             )}
             <p style={{ margin: '0 0 10px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-              Verifica tú mismo este pasaporte. Vive en una cadena de bloques — si alguien altera un dato, la cadena lo detecta inmediatamente.
+              Verifica tú mismo este pasaporte. Vive en una cadena de bloques - si alguien altera un dato, la cadena lo detecta inmediatamente.
             </p>
             <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
               <Link href="/legal/ia" style={{ fontSize: 12, color: '#59A6E4', textDecoration: 'none', fontWeight: 600 }}>

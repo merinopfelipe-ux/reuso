@@ -121,10 +121,10 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
                     </code>
                   </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: 11 }}>
-                    {log.user_id?.slice(0, 8) ?? '—'}...
+                    {log.user_id?.slice(0, 8) ?? '-'}...
                   </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-placeholder)', fontSize: 12 }}>
-                    {log.ip ?? '—'}
+                    {log.ip ?? '-'}
                   </td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {JSON.stringify(log.detalle_json)}

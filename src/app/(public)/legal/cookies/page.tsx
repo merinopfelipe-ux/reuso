@@ -78,7 +78,7 @@ const T = {
     s6Form: 'formulario de consultas legales',
     s7Title: 'Base legal',
     s7: [
-      { ley: 'RGPD — Art. 5(3) y Directiva ePrivacy (UE)', texto: 'Las cookies esenciales no requieren consentimiento. Las funcionales y analíticas sí. Puedes retirar el consentimiento en cualquier momento.' },
+      { ley: 'RGPD - Art. 5(3) y Directiva ePrivacy (UE)', texto: 'Las cookies esenciales no requieren consentimiento. Las funcionales y analíticas sí. Puedes retirar el consentimiento en cualquier momento.' },
       { ley: 'CCPA (California, EE. UU.)', texto: 'Los residentes de California tienen derecho a saber qué datos se recopilan, a oponerse a su venta (no vendemos datos) y a solicitar su eliminación.' },
       { ley: 'Ley 1581 de 2012 y Decreto 1377/2013 (Colombia)', texto: 'Rige el tratamiento de datos personales en Colombia. Incluye el derecho a conocer, actualizar, rectificar y suprimir la información. Aplica a todos nuestros usuarios colombianos.' },
     ],
@@ -155,7 +155,7 @@ const T = {
     s6Form: 'legal enquiry form',
     s7Title: 'Legal basis',
     s7: [
-      { ley: 'GDPR — Art. 5(3) and ePrivacy Directive (EU)', texto: 'Essential cookies do not require consent. Functional and analytics cookies do. You can withdraw consent at any time.' },
+      { ley: 'GDPR - Art. 5(3) and ePrivacy Directive (EU)', texto: 'Essential cookies do not require consent. Functional and analytics cookies do. You can withdraw consent at any time.' },
       { ley: 'CCPA (California, USA)', texto: 'California residents have the right to know what data is collected, to opt out of its sale (we do not sell data), and to request its deletion.' },
       { ley: 'Law 1581 of 2012 and Decree 1377/2013 (Colombia)', texto: 'Governs personal data processing in Colombia. Includes the right to know, update, correct and delete information. Applies to all our Colombian users.' },
     ],
@@ -328,7 +328,7 @@ export default function CookiesPage() {
         {t.s5.map((item, i) => (
           <div key={i} style={{ marginBottom: 12, padding: '12px 16px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
             <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
-              {item.proveedor} <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: 12 }}>— {item.rol}</span>
+              {item.proveedor} <span style={{ fontWeight: 400, color: 'var(--text-secondary)', fontSize: 12 }}>- {item.rol}</span>
             </p>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{item.info}</p>
           </div>

@@ -36,7 +36,7 @@ const bodySchema = z
       .regex(/[0-9]/, 'Debe contener al menos un número.'),
     password_confirm: z.string(),
     acepta_terminos: z.literal(true),
-    turnstile_token: z.string().min(1),
+    turnstile_token: z.string().optional(),
   })
   .refine((d) => d.password === d.password_confirm, {
     message: 'Las contraseñas no coinciden.',
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   const allowed = await rateLimit(`registro_invitacion:${ip}`, 3, 60_000)
   if (!allowed) {
     return NextResponse.json(
-      { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
+      { error: 'Demasiados intentos. Espera 60 segundos antes de intentar de nuevo.' },
       { status: 429 }
     )
   }
@@ -65,8 +65,9 @@ export async function POST(request: NextRequest) {
 
   const { token, nombre, password, turnstile_token } = parsed.data
 
-  if (process.env.SKIP_TURNSTILE !== 'true') {
-    const turnstileOk = await verifyTurnstile(turnstile_token, ip)
+  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
+  if (!skipTurnstile) {
+    const turnstileOk = await verifyTurnstile(turnstile_token ?? '', ip)
     if (!turnstileOk) {
       return NextResponse.json(
         { error: 'Verificación de seguridad fallida. Intenta de nuevo.' },
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Esta invitación ha expirado.' }, { status: 410 })
   }
 
-  // Crear usuario — email_confirm: true porque el admin ya verificó el email al invitarlo
+  // Crear usuario - email_confirm: true porque el admin ya verificó el email al invitarlo
   const { data: authData, error: createError } = await adminClient.auth.admin.createUser({
     email: invitacion.email,
     password,
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Error al crear la cuenta. Intenta de nuevo.' }, { status: 500 })
   }
 
-  // El trigger handle_new_user crea el profile con usuario_libre — actualizamos rol y empresa
+  // El trigger handle_new_user crea el profile con usuario_libre - actualizamos rol y empresa
   const { error: profileError } = await adminClient
     .from('profiles')
     .update({

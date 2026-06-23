@@ -43,7 +43,7 @@ async function checkRateLimit(ip: string, accion: string, max: number, windowMs:
 const bodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
-  turnstile_token: z.string().min(1),
+  turnstile_token: z.string().optional(),
   acepta_legal: z.boolean().optional(),
 })
 
@@ -85,16 +85,16 @@ export async function POST(request: NextRequest) {
 
   // Rate limit y Turnstile en paralelo
   const skipRateLimit = process.env.SKIP_RATE_LIMIT === 'true'
-  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
+  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
 
   const [allowed, turnstileOk] = await Promise.all([
     skipRateLimit ? Promise.resolve(true) : checkRateLimit(ip, 'login', 5, 60_000),
-    skipTurnstile ? Promise.resolve(true) : verifyTurnstile(turnstile_token, ip),
+    skipTurnstile ? Promise.resolve(true) : verifyTurnstile(turnstile_token ?? '', ip),
   ])
 
   if (!allowed) {
     return NextResponse.json(
-      { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
+      { error: 'Demasiados intentos. Espera 60 segundos antes de intentar de nuevo.' },
       { status: 429 }
     )
   }

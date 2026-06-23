@@ -188,7 +188,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setFontSize(9)
   doc.setFont('helvetica', 'bold')
   doc.setTextColor(TEXT_DARK)
-  doc.text(`${datos.fecha_inicio} — ${datos.fecha_fin}`, W - 14, y + 8, { align: 'right' })
+  doc.text(`${datos.fecha_inicio} - ${datos.fecha_fin}`, W - 14, y + 8, { align: 'right' })
 
   y += 22
 

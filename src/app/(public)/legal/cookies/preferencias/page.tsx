@@ -24,7 +24,7 @@ const T = {
       { id: 'impacto', label: 'Qué cambia' },
       { id: 'retirar', label: 'Retirar consentimiento' },
     ],
-    resumen: 'Gestiona qué cookies activas en Reúso. Las esenciales siempre están activas; las funcionales y analíticas son opcionales. Puedes cambiar tu elección en cualquier momento.',
+    resumen: 'Gestiona las cookies que habilitas en la Calculadora de Reúso. Mantenemos las esenciales siempre activas. Tú decides si activas las funcionales y analíticas. Cambia tus preferencias cuando quieras.',
     leeTabien: [
       { href: '/legal/cookies', label: 'Política de Cookies', descripcion: 'Descripción completa de todas las cookies que usamos.' },
     ],
@@ -61,7 +61,7 @@ const T = {
       { id: 'impacto', label: 'What changes' },
       { id: 'retirar', label: 'Withdraw consent' },
     ],
-    resumen: 'Manage which cookies you enable on Reúso. Essential cookies are always active; functional and analytics cookies are optional. You can change your choice at any time.',
+    resumen: 'Manage the cookies you enable on the Reuse Calculator. We keep essential cookies always active. You decide whether to enable functional and analytical cookies. Change your preferences at any time.',
     leeTabien: [
       { href: '/legal/cookies', label: 'Cookie Policy', descripcion: 'Full description of all the cookies we use.' },
     ],

@@ -207,7 +207,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
                   </p>
                   <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: 0 }}>
                     {cert.tipo === 'informe' && cert.fecha_inicio && cert.fecha_fin
-                      ? `${formatFecha(cert.fecha_inicio)} — ${formatFecha(cert.fecha_fin)}`
+                      ? `${formatFecha(cert.fecha_inicio)} - ${formatFecha(cert.fecha_fin)}`
                       : `Emitido el ${formatFecha(cert.created_at)}`}
                     {' · '}
                     <code style={{ fontSize: 10, color: 'var(--color-brand)' }}>{codigo}</code>

@@ -93,7 +93,7 @@ export function ReportesClient({ serieTemporalCO2, serieCategoria, co2Total, agu
         padding: '20px 20px 12px', marginBottom: 20,
       }}>
         <h2 style={{ fontSize: 15, fontWeight: 700, color: TEXT_DARK, margin: '0 0 4px' }}>
-          CO₂ evitado — últimos 30 días
+          CO₂ evitado - últimos 30 días
         </h2>
         <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 20px' }}>
           Acumulado diario del equipo

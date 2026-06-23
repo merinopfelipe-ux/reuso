@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -8,7 +8,8 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import {
   ShieldCheck, Eye, EyeSlash, Square, CheckSquare,
   Buildings, EnvelopeSimple, Phone, User, CaretDown,
-  ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle,
+  ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle, CircleNotch,
+  FileText, CaretRight,
 } from '@phosphor-icons/react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -51,7 +52,6 @@ const PAISES = [
 ]
 
 // ── Opciones de perfil ────────────────────────────────────────────────────────
-const SECTORES = ['Mobiliario', 'Electrónicos', 'Ropa', 'Construcción', 'Otro']
 const FRECUENCIAS = ['Diario', 'Semanal', 'Mensual', 'Ocasional']
 const MOTIVACIONES = ['Reducir costos', 'Impacto ambiental', 'Cumplimiento normativo', 'Curiosidad / Aprendizaje']
 
@@ -73,10 +73,24 @@ const FUERZA_CFG: Record<Fuerza, { label: string; color: string; width: string }
   3: { label: 'Fuerte',    color: '#38B98E', width: '100%' },
 }
 
+// ── Puntos clave de documentos legales ───────────────────────────────────────
+const PUNTOS_TERMINOS = [
+  'El servicio es para uso profesional dentro de tu organización.',
+  'Tus datos de reúso son privados y solo visibles para tu empresa.',
+  'Puedes solicitar la eliminación de tu cuenta en cualquier momento.',
+  'El uso indebido de la plataforma puede resultar en la suspensión de la cuenta.',
+]
+const PUNTOS_PRIVACIDAD = [
+  'Recopilamos nombre, correo y los datos de reúso que registras.',
+  'Tus datos se procesan en servidores seguros con cifrado SSL/TLS.',
+  'Usamos tus datos para generar informes de impacto ambiental.',
+  'No vendemos ni compartimos tu información con terceros.',
+]
+
 // ── Componente ─────────────────────────────────────────────────────────────────
 export default function RegistroPage() {
   const router = useRouter()
-  const [paso, setPaso] = useState<1 | 2 | 3>(1)
+  const [paso, setPaso] = useState<1 | 2 | 3 | 4>(1)
 
   // Paso 1
   const [nombre, setNombre] = useState('')
@@ -94,7 +108,7 @@ export default function RegistroPage() {
   // Paso 2
   const [sector, setSector] = useState('')
   const [frecuencia, setFrecuencia] = useState('')
-  const [motivacion, setMotivacion] = useState('')
+  const [motivaciones, setMotivaciones] = useState<string[]>([])
   const [quiereAsesoria, setQuiereAsesoria] = useState(false)
 
   // Paso 3
@@ -103,11 +117,16 @@ export default function RegistroPage() {
   const [passwordConfirm, setPasswordConfirm] = useState('')
   const [showPwd, setShowPwd] = useState(false)
   const [showPwdConf, setShowPwdConf] = useState(false)
-  const [aceptaTerminos, setAceptaTerminos] = useState(false)
+  const [aceptoTerminos, setAceptoTerminos] = useState(false)
+  const [aceptoPrivacidad, setAceptoPrivacidad] = useState(false)
+  const [modalDoc, setModalDoc] = useState<'terminos' | 'privacidad' | null>(null)
   const [suscritoNewsletter, setSuscritoNewsletter] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [verificandoEmail, setVerificandoEmail] = useState(false)
+  const [exitoAsesoria, setExitoAsesoria] = useState(false)
+  const turnstileRef = useRef<any>(null)
 
   const fuerza = evaluarFuerza(password)
   const fuerzaCfg = FUERZA_CFG[fuerza]
@@ -136,32 +155,63 @@ export default function RegistroPage() {
   }, [])
 
   // ── Navegación entre pasos ───────────────────────────────────────────────────
-  function avanzarPaso1() {
-    if (!nombre.trim() || !email.trim()) {
-      setError('Completa tu nombre y correo electrónico para continuar.')
+  async function avanzarPaso1() {
+    if (!nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim()) {
+      setError('Completa nombre, apellido, correo y teléfono para continuar.')
       return
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setError('Ingresa un correo electrónico válido.')
       return
     }
+    setVerificandoEmail(true)
+    try {
+      const res = await fetch('/api/auth/verificar-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      })
+      const data = await res.json()
+      if (data.existe) {
+        setError('Este correo ya tiene una cuenta. ¿Quieres ingresar?')
+        return
+      }
+    } catch {
+      // Continuar si la verificación falla (fail open)
+    } finally {
+      setVerificandoEmail(false)
+    }
     setError('')
     setPaso(2)
   }
 
+  function toggleMotivacion(m: string) {
+    setMotivaciones(prev =>
+      prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]
+    )
+  }
+
   function avanzarPaso2() {
-    if (!sector || !frecuencia || !motivacion) {
-      setError('Selecciona una opción en cada pregunta para continuar.')
-      return
-    }
+    if (!sector.trim()) { setError('Escribe el sector o industria en el que trabajas.'); return }
+    if (!frecuencia) { setError('Selecciona con qué frecuencia registras reúsos.'); return }
+    if (motivaciones.length === 0) { setError('Elige al menos una motivación para usar la Calculadora de Reúso.'); return }
     setError('')
     setPaso(3)
   }
 
+  function avanzarPaso3() {
+    if (password.length < 8) { setError('La contraseña debe tener al menos 8 caracteres.'); return }
+    if (!/[A-Z]/.test(password)) { setError('La contraseña debe incluir al menos una letra mayúscula.'); return }
+    if (!/[0-9]/.test(password)) { setError('La contraseña debe incluir al menos un número.'); return }
+    if (password !== passwordConfirm) { setError('Las contraseñas no coinciden.'); return }
+    setError('')
+    setPaso(4)
+  }
+
   // ── Envío final ──────────────────────────────────────────────────────────────
   async function handleSubmit() {
-    if (!aceptaTerminos) {
-      setError('Acepta los términos y condiciones para continuar.')
+    if (!aceptoTerminos || !aceptoPrivacidad) {
+      setError('Acepta los términos y la política de privacidad para continuar.')
       return
     }
     if (password !== passwordConfirm) {
@@ -178,10 +228,6 @@ export default function RegistroPage() {
     }
     if (!/[0-9]/.test(password)) {
       setError('La contraseña debe incluir al menos un número.')
-      return
-    }
-    if (process.env.NEXT_PUBLIC_SKIP_TURNSTILE !== 'true' && !turnstileToken) {
-      setError('Completa la verificación de seguridad.')
       return
     }
     setLoading(true)
@@ -201,7 +247,7 @@ export default function RegistroPage() {
         acepta_terminos: true,
         sector,
         frecuencia_reuso: frecuencia,
-        motivacion,
+        motivacion: motivaciones.join(', '),
         quiere_asesoria: quiereAsesoria,
         codigo_empresa: codigoStatus === 'ok' ? codigoEmpresa.trim().toUpperCase() : undefined,
         turnstile_token: turnstileToken || 'skip',
@@ -212,10 +258,51 @@ export default function RegistroPage() {
     if (!res.ok) {
       setError(data.error ?? 'Algo salió mal. Intenta de nuevo.')
       setLoading(false)
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
       return
     }
     router.push(`/confirmar-email?email=${encodeURIComponent(email)}`)
   }
+
+  async function handleSolicitarAsesoria() {
+    if (!sector.trim()) { setError('Escribe el sector o industria en el que trabajas.'); return }
+    if (!frecuencia) { setError('Selecciona con qué frecuencia registras reúsos.'); return }
+    if (motivaciones.length === 0) { setError('Elige al menos una motivación para usar la Calculadora de Reúso.'); return }
+
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: `${nombre} ${apellido}`.trim(),
+          email: email.trim().toLowerCase(),
+          empresa: codigoNombreEmpresa || undefined,
+          interes: 'Asesoría Personalizada - Registro',
+          mensaje: `Registro con solicitud de asesoría personalizada. Teléfono: ${indicativo.dial} ${telefono}. Sector: ${sector}. Frecuencia: ${frecuencia}. Motivaciones: ${motivaciones.join(', ')}. Código de Empresa: ${codigoEmpresa || 'Ninguno'}.`,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Error al enviar la solicitud.')
+      }
+      setExitoAsesoria(true)
+    } catch (err: any) {
+      setError(err.message ?? 'No se pudo enviar la solicitud. Intenta de nuevo.')
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (exitoAsesoria) {
+      const timer = setTimeout(() => {
+        router.push('/login')
+      }, 4000)
+      return () => clearTimeout(timer)
+    }
+  }, [exitoAsesoria, router])
 
   // ── Estilos compartidos ──────────────────────────────────────────────────────
   const inputBase = `
@@ -274,10 +361,10 @@ export default function RegistroPage() {
               <ShieldCheck size={14} weight="duotone" />
               <span>Estás en un entorno seguro</span>
             </div>
-            <span className="text-xs text-[var(--text-secondary)]/50 font-medium">Paso {paso} de 3</span>
+            <span className="text-xs text-[var(--text-secondary)]/50 font-medium">Paso {paso} de 4</span>
           </div>
           <div className="flex gap-1.5">
-            {[1, 2, 3].map(n => (
+            {[1, 2, 3, 4].map(n => (
               <div
                 key={n}
                 className="flex-1 h-1.5 rounded-full transition-all duration-500"
@@ -288,16 +375,85 @@ export default function RegistroPage() {
         </div>
 
         <div className="px-8 py-7">
-          {/* ── Error global ─────────────────────────────────────────────────── */}
-          {error && (
-            <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl bg-[var(--color-error)]/8 border border-[var(--color-error)]/25 text-[var(--color-error-content)] text-sm">
-              <X size={16} className="flex-shrink-0 mt-0.5" />
-              <span>{error}</span>
+          {exitoAsesoria ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '24px 0', gap: 16 }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: '50%',
+                background: 'var(--color-brand-light)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--color-brand)'
+              }}>
+                <CheckCircle size={32} weight="duotone" />
+              </div>
+              <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>¡Solicitud recibida!</h2>
+              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                Tus datos han sido registrados correctamente como contacto. Un asesor de la <strong>Calculadora de Reúso</strong> te contactará muy pronto para guiarte de forma personalizada.
+              </p>
+              <p style={{ fontSize: 12, color: 'var(--text-placeholder)', marginTop: 8, margin: 0 }}>
+                Redirigiendo al inicio de sesión...
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+                <CircleNotch size={20} className="animate-spin" color="var(--color-brand)" />
+              </div>
             </div>
-          )}
+          ) : (
+            <>
+              {/* ── Error global ─────────────────────────────────────────────────── */}
+              {error && error !== 'verificando' && (
+                error === 'Este correo ya tiene una cuenta. ¿Quieres ingresar?' ? (
+                  <div style={{
+                    background: 'rgba(255, 94, 75, 0.08)',
+                    border: '1px solid var(--color-error)',
+                    borderRadius: 16,
+                    padding: 16,
+                    marginBottom: 20,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 12
+                  }}>
+                    <p style={{ margin: 0, fontSize: 13, color: 'var(--color-error-content)', fontWeight: 600 }}>
+                      Este correo ya tiene una cuenta registrada en el sistema.
+                    </p>
+                    <div style={{ display: 'flex', gap: 10 }}>
+                      <Link href="/login" style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        background: 'var(--color-brand)',
+                        color: '#fff',
+                        padding: '8px 12px',
+                        borderRadius: 8,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        textDecoration: 'none'
+                      }}>
+                        Iniciar sesión
+                      </Link>
+                      <Link href="/recuperar" style={{
+                        flex: 1,
+                        textAlign: 'center',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text-primary)',
+                        padding: '8px 12px',
+                        borderRadius: 8,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        background: 'var(--bg-input)'
+                      }}>
+                        Recuperar clave
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl bg-[var(--color-error)]/8 border border-[var(--color-error)]/25 text-[var(--color-error-content)] text-sm">
+                    <X size={16} className="flex-shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                )
+              )}
 
           {/* ══════════════════════════════════════════════════════════════════ */}
-          {/* PASO 1 — Datos de contacto                                       */}
+          {/* PASO 1 - Datos de contacto                                       */}
           {/* ══════════════════════════════════════════════════════════════════ */}
           {paso === 1 && (
             <div className="flex flex-col gap-5">
@@ -308,14 +464,14 @@ export default function RegistroPage() {
 
               {/* Nombre */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Nombre</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Nombres <span className="text-[#FF5E4B]">*</span></label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
                     type="text"
                     value={nombre}
                     onChange={e => setNombre(e.target.value)}
-                    placeholder="Tu nombre"
+                    placeholder="María Estefanía"
                     autoComplete="given-name"
                     className={`${inputBase} pl-10`}
                   />
@@ -325,7 +481,7 @@ export default function RegistroPage() {
               {/* Apellido */}
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
-                  Apellido <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
+                  Apellido <span className="text-[#FF5E4B]">*</span>
                 </label>
                 <div className="relative">
                   <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
@@ -333,16 +489,34 @@ export default function RegistroPage() {
                     type="text"
                     value={apellido}
                     onChange={e => setApellido(e.target.value)}
-                    placeholder="Tu apellido"
+                    placeholder="Pérez"
                     autoComplete="family-name"
                     className={`${inputBase} pl-10`}
                   />
                 </div>
               </div>
 
+              {/* Apodo */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                    Apodo
+                  </label>
+                  <span className="text-[10px] text-[var(--text-secondary)]/40">{apodo.length}/15</span>
+                </div>
+                <input
+                  type="text"
+                  value={apodo}
+                  onChange={e => setApodo(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ.]/g, '').slice(0, 15))}
+                  placeholder="¿Cómo te llamamos?"
+                  autoComplete="nickname"
+                  className={inputBase}
+                />
+              </div>
+
               {/* Email */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Correo electrónico</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Correo electrónico <span className="text-[#FF5E4B]">*</span></label>
                 <div className="relative">
                   <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
                   <input
@@ -359,7 +533,7 @@ export default function RegistroPage() {
               {/* Teléfono */}
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
-                  Teléfono <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
+                  Teléfono <span className="text-[#FF5E4B]">*</span>
                 </label>
                 <div className="flex gap-2">
                   {/* Selector de país */}
@@ -472,29 +646,11 @@ export default function RegistroPage() {
                 </div>
               </div>
 
-              {/* Apodo */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
-                    Apodo <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
-                  </label>
-                  <span className="text-[10px] text-[var(--text-secondary)]/40">{apodo.length}/15</span>
-                </div>
-                <input
-                  type="text"
-                  value={apodo}
-                  onChange={e => setApodo(e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ.]/g, '').slice(0, 15))}
-                  placeholder="¿Cómo te llamamos?"
-                  autoComplete="nickname"
-                  className={inputBase}
-                />
-              </div>
-
               {/* Código de empresa */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
-                    Código de empresa <span className="font-normal normal-case text-[var(--text-secondary)]/40">(opcional)</span>
+                    Código de empresa
                   </label>
                   <div className="relative">
                     <button
@@ -552,10 +708,13 @@ export default function RegistroPage() {
               <button
                 type="button"
                 onClick={avanzarPaso1}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2"
+                disabled={verificandoEmail || !nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim()}
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
               >
-                Siguiente <ArrowRight size={16} weight="bold" />
+                {verificandoEmail
+                  ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Verificando...</>
+                  : <>Siguiente <ArrowRight size={16} weight="bold" /></>}
               </button>
 
               <p className="text-center text-xs text-[var(--text-secondary)]/50 mt-1">
@@ -566,7 +725,7 @@ export default function RegistroPage() {
           )}
 
           {/* ══════════════════════════════════════════════════════════════════ */}
-          {/* PASO 2 — Tu perfil                                               */}
+          {/* PASO 2 - Tu perfil                                               */}
           {/* ══════════════════════════════════════════════════════════════════ */}
           {paso === 2 && (
             <div className="flex flex-col gap-6">
@@ -577,28 +736,19 @@ export default function RegistroPage() {
 
               {/* Sector */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas?</label>
-                <div className="flex flex-wrap gap-2">
-                  {SECTORES.map(s => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => setSector(s)}
-                      className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
-                        sector === s
-                          ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] border-[var(--color-brand)]'
-                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]'
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas? <span className="text-[#FF5E4B]">*</span></label>
+                <input
+                  type="text"
+                  value={sector}
+                  onChange={e => setSector(e.target.value)}
+                  placeholder="Ej. Mobiliario de oficina"
+                  className={inputBase}
+                />
               </div>
 
               {/* Frecuencia */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Con qué frecuencia reutilizas?</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Con qué frecuencia reutilizas? <span className="text-[#FF5E4B]">*</span></label>
                 <div className="flex flex-wrap gap-2">
                   {FRECUENCIAS.map(f => (
                     <button
@@ -617,25 +767,28 @@ export default function RegistroPage() {
                 </div>
               </div>
 
-              {/* Motivación */}
+              {/* Motivación - selección múltiple */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Cuál es tu principal motivación?</label>
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Cuáles son tus motivaciones? <span className="text-[#FF5E4B]">*</span> <span className="font-normal text-[var(--text-secondary)]/50">(elige todas las que apliquen)</span></label>
                 <div className="flex flex-col gap-2">
-                  {MOTIVACIONES.map(m => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setMotivacion(m)}
-                      className={`w-full px-4 py-2.5 rounded-2xl text-sm font-semibold border text-left transition-all ${
-                        motivacion === m
-                          ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)] border-[var(--color-brand)]'
-                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)]/50'
-                      }`}
-                    >
-                      {motivacion === m && <Check size={14} weight="bold" className="inline mr-2" />}
-                      {m}
-                    </button>
-                  ))}
+                  {MOTIVACIONES.map(m => {
+                    const activo = motivaciones.includes(m)
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => toggleMotivacion(m)}
+                        className={`w-full px-4 py-2.5 rounded-2xl text-sm font-semibold border text-left transition-all ${
+                          activo
+                            ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)] border-[var(--color-brand)]'
+                            : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)]/50'
+                        }`}
+                      >
+                        {activo && <Check size={14} weight="bold" className="inline mr-2" />}
+                        {m}
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -652,7 +805,7 @@ export default function RegistroPage() {
                   <Headset size={20} weight="duotone" className={quiereAsesoria ? 'text-[var(--color-brand)]' : 'text-[var(--text-placeholder)]'} />
                   <div>
                     <p className="text-sm font-semibold text-[var(--text-primary)]">Asesoría personalizada</p>
-                    <p className="text-xs text-[var(--text-secondary)]/60">Un experto te guía en tu proceso de reúso</p>
+                    <p className="text-xs text-[var(--text-secondary)]/60">Un experto te contactará directamente para guiarte de forma personalizada.</p>
                   </div>
                 </div>
                 <div
@@ -672,20 +825,33 @@ export default function RegistroPage() {
                 >
                   <ArrowLeft size={15} weight="bold" /> Atrás
                 </button>
-                <button
-                  type="button"
-                  onClick={avanzarPaso2}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all"
-                  style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
-                >
-                  Siguiente <ArrowRight size={16} weight="bold" />
-                </button>
+                {quiereAsesoria ? (
+                  <button
+                    type="button"
+                    onClick={handleSolicitarAsesoria}
+                    disabled={loading}
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
+                  >
+                    {loading ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Enviando...</> : 'Solicitar asesoría'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={avanzarPaso2}
+                    disabled={loading}
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
+                  >
+                    Siguiente <ArrowRight size={16} weight="bold" />
+                  </button>
+                )}
               </div>
             </div>
           )}
 
           {/* ══════════════════════════════════════════════════════════════════ */}
-          {/* PASO 3 — Seguridad y confirmación                                */}
+          {/* PASO 3 - Seguridad y confirmación                                */}
           {/* ══════════════════════════════════════════════════════════════════ */}
           {paso === 3 && (
             <div className="flex flex-col gap-5">
@@ -775,54 +941,11 @@ export default function RegistroPage() {
                     {showPwdConf ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
-                {passwordConfirm && passwordConfirm !== password && (
-                  <p className="text-xs text-[#FF5E4B] ml-1">Las contraseñas no coinciden.</p>
+                {passwordConfirm && (
+                  <p className="text-xs ml-1" style={{ color: password === passwordConfirm ? '#38B98E' : '#FF5E4B' }}>
+                    {password === passwordConfirm ? '✓ Las contraseñas coinciden' : 'Las contraseñas no coinciden'}
+                  </p>
                 )}
-              </div>
-
-              {/* Checkbox único: términos + privacidad + datos (obligatorio) */}
-              <label
-                className="flex items-start gap-2.5 cursor-pointer select-none group"
-                onClick={() => setAceptaTerminos(!aceptaTerminos)}
-              >
-                {aceptaTerminos
-                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
-                }
-                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
-                  He leído y acepto los{' '}
-                  <span className="text-[var(--color-brand)] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal', '_blank') }}>
-                    términos y privacidad
-                  </span>
-                  {' '}y el{' '}
-                  <span className="text-[var(--color-brand)] font-semibold hover:underline" onClick={e => { e.stopPropagation(); window.open('/legal/datos', '_blank') }}>
-                    tratamiento de mis datos
-                  </span>
-                </span>
-              </label>
-
-              {/* Checkbox newsletter (opcional) */}
-              <label
-                className="flex items-start gap-2.5 cursor-pointer select-none group"
-                onClick={() => setSuscritoNewsletter(v => !v)}
-              >
-                {suscritoNewsletter
-                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
-                }
-                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
-                  Quiero recibir novedades sobre economía circular{' '}
-                  <span className="text-[var(--text-secondary)]/40 font-normal">(opcional)</span>
-                </span>
-              </label>
-
-              {/* Turnstile */}
-              <div className="flex justify-center">
-                <Turnstile
-                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                  onSuccess={token => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken('')}
-                />
               </div>
 
               <div className="flex gap-3">
@@ -835,20 +958,136 @@ export default function RegistroPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm transition-all active:scale-95"
-                  style={{
-                    background: loading ? 'var(--border)' : 'var(--color-brand)',
-                    color: 'var(--text-on-brand, #ffffff)',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    boxShadow: loading ? 'none' : '0 6px 20px var(--color-brand-light)',
-                  }}
+                  onClick={avanzarPaso3}
+                  disabled={!password || !passwordConfirm || password !== passwordConfirm || password.length < 8}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                 >
-                  {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+                  Siguiente <ArrowRight size={16} weight="bold" />
                 </button>
               </div>
             </div>
+          )}
+
+          {/* ══════════════════════════════════════════════════════════════════ */}
+          {/* PASO 4 - Documentos legales                                      */}
+          {/* ══════════════════════════════════════════════════════════════════ */}
+          {paso === 4 && (
+            <div className="flex flex-col gap-5">
+              <div>
+                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Ya casi terminas</h1>
+                <p className="text-sm text-[var(--text-secondary)]/80">Solo confirma que leíste los documentos y listo.</p>
+              </div>
+
+              {/* Documentos legales - patrón Bancolombia */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                  Revisa y acepta los documentos
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setModalDoc('terminos')}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full"
+                  style={{
+                    background: aceptoTerminos ? (isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.04)') : 'var(--bg-hover)',
+                    borderColor: aceptoTerminos ? 'var(--color-brand)' : 'var(--border)',
+                  }}
+                >
+                  <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <FileText size={18} className="text-[var(--color-brand)]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight">Términos y condiciones</p>
+                    <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
+                  </div>
+                  {aceptoTerminos
+                    ? <CheckCircle size={22} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0" />
+                    : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
+                  }
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setModalDoc('privacidad')}
+                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full"
+                  style={{
+                    background: aceptoPrivacidad ? (isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.04)') : 'var(--bg-hover)',
+                    borderColor: aceptoPrivacidad ? 'var(--color-brand)' : 'var(--border)',
+                  }}
+                >
+                  <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ShieldCheck size={18} weight="duotone" className="text-[var(--color-brand)]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight">Política de privacidad y datos</p>
+                    <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
+                  </div>
+                  {aceptoPrivacidad
+                    ? <CheckCircle size={22} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0" />
+                    : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
+                  }
+                </button>
+              </div>
+
+              {/* Checkbox newsletter */}
+              <label
+                className="flex items-start gap-2.5 cursor-pointer select-none group"
+                onClick={() => setSuscritoNewsletter(v => !v)}
+              >
+                {suscritoNewsletter
+                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
+                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
+                }
+                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
+                  Quiero recibir novedades sobre economía circular
+                </span>
+              </label>
+
+              {/* Turnstile */}
+              {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+                <div className="flex justify-center">
+                  <Turnstile
+                    ref={turnstileRef}
+                    siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                    onSuccess={token => setTurnstileToken(token)}
+                    onExpire={() => setTurnstileToken('')}
+                    onError={() => setTurnstileToken('')}
+                  />
+                </div>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => { setError(''); setPaso(3) }}
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
+                >
+                  <ArrowLeft size={15} weight="bold" /> Atrás
+                </button>
+                {(() => {
+                  const formValido = !loading && aceptoTerminos && aceptoPrivacidad
+                  return (
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={!formValido}
+                      className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full font-bold text-sm transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+                      style={{
+                        background: formValido ? 'var(--color-brand)' : 'var(--border)',
+                        color: 'var(--text-on-brand, #ffffff)',
+                        cursor: formValido ? 'pointer' : 'not-allowed',
+                        boxShadow: formValido ? '0 6px 20px var(--color-brand-light)' : 'none',
+                      }}
+                    >
+                      {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+                    </button>
+                  )
+                })()}
+              </div>
+            </div>
+          )}
+            </>
           )}
         </div>
       </div>
@@ -856,6 +1095,76 @@ export default function RegistroPage() {
       <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)', opacity: 0.6, textAlign: 'center' }}>
         Grupo MLP ©{new Date().getFullYear()}. Todos los derechos reservados.
       </p>
+
+      {/* Modal de documento - patrón Bancolombia */}
+      {modalDoc && (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)', zIndex: 2500, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0 16px 24px' }}
+          onClick={() => setModalDoc(null)}
+        >
+          <div
+            style={{ background: isDark ? '#525252' : '#FFFFFF', borderRadius: '24px 24px 16px 16px', width: '100%', maxWidth: 440, overflow: 'hidden', boxShadow: '0 -8px 40px rgba(0,0,0,0.20)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div style={{ width: 40, height: 4, background: 'var(--border)', borderRadius: 2, margin: '12px auto 0' }} />
+
+            {/* Título */}
+            <div style={{ padding: '16px 24px 12px', borderBottom: '1px solid var(--border)' }}>
+              <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+                {modalDoc === 'terminos' ? 'Términos y condiciones' : 'Política de privacidad y datos'}
+              </p>
+              <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary)', opacity: 0.6 }}>
+                Al crear tu cuenta aceptas lo siguiente:
+              </p>
+            </div>
+
+            {/* Puntos clave */}
+            <div style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {(modalDoc === 'terminos' ? PUNTOS_TERMINOS : PUNTOS_PRIVACIDAD).map((punto, i) => (
+                <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: isDark ? 'rgba(214,243,145,0.15)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <Check size={11} weight="bold" className="text-[var(--color-brand)]" />
+                  </div>
+                  <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{punto}</p>
+                </div>
+              ))}
+
+              <a
+                href={modalDoc === 'terminos' ? '/legal' : '/legal/datos'}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: 13, color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}
+              >
+                Leer documento completo
+                <ArrowRight size={13} weight="bold" />
+              </a>
+            </div>
+
+            {/* Acciones */}
+            <div style={{ padding: '0 24px 24px', display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                onClick={() => setModalDoc(null)}
+                style={{ flex: 1, padding: '12px', borderRadius: 100, border: '1.5px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (modalDoc === 'terminos') setAceptoTerminos(true)
+                  else setAceptoPrivacidad(true)
+                  setModalDoc(null)
+                }}
+                style={{ flex: 2, padding: '12px', borderRadius: 100, background: 'var(--color-brand)', border: 'none', color: '#FFFFFF', fontWeight: 700, fontSize: 14, cursor: 'pointer' }}
+              >
+                Entendido, acepto
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

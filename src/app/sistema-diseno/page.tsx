@@ -202,7 +202,7 @@ export default function ManualDisenoPage() {
 
   if (!mounted) return null
 
-  // Clases comunes de Liquid Glass — Transparencia 50% + Blur 40px
+  // Clases comunes de Liquid Glass - Transparencia 50% + Blur 40px
   const liquidGlassClass = isDark 
     ? 'bg-[#D6F391]/08 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
     : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
@@ -295,11 +295,11 @@ export default function ManualDisenoPage() {
 
       <DesignSystemHeader menuGroups={menuGroups} searchResults={searchResults} isDark={isDark} onToggleDark={toggleDark} />
 
-      {/* HERO SECTION — Círculos reactivos al Mouse */}
+      {/* HERO SECTION - Círculos reactivos al Mouse */}
       <main className="pt-48 px-[60px] max-w-7xl mx-auto space-y-32 pb-24">
         
         <section className="max-w-4xl relative">
-          {/* Círculos outline — scroll en móvil, scroll + mouse en desktop */}
+          {/* Círculos outline - scroll en móvil, scroll + mouse en desktop */}
           <div
             className="absolute rounded-full pointer-events-none"
             style={{
@@ -451,9 +451,9 @@ export default function ManualDisenoPage() {
               </div>
             </div>
 
-            {/* D. Liquid Glass — Especificación Técnica */}
+            {/* D. Liquid Glass - Especificación Técnica */}
             <div className="mb-8">
-              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>Liquid Glass — Especificación Técnica</h3>
+              <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>Liquid Glass - Especificación Técnica</h3>
               <div className={`p-8 rounded-[2.5rem] relative overflow-hidden group/glass ${liquidGlassClass}`}>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                   <div className="glass-stat flex flex-col gap-2">
@@ -472,7 +472,7 @@ export default function ManualDisenoPage() {
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>border-[#00827C]/10 (Día) · border-white/10 (Noche)</span>
                   </div>
                 </div>
-                {/* Reflejos — Tríada Bio (reactivos a mouse o scroll) */}
+                {/* Reflejos - Tríada Bio (reactivos a mouse o scroll) */}
                 <div
                   className="absolute -top-16 -right-16 w-32 sm:w-72 md:w-96 h-32 sm:h-72 md:h-96 bg-[#59A6E4]/45 blur-[30px] md:blur-[80px] rounded-full pointer-events-none"
                   style={{ transform: `translate(${mouseX * 0.08 + (scrollY * 0.05)}px, ${mouseY * 0.07}px)`, transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1)', willChange: 'transform' }}
@@ -573,7 +573,7 @@ export default function ManualDisenoPage() {
               </div>
               <div className="flex flex-col gap-4 items-start md:col-span-3">
                 <div className="flex items-center gap-4 mb-4">
-                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>7. Línea Inferior (Tab) — Con y Sin Icono</span>
+                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>7. Línea Inferior (Tab) - Con y Sin Icono</span>
                 </div>
                 <div className="flex flex-col gap-8 w-full">
                   <div className="flex gap-8">
@@ -609,7 +609,7 @@ export default function ManualDisenoPage() {
                  <div className="text-center"><span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Héroe Estadio</span></div>
                </div>
 
-               {/* 2. Tarjeta Retrato Circular — Botón en el borde exterior */}
+               {/* 2. Tarjeta Retrato Circular - Botón en el borde exterior */}
                 <div className="flex flex-col gap-6 items-center group">
                   <div className="w-64 h-64 relative transition-all hover:scale-105 duration-500">
                     <div className="w-full h-full rounded-full shadow-2xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#D6F391' }}>
@@ -625,7 +625,7 @@ export default function ManualDisenoPage() {
                   </div>
                 </div>
 
-               {/* 3. Fila Editorial Cápsula — Fuente corregida */}
+               {/* 3. Fila Editorial Cápsula - Fuente corregida */}
                <div className="flex flex-col gap-6">
                  <div className={`w-full h-64 rounded-[120px] border border-[#00827C]/10 shadow-[0_24px_48px_rgba(0,130,124,0.06)] flex items-center justify-center p-12 text-center transition-transform hover:rotate-1 duration-500 ${isDark ? 'bg-white/10' : 'bg-[#FCFBFA]'}`}>
                     <div className="flex flex-col items-center">
@@ -749,7 +749,7 @@ export default function ManualDisenoPage() {
 
         </div>
 
-        {/* SECCION 08: TONO E INTERACCION — Banner Liquid Glass restaurado */}
+        {/* SECCION 08: TONO E INTERACCION - Banner Liquid Glass restaurado */}
         <section id="s08-tono" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-16">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tono e interacción</h2>
@@ -773,7 +773,7 @@ export default function ManualDisenoPage() {
             </div>
             {/* Banner Liquid Glass con dos reflejos */}
             <div className={`p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] ${liquidGlassClass} aspect-video flex items-center justify-center relative overflow-hidden group border shadow-2xl`}>
-                {/* Reflejos de Liquid Glass — Tríada Bio Expansiva (Mouse o Scroll) */}
+                {/* Reflejos de Liquid Glass - Tríada Bio Expansiva (Mouse o Scroll) */}
                 <div
                   className="absolute -top-20 -right-20 w-[70%] md:w-[55%] h-[70%] md:h-[55%] bg-[#59A6E4]/40 blur-[40px] md:blur-[100px] rounded-full pointer-events-none"
                   style={{ transform: `translate(${mouseX * 0.09 + (scrollY * 0.08)}px, ${mouseY * 0.08}px)`, transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1)', willChange: 'transform' }}
@@ -992,7 +992,7 @@ export default function ManualDisenoPage() {
           </div>
           <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Tarjetas de servicio con imagen prominente y llamada a la acción clara.</p>
           
-          {/* Cards — scroll horizontal en móvil, grid en desktop */}
+          {/* Cards - scroll horizontal en móvil, grid en desktop */}
           <div className="relative">
             <div
               ref={cardsScrollRef}
@@ -1027,7 +1027,7 @@ export default function ManualDisenoPage() {
               ))}
             </div>
 
-            {/* Navegación móvil: puntos + flechas — ocultos en desktop */}
+            {/* Navegación móvil: puntos + flechas - ocultos en desktop */}
             <div className="flex items-center justify-center gap-6 mt-6 md:hidden">
               <button
                 onPointerDown={() => {
@@ -1177,8 +1177,8 @@ export default function ManualDisenoPage() {
               <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-[#00827C]/5'}`}>
                 {[
                   { feature: 'Cálculos por mes', vals: ['10', '200', '200', 'Ilimitados'] },
-                  { feature: 'Informes por mes', vals: ['—', '5', '5', 'Ilimitados'] },
-                  { feature: 'Certificados por mes', vals: ['—', '2', '2', 'Ilimitados'] },
+                  { feature: 'Informes por mes', vals: ['-', '5', '5', 'Ilimitados'] },
+                  { feature: 'Certificados por mes', vals: ['-', '2', '2', 'Ilimitados'] },
                   { feature: 'Usuarios / Empleados', vals: ['1', '5', '10', 'Ilimitados'] },
                   { feature: 'Cotizador Circular', vals: ['no', 'no', 'yes', 'yes'] },
                   { feature: 'Seguridad Inalterable', vals: ['no', 'yes', 'yes', 'yes'], desc: 'Cada cálculo tiene un código único que nadie puede borrar.' },
@@ -1197,7 +1197,7 @@ export default function ManualDisenoPage() {
 
       </main>
 
-      {/* FOOTER EXTERNO — Para páginas públicas (Sistema de Diseño, Landing, Legales, etc.) */}
+      {/* FOOTER EXTERNO - Para páginas públicas (Sistema de Diseño, Landing, Legales, etc.) */}
       <footer style={{
         padding: '40px 48px',
         background: `linear-gradient(0deg, rgba(214, 243, 145, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`,

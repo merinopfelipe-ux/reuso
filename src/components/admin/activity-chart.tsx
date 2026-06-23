@@ -29,7 +29,7 @@ export function ActivityChart({ data }: ActivityChartProps) {
       }}
     >
       <p style={{ margin: '0 0 24px', fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-        Actividad — últimos 30 días
+        Actividad - últimos 30 días
       </p>
       
       {hasData ? (
@@ -37,8 +37,8 @@ export function ActivityChart({ data }: ActivityChartProps) {
           <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="gradBrand" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#00827C" stopOpacity={0.15} />
-                <stop offset="95%" stopColor="#00827C" stopOpacity={0} />
+                <stop offset="5%" stopColor="var(--color-brand)" stopOpacity={0.20} />
+                <stop offset="95%" stopColor="var(--color-brand)" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" vertical={false} />

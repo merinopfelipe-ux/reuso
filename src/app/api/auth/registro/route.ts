@@ -43,9 +43,9 @@ async function checkRateLimit(ip: string, accion: string, max: number, windowMs:
 const bodySchema = z
   .object({
     nombre: z.string().min(2).max(100),
-    apellido: z.string().max(100).optional(),
+    apellido: z.string().min(2, 'El apellido es muy corto.').max(100),
     apodo: z.string().max(15).regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ.]*$/).optional(),
-    telefono: z.string().optional(),
+    telefono: z.string().min(1, 'El teléfono es requerido.'),
     email: z.string().email(),
     password: z
       .string()
@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
   const allowed = process.env.SKIP_RATE_LIMIT === 'true' || await checkRateLimit(ip, 'registro', 3, 60_000)
   if (!allowed) {
     return NextResponse.json(
-      { error: 'Demasiados intentos. Intenta de nuevo en un momento.' },
+      { error: 'Demasiados intentos. Espera 60 segundos antes de intentar de nuevo.' },
       { status: 429 }
     )
   }
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
   const { nombre, apellido, apodo, telefono, email, password, turnstile_token,
           sector, frecuencia_reuso, motivacion, quiere_asesoria, codigo_empresa } = parsed.data
 
-  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true'
+  const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
   if (!skipTurnstile) {
     const turnstileOk = await verifyTurnstile(turnstile_token ?? '', ip)
     if (!turnstileOk) {

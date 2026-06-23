@@ -64,6 +64,11 @@ Los colores dominantes absolutos son el brand (#00827C) y, en el tema claro, el 
 --color-info: #59A6E4
 --color-pistacho: #D6F391
 --color-menta: #8AD0B2
+
+## REGLA DE CONTRASTE PISTACHO — CRÍTICA
+Cuando el FONDO de un elemento es pistacho (`bg-[#D6F391]`, `background: '#D6F391'`), el TEXTO siempre debe ser Negro Lurdes `#474747`.
+PROHIBIDO usar texto blanco (`#fff`, `#ffffff`, `text-white`) sobre fondo pistacho — el pistacho es un color claro y el blanco no se lee.
+Patrón correcto: `isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'`
 --color-nogal: #AD7C43
 --color-rosa: #F3BBD3
 

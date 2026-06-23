@@ -25,7 +25,7 @@ const schemas = [
   {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Calculadora de Reúso — CO₂ y Ahorro Circular',
+    name: 'Calculadora de Reúso - CO₂ y Ahorro Circular',
     description: 'Plataforma SaaS que mide, certifica y comunica el CO₂ evitado y el ahorro económico al reutilizar productos.',
     url: 'https://reuso.lurdes.co',
     applicationCategory: 'BusinessApplication',
@@ -66,7 +66,7 @@ const schemas = [
       {
         '@type': 'Question',
         name: '¿El diagnóstico circular sirve para informes ESG?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Nuestros diagnósticos incluyen código QR verificable y metodología basada en estándares GHG Protocol. Son una fuente de datos válida para informes ESG, licitaciones públicas y comunicación a clientes e inversores — sin afirmar que el diagnóstico en sí es una certificación ambiental.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Nuestros diagnósticos incluyen código QR verificable y metodología basada en estándares GHG Protocol. Son una fuente de datos válida para informes ESG, licitaciones públicas y comunicación a clientes e inversores - sin afirmar que el diagnóstico en sí es una certificación ambiental.' },
       },
     ],
   },

@@ -87,11 +87,11 @@ export async function POST(request: NextRequest) {
   try {
     const { data: empresa } = await adminClient
       .from('empresas')
-      .select('nombre')
+      .select('nombre, codigo_registro')
       .eq('id', empresa_id)
       .single()
     if (empresa?.nombre) {
-      await enviarInvitacion(email, token, empresa.nombre)
+      await enviarInvitacion(email, token, empresa.nombre, empresa.codigo_registro ?? null)
     }
   } catch (emailError) {
     console.error('[invitar] Email no enviado:', emailError)

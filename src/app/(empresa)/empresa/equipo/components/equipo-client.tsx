@@ -71,6 +71,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
   const [enviando, setEnviando]           = useState(false)
   const [linkInvitacion, setLinkInvitacion] = useState<string | null>(null)
   const [copiado, setCopiado]             = useState(false)
+  const [codigoCopiado, setCodigoCopiado] = useState(false)
 
   // ── Listas reactivas ─────────────────────────────────────────────────────────
   const [miembros, setMiembros]           = useState<Miembro[]>(miembrosIniciales)
@@ -81,7 +82,8 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
   const [exito, setExito]                 = useState<string | null>(null)
 
   // ── Eliminar miembro ─────────────────────────────────────────────────────────
-  const [confirmarElimMiembro, setConfirmarElimMiembro] = useState<string | null>(null)
+  const [miembroAEliminar, setMiembroAEliminar] = useState<Miembro | null>(null)
+  const [textoConfirmacionEliminar, setTextoConfirmacionEliminar] = useState('')
   const [eliminandoMiembro, setEliminandoMiembro]       = useState<string | null>(null)
 
   // ── Eliminar invitación ──────────────────────────────────────────────────────
@@ -97,7 +99,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
   const [editEmailInv, setEditEmailInv]     = useState('')
   const [guardandoInv, setGuardandoInv]     = useState(false)
 
-  // ── Handlers — Invitar ───────────────────────────────────────────────────────
+  // ── Handlers - Invitar ───────────────────────────────────────────────────────
   async function copiarLink() {
     if (!linkInvitacion) return
     await navigator.clipboard.writeText(linkInvitacion)
@@ -128,7 +130,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
     }
   }, [emailInvitar, rolInvitado, empresaId])
 
-  // ── Handlers — Eliminar miembro ──────────────────────────────────────────────
+  // ── Handlers - Eliminar miembro ──────────────────────────────────────────────
   const handleEliminarMiembro = useCallback(async (id: string) => {
     setEliminandoMiembro(id)
     setError(null)
@@ -138,15 +140,15 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
       setMiembros(prev => prev.filter(m => m.id !== id))
       setExito('Miembro removido del equipo.')
       setTimeout(() => setExito(null), 3000)
+      setMiembroAEliminar(null)
     } catch {
       setError('No se pudo remover al miembro.')
     } finally {
       setEliminandoMiembro(null)
-      setConfirmarElimMiembro(null)
     }
   }, [])
 
-  // ── Handlers — Eliminar invitación ───────────────────────────────────────────
+  // ── Handlers - Eliminar invitación ───────────────────────────────────────────
   const handleEliminarInv = useCallback(async (id: string) => {
     setEliminandoInv(id)
     setError(null)
@@ -161,7 +163,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
     }
   }, [])
 
-  // ── Handlers — Editar miembro ────────────────────────────────────────────────
+  // ── Handlers - Editar miembro ────────────────────────────────────────────────
   const handleGuardarMiembro = useCallback(async (id: string) => {
     if (!editNombreMiembro.trim()) return
     setGuardandoMiembro(true)
@@ -181,7 +183,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
     }
   }, [editNombreMiembro])
 
-  // ── Handlers — Editar email invitación ───────────────────────────────────────
+  // ── Handlers - Editar email invitación ───────────────────────────────────────
   const handleGuardarInv = useCallback(async (id: string) => {
     if (!editEmailInv.trim()) return
     setGuardandoInv(true)
@@ -306,32 +308,13 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                           <PencilSimple size={13} />
                         </button>
 
-                        {confirmarElimMiembro === m.id ? (
-                          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
-                            <span style={{ fontSize: 11, color: '#FF5E4B', fontWeight: 600 }}>¿Remover?</span>
-                            <button
-                              onClick={() => handleEliminarMiembro(m.id)}
-                              disabled={eliminandoMiembro === m.id}
-                              style={{ background: '#FF5E4B', color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', fontSize: 11, fontWeight: 600, cursor: 'pointer' }}
-                            >
-                              {eliminandoMiembro === m.id ? <CircleNotch size={12} style={{ animation: 'spin 1s linear infinite' }} /> : 'Sí'}
-                            </button>
-                            <button
-                              onClick={() => setConfirmarElimMiembro(null)}
-                              style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', fontSize: 11, cursor: 'pointer', color: TEXT_MED }}
-                            >
-                              No
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => setConfirmarElimMiembro(m.id)}
-                            title="Remover del equipo"
-                            style={{ background: 'rgba(255,94,75,0.06)', border: '1px solid rgba(255,94,75,0.20)', borderRadius: 6, padding: '5px', cursor: 'pointer', color: '#FF5E4B', display: 'flex', alignItems: 'center' }}
-                          >
-                            <Trash size={13} />
-                          </button>
-                        )}
+                        <button
+                          onClick={() => { setMiembroAEliminar(m); setTextoConfirmacionEliminar('') }}
+                          title="Remover del equipo"
+                          style={{ background: 'rgba(255,94,75,0.06)', border: '1px solid rgba(255,94,75,0.20)', borderRadius: 6, padding: '5px', cursor: 'pointer', color: '#FF5E4B', display: 'flex', alignItems: 'center' }}
+                        >
+                          <Trash size={13} />
+                        </button>
                       </>
                     )}
                   </div>
@@ -410,9 +393,10 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                         <button
                           onClick={() => { setEditandoInv(inv.id); setEditEmailInv(inv.email) }}
                           title="Editar email"
-                          style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '5px', cursor: 'pointer', color: TEXT_MED, display: 'flex', alignItems: 'center' }}
+                          style={{ padding: '5px 10px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'transparent', color: TEXT_MED, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
                         >
                           <PencilSimple size={13} />
+                          Editar
                         </button>
                       )}
 
@@ -454,9 +438,39 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
             <h3 style={{ fontSize: 17, fontWeight: 700, color: TEXT_DARK, margin: '0 0 6px' }}>
               Invitar al equipo
             </h3>
-            <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 20px' }}>
+            <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 16px' }}>
               El destinatario recibirá un enlace para unirse a tu organización.
             </p>
+            {codigoRegistro && (
+              <div style={{
+                background: 'rgba(0,130,124,0.04)',
+                border: '1px dashed rgba(0,130,124,0.25)',
+                borderRadius: 12,
+                padding: '10px 14px',
+                marginBottom: 16,
+                fontSize: 12,
+                color: TEXT_MED,
+                lineHeight: 1.4
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap' }}>
+                  <span>
+                    <strong>Código de empresa:</strong>{' '}
+                    <span style={{ color: BRAND, fontWeight: 700, fontFamily: 'monospace' }}>{codigoRegistro}</span>
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(codigoRegistro!)
+                      setCodigoCopiado(true)
+                      setTimeout(() => setCodigoCopiado(false), 2000)
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, border: `1px solid ${BRAND}`, background: codigoCopiado ? BRAND : 'transparent', color: codigoCopiado ? '#fff' : BRAND, fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                  >
+                    {codigoCopiado ? '✓ Copiado' : 'Copiar código'}
+                  </button>
+                </div>
+                <p style={{ margin: '6px 0 0', fontSize: 11, opacity: 0.8 }}>Los colaboradores pueden registrarse con este código en /registro.</p>
+              </div>
+            )}
 
             {error && (
               <p style={{ fontSize: 12, color: '#FF5E4B', marginBottom: 14 }}>{error}</p>
@@ -543,6 +557,69 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                 Listo
               </button>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal eliminar miembro (GitHub-style) ────────────────────────────── */}
+      {miembroAEliminar && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 2500,
+          background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: 20,
+        }}>
+          <div
+            style={{ position: 'absolute', inset: 0 }}
+            onClick={() => setMiembroAEliminar(null)}
+          />
+          <div style={{
+            position: 'relative', width: '100%', maxWidth: 420,
+            background: 'var(--bg-card)', borderRadius: 16,
+            border: `1px solid ${BORDER}`, padding: 24,
+            boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+          }}>
+            <h3 style={{ fontSize: 17, fontWeight: 700, color: '#FF5E4B', margin: '0 0 12px' }}>
+              Confirmar remoción de miembro
+            </h3>
+            <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 16px', lineHeight: 1.5 }}>
+              Esta acción desvinculará a <strong style={{ color: TEXT_DARK }}>{miembroAEliminar.nombre}</strong> de la organización.
+              Para confirmar, escribe el nombre completo del colaborador a continuación:
+            </p>
+            <div style={{ marginBottom: 20 }}>
+              <input
+                type="text"
+                value={textoConfirmacionEliminar}
+                onChange={e => setTextoConfirmacionEliminar(e.target.value)}
+                placeholder={miembroAEliminar.nombre}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'var(--bg-input)', color: TEXT_DARK, fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setMiembroAEliminar(null)}
+                style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'transparent', color: TEXT_MED, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => handleEliminarMiembro(miembroAEliminar.id)}
+                disabled={textoConfirmacionEliminar !== miembroAEliminar.nombre || eliminandoMiembro === miembroAEliminar.id}
+                style={{
+                  padding: '8px 16px', borderRadius: 8, border: 'none',
+                  background: textoConfirmacionEliminar === miembroAEliminar.nombre ? '#FF5E4B' : 'var(--border)',
+                  color: textoConfirmacionEliminar === miembroAEliminar.nombre ? '#fff' : 'var(--text-placeholder)',
+                  fontSize: 13, fontWeight: 600,
+                  cursor: textoConfirmacionEliminar === miembroAEliminar.nombre ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', gap: 6
+                }}
+              >
+                {eliminandoMiembro === miembroAEliminar.id && <CircleNotch size={14} style={{ animation: 'spin 1s linear infinite' }} />}
+                Remover miembro
+              </button>
+            </div>
           </div>
         </div>
       )}

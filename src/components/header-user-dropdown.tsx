@@ -62,7 +62,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
   async function cerrarSesion() {
     setOpen(false)
     await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/')
+    router.push('/login')
     router.refresh()
   }
 

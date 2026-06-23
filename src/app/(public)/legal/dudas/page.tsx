@@ -55,7 +55,7 @@ export default function DudasPage() {
 
   return (
     <>
-      {/* Header sticky — igual al de las demás páginas legales */}
+      {/* Header sticky - igual al de las demás páginas legales */}
       <LegalHeader />
 
       {/* Contenido */}

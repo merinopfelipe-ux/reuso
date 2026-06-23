@@ -374,7 +374,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* KPI cards animadas — empresa para empleado, personales para los demás */}
+      {/* KPI cards animadas - empresa para empleado, personales para los demás */}
       <div
         style={{
           display: 'grid',
@@ -461,7 +461,7 @@ export default async function DashboardPage() {
         )}
       </div>
 
-      {/* Cuota de cálculos — solo usuario_libre */}
+      {/* Cuota de cálculos - solo usuario_libre */}
       {rol === 'usuario_libre' && (
         <div
           style={{
@@ -506,7 +506,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Banner upgrade — solo usuario_libre */}
+      {/* Banner upgrade - solo usuario_libre */}
       {rol === 'usuario_libre' && (
         <div
           style={{
@@ -558,7 +558,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Gráficas — solo si hay cálculos */}
+      {/* Gráficas - solo si hay cálculos */}
       {(totalObjetos ?? 0) > 0 && (
         <div
           style={{
@@ -568,7 +568,7 @@ export default async function DashboardPage() {
             marginBottom: 24,
           }}
         >
-          <SectionCard titulo="Evolución mensual — CO₂ evitado">
+          <SectionCard titulo="Evolución mensual - CO₂ evitado">
             <GraficaLineaPersonal data={serieMensual12} />
           </SectionCard>
           {donutPersonal.length > 0 && (
@@ -579,7 +579,7 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Accesos rápidos — empleado */}
+      {/* Accesos rápidos - empleado */}
       {rol === 'empleado' && (
         <div
           style={{

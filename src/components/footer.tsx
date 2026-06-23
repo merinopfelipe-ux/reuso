@@ -1,4 +1,4 @@
-// 🔒 ARCHIVO PROTEGIDO — NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
+// 🔒 ARCHIVO PROTEGIDO - NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -154,14 +154,14 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
               opacity: 0.8, 
               fontSize: 10,
             }}>
-              <span title={ip} style={{ opacity: 0.6 }}>{ipLabel} {ip || '—'}</span>
+              <span title={ip} style={{ opacity: 0.6 }}>{ipLabel} {ip || '-'}</span>
               <span style={{ opacity: 0.3 }}>|</span>
               {lastVisitHref ? (
-                <a href={lastVisitHref} className="footer-link" style={{ color: 'inherit', textDecoration: 'underline', pointerEvents: 'auto' }}>{lastVisitLabel} {lastVisit || '—'}</a>
-              ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '—'}</span>}
+                <a href={lastVisitHref} className="footer-link" style={{ color: 'inherit', textDecoration: 'underline', pointerEvents: 'auto' }}>{lastVisitLabel} {lastVisit || '-'}</a>
+              ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '-'}</span>}
             </div>
 
-            {/* Selector de idioma — dropdown */}
+            {/* Selector de idioma - dropdown */}
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setIdiomaOpen(o => !o)}

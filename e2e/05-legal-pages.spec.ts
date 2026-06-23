@@ -4,7 +4,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
   // Sin usar estado de autenticación guardado - Acceso 100% público
   test.use({ storageState: { cookies: [], origins: [] } })
 
-  test('01 — /legal es pública y accesible sin iniciar sesión', async ({ page }) => {
+  test('01 - /legal es pública y accesible sin iniciar sesión', async ({ page }) => {
     await page.goto('/legal')
     await page.waitForLoadState('load')
     
@@ -18,7 +18,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     expect(text?.toLowerCase()).toContain('legal')
   })
 
-  test('02 — Todas las subpáginas de legales son públicas y cargan correctamente', async ({ page }) => {
+  test('02 - Todas las subpáginas de legales son públicas y cargan correctamente', async ({ page }) => {
     const paginas = [
       '/legal/terminos',
       '/legal/privacidad',
@@ -42,7 +42,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     }
   })
 
-  test('03 — El footer de legales incluye el selector de idioma y funciona reactivamente', async ({ page }) => {
+  test('03 - El footer de legales incluye el selector de idioma y funciona reactivamente', async ({ page }) => {
     await page.goto('/legal')
     await page.waitForLoadState('load')
 
@@ -66,7 +66,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     await expect(heading).toHaveText('Legal documents', { timeout: 3000 })
   })
 
-  test('04 — Las páginas de legales heredan la meta noindex, nofollow para SEO', async ({ page }) => {
+  test('04 - Las páginas de legales heredan la meta noindex, nofollow para SEO', async ({ page }) => {
     await page.goto('/legal')
     await page.waitForLoadState('load')
 
@@ -85,13 +85,13 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     expect(contentSub).toBe('noindex, nofollow')
   })
 
-  test('05 — El banner de cookies es bilingüe y reactivo al selector del footer', async ({ page }) => {
+  test('05 - El banner de cookies es bilingüe y reactivo al selector del footer', async ({ page }) => {
     // Abrimos una pestaña en blanco (limpiando almacenamiento de cookies para ver el banner de nuevo)
     await page.goto('/legal')
     await page.waitForLoadState('load')
 
     // El banner de cookies debería ser visible
-    const banner = page.locator('text=Cookies en Reúso')
+    const banner = page.locator('text=Tu privacidad, tus reglas')
     await expect(banner).toBeVisible({ timeout: 15_000 })
 
     // Verificamos que tenga la opción de "Solo esenciales"
@@ -105,7 +105,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     await englishBtn.click()
 
     // El banner debería actualizarse instantáneamente a inglés
-    const bannerEng = page.locator('text=Cookies on Reúso')
+    const bannerEng = page.locator('text=Your privacy, your call')
     await expect(bannerEng).toBeVisible({ timeout: 3000 })
 
     // Hacemos click en "Essential only" (bilingüe)
@@ -117,7 +117,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     await expect(bannerEng).not.toBeVisible({ timeout: 3000 })
   })
 
-  test('06 — Se han reemplazado los emojis de tarjetas en cookies y privacidad por iconos Phosphor', async ({ page }) => {
+  test('06 - Se han reemplazado los emojis de tarjetas en cookies y privacidad por iconos Phosphor', async ({ page }) => {
     // 1. En la página de cookies
     await page.goto('/legal/cookies')
     await page.waitForLoadState('load')

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Key, CircleNotch, Eye, EyeSlash, CheckCircle } from '@phosphor-icons/react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { OTPInput } from '@/components/otp-input'
 
 // ── Constantes de estilo ────────────────────────────────────────────────────
 const BRAND = 'var(--color-brand)'
@@ -43,6 +44,12 @@ export default function RecuperarPage() {
 
   const [paso, setPaso] = useState<Paso>('email')
   const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const emailParam = params.get('email')
+    if (emailParam) setEmail(emailParam)
+  }, [])
   const [codigo, setCodigo] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')
@@ -73,7 +80,7 @@ export default function RecuperarPage() {
     setLoading(false)
 
     if (err) {
-      // Supabase no revela si el email existe — siempre mostrar avance por seguridad
+      // Supabase no revela si el email existe - siempre mostrar avance por seguridad
       // Solo mostramos error en casos técnicos reales
       const msg = err.message?.toLowerCase() ?? ''
       if (msg.includes('rate limit') || msg.includes('too many')) {
@@ -91,7 +98,7 @@ export default function RecuperarPage() {
     e.preventDefault()
 
     const token = codigo.trim()
-    if (token.length < 6) { setError('Ingresa el código de 6 dígitos que recibiste.'); return }
+    if (token.length !== 8) { setError('Ingresa los 8 dígitos del código de recuperación.'); return }
     if (password.length < 8) { setError('La contraseña debe tener al menos 8 caracteres.'); return }
     if (!/[A-Z]/.test(password)) { setError('La contraseña debe incluir al menos una mayúscula.'); return }
     if (!/[0-9]/.test(password)) { setError('La contraseña debe incluir al menos un número.'); return }
@@ -100,7 +107,7 @@ export default function RecuperarPage() {
     setLoading(true)
     setError('')
 
-    // Verificar OTP primero — esto inicia una sesión temporal
+    // Verificar OTP primero - esto inicia una sesión temporal
     const { error: otpErr } = await supabase.auth.verifyOtp({
       email: email.trim().toLowerCase(),
       token,
@@ -171,7 +178,7 @@ export default function RecuperarPage() {
           Recuperar contraseña
         </h2>
         <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 28px', textAlign: 'center', lineHeight: 1.6 }}>
-          Ingresa tu correo y te enviaremos un código de recuperación de 6 dígitos.
+          Ingresa tu correo y te enviaremos un código de recuperación de 8 dígitos.
         </p>
 
         <ErrorBox mensaje={error} />
@@ -223,21 +230,8 @@ export default function RecuperarPage() {
       <form onSubmit={handleCambiarPassword} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         {/* Código */}
         <div>
-          <label style={{ ...labelStyle, textAlign: 'center' }}>Código de recuperación</label>
-          <input
-            type="text"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            maxLength={6}
-            value={codigo}
-            onChange={e => setCodigo(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            placeholder="000000"
-            autoFocus
-            autoComplete="one-time-code"
-            style={{ ...inputStyle, textAlign: 'center', fontSize: 18, fontWeight: 700, letterSpacing: '0.15em' }}
-            onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-brand)' }}
-            onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)' }}
-          />
+          <label style={{ ...labelStyle, textAlign: 'center', marginBottom: 12 }}>Código de recuperación</label>
+          <OTPInput value={codigo} onChange={setCodigo} isDark={isDark} disabled={loading} length={8} />
         </div>
 
         {/* Nueva contraseña */}
@@ -372,7 +366,7 @@ function BtnPrimario({ loading, texto, isDark }: { loading: boolean; texto: stri
       }}
     >
       {loading
-        ? <><CircleNotch size={16} className="animate-spin" /> Procesando...</>
+        ? <><CircleNotch size={16} className="animate-spin" color="currentColor" /> Procesando...</>
         : texto}
     </button>
   )

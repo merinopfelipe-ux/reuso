@@ -141,7 +141,7 @@ export async function POST(
     return NextResponse.json({ error: 'Error al guardar el mueble. Intenta de nuevo.' }, { status: 500 })
   }
 
-  // Actualizar totales de la cotización de forma atómica (función SQL — evita race condition)
+  // Actualizar totales de la cotización de forma atómica (función SQL - evita race condition)
   const { data: totalesActualizados } = await adminClient
     .rpc('recalcular_totales_cotizacion', { p_cotizacion_id: params.id })
     .single()

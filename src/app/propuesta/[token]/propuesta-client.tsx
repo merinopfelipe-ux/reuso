@@ -94,13 +94,13 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
   const duchas = Math.round(agua / PARAM_AGUA_DUCHA_5MIN)
 
   // Número de propuesta a partir del código
-  const numeroPropuesta = cotizacion.codigo_cotizacion.split('-').pop() ?? '—'
+  const numeroPropuesta = cotizacion.codigo_cotizacion.split('-').pop() ?? '-'
   const fechaCreacion = cotizacion.created_at
     ? new Date(cotizacion.created_at).toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
-    : '—'
+    : '-'
   const fechaMod = cotizacion.updated_at
     ? new Date(cotizacion.updated_at).toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' })
-    : '—'
+    : '-'
 
   async function aceptarPropuesta() {
     setAceptando(true)
@@ -273,7 +273,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
           {aceptada ? (
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#38B98E]/10 text-[#38B98E] font-semibold">
               <CheckCircle size={20} weight="duotone" />
-              Propuesta aceptada — Te contactamos pronto
+              Propuesta aceptada - Te contactamos pronto
             </div>
           ) : (
             <>

@@ -31,7 +31,6 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!turnstileToken) { setError('Completa la verificación de seguridad.'); return }
     if (form.password !== form.password_confirm) { setError('Las contraseñas no coinciden.'); return }
     setLoading(true)
     setError('')
@@ -39,7 +38,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
     const res = await fetch('/api/auth/registro-invitacion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, ...form, acepta_terminos: true, turnstile_token: turnstileToken }),
+      body: JSON.stringify({ token, ...form, acepta_terminos: true, turnstile_token: turnstileToken || 'skip' }),
     })
     const data = await res.json()
 
@@ -149,6 +148,19 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
             {showPass ? <EyeSlash size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        {form.password && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 8 }}>
+            {[
+              { ok: form.password.length >= 8, label: 'Mínimo 8 caracteres' },
+              { ok: /[A-Z]/.test(form.password), label: 'Una letra mayúscula' },
+              { ok: /[0-9]/.test(form.password), label: 'Un número' },
+            ].map(({ ok, label }) => (
+              <p key={label} style={{ margin: 0, fontSize: 12, color: ok ? '#38B98E' : '#7FA8A5', display: 'flex', gap: 6 }}>
+                {ok ? '✓' : '○'} {label}
+              </p>
+            ))}
+          </div>
+        )}
       </div>
 
       <div>
@@ -173,6 +185,11 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
             {showConfirm ? <EyeSlash size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        {form.password_confirm && (
+          <p style={{ margin: '4px 0 0', fontSize: 12, color: form.password === form.password_confirm ? '#38B98E' : '#FF5E4B' }}>
+            {form.password === form.password_confirm ? '✓ Las contraseñas coinciden' : 'Las contraseñas no coinciden'}
+          </p>
+        )}
       </div>
 
       <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: 14 }}>
@@ -194,6 +211,11 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={setTurnstileToken}
+        onExpire={() => setTurnstileToken('')}
+        onError={() => {
+          setError('Error de verificación de seguridad. Intenta de nuevo.');
+          setTurnstileToken('');
+        }}
         options={{ theme: 'auto' }}
       />
 

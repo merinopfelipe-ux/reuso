@@ -23,7 +23,7 @@ export default async function HistorialPage() {
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
 
-  // Carga inicial — primeras 20 filas del usuario
+  // Carga inicial - primeras 20 filas del usuario
   const [historialRes, categoriasRes] = await Promise.all([
     adminClient
       .from('calculos')

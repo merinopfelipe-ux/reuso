@@ -130,7 +130,7 @@ export function LegalPageLayout({
       >
         {/* ── COLUMNA PRINCIPAL ─────────────────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Miga de pan — NO sticky */}
+          {/* Miga de pan - NO sticky */}
           <nav
             style={{
               display: 'flex',
@@ -155,7 +155,7 @@ export function LegalPageLayout({
             <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{breadcrumbLabel}</span>
           </nav>
 
-          {/* Título STICKY — pegado debajo del header */}
+          {/* Título STICKY - pegado debajo del header */}
           <div
             style={{
               position: 'sticky',
@@ -387,7 +387,7 @@ export function LegalPageLayout({
           )}
         </div>
 
-        {/* ── SIDEBAR DERECHO — menú de secciones ───────────────────── */}
+        {/* ── SIDEBAR DERECHO - menú de secciones ───────────────────── */}
         <div
           className="legal-sidebar"
           style={{

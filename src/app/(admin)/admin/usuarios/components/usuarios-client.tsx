@@ -115,9 +115,9 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   }
 
   function getNombreEmpresa(empresas: PerfilRow['empresas']): string {
-    if (!empresas) return '—'
-    if (Array.isArray(empresas)) return empresas[0]?.nombre ?? '—'
-    return empresas.nombre ?? '—'
+    if (!empresas) return '-'
+    if (Array.isArray(empresas)) return empresas[0]?.nombre ?? '-'
+    return empresas.nombre ?? '-'
   }
 
   const queryParams = new URLSearchParams()
@@ -277,7 +277,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
               )}
               {(usuariosOrdenados as unknown as PerfilRow[]).map(u => (
                 <tr key={u.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{u.nombre || '—'}</td>
+                  <td style={{ padding: '10px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{u.nombre || '-'}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{u.email}</td>
                   <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{getNombreEmpresa(u.empresas)}</td>
                   <td style={{ padding: '10px 16px' }}>

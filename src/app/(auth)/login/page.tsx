@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -118,6 +118,7 @@ const TESTIMONIOS = [
 export default function LoginPage() {
   const router = useRouter()
   const [invited, setInvited] = useState(false)
+  const turnstileRef = useRef<any>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -134,7 +135,7 @@ export default function LoginPage() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [aceptaLegal, setAceptaLegal] = useState(true)
+  const [aceptaLegal, setAceptaLegal] = useState(false)
   const [legalError, setLegalError] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [passError, setPassError] = useState(false)
@@ -231,12 +232,18 @@ export default function LoginPage() {
     } catch {
       setError(t.errorServer);
       setLoading(false);
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
       return;
     }
 
     if (!res.ok) {
-      setError(data.error ?? t.errorDatos)
+      const srv = (data.error ?? '').toLowerCase()
+      const esCredenciales = srv.includes('credenciales') || srv.includes('incorrect') || srv.includes('invalid') || srv.includes('not found')
+      setError(esCredenciales ? t.errorDatos : (data.error ?? t.errorDatos))
       setLoading(false)
+      setTurnstileToken('')
+      turnstileRef.current?.reset()
       return
     }
 
@@ -267,17 +274,23 @@ export default function LoginPage() {
         .anim-t-prev     { animation: testimonyPrev 0.5s cubic-bezier(0.22,1,0.36,1) both; }
       `}</style>
 
-      {/* Turnstile invisible — sin UI visible */}
+      {/* Turnstile invisible - sin UI visible */}
       {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
         <Turnstile
+          ref={turnstileRef}
           siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
           options={{ size: 'invisible' }}
           onSuccess={(token) => setTurnstileToken(token)}
           onExpire={() => setTurnstileToken('')}
+          onError={() => {
+            setError(T[idioma].errorDatos || 'Error de verificación de seguridad. Intenta de nuevo.');
+            setTurnstileToken('');
+            turnstileRef.current?.reset();
+          }}
         />
       )}
 
-      {/* ── PANEL IZQUIERDO — LOGIN (40%) ───────────────────────────── */}
+      {/* ── PANEL IZQUIERDO - LOGIN (40%) ───────────────────────────── */}
       <section className="anim-left w-full lg:w-[40%] flex flex-col justify-between relative overflow-y-auto z-10 bg-primary">
 
         {/* Header */}
@@ -292,7 +305,7 @@ export default function LoginPage() {
           />
           <p className="text-sm text-secondary font-medium hidden sm:block">
             {T[idioma].cuentaQ}{' '}
-            <Link href="/registro" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline transition-colors">
+            <Link href="/registro" className="text-brand hover:underline transition-colors">
               {T[idioma].registrate}
             </Link>
           </p>
@@ -395,7 +408,7 @@ export default function LoginPage() {
                   {T[idioma].recordarme}
                 </span>
               </label>
-              <Link href="/recuperar" target="_blank" rel="noopener noreferrer" className="text-sm text-brand hover:underline transition-colors">
+              <Link href={`/recuperar${email ? `?email=${encodeURIComponent(email)}` : ''}`} className="text-sm text-brand hover:underline transition-colors">
                 {T[idioma].olvidaste}
               </Link>
             </div>
@@ -431,13 +444,13 @@ export default function LoginPage() {
               disabled={loading}
               className={`w-full py-3.5 mt-2 rounded-btn font-bold text-[15px] transition-all flex items-center justify-center gap-2 shadow-card ${
                 loading
-                  ? 'bg-brand/60 text-white/80 cursor-not-allowed shadow-none'
-                  : `bg-brand hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0 ${isDark ? 'text-black font-extrabold' : 'text-white'}`
+                  ? `opacity-70 cursor-not-allowed shadow-none ${isDark ? 'bg-brand text-[#474747]' : 'bg-brand text-white'}`
+                  : `bg-brand hover:bg-brand-hover hover:-translate-y-0.5 active:translate-y-0 ${isDark ? 'text-[#474747] font-extrabold' : 'text-white'}`
               }`}
             >
               {loading ? (
                 <>
-                  <CircleNotch size={18} className="animate-spin" />
+                  <CircleNotch size={18} className="animate-spin" color="currentColor" />
                   {T[idioma].verificando}
                 </>
               ) : T[idioma].ingresar}
@@ -445,7 +458,7 @@ export default function LoginPage() {
 
             <p className="text-xs text-center text-secondary mt-2 sm:hidden">
               {T[idioma].cuentaQ}{' '}
-              <Link href="/registro" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline transition-colors">
+              <Link href="/registro" className="text-brand hover:underline transition-colors">
                 {T[idioma].registrate}
               </Link>
             </p>
@@ -478,10 +491,10 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Controles de accesibilidad — idioma + modo noche */}
+            {/* Controles de accesibilidad - idioma + modo noche */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
 
-            {/* Selector de idioma — dropdown */}
+            {/* Selector de idioma - dropdown */}
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setIdiomaOpen(o => !o)}
@@ -554,7 +567,7 @@ export default function LoginPage() {
         </footer>
       </section>
 
-      {/* ── PANEL DERECHO — CARRUSEL (60%) ──────────────────────────── */}
+      {/* ── PANEL DERECHO - CARRUSEL (60%) ──────────────────────────── */}
       <section className="anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-gradient-to-br from-[#004945] to-brand shadow-inner">
 
         {/* Semicírculo decorativo */}
@@ -571,7 +584,7 @@ export default function LoginPage() {
         {/* Contenido del carrusel */}
         <div className="flex-1 flex flex-col justify-center items-center w-full px-16 lg:px-24 xl:px-32 relative z-10">
 
-          {/* Card testimonio — sombra siempre visible */}
+          {/* Card testimonio - sombra siempre visible */}
           <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
             <div className="absolute -top-6 -left-6 bg-brand text-white p-4 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
               <Quotes size={32} weight="fill" />

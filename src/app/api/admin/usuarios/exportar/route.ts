@@ -49,7 +49,7 @@ function generarPDF(filas: FilaExport[]): Buffer {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   doc.setFontSize(14)
   doc.setTextColor(0, 130, 124)
-  doc.text('reuso.lurdes.co — Usuarios', 14, 16)
+  doc.text('reuso.lurdes.co - Usuarios', 14, 16)
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
   doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')} © Grupo MLP S.A.S.`, 14, 22)

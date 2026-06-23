@@ -251,10 +251,10 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (insertError || !certRow) {
-    // El PDF ya existe en storage pero el registro falló — limpiar
+    // El PDF ya existe en storage pero el registro falló - limpiar
     const { error: removeError } = await adminClient.storage.from('documentos').remove([storagePath])
     if (removeError) {
-      console.error('[cert/generar] PDF huérfano en storage — limpieza fallida:', storagePath, removeError)
+      console.error('[cert/generar] PDF huérfano en storage - limpieza fallida:', storagePath, removeError)
     }
     return NextResponse.json({ error: 'Error creando el registro del documento.' }, { status: 500 })
   }

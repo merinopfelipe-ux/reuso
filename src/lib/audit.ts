@@ -11,8 +11,8 @@ interface LogParams {
 
 /**
  * Registra una acción en logs_auditoria usando el cliente con service_role.
- * El INSERT bypasea RLS — solo llamar desde API routes de servidor.
- * No lanza errores — fallo silencioso para no interrumpir la operación principal.
+ * El INSERT bypasea RLS - solo llamar desde API routes de servidor.
+ * No lanza errores - fallo silencioso para no interrumpir la operación principal.
  */
 export async function logAuditoria(
   adminClient: AdminClient,

@@ -6,7 +6,21 @@ fecha: 2026-06-06
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V14.9 — Estandarización de Modo Claro y Noche (Fondos Puros).**
+**V15.1 — Blindaje Exitoso de 118 Pruebas E2E y Corrección de Nulos/Tipos.**
+
+## Sesión 2026-06-20 — Blindaje de Suite E2E & Prevención de Colapsos
+- **Estabilización de 118 Pruebas E2E**: Ejecución exitosa de las 12 fases de pruebas mediante `npm run pruebas`.
+- **Limpieza de Caché del Dev Server**: Identificación de problemas de sincronización de chunks del dev server de Next.js. Se resolvió purgando la carpeta `.next` y reiniciando el proceso (`npm run dev:clean`).
+- **Null Safety en Fecha de Reportes**: Corregidos colapsos del servidor en `/empresa/reportes` y `/admin` cuando un cálculo en la base de datos tiene `fecha = null` (por ej. los insertados vía API general). Se implementó validación preventiva `if (!c.fecha) continue` en [reportes/page.tsx](file:///Users/merinop/Documents/Automatizaciones/Reuso/src/app/(empresa)/empresa/reportes/page.tsx) y mapeos seguros en [admin/page.tsx](file:///Users/merinop/Documents/Automatizaciones/Reuso/src/app/(admin)/admin/page.tsx).
+- **Fallback en searchParams de Usuarios**: Se resguardó `searchParams` en la vista administrativa de usuarios `/admin/usuarios` ante valores nulos durante la generación estática usando `const params = searchParams ?? {}` en [usuarios/page.tsx](file:///Users/merinop/Documents/Automatizaciones/Reuso/src/app/(admin)/admin/usuarios/page.tsx).
+
+## Sesión 2026-06-16 — Módulo de Autenticación V15.0
+- **Cajas de Entrada OTP (OTPInput)**: Refactorizado el ingreso de códigos en 6 cajas individuales con foco inteligente (auto-avance y soporte para pegar) en las páginas `/confirmar-email`, `/recuperar` y `/settings`.
+- **Tema Noche en Confirmación de Correo**: Agregado soporte completo para modo oscuro y `ThemeToggle` en `/confirmar-email`.
+- **Registro con Aceptación Legal Explícita**: Integrado el patrón estilo Bancolombia en el paso 3 de registro, requiriendo que el usuario interactúe conscientemente con los modales de términos legales y política de privacidad antes de permitir la creación de cuentas.
+- **Rediseño de Correos**: Plantillas de correo (bienvenida, confirmación, recuperación, invitaciones y soporte) actualizadas con narrativa en 3 pasos y un encabezado en gradiente `#004D49` a `#00827C`.
+- **Turnstile en Modo Fail-Open**: Ajustado el flujo de Turnstile de Cloudflare para que nunca bloquee al usuario en caso de error de red o de carga del widget.
+- **Limpieza y Corrección en Registro**: Eliminado el campo apodo duplicado y unificados los links para que abran de forma local (evitando nuevas pestañas).
 
 ## Sesión 2026-06-09 — Fondos Puros y CSS Variables
 - **Estandarización de Fondos en Todo el Sistema**: Se unificaron las páginas del cotizador de empresas y los componentes client del panel administrativo para que lean dinámicamente de las variables de tema global `--bg-primary` en lugar de sobreescribir con fondos claros `#F5FAFA` o negros intermedios `#474747` / `#525252`.

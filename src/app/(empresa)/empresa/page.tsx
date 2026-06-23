@@ -248,7 +248,7 @@ export default async function EmpresaPage() {
       </div>
 
       {/* Gráfica mensual */}
-      <SectionCard titulo="CO₂ evitado — últimos 6 meses">
+      <SectionCard titulo="CO₂ evitado - últimos 6 meses">
         <GraficaCO2Mensual data={serieMensual} />
       </SectionCard>
 

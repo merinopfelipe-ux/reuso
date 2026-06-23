@@ -225,7 +225,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                         <td style={{ padding: '10px 16px', color: 'var(--color-brand)', fontWeight: 600 }}>{item.co2_por_unidad}</td>
                         <td style={{ padding: '10px 16px' }}><ConfianzaBadge nivel={item.nivel_confianza} /></td>
                         <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {item.origen_fuente ?? '—'}
+                          {item.origen_fuente ?? '-'}
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <button onClick={() => toggleItem(item.id, item.activo)}

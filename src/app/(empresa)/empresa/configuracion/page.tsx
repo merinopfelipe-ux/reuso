@@ -149,12 +149,12 @@ export default async function EmpresaConfiguracionPage() {
         ))}
       </div>
 
-      {/* Código de empresa — solo empresa_admin */}
+      {/* Código de empresa - solo empresa_admin */}
       {esAdmin && (
         <CodigoRegistroClient codigoInicial={empresa.codigo_registro ?? null} />
       )}
 
-      {/* Formulario editable — solo empresa_admin */}
+      {/* Formulario editable - solo empresa_admin */}
       {esAdmin && (
         <div style={{
           background: 'var(--bg-card)', borderRadius: 16, border: `1px solid ${BORDER}`,

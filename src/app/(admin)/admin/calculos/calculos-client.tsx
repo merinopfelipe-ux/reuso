@@ -102,9 +102,9 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                       {new Date(c.fecha).toLocaleDateString('es-CO')}
                     </td>
                     <td style={{ padding: '10px 14px', color: C.dark }}>
-                      {c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '—'}
+                      {c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '-'}
                     </td>
-                    <td style={{ padding: '10px 14px', color: C.mid }}>{c.empresas?.nombre ?? '—'}</td>
+                    <td style={{ padding: '10px 14px', color: C.mid }}>{c.empresas?.nombre ?? '-'}</td>
                     <td style={{ padding: '10px 14px', color: C.brand, fontWeight: 600 }}>{formatCo2(c.total_co2)}</td>
                     <td style={{ padding: '10px 14px', color: C.mid }}>{(c.total_agua / 1000).toFixed(1)} m³</td>
                     <td style={{ padding: '10px 14px' }}>

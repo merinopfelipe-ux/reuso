@@ -1,150 +1,296 @@
 ---
 name: email-design
 description: >
-  Diseño y voz de todos los correos del sistema Calculadora de Reúso. Plantilla base emailBase() en src/lib/email.ts.
-  Leer SIEMPRE antes de crear, modificar o agregar cualquier correo transaccional.
+  Diseño y voz de todos los correos del sistema Calculadora de Reuso.
+  Leer SIEMPRE antes de crear, modificar o agregar cualquier correo transaccional,
+  ya sea via Resend (src/lib/email.ts) o Supabase Auth (Dashboard Email Templates).
 ---
 
-# Diseño de correos — Calculadora de Reúso
+# Diseño de correos - Calculadora de Reúso
 
 **REGLA ABSOLUTA DE NOMBRE:** El producto se llama **Calculadora de Reúso**. Nunca escribir solo "Reúso" como nombre del producto en ningún correo, asunto, subtítulo ni texto visible.
-**Ley Madre de correos. Sin excepciones.**
 
 ---
 
-## 1. Filosofía
+## 1. Filosofía y voz
 
-Los correos de Reúso no son notificaciones frías de sistema. Son el momento en que la plataforma le habla directamente a una persona. Deben sentirse como un mensaje claro de un colega amable, no como una alerta automática.
-
-| Correcto | Incorrecto |
-|----------|-----------|
-| "Confirma tu correo para empezar" | "Se ha enviado un correo de confirmación" |
-| "Usa este código para crear tu contraseña" | "El token de recuperación ha sido generado" |
-| "El administrador respondió a tu consulta" | "Hay una actualización en el ticket #123" |
+Los correos no son notificaciones frías de sistema. Son el momento en que la plataforma le habla directamente a una persona.
 
 **Reglas de voz:**
-- **Imperativo directo** para acciones: "Confirma", "Usa", "Revisa", "Ingresa"
-- **Segunda persona singular** siempre: "tú", nunca "usted" ni "los usuarios"
-- **Voz activa**: sujeto + verbo + objeto. Nunca pasiva.
-- **Sin tecnicismos**: "código de 6 dígitos", no "OTP token"
-- **Sin palabras vacías**: sin "estimado/a", sin "por medio de la presente"
+- Imperativo directo para acciones: "Confirma", "Usa", "Revisa", "Ingresa"
+- Segunda persona singular siempre: "tú", nunca "usted"
+- Voz activa: sujeto + verbo + objeto. Nunca pasiva
+- Sin tecnicismos: "código de 8 dígitos", no "OTP token"
+- Sin palabras vacías: sin "estimado/a", sin "por medio de la presente"
+
+**Prohibido en todo texto visible:**
+- Punto y coma `;` — reemplazar con punto o coma
+- Guión largo `—` — hace pesada la lectura. Reemplazar con punto seguido o punto aparte
+- Mayúsculas sostenidas
+- Link o mención a ningún correo de soporte (`hola@reuso.lurdes.co` u otro)
 
 ---
 
-## 2. Estructura visual (obligatoria, sin variaciones)
+## 2. Estructura narrativa — OBLIGATORIA
 
-```
-┌─────────────────────────────────────────┐
-│                                         │
-│         Calculadora de Reúso           │  ← h1 verde #00827C, 24px, bold, centrado
-│         Subtítulo descriptivo           │  ← p gris #888, 12px, centrado
-│                                         │
-│  Label 1     │  Valor 1                 │  ← tabla: label bold, valor normal
-│  Label 2     │  Valor 2                 │
-│                                         │
-│ ▌  Descripción amigable en voz activa  │  ← caja con borde izquierdo #00827C
-│                                         │
-│ ─────────────────────────────────────── │
-│              © Grupo MLP S.A.S.         │  ← footer gris 11px
-└─────────────────────────────────────────┘
-```
+Cada correo responde estas tres preguntas en orden:
 
-**Propiedades exactas:**
-- Fuente: `'Open Sans', sans-serif` (solo texto, sin imágenes de logo)
-- Ancho máximo: `560px`, centrado, fondo `#ffffff`
-- Padding: `32px 24px`
-- Título `<h1>`: `color:#00827C`, `font-size:24px`, `font-weight:700`, `margin:0`
-- Subtítulo: `color:#888`, `font-size:12px`, `margin:6px 0 0`
-- Tabla: labels `font-weight:700`, `width:110px`, valores normales, `font-size:14px`
-- Caja descripción: `background:#f6faf9`, `border-left:3px solid #00827C`, `padding:16px 20px`, `border-radius:0 6px 6px 0`, `font-size:14px`, `color:#333`, `line-height:1.6`
-- Separador `<hr>`: `border:none`, `border-top:1px solid #eee`, `margin:28px 0`
-- Footer: `color:#aaa`, `font-size:11px`, `text-align:center`
+| # | Pregunta | Ejemplo |
+|---|----------|---------|
+| 1 | ¿En qué paso estoy? | "Ingresaste tu correo y ya casi terminas." |
+| 2 | ¿Qué debo hacer ahora? | "Ingresa este código en la pantalla de verificación:" |
+| 3 | ¿Qué pasa después? | "En cuanto lo uses, tu cuenta queda lista." |
 
-**Prohibido en correos:**
-- Imágenes o logos SVG/PNG embebidos
-- Botones con fondo de color (#00827C) — el enlace va dentro de la tabla o la descripción
-- Texto en MAYÚSCULAS SOSTENIDAS
-- Colores de fondo en el `<body>` o contenedor principal
-- Más de 3 filas en la tabla de datos
-- Emojis
+- El parámetro `cuerpo` responde las preguntas 1 y 3
+- El `contenidoCentral` (código OTP o botón) responde la pregunta 2
 
 ---
 
-## 3. Función `emailBase()` — usar SIEMPRE
+## 3. Estructura visual
 
-**Ruta:** `src/lib/email.ts`
+Orden obligatorio del cuerpo:
+1. Saludo + párrafo narrativo
+2. Contenido central (botón o código OTP)
+3. "Un saludo, El equipo de la Calculadora de Reúso"
+4. Bloque de alerta 🔔 — SIEMPRE al final, nunca antes del sign-off
+
+---
+
+## 4. Sistema de clases CSS
+
+Todos los elementos tienen clase corta para el modo noche. **Nunca omitirlas.**
+
+| Clase | Elemento | Función |
+|-------|----------|---------|
+| `.eo` | `body` + tabla exterior | Contenedor raíz. Fondo lo controla el cliente de correo del dispositivo. Nunca sobrescribir. |
+| `.ec` | `<td>` del cuerpo | Card principal. Noche: `#525252` |
+| `.eh` | `<td>` de la cabecera | Día: `#00827C`. Noche: pistacho `#D6F391`, texto `#474747` |
+| `.eb` | `<a>` del botón | Día: `#00827C` + blanco. Noche: pistacho `#D6F391` + `#474747` |
+| `.ef` | `<td>` del footer | Noche: `#474747` |
+| `.ea` | `<table>` de la alerta | Fondo `#FFF8E6`. Noche: ámbar sutil |
+| `.ek` | `<table>` del bloque OTP | Fondo `#F0F7F6`. Noche: verde sutil |
+| `.et` | `<table>` de datos | Filas de información (tickets, notificaciones) |
+
+---
+
+## 5. Colores — modo día
+
+Todo el texto del cuerpo va en **Negro Lurdes `#474747`** sin excepción.
+
+| Elemento | Valor |
+|----------|-------|
+| Cabecera fondo | `#00827C` sólido (sin gradiente) |
+| Cabecera texto principal | `#ffffff` |
+| Cabecera subtítulo | `rgba(255,255,255,0.75)` |
+| Botón fondo | `#00827C` |
+| Botón texto | `#ffffff` |
+| Card fondo | `#ffffff` |
+| Todo texto del cuerpo | `#474747` |
+| Bloque OTP fondo | `#F0F7F6` |
+| Bloque OTP código | `#00827C`, 40px, peso 800, `letter-spacing:0.25em` |
+| Alerta fondo | `#FFF8E6` |
+| Alerta texto | `#474747` |
+| Footer fondo | `#F5F5F5` |
+| Footer texto | `#474747` |
+
+---
+
+## 6. Modo noche — CSS completo
+
+El CSS de noche va SIEMPRE en el `<body>` como primer elemento hijo, NUNCA en `<head>`. Gmail elimina todos los `<style>` del `<head>` antes de renderizar.
+
+El bloque siempre lleva **cuatro secciones en este orden**. Nunca omitir ninguna.
+
+```css
+<style type="text/css">
+  /* 1. Señal de color-scheme para clientes modernos */
+  :root {
+    color-scheme: light dark;
+    supported-color-schemes: light dark;
+  }
+
+  /* 2. iOS Data Detectors — neutraliza el estilo visual cuando iOS convierte
+        texto en link de teléfono, fecha o dirección. El toque sigue siendo un
+        link pero el usuario no ve el subrayado azul. */
+  a[x-apple-data-detectors] {
+    color: inherit !important;
+    text-decoration: none !important;
+    font-size: inherit !important;
+    font-family: inherit !important;
+    font-weight: inherit !important;
+    line-height: inherit !important;
+  }
+
+  /* 3. Protección extra para links dentro del bloque OTP */
+  .otp-text a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  /* 4. Apple Mail, Outlook iOS, Samsung Mail, Thunderbird */
+  @media (prefers-color-scheme: dark) {
+    .ec { background-color: #525252 !important; }
+    .ec p, .ec td, .ec span, .ec li { color: #E0E0E0 !important; }
+    .ec strong { color: #ffffff !important; }
+    .ec a { color: #D6F391 !important; }
+    .eh { background-color: #D6F391 !important; }
+    .eh p { color: #474747 !important; }
+    .eh p + p { color: rgba(71,71,71,0.65) !important; }
+    a.eb { background-color: #D6F391 !important; color: #474747 !important; }
+    .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
+    .ef p, .ef a { color: #E0E0E0 !important; }
+    .ea td { background-color: rgba(246,191,62,0.10) !important; }
+    .ea p { color: #F6BF3E !important; }
+    .ek td { background-color: rgba(214,243,145,0.10) !important; }
+    .ek a, .ek span { color: #D6F391 !important; }
+    .ek p { color: #E0E0E0 !important; }
+    .et { background-color: rgba(214,243,145,0.08) !important; }
+    .et td { color: #E0E0E0 !important; }
+  }
+
+  /* Secciones [data-ogsc] y [data-ogsb] idénticas (Gmail app y Outlook.com web) */
+  [data-ogsc] .ec { ... }
+  [data-ogsb] .ec { ... }
+  /* Regla clave del OTP en estas secciones: .ek a, .ek span (no solo .ek span) */
+</style>
+```
+
+**Compatibilidad de modo noche por cliente de correo:**
+
+| Cliente | Mecanismo | Soporte |
+|---------|-----------|---------|
+| Apple Mail (macOS/iOS) | `@media (prefers-color-scheme: dark)` | Completo |
+| Samsung Mail | `@media (prefers-color-scheme: dark)` | Completo |
+| Thunderbird | `@media (prefers-color-scheme: dark)` | Completo |
+| Outlook iOS/macOS | `@media (prefers-color-scheme: dark)` | Completo |
+| Yahoo Mail | `@media (prefers-color-scheme: dark)` | Parcial |
+| Gmail app (Android e iOS) | `[data-ogsc]` en body | Parcial |
+| Outlook.com web | `[data-ogsb]` en body | Completo |
+| **Gmail web (navegador)** | **Ninguno — limitación de plataforma** | **Sin solución** |
+| Outlook Windows | Motor Word, sin soporte CSS | Sin solución |
+
+**Gmail web no tiene solución:** Google elimina todo el CSS del email antes de renderizarlo y aplica su propio algoritmo. No existe ningún selector CSS que lo sobrescriba. No insistir.
+
+Regla crítica de contraste: cuando el fondo es pistacho `#D6F391`, el texto siempre es `#474747`. Prohibido texto blanco sobre pistacho.
+
+Por qué `a.eb` y no `.eb`: `.ec a` tiene especificidad (0,1,1) y `.eb` tiene (0,1,0). Con `!important` en ambas, gana la más específica. `a.eb` iguala la especificidad y al ir después en el CSS, gana.
+
+---
+
+## 7. Tipografía
+
+Una sola fuente en todo el correo: `'Open Sans', Helvetica, Arial, sans-serif`
+
+Declarada en el `<body>` y heredada por todos los elementos. Prohibido `font-family: monospace`, `'Courier New'` o cualquier otra fuente en bloques de código u OTP. Los códigos se distinguen por tamaño (40px), peso (800) y letter-spacing, no por la fuente.
+
+---
+
+## 8. emailPlantilla() — correos vía Resend
+
+Ruta: `src/lib/email.ts`
 
 ```typescript
-import { emailBase } from '@/lib/email'
-
-emailBase({
-  subtitulo: 'Descripción del tipo de correo',
-  filas: [
-    { label: 'Etiqueta', valor: 'Valor o HTML simple' },
-  ],
-  descripcion: 'Texto amigable en voz activa. Puede contener <a href="...">enlaces</a> y <strong>negritas</strong>.',
+emailPlantilla({
+  preheader: 'Texto corto visible en la bandeja antes de abrir (max 90 chars)',
+  subtituloHeader: 'Subtítulo en la cabecera verde (2-5 palabras)',
+  saludo: '¡Hola, Nombre! 👋',
+  cuerpo: 'Párrafo narrativo en voz activa. Paso actual y qué sigue.',
+  contenidoCentral: '/* HTML del bloque OTP o botón CTA */',
+  alertaAccion: 'uses el código',
+  mostrarAlerta: true,
 })
 ```
 
-**Reglas de uso:**
-- `subtitulo`: 2-4 palabras que describan el tipo de correo (no el asunto)
-- `filas`: máximo 3. Solo los datos que el usuario necesita ver de un vistazo
-- `descripcion`: 1-2 oraciones en voz activa. La acción que el usuario debe tomar o el hecho relevante
+Scripts de preview local:
+```bash
+node scripts/preview-emails.mjs       # 3 correos Resend: -dia.html y -noche.html
+node scripts/supabase-templates.mjs   # 6 templates Supabase: día y noche
+```
+
+Siempre correr el script y revisar ambos modos antes de publicar.
 
 ---
 
-## 4. Correos del sistema — inventario completo
+## 9. Inventario completo
 
-### 4a. Correos vía Resend (código `src/lib/email.ts`)
+### Correos vía Resend (`src/lib/email.ts`)
 
 | Función | Cuándo se envía | Destinatario |
 |---------|----------------|--------------|
-| `enviarInvitacion()` | Admin invita a un miembro | Email invitado |
+| `enviarInvitacion()` | Admin invita a un miembro del equipo | Email del invitado |
 | `enviarNotificacionTicket()` | Se crea un ticket de soporte | `innovacion@lurdes.co` |
-| `enviarRespuestaTicket()` | Admin responde un ticket | Usuario que creó el ticket |
-| `enviarFirmaConfidencialidad()` | Usuario firma el acuerdo | Usuario + BCC a innovacion |
 
-### 4b. Correos vía Supabase Auth (Dashboard → Authentication → Email Templates)
+### Templates Supabase (Dashboard → Authentication → Email Templates)
 
-| Template | Cuándo se envía |
-|----------|----------------|
-| Confirm signup | Al registrarse (verificar correo) |
-| Reset Password | Al pedir recuperar contraseña |
-| Magic Link | Login sin contraseña (desactivado, pero debe tener template) |
-| Change Email Address | Al cambiar el correo de la cuenta |
-| Reauthentication | Al pedir verificación de identidad antes de operación sensible |
-| Invite User | Invitación nativa de Supabase (no usada, pero debe tener template) |
+Generados por `scripts/supabase-templates.mjs`. Archivos HTML en `.email-previews/supabase/`.
+
+| Archivo | Template en Supabase | Asunto |
+|---------|---------------------|--------|
+| `1-confirmar-registro.html` | Confirm signup | `Confirma tu correo en la Calculadora de Reúso` |
+| `2-invitacion-admin.html` | Invite User | `Te invitaron a la Calculadora de Reúso` |
+| `3-magic-link.html` | Magic Link | `Tu enlace de acceso a la Calculadora de Reúso` |
+| `4-cambio-correo.html` | Change Email Address | `Confirma tu nuevo correo en la Calculadora de Reúso` |
+| `5-recuperar-contrasena.html` | Reset Password | `Restablece tu contraseña en la Calculadora de Reúso` |
+| `6-reautenticacion.html` | Reauthentication | `Tu código de verificación en la Calculadora de Reúso` |
+
+Variables Supabase disponibles:
+- `{{ .ConfirmationURL }}` enlace de confirmación
+- `{{ .Token }}` código OTP (8 dígitos en recovery y reauth)
+- `{{ .Email }}` correo del usuario
+- `{{ .NewEmail }}` nuevo correo (solo en change email)
+
+Cómo pegar en Supabase: Dashboard → Authentication → Email Templates → selecciona el template → pega el HTML completo en "Body" → pega el asunto en "Subject" → Save.
 
 ---
 
-## 5. Asuntos de correo — tono y formato
+## 10. Asuntos — reglas
 
-**Regla:** Asunto = verbo imperativo + contexto. Nunca empieces con "Notificación de..." ni el nombre del sistema.
-
-**Reglas de asunto:**
-- Sin guiones, sin emojis
-- Voz activa o imperativo directo
-- Mencionar "Calculadora de Reúso" solo si aporta contexto; no como muletilla al final
+- Sin emojis, sin punto y coma, sin guión largo
+- Voz activa: "Confirma tu correo", "Tu código para..."
+- Mencionar "Calculadora de Reúso" si da contexto necesario
 - Entre 5 y 10 palabras
 
-| Correo | Asunto correcto | Asunto incorrecto |
-|--------|----------------|-------------------|
-| Confirmar registro | `Confirma tu correo para empezar` | `Verificación de cuenta — Calculadora de Reúso` |
-| Recuperar contraseña | `Tu código para crear una nueva contraseña` | `Recuperación de contraseña — Reúso` |
-| Invitación equipo | `[Empresa] te invitó a unirse a Calculadora de Reúso` | `Invitación de usuario — Reúso` |
-| Ticket de soporte | `Nuevo ticket recibido [categoría]` | `Notificación de soporte — Reúso` |
-| Respuesta ticket | `Respondieron tu consulta en Calculadora de Reúso` | `Actualización en ticket #123` |
-| Firma confidencialidad | `Tu Acuerdo de Confidencialidad está firmado` | `Documento generado — Reúso` |
-| Cambio de correo | `Confirma tu nuevo correo en Calculadora de Reúso` | `Cambio de email — Reúso` |
+---
+
+## 11. Bloque OTP — prevención de detección de teléfono en iOS
+
+iOS analiza el texto del email y convierte cualquier secuencia de 7-10 dígitos en un link de teléfono. Esto ocurre aunque el correo tenga `<meta name="format-detection" content="telephone=no">` — iOS ignora ese meta para patrones que considera "obvios".
+
+**Patrón correcto (probado y confirmado):**
+
+```html
+<!-- El span con clase otp-text permite que el CSS neutralice cualquier link
+     que iOS añada automáticamente alrededor del código -->
+<span class="otp-text" style="display:inline-block;font-size:40px;font-weight:800;
+  color:#00827C;letter-spacing:0.18em;">3784&thinsp;2951</span>
+```
+
+El `&thinsp;` parte visualmente el código en dos grupos de 4, mejorando legibilidad.
+Para Supabase templates: `{{ .Token }}` sin partir (la variable se resuelve en el servidor, no en JS).
+
+**Lo que NO funciona:**
+- `<meta name="format-detection" content="telephone=no">` — iOS lo ignora para números "obvios"
+- `x-apple-data-detectors="false"` en `<span>` — solo funciona en `<a>`, no en span
+- Grupos separados `3784 2951` con thin space — iOS sigue detectando como teléfono
+- `<a href="https://...">` — funciona para iOS pero navega al sitio web al tocar
+
+**Lo que sí funciona:**
+- CSS `a[x-apple-data-detectors]` — cuando iOS añade el link, el CSS lo hace invisible (sin subrayado azul, sin cambio de color). El usuario ve texto normal.
+- CSS `.otp-text a` — protección extra para links dentro del span OTP.
 
 ---
 
-## 6. Checklist antes de enviar a producción cualquier correo
+## 12. Checklist antes de publicar
 
-- [ ] ¿Usa `emailBase()` de `src/lib/email.ts`? (o sigue la misma estructura en Supabase)
-- [ ] ¿El subtítulo es descriptivo y en 2-4 palabras?
-- [ ] ¿La tabla tiene máximo 3 filas con los datos esenciales?
-- [ ] ¿La descripción está en voz activa e imperativo?
-- [ ] ¿El asunto empieza con verbo o contexto directo (sin "Notificación de...")?
-- [ ] ¿No hay imágenes, botones con fondo de color ni MAYÚSCULAS?
-- [ ] ¿Se probó en Gmail y en modo oscuro?
+- [ ] ¿Usa `emailPlantilla()` (Resend) o `plantilla()` (supabase-templates.mjs)?
+- [ ] ¿CSS en `<body>` (primer hijo), NO en `<head>`?
+- [ ] ¿CSS tiene las 4 secciones: `:root`, `a[x-apple-data-detectors]`, `.otp-text a`, `@media` + `[data-ogsc]` + `[data-ogsb]`?
+- [ ] ¿Bloque OTP usa `<span class="otp-text">` con grupos de 4 separados por `&thinsp;`?
+- [ ] ¿Todo el texto del cuerpo en `#474747`?
+- [ ] ¿Cabecera con `class="eh"`, botón con `a.eb`, footer con `class="ef"`?
+- [ ] ¿El bloque 🔔 va DESPUÉS del sign-off?
+- [ ] ¿Sin mención a ningún correo de soporte?
+- [ ] ¿Sin `;` ni `—` en ningún texto visible?
+- [ ] ¿Sin mayúsculas sostenidas?
+- [ ] ¿Fuente Open Sans en todo el correo, sin monospace?
+- [ ] ¿Preview revisado en modo día Y modo noche?

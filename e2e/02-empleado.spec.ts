@@ -7,13 +7,13 @@ test.describe('empleado', () => {
     await page.goto('/dashboard')
   })
 
-  test('01 — login aterriza en /dashboard (no /empresa ni /admin)', async ({ page }) => {
+  test('01 - login aterriza en /dashboard (no /empresa ni /admin)', async ({ page }) => {
     await expect(page).toHaveURL(/\/dashboard/)
     expect(page.url()).not.toMatch(/\/empresa/)
     expect(page.url()).not.toMatch(/\/admin/)
   })
 
-  test('02 — cálculo persiste en historial tras recargar', async ({ page }) => {
+  test('02 - cálculo persiste en historial tras recargar', async ({ page }) => {
     const boton = page.locator('button').filter({ hasText: /Ropa y Textiles|Muebles/i }).first()
     await expect(boton).toBeVisible({ timeout: 10_000 })
     await boton.click()
@@ -31,19 +31,19 @@ test.describe('empleado', () => {
     expect(textoCO2).toMatch(/\d+/)
   })
 
-  test('03 — /empresa/equipo bloqueado por URL directa', async ({ page }) => {
+  test('03 - /empresa/equipo bloqueado por URL directa', async ({ page }) => {
     await page.goto('/empresa/equipo')
     await page.waitForURL(/(?!.*\/empresa)/, { timeout: 8_000 })
     expect(page.url()).not.toMatch(/\/empresa/)
   })
 
-  test('04 — /empresa/configuracion bloqueado por URL directa', async ({ page }) => {
+  test('04 - /empresa/configuracion bloqueado por URL directa', async ({ page }) => {
     await page.goto('/empresa/configuracion')
     await page.waitForURL(/(?!.*\/empresa)/, { timeout: 8_000 })
     expect(page.url()).not.toMatch(/\/empresa/)
   })
 
-  test('05 — API de invitar rechaza a empleado con 401 o 403', async ({ page }) => {
+  test('05 - API de invitar rechaza a empleado con 401 o 403', async ({ page }) => {
     const res = await page.request.post('/api/empresa/invitar', {
       data: {
         email: 'intruso@ejemplo.com',
@@ -54,13 +54,13 @@ test.describe('empleado', () => {
     expect([401, 403]).toContain(res.status())
   })
 
-  test('06 — /admin/empresas bloqueado por URL directa', async ({ page }) => {
+  test('06 - /admin/empresas bloqueado por URL directa', async ({ page }) => {
     await page.goto('/admin/empresas')
     await page.waitForURL(/(?!.*\/admin)/, { timeout: 8_000 })
     expect(page.url()).not.toMatch(/\/admin/)
   })
 
-  test('07 — ticket de soporte persiste en lista tras recargar', async ({ page }) => {
+  test('07 - ticket de soporte persiste en lista tras recargar', async ({ page }) => {
     await page.goto('/dashboard/soporte')
     await page.waitForLoadState('load')
     const tituloUnico = `E2E empleado ${Date.now()}`
@@ -76,7 +76,7 @@ test.describe('empleado', () => {
     await expect(page.getByText(tituloUnico)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('08 — panel certificados carga con ambos botones visibles', async ({ page }) => {
+  test('08 - panel certificados carga con ambos botones visibles', async ({ page }) => {
     await page.goto('/dashboard/certificados')
     await page.waitForLoadState('load')
     await expect(page.locator('button:has-text("Generar certificado")')).toBeVisible({ timeout: 10_000 })

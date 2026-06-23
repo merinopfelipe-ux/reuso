@@ -1,4 +1,4 @@
-// 🔒 ARCHIVO PROTEGIDO — NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
+// 🔒 ARCHIVO PROTEGIDO - NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -91,7 +91,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
   async function cerrarSesion() {
     setDropdownOpen(false)
     await fetch('/api/auth/logout', { method: 'POST' })
-    router.push('/')
+    router.push('/login')
     router.refresh()
   }
 
@@ -206,7 +206,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
     cursor: 'pointer'
   }
 
-  // LIQUID GLASS V13.30 — Cabecera BLANCA en día
+  // LIQUID GLASS V13.30 - Cabecera BLANCA en día
   const headerBg = isDark
     ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)'
     : 'rgba(255, 255, 255, 0.5)'
@@ -232,7 +232,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
           ? '1px solid rgba(255, 255, 255, 0.08)'
           : '1px solid rgba(255, 255, 255, 0.6)',
         boxShadow: isDark
-          ? '0 4px 24px rgba(0,130,124,0.15), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,130,124,0.15)'
+          ? '0 4px 24px rgba(214,243,145,0.12), inset 0 1px 0 rgba(214,243,145,0.15), inset 0 -1px 0 rgba(214,243,145,0.10)'
           : '0 4px 24px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,130,124,0.04)',
         userSelect: 'none'
       }}

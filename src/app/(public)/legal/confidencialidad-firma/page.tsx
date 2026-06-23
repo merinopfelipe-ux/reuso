@@ -9,7 +9,7 @@ import { LegalPageLayout } from '@/components/legal/legal-page-layout'
 const T = {
   ES: {
     titulo: 'Acuerdo de Confidencialidad',
-    breadcrumb: 'Confidencialidad — Firma',
+    breadcrumb: 'Confidencialidad - Firma',
     secciones: [
       { id: 'objeto', label: 'Objeto' },
       { id: 'definicion', label: 'Información confidencial' },
@@ -135,7 +135,7 @@ const T = {
   },
   ENG: {
     titulo: 'Non-Disclosure Agreement',
-    breadcrumb: 'Confidentiality — Sign',
+    breadcrumb: 'Confidentiality - Sign',
     secciones: [
       { id: 'objeto', label: 'Purpose' },
       { id: 'definicion', label: 'Confidential information' },
@@ -659,7 +659,7 @@ function FirmaSection({ tf }: { tf: typeof T['ES']['firma'] }) {
         </div>
       )}
 
-      {/* Formulario — siempre visible pero congelado si no ha aceptado */}
+      {/* Formulario - siempre visible pero congelado si no ha aceptado */}
       {!enviado && (
         <form
           onSubmit={handleSubmit}

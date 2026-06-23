@@ -97,7 +97,7 @@ function expandirCampos(raw: unknown): DatosExpandidos {
   }
 }
 
-// ── IA 1-texto: Gemini — extractor de texto puro (PDF ya convertido a TXT) ───
+// ── IA 1-texto: Gemini - extractor de texto puro (PDF ya convertido a TXT) ───
 
 const GEMINI_RESPONSE_SCHEMA = {
   type: 'OBJECT',
@@ -150,7 +150,7 @@ async function llamarGeminiTexto(textoDoc: string, system: string, user: string)
   } catch { return { ok: false, json: null, proveedor: 'gemini' } }
 }
 
-// ── IA 2-texto: OpenRouter — fallback texto puro ─────────────────────────────
+// ── IA 2-texto: OpenRouter - fallback texto puro ─────────────────────────────
 
 async function llamarOpenRouterTexto(textoDoc: string, system: string, user: string): Promise<IAResult> {
   const key = process.env.OR_KEY
@@ -176,7 +176,7 @@ async function llamarOpenRouterTexto(textoDoc: string, system: string, user: str
   } catch { return { ok: false, json: null, proveedor: 'openrouter' } }
 }
 
-// ── IA 1: Gemini 2.0 Flash — extractor visual primario ───────────────────────
+// ── IA 1: Gemini 2.0 Flash - extractor visual primario ───────────────────────
 
 async function llamarGemini(base64Data: string, mimeType: string, system: string, user: string): Promise<IAResult> {
   const key = process.env.GEMINI_KEY
@@ -212,7 +212,7 @@ async function llamarGemini(base64Data: string, mimeType: string, system: string
   } catch { return { ok: false, json: null, proveedor: 'gemini' } }
 }
 
-// ── IA 2: OpenRouter Qwen-VL — segundo extractor visual (perspectiva diferente) ──
+// ── IA 2: OpenRouter Qwen-VL - segundo extractor visual (perspectiva diferente) ──
 
 async function llamarOpenRouter(base64Data: string, mimeType: string, system: string, user: string): Promise<IAResult> {
   const key = process.env.OR_KEY
@@ -242,7 +242,7 @@ async function llamarOpenRouter(base64Data: string, mimeType: string, system: st
   } catch { return { ok: false, json: null, proveedor: 'openrouter' } }
 }
 
-// ── IA 3: Groq LLaMA — validador de coherencia DPP (sin visión, texto puro) ──
+// ── IA 3: Groq LLaMA - validador de coherencia DPP (sin visión, texto puro) ──
 // No extrae: ajusta la confianza de los campos ya extraídos según coherencia DPP
 
 async function validarConGroq(campos: CampoExtraido[], tipoActivo: string): Promise<CampoExtraido[]> {
@@ -373,7 +373,7 @@ export async function POST(request: NextRequest) {
         if (fallback.ok) extraccion = fallback
       }
     } else {
-      // ── Flujo visión: imágenes JPG/PNG — mantener pipeline original ──
+      // ── Flujo visión: imágenes JPG/PNG - mantener pipeline original ──
       const base64Data = Buffer.from(await archivoRes.arrayBuffer()).toString('base64')
       let mimeType = 'image/jpeg'
       if (nombre.endsWith('.png')) mimeType = 'image/png'
@@ -396,7 +396,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── PASO 3: Groq valida coherencia — SOLO si hay confianza baja < 0.7 ──
+    // ── PASO 3: Groq valida coherencia - SOLO si hay confianza baja < 0.7 ──
     // Si todos los campos tienen buena confianza, omitir la llamada a Groq (ahorra 1 API call)
     const datosExpandidos = extraccion.ok ? expandirCampos(extraccion.json) : null
     let camposFinales = datosExpandidos?.campos_extraidos ?? []

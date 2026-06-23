@@ -15,8 +15,15 @@ VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 - Acento de modo noche: `bg-[#D6F391]`, `text-[#D6F391]`
 - CSS variable `--color-brand` en dark theme → `#D6F391`
 - CSS variable `--color-pistacho` → `#D6F391`
+- **REGLA CRÍTICA DE CONTRASTE:** Cuando el fondo ES pistacho (`bg-[#D6F391]`), el texto SIEMPRE es Negro Lurdes `text-[#474747]`. PROHIBIDO usar texto blanco (`text-white`, `#fff`, `#ffffff`) sobre fondo pistacho. El pistacho es un color claro — el texto blanco no se lee.
 
 **REGLA GENERAL DE COLORES:** Antes de reemplazar cualquier valor hex en más de 2 archivos, el usuario debe escribir explícitamente el nuevo valor hex en su mensaje. Si algo parece "no autorizado" → PREGUNTAR antes de cambiar, nunca asumir.
+
+**FONDOS SIEMPRE PLANOS — REGLA ABSOLUTA:**
+- Día: `#FFFFFF` blanco puro. Noche: `#474747` Negro Lurdes.
+- PROHIBIDO en fondos de página: gradientes, blobs, efectos de luz, glows, animate-blob, radial-gradient, linear-gradient como fondo de pantalla completa.
+- Los efectos visuales (glass, blur, sombras) solo se permiten en componentes internos (cards, modales, sidebar, header), NUNCA como fondo de página.
+- Si una página tiene `animate-blob`, blobs absolutos o gradientes de fondo → son bugs, eliminarlos de inmediato.
 
 ## NOMBRE DEL PRODUCTO — REGLA ABSOLUTA
 El nombre es **Calculadora de Reúso**. NUNCA escribir solo "Reúso" como nombre del producto.
@@ -56,6 +63,15 @@ Excepción técnica permitida: slugs de URL y variables en código (`reuso.lurde
    Prompts Claude Code: reutiliza código existente, no re-escribas.
    Performance: menos de 2s carga, ISR en públicas, lazy-load.
    Prohibido alucinar: no inventar colores, componentes ni factores.
+
+7) SIN PUNTO Y COMA NI GUIÓN LARGO EN COPY: NUNCA usar `;` ni `—` en textos visibles de UI, correos, tooltips, placeholders, mensajes de error ni botones.
+   Solo punto (`.`) o coma (`,`) para separar oraciones y listas. Aplica a todo texto que el usuario lea.
+   El guión largo hace pesada la lectura. Reemplazar con punto seguido o punto aparte según el contexto.
+
+8) TURNSTILE SIEMPRE FAIL-OPEN: El widget de Cloudflare Turnstile protege pero NUNCA bloquea al usuario si no carga.
+   Frontend: el botón de submit NUNCA requiere `turnstileToken` en `formValido`. El token se envía si llegó, pero no se exige.
+   Backend: si `turnstile_token` está vacío o ausente, se omite la verificación y se continúa el flujo (fail-open).
+   Solo se rechaza si el token llega Y falla la verificación con Cloudflare.
 
 ## 🔐 SEGURIDAD — REGLAS MÍNIMAS INQUEBRANTABLES
 - **NUNCA** renderizar HTML de usuario con `dangerouslySetInnerHTML` sin `DOMPurify.sanitize()` antes (en el API route, antes del INSERT).
@@ -135,6 +151,25 @@ Estado: Cotizador V6 2026-06-05 — Marca personalizable (logo, footer, WhatsApp
 Flujos: Cotizador IA (/empresa/cotizador) y DPP con IA (/empresa/dpp/nuevo) son independientes. La cotización migra a DPP solo si el comercial activa la casilla explícitamente.
 Tablas nuevas (migración 018 + 019 + 020): crm_cotizaciones, crm_clientes, crm_muebles_cotizados, crm_config_costos, cotizador_precios, cotizador_pipeline, modulos_usuarios + columnas marca en empresas.
 Keys requeridas: GEMINI_KEY, OR_KEY, GROQ_KEY, CRON_SECRET, NEXT_PUBLIC_BASE_URL (agregar a .env.local y variables de entorno en Vercel).
+
+## MÓDULO AUTH — COMPLETO (V15.0, 2026-06-16)
+
+Auditoría y refactor completo del primer módulo. Todos los flujos de autenticación quedan funcionales y testeables.
+
+| Ítem | Estado |
+|---|---|
+| OTPInput dividido (6 cajas, auto-avance, pegado) en confirmar-email, recuperar, settings | ✓ |
+| Dark mode + ThemeToggle en confirmar-email (completaba el set de páginas auth) | ✓ |
+| Patrón Bancolombia en registro paso 3 (tarjetas + modal + "Entendido, acepto") | ✓ |
+| Email rediseño completo — 6 templates Supabase + enviarInvitacion + enviarNotificacionTicket | ✓ |
+| Cabecera sólida `#00827C` (sin gradiente), cuerpo `#474747`, dark mode `@media (prefers-color-scheme: dark)` | ✓ |
+| aceptaLegal inicia en false (usuario debe marcar conscientemente) | ✓ |
+| Links internos /registro y /recuperar ya no abren en pestaña nueva | ✓ |
+| Apodo duplicado eliminado de registro; campo único con validación y contador | ✓ |
+| Tests QA set-03 y set-04 (cambiar correo + bloqueo por intentos) | ✓ |
+| **Supabase Dashboard — todos los ajustes manuales aplicados** | ✓ |
+
+**Supabase configurado (2026-06-16):** 6 templates de email con diseño gradiente y narrativa 3 pasos aplicados. OTP Expiry ≥ 600s. El flujo OTP de recuperación funciona end-to-end.
 
 ## PRINCIPIO FINAL
 No es proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.

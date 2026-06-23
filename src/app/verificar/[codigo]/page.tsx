@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: 'Certificado verificado',
     description: desc || 'Certificado de impacto ambiental verificado en reuso.lurdes.co',
     openGraph: {
-      title: titular ? `Certificado de ${titular} — reuso.lurdes.co` : 'Certificado verificado — reuso.lurdes.co',
+      title: titular ? `Certificado de ${titular} - reuso.lurdes.co` : 'Certificado verificado - reuso.lurdes.co',
       description: desc || 'Certificado de impacto ambiental por reúso de objetos',
       images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     },
@@ -276,7 +276,7 @@ export default async function VerificarPage({ params }: PageProps) {
                   {cert.tipo === 'certificado' ? 'Período de impacto verificado' : 'Período del informe'}
                 </p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                  {formatFecha(cert.fecha_inicio ?? cert.created_at)} — {formatFecha(cert.fecha_fin ?? cert.created_at)}
+                  {formatFecha(cert.fecha_inicio ?? cert.created_at)} - {formatFecha(cert.fecha_fin ?? cert.created_at)}
                 </p>
               </div>
             </div>

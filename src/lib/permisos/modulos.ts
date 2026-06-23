@@ -8,7 +8,7 @@ export type ClaveMódulo = 'cotizador_crm'
  *   1. La empresa del usuario tiene el módulo activo (modulos_empresas).
  *   2. El usuario tiene acceso al módulo (modulos_usuarios activo = true),
  *      O no existe registro aún en modulos_usuarios (el empresa_admin aún no
- *      restringió — en ese caso, si la empresa lo tiene activo, el empleado accede).
+ *      restringió - en ese caso, si la empresa lo tiene activo, el empleado accede).
  *
  * El super_admin siempre tiene acceso.
  */

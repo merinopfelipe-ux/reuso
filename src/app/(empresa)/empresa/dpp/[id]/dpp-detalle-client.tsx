@@ -55,12 +55,12 @@ const errorBannerStyle: React.CSSProperties = {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function formatFecha(iso: string | null) {
-  if (!iso) return '—'
+  if (!iso) return '-'
   return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
 function formatMoneda(n: number | null | undefined, moneda: string) {
-  if (n == null) return '—'
+  if (n == null) return '-'
   return n.toLocaleString('es-CO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 })
 }
 
@@ -176,7 +176,7 @@ function ModalResultadosIA({
           <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{resultado.resumen}</p>
         )}
         <div style={{ background: 'rgba(89,166,228,0.08)', border: '1px solid rgba(89,166,228,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#1A3A38' }}>
-          Revisa los valores antes de aceptarlos. La IA extrae lo que ve — tú confirmas lo que es correcto.
+          Revisa los valores antes de aceptarlos. La IA extrae lo que ve - tú confirmas lo que es correcto.
         </div>
         {campos.length === 0 ? (
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>La IA no encontró datos extraíbles. Ingresa los valores manualmente en el tab de Métricas.</p>
@@ -285,7 +285,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
   const router = useRouter()
   const [tabActivo, setTabActivo] = useState<'pasaporte' | 'ciclos' | 'metricas' | 'documentos'>('pasaporte')
 
-  // — Modal ciclo —
+  // - Modal ciclo -
   const [showModalCiclo, setShowModalCiclo] = useState(false)
   const [cicloForm, setCicloForm] = useState({
     operacion_realizada: '', fecha_inicio: '', fecha_fin: '', descripcion: '', distancia_transporte_km: '0',
@@ -293,7 +293,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
   const [loadingCiclo, setLoadingCiclo] = useState(false)
   const [errorCiclo, setErrorCiclo] = useState<string | null>(null)
 
-  // — Métricas financieras —
+  // - Métricas financieras -
   const [moneda, setMoneda] = useState<'COP' | 'USD' | 'EUR'>('COP')
   const [isOpenMoneda, setIsOpenMoneda] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -324,7 +324,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
   const [grupoB, setGrupoB] = useState(true)
   const [grupoC, setGrupoC] = useState(false)
 
-  // — Documentos —
+  // - Documentos -
   const [documentosList, setDocumentosList] = useState<Documento[]>(documentos)
   const [uploadFile, setUploadFile] = useState<File | null>(null)
   const [uploadTipo, setUploadTipo] = useState('factura_compra')
@@ -393,7 +393,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(20)
     doc.setTextColor(0, 130, 124)
-    doc.text('Reporte CFO — Pasaporte Digital de Producto', 20, 28)
+    doc.text('Reporte CFO - Pasaporte Digital de Producto', 20, 28)
     doc.setTextColor(30, 30, 30)
     doc.setFontSize(13)
     doc.setFont('helvetica', 'normal')
@@ -575,13 +575,13 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                         <td style={{ padding: '9px 10px', fontWeight: 600 }}>{m.material}</td>
                         <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.peso_kg}</td>
                         <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.factor_co2_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '—'}</td>
+                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '-'}</td>
                         <td style={{ padding: '9px 10px' }}>
                           {m.nivel_confianza ? (
                             <span style={{ background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5'}1A`, color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
                               {m.nivel_confianza}
                             </span>
-                          ) : '—'}
+                          ) : '-'}
                         </td>
                       </tr>
                     ))}
@@ -697,7 +697,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
         <div>
           <div style={{ background: 'rgba(0,130,124,0.06)', borderRadius: 12, padding: '14px 16px', marginBottom: 24 }}>
             <p style={{ margin: 0, fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.65 }}>
-              Ingresa los datos económicos y descubre cuánto ahorras reutilizando. Estos datos son privados — solo tu equipo los ve.
+              Ingresa los datos económicos y descubre cuánto ahorras reutilizando. Estos datos son privados - solo tu equipo los ve.
             </p>
           </div>
 
@@ -736,7 +736,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                       alt={moneda}
                       style={{ width: '20px', height: '15px', objectFit: 'cover', borderRadius: '2px' }}
                     />
-                    {moneda === 'COP' ? 'COP — Peso colombiano' : moneda === 'USD' ? 'USD — Dólar' : 'EUR — Euro'}
+                    {moneda === 'COP' ? 'COP - Peso colombiano' : moneda === 'USD' ? 'USD - Dólar' : 'EUR - Euro'}
                   </span>
                   <CaretDown size={16} style={{ color: 'var(--text-secondary)' }} />
                 </button>
@@ -757,9 +757,9 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                     }}
                   >
                     {[
-                      { value: 'COP', name: 'COP — Peso colombiano', flag: 'co' },
-                      { value: 'USD', name: 'USD — Dólar', flag: 'us' },
-                      { value: 'EUR', name: 'EUR — Euro', flag: 'eu' },
+                      { value: 'COP', name: 'COP - Peso colombiano', flag: 'co' },
+                      { value: 'USD', name: 'USD - Dólar', flag: 'us' },
+                      { value: 'EUR', name: 'EUR - Euro', flag: 'eu' },
                     ].map((opt) => (
                       <button
                         key={opt.value}
@@ -870,9 +870,9 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                         <td style={{ padding: '9px 12px', color: 'var(--text-secondary)', fontSize: 12 }}>{formatFecha(m.calculado_at)}</td>
                         <td style={{ padding: '9px 12px', fontWeight: 600 }}>{formatMoneda(m.tco, 'COP')}</td>
                         <td style={{ padding: '9px 12px', color: '#38B98E', fontWeight: 600 }}>{formatMoneda(m.costo_evitado, 'COP')}</td>
-                        <td style={{ padding: '9px 12px' }}>{m.e_roi != null ? `${m.e_roi}%` : '—'}</td>
-                        <td style={{ padding: '9px 12px' }}>{m.ice_porcentaje != null ? `${m.ice_porcentaje}%` : '—'}</td>
-                        <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)' }}>{m.version ?? '—'}</td>
+                        <td style={{ padding: '9px 12px' }}>{m.e_roi != null ? `${m.e_roi}%` : '-'}</td>
+                        <td style={{ padding: '9px 12px' }}>{m.ice_porcentaje != null ? `${m.ice_porcentaje}%` : '-'}</td>
+                        <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)' }}>{m.version ?? '-'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -888,7 +888,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
         <div>
           <div style={{ background: 'rgba(0,130,124,0.06)', borderRadius: 12, padding: '14px 16px', marginBottom: 24 }}>
             <p style={{ margin: 0, fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.65 }}>
-              Sube tus facturas o fotos del objeto. Extraemos los datos por ti y tú los confirmas — la IA propone, tú decides.
+              Sube tus facturas o fotos del objeto. Extraemos los datos por ti y tú los confirmas - la IA propone, tú decides.
             </p>
           </div>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 24 }}>

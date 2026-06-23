@@ -116,7 +116,7 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
               <div>
                 <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>Empresa</label>
                 <select style={inputSt} value={form.destinatario_id} onChange={e => setForm(p => ({ ...p, destinatario_id: e.target.value }))}>
-                  <option value="">— Selecciona empresa —</option>
+                  <option value="">- Selecciona empresa -</option>
                   {empresas.map(emp => <option key={emp.id} value={emp.id}>{emp.nombre}</option>)}
                 </select>
               </div>

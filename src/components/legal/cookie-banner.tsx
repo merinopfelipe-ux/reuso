@@ -17,8 +17,9 @@ const LEGACY_KEY = 'reuso_cookies_aceptadas'
 
 const T = {
   ES: {
-    heading: 'Cookies en Reúso',
-    text: 'Usamos cookies esenciales para que el sitio funcione. Con tu permiso, también medimos qué secciones son más útiles. Sin rastreadores ni venta de datos.',
+    heading: 'Tu privacidad, tus reglas',
+    text: 'Usamos cookies esenciales para que la plataforma funcione. Con tu permiso, también activamos cookies que recuerdan tus preferencias y nos dicen qué mejorar.',
+    text2: 'Si aceptas, aprovechas todo. Si rechazas, solo usamos lo estrictamente necesario. Puedes cambiar esto cuando quieras.',
     privacidad: 'Privacidad',
     politica: 'Política de cookies',
     btnEsenciales: 'Solo esenciales',
@@ -27,15 +28,16 @@ const T = {
     personalizarTitle: 'Personalizar cookies',
     btnGuardar: 'Guardar preferencias',
     catEsenciales: 'Esenciales',
-    catEsencialesDesc: 'Sesión activa, protección CSRF y tu elección de cookies. Sin estas el sitio no funciona.',
+    catEsencialesDesc: 'Siempre activas. Mantienen tu sesión, protegen los formularios y guardan tu elección aquí.',
     catFuncionales: 'Funcionales',
-    catFuncionalesDesc: 'Recuerdan tus preferencias de interfaz y la opción de mantener la sesión activa.',
+    catFuncionalesDesc: 'Recuerdan tu modo (día/noche), idioma y si quieres mantener la sesión entre visitas.',
     catAnaliticas: 'Analíticas',
-    catAnaliticasDesc: 'Estadísticas de uso y análisis de comportamiento para mejorar la plataforma. Opcionales.',
+    catAnaliticasDesc: 'Nos dicen qué secciones usas más para ayudarnos a mejorar. Nunca identifican personas.',
   },
   ENG: {
-    heading: 'Cookies on Reúso',
-    text: 'We use essential cookies to keep the site working. With your permission, we also measure which sections are most useful. No trackers, no data sales.',
+    heading: 'Your privacy, your call',
+    text: 'We use essential cookies to keep the platform running. With your permission, we also enable cookies that remember your preferences and help us improve.',
+    text2: 'Accept all to get the full experience, or decline to keep only what\'s strictly necessary. You can change this anytime.',
     privacidad: 'Privacy',
     politica: 'Cookie policy',
     btnEsenciales: 'Essential only',
@@ -44,11 +46,11 @@ const T = {
     personalizarTitle: 'Customize cookies',
     btnGuardar: 'Save preferences',
     catEsenciales: 'Essential',
-    catEsencialesDesc: 'Active session, CSRF protection, and your cookie choice. Without these, the site does not work.',
+    catEsencialesDesc: 'Always on. They keep your session active, protect forms, and save your choice here.',
     catFuncionales: 'Functional',
-    catFuncionalesDesc: 'Remember your interface preferences and the option to keep your session active.',
+    catFuncionalesDesc: 'Remember your theme (light/dark), language, and whether to keep your session active.',
     catAnaliticas: 'Analytics',
-    catAnaliticasDesc: 'Usage statistics and behaviour analysis to improve the platform. Optional.',
+    catAnaliticasDesc: 'Tell us which sections you use most so we can improve. Never identify individuals.',
   }
 }
 
@@ -203,15 +205,14 @@ export function CookieBanner() {
               <Cookie size={20} color="var(--color-brand)" />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ margin: '0 0 4px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
+              <p style={{ margin: '0 0 6px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.3 }}>
                 {t.heading}
               </p>
+              <p style={{ margin: '0 0 6px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
+                {t.text}
+              </p>
               <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65 }}>
-                {esColombia ? (
-                  lang === 'ES'
-                    ? 'Aceptamos cookies esenciales, funcionales y analíticas por defecto para optimizar la plataforma en Colombia bajo la Ley 1581 de 2012. Puedes personalizarlas o revocarlas aquí:'
-                    : 'We accept essential, functional and analytical cookies by default to optimize the platform in Colombia under Law 1581 of 2012. You can customize or revoke them here:'
-                ) : t.text}{' '}
+                {t.text2}{' '}
                 <Link href="/legal/privacidad" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
                   {t.privacidad}
                 </Link>
@@ -249,7 +250,7 @@ export function CookieBanner() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
-            {/* Esenciales — bloqueadas */}
+            {/* Esenciales - bloqueadas */}
             <ToggleRow
               label={t.catEsenciales}
               desc={t.catEsencialesDesc}

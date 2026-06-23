@@ -57,7 +57,7 @@ const FAQS = [
   },
   {
     q: '¿El diagnóstico circular sirve para informes ESG?',
-    a: 'Nuestros diagnósticos incluyen código QR verificable y metodología basada en estándares GHG Protocol. Son una fuente de datos válida para informes ESG, licitaciones públicas y comunicación a clientes e inversores — sin afirmar que el diagnóstico en sí es una certificación ambiental.',
+    a: 'Nuestros diagnósticos incluyen código QR verificable y metodología basada en estándares GHG Protocol. Son una fuente de datos válida para informes ESG, licitaciones públicas y comunicación a clientes e inversores - sin afirmar que el diagnóstico en sí es una certificación ambiental.',
   },
 ]
 
@@ -257,7 +257,7 @@ export default function Landing2Page() {
         }
       />
 
-      {/* ── SECCIÓN 1 — HERO ──────────────────────────────────────────────── */}
+      {/* ── SECCIÓN 1 - HERO ──────────────────────────────────────────────── */}
       <section className="pt-32 pb-24 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -328,7 +328,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 2 — AUTORIDAD ─────────────────────────────────────────── */}
+      {/* ── SECCIÓN 2 - AUTORIDAD ─────────────────────────────────────────── */}
       <section id="autoridad" className={`py-6 px-6 border-y transition-colors duration-300 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#00827C]/5 border-[#00827C]/10'}`}>
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left">
           <div className="flex items-center gap-3 text-[#00827C]">
@@ -337,7 +337,7 @@ export default function Landing2Page() {
             <Globe size={22} weight="duotone" />
           </div>
           <h2 className={`text-sm font-bold max-w-2xl ${tp}`}>
-            La métrica de confianza para la economía circular. Datos trazables a fuentes internacionales — IPCC, ecoinvent, DEFRA.
+            La métrica de confianza para la economía circular. Datos trazables a fuentes internacionales - IPCC, ecoinvent, DEFRA.
           </h2>
           <div className="flex items-center gap-3 text-[#00827C]">
             <ShieldCheck size={22} weight="duotone" />
@@ -347,7 +347,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 3 — COMPARATIVA ───────────────────────────────────────── */}
+      {/* ── SECCIÓN 3 - COMPARATIVA ───────────────────────────────────────── */}
       <section id="comparativa" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
@@ -366,7 +366,7 @@ export default function Landing2Page() {
                 <div className="w-10 h-10 rounded-xl bg-[#FF5E4B]/10 flex items-center justify-center">
                   <span className="text-[#FF5E4B] font-black text-lg">×</span>
                 </div>
-                <h3 className={`text-lg font-black ${tp}`}>Economía Lineal — Comprar y desechar</h3>
+                <h3 className={`text-lg font-black ${tp}`}>Economía Lineal - Comprar y desechar</h3>
               </div>
               <ul className="space-y-4">
                 {[
@@ -377,7 +377,7 @@ export default function Landing2Page() {
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <div className="mt-0.5 w-5 h-5 rounded-full bg-[#FF5E4B]/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-[#FF5E4B] text-[10px] font-black">—</span>
+                      <span className="text-[#FF5E4B] text-[10px] font-black">-</span>
                     </div>
                     <span className={`text-sm font-medium leading-relaxed ${ts}`}>{item}</span>
                   </li>
@@ -397,7 +397,7 @@ export default function Landing2Page() {
                 <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center">
                   <Check size={20} weight="bold" className="text-[#00827C]" />
                 </div>
-                <h3 className={`text-lg font-black ${tp}`}>Economía Circular — Reutilizar y optimizar</h3>
+                <h3 className={`text-lg font-black ${tp}`}>Economía Circular - Reutilizar y optimizar</h3>
               </div>
               <ul className="relative z-10 space-y-4">
                 {[
@@ -419,7 +419,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 4 — CATEGORÍAS ────────────────────────────────────────── */}
+      {/* ── SECCIÓN 4 - CATEGORÍAS ────────────────────────────────────────── */}
       <section id="categorias" className={`py-24 px-6 border-t transition-colors duration-300 ${isDark ? 'bg-[#525252]/40 border-white/8' : 'bg-[#00827C]/[0.02] border-[#00827C]/8'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
@@ -507,7 +507,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 5 — PROCESO ───────────────────────────────────────────── */}
+      {/* ── SECCIÓN 5 - PROCESO ───────────────────────────────────────────── */}
       <section id="proceso" className="py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-12">
@@ -521,7 +521,7 @@ export default function Landing2Page() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { n: '01', Icon: Flask, titulo: 'Sube tus datos', desc: 'Ingresa los ítems recuperados o reacondicionados en nuestra plataforma. Textil, indumentaria, mobiliario — cada categoría tiene su propio flujo optimizado.' },
+              { n: '01', Icon: Flask, titulo: 'Sube tus datos', desc: 'Ingresa los ítems recuperados o reacondicionados en nuestra plataforma. Textil, indumentaria, mobiliario - cada categoría tiene su propio flujo optimizado.' },
               { n: '02', Icon: Target, titulo: 'El algoritmo calcula', desc: 'Cruzamos tus datos con factores de emisión del IPCC y bases de datos internacionales (ecoinvent, DEFRA) para obtener métricas verificables de carbono y agua.' },
               { n: '03', Icon: ShieldCheck, titulo: 'Exporta y demuestra', desc: 'Genera diagnósticos circulares y reportes listos para revelar el valor oculto en tus operaciones. Cada documento incluye QR verificable y metodología trazable.' },
             ].map((paso, i) => (
@@ -544,7 +544,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 6 — PLANES ────────────────────────────────────────────── */}
+      {/* ── SECCIÓN 6 - PLANES ────────────────────────────────────────────── */}
       <section id="planes" className={`py-24 px-6 border-t transition-colors duration-300 ${isDark ? 'bg-[#525252]/40 border-white/8' : 'bg-[#00827C]/[0.02] border-[#00827C]/8'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-12 text-center">
@@ -607,7 +607,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 7 — FAQ ───────────────────────────────────────────────── */}
+      {/* ── SECCIÓN 7 - FAQ ───────────────────────────────────────────────── */}
       <section id="faq" className="py-24 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="mb-12 text-center">
@@ -622,7 +622,7 @@ export default function Landing2Page() {
         </div>
       </section>
 
-      {/* ── SECCIÓN 8 — CTA FINAL ─────────────────────────────────────────── */}
+      {/* ── SECCIÓN 8 - CTA FINAL ─────────────────────────────────────────── */}
       <section id="cta-final" className="py-24 px-6">
         <div className="max-w-4xl mx-auto">
           <div className={`relative p-12 md:p-16 rounded-[3rem] overflow-hidden text-center ${liquidGlass}`}>

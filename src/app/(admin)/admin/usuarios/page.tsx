@@ -19,10 +19,11 @@ export default async function UsuariosPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(searchParams.pageSize ?? String(DEFAULT_PAGE_SIZE))))
-  const page = Math.max(1, parseInt(searchParams.page ?? '1'))
-  const search = searchParams.search ?? ''
-  const rolFiltro = searchParams.rol ?? ''
+  const params = searchParams ?? {}
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(params.pageSize ?? String(DEFAULT_PAGE_SIZE))))
+  const page = Math.max(1, parseInt(params.page ?? '1'))
+  const search = params.search ?? ''
+  const rolFiltro = params.rol ?? ''
   const offset = (page - 1) * pageSize
 
   const adminClient = await createAdminClient()

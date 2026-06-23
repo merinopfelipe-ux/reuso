@@ -1,0 +1,117 @@
+---
+name: pruebas
+description: Use when running, debugging or fixing E2E tests for Calculadora de Reúso. Covers the 12-phase Playwright suite (120 tests): phase-to-file map, exact expected values, debug commands, and common failure patterns.
+---
+
+# Skill: /pruebas — Blindaje Total QA (12 Fases, 120 Tests)
+
+Al invocar `/pruebas`, ejecuta `npm run pruebas` y repara cualquier fallo encontrado.
+
+## Comandos esenciales
+
+```bash
+# Suite completa (12 fases)
+npm run pruebas
+
+# Fase aislada (más rápido para depurar)
+npx playwright test e2e/07-auth.spec.ts
+
+# Ver el navegador durante la ejecución
+npx playwright test e2e/07-auth.spec.ts --headed
+
+# Debug paso a paso (detiene en cada acción)
+npx playwright test e2e/07-auth.spec.ts --debug
+
+# Filtrar un test por ID
+npx playwright test --grep "auth-02"
+
+# Limpiar caché si hubo cambios en código
+pkill -f "next dev" && rm -rf .next && SKIP_RATE_LIMIT=true npm run dev
+```
+
+El webServer se levanta automáticamente con `SKIP_RATE_LIMIT=true` si no hay servidor activo.
+
+## Mapa de fases → archivos spec
+
+| Fase | Categoría | Spec file | IDs cubiertos |
+|------|-----------|-----------|--------------|
+| 1 | Autenticación | `07-auth.spec.ts` · `02-empleado.spec.ts` · `05-legal-pages.spec.ts` · `06-aislamiento-usuarios.spec.ts` | auth-01…12 |
+| 2 | Panel Admin | `08-panel-admin.spec.ts` | adm-01…16 |
+| 3 | Panel Empresa | `09-panel-empresa.spec.ts` | emp-01…13 |
+| 4 | Dashboard | `10-dashboard.spec.ts` | dash-01…07 |
+| 5 | Cotizador IA | `11-cotizador-ia.spec.ts` | cot-01…12 |
+| 6 | DPP / Pasaporte | `12-dpp--pasaporte.spec.ts` | dpp-01…07 |
+| 7 | Páginas Públicas | `17-paginas-publicas.spec.ts` | pub-01…08 |
+| 8 | Modo Noche | `13-modo-noche.spec.ts` | dark-01…08 |
+| 9 | Rendimiento | `14-rendimiento.spec.ts` | perf-01…09 |
+| 10 | Seguridad & RBAC | `15-seguridad.spec.ts` | seg-01…12 |
+| 11 | Alertas | `18-alertas.spec.ts` | alerta-01…03 |
+| 12 | Settings + APIs | `19-settings-ayuda.spec.ts` · `16-apis--validaciones.spec.ts` | set-01…04 · api-01…07 · ayuda-01 |
+
+## Valores esperados críticos (comparar contra código)
+
+Cuando un test falla por texto o redirect, verificar estos valores exactos:
+
+| Test | Qué verifica | Valor exacto |
+|------|-------------|-------------|
+| auth-02 | Error login inválido | `"Credenciales incorrectas. Verifica tu email y contraseña."` |
+| auth-09 / seg-05 | Rate limit login (intento 6) | `"Demasiados intentos. Espera 60 segundos antes de intentar de nuevo."` |
+| set-03 | Contraseña incorrecta en settings | `"Contraseña incorrecta."` |
+| seg-12 | Rate limit acciones sensibles | `"Demasiados intentos fallidos. Acciones sensibles bloqueadas por una hora."` |
+| auth-10 | Redirect usuario_libre sin empresa | → `/dashboard` (NO `/empresa/nueva`) |
+| pub-07 paso 2 | Cómo llegar a onboarding | desde `/dashboard` → navegar a `/empresa/nueva` |
+| auth-11 | Turnstile bloqueado en DevTools | Formulario envía igual (fail-open) |
+| adm-01 | KPIs del panel admin | "Usuarios registrados · Empresas activas · Cálculos realizados · CO₂ total evitado" |
+| emp-01 | KPIs del panel empresa | "CO₂ evitado · Agua ahorrada · Miembros del equipo · Certificados generados" |
+
+## Archivos fuente para mensajes y comportamientos
+
+| Comportamiento | Archivo | Línea |
+|---------------|---------|-------|
+| Login 429 (rate limit) | `src/app/api/auth/login/route.ts` | 97 |
+| Login 401 (credenciales) | `src/app/api/auth/login/route.ts` | 116 |
+| Sensitive rate limit | `src/app/api/profile/update-sensitive/route.ts` | 79 |
+| Redirect por rol | `src/middleware.ts` | 49–54 |
+| Redirect empresa sin empresa_id | `src/app/(empresa)/empresa/page.tsx` | 141 |
+| Fail-open Turnstile registro | `src/app/(auth)/registro/page.tsx` · `src/app/api/auth/registro/route.ts` | — |
+
+## Protocolo de reparación cuando un test falla
+
+1. **Aislar**: `npx playwright test e2e/<spec_fallido>.spec.ts --headed`
+2. **Leer el test**: buscar el texto exacto que falla (`expect(page.getByText(...))`)
+3. **Comparar**: verificar si el mensaje esperado coincide con los valores de la tabla de arriba
+4. **Decidir**:
+   - Si el **código cambió** y el test ya no aplica → actualizar el test
+   - Si el **test está mal** (redirect, mensaje equivocado) → corregir el test
+   - Si hay un **bug real** en código → corregir el código, correr solo esa fase
+5. **Confirmar**: volver a correr la fase aislada hasta pasar, luego `npm run pruebas` completo
+
+## Fallos comunes y soluciones rápidas
+
+| Síntoma | Causa | Solución |
+|---------|-------|---------|
+| Timeout en login | Servidor no corre | `npm run dev` en otra terminal |
+| `auth.setup.ts` falla | Credenciales test inválidas | Verificar `TEST_USER_EMAIL`/`TEST_USER_PASSWORD` en `.env.local` |
+| Banner de cookies rompe selector | Selector del banner cambió | Revisar el `.catch(() => {})` en el spec |
+| Rate limit falla en CI | IP compartida | Verificar `SKIP_RATE_LIMIT=true` en el entorno |
+| Redirect falla con `/empresa/nueva` | Test desactualizado | Correcto es `/dashboard` (ver tabla valores) |
+| Modo noche falla | `data-theme` tarda en aplicarse | Añadir `await page.waitForTimeout(300)` tras el toggle |
+| Tests de IA / DPP llaman a Gemini real | Mock de red no activo | Revisar `page.route(...)` en el spec, no llamar API real |
+
+## Tests críticos (prioridad máxima para reparar)
+
+auth-01, auth-02, auth-05, auth-07, auth-08, auth-10, auth-12,
+adm-01, adm-02, adm-03, adm-05, adm-08,
+emp-01, emp-03, emp-05,
+dash-01, cot-02, cot-03, cot-06, cot-07,
+dpp-02, dpp-04, dpp-07,
+pub-05, pub-06, perf-01,
+seg-01, seg-02, seg-05, seg-06, seg-09, seg-10, seg-11, seg-12,
+api-01, api-06, api-07, set-03
+
+## Reglas inamovibles
+
+- **No eliminar `.skip`** de tests en fases 7–12 marcados así intencionalmente.
+- **Fail-open Turnstile**: no romper el patrón en `registro/page.tsx` ni en `api/auth/registro`.
+- **Mocks IA**: las fases 5 y 6 usan `page.route()` para no quemar créditos de Gemini/OpenRouter.
+- **SKIP_RATE_LIMIT=true**: siempre activo al correr tests para no bloquear IPs propias.

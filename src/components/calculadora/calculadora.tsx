@@ -224,7 +224,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
         </div>
       </div>
 
-      {/* Grid de items — input en kg */}
+      {/* Grid de items - input en kg */}
       <div style={{
         padding: 20,
         display: 'grid',

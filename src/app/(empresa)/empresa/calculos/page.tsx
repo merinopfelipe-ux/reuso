@@ -30,7 +30,7 @@ export default async function EmpresaCalculosPage() {
 
   const adminClient = await createAdminClient()
 
-  // Carga inicial — primeras 20 filas de la empresa
+  // Carga inicial - primeras 20 filas de la empresa
   const [historialRes, categoriasRes, perfilesRes] = await Promise.all([
     adminClient
       .from('calculos')
@@ -71,7 +71,7 @@ export default async function EmpresaCalculosPage() {
           Cálculos de la empresa
         </h1>
         <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
-          Todos los registros de tus colaboradores — solo lectura.
+          Todos los registros de tus colaboradores - solo lectura.
         </p>
       </div>
 

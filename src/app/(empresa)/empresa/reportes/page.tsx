@@ -51,6 +51,7 @@ export default async function EmpresaReportesPage() {
     porDia[key] = { co2: 0, count: 0 }
   }
   for (const c of calculos30d ?? []) {
+    if (!c.fecha) continue
     const key = c.fecha.slice(0, 10)
     if (porDia[key]) {
       porDia[key].co2 += c.total_co2 ?? 0

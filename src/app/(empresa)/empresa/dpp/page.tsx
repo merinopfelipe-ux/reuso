@@ -90,7 +90,7 @@ export default async function DppPage({
         }
       />
 
-      {/* KPI Grid — 2 cols mobile, 4 cols desktop */}
+      {/* KPI Grid - 2 cols mobile, 4 cols desktop */}
       <div
         className="dpp-kpi-grid"
         style={{
@@ -166,7 +166,7 @@ export default async function DppPage({
                       {a.n_ciclos ?? 0}
                     </td>
                     <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: co2 > 0 ? '#38B98E' : 'var(--text-secondary)', fontWeight: co2 > 0 ? 700 : 400 }}>
-                      {co2 > 0 ? `${co2.toFixed(2)} kg` : '—'}
+                      {co2 > 0 ? `${co2.toFixed(2)} kg` : '-'}
                     </td>
                     <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: 13 }}>
                       {formatFecha(a.updated_at ?? a.created_at)}

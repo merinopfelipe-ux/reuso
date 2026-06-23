@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sun, Moon, Monitor, ArrowLeft, Check, Bell, Question, FloppyDisk, LockSimple } from '@phosphor-icons/react'
 import { useToast } from '@/components/toast-provider'
+import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'
 
 type Tema = 'light' | 'dark' | 'system'
@@ -387,7 +388,7 @@ export default function SettingsPage() {
                   </label>
                 </div>
 
-                {/* Correo electrónico — enmascarado */}
+                {/* Correo electrónico - enmascarado */}
                 <div>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
                     Correo electrónico
@@ -424,7 +425,7 @@ export default function SettingsPage() {
                   )}
                 </div>
 
-                {/* Teléfono — enmascarado (solo si existe) */}
+                {/* Teléfono - enmascarado (solo si existe) */}
                 {telefonoMasked !== null && (
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
@@ -515,14 +516,11 @@ export default function SettingsPage() {
                       <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
                         Ingresa el código de 6 dígitos que enviamos a tu correo.
                       </p>
-                      <input
-                        type="text"
-                        placeholder="Código de 6 dígitos"
+                      <OTPInput
                         value={passwordCode}
-                        maxLength={6}
-                        onChange={e => setPasswordCode(e.target.value.replace(/\D/g, ''))}
-                        style={{ ...inputStyle, letterSpacing: 4, fontSize: 18, fontWeight: 700 }}
-                        autoFocus
+                        onChange={setPasswordCode}
+                        isDark={isDark}
+                        disabled={passwordLoading}
                       />
                       <div style={{ display: 'flex', gap: 8 }}>
                         <button
@@ -711,7 +709,7 @@ export default function SettingsPage() {
         </aside>
       </div>
 
-      {/* ── Botón guardar — sticky al fondo ── */}
+      {/* ── Botón guardar - sticky al fondo ── */}
       {!loadingProfile && (
         <div style={{
           position: 'sticky',

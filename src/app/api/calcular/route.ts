@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     ),
     param_equiv: PARAM_EQUIV,
     version_factores: new Date().toISOString().slice(0, 10),
-    metodologia: 'ACV simplificado, factores europeos ecoinvent/ELCD — input en kg',
+    metodologia: 'ACV simplificado, factores europeos ecoinvent/ELCD con entrada en kg',
   }
 
   // ── CADENA DE BLOQUES (HASH CHAIN) ───────────────────────────
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
   })
   const hash_interno = createHash('sha256').update(payloadToHash).digest('hex')
 
-  // Insertar — primero con hash chain, luego sin él si la columna no existe en la BD
+  // Insertar - primero con hash chain, luego sin él si la columna no existe en la BD
   let calculo: { id: string } | null = null
   let insertError: { message?: string } | null = null
 
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (resConHash.error?.message?.includes('hash_interno') || resConHash.error?.message?.includes('hash_previo')) {
-    // Migración 005 no aplicada — insertar sin hash chain
+    // Migración 005 no aplicada - insertar sin hash chain
     const resSinHash = await adminClient
       .from('calculos')
       .insert(baseInsert)
