@@ -102,6 +102,7 @@ function emailPlantilla({
   contenidoCentral,
   alertaAccion = 'compartas el código con nadie',
   mostrarAlerta = true,
+  avisoPie,
 }: {
   preheader: string
   subtituloHeader: string
@@ -110,6 +111,7 @@ function emailPlantilla({
   contenidoCentral: string
   alertaAccion?: string
   mostrarAlerta?: boolean
+  avisoPie?: string
 }): string {
   const year = new Date().getFullYear()
   return `<!DOCTYPE html>
@@ -160,9 +162,9 @@ function emailPlantilla({
           <!-- Footer -->
           <tr>
             <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
-              <p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
+              ${avisoPie ?? `<p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
                 Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
-              </p>
+              </p>`}
               <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
                 <a href="https://reuso.lurdes.co" style="color:#474747;text-decoration:underline;">reuso.lurdes.co</a>
@@ -329,4 +331,32 @@ export async function enviarNotificacionTicket(
     subject: `Nuevo ticket de soporte. ${datos.categoria}`,
     html,
   })
+}
+
+// ── Helpers de marketing ──────────────────────────────────────────────────────
+
+export function urlBaja(token: string): string {
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  return `${base}/unsubscribe?token=${encodeURIComponent(token)}`
+}
+
+export function emailMarketing(params: {
+  preheader: string
+  subtituloHeader: string
+  saludo: string
+  cuerpo: string
+  contenidoCentral: string
+  alertaAccion?: string
+  mostrarAlerta?: boolean
+  unsubscribeToken: string
+}): string {
+  const { unsubscribeToken, ...plantillaParams } = params
+  const url = urlBaja(unsubscribeToken)
+
+  const avisoPie = `<p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
+    Para dejar de recibir estos correos,
+    <a href="${url}" style="color:#474747;text-decoration:underline;">cancela tu suscripción</a>.
+  </p>`
+
+  return emailPlantilla({ ...plantillaParams, avisoPie })
 }
