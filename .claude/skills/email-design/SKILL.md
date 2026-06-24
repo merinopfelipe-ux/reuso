@@ -67,6 +67,35 @@ El texto ya está integrado en `emailPlantilla()` (email.ts) y en `plantilla()` 
 
 ---
 
+## 3.1 Correos de marketing — emailMarketing()
+
+Para correos promocionales o de marketing, usar `emailMarketing()` en lugar de `emailPlantilla()`.
+
+```typescript
+import { emailMarketing, urlBaja } from '@/lib/email'
+
+// El token viene del campo unsubscribe_token del profile del destinatario
+const html = emailMarketing({
+  preheader: 'Texto de bandeja...',
+  subtituloHeader: 'Título',
+  saludo: '¡Hola, Nombre!',
+  cuerpo: 'Cuerpo del correo.',
+  contenidoCentral: '/* botón o CTA */',
+  mostrarAlerta: false,
+  unsubscribeToken: profile.unsubscribe_token,
+})
+```
+
+El footer resultante es:
+> Para dejar de recibir estos correos, [cancela tu suscripción](https://reuso.lurdes.co/unsubscribe?token=xxx).
+
+**Reglas:**
+- Verificar `profile.marketing_opt_out === false` antes de llamar a `emailMarketing()`. Si es `true`, no enviar.
+- El token se rota automáticamente tras cada uso en `POST /api/unsubscribe`. No reutilizar tokens.
+- `urlBaja(token)` genera la URL completa. No construir la URL manualmente.
+
+---
+
 ## 4. Sistema de clases CSS
 
 Todos los elementos tienen clase corta para el modo noche. **Nunca omitirlas.**
@@ -306,3 +335,5 @@ Para Supabase templates: `{{ .Token }}` sin partir (la variable se resuelve en e
 - [ ] ¿Sin mayúsculas sostenidas?
 - [ ] ¿Fuente Open Sans en todo el correo, sin monospace?
 - [ ] ¿Preview revisado en modo día Y modo noche?
+- [ ] Si es correo de marketing, ¿usa `emailMarketing()` (no `emailPlantilla()`)?
+- [ ] Si es correo de marketing, ¿verificaste `marketing_opt_out === false` antes de enviar?
