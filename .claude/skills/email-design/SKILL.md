@@ -54,6 +54,17 @@ Orden obligatorio del cuerpo:
 3. "Un saludo, El equipo de la Calculadora de Reúso"
 4. Bloque de alerta 🔔 — SIEMPRE al final, nunca antes del sign-off
 
+### Footer — aviso legal obligatorio en correos de sistema
+
+Todos los correos transaccionales y de sistema incluyen este texto ANTES de "Todos los derechos reservados":
+
+> Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
+
+Se aplica a: invitaciones de equipo, confirmación de registro, recuperación de contraseña, cambio de correo, magic link, reautenticación y notificaciones de ticket.
+No aplica a: correos de promoción o marketing (que no existen actualmente en el sistema).
+
+El texto ya está integrado en `emailPlantilla()` (email.ts) y en `plantilla()` (supabase-templates.mjs). Cualquier nueva función de correo debe usar una de estas dos para recibirlo automáticamente.
+
 ---
 
 ## 4. Sistema de clases CSS
@@ -282,7 +293,8 @@ Para Supabase templates: `{{ .Token }}` sin partir (la variable se resuelve en e
 
 ## 12. Checklist antes de publicar
 
-- [ ] ¿Usa `emailPlantilla()` (Resend) o `plantilla()` (supabase-templates.mjs)?
+- [ ] ¿Usa `emailPlantilla()` (Resend) o `plantilla()` (supabase-templates.mjs)? (el aviso legal de sistema se incluye automáticamente)
+- [ ] Si es un correo nuevo y NO usa esas funciones, ¿tiene el aviso legal de sistema en el footer antes de "Todos los derechos reservados"?
 - [ ] ¿CSS en `<body>` (primer hijo), NO en `<head>`?
 - [ ] ¿CSS tiene las 4 secciones: `:root`, `a[x-apple-data-detectors]`, `.otp-text a`, `@media` + `[data-ogsc]` + `[data-ogsb]`?
 - [ ] ¿Bloque OTP usa `<span class="otp-text">` con grupos de 4 separados por `&thinsp;`?
