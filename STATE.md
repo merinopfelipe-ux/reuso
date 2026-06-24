@@ -1,12 +1,22 @@
 ---
 tags: [estado, reuso, proyecto]
-fecha: 2026-06-06
+fecha: 2026-06-24
 ---
 
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V15.1 — Blindaje Exitoso de 118 Pruebas E2E y Corrección de Nulos/Tipos.**
+**V15.2 — Infraestructura de baja de marketing y aviso legal en correos del sistema.**
+
+## Sesión 2026-06-24 — Marketing Unsubscribe + Avisos Legales en Correos
+- **Aviso legal en correos de sistema**: Footer actualizado en `emailPlantilla()`, `supabase-templates.mjs` y `preview-emails.mjs`. Los 9 correos (3 Resend + 6 Supabase) incluyen el texto "Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso...".
+- **Migración 029**: Columnas `marketing_opt_out` (bool) y `unsubscribe_token` (uuid) en tabla `profiles`. Índice único en token para lookup rápido.
+- **API POST /api/unsubscribe**: Rate limit 5/min por IP, validación UUID con Zod, marca `marketing_opt_out=true` y rota token tras cada uso. Respuesta genérica si el token no existe (anti-enumeración).
+- **Página pública /unsubscribe**: 4 estados (pendiente, confirmando, éxito, error). Suspense + useSearchParams. Dark mode reactivo. Agregada a `PUBLIC_ROUTES` en middleware.
+- **emailMarketing()**: Nueva función en `email.ts` que inyecta footer de baja en lugar del aviso de sistema. Helper `urlBaja(token)` genera la URL completa. Parámetro `avisoPie?` en `emailPlantilla()` — backward compatible.
+- **Skill email-design actualizada**: Sección 3.1 documenta `emailMarketing()`, reglas de opt-out y checklist ampliado.
+- **Templates Supabase aplicados**: 6 templates pegados en Supabase Dashboard con diseño actualizado.
+- TypeScript limpio ✓. Build exitoso ✓. Push a origin/main ✓.
 
 ## Sesión 2026-06-20 — Blindaje de Suite E2E & Prevención de Colapsos
 - **Estabilización de 118 Pruebas E2E**: Ejecución exitosa de las 12 fases de pruebas mediante `npm run pruebas`.
