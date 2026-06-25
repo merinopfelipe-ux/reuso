@@ -41,6 +41,13 @@ const DARK_CSS = `
       .eh p { color: #474747 !important; }
       .eh p + p { color: rgba(71,71,71,0.65) !important; }
       a.eb { background-color: #D6F391 !important; color: #474747 !important; }
+      span.epi { color: #474747 !important; }
+      .ediv { border-color: rgba(214,243,145,0.35) !important; }
+      .epromo-bg { background: #D6F391 !important; }
+      .epromo-bg p, .epromo-bg span { color: #474747 !important; }
+      span.epbw { color: #ffffff !important; }
+      .epbd { background-color: #474747 !important; }
+      span.ep-mes { color: #D6F391 !important; }
       .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
       .ef p, .ef a { color: #E0E0E0 !important; }
       .ea td { background-color: rgba(246,191,62,0.10) !important; }
@@ -50,6 +57,10 @@ const DARK_CSS = `
       .ek p { color: #E0E0E0 !important; }
       .et { background-color: rgba(214,243,145,0.08) !important; }
       .et td { color: #E0E0E0 !important; }
+      .ep { background-color: rgba(255,255,255,0.07) !important; }
+      .ep p { color: #E0E0E0 !important; }
+      .ep .ep-tachado { color: rgba(224,224,224,0.45) !important; }
+      .ep .ep-precio { color: #D6F391 !important; }
     }
     [data-ogsc] .ec { background-color: #525252 !important; }
     [data-ogsc] .ec p, [data-ogsc] .ec td, [data-ogsc] .ec span, [data-ogsc] .ec li { color: #E0E0E0 !important; }
@@ -59,6 +70,13 @@ const DARK_CSS = `
     [data-ogsc] .eh p { color: #474747 !important; }
     [data-ogsc] .eh p + p { color: rgba(71,71,71,0.65) !important; }
     [data-ogsc] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
+    [data-ogsc] span.epi { color: #474747 !important; }
+    [data-ogsc] .ediv { border-color: rgba(214,243,145,0.35) !important; }
+    [data-ogsc] .epromo-bg { background: #D6F391 !important; }
+    [data-ogsc] .epromo-bg p, [data-ogsc] .epromo-bg span { color: #474747 !important; }
+    [data-ogsc] span.epbw { color: #ffffff !important; }
+    [data-ogsc] .epbd { background-color: #474747 !important; }
+    [data-ogsc] span.ep-mes { color: #D6F391 !important; }
     [data-ogsc] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
     [data-ogsc] .ef p, [data-ogsc] .ef a { color: #E0E0E0 !important; }
     [data-ogsc] .ea td { background-color: rgba(246,191,62,0.10) !important; }
@@ -68,6 +86,10 @@ const DARK_CSS = `
     [data-ogsc] .ek p { color: #E0E0E0 !important; }
     [data-ogsc] .et { background-color: rgba(214,243,145,0.08) !important; }
     [data-ogsc] .et td { color: #E0E0E0 !important; }
+    [data-ogsc] .ep { background-color: rgba(255,255,255,0.07) !important; }
+    [data-ogsc] .ep p { color: #E0E0E0 !important; }
+    [data-ogsc] .ep .ep-tachado { color: rgba(224,224,224,0.45) !important; }
+    [data-ogsc] .ep .ep-precio { color: #D6F391 !important; }
     [data-ogsb] .ec { background-color: #525252 !important; }
     [data-ogsb] .ec p, [data-ogsb] .ec td, [data-ogsb] .ec span, [data-ogsb] .ec li { color: #E0E0E0 !important; }
     [data-ogsb] .ec strong { color: #ffffff !important; }
@@ -76,6 +98,13 @@ const DARK_CSS = `
     [data-ogsb] .eh p { color: #474747 !important; }
     [data-ogsb] .eh p + p { color: rgba(71,71,71,0.65) !important; }
     [data-ogsb] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
+    [data-ogsb] span.epi { color: #474747 !important; }
+    [data-ogsb] .ediv { border-color: rgba(214,243,145,0.35) !important; }
+    [data-ogsb] .epromo-bg { background: #D6F391 !important; }
+    [data-ogsb] .epromo-bg p, [data-ogsb] .epromo-bg span { color: #474747 !important; }
+    [data-ogsb] span.epbw { color: #ffffff !important; }
+    [data-ogsb] .epbd { background-color: #474747 !important; }
+    [data-ogsb] span.ep-mes { color: #D6F391 !important; }
     [data-ogsb] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
     [data-ogsb] .ef p, [data-ogsb] .ef a { color: #E0E0E0 !important; }
     [data-ogsb] .ea td { background-color: rgba(246,191,62,0.10) !important; }
@@ -85,6 +114,10 @@ const DARK_CSS = `
     [data-ogsb] .ek p { color: #E0E0E0 !important; }
     [data-ogsb] .et { background-color: rgba(214,243,145,0.08) !important; }
     [data-ogsb] .et td { color: #E0E0E0 !important; }
+    [data-ogsb] .ep { background-color: rgba(255,255,255,0.07) !important; }
+    [data-ogsb] .ep p { color: #E0E0E0 !important; }
+    [data-ogsb] .ep .ep-tachado { color: rgba(224,224,224,0.45) !important; }
+    [data-ogsb] .ep .ep-precio { color: #D6F391 !important; }
   </style>`
 
 const ALERTA = (accion) => `
@@ -99,7 +132,7 @@ const ALERTA = (accion) => `
   </tr>
 </table>`
 
-function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoCentral, alertaAccion = 'compartas el código con nadie', mostrarAlerta = true }) {
+function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoCentral, alertaAccion = 'compartas el código con nadie', mostrarAlerta = true, mostrarFirma = true, avisoPie }) {
   const year = new Date().getFullYear()
   return `<!DOCTYPE html>
 <html lang="es">
@@ -129,18 +162,13 @@ function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoC
               <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:${NEGRO};line-height:1.3;">${saludo}</p>
               ${cuerpo ? `<p style="margin:0 0 28px;font-size:15px;color:${NEGRO};line-height:1.75;">${cuerpo}</p>` : ''}
               ${contenidoCentral}
-              <p style="margin:32px 0 0;font-size:14px;color:${NEGRO};line-height:1.65;">
-                Un saludo,<br>
-                <strong style="color:${NEGRO};">El equipo de la Calculadora de Reúso</strong>
-              </p>
+              ${mostrarFirma ? `<p style="margin:32px 0 0;font-size:14px;color:${NEGRO};line-height:1.65;">Un saludo,<br><strong style="color:${NEGRO};">El equipo de la Calculadora de Reúso</strong></p>` : ''}
               ${mostrarAlerta ? ALERTA(alertaAccion) : ''}
             </td>
           </tr>
           <tr>
             <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
-              <p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">
-                Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
-              </p>
+              ${avisoPie ?? `<p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.</p>`}
               <p style="margin:0;font-size:11px;color:${NEGRO};line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
                 <a href="https://reuso.lurdes.co" style="color:${NEGRO};text-decoration:underline;">reuso.lurdes.co</a>
@@ -236,6 +264,117 @@ const templates = {
 <p style="margin:0;font-size:14px;color:${NEGRO};line-height:1.75;">Al intentar generar el certificado me aparece un error 500.</p>`,
     mostrarAlerta: false,
   }),
+
+  // ── Ejemplo de correo de marketing ──────────────────────────────────────────
+  '4-promo-relampago': emailPlantilla({
+    preheader: '50% de descuento hoy. Solo 24 horas para activar Impulso Sostenible.',
+    subtituloHeader: 'Oferta exclusiva para ti',
+    saludo: '¡Hola, María! 👋',
+    cuerpo: 'Mañana pagan el precio completo. Hoy tú no.',
+    avisoPie: `<p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">Para dejar de recibir estos correos, <a href="https://reuso.lurdes.co/unsubscribe?token=EJEMPLO" style="color:${NEGRO};text-decoration:underline;">cancela tu suscripción</a>.</p>`,
+    mostrarAlerta: false,
+    mostrarFirma: false,
+    contenidoCentral: `
+
+<!-- HERO — bloque de imagen estilizada -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;border-radius:16px;overflow:hidden;">
+  <tr>
+    <td class="epromo-bg" style="background:linear-gradient(135deg,#004D49 0%,#00827C 55%,#006B66 100%);padding:36px 32px 32px;text-align:center;border-radius:16px;">
+
+      <!-- Badge relámpago -->
+      <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 16px;">
+        <tr>
+          <td class="epbd" style="background-color:#D6F391;border-radius:100px;padding:6px 18px;">
+            <span class="epbw" style="font-size:13px;font-weight:800;color:#474747;letter-spacing:0.04em;">⚡ Promo Relámpago</span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Número grande -->
+      <p style="margin:0;font-size:88px;font-weight:800;color:#D6F391;line-height:1;letter-spacing:-4px;">50<span style="font-size:52px;vertical-align:super;letter-spacing:-1px;">%</span></p>
+      <p style="margin:4px 0 0;font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">en Impulso Sostenible</p>
+
+    </td>
+  </tr>
+</table>
+
+<!-- QUÉ INCLUYE -->
+<p style="margin:0 0 16px;font-size:15px;font-weight:700;color:#474747;">Con Impulso Sostenible obtienes:</p>
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;">
+  <tr>
+    <td class="ediv" style="padding:10px 0;border-bottom:1px solid rgba(0,130,124,0.15);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td width="32" style="vertical-align:top;padding-top:1px;">
+            <span class="epi" style="display:inline-block;width:24px;height:24px;background-color:#D6F391;border-radius:50%;text-align:center;line-height:24px;font-size:13px;">✓</span>
+          </td>
+          <td>
+            <p style="margin:0;font-size:14px;font-weight:700;color:#474747;">200 cálculos CO₂ por mes</p>
+            <p style="margin:2px 0 0;font-size:13px;color:rgba(71,71,71,0.65);line-height:1.5;">Registra todo el reúso de tu empresa sin límite mensual práctico.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="ediv" style="padding:10px 0;border-bottom:1px solid rgba(0,130,124,0.15);">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td width="32" style="vertical-align:top;padding-top:1px;">
+            <span class="epi" style="display:inline-block;width:24px;height:24px;background-color:#D6F391;border-radius:50%;text-align:center;line-height:24px;font-size:13px;">✓</span>
+          </td>
+          <td>
+            <p style="margin:0;font-size:14px;font-weight:700;color:#474747;">Cotizador inteligente con IA</p>
+            <p style="margin:2px 0 0;font-size:13px;color:rgba(71,71,71,0.65);line-height:1.5;">Diagnostica muebles con foto y genera propuestas de reúso en segundos.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:10px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td width="32" style="vertical-align:top;padding-top:1px;">
+            <span class="epi" style="display:inline-block;width:24px;height:24px;background-color:#D6F391;border-radius:50%;text-align:center;line-height:24px;font-size:13px;">✓</span>
+          </td>
+          <td>
+            <p style="margin:0;font-size:14px;font-weight:700;color:#474747;">Hasta 10 personas en tu equipo</p>
+            <p style="margin:2px 0 0;font-size:13px;color:rgba(71,71,71,0.65);line-height:1.5;">Invita a tu equipo y centraliza el registro de impacto desde un solo lugar.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<!-- PRECIO -->
+<table class="ep" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 28px;background-color:#F0F7F6;border-radius:16px;">
+  <tr>
+    <td style="padding:20px 24px;text-align:center;">
+      <p class="ep-tachado" style="margin:0 0 2px;font-size:13px;color:rgba(71,71,71,0.55);">Precio habitual</p>
+      <p class="ep-tachado" style="margin:0 0 10px;font-size:20px;font-weight:700;color:rgba(71,71,71,0.35);text-decoration:line-through;">$199.000 / mes</p>
+      <p class="ep-precio" style="margin:0 0 2px;font-size:13px;font-weight:700;color:#00827C;">Precio de hoy</p>
+      <p class="ep-precio" style="margin:0;font-size:40px;font-weight:800;color:#00827C;letter-spacing:-1px;">$99.500<span class="ep-mes" style="font-size:16px;font-weight:600;"> / mes</span></p>
+    </td>
+  </tr>
+</table>
+
+<!-- CTA -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="https://reuso.lurdes.co/planes" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:18px 52px;border-radius:100px;font-size:17px;font-weight:800;letter-spacing:-0.3px;">
+        Activar ahora con 50% off
+      </a>
+    </td>
+  </tr>
+</table>
+<p style="margin:0;font-size:12px;color:rgba(71,71,71,0.5);text-align:center;">El descuento se aplica automáticamente. No necesitas código.</p>
+
+`,
+  }),
 }
 
 // CSS de noche forzada (sin media query) — para preview en cualquier Mac
@@ -249,6 +388,13 @@ const DARK_FORCED = `
     .eh p { color: #474747 !important; }
     .eh p + p { color: rgba(71,71,71,0.65) !important; }
     a.eb { background-color: #D6F391 !important; color: #474747 !important; }
+    span.epi { color: #474747 !important; }
+    .ediv { border-color: rgba(214,243,145,0.35) !important; }
+    .epromo-bg { background: #D6F391 !important; }
+    .epromo-bg p, .epromo-bg span { color: #474747 !important; }
+    span.epbw { color: #ffffff !important; }
+    .epbd { background-color: #474747 !important; }
+    span.ep-mes { color: #D6F391 !important; }
     .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
     .ef p, .ef a { color: #E0E0E0 !important; }
     .ea td { background-color: rgba(246,191,62,0.10) !important; }
@@ -258,6 +404,10 @@ const DARK_FORCED = `
     .ek p { color: #E0E0E0 !important; }
     .et { background-color: rgba(214,243,145,0.08) !important; }
     .et td { color: #E0E0E0 !important; }
+    .ep { background-color: rgba(255,255,255,0.07) !important; }
+    .ep p { color: #E0E0E0 !important; }
+    .ep .ep-tachado { color: rgba(224,224,224,0.45) !important; }
+    .ep .ep-precio { color: #D6F391 !important; }
   </style>`
 
 const outDir = path.join(__dirname, '../.email-previews')
@@ -278,6 +428,10 @@ for (const [name, html] of Object.entries(templates)) {
   const fileNoche = path.join(outDir, `${name}-noche.html`)
   fs.writeFileSync(fileNoche, htmlNoche)
   nocheFiles.push(fileNoche)
+
+  // Full — HTML original con @media CSS para enviar via Resend
+  const fileFull = path.join(outDir, `${name}-full.html`)
+  fs.writeFileSync(fileFull, html)
 
   console.log(`✓ ${name}`)
 }

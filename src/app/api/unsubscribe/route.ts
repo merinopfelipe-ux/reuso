@@ -6,6 +6,7 @@ import { rateLimit } from '@/lib/rate-limit'
 
 const Schema = z.object({
   token: z.string().uuid(),
+  motivo: z.string().max(200).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -17,10 +18,12 @@ export async function POST(request: NextRequest) {
   }
 
   let token: string
+  let motivo: string | undefined
   try {
     const body = await request.json()
     const parsed = Schema.parse(body)
     token = parsed.token
+    motivo = parsed.motivo
   } catch {
     return NextResponse.json({ ok: false, error: 'Token inválido.' }, { status: 400 })
   }
@@ -46,6 +49,7 @@ export async function POST(request: NextRequest) {
       .update({
         marketing_opt_out: true,
         unsubscribe_token: crypto.randomUUID(),
+        ...(motivo ? { unsubscribe_reason: motivo } : {}),
       })
       .eq('id', perfil.id)
 

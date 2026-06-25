@@ -102,6 +102,7 @@ function emailPlantilla({
   contenidoCentral,
   alertaAccion = 'compartas el código con nadie',
   mostrarAlerta = true,
+  mostrarFirma = true,
   avisoPie,
 }: {
   preheader: string
@@ -111,6 +112,7 @@ function emailPlantilla({
   contenidoCentral: string
   alertaAccion?: string
   mostrarAlerta?: boolean
+  mostrarFirma?: boolean
   avisoPie?: string
 }): string {
   const year = new Date().getFullYear()
@@ -150,10 +152,7 @@ function emailPlantilla({
 
               ${contenidoCentral}
 
-              <p style="margin:32px 0 0;font-size:14px;color:#474747;line-height:1.65;">
-                Un saludo,<br>
-                <strong style="color:#474747;">El equipo de la Calculadora de Reúso</strong>
-              </p>
+              ${mostrarFirma ? `<p style="margin:32px 0 0;font-size:14px;color:#474747;line-height:1.65;">Un saludo,<br><strong style="color:#474747;">El equipo de la Calculadora de Reúso</strong></p>` : ''}
 
               ${mostrarAlerta ? ALERTA_SEGURIDAD(alertaAccion) : ''}
             </td>
@@ -358,5 +357,5 @@ export function emailMarketing(params: {
     <a href="${url}" style="color:#474747;text-decoration:underline;">cancela tu suscripción</a>.
   </p>`
 
-  return emailPlantilla({ ...plantillaParams, avisoPie })
+  return emailPlantilla({ ...plantillaParams, mostrarFirma: false, avisoPie })
 }
