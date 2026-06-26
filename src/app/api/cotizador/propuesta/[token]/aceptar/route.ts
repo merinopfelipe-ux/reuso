@@ -1,9 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 
+interface CotizacionAceptar {
+  id: string
+  estado: string
+  empresa_id: string
+  asesor_id: string | null
+  codigo_cotizacion: string
+  crm_clientes: { nombre: string } | { nombre: string }[] | null
+}
+
 export async function POST(
-  _request: NextRequest,
+  _: Request,
   { params }: { params: { token: string } }
 ) {
   const adminClient = await createAdminClient()
@@ -23,10 +32,12 @@ export async function POST(
     return NextResponse.json({ error: 'Propuesta no encontrada.' }, { status: 404 })
   }
 
+  const cotTyped = cot as unknown as CotizacionAceptar
+
   // Solo cambia si no está ya aceptada o cerrada
   const estadosFinales = ['cerrado_ganado', 'cerrado_perdido', 'cerrado_inviable']
-  if (estadosFinales.includes(cot.estado)) {
-    return NextResponse.json({ ok: true, estado: cot.estado })
+  if (estadosFinales.includes(cotTyped.estado)) {
+    return NextResponse.json({ ok: true, estado: cotTyped.estado })
   }
 
   const { error } = await adminClient
@@ -35,31 +46,30 @@ export async function POST(
       estado: 'esperando_anticipo',
       updated_at: new Date().toISOString(),
     })
-    .eq('id', cot.id)
+    .eq('id', cotTyped.id)
 
   if (error) {
     return NextResponse.json({ error: 'No pudimos registrar tu aceptación. Intenta de nuevo.' }, { status: 500 })
   }
 
   // Notificar al asesor con alerta en campana
-  if (cot.asesor_id) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cl = Array.isArray(cot.crm_clientes) ? (cot.crm_clientes as any[])[0] : cot.crm_clientes
-    const clienteNombre = (cl as { nombre: string } | null)?.nombre ?? 'El cliente'
+  if (cotTyped.asesor_id) {
+    const cl = Array.isArray(cotTyped.crm_clientes) ? cotTyped.crm_clientes[0] : cotTyped.crm_clientes
+    const clienteNombre = cl?.nombre ?? 'El cliente'
     await adminClient.from('alertas').insert({
       titulo: 'Propuesta aceptada',
-      mensaje: `${clienteNombre} aceptó la propuesta ${cot.codigo_cotizacion}. Coordina el anticipo.`,
+      mensaje: `${clienteNombre} aceptó la propuesta ${cotTyped.codigo_cotizacion}. Coordina el anticipo.`,
       tipo: 'success',
       destinatario_tipo: 'usuario',
-      destinatario_id: cot.asesor_id,
+      destinatario_id: cotTyped.asesor_id,
       expires_at: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
     })
   }
 
   await logAuditoria(adminClient, {
-    user_id: cot.asesor_id ?? 'sistema',
+    user_id: cotTyped.asesor_id ?? 'sistema',
     accion: 'propuesta_aceptada_cliente',
-    detalle: { cotizacion_id: cot.id, token: params.token },
+    detalle: { cotizacion_id: cotTyped.id, token: params.token },
     ip: 'publica',
   })
 

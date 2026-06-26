@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 
 export async function GET(
-  _request: NextRequest,
+  _: Request,
   { params }: { params: { id: string } }
 ) {
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])

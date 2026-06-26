@@ -15,7 +15,7 @@ const schema = z.object({
 }).refine(d => Object.keys(d).length > 0, { message: 'Envía al menos un campo para actualizar.' })
 
 export async function GET(
-  _request: NextRequest,
+  _: Request,
   { params }: { params: { id: string } }
 ) {
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])

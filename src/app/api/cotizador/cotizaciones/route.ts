@@ -5,6 +5,23 @@ import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 
+interface CotizacionItem {
+  id: string
+  codigo_cotizacion: string
+  estado: string
+  total: number | null
+  subtotal: number | null
+  co2_evitado_total_kg: number | null
+  created_at: string
+  updated_at: string
+  fecha_enviada: string | null
+  fecha_apertura_cliente: string | null
+  veces_abierta: number
+  enlace_publico_token: string | null
+  crm_clientes: { nombre: string; telefono: string } | { nombre: string; telefono: string }[] | null
+  profiles: { nombre: string } | null
+}
+
 export async function GET(request: NextRequest) {
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
   if (!auth.ok) {
@@ -37,16 +54,16 @@ export async function GET(request: NextRequest) {
   const { data, error } = await query
   if (error) return NextResponse.json({ error: 'Error al cargar cotizaciones.' }, { status: 500 })
 
-  let cotizaciones = data ?? []
+  const cotizacionesRaw = (data as unknown as CotizacionItem[]) ?? []
+  let cotizaciones = cotizacionesRaw
 
   // Filtro de texto local (supabase ilike en columnas relacionadas es complejo)
   if (q) {
     const lq = q.toLowerCase()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cotizaciones = cotizaciones.filter((c: any) => {
+    cotizaciones = cotizacionesRaw.filter((c) => {
       const cliente = Array.isArray(c.crm_clientes) ? c.crm_clientes[0] : c.crm_clientes
       return (
-        (c.codigo_cotizacion as string).toLowerCase().includes(lq) ||
+        c.codigo_cotizacion.toLowerCase().includes(lq) ||
         ((cliente?.nombre as string) ?? '').toLowerCase().includes(lq)
       )
     })

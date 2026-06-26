@@ -14,7 +14,7 @@ async function getPerfilYEmpresa(supabase: ReturnType<typeof createClient>) {
 }
 
 export async function DELETE(
-  _req: NextRequest,
+  _: Request,
   { params }: { params: { id: string } }
 ) {
   const supabase = createClient()

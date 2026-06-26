@@ -4,6 +4,15 @@ import { createAdminClient } from '@/lib/supabase/admin'
 // Ejecutado por Vercel Cron diariamente a las 8:00 AM Colombia (UTC-5 → 13:00 UTC)
 // Configurado en vercel.json: { "crons": [{ "path": "/api/cron/cotizaciones-frias", "schedule": "0 13 * * *" }] }
 
+interface CotizacionFria {
+  id: string
+  codigo_cotizacion: string
+  empresa_id: string
+  asesor_id: string | null
+  updated_at: string
+  crm_clientes: { nombre: string } | { nombre: string }[] | null
+}
+
 export async function GET(request: NextRequest) {
   // Proteger con CRON_SECRET para que solo Vercel pueda llamarlo
   const authHeader = request.headers.get('authorization')
@@ -31,13 +40,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ procesadas: 0, mensaje: 'Sin cotizaciones frías hoy.' })
   }
 
+  const friasTyped = frias as unknown as CotizacionFria[]
   let notificadas = 0
 
-  for (const cot of frias) {
+  for (const cot of friasTyped) {
     if (!cot.asesor_id) continue
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cl = Array.isArray(cot.crm_clientes) ? (cot.crm_clientes as any[])[0] : cot.crm_clientes
-    const clienteNombre = (cl as { nombre: string } | null)?.nombre ?? 'un cliente'
+    const cl = Array.isArray(cot.crm_clientes) ? cot.crm_clientes[0] : cot.crm_clientes
+    const clienteNombre = cl?.nombre ?? 'un cliente'
     const diasSinRespuesta = Math.floor(
       (Date.now() - new Date(cot.updated_at).getTime()) / 86_400_000
     )
