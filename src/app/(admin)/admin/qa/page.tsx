@@ -7,7 +7,7 @@ import {
   Robot, FileText, Storefront, Buildings, Bell,
   ShieldCheck, Globe, Gear, BookOpen,
   MagnifyingGlass, CaretDown, CaretUp, FloppyDisk, X,
-  MinusCircle, Question, Sun,
+  MinusCircle, Question,
 } from '@phosphor-icons/react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -1621,11 +1621,6 @@ interface QAIntento {
   etiqueta: string
   alcance: 'completo' | string
   tareas: { id: string; estado: Estado; notas: string }[]
-}
-
-interface QAStore {
-  intentos: QAIntento[]
-  borrador: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[]
 }
 
 const LS_KEY_V3 = 'reuso_qa_v3'

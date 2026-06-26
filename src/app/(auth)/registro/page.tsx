@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
   ShieldCheck, Eye, EyeSlash, Square, CheckSquare,
   Buildings, EnvelopeSimple, Phone, User, CaretDown,
@@ -126,7 +126,7 @@ export default function RegistroPage() {
   const [error, setError] = useState('')
   const [verificandoEmail, setVerificandoEmail] = useState(false)
   const [exitoAsesoria, setExitoAsesoria] = useState(false)
-  const turnstileRef = useRef<any>(null)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
 
   const fuerza = evaluarFuerza(password)
   const fuerzaCfg = FUERZA_CFG[fuerza]
@@ -289,8 +289,9 @@ export default function RegistroPage() {
         throw new Error(data.error ?? 'Error al enviar la solicitud.')
       }
       setExitoAsesoria(true)
-    } catch (err: any) {
-      setError(err.message ?? 'No se pudo enviar la solicitud. Intenta de nuevo.')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'No se pudo enviar la solicitud. Intenta de nuevo.'
+      setError(msg)
       setLoading(false)
     }
   }

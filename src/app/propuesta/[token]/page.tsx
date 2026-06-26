@@ -64,17 +64,61 @@ export default async function PropuestaPublicaPage({ params }: Props) {
     })
     .eq('id', cot.id)
 
-  // Normalizar arrays de joins → objetos singulares (Supabase devuelve arrays en joins)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const cotAny = cot as any
-  const crm_clientes = Array.isArray(cotAny.crm_clientes) ? cotAny.crm_clientes[0] ?? null : cotAny.crm_clientes
-  const empresaRaw = Array.isArray(cotAny.empresas) ? cotAny.empresas[0] ?? null : cotAny.empresas
+  interface CotizacionData {
+    id: string
+    codigo_cotizacion: string
+    estado: string
+    subtotal: number | null
+    descuento: number | null
+    total: number | null
+    co2_evitado_total_kg: number | null
+    agua_evitada_total_l: number | null
+    observaciones: string | null
+    fecha_apertura_cliente: string | null
+    veces_abierta: number | null
+    enlace_publico_token: string | null
+    created_at: string
+    updated_at: string
+    crm_clientes: { nombre: string; telefono: string | null; email: string | null } | { nombre: string; telefono: string | null; email: string | null }[] | null
+    empresas: {
+      nombre: string
+      logo_url: string | null
+      logo_propuesta_url: string | null
+      nombre_footer_propuesta: string | null
+      whatsapp_propuesta: string | null
+      mostrar_marca_reuso: boolean | null
+    } | {
+      nombre: string
+      logo_url: string | null
+      logo_propuesta_url: string | null
+      nombre_footer_propuesta: string | null
+      whatsapp_propuesta: string | null
+      mostrar_marca_reuso: boolean | null
+    }[] | null
+  }
+
+  const cotTyped = cot as unknown as CotizacionData
+  const crm_clientes = Array.isArray(cotTyped.crm_clientes) ? cotTyped.crm_clientes[0] ?? null : cotTyped.crm_clientes
+  const empresaRaw = Array.isArray(cotTyped.empresas) ? cotTyped.empresas[0] ?? null : cotTyped.empresas
 
   // Seleccionar logo: logo_propuesta_url tiene prioridad; si no, logo_url genérico
   const logoFinal = empresaRaw?.logo_propuesta_url ?? empresaRaw?.logo_url ?? null
 
   const cotNorm = {
-    ...cotAny,
+    id: cotTyped.id,
+    codigo_cotizacion: cotTyped.codigo_cotizacion,
+    estado: cotTyped.estado,
+    subtotal: cotTyped.subtotal,
+    descuento: cotTyped.descuento,
+    total: cotTyped.total,
+    co2_evitado_total_kg: cotTyped.co2_evitado_total_kg,
+    agua_evitada_total_l: cotTyped.agua_evitada_total_l,
+    observaciones: cotTyped.observaciones,
+    fecha_apertura_cliente: cotTyped.fecha_apertura_cliente,
+    veces_abierta: cotTyped.veces_abierta,
+    enlace_publico_token: cotTyped.enlace_publico_token,
+    created_at: cotTyped.created_at,
+    updated_at: cotTyped.updated_at,
     crm_clientes,
     empresas: empresaRaw
       ? {

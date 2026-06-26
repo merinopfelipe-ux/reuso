@@ -1,12 +1,53 @@
 ---
 tags: [estado, reuso, proyecto]
-fecha: 2026-06-24
+fecha: 2026-06-25
 ---
 
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V15.2 — Infraestructura de baja de marketing y aviso legal en correos del sistema.**
+**V15.4 — Limpieza de Lints, Tipados Seguros de Turnstile y Compilación Exitosa.**
+
+## Sesión 2026-06-25 (noche) — Limpieza de API Routes
+
+- **Parámetros `_req`/`_request: NextRequest` → `_: Request`** en 5 handlers DELETE/GET/POST que no usaban el request: `propuesta/[token]/aceptar`, `cotizaciones/[id]` GET, `cotizaciones/[id]/muebles`, `invitaciones/[id]` DELETE, `miembros/[id]` DELETE.
+- **Import `NextRequest` eliminado** donde solo existía por el parámetro muerto: `propuesta/[token]/aceptar/route.ts` y `cotizaciones/[id]/muebles/route.ts`.
+- **Interfaces internas movidas al nivel de módulo**: `CotizacionAceptar`, `CotizacionItem`, `CotizacionFria` — estaban declaradas dentro de funciones, antipatrón de TypeScript.
+- TypeScript limpio ✓. Commit `3493be1`.
+
+## Sesión 2026-06-25 (tarde) — Limpieza de Lints y Compilación Exitosa
+- **Tipado Seguro de Turnstile**: Reemplazados tipos `any` y firmas de objetos ad-hoc por `TurnstileInstance` de `@marsidev/react-turnstile` en `/login` y `/registro` para resolver errores de compilación del compilador de NextJS.
+- **Remoción de Imports/Parámetros Muertos**:
+  - En `/admin/qa`: Eliminados `Sun` import y la interfaz `QAStore` que no se utilizaban.
+  - En `/invitacion/[token]`: Removido `useEffect` import no utilizado.
+  - En `POST/DELETE /api/empresa/configuracion/codigo-registro`: Removidos los parámetros `_req` no utilizados y el import `NextRequest` no utilizado.
+- **Tipado Seguro de Excepciones**: Reemplazado `catch (err: any)` por `catch (err)` y chequeos de instancia seguros en `/registro`.
+- TypeScript limpio ✓. Build de producción exitoso ✓.
+
+## Sesión 2026-06-25 (mañana) — Promo Relámpago + Rediseño /unsubscribe
+
+### Correo de marketing: Promo Relámpago
+- **Template `4-promo-relampago`**: Primer correo de marketing real con hero pistacho, precio, 3 beneficios y link de baja. Sin firma (marketing no va firmado).
+- **`emailPlantilla()` con `mostrarFirma`**: Nuevo parámetro booleano (default `true`). Los correos de sistema mantienen la firma; los de marketing la suprimen. Aplicado en `src/lib/email.ts` y en `scripts/preview-emails.mjs`.
+- **`emailMarketing()`**: Ya acepta `mostrarFirma: false` y `avisoPie` automáticamente. No requiere cambios.
+- **Dark mode del correo (4 capas sincronizadas)**: `@media`, `[data-ogsc]`, `[data-ogsb]` y `DARK_FORCED`. Clases nuevas: `.epromo-bg` (hero pistacho), `.epbd` (badge fondo `#474747`), `.epbw` (badge texto blanco), `.ep-mes` (pistacho), `span.epi` (checkmarks negro Lurdes), `.ediv` (divisores pistacho), `.ep` + `.ep-precio` + `.ep-tachado`.
+- **Bug de especificidad CSS resuelto**: `.epi` perdía ante `.ec span` porque (0,1,0) < (0,1,1). Corregido a `span.epi` — misma especificidad, declarado después, gana.
+- **Countdown eliminado**: No funciona en email HTML estático.
+- **Variantes de preview**: Ahora se generan 3 archivos por template: `-dia.html` (sin CSS), `-noche.html` (DARK_FORCED), `-full.html` (con `@media` CSS para envío real).
+- **`send-promo-test.mjs`**: Script de envío usa `-full.html` para preservar dark mode en clientes de correo.
+- **Migración 030 ejecutada en Supabase**: `profiles.unsubscribe_reason TEXT` — guarda el motivo de baja de la encuesta.
+
+### Página /unsubscribe rediseñada
+- **Movida de `(public)` a `(standalone)`**: Nuevo route group sin layout → sin header ni footer público.
+- **`src/app/(standalone)/layout.tsx`**: Layout mínimo que solo renderiza `{children}`.
+- **Logo real con dark mode**: `Image` SVG con `dark:brightness-0 dark:invert` — funciona automáticamente con Tailwind.
+- **Encuesta de motivo de baja**: 4 opciones con radio buttons estilizados (pistacho en noche al seleccionar). Campo opcional; el motivo se guarda en `profiles.unsubscribe_reason`.
+- **Dark mode automático**: Tailwind `dark:` — sin MutationObserver, sin JS extra.
+- **Colores correctos**: Día `#00827C` / Noche `#D6F391` + `#474747`. Sin `#525252` hardcodeado (reemplazado por `var(--bg-card)`).
+- **Sin footer**: Standalone layout elimina la herencia del footer de `(public)`.
+
+### API actualizada
+- **`POST /api/unsubscribe`**: Acepta `motivo?: string` (max 200 chars). Si viene, lo guarda en `profiles.unsubscribe_reason` junto con `marketing_opt_out: true` y rotación de token.
 
 ## Sesión 2026-06-24 — Marketing Unsubscribe + Avisos Legales en Correos
 - **Aviso legal en correos de sistema**: Footer actualizado en `emailPlantilla()`, `supabase-templates.mjs` y `preview-emails.mjs`. Los 9 correos (3 Resend + 6 Supabase) incluyen el texto "Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso...".

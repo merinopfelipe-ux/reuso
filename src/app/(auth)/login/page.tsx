@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Turnstile } from '@marsidev/react-turnstile'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
   Eye,
   EyeSlash,
@@ -118,7 +118,7 @@ const TESTIMONIOS = [
 export default function LoginPage() {
   const router = useRouter()
   const [invited, setInvited] = useState(false)
-  const turnstileRef = useRef<any>(null)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
