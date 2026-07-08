@@ -1,34 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import {
-  CheckCircle,
-  XCircle,
-  Circle,
-  ClipboardList as ClipboardText,
-  Download as DownloadSimple,
-  RotateCcw as ArrowCounterClockwise,
-  Zap as Lightning,
-  Lock,
-  Moon,
-  BarChart2 as ChartBar,
-  Bot as Robot,
-  FileText,
-  Store as Storefront,
-  Building2 as Buildings,
-  Bell,
-  ShieldCheck,
-  Globe,
-  Settings as Gear,
-  BookOpen,
-  Search as MagnifyingGlass,
-  ChevronDown as CaretDown,
-  ChevronUp as CaretUp,
-  Save as FloppyDisk,
-  X,
-  MinusCircle,
-  CircleHelp as Question,
-} from 'lucide-react'
+import { CheckCircleIcon as CheckCircle, XCircleIcon as XCircle, CircleIcon as Circle, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, LockIcon as Lock, MoonIcon as Moon, BarChart2 as ChartBar, Bot as Robot, FileTextIcon as FileText, Store as Storefront, Building2 as Buildings, BellIcon as Bell, ShieldCheckIcon as ShieldCheck, GlobeIcon as Globe, Settings as Gear, BookOpenIcon as BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, XIcon as X, MinusCircleIcon as MinusCircle, CircleHelp as Question } from '@animateicons/react/lucide'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 

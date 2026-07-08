@@ -2,16 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Plus,
-  Power,
-  Layers as Stack,
-  Check,
-  X,
-  Tag,
-  Building2 as Buildings,
-  Pencil as PencilSimple,
-} from 'lucide-react'
+import { PlusIcon as Plus, PowerIcon as Power, Layers as Stack, CheckIcon as Check, XIcon as X, TagIcon as Tag, Building2 as Buildings, Pencil as PencilSimple } from '@animateicons/react/lucide'
 import type { ModuloConCategorias } from '@/types'
 import * as LucideIcons from 'lucide-react'
 

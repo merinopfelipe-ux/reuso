@@ -3,13 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import {
-  Key,
-  Loader2 as CircleNotch,
-  Eye,
-  EyeOff as EyeSlash,
-  CheckCircle,
-} from 'lucide-react'
+import { KeyIcon as Key, Loader2 as CircleNotch, EyeIcon as Eye, EyeOff as EyeSlash, CheckCircleIcon as CheckCircle } from '@animateicons/react/lucide'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OTPInput } from '@/components/otp-input'

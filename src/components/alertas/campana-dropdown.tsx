@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import {
-  Bell,
-  Info,
-  Tag,
-  TriangleAlert as Warning,
-} from 'lucide-react'
+import { BellIcon as Bell, InfoIcon as Info, TagIcon as Tag, TriangleAlert as Warning } from '@animateicons/react/lucide'
 import { useAlertas } from './alertas-context'
 import type { TipoAlerta } from '@/types'
 

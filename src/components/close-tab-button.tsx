@@ -1,8 +1,6 @@
 'use client'
 
-import {
-  X,
-} from 'lucide-react'
+import { XIcon as X } from '@animateicons/react/lucide'
 
 export function CloseTabButton() {
   return (

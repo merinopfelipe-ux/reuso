@@ -3,11 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
-import {
-  Lock,
-  BarChart2 as ChartBar,
-  SlidersHorizontal,
-} from 'lucide-react'
+import { LockIcon as Lock, BarChart2 as ChartBar, SlidersHorizontalIcon as SlidersHorizontal } from '@animateicons/react/lucide'
 
 const ICONOS_CONFIANZA = {
   Lock: Lock,

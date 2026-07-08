@@ -3,13 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
-import {
-  Eye,
-  EyeOff as EyeSlash,
-  CheckCircle,
-  Loader2 as CircleNotch,
-  Leaf,
-} from 'lucide-react'
+import { EyeIcon as Eye, EyeOff as EyeSlash, CheckCircleIcon as CheckCircle, Loader2 as CircleNotch, LeafIcon as Leaf } from '@animateicons/react/lucide'
 
 interface Props {
   token: string

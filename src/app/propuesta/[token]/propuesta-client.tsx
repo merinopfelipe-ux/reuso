@@ -2,15 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import {
-  CheckCircle,
-  Leaf,
-  Droplet as Drop,
-  TreeDeciduous as Tree,
-  Bath as Bathtub,
-  RefreshCcw as ArrowsCounterClockwise,
-  CircleHelp as Question,
-} from 'lucide-react'
+import { CheckCircleIcon as CheckCircle, LeafIcon as Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question } from '@animateicons/react/lucide'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────

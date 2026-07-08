@@ -1,9 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {
-  ArrowLeft,
-} from 'lucide-react'
+import { ArrowLeftIcon as ArrowLeft } from '@animateicons/react/lucide'
 
 interface AdminPageHeaderProps {
   titulo: string

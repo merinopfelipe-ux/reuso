@@ -2,19 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Plus,
-  Search as MagnifyingGlass,
-  Filter as Funnel,
-  Leaf,
-  CircleDollarSign as CurrencyCircleDollar,
-  Percent,
-  Clock,
-  CheckCircle,
-  XCircle,
-  TriangleAlert as Warning,
-  ChevronRight as CaretRight,
-} from 'lucide-react'
+import { PlusIcon as Plus, Search as MagnifyingGlass, Filter as Funnel, LeafIcon as Leaf, CircleDollarSign as CurrencyCircleDollar, PercentIcon as Percent, ClockIcon as Clock, CheckCircleIcon as CheckCircle, XCircleIcon as XCircle, TriangleAlert as Warning, ChevronRight as CaretRight } from '@animateicons/react/lucide'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────

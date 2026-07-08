@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import {
-  X,
-  SendHorizontal as PaperPlaneRight,
-  Loader2 as CircleNotch,
-  Info,
-} from 'lucide-react'
+import { XIcon as X, SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, InfoIcon as Info } from '@animateicons/react/lucide'
 import type { EstadoTicket, PrioridadTicket } from './lista-tickets'
 
 interface Mensaje {

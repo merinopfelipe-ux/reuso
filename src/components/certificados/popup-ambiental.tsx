@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  Download,
-  Leaf,
-  X,
-} from 'lucide-react'
+import { DownloadIcon as Download, LeafIcon as Leaf, XIcon as X } from '@animateicons/react/lucide'
 
 interface Props {
   url: string

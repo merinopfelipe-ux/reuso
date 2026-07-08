@@ -3,11 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
-import {
-  Lock,
-  CheckCircle,
-  XCircle,
-} from 'lucide-react'
+import { LockIcon as Lock, CheckCircleIcon as CheckCircle, XCircleIcon as XCircle } from '@animateicons/react/lucide'
 
 interface ConsentData {
   v: number

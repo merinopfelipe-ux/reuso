@@ -1,12 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import {
-  Plus,
-  LifeBuoy as Lifebuoy,
-  Loader2 as CircleNotch,
-  ArrowRight,
-} from 'lucide-react'
+import { PlusIcon as Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch, ArrowRightIcon as ArrowRight } from '@animateicons/react/lucide'
 import { HiloTicket } from './hilo-ticket'
 
 export type TipoTicket = 'bug' | 'duda' | 'solicitud' | 'queja'

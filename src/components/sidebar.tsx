@@ -4,24 +4,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import {
-  LayoutGrid as SquaresFour,
-  Building2 as Buildings,
-  Layers as Stack,
-  Package,
-  Settings as Gear,
-  Home as House,
-  Medal,
-  LogOut as SignOut,
-  History as ClockCounterClockwise,
-  LifeBuoy as Lifebuoy,
-  TrendingUp as TrendUp,
-  Target,
-  Calculator,
-  Scale as Scales,
-  ChevronRight as CaretRight,
-  IdCard as IdentificationCard,
-} from 'lucide-react'
+import { LayoutGrid as SquaresFour, Building2 as Buildings, Layers as Stack, PackageIcon as Package, Settings as Gear, Home as House, MedalIcon as Medal, LogOut as SignOut, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, TrendingUp as TrendUp, TargetIcon as Target, CalculatorIcon as Calculator, Scale as Scales, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@animateicons/react/lucide'
 import type { Rol } from '@/types'
 
 interface SubItem {

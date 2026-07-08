@@ -1,13 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  TrendingUp as TrendUp,
-  TrendingDown as TrendDown,
-  Minus,
-} from 'lucide-react'
+import { TrendingUp as TrendUp, TrendingDown as TrendDown, MinusIcon as Minus } from '@animateicons/react/lucide'
 import type { LucideIcon as Icon } from 'lucide-react'
-import { Leaf, Droplet, Package, Medal } from 'lucide-react'
+import { LeafIcon as Leaf, DropletIcon as Droplet, PackageIcon as Package, MedalIcon as Medal } from '@animateicons/react/lucide'
 
 export interface IndicadorSemanal {
   porcentaje: number

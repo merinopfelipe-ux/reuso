@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  ChevronUp as CaretUp,
-  ChevronDown as CaretDown,
-  ChevronsUpDown as CaretUpDown,
-} from 'lucide-react'
+import { ChevronUp as CaretUp, ChevronDown as CaretDown, ChevronsUpDown as CaretUpDown } from '@animateicons/react/lucide'
 import type { SortState } from '@/lib/use-sortable'
 
 interface SortThProps {

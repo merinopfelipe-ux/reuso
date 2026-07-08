@@ -2,9 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  ChevronDown as CaretDown,
-} from 'lucide-react'
+import { ChevronDown as CaretDown } from '@animateicons/react/lucide'
 
 interface FooterProps {
   ip?: string

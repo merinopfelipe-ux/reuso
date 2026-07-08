@@ -1,14 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  Copy,
-  Check,
-  RefreshCw as ArrowsClockwise,
-  Loader2 as CircleNotch,
-  Trash2 as Trash,
-  QrCode,
-} from 'lucide-react'
+import { CopyIcon as Copy, CheckIcon as Check, RefreshCw as ArrowsClockwise, Loader2 as CircleNotch, Trash2 as Trash, QrCodeIcon as QrCode } from '@animateicons/react/lucide'
 
 const BRAND = '#00827C'
 const TEXT_MED = '#4D7C79'

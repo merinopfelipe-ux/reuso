@@ -2,12 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Calculator,
-  TriangleAlert as Warning,
-  X,
-  Check,
-} from 'lucide-react'
+import { CalculatorIcon as Calculator, TriangleAlert as Warning, XIcon as X, CheckIcon as Check } from '@animateicons/react/lucide'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

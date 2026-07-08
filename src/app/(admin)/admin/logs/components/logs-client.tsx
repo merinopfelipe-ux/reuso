@@ -2,11 +2,7 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Filter as Funnel,
-  ChevronLeft as CaretLeft,
-  ChevronRight as CaretRight,
-} from 'lucide-react'
+import { Filter as Funnel, ChevronLeft as CaretLeft, ChevronRight as CaretRight } from '@animateicons/react/lucide'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import type { LogAuditoria } from '@/types'
