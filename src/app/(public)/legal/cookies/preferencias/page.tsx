@@ -307,6 +307,7 @@ export default function CookiesPreferenciasPage() {
         <div style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <button
             onClick={guardarPreferencias}
+            className="hover-pop hover-press"
             style={{
               background: '#00827C',
               color: '#fff',
@@ -387,6 +388,7 @@ export default function CookiesPreferenciasPage() {
         </ul>
         <button
           onClick={reiniciarPreferencias}
+          className="hover-rotate-90 hover-press"
           style={{
             display: 'inline-flex',
             alignItems: 'center',

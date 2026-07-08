@@ -63,6 +63,7 @@ function VerificarForm() {
           />
           <button
             type="submit"
+            className="hover-pop hover-press"
             style={{
               position: 'absolute', right: 8, top: 8, bottom: 8, width: 44,
               background: 'var(--color-brand)', border: 'none', borderRadius: 10,
