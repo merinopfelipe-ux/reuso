@@ -1585,10 +1585,10 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
 
 const CATEGORIAS = [
   { key: 'Autenticación',       icono: Lock,        color: '#59A6E4' },
+  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43' },
   { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E' },
   { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C' },
   { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E' },
-  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43' },
   { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2' },
   { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3' },
   { key: 'Modo Noche',          icono: Moon,         color: '#D6F391' },
