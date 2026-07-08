@@ -1,7 +1,16 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { CameraIcon as Camera, Save as FloppyDisk, CheckCircleIcon as CheckCircle, AlertCircle as WarningCircle, SquareCheck as CheckSquare, SquareIcon as Square, EyeIcon as Eye, Building2 as Buildings } from '@animateicons/react/lucide'
+import {
+  Camera,
+  Save as FloppyDisk,
+  CheckCircle,
+  AlertCircle as WarningCircle,
+  SquareCheck as CheckSquare,
+  Square,
+  Eye,
+  Building2 as Buildings,
+} from 'lucide-react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 // ── Tipos ────────────────────────────────────────────────────────────────────

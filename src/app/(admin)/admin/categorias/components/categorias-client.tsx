@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronDown as CaretDown, ChevronRight as CaretRight, PlusIcon as Plus, PowerIcon as Power } from '@animateicons/react/lucide'
+import {
+  ChevronDown as CaretDown,
+  ChevronRight as CaretRight,
+  Plus,
+  Power,
+} from 'lucide-react'
 import { ConfianzaBadge } from '@/components/admin/confianza-badge'
 import type { CategoriaConItems, Modulo, NivelConfianza } from '@/types'
 

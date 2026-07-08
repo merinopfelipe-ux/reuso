@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Save as FloppyDisk, UploadIcon as Upload, FileTextIcon as FileText, MedalIcon as Medal } from '@animateicons/react/lucide'
+import {
+  Save as FloppyDisk,
+  Upload,
+  FileText,
+  Medal,
+} from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

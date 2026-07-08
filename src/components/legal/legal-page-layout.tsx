@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowDownIcon as ArrowDown } from '@animateicons/react/lucide'
+import {
+  ArrowDown,
+} from 'lucide-react'
 import { IaIcon } from '@/components/ui/icons'
 import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'

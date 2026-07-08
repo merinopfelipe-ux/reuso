@@ -5,7 +5,28 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { ShieldCheckIcon as ShieldCheck, EyeIcon as Eye, EyeOff as EyeSlash, SquareIcon as Square, SquareCheck as CheckSquare, Building2 as Buildings, Mail as EnvelopeSimple, PhoneIcon as Phone, UserIcon as User, ChevronDown as CaretDown, ArrowRightIcon as ArrowRight, ArrowLeftIcon as ArrowLeft, XIcon as X, CheckIcon as Check, HeadsetIcon as Headset, CircleIcon as Circle, CheckCircleIcon as CheckCircle, Loader2 as CircleNotch, FileTextIcon as FileText, ChevronRight as CaretRight } from '@animateicons/react/lucide'
+import {
+  ShieldCheck,
+  Eye,
+  EyeOff as EyeSlash,
+  Square,
+  SquareCheck as CheckSquare,
+  Building2 as Buildings,
+  Mail as EnvelopeSimple,
+  Phone,
+  User,
+  ChevronDown as CaretDown,
+  ArrowRight,
+  ArrowLeft,
+  X,
+  Check,
+  Headset,
+  Circle,
+  CheckCircle,
+  Loader2 as CircleNotch,
+  FileText,
+  ChevronRight as CaretRight,
+} from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 function normalizeStr(str: string): string {

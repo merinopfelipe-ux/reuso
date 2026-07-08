@@ -3,7 +3,15 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
-import { FileTextIcon as FileText, ShieldIcon as Shield, DatabaseIcon as Database, CookieIcon as Cookie, LockIcon as Lock, ScaleIcon as Scale, MessageSquare as ChatCircle } from '@animateicons/react/lucide'
+import {
+  FileText,
+  Shield,
+  Database,
+  Cookie,
+  Lock,
+  Scale,
+  MessageSquare as ChatCircle,
+} from 'lucide-react'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {

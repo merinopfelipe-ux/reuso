@@ -3,7 +3,17 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { CameraIcon as Camera, XCircleIcon as XCircle, SquareCheck as CheckSquare, SquareIcon as Square, LeafIcon as Leaf, Droplet as Drop, PlusIcon as Plus, ArrowRightIcon as ArrowRight, AlertCircle as WarningCircle } from '@animateicons/react/lucide'
+import {
+  Camera,
+  XCircle,
+  SquareCheck as CheckSquare,
+  Square,
+  Leaf,
+  Droplet as Drop,
+  Plus,
+  ArrowRight,
+  AlertCircle as WarningCircle,
+} from 'lucide-react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { calcularCotizacion } from '@/lib/cotizador/motor-cotizacion'
 import type { ConfigCostosMueble, Oficios, ResultadoCotizacion } from '@/lib/cotizador/motor-cotizacion'

@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
-import { AlertCircle as WarningCircle, RotateCcw as ArrowCounterClockwise } from '@animateicons/react/lucide'
+import {
+  AlertCircle as WarningCircle,
+  RotateCcw as ArrowCounterClockwise,
+} from 'lucide-react'
 
 export default function AdminError({
   error,

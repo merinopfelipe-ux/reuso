@@ -1,6 +1,8 @@
 'use client'
 
-import { TrophyIcon as Trophy } from '@animateicons/react/lucide'
+import {
+  Trophy,
+} from 'lucide-react'
 
 export interface ItemRanking {
   user_id: string

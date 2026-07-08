@@ -1,7 +1,19 @@
 'use client'
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
-import { CalendarIcon as Calendar, Filter as Funnel, XIcon as X, ChevronLeft as CaretLeft, ChevronRight as CaretRight, Search as MagnifyingGlass, Loader2 as CircleNotch, LeafIcon as Leaf, Droplet as Drop, ShieldCheckIcon as ShieldCheck, Link as LinkIcon } from '@animateicons/react/lucide'
+import {
+  Calendar,
+  Filter as Funnel,
+  X,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+  Search as MagnifyingGlass,
+  Loader2 as CircleNotch,
+  Leaf,
+  Droplet as Drop,
+  ShieldCheck,
+  Link as LinkIcon,
+} from 'lucide-react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'

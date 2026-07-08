@@ -5,7 +5,20 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { EyeIcon as Eye, EyeOff as EyeSlash, Mail as Envelope, KeyRound as LockKey, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, Loader2 as CircleNotch, CircleUser as UserCircle, Quote as Quotes, SquareIcon as Square, SquareCheck as CheckSquare } from '@animateicons/react/lucide'
+import {
+  Eye,
+  EyeOff as EyeSlash,
+  Mail as Envelope,
+  KeyRound as LockKey,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+  ChevronDown as CaretDown,
+  Loader2 as CircleNotch,
+  CircleUser as UserCircle,
+  Quote as Quotes,
+  Square,
+  SquareCheck as CheckSquare,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type { Rol } from '@/types'

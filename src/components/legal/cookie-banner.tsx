@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { CookieIcon as Cookie, XIcon as X, CheckCircleIcon as CheckCircle, LockIcon as Lock } from '@animateicons/react/lucide'
+import {
+  Cookie,
+  X,
+  CheckCircle,
+  Lock,
+} from 'lucide-react'
 
 interface ConsentData {
   v: number

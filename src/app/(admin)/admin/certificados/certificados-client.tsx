@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { MedalIcon as Medal, ExternalLink as ArrowSquareOut, XCircleIcon as XCircle, Search as MagnifyingGlass } from '@animateicons/react/lucide'
+import {
+  Medal,
+  ExternalLink as ArrowSquareOut,
+  XCircle,
+  Search as MagnifyingGlass,
+} from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

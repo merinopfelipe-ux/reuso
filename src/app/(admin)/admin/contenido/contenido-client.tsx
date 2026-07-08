@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Save as FloppyDisk, BarChart2 as ChartBar, CircleHelp as Question, Layers as Stack } from '@animateicons/react/lucide'
+import {
+  Save as FloppyDisk,
+  BarChart2 as ChartBar,
+  CircleHelp as Question,
+  Layers as Stack,
+} from 'lucide-react'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 

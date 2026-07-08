@@ -1,6 +1,8 @@
 'use client'
 
-import { DownloadIcon as Download } from '@animateicons/react/lucide'
+import {
+  Download,
+} from 'lucide-react'
 import type { Plan } from '@/types'
 
 interface Props {

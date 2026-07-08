@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { PenLine as PencilSimpleLine, ChevronDown as CaretDown } from '@animateicons/react/lucide'
+import {
+  PenLine as PencilSimpleLine,
+  ChevronDown as CaretDown,
+} from 'lucide-react'
 import { LegalPageLayout } from '@/components/legal/legal-page-layout'
 
 /* ── Traducciones ─────────────────────────────────────────────────── */

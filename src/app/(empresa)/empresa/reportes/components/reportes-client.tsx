@@ -1,7 +1,12 @@
 'use client'
 
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
-import { LeafIcon as Leaf, Droplet as Drop, TreeDeciduous as Tree, CarIcon as Car } from '@animateicons/react/lucide'
+import {
+  Leaf,
+  Droplet as Drop,
+  TreeDeciduous as Tree,
+  Car,
+} from 'lucide-react'
 
 interface Props {
   serieTemporalCO2: { fecha: string; co2: number; calculos: number }[]

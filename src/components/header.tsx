@@ -2,7 +2,16 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { ListIcon as List, Search as MagnifyingGlass, UserIcon as User, Building2 as Buildings, CalculatorIcon as Calculator, UserCheckIcon as UserCheck, Settings as Gear, LogOut as SignOut } from '@animateicons/react/lucide'
+import {
+  List,
+  Search as MagnifyingGlass,
+  User,
+  Building2 as Buildings,
+  Calculator,
+  UserCheck,
+  Settings as Gear,
+  LogOut as SignOut,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'

@@ -2,7 +2,13 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeftIcon as ArrowLeft, UsersIcon as Users, CalculatorIcon as Calculator, MedalIcon as Medal, FileTextIcon as FileText } from '@animateicons/react/lucide'
+import {
+  ArrowLeft,
+  Users,
+  Calculator,
+  Medal,
+  FileText,
+} from 'lucide-react'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import type { Empresa } from '@/types'
 

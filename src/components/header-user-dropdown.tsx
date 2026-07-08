@@ -2,7 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { UserIcon as User, Settings as Gear, LogOut as SignOut, UserCheckIcon as UserCheck, Building2 as Buildings } from '@animateicons/react/lucide'
+import {
+  User,
+  Settings as Gear,
+  LogOut as SignOut,
+  UserCheck,
+  Building2 as Buildings,
+} from 'lucide-react'
 import type { Rol } from '@/types'
 
 const ROL_LABELS: Record<string, string> = {

@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout } from '@/components/legal/legal-page-layout'
-import { LockIcon as Lock, ShieldCheckIcon as ShieldCheck, HeartHandshake as HandHeart } from '@animateicons/react/lucide'
+import {
+  Lock,
+  ShieldCheck,
+  HeartHandshake as HandHeart,
+} from 'lucide-react'
 
 const ICONOS_PRIVACIDAD = {
   Lock: Lock,

@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { MedalIcon as Medal, FileTextIcon as FileText, DownloadIcon as Download, ExternalLink as ArrowSquareOut, XIcon as X, CalendarIcon as Calendar, Loader2 as CircleNotch } from '@animateicons/react/lucide'
+import {
+  Medal,
+  FileText,
+  Download,
+  ExternalLink as ArrowSquareOut,
+  X,
+  Calendar,
+  Loader2 as CircleNotch,
+} from 'lucide-react'
 import type { Certificado } from '@/types'
 import { PopupAmbiental } from './popup-ambiental'
 

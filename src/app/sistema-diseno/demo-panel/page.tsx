@@ -1,7 +1,21 @@
 'use client'
 
 import React, { useState } from 'react'
-import { ListIcon as List, LayoutGrid as SquaresFour, Building2 as Buildings, Layers as Stack, Settings as Gear, CalculatorIcon as Calculator, TrendingUp as TrendUp, LogOut as SignOut, SunIcon as Sun, MoonIcon as Moon, ChevronRight as CaretRight, LeafIcon as Leaf, Scale as Scales } from '@animateicons/react/lucide'
+import {
+  List,
+  LayoutGrid as SquaresFour,
+  Building2 as Buildings,
+  Layers as Stack,
+  Settings as Gear,
+  Calculator,
+  TrendingUp as TrendUp,
+  LogOut as SignOut,
+  Sun,
+  Moon,
+  ChevronRight as CaretRight,
+  Leaf,
+  Scale as Scales,
+} from 'lucide-react'
 
 export default function LayoutDemoPage() {
   const [isDark, setIsDark] = useState(true)

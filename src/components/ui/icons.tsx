@@ -2,7 +2,6 @@
 
 import React from 'react'
 import * as Lucide from 'lucide-react'
-import * as LucideAnimated from '@animateicons/react/lucide'
 
 // IconProps extends standard SVG props + custom size, color, strokeWidth, and duotone
 export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
@@ -14,14 +13,8 @@ export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
 
 export type Icon = React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>
 
-// Wrapper HOC to add duotone (20% fill) support and auto-inject animations
+// Wrapper HOC to add duotone (20% fill) support
 function wrapIcon(LucideIcon: React.ComponentType<any>): Icon {
-  const name = LucideIcon.displayName
-  let AnimatedIcon: any = null
-  if (name && (LucideAnimated as any)[`${name}Icon`]) {
-    AnimatedIcon = (LucideAnimated as any)[`${name}Icon`]
-  }
-
   const Component = React.forwardRef<SVGSVGElement, IconProps>(
     ({ duotone, ...props }, ref) => {
       const extraProps: any = {}
@@ -29,11 +22,8 @@ function wrapIcon(LucideIcon: React.ComponentType<any>): Icon {
         extraProps.fill = 'currentColor'
         extraProps.fillOpacity = 0.2
       }
-      
-      const BaseIcon = AnimatedIcon || LucideIcon
-      
       return (
-        <BaseIcon
+        <LucideIcon
           ref={ref}
           {...extraProps}
           {...props}
@@ -41,7 +31,7 @@ function wrapIcon(LucideIcon: React.ComponentType<any>): Icon {
       )
     }
   )
-  Component.displayName = name || 'Icon'
+  Component.displayName = LucideIcon.displayName || 'Icon'
   return Component as Icon
 }
 
@@ -66,11 +56,11 @@ export const IaIcon = React.forwardRef<SVGSVGElement, IconProps>(
         <rect x="3" y="3" width="18" height="18" rx="4" />
         <text
           x="50%"
-          y="51%"
+          y="55%"
           dominantBaseline="central"
           textAnchor="middle"
           fontFamily="seravek, ui-sans-serif, sans-serif"
-          fontSize="12"
+          fontSize="10"
           fontWeight="800"
           fill="currentColor"
           stroke="none"

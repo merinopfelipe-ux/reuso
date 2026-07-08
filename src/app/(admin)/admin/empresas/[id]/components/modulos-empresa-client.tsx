@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Layers as Stack, TriangleAlert as Warning } from '@animateicons/react/lucide'
+import {
+  Layers as Stack,
+  TriangleAlert as Warning,
+} from 'lucide-react'
 import type { ModuloConActivo } from '@/types'
 
 const C = {

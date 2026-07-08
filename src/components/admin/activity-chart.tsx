@@ -1,7 +1,9 @@
 'use client'
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
-import { InfoIcon as Info } from '@animateicons/react/lucide'
+import {
+  Info,
+} from 'lucide-react'
 
 interface DatoActividad {
   fecha: string
