@@ -103,6 +103,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
             <button
               onClick={copiar}
               title="Copiar código"
+              className="hover-copy hover-press"
               style={{
                 padding: '10px 14px', borderRadius: 8,
                 border: `1px solid ${copiado ? '#38B98E' : BORDER}`,
@@ -119,6 +120,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
               onClick={generar}
               disabled={cargando}
               title="Regenerar código"
+              className={cargando ? '' : 'hover-spin hover-press'}
               style={{
                 padding: '10px 14px', borderRadius: 8,
                 border: `1px solid ${BORDER}`, background: 'transparent',
@@ -137,6 +139,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
               onClick={eliminar}
               disabled={cargando}
               title="Desactivar código"
+              className={cargando ? '' : 'hover-trash hover-press'}
               style={{
                 padding: '10px 14px', borderRadius: 8,
                 border: '1px solid rgba(255,94,75,0.20)', background: 'rgba(255,94,75,0.04)',
@@ -157,6 +160,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
           <button
             onClick={generar}
             disabled={cargando}
+            className={cargando ? '' : 'hover-pop hover-press'}
             style={{
               padding: '10px 18px', borderRadius: 8, border: 'none',
               background: BRAND, color: '#fff',

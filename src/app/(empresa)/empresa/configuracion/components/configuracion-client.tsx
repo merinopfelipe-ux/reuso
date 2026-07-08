@@ -183,6 +183,7 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
         <button
           type="submit"
           disabled={guardando}
+          className={guardando ? '' : 'hover-download hover-press'}
           style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '11px 24px', borderRadius: 8, border: 'none',

@@ -717,6 +717,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 <button
                   type="button"
                   onClick={() => setIsOpenMoneda(!isOpenMoneda)}
+                  className="hover-pop"
                   style={{
                     ...inputStyle,
                     cursor: 'pointer',

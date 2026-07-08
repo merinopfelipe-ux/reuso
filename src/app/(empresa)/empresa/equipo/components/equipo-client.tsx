@@ -219,7 +219,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
           color: '#FF5E4B', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <WarningCircle size={16} /> {error}
-          <button onClick={() => setError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#FF5E4B', cursor: 'pointer' }}>
+          <button onClick={() => setError(null)} className="hover-rotate-90 hover-press" style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#FF5E4B', cursor: 'pointer' }}>
             <X size={14} />
           </button>
         </div>
@@ -237,6 +237,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
           </div>
           <button
             onClick={() => setModalOpen(true)}
+            className="hover-pop hover-press"
             style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 8, border: 'none', background: BRAND, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
             <UserPlus size={15} /> Invitar
@@ -300,6 +301,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                         <button
                           onClick={() => { setEditandoMiembro(m.id); setEditNombreMiembro(m.nombre) }}
                           title="Editar nombre"
+                          className="hover-pencil hover-press"
                           style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '5px', cursor: 'pointer', color: TEXT_MED, display: 'flex', alignItems: 'center' }}
                         >
                           <PencilSimple size={13} />
@@ -308,6 +310,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                         <button
                           onClick={() => { setMiembroAEliminar(m); setTextoConfirmacionEliminar('') }}
                           title="Remover del equipo"
+                          className="hover-trash hover-press"
                           style={{ background: 'rgba(255,94,75,0.06)', border: '1px solid rgba(255,94,75,0.20)', borderRadius: 6, padding: '5px', cursor: 'pointer', color: '#FF5E4B', display: 'flex', alignItems: 'center' }}
                         >
                           <Trash size={13} />
@@ -390,6 +393,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                         <button
                           onClick={() => { setEditandoInv(inv.id); setEditEmailInv(inv.email) }}
                           title="Editar email"
+                          className="hover-pencil hover-press"
                           style={{ padding: '5px 10px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'transparent', color: TEXT_MED, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
                         >
                           <PencilSimple size={13} />
@@ -400,6 +404,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                       <button
                         onClick={() => handleEliminarInv(inv.id)}
                         disabled={eliminandoInv === inv.id}
+                        className={eliminandoInv === inv.id ? '' : 'hover-trash hover-press'}
                         style={{ padding: '5px 10px', borderRadius: 8, border: '1px solid rgba(255,94,75,0.25)', background: 'rgba(255,94,75,0.06)', color: '#FF5E4B', fontSize: 12, fontWeight: 600, cursor: eliminandoInv === inv.id ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
                       >
                         {eliminandoInv === inv.id ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Trash size={13} />}
@@ -513,6 +518,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                   </p>
                   <button
                     onClick={copiarLink}
+                    className="hover-copy hover-press"
                     style={{ flexShrink: 0, padding: '6px 12px', borderRadius: 6, border: `1.5px solid ${BRAND}`, background: copiado ? BRAND : 'transparent', color: copiado ? '#fff' : BRAND, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.2s' }}
                   >
                     {copiado ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
@@ -535,6 +541,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                 <button
                   onClick={handleInvitar}
                   disabled={!emailInvitar || enviando}
+                  className={enviando ? '' : 'hover-pop hover-press'}
                   style={{ flex: 1, padding: '11px', borderRadius: 8, border: 'none', background: emailInvitar && !enviando ? BRAND : BG_LIGHT, color: emailInvitar && !enviando ? '#fff' : TEXT_MED, fontSize: 14, fontWeight: 600, cursor: emailInvitar && !enviando ? 'pointer' : 'not-allowed', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                 >
                   {enviando ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Generando...</> : 'Generar invitación'}
