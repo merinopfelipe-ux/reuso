@@ -77,7 +77,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
   const [open, setOpen] = useState(false)
   return (
     <div className={`border-b py-5 ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
-      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-4 text-left">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between gap-4 text-left hover-pop">
         <span className={`text-base font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{q}</span>
         <CaretDown
           size={18}
@@ -284,10 +284,10 @@ export default function Landing2Page() {
               Mide Verde. Cuantifica la reducción de CO₂, el ahorro de agua y el impacto económico de reutilizar en el Sistema Moda y más allá. Evita el lavado de imagen verde con datos reales.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <a href="#planes" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#00827C] text-white font-bold text-base hover:bg-[#006B66] transition-all shadow-[0_8px_32px_rgba(0,130,124,0.3)] hover:shadow-[0_12px_40px_rgba(0,130,124,0.4)] hover:-translate-y-0.5">
+              <a href="#planes" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#00827C] text-white font-bold text-base hover:bg-[#006B66] transition-all shadow-[0_8px_32px_rgba(0,130,124,0.3)] hover:shadow-[0_12px_40px_rgba(0,130,124,0.4)] hover:-translate-y-0.5 hover-slide-r hover-press">
                 Iniciar mi primer diagnóstico <ArrowRight size={18} strokeWidth={2.5} />
               </a>
-              <a href="#proceso" className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border font-bold text-base transition-all ${isDark ? 'border-[#D6F391]/20 text-[#D6F391] hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}>
+              <a href="#proceso" className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border font-bold text-base transition-all hover-pop hover-press ${isDark ? 'border-[#D6F391]/20 text-[#D6F391] hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}>
                 Ver cómo funciona
               </a>
             </div>

@@ -289,7 +289,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
               <button
                 onClick={aceptarPropuesta}
                 disabled={aceptando}
-                className="px-8 py-3.5 rounded-full bg-[#00827C] text-white text-base font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-60"
+                className={`px-8 py-3.5 rounded-full bg-[#00827C] text-white text-base font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-60 ${aceptando ? '' : 'hover-pop hover-press'}`}
               >
                 {aceptando ? 'Registrando...' : 'Quiero el servicio'}
               </button>

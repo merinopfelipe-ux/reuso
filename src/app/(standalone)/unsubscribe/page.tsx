@@ -142,6 +142,7 @@ function UnsubscribeContent() {
                 'bg-[#00827C] hover:bg-[#006B66] text-white',
                 'dark:bg-[#D6F391] dark:text-[#474747] dark:hover:bg-[#c8e882]',
                 'disabled:opacity-60 disabled:cursor-not-allowed',
+                estado === 'confirmando' ? '' : 'hover-pop hover-press',
               ].join(' ')}
             >
               {estado === 'confirmando' ? 'Procesando...' : 'Confirmar baja'}
