@@ -2,13 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Search as MagnifyingGlass,
-  ChevronLeft as CaretLeft,
-  ChevronRight as CaretRight,
-  PlusCircle,
-  X,
-} from 'lucide-react'
+import { Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight, PlusCircle, X } from '@/components/ui/icons'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'

@@ -2,15 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Inbox as Tray,
-  Mail as Envelope,
-  Building2 as Buildings,
-  Calendar,
-  ChevronDown as CaretDown,
-  ChevronUp as CaretUp,
-  Phone,
-} from 'lucide-react'
+import { Inbox as Tray, Mail as Envelope, Building2 as Buildings, Calendar, ChevronDown as CaretDown, ChevronUp as CaretUp, Phone } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 

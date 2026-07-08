@@ -1,9 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  ChevronDown as CaretDown,
-} from 'lucide-react'
+import { ChevronDown as CaretDown } from '@/components/ui/icons'
 
 export function CollapseSection({
   titulo,

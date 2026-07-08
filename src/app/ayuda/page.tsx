@@ -2,14 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  ArrowLeft,
-  MessageSquare as ChatCircle,
-  Mail as Envelope,
-  CircleHelp as Question,
-  TriangleAlert as Warning,
-  CreditCard,
-} from 'lucide-react'
+import { ArrowLeft, MessageSquare as ChatCircle, Mail as Envelope, CircleHelp as Question, TriangleAlert as Warning, CreditCard } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PageSubmenu } from '@/components/page-submenu'
 

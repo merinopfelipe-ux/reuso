@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import * as Lucide from 'lucide-react'
+import * as LucideAnimated from '@animateicons/react/lucide'
 
 // IconProps extends standard SVG props + custom size, color, strokeWidth, and duotone
 export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
@@ -13,25 +14,73 @@ export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
 
 export type Icon = React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>
 
-// Wrapper HOC to add duotone (20% fill) support
+// Wrapper HOC to add duotone (20% fill) support, auto-inject animations, and handle group hovers
 function wrapIcon(LucideIcon: React.ComponentType<any>): Icon {
+  const name = LucideIcon.displayName
+  let AnimatedIcon: any = null
+  if (name && (LucideAnimated as any)[`${name}Icon`]) {
+    AnimatedIcon = (LucideAnimated as any)[`${name}Icon`]
+  }
+
   const Component = React.forwardRef<SVGSVGElement, IconProps>(
-    ({ duotone, size = 24, ...props }, ref) => {
+    ({ duotone, size = 24, className, ...props }, forwardedRef) => {
+      const containerRef = useRef<HTMLSpanElement>(null)
+      const internalAnimatedRef = useRef<any>(null)
+
+      useEffect(() => {
+        if (!AnimatedIcon) return
+        const span = containerRef.current
+        if (!span) return
+
+        const groupParent = span.closest('.group')
+        if (groupParent) {
+          const handleEnter = () => internalAnimatedRef.current?.startAnimation?.()
+          const handleLeave = () => internalAnimatedRef.current?.stopAnimation?.()
+
+          groupParent.addEventListener('mouseenter', handleEnter)
+          groupParent.addEventListener('mouseleave', handleLeave)
+
+          return () => {
+            groupParent.removeEventListener('mouseenter', handleEnter)
+            groupParent.removeEventListener('mouseleave', handleLeave)
+          }
+        }
+      }, [])
+
       const extraProps: any = {}
       if (duotone) {
         extraProps.fill = 'currentColor'
         extraProps.fillOpacity = 0.2
       }
-      return (
-        <LucideIcon
-          ref={ref}
+      
+      const BaseIcon = AnimatedIcon || LucideIcon
+      const iconRef = AnimatedIcon ? internalAnimatedRef : forwardedRef
+      
+      const fallbackClass = !AnimatedIcon ? 'transition-transform duration-200 group-hover:scale-110 hover:scale-110' : ''
+      const combinedClassName = [className, fallbackClass].filter(Boolean).join(' ')
+      
+      const IconEl = (
+        <BaseIcon
+          ref={iconRef}
+          size={size}
+          className={combinedClassName}
           {...extraProps}
           {...props}
         />
       )
+
+      if (AnimatedIcon) {
+        return (
+          <span ref={containerRef} className="contents">
+            {IconEl}
+          </span>
+        )
+      }
+      
+      return IconEl
     }
   )
-  Component.displayName = LucideIcon.displayName || 'Icon'
+  Component.displayName = name || 'Icon'
   return Component as Icon
 }
 
@@ -56,11 +105,11 @@ export const IaIcon = React.forwardRef<SVGSVGElement, IconProps>(
         <rect x="3" y="3" width="18" height="18" rx="4" />
         <text
           x="50%"
-          y="55%"
+          y="51%"
           dominantBaseline="central"
           textAnchor="middle"
           fontFamily="seravek, ui-sans-serif, sans-serif"
-          fontSize="10"
+          fontSize="12"
           fontWeight="800"
           fill="currentColor"
           stroke="none"
@@ -169,6 +218,76 @@ export const Image = wrapIcon(Lucide.Image)
 export const Phone = wrapIcon(Lucide.Phone)
 export const SquareHalf = wrapIcon(Lucide.SquareSplitHorizontal)
 export const Spinner = wrapIcon(Lucide.Loader2)
+
+
+// --- AUTO-GENERATED EXPORTS ---
+export const Activity = wrapIcon(Lucide.Activity)
+export const AlertCircle = wrapIcon(Lucide.AlertCircle)
+export const ArrowDown = wrapIcon(Lucide.ArrowDown)
+export const BarChart2 = wrapIcon(Lucide.BarChart2)
+export const Bath = wrapIcon(Lucide.Bath)
+export const BookOpen = wrapIcon(Lucide.BookOpen)
+export const Bot = wrapIcon(Lucide.Bot)
+export const Building2 = wrapIcon(Lucide.Building2)
+export const Camera = wrapIcon(Lucide.Camera)
+export const ChevronDown = wrapIcon(Lucide.ChevronDown)
+export const ChevronLeft = wrapIcon(Lucide.ChevronLeft)
+export const ChevronRight = wrapIcon(Lucide.ChevronRight)
+export const ChevronUp = wrapIcon(Lucide.ChevronUp)
+export const ChevronsUpDown = wrapIcon(Lucide.ChevronsUpDown)
+export const Circle = wrapIcon(Lucide.Circle)
+export const CircleDollarSign = wrapIcon(Lucide.CircleDollarSign)
+export const CircleHelp = wrapIcon(Lucide.CircleHelp)
+export const CircleUser = wrapIcon(Lucide.CircleUser)
+export const ClipboardList = wrapIcon(Lucide.ClipboardList)
+export const Droplet = wrapIcon(Lucide.Droplet)
+export const Dumbbell = wrapIcon(Lucide.Dumbbell)
+export const ExternalLink = wrapIcon(Lucide.ExternalLink)
+export const EyeOff = wrapIcon(Lucide.EyeOff)
+export const Filter = wrapIcon(Lucide.Filter)
+export const FlaskConical = wrapIcon(Lucide.FlaskConical)
+export const Hammer = wrapIcon(Lucide.Hammer)
+export const Headset = wrapIcon(Lucide.Headset)
+export const HeartHandshake = wrapIcon(Lucide.HeartHandshake)
+export const History = wrapIcon(Lucide.History)
+export const Home = wrapIcon(Lucide.Home)
+export const IdCard = wrapIcon(Lucide.IdCard)
+export const Inbox = wrapIcon(Lucide.Inbox)
+export const KeyRound = wrapIcon(Lucide.KeyRound)
+export const Layers = wrapIcon(Lucide.Layers)
+export const LayoutGrid = wrapIcon(Lucide.LayoutGrid)
+export const LifeBuoy = wrapIcon(Lucide.LifeBuoy)
+export const Loader2 = wrapIcon(Lucide.Loader2)
+export const LockKeyhole = wrapIcon(Lucide.LockKeyhole)
+export const LogOut = wrapIcon(Lucide.LogOut)
+export const Mail = wrapIcon(Lucide.Mail)
+export const MessageSquare = wrapIcon(Lucide.MessageSquare)
+export const MinusCircle = wrapIcon(Lucide.MinusCircle)
+export const PenLine = wrapIcon(Lucide.PenLine)
+export const Pencil = wrapIcon(Lucide.Pencil)
+export const Percent = wrapIcon(Lucide.Percent)
+export const QrCode = wrapIcon(Lucide.QrCode)
+export const Quote = wrapIcon(Lucide.Quote)
+export const RefreshCcw = wrapIcon(Lucide.RefreshCcw)
+export const RefreshCw = wrapIcon(Lucide.RefreshCw)
+export const RotateCcw = wrapIcon(Lucide.RotateCcw)
+export const Save = wrapIcon(Lucide.Save)
+export const Scale = wrapIcon(Lucide.Scale)
+export const Search = wrapIcon(Lucide.Search)
+export const Send = wrapIcon(Lucide.Send)
+export const SendHorizontal = wrapIcon(Lucide.SendHorizontal)
+export const Settings = wrapIcon(Lucide.Settings)
+export const ShowerHead = wrapIcon(Lucide.ShowerHead)
+export const SlidersHorizontal = wrapIcon(Lucide.SlidersHorizontal)
+export const Square = wrapIcon(Lucide.Square)
+export const SquareCheck = wrapIcon(Lucide.SquareCheck)
+export const Store = wrapIcon(Lucide.Store)
+export const Trash2 = wrapIcon(Lucide.Trash2)
+export const TreeDeciduous = wrapIcon(Lucide.TreeDeciduous)
+export const TrendingDown = wrapIcon(Lucide.TrendingDown)
+export const TrendingUp = wrapIcon(Lucide.TrendingUp)
+export const TriangleAlert = wrapIcon(Lucide.TriangleAlert)
+export const Zap = wrapIcon(Lucide.Zap)
 
 // Export brand logos from brand-logos.tsx
 export {

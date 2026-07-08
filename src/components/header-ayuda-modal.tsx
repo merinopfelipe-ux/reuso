@@ -1,9 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import {
-  CircleHelp as Question,
-} from 'lucide-react'
+import { CircleHelp as Question } from '@/components/ui/icons'
 
 export function HeaderAyudaModal() {
   const router = useRouter()

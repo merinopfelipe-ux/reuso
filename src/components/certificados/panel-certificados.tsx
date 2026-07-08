@@ -1,15 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import {
-  Medal,
-  FileText,
-  Download,
-  ExternalLink as ArrowSquareOut,
-  X,
-  Calendar,
-  Loader2 as CircleNotch,
-} from 'lucide-react'
+import { Medal, FileText, Download, ExternalLink as ArrowSquareOut, X, Calendar, Loader2 as CircleNotch } from '@/components/ui/icons'
 import type { Certificado } from '@/types'
 import { PopupAmbiental } from './popup-ambiental'
 

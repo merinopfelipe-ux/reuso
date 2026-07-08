@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import {
-  Download,
-} from 'lucide-react'
+import { Download } from '@/components/ui/icons'
 
 type Formato = 'csv' | 'xlsx' | 'pdf'
 

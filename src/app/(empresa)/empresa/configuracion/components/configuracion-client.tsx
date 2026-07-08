@@ -2,11 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import {
-  Upload,
-  Save as FloppyDisk,
-  CheckCircle,
-} from 'lucide-react'
+import { Upload, Save as FloppyDisk, CheckCircle } from '@/components/ui/icons'
 
 const BRAND = '#00827C'
 const BORDER = 'rgba(0,130,124,0.12)'

@@ -1,9 +1,7 @@
 'use client'
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
-import {
-  Info,
-} from 'lucide-react'
+import { Info } from '@/components/ui/icons'
 
 interface DatoActividad {
   fecha: string

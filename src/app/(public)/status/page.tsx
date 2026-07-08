@@ -2,22 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import {
-  CheckCircle,
-  AlertCircle as WarningCircle,
-  XCircle,
-  Cpu,
-  Database,
-  ShieldCheck,
-  ArrowLeft,
-  Clock,
-  ChevronLeft as CaretLeft,
-  ChevronRight as CaretRight,
-  ChevronDown as CaretDown,
-  ChevronUp as CaretUp,
-  TriangleAlert as Warning,
-  Hammer,
-} from 'lucide-react'
+import { CheckCircle, AlertCircle as WarningCircle, XCircle, Cpu, Database, ShieldCheck, ArrowLeft, Clock, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning, Hammer } from '@/components/ui/icons'
 import type { ChecksResult } from '@/lib/status-checker'
 
 interface StatusComponent {

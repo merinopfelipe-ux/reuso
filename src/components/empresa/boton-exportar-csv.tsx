@@ -1,8 +1,6 @@
 'use client'
 
-import {
-  Download,
-} from 'lucide-react'
+import { Download } from '@/components/ui/icons'
 import type { Plan } from '@/types'
 
 interface Props {

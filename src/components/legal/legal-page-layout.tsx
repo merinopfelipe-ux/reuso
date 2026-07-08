@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  ArrowDown,
-} from 'lucide-react'
+import { ArrowDown } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'
@@ -426,7 +424,7 @@ export function LegalPageLayout({
           color: 'var(--color-brand)',
           transition: 'box-shadow 0.2s, transform 0.2s',
         }}
-        className="legal-scroll-bottom-btn"
+        className="legal-scroll-bottom-btn hover-slide-d"
       >
         <ArrowDown size={18} />
       </button>

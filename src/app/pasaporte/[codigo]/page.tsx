@@ -1,16 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import {
-  IdCard as IdentificationCard,
-  Leaf,
-  Droplet as Drop,
-  Car,
-  TreeDeciduous as Tree,
-  ShieldCheck,
-  RotateCcw as ArrowCounterClockwise,
-  Dumbbell as Barbell,
-  AlertCircle as WarningCircle,
-} from 'lucide-react'
+import { IdCard as IdentificationCard, Leaf, Droplet as Drop, Car, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'

@@ -3,10 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import {
-  Upload,
-  Leaf,
-} from 'lucide-react'
+import { Upload, Leaf } from '@/components/ui/icons'
 
 const BRAND = '#00827C'
 

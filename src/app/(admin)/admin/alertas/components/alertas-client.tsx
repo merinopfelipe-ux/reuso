@@ -2,10 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Plus,
-  Power,
-} from 'lucide-react'
+import { Plus, Power } from '@/components/ui/icons'
 import type { Alerta, TipoAlerta, TipoDestinatario } from '@/types'
 
 const TIPO_CONFIG: Record<TipoAlerta, { label: string; bg: string; color: string }> = {

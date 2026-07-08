@@ -1,10 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  Sun,
-  Moon,
-} from 'lucide-react'
+import { Sun, Moon } from '@/components/ui/icons'
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false)

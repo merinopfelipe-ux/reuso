@@ -1,11 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  SendHorizontal as PaperPlaneRight,
-  Loader2 as CircleNotch,
-  CheckCircle,
-} from 'lucide-react'
+import { SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, CheckCircle } from '@/components/ui/icons'
 
 export function LeadsForm() {
   const [loading, setLoading] = useState(false)

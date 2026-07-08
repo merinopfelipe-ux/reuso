@@ -3,11 +3,7 @@
 import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import {
-  CheckCircle,
-  Loader2 as CircleNotch,
-  Mail as Envelope,
-} from 'lucide-react'
+import { CheckCircle, Loader2 as CircleNotch, Mail as Envelope } from '@/components/ui/icons'
 import { createClient } from '@/lib/supabase/client'
 import { OTPInput } from '@/components/otp-input'
 import { ThemeToggle } from '@/components/theme-toggle'

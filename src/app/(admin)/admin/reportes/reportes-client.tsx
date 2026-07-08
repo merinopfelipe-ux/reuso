@@ -1,18 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  FileText,
-  Download,
-  Loader2 as CircleNotch,
-  Building2 as Buildings,
-  TrendingUp as TrendUp,
-  BarChart2 as ChartBar,
-  Clock,
-  Users,
-  Headphones,
-  Layers as Stack,
-} from 'lucide-react'
+import { FileText, Download, Loader2 as CircleNotch, Building2 as Buildings, TrendingUp as TrendUp, BarChart2 as ChartBar, Clock, Users, Headphones, Layers as Stack } from '@/components/ui/icons'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

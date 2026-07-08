@@ -4,10 +4,7 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  CheckCircle,
-  AlertCircle as WarningCircle,
-} from 'lucide-react'
+import { CheckCircle, AlertCircle as WarningCircle } from '@/components/ui/icons'
 
 type Estado = 'pendiente' | 'confirmando' | 'exito' | 'error'
 

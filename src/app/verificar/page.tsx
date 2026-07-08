@@ -3,10 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import {
-  Search as MagnifyingGlass,
-  ShieldCheck,
-} from 'lucide-react'
+import { Search as MagnifyingGlass, ShieldCheck } from '@/components/ui/icons'
 
 function VerificarForm() {
   const [codigo, setCodigo] = useState('')

@@ -1,19 +1,7 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import {
-  Leaf,
-  Droplet as Drop,
-  TreeDeciduous as Tree,
-  Car,
-  ShowerHead as Shower,
-  Loader2 as CircleNotch,
-  CheckCircle,
-  RotateCcw as ArrowCounterClockwise,
-  Medal,
-  Image as ImageIcon,
-  IdCard as IdentificationCard,
-} from 'lucide-react'
+import { Leaf, Droplet as Drop, TreeDeciduous as Tree, Car, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Medal, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
 import { factorCo2PorKg } from '@/lib/calculos/co2'
 import type { Categoria, Item, Rol } from '@/types'
 

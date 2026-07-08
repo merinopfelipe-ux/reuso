@@ -2,13 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  X,
-  ExternalLink as ArrowSquareOut,
-  Search as MagnifyingGlass,
-  ChevronLeft as CaretLeft,
-  ChevronRight as CaretRight,
-} from 'lucide-react'
+import { X, ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight } from '@/components/ui/icons'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'

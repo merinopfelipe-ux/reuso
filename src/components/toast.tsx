@@ -1,11 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import {
-  CheckCircle,
-  XCircle,
-  X,
-} from 'lucide-react'
+import { CheckCircle, XCircle, X } from '@/components/ui/icons'
 
 export type ToastVariant = 'success' | 'error'
 

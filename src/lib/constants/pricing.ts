@@ -1,10 +1,4 @@
-import {
-  Target,
-  FlaskConical as Flask,
-  Zap as Lightning,
-  ShieldCheck,
-  IdCard as IdentificationCard,
-} from 'lucide-react'
+import { Target, FlaskConical as Flask, Zap as Lightning, ShieldCheck, IdCard as IdentificationCard } from '@/components/ui/icons'
 
 export const CURRENCIES = {
   COP: { symbol: '$', code: 'COP', rate: 1, format: (n: number) => n.toLocaleString('es-CO') },

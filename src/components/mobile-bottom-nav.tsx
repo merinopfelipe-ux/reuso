@@ -3,20 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Home as House,
-  Package,
-  History as ClockCounterClockwise,
-  LifeBuoy as Lifebuoy,
-  Building2 as Buildings,
-  Target,
-  Medal,
-  LayoutGrid as SquaresFour,
-  List,
-  X,
-  Settings as Gear,
-  TrendingUp as TrendUp,
-} from 'lucide-react'
+import { Home as House, Package, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, Building2 as Buildings, Target, Medal, LayoutGrid as SquaresFour, List, X, Settings as Gear, TrendingUp as TrendUp } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface MobileBottomNavProps {

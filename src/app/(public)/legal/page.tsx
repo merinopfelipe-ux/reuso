@@ -3,15 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
-import {
-  FileText,
-  Shield,
-  Database,
-  Cookie,
-  Lock,
-  Scale,
-  MessageSquare as ChatCircle,
-} from 'lucide-react'
+import { FileText, Shield, Database, Cookie, Lock, Scale, MessageSquare as ChatCircle } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {
@@ -123,7 +115,7 @@ export default function LegalIndexPage() {
                   textDecoration: 'none',
                   transition: 'box-shadow 0.2s, transform 0.2s',
                 }}
-                className="legal-card"
+                className="legal-card hover-pop"
               >
                 <div
                   style={{
@@ -173,7 +165,7 @@ export default function LegalIndexPage() {
             textDecoration: 'none',
             transition: 'box-shadow 0.2s, background 0.2s',
           }}
-          className="legal-duda-module"
+          className="legal-duda-module hover-pop"
         >
           <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ChatCircle size={22} color="var(--color-brand)" />

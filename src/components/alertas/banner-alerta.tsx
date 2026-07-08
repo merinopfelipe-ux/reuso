@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  X,
-  Info,
-  Tag,
-  TriangleAlert as Warning,
-} from 'lucide-react'
+import { X, Info, Tag, TriangleAlert as Warning } from '@/components/ui/icons'
 import { useAlertas } from './alertas-context'
 import type { TipoAlerta } from '@/types'
 

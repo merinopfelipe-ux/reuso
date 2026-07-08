@@ -2,21 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import {
-  TreeDeciduous as Tree,
-  Globe,
-  Medal,
-  Users,
-  Calculator,
-  Leaf,
-  ArrowRight,
-  Check,
-  ChevronDown as CaretDown,
-  FlaskConical as Flask,
-  ShieldCheck,
-  Target,
-  RefreshCw as ArrowsClockwise,
-} from 'lucide-react'
+import { TreeDeciduous as Tree, Globe, Medal, Users, Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, FlaskConical as Flask, ShieldCheck, Target, RefreshCw as ArrowsClockwise } from '@/components/ui/icons'
 import { PLANS, CURRENCIES, ANNUAL_DISCOUNT } from '@/lib/constants/pricing'
 import { LandingHeader } from '@/components/landing-header'
 

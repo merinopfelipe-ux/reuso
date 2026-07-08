@@ -3,16 +3,7 @@ import { useState } from 'react'
 import { LeadsForm } from '@/components/leads-form'
 import Link from 'next/link'
 import Image from 'next/image'
-import {
-  Check,
-  ChevronDown as CaretDown,
-  MessageSquare as ChatCircle,
-  ArrowRight,
-  X,
-  TrendingUp as TrendUp,
-  Medal,
-  Users,
-} from 'lucide-react'
+import { Check, ChevronDown as CaretDown, MessageSquare as ChatCircle, ArrowRight, X, TrendingUp as TrendUp, Medal, Users } from '@/components/ui/icons'
 import { CURRENCIES, ANNUAL_DISCOUNT, PLANS, VALUE_PROPS } from '@/lib/constants/pricing'
 import { waLink } from '@/lib/constants/contacto'
 

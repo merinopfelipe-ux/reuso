@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
-import {
-  SquareCheck as CheckSquare,
-  Square,
-  Lock,
-  CircleUser as UserCircle,
-  Leaf,
-} from 'lucide-react'
+import { SquareCheck as CheckSquare, Square, Lock, CircleUser as UserCircle, Leaf } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 
 interface Modulo {

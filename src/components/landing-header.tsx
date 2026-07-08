@@ -4,14 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import {
-  Search as MagnifyingGlass,
-  Sun,
-  Moon,
-  X,
-  List,
-  ChevronDown as CaretDown,
-} from 'lucide-react'
+import { Search as MagnifyingGlass, Sun, Moon, X, List, ChevronDown as CaretDown } from '@/components/ui/icons'
 
 interface MenuItem {
   name: string

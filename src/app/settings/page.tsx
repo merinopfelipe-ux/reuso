@@ -2,17 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Sun,
-  Moon,
-  Monitor,
-  ArrowLeft,
-  Check,
-  Bell,
-  CircleHelp as Question,
-  Save as FloppyDisk,
-  LockKeyhole as LockSimple,
-} from 'lucide-react'
+import { Sun, Moon, Monitor, ArrowLeft, Check, Bell, CircleHelp as Question, Save as FloppyDisk, LockKeyhole as LockSimple } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'

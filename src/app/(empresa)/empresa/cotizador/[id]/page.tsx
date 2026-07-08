@@ -2,18 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import {
-  ArrowLeft,
-  CheckCircle,
-  Copy,
-  Link,
-  Leaf,
-  Droplet as Drop,
-  Send as PaperPlaneTilt,
-  ChevronDown as CaretDown,
-  ChevronUp as CaretUp,
-  TriangleAlert as Warning,
-} from 'lucide-react'
+import { ArrowLeft, CheckCircle, Copy, Link, Leaf, Droplet as Drop, Send as PaperPlaneTilt, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────

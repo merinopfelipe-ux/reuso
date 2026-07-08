@@ -1,10 +1,6 @@
 'use client'
 
-import {
-  Download,
-  Leaf,
-  X,
-} from 'lucide-react'
+import { Download, Leaf, X } from '@/components/ui/icons'
 
 interface Props {
   url: string

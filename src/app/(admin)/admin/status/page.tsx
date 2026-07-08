@@ -1,15 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-  Plus,
-  Trash2 as Trash,
-  Check,
-  TriangleAlert as Warning,
-  Clock,
-  ShieldCheck,
-  Activity as Pulse,
-} from 'lucide-react'
+import { Plus, Trash2 as Trash, Check, TriangleAlert as Warning, Clock, ShieldCheck, Activity as Pulse } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 interface Incidente {
