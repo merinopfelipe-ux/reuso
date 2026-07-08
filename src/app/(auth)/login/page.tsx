@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { Eye, EyeOff as EyeSlash, Mail as Envelope, KeyRound as LockKey, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, Loader2 as CircleNotch, CircleUser as UserCircle, Quote as Quotes, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
+import { Eye, EyeOff as EyeSlash, Mail as Envelope, KeyRound as LockKey, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, Loader2 as CircleNotch, CircleUser as UserCircle, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type { Rol } from '@/types'
@@ -574,8 +574,8 @@ export default function LoginPage() {
 
           {/* Card testimonio - sombra siempre visible */}
           <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
-            <div className="absolute -top-6 -left-6 bg-brand text-white p-4 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-              <Quotes size={32} />
+            <div className="absolute -top-6 -left-6 bg-brand text-white w-14 h-14 flex items-center justify-center rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]" aria-hidden="true">
+              <span style={{ fontSize: 32, lineHeight: 1, fontWeight: 900, fontFamily: 'Georgia, serif', letterSpacing: '-0.02em', userSelect: 'none' }}>"</span>
             </div>
 
             <div key={activeTestimonial} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} min-h-[220px] flex flex-col justify-center`}>
@@ -624,14 +624,14 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 hover-pop"
+                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 hover-pop hover-press"
                 aria-label="Testimonio anterior"
               >
                 <CaretLeft size={24} strokeWidth={2.5} />
               </button>
               <button
                 onClick={nextTestimonial}
-                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-r"
+                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-r hover-press"
                 aria-label="Testimonio siguiente"
               >
                 <CaretRight size={24} strokeWidth={2.5} />

@@ -115,7 +115,7 @@ export default function LegalIndexPage() {
                   textDecoration: 'none',
                   transition: 'box-shadow 0.2s, transform 0.2s',
                 }}
-                className="legal-card hover-pop"
+                className={`legal-card ${esIA ? 'hover-ia' : 'hover-pop'}`}
               >
                 <div
                   style={{

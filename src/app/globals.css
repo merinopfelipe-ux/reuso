@@ -251,6 +251,12 @@ body {
   transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* IA: tilt + escala — activa sensación de inteligencia en marcha */
+.hover-ia:hover svg {
+  transform: scale(1.12) rotate(-10deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* Pop: escala con bounce */
 .hover-pop:hover svg {
   transform: scale(1.18);
