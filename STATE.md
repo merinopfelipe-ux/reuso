@@ -6,6 +6,20 @@ fecha: 2026-07-07
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
+**V15.12 — Brand logos WhatsApp en propuesta/leads/contenido, micro-animaciones en toda la app, build limpio 127 páginas.**
+
+## Sesión 2026-07-08 — Brand Logos + Micro-animaciones + Deploy (V15.12)
+
+- **Brand logos WhatsApp**: `propuesta-client.tsx`, `leads-client.tsx`, `contenido-client.tsx` ahora usan `WhatsappLogo` de `brand-logos.tsx` en lugar de íconos genéricos de Lucide.
+- **Micro-animaciones hover completas**: clases CSS `hover-*` aplicadas en TODAS las páginas admin (14 secciones), empresa (cotizador, marca, modulos), y páginas públicas (propuesta, unsubscribe, landing2).
+- **Protección de estados de carga**: patrón `${loading ? '' : 'hover-XXX hover-press'}` en todos los botones async.
+- **Revert de migración masiva**: se revirtió el commit `bf28a37` porque `@animateicons/react/lucide` no exporta todos los íconos de Lucide. Los imports de `lucide-react` deben mantenerse para íconos sin equivalente animado.
+- **Build**: ✓ limpio, 127 páginas, 0 errores TypeScript.
+- **Deploy**: `dpl_jgo2053e8` en producción `reuso.lurdes.co`.
+
+**Regla establecida**: `@animateicons/react/lucide` solo para los íconos que SÍ exporta esa librería. Todos los demás → `lucide-react`. No hacer migración masiva automática.
+
+## Versión anterior
 **V15.11 — Integración nativa de @animateicons/react, soporte de @lucide/lab, y wrapper de compatibilidad para Phosphor Icons.**
 
 ## Sesión 2026-07-08 — Integración de AnimateIcons y Phosphor Wrapper (V15.11)
