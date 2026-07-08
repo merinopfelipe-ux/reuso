@@ -143,6 +143,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
           <button
             type="button"
             onClick={() => setShowPass(!showPass)}
+            className="hover-pop hover-press"
             style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
           >
             {showPass ? <EyeSlash size={18} /> : <Eye size={18} />}
@@ -180,6 +181,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
           <button
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
+            className="hover-pop hover-press"
             style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
           >
             {showConfirm ? <EyeSlash size={18} /> : <Eye size={18} />}

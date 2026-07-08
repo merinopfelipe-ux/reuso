@@ -162,12 +162,14 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
 
                   {/* WhatsApp */}
                   <button onClick={() => abrirWhatsApp(lead)}
+                    className="hover-pop hover-press"
                     style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <WhatsappLogo size={13} /> WA
+                    <WhatsappLogo size={13} color="white" /> WA
                   </button>
 
                   {/* Expandir */}
                   <button onClick={() => setExpandido(abierto ? null : lead.id)}
+                    className="hover-pop hover-press"
                     style={{ padding: 6, borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                     {abierto ? <CaretUp size={15} color={C.mid} /> : <CaretDown size={15} color={C.mid} />}
                   </button>

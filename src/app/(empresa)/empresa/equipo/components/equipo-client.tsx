@@ -278,7 +278,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                             style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                             {guardandoMiembro ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={13} />}
                           </button>
-                          <button onClick={() => setEditandoMiembro(null)} style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
+                          <button onClick={() => setEditandoMiembro(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
                             <X size={13} />
                           </button>
                         </div>
@@ -371,7 +371,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                               style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                               {guardandoInv ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={13} />}
                             </button>
-                            <button onClick={() => setEditandoInv(null)} style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
+                            <button onClick={() => setEditandoInv(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
                               <X size={13} />
                             </button>
                           </div>

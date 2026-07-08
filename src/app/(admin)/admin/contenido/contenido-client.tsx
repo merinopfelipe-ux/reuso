@@ -122,7 +122,7 @@ export function ContenidoClient({ contenido }: Props) {
             <input value={waNumero} onChange={e => setWaNumero(e.target.value)} style={inputStyle} placeholder="573001234567" />
             <p style={{ fontSize: 11, color: C.mid, marginTop: 6 }}>Ejemplo: 573001234567 (Colombia +57, número 300 1234567)</p>
           </div>
-          <button onClick={() => startTransition(() => { guardar('whatsapp', { numero: waNumero }) })} style={btnStyle}>
+          <button onClick={() => startTransition(() => { guardar('whatsapp', { numero: waNumero }) })} className="hover-pop hover-press" style={btnStyle}>
             <FloppyDisk size={15} />
             Guardar número
           </button>
@@ -144,7 +144,7 @@ export function ContenidoClient({ contenido }: Props) {
             <textarea value={hero.subtitulo} onChange={e => setHero(prev => ({ ...prev, subtitulo: e.target.value }))}
               style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} />
           </div>
-          <button onClick={() => startTransition(() => { guardar('hero', hero) })} style={btnStyle}>
+          <button onClick={() => startTransition(() => { guardar('hero', hero) })} className="hover-pop hover-press" style={btnStyle}>
             <FloppyDisk size={15} />
             Guardar hero
           </button>
@@ -172,7 +172,7 @@ export function ContenidoClient({ contenido }: Props) {
               </div>
             </div>
           ))}
-          <button onClick={() => startTransition(() => { guardar('stats', stats) })} style={btnStyle}>
+          <button onClick={() => startTransition(() => { guardar('stats', stats) })} className="hover-pop hover-press" style={btnStyle}>
             <FloppyDisk size={15} />
             Guardar estadísticas
           </button>
@@ -222,7 +222,7 @@ export function ContenidoClient({ contenido }: Props) {
             </button>
           </div>
 
-          <button onClick={() => startTransition(() => { guardar('faq', { items: faqItems }) })} style={btnStyle}>
+          <button onClick={() => startTransition(() => { guardar('faq', { items: faqItems }) })} className="hover-pop hover-press" style={btnStyle}>
             <FloppyDisk size={15} />
             Guardar FAQ
           </button>

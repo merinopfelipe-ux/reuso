@@ -259,7 +259,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
             </div>
           </div>
           <div className="text-right mt-2">
-            <a href="https://reuso.lurdes.co/legal/medicion" className="text-xs text-[#00827C] hover:underline inline-flex items-center gap-1">
+            <a href="https://reuso.lurdes.co/legal/medicion" className="text-xs text-[#00827C] hover:underline inline-flex items-center gap-1 hover-wiggle">
               <Question size={13} /> ¿Cómo lo medimos?
             </a>
           </div>

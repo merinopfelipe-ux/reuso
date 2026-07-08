@@ -223,7 +223,7 @@ export function DesignSystemHeader({
                className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#474747]/30'}`}
              />
              {searchQuery && (
-               <button onClick={() => setSearchQuery('')}>
+               <button onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
                  <X size={16} className="opacity-40" />
                </button>
              )}
@@ -270,7 +270,7 @@ export function DesignSystemHeader({
           >
             <div className="flex justify-between items-center mb-6">
                <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Menú de Navegación</div>
-               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#474747]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
+               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center hover-rotate-90 hover-press ${isDark ? 'bg-white/10 text-white' : 'bg-[#474747]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
