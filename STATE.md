@@ -1,12 +1,23 @@
 ---
 tags: [estado, reuso, proyecto]
-fecha: 2026-06-25
+fecha: 2026-07-07
 ---
 
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V15.4 — Limpieza de Lints, Tipados Seguros de Turnstile y Compilación Exitosa.**
+**V15.5 — Migración completa de Phosphor Icons → Lucide React.**
+
+## Sesión 2026-07-07 — Migración de Iconos (Phosphor → Lucide)
+
+- **94 archivos migrados**: Eliminado `@phosphor-icons/react` por completo. Todas las importaciones convertidas a `lucide-react`.
+- **Hub `src/components/ui/icons.tsx`**: Reescrito para exportar desde `lucide-react` con aliases compatibles con nombres Phosphor (para los 12 archivos que importan del hub).
+- **Iconos sin equivalente directo**: Barbell→Dumbbell, ArrowsCounterClockwise→RefreshCcw, Bathtub→Bath, Robot→Bot, Storefront→Store, LockKey→KeyRound, Quotes→Quote, ClipboardText→ClipboardList, DownloadSimple→Download, EnvelopeSimple→Mail, ChatCircleText→MessageSquareText.
+- **WhatsappLogo**: Reemplazado con SVG inline en `cotizador/[id]/page.tsx` y `empresa/configuracion/modulos/page.tsx` (no existe en Lucide — es logo de marca).
+- **Props `weight` convertidas**: `bold`→`strokeWidth={2.5}`, `light`→`strokeWidth={1.5}`, ternarios dinámicos→`strokeWidth={isActive ? 2.5 : 2}`. Props `fill`, `regular`, `duotone` eliminadas.
+- **Archivos especiales**: `pasaporte/[codigo]/page.tsx` usaba `/dist/ssr` — migrado a `lucide-react` (RSC-compatible por defecto). `modulos-client.tsx` usaba `import * as PhosphorIcons` para búsqueda dinámica → `import * as LucideIcons`.
+- **CLAUDE.md actualizado**: "Iconos: Phosphor Icons" → "Iconos: Lucide Icons (`lucide-react`)".
+- Build de producción: ✓ 127 páginas, cero errores. Commit `d5eecb1`.
 
 ## Sesión 2026-06-25 (noche) — Limpieza de API Routes
 
