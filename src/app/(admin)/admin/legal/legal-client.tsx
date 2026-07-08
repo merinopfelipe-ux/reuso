@@ -97,6 +97,7 @@ export function LegalAdminClient() {
           <button
             key={doc.clave}
             onClick={() => setTab(doc.clave)}
+            className="hover-pop"
             style={{
               padding: '9px 16px',
               fontSize: 13,
@@ -182,6 +183,7 @@ export function LegalAdminClient() {
           <button
             onClick={guardar}
             disabled={guardando || !hayCamera}
+            className={guardando || !hayCamera ? '' : 'hover-download hover-press'}
             style={{
               padding: '10px 22px',
               borderRadius: 10,

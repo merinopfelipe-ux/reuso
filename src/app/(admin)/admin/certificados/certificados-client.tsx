@@ -91,7 +91,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20, alignItems: 'center' }}>
         <div style={{ display: 'inline-flex', background: 'var(--bg-card)', padding: 4, borderRadius: 12, border: `1px solid ${C.border}` }}>
           {([['todos', `Todos (${total})`], ['validos', 'Válidos'], ['revocados', 'Revocados']] as const).map(([val, label]) => (
-            <button key={val} onClick={() => setFiltro(val)} style={{
+            <button key={val} onClick={() => setFiltro(val)} className="hover-pop" style={{
               padding: '7px 16px', borderRadius: 8, border: 'none', cursor: 'pointer',
               fontSize: 12, fontWeight: 700,
               background: filtro === val ? C.brand : 'transparent',
@@ -168,6 +168,7 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
                     )}
                     {!cert.revocado && (
                       <button onClick={() => setModal(cert)} title="Revocar"
+                        className="hover-trash hover-press"
                         style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, background: 'rgba(239,68,68,0.10)', color: '#EF4444', border: 'none', cursor: 'pointer' }}>
                         <XCircle size={14} />
                       </button>
@@ -199,10 +200,12 @@ export function CertificadosAdminClient({ certificados: inicial, total }: Props)
               style={{ width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', minHeight: 100, resize: 'vertical', marginBottom: 20, background: 'var(--bg-input)' }} />
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
               <button onClick={() => { setModal(null); setMotivo('') }}
+                className="hover-pop hover-press"
                 style={{ padding: '10px 22px', borderRadius: 10, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.dark, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                 Cancelar
               </button>
               <button onClick={() => startTransition(() => { revocar() })}
+                className="hover-trash hover-press"
                 style={{ padding: '10px 22px', borderRadius: 10, background: '#EF4444', color: '#fff', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }}>
                 Revocar certificado
               </button>

@@ -75,6 +75,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
         <div style={{ display: 'flex', gap: 6 }}>
           {(['todos', 'activo', 'anulado'] as const).map(f => (
             <button key={f} onClick={() => setFiltroEstado(f)}
+              className="hover-pop"
               style={{ padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: `1.5px solid ${filtroEstado === f ? C.brand : C.border}`, background: filtroEstado === f ? C.light : 'var(--bg-card)', color: filtroEstado === f ? C.brand : C.mid, transition: 'all 0.2s' }}>
               {f === 'todos' ? 'Todos' : f === 'activo' ? 'Activos' : 'Anulados'}
             </button>
@@ -122,6 +123,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                     <td style={{ padding: '10px 14px' }}>
                       {activo && (
                         <button onClick={() => { setAnulando(c.id); setMotivo(''); setError('') }}
+                          className="hover-trash hover-press"
                           style={{ padding: '4px 10px', borderRadius: 7, border: `1px solid rgba(255,94,75,0.3)`, background: 'rgba(255,94,75,0.06)', color: C.error, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                           <Warning size={11} /> Anular
                         </button>
@@ -141,7 +143,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
           <div style={{ background: 'var(--bg-card)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 440, boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <p style={{ fontSize: 16, fontWeight: 700, color: C.dark, margin: 0 }}>Anular cálculo</p>
-              <button onClick={() => setAnulando(null)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => setAnulando(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                 <X size={18} color={C.mid} />
               </button>
             </div>
@@ -158,10 +160,12 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
             {error && <p style={{ fontSize: 12, color: C.error, marginTop: 6 }}>{error}</p>}
             <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
               <button onClick={confirmarAnulacion} disabled={guardando}
+                className={guardando ? '' : 'hover-pop hover-press'}
                 style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: C.error, color: '#fff', fontWeight: 700, fontSize: 13, cursor: guardando ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
                 <Check size={14} /> {guardando ? 'Anulando...' : 'Confirmar anulación'}
               </button>
               <button onClick={() => setAnulando(null)}
+                className="hover-pop hover-press"
                 style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.mid, fontSize: 13, cursor: 'pointer' }}>
                 Cancelar
               </button>

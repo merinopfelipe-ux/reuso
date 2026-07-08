@@ -130,7 +130,7 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: `1px solid ${C.border}` }}>
         {TIPOS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
+          <button key={t.id} onClick={() => setTab(t.id)} className="hover-pop" style={{
             display: 'flex', alignItems: 'center', gap: 8,
             padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
             fontSize: 13, fontWeight: 700,
@@ -157,7 +157,7 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
               </p>
             </div>
             {plantilla && (
-              <button onClick={toggleActiva} style={{
+              <button onClick={toggleActiva} className="hover-pop hover-press" style={{
                 padding: '8px 16px', borderRadius: 10, border: 'none', cursor: 'pointer',
                 fontSize: 12, fontWeight: 800,
                 background: plantilla.activa ? 'rgba(56,185,142,0.12)' : C.light,
@@ -214,7 +214,7 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
             </div>
           </div>
 
-          <button onClick={() => startTransition(() => { guardar() })} style={btnStyle}>
+          <button onClick={() => startTransition(() => { guardar() })} className="hover-download hover-press" style={btnStyle}>
             <FloppyDisk size={15} />
             Guardar plantilla
           </button>

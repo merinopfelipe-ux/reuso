@@ -108,7 +108,7 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
     <div style={{ padding: '0 0 40px' }}>
       {/* Botón nuevo módulo */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 20 }}>
-        <button style={btnPrimary} onClick={() => setMostrarForm(v => !v)}>
+        <button style={btnPrimary} className="hover-pop hover-press" onClick={() => setMostrarForm(v => !v)}>
           <Plus size={15} />
           Nuevo módulo
         </button>
@@ -155,10 +155,10 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
           </div>
           {error && <p style={{ fontSize: 12, color: '#FF5E4B', marginBottom: 8 }}>{error}</p>}
           <div style={{ display: 'flex', gap: 8 }}>
-            <button type="submit" disabled={guardando} style={btnPrimary}>
+            <button type="submit" disabled={guardando} style={btnPrimary} className={guardando ? '' : 'hover-download hover-press'}>
               {guardando ? 'Guardando...' : 'Crear módulo'}
             </button>
-            <button type="button" style={btnSecondary} onClick={() => setMostrarForm(false)}>
+            <button type="button" style={btnSecondary} className="hover-pop hover-press" onClick={() => setMostrarForm(false)}>
               Cancelar
             </button>
           </div>
@@ -208,10 +208,10 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
                 />
                 {error && <p style={{ fontSize: 12, color: '#FF5E4B', marginBottom: 6 }}>{error}</p>}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button style={{ ...btnSecondary, background: C.brand, color: 'var(--text-on-brand)', border: 'none' }} disabled={guardando} onClick={() => guardarEdicion(m.id)}>
+                  <button style={{ ...btnSecondary, background: C.brand, color: 'var(--text-on-brand)', border: 'none' }} disabled={guardando} className={guardando ? '' : 'hover-download hover-press'} onClick={() => guardarEdicion(m.id)}>
                     <Check size={13} /> Guardar
                   </button>
-                  <button style={btnSecondary} onClick={() => setEditandoId(null)}>
+                  <button style={btnSecondary} className="hover-rotate-90 hover-press" onClick={() => setEditandoId(null)}>
                     <X size={13} /> Cancelar
                   </button>
                 </div>
@@ -252,11 +252,12 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
 
                 {/* Acciones */}
                 <div style={{ display: 'flex', gap: 6 }}>
-                  <button style={btnSecondary} onClick={() => iniciarEdicion(m)}>
+                  <button style={btnSecondary} className="hover-pencil hover-press" onClick={() => iniciarEdicion(m)}>
                     <PencilSimple size={12} /> Editar
                   </button>
                   <button
                     style={{ ...btnSecondary, color: m.activo ? '#FF5E4B' : C.brand }}
+                    className="hover-pop hover-press"
                     onClick={() => toggleActivo(m.id, m.activo)}
                   >
                     <Power size={12} />

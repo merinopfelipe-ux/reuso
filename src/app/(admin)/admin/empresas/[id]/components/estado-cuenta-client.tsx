@@ -185,6 +185,7 @@ export function EstadoCuentaClient({
           <button
             onClick={guardarNotas}
             disabled={guardando}
+            className={guardando ? '' : 'hover-download hover-press'}
             style={{
               marginTop: 10,
               width: '100%',

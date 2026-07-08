@@ -87,6 +87,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
         </select>
         {hayFiltros && (
           <button onClick={limpiar}
+            className="hover-pop hover-press"
             style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer' }}>
             Limpiar
           </button>
@@ -149,6 +150,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
               <button
                 disabled={page <= 1}
                 onClick={() => navegar({ page: String(page - 1) })}
+                className="hover-pop hover-press"
                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
               >
                 <CaretLeft size={14} /> Anterior
@@ -156,6 +158,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
               <button
                 disabled={page >= totalPages}
                 onClick={() => navegar({ page: String(page + 1) })}
+                className="hover-slide-r hover-press"
                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
               >
                 Siguiente <CaretRight size={14} />

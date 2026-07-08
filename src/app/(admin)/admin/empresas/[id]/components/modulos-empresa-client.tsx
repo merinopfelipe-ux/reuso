@@ -115,6 +115,7 @@ export function ModulosEmpresaClient({
             <div style={{ display: 'flex', gap: 10 }}>
               <button
                 onClick={() => setPendiente(null)}
+                className="hover-pop hover-press"
                 style={{
                   flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
                   border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.dark, cursor: 'pointer',
@@ -124,6 +125,7 @@ export function ModulosEmpresaClient({
               </button>
               <button
                 onClick={confirmarDesactivar}
+                className="hover-trash hover-press"
                 style={{
                   flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
                   border: 'none', background: '#FF5E4B', color: '#fff', cursor: 'pointer',
@@ -153,6 +155,7 @@ export function ModulosEmpresaClient({
             <button
               disabled={toggling === m.id}
               onClick={() => toggle(m.id, m.activo_en_empresa, m.nombre)}
+              className={toggling === m.id ? '' : 'hover-pop hover-press'}
               style={{
                 padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                 cursor: toggling === m.id ? 'wait' : 'pointer',

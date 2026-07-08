@@ -11,9 +11,9 @@ export interface PhosphorIconProps extends Omit<React.ComponentPropsWithoutRef<a
 }
 
 // Wrapper HOC to match Phosphor weight prop to Lucide strokeWidth and duotone props
-export function wrapPhosphorIcon(PhosphorIcon: React.ComponentType<any>) {
+export function wrapPhosphorIcon(PhosphorIcon: React.ComponentType<any>, defaultColor?: string) {
   const Component = React.forwardRef<SVGSVGElement, PhosphorIconProps>(
-    ({ strokeWidth, duotone, weight, ...props }, ref) => {
+    ({ strokeWidth, duotone, weight, color, ...props }, ref) => {
       let resolvedWeight: any = weight || 'regular'
       
       if (duotone) {
@@ -28,7 +28,7 @@ export function wrapPhosphorIcon(PhosphorIcon: React.ComponentType<any>) {
         }
       }
 
-      return <PhosphorIcon ref={ref} weight={resolvedWeight} {...props} />
+      return <PhosphorIcon ref={ref} weight={resolvedWeight} color={color || defaultColor || 'currentColor'} {...props} />
     }
   )
   Component.displayName = PhosphorIcon.displayName || 'PhosphorIcon'
@@ -36,9 +36,10 @@ export function wrapPhosphorIcon(PhosphorIcon: React.ComponentType<any>) {
 }
 
 // Export official brand and social logos from Phosphor Icons, wrapped for visual compatibility
-export const WhatsappLogo = wrapPhosphorIcon(Phosphor.WhatsappLogo)
-export const LinkedinLogo = wrapPhosphorIcon(Phosphor.LinkedinLogo)
-export const InstagramLogo = wrapPhosphorIcon(Phosphor.InstagramLogo)
-export const FacebookLogo = wrapPhosphorIcon(Phosphor.FacebookLogo)
-export const XLogo = wrapPhosphorIcon(Phosphor.XLogo)
-export const YoutubeLogo = wrapPhosphorIcon(Phosphor.YoutubeLogo)
+// WhatsApp: #25D366, LinkedIn: #0A66C2, Instagram: #E1306C, Facebook: #1877F2, X: #474747, YouTube: #FF0000
+export const WhatsappLogo = wrapPhosphorIcon(Phosphor.WhatsappLogo, '#25D366')
+export const LinkedinLogo = wrapPhosphorIcon(Phosphor.LinkedinLogo, '#0A66C2')
+export const InstagramLogo = wrapPhosphorIcon(Phosphor.InstagramLogo, '#E1306C')
+export const FacebookLogo = wrapPhosphorIcon(Phosphor.FacebookLogo, '#1877F2')
+export const XLogo = wrapPhosphorIcon(Phosphor.XLogo, '#474747')
+export const YoutubeLogo = wrapPhosphorIcon(Phosphor.YoutubeLogo, '#FF0000')

@@ -29,7 +29,7 @@ const C = {
 }
 
 // ─── Componentes auxiliares ──────────────────────────────────────────────────
-import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
+import { WhatsappLogo } from '@/components/ui/icons'
 
 function WhatsAppButton() {
   return (
@@ -50,7 +50,7 @@ function WhatsAppButton() {
       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
     >
-      <WhatsappLogo size={32} className="text-[#25D366]" />
+      <WhatsappLogo size={32} color="white" />
     </a>
   )
 }

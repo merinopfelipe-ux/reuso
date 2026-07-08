@@ -228,6 +228,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 <button
                   disabled={page <= 1}
                   onClick={() => navegar({ search: busquedaLocal, plan: planFiltro, page: String(page - 1) })}
+                  className="hover-pop hover-press"
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
                 >
                   <CaretLeft size={14} /> Anterior
@@ -235,6 +236,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 <button
                   disabled={page >= totalPages}
                   onClick={() => navegar({ search: busquedaLocal, plan: planFiltro, page: String(page + 1) })}
+                  className="hover-slide-r hover-press"
                   style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
                 >
                   Siguiente <CaretRight size={14} />
@@ -250,6 +252,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{seleccionada.nombre}</p>
               <button onClick={() => setSeleccionada(null)}
+                className="hover-rotate-90 hover-press"
                 style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}>
                 <X size={16} />
               </button>
@@ -271,6 +274,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
             <div style={{ marginBottom: 16 }}>
               <button
                 onClick={() => toggleActiva(seleccionada.id, seleccionada.activa)}
+                className="hover-pop hover-press"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--border)', background: seleccionada.activa ? 'rgba(255,94,75,0.08)' : 'rgba(56,185,142,0.10)', color: seleccionada.activa ? '#CC3C2A' : '#1F8C65', width: '100%', justifyContent: 'center' }}>
                 {seleccionada.activa ? 'Desactivar empresa' : 'Activar empresa'}
               </button>
@@ -297,6 +301,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }}
               />
               <button onClick={guardarNotas} disabled={guardando}
+                className={guardando ? '' : 'hover-download hover-press'}
                 style={{ marginTop: 8, padding: '7px 16px', borderRadius: 8, background: 'var(--color-brand)', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer', width: '100%' }}>
                 {guardando ? 'Guardando...' : 'Guardar notas'}
               </button>

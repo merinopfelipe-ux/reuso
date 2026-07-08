@@ -203,7 +203,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
               <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Nuevo usuario</h2>
-              <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
+              <button onClick={() => setModalOpen(false)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
                 <X size={18} />
               </button>
             </div>
@@ -251,10 +251,10 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
               </div>
 
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" onClick={() => setModalOpen(false)} style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-primary)', fontSize: 13, cursor: 'pointer' }}>
+                <button type="button" onClick={() => setModalOpen(false)} className="hover-pop hover-press" style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-primary)', fontSize: 13, cursor: 'pointer' }}>
                   Cancelar
                 </button>
-                <button type="submit" disabled={creando} style={{ padding: '9px 20px', borderRadius: 8, background: creando ? '#4D7C79' : 'var(--color-brand)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: creando ? 'not-allowed' : 'pointer' }}>
+                <button type="submit" disabled={creando} className={creando ? '' : 'hover-download hover-press'} style={{ padding: '9px 20px', borderRadius: 8, background: creando ? '#4D7C79' : 'var(--color-brand)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: creando ? 'not-allowed' : 'pointer' }}>
                   {creando ? 'Creando...' : 'Crear usuario'}
                 </button>
               </div>
@@ -319,6 +319,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
               <button
                 disabled={page <= 1}
                 onClick={() => navegar({ search: busquedaLocal, rol: rolFiltro, page: String(page - 1) })}
+                className="hover-pop hover-press"
                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
               >
                 <CaretLeft size={14} /> Anterior
@@ -326,6 +327,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
               <button
                 disabled={page >= totalPages}
                 onClick={() => navegar({ search: busquedaLocal, rol: rolFiltro, page: String(page + 1) })}
+                className="hover-slide-r hover-press"
                 style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
               >
                 Siguiente <CaretRight size={14} />

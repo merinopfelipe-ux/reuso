@@ -120,6 +120,7 @@ export function ReportesClient() {
               <button
                 onClick={() => generar(r.tipo)}
                 disabled={cargando !== null}
+                className={cargandoEste ? '' : 'hover-download hover-press'}
                 style={{
                   padding: '8px 14px', borderRadius: 8, border: 'none',
                   background: cargandoEste ? C.light : C.brand,

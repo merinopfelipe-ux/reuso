@@ -82,6 +82,7 @@ export default function ConfiguracionSistemaPage() {
               <button
                 type="submit"
                 disabled={loading}
+                className={loading ? '' : 'hover-download hover-press'}
                 style={{
                   padding: '10px 24px', background: loading ? '#4D7C79' : 'var(--color-brand)',
                   color: '#fff', border: 'none', borderRadius: 8,

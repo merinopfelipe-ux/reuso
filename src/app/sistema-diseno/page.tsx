@@ -980,7 +980,7 @@ export default function ManualDisenoPage() {
               Explorar librería Lucide <ArrowRight size={16} strokeWidth={2.5} />
             </a>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres grosores de trazo (strokeWidth)</strong> según el contexto: <strong>1.5 (Delgado)</strong>, <strong>2.0 (Regular)</strong> y <strong>2.5 (Destacado)</strong>. Adicionalmente, el hub de iconos local da soporte al atributo <code>duotone</code>, el cual aplica un **relleno al 20% de opacidad** para emular visualmente el estilo duotone nativo.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres grosores de trazo (strokeWidth)</strong> según el contexto: <strong>1.5 (Delgado)</strong>, <strong>2.0 (Regular)</strong> y <strong>2.5 (Destacado)</strong>. Adicionalmente, el hub de iconos local da soporte al atributo <code>duotone</code>, el cual aplica un <strong>relleno al 20% de opacidad</strong> para emular visualmente el estilo duotone nativo.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
@@ -1051,7 +1051,7 @@ export default function ManualDisenoPage() {
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black uppercase tracking-wider mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
-                Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, **se debe utilizar siempre la librería Phosphor Icons sin animación**. Nuestro hub exporta automáticamente estas marcas envueltas en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
+                Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong>. Se permite el uso de Phosphor Icons en la interfaz general <strong>si y solo si</strong> el ícono requerido no existe en Lucide y es un caso extremo. En estos escenarios, nuestro hub exporta automáticamente estos íconos envueltos en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
               </p>
               <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-black/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
                 <div className="font-bold mb-2">Mapeo de Grosores Automático:</div>
@@ -1067,7 +1067,7 @@ export default function ManualDisenoPage() {
           <div className="mt-16">
             <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Logotipos de Marca Oficiales (Brand Logos)</h3>
             <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
-              Logotipos vectoriales oficiales de empresas, redes sociales y plataformas de terceros. Para garantizar la máxima fidelidad y reconocimiento oficial, **se utiliza la librería Phosphor Icons (`@phosphor-icons/react`) de forma exclusiva para estos casos**. Se muestran de forma estática (sin animaciones interactivas de hover) y con colores corporativos oficiales.
+              Logotipos vectoriales oficiales de empresas, redes sociales y plataformas de terceros. Para garantizar la máxima fidelidad y reconocimiento oficial, <strong>se utiliza la librería Phosphor Icons (<code>@phosphor-icons/react</code>) de forma exclusiva para estos casos</strong>. Se muestran de forma estática (sin animaciones interactivas de hover) y con colores corporativos oficiales.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
               {[
