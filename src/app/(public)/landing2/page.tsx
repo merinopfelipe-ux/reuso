@@ -450,7 +450,7 @@ export default function Landing2Page() {
                   <button
                     key={c.id}
                     onClick={() => setActiveCategory(c.id as CatKey)}
-                    className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-left font-bold text-sm transition-all ${
+                    className={`flex items-center gap-3 px-5 py-4 rounded-2xl text-left font-bold text-sm transition-all hover-pop ${
                       activeCategory === c.id
                         ? 'bg-[#00827C] text-white shadow-[0_8px_24px_rgba(0,130,124,0.2)]'
                         : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20' : 'border-[#00827C]/12 hover:border-[#00827C]/20'}`
@@ -645,7 +645,7 @@ export default function Landing2Page() {
               </p>
               <Link
                 href="/registro"
-                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#00827C] text-white font-black text-base hover:bg-[#006B66] transition-all shadow-[0_12px_40px_rgba(0,130,124,0.35)] hover:shadow-[0_16px_48px_rgba(0,130,124,0.45)] hover:-translate-y-1"
+                className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#00827C] text-white font-black text-base hover:bg-[#006B66] transition-all shadow-[0_12px_40px_rgba(0,130,124,0.35)] hover:shadow-[0_16px_48px_rgba(0,130,124,0.45)] hover:-translate-y-1 hover-slide-r hover-press"
               >
                 Crear mi cuenta y diagnosticar mis primeros productos <ArrowRight size={20} strokeWidth={2.5} />
               </Link>

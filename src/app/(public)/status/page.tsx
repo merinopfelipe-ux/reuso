@@ -616,7 +616,7 @@ export default function StatusPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <Link href="/" style={{
+          <Link href="/" className="hover-pop" style={{
             display: 'flex',
             alignItems: 'center',
             gap: 6,
@@ -1140,6 +1140,7 @@ export default function StatusPage() {
                               transition: 'all 0.2s',
                               userSelect: 'none'
                             }}
+                            className="hover-pop"
                             onMouseEnter={e => {
                               if (!isExpanded) {
                                 e.currentTarget.style.background = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'
@@ -1316,6 +1317,7 @@ export default function StatusPage() {
                 transition: 'all 0.2s',
                 userSelect: 'none'
               }}
+              className="hover-pop"
             >
               <span>Ver historial</span>
               {historyExpanded ? <CaretUp size={12} strokeWidth={2.5} /> : <CaretDown size={12} strokeWidth={2.5} />}

@@ -485,6 +485,7 @@ export default function LoginPage() {
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setIdiomaOpen(o => !o)}
+                className="hover-pop"
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   fontSize: 11, fontWeight: 600, padding: '5px 10px',

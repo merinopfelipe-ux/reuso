@@ -219,7 +219,7 @@ export function LandingHeader({
                className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#00827C]/30'}`}
              />
              {searchQuery && (
-               <button onClick={() => setSearchQuery('')}>
+               <button onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
                  <X size={16} className="opacity-40" />
                </button>
              )}

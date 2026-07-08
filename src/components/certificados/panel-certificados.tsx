@@ -269,6 +269,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
           }}>
             <button
               onClick={() => !generando && setModalOpen(null)}
+              className="hover-rotate-90 hover-press"
               style={{
                 position: 'absolute', top: 14, right: 14,
                 width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',

@@ -548,7 +548,7 @@ export default function RegistroPage() {
                         color: 'var(--text-primary)',
                         minWidth: 90,
                       }}
-                      className="transition-all"
+                      className="transition-all hover-pop"
                     >
                       <img
                         src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${indicativo.code}.svg`}
@@ -984,7 +984,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => setModalDoc('terminos')}
-                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full"
+                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full hover-pop"
                   style={{
                     background: aceptoTerminos ? (isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.04)') : 'var(--bg-hover)',
                     borderColor: aceptoTerminos ? 'var(--color-brand)' : 'var(--border)',
@@ -1006,7 +1006,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => setModalDoc('privacidad')}
-                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full"
+                  className="flex items-center gap-3 p-3.5 rounded-2xl border transition-all text-left w-full hover-shield"
                   style={{
                     background: aceptoPrivacidad ? (isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.04)') : 'var(--bg-hover)',
                     borderColor: aceptoPrivacidad ? 'var(--color-brand)' : 'var(--border)',
@@ -1130,6 +1130,7 @@ export default function RegistroPage() {
                 href={modalDoc === 'terminos' ? '/legal' : '/legal/datos'}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="hover-slide-r"
                 style={{ fontSize: 13, color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}
               >
                 Leer documento completo
