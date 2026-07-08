@@ -61,6 +61,7 @@ export function BotonDescargar({ endpoint, queryParams, label }: Props) {
           cursor: 'pointer',
           userSelect: 'none',
         }}
+        className="hover-download hover-press"
       >
         <Download size={14} />
         {label ?? 'Descargar'}

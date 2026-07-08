@@ -3,9 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import {
-  ArrowUpRight,
   CheckCircle,
-  MessageSquareText as ChatCircleText,
   Leaf,
   Droplet as Drop,
   TreeDeciduous as Tree,
@@ -13,6 +11,7 @@ import {
   RefreshCcw as ArrowsCounterClockwise,
   CircleHelp as Question,
 } from 'lucide-react'
+import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -153,7 +152,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-sm text-[#474747]/70 hover:text-[#474747] transition-colors"
         >
-          <ArrowUpRight size={16} strokeWidth={2.5} />
+          <WhatsappLogo size={16} className="text-[#25D366]" />
           Compartir
         </a>
       </header>
@@ -302,7 +301,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm text-[#474747]/50 hover:text-[#474747] transition-colors"
                   >
-                    <ChatCircleText size={16} />
+                    <WhatsappLogo size={16} className="text-[#25D366]" />
                     Tengo dudas
                   </a>
                 </div>

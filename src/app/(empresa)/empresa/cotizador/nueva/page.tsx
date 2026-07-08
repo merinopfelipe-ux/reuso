@@ -319,7 +319,7 @@ export default function NuevaCotizacionPage() {
             <p className={`text-sm mb-4 ${ts}`}>La IA lo analiza y detecta qué oficios necesita</p>
             <button
               onClick={() => inputFotoRef.current?.click()}
-              className="px-5 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors"
+              className="px-5 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press"
             >
               {muebles.length === 0 ? 'Sube la foto del mueble' : 'Agrega otro mueble'}
             </button>
@@ -369,7 +369,7 @@ export default function NuevaCotizacionPage() {
             </div>
             <button
               onClick={() => { setEstado('idle'); setDiagnostico(null); setImagenPreview(null) }}
-              className={`mt-4 w-full py-2.5 rounded-full text-sm font-semibold border transition-colors ${isDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-[#474747]/20 text-[#474747] hover:bg-[#474747]/05'}`}
+              className={`mt-4 w-full py-2.5 rounded-full text-sm font-semibold border transition-colors hover-pop hover-press ${isDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-[#474747]/20 text-[#474747] hover:bg-[#474747]/05'}`}
             >
               Sube otra foto
             </button>
@@ -506,7 +506,7 @@ export default function NuevaCotizacionPage() {
             <button
               onClick={handleAgregarMueble}
               disabled={estado === 'guardando'}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-50"
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-50 ${estado === 'guardando' ? '' : 'hover-pop hover-press'}`}
             >
               <Plus size={16} strokeWidth={2.5} />
               {estado === 'guardando' ? 'Guardando...' : 'Agrega otro mueble'}
@@ -515,7 +515,7 @@ export default function NuevaCotizacionPage() {
               <button
                 onClick={handleGenerarPropuesta}
                 disabled={estado === 'guardando'}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${isDark ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90' : 'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90'}`}
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${estado === 'guardando' ? '' : 'hover-slide-r hover-press'} ${isDark ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90' : 'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90'}`}
               >
                 Genera la propuesta
                 <ArrowRight size={16} strokeWidth={2.5} />

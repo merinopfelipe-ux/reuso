@@ -226,7 +226,7 @@ export default function DetalleCotizacionPage() {
 
         {/* Cabecero */}
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push('/empresa/cotizador')} className={`p-2 rounded-full ${isDark ? 'hover:bg-white/10' : 'hover:bg-[#00827C]/08'} transition-colors`}>
+          <button onClick={() => router.push('/empresa/cotizador')} className={`p-2 rounded-full hover-pop hover-press ${isDark ? 'hover:bg-white/10' : 'hover:bg-[#00827C]/08'} transition-colors`}>
             <ArrowLeft size={20} className={tp} />
           </button>
           <div className="flex-1 min-w-0">
@@ -352,7 +352,7 @@ export default function DetalleCotizacionPage() {
               <div className="flex items-center gap-2 rounded-[8px] border px-3 py-2 border-[var(--border)] bg-[var(--bg-input)]">
                 <Link size={14} className={ts} />
                 <span className={`text-xs flex-1 truncate ${ts}`}>{enlace}</span>
-                <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
+                <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
                   <Copy size={14} />
                   {copiado ? 'Copiado' : 'Copiar'}
                 </button>
@@ -361,7 +361,7 @@ export default function DetalleCotizacionPage() {
                 href={`https://wa.me/${cot.crm_clientes?.telefono?.replace(/\D/g, '') ? `57${cot.crm_clientes.telefono.replace(/\D/g, '')}` : ''}?text=${encodeURIComponent(`Hola ${clienteNombre}, aquí está tu propuesta: ${enlace}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#25D366]/10 text-[#128C7E] text-sm font-semibold hover:bg-[#25D366]/20 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#25D366]/10 text-[#128C7E] text-sm font-semibold hover:bg-[#25D366]/20 transition-colors hover-pop hover-press"
               >
                 <WhatsappLogo size={16} />
                 Envía por WhatsApp
@@ -371,7 +371,7 @@ export default function DetalleCotizacionPage() {
             <button
               onClick={enviarPropuesta}
               disabled={enviando}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-50"
+              className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-50 ${enviando ? '' : 'hover-send hover-press'}`}
             >
               <PaperPlaneTilt size={16} strokeWidth={2.5} />
               {enviando ? 'Generando enlace...' : 'Generar y enviar propuesta'}
@@ -390,7 +390,7 @@ export default function DetalleCotizacionPage() {
         {/* Copys WhatsApp */}
         <div className={`rounded-[12px] border ${cardBg}`}>
           <button
-            className="w-full flex items-center justify-between p-4"
+            className="w-full flex items-center justify-between p-4 hover-pop"
             onClick={() => setCopysAbiertos(p => !p)}
           >
             <div className="flex items-center gap-2">
@@ -424,13 +424,13 @@ export default function DetalleCotizacionPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setConfirmarEstado(null)}
-                className="flex-1 py-2.5 rounded-full text-sm font-semibold border transition-colors border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
+                className="flex-1 py-2.5 rounded-full text-sm font-semibold border transition-colors border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover-pop hover-press"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => ejecutarCambioEstado(confirmarEstado)}
-                className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-colors ${confirmarEstado === 'cerrado_ganado' ? 'bg-[#00827C] text-white hover:bg-[#006B66]' : 'bg-[#FF5E4B] text-white hover:bg-[#e04438]'}`}
+                className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-colors hover-pop hover-press ${confirmarEstado === 'cerrado_ganado' ? 'bg-[#00827C] text-white hover:bg-[#006B66]' : 'bg-[#FF5E4B] text-white hover:bg-[#e04438]'}`}
               >
                 Confirmar
               </button>
@@ -472,7 +472,7 @@ function CopyCard({ label, texto, isDark }: { label: string; texto: string; isDa
         <span className={`text-xs font-semibold ${isDark ? 'text-white/70' : 'text-[#474747]/70'}`}>{label}</span>
         <button
           onClick={copiar}
-          className={`text-xs font-medium flex items-center gap-1 ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}
+          className={`text-xs font-medium flex items-center gap-1 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}
         >
           <Copy size={12} />
           {copiado ? 'Copiado' : 'Copiar'}

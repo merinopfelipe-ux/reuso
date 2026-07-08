@@ -304,7 +304,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
               onClick={() => setIsSearchMobileOpen(!isSearchMobileOpen)}
               style={circleButtonStyle}
               aria-label="Buscar"
-              className="icon-circle"
+              className="icon-circle hover-pop hover-press"
             >
               <MagnifyingGlass size={20} />
             </button>
@@ -350,7 +350,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                     <button
                       onClick={activarModoEmpleado}
                       style={{ ...itemStyle, color: 'var(--color-brand)' }}
-                      className="dropdown-item"
+                      className="dropdown-item hover-pop"
                     >
                       <UserCheck size={15} /> Ver como colaborador
                     </button>
@@ -359,7 +359,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                     <button
                       onClick={desactivarModoEmpleado}
                       style={{ ...itemStyle, color: 'var(--color-brand)' }}
-                      className="dropdown-item"
+                      className="dropdown-item hover-pop"
                     >
                       <Buildings size={15} /> Volver a mi empresa
                     </button>
@@ -370,14 +370,14 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                   <button
                     onClick={() => { setDropdownOpen(false); router.push('/settings#datos') }}
                     style={itemStyle}
-                    className="dropdown-item"
+                    className="dropdown-item hover-pop"
                   >
                     <User size={15} /> Mis datos
                   </button>
                   <button
                     onClick={() => { setDropdownOpen(false); router.push('/settings#preferencias') }}
                     style={itemStyle}
-                    className="dropdown-item"
+                    className="dropdown-item hover-gear"
                   >
                     <Gear size={15} /> Preferencias
                   </button>
@@ -385,7 +385,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                   <button
                     onClick={cerrarSesion}
                     style={{ ...itemStyle, color: 'var(--color-error)' }}
-                    className="dropdown-item"
+                    className="dropdown-item hover-slide-r"
                   >
                     <SignOut size={15} /> Cerrar sesión
                   </button>

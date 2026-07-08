@@ -102,9 +102,10 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Metas Ambientales</h3>
         {esAdmin && (
-          <button 
+          <button
             onClick={() => setForma(!forma)}
-            style={{ ...btnBase, background: 'var(--color-brand)', color: '#FFF' }}>
+            style={{ ...btnBase, background: 'var(--color-brand)', color: '#FFF' }}
+            className="hover-target hover-press">
             <Plus size={16} /> Crear Meta
           </button>
         )}
@@ -174,7 +175,7 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
                     </div>
                   </div>
                   {esAdmin && (
-                    <button onClick={() => handleDelete(meta.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#FF5E4B' }}>
+                    <button onClick={() => handleDelete(meta.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#FF5E4B' }} className="hover-trash hover-press">
                       <Trash size={16} />
                     </button>
                   )}

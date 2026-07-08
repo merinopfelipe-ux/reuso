@@ -17,6 +17,7 @@ const ALLOWED_FILES = [
   'src/app/(admin)/admin/qa/page.tsx',
   'src/app/sistema-diseno/page.tsx',
   'src/app/sistema-diseno/demo-panel/page.tsx',
+  'src/components/design-system-header.tsx',
   'src/app/globals.css', // Defines variables
   'src/app/page.tsx',    // Public landing
   'CLAUDE.md',

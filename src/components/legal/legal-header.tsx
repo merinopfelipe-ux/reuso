@@ -50,7 +50,7 @@ export function LegalHeader() {
       }}
     >
       {/* Izquierda: cerrar → home con tooltip */}
-      <Link href="/" className="legal-header-btn">
+      <Link href="/" className="legal-header-btn hover-rotate-90">
         <X size={18} strokeWidth={2.5} />
         <span className="legal-tooltip legal-tooltip--bottom">Volver al inicio</span>
       </Link>
@@ -74,7 +74,7 @@ export function LegalHeader() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
         <button
           onClick={toggleDark}
-          className="legal-header-btn"
+          className="legal-header-btn hover-rotate-180"
           aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
         >
           {mounted && isDark ? <Sun size={18} strokeWidth={2.5} /> : <Moon size={18} strokeWidth={2.5} />}
@@ -83,7 +83,7 @@ export function LegalHeader() {
           </span>
         </button>
         
-        <Link href="/legal/dudas" className="legal-header-btn">
+        <Link href="/legal/dudas" className="legal-header-btn hover-wiggle">
           <Question size={18} strokeWidth={2.5} />
           <span className="legal-tooltip legal-tooltip--bottom">Tengo una duda</span>
         </Link>

@@ -201,12 +201,12 @@ export function LandingHeader({
                     setTimeout(() => document.getElementById('search-input')?.focus(), 100);
                   }
                 }}
-                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm hover-press ${searchOpen ? 'hover-rotate-90' : 'hover-pop'} ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
               >
                 {searchOpen ? <X size={16} strokeWidth={2.5} /> : <MagnifyingGlass size={16} strokeWidth={2.5} />}
               </button>
             )}
-            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
+            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm hover-rotate-180 hover-press ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
               {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
             </button>
           </div>
@@ -273,7 +273,7 @@ export function LandingHeader({
           >
             <div className="flex justify-between items-center mb-6">
                <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
-               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
+               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center hover-rotate-90 hover-press ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">

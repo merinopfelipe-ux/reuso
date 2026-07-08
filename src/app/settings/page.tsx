@@ -319,6 +319,7 @@ export default function SettingsPage() {
           display: 'flex', alignItems: 'center', gap: 8,
           cursor: 'pointer', marginBottom: 28,
         }}
+        className="hover-slide-r"
       >
         <ArrowLeft size={22} />
         Configuración
@@ -415,6 +416,7 @@ export default function SettingsPage() {
                       onClick={() => { setUnlockField(unlockField === 'email' ? null : 'email'); setUnlockPassword(''); setNewSensitiveValue('') }}
                       title="Cambiar correo"
                       style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}
+                      className="hover-lock hover-press"
                     >
                       <LockSimple size={16} strokeWidth={2.5} />
                     </button>
@@ -453,6 +455,7 @@ export default function SettingsPage() {
                         onClick={() => { setUnlockField(unlockField === 'phone' ? null : 'phone'); setUnlockPassword(''); setNewSensitiveValue('') }}
                         title="Cambiar teléfono"
                         style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}
+                        className="hover-lock hover-press"
                       >
                         <LockSimple size={16} strokeWidth={2.5} />
                       </button>
@@ -752,6 +755,7 @@ export default function SettingsPage() {
               justifyContent: 'center',
               fontFamily: "'Open Sans', sans-serif",
             }}
+            className={loading ? '' : 'hover-pop hover-press'}
           >
             {saved ? (
               <><Check size={17} strokeWidth={2.5} /> Guardado</>

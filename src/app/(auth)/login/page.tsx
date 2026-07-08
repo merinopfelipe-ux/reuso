@@ -385,7 +385,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 text-secondary hover:text-primary transition-colors flex items-center justify-center focus:outline-none"
+                  className="absolute right-4 text-secondary hover:text-primary transition-colors flex items-center justify-center focus:outline-none hover-pop hover-press"
                   aria-label={showPassword ? T[idioma].ocultarPass : T[idioma].mostrarPass}
                 >
                   {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
@@ -419,7 +419,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => { setAceptaLegal(!aceptaLegal); setLegalError(false) }}
-                  className="flex-shrink-0 flex items-center focus:outline-none"
+                  className="flex-shrink-0 flex items-center focus:outline-none hover-pop hover-press"
                   aria-label="Aceptar términos legales"
                 >
                   {aceptaLegal
@@ -636,14 +636,14 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 hover-pop"
                 aria-label="Testimonio anterior"
               >
                 <CaretLeft size={24} strokeWidth={2.5} />
               </button>
               <button
                 onClick={nextTestimonial}
-                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
+                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-r"
                 aria-label="Testimonio siguiente"
               >
                 <CaretRight size={24} strokeWidth={2.5} />

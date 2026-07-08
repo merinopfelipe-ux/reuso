@@ -21,6 +21,7 @@ export function CloseTabButton() {
         marginBottom: 32,
         padding: 0,
       }}
+      className="hover-rotate-90 hover-press"
     >
       <X size={15} /> Cerrar
     </button>

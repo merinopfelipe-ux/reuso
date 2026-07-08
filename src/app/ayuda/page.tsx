@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
-  MessageCircle as ChatCircle,
+  MessageSquare as ChatCircle,
   Mail as Envelope,
   CircleHelp as Question,
   TriangleAlert as Warning,
@@ -78,6 +78,7 @@ export default function AyudaPage() {
           display: 'flex', alignItems: 'center', gap: 8,
           cursor: 'pointer', marginBottom: 28,
         }}
+        className="hover-slide-r"
       >
         <ArrowLeft size={22} />
         Centro de ayuda
@@ -130,6 +131,7 @@ export default function AyudaPage() {
                         transition: 'all 0.15s',
                         fontFamily: "'Open Sans', sans-serif",
                       }}
+                      className="hover-pop hover-press"
                     >
                       <Icon size={15} />
                       {value}

@@ -6,9 +6,90 @@ fecha: 2026-07-07
 # Estado del Proyecto: reuso.lurdes.co
 
 ## Versión actual
-**V15.5 — Migración completa de Phosphor Icons → Lucide React.**
+**V15.11 — Integración nativa de @animateicons/react, soporte de @lucide/lab, y wrapper de compatibilidad para Phosphor Icons.**
 
-## Sesión 2026-07-07 — Migración de Iconos (Phosphor → Lucide)
+## Sesión 2026-07-08 — Integración de AnimateIcons y Phosphor Wrapper (V15.11)
+
+- **Wrapper de Grosores para Phosphor Icons (`wrapPhosphorIcon`)**:
+  - `src/components/ui/brand-logos.tsx`: Reescribimos el archivo para importar los logotipos oficiales comerciales y redes sociales (`WhatsappLogo`, `LinkedinLogo`, `InstagramLogo`, `FacebookLogo`, `XLogo`, `YoutubeLogo`) desde la librería oficial de `@phosphor-icons/react` instalada.
+  - Implementamos el HOC `wrapPhosphorIcon` para mapear los atributos de grosor de Lucide (`strokeWidth` y `duotone`) a los pesos nativos de Phosphor (`light`, `regular`, `bold`, `duotone`), asegurando que no se note ningún cambio o salto visual en la interfaz. Estos logos se renderizan de forma estática (sin animaciones de hover).
+- **Integración de AnimateIcons**:
+  - Instalamos `@animateicons/react` y cambiamos el muestrario de la subsección `AnimateIcons` en el sistema de diseño (`sistema-diseno/page.tsx`) para usar los componentes de icono interactivos oficiales de `@animateicons/react/lucide` (con animaciones de Framer Motion por hover nativas de `animateicons.in`).
+- **Catálogo de Lucide Lab**:
+  - Instalamos `@lucide/lab` e integramos un nuevo catálogo de iconos experimentales en la página del sistema de diseño (renderizados con el componente `Icon` de `lucide-react`), como `avocado`, `ufo`, `snowman`, `strawberry`, etc.
+- **Despliegue y Validación**:
+  - Compilación exitosa de Next.js y despliegue a producción en `reuso.lurdes.co` a través de Vercel.
+
+## Sesión 2026-07-07 — Corrección de Relleno en Iconos y Ajuste Duotone (V15.10)
+
+- **Eliminación de Rellenos/Fondos Negros**:
+  - `src/components/ui/icons.tsx`: Resolvimos un error crítico en el HOC `wrapIcon` que causaba que todos los iconos normales se renderizaran con un fondo negro sólido. El error se producía porque React sobrescribía el valor predeterminado `fill="none"` de Lucide con `undefined` al inyectar el prop fill, lo que provocaba que el navegador aplicara el relleno negro estándar de SVG. Modificamos el HOC para que solo pase los atributos `fill` y `fillOpacity` a la etiqueta cuando `duotone` sea estrictamente verdadero.
+- **Ajuste de Opacidad Duotone al 65%**:
+  - `src/components/ui/icons.tsx` y `IaIcon`: Aumentamos la opacidad de los iconos duotono del 50% al 65% (`fillOpacity={0.65}`) para mejorar la visibilidad y estética del relleno.
+  - `src/app/sistema-diseno/page.tsx`: Actualizamos la documentación del sistema de diseño para reflejar que la opacidad del relleno duotono se ha ajustado al 65%.
+- **Animaciones en los Cajones de Iconografía**:
+  - `src/app/sistema-diseno/page.tsx`: Mapeamos individualmente las clases de micro-interacción por hover (`hover-slide-r`, `hover-leaf`, `hover-calc`, `hover-target`, etc.) a cada uno de los cajones de icono individuales en la grilla del catálogo de iconografía de la Sección 11.
+- **Despliegue y Validación**:
+  - Desplegado correctamente en vivo en `reuso.lurdes.co` a través de Vercel.
+
+## Sesión 2026-07-07 — Tipografía de Cabecera, Negro Lurdes y Regla de Logotipos (V15.9)
+
+- **Regla de Logotipos de Redes y Empresas**:
+  - `CLAUDE.md`: Añadida la regla absoluta de diseño que prohíbe el uso de iconos informales para redes y marcas corporativas. Es obligatorio usar siempre los logotipos vectoriales oficiales públicos (WhatsApp, LinkedIn, Instagram, Facebook, X, YouTube) provistos por el hub local (`brand-logos.tsx` / `icons.tsx`), asegurando colores e identidades oficiales.
+- **Cabecera de Sistema de Diseño**:
+  - `src/components/design-system-header.tsx`:
+    - Modificado el título de cabecera "sistema de diseño" para usar la fuente **Seravek**, renderizarse en **dos líneas** imitando la estructura del logotipo corporativo principal ("sistema de" en tamaño 12px, normal, tracking amplio y opacidad del 80%; y "diseño" en tamaño 22px, extra negrita y tracking ajustado) con ajuste de interlineado (1.05) para máximo refinamiento tipográfico.
+    - Cambiados todos los acentos y bordes de color verde sostenible (#00827C) a **Negro Lurdes** (#474747) en menús desplegables, triggers móviles, fondos activos y autocompletados del buscador (manteniendo el pistacho #D6F391 solo en modo oscuro).
+- **Subtextos del Catálogo en Negro Lurdes Puro**:
+  - `src/app/sistema-diseno/page.tsx`: Modificados todos los párrafos de descripción y subtextos de cada una de las 14 secciones del catálogo de estilos para que utilicen **Negro Lurdes puro (#474747)** en modo claro en lugar de verde sostenible (#00827C).
+- **Validación y Despliegue**:
+  - `scripts/check-backgrounds.js`: Añadido `design-system-header.tsx` a los archivos permitidos para el control de backgrounds, previniendo falsos positivos por el uso de Negro Lurdes en light mode.
+  - Compilación de Next.js (`npm run build`) y pruebas de unidad superadas exitosamente. Despliegue iniciado a producción en `reuso.lurdes.co` a través de Vercel.
+
+## Sesión 2026-07-07 — Iconografía Avanzada: Duotone, IA, WhatsApp y MessageSquare (V15.8)
+
+- **Iconos con Relleno al 50% (Duotone)**:
+  - `src/components/ui/icons.tsx`: Implementamos un HOC (`wrapIcon`) que envuelve todos los iconos del hub para interceptar y admitir la propiedad `duotone`. Cuando `duotone={true}` se pasa al componente de icono, este se renderiza con `fill="currentColor" fillOpacity={0.5}`, emulando perfectamente el estilo duotone nativo y dándole soporte en todo el sistema.
+  - `src/app/sistema-diseno/page.tsx`: Añadimos una cuarta columna llamada "Duotone (duotone=true)" en el muestrario de pesos de la **Sección 11 (Iconografía)**, documentando y renderizando los iconos con el nuevo prop.
+- **Icono de Inteligencia Artificial (IaIcon)**:
+  - `src/components/ui/icons.tsx`: Diseñamos y exportamos un icono personalizado `IaIcon` que dibuja una caja redondeada de Lucide con las letras "IA" caladas en el centro utilizando la tipografía **Seravek** (`fontFamily="seravek, ..."`).
+  - `src/app/(public)/legal/page.tsx`: Actualizamos el mapeo de `/legal/ia` en `ICONOS` para que use el nuevo `IaIcon` en lugar de `Cpu` en la grilla de documentos legales.
+  - `src/app/sistema-diseno/page.tsx`: Agregamos `IaIcon` en el catálogo general de iconografía.
+- **Preferencia por la familia MessageSquare**:
+  - Reemplazamos `MessageCircle` por `MessageSquare` en todos los archivos del proyecto que importaban el chat bubble directamente para homogeneizar el estilo:
+    - `src/components/ui/icons.tsx` (alias `ChatCircle` mapeado a `MessageSquare`).
+    - `src/app/page.tsx`, `src/app/ayuda/page.tsx`, `src/app/(admin)/admin/contenido/contenido-client.tsx`, `src/app/(admin)/admin/leads/leads-client.tsx` y `src/app/(public)/legal/page.tsx`.
+- **Implementación Correcta de WhatsApp**:
+  - `src/components/ui/whatsapp-logo.tsx`: Rediseñamos el SVG de `WhatsappLogo` utilizando una estructura de dos capas (un círculo inferior blanco `#FFFFFF` y el trazado superior de la burbuja que hereda `currentColor`). Esto garantiza que el teléfono interno siempre se renderice en blanco contrastado, solucionando el bug donde el teléfono se volvía transparente y tomaba el color de fondo.
+  - `src/app/page.tsx`: Reemplazamos el icono `ChatCircle` genérico del botón flotante de WhatsApp por el nuevo `WhatsappLogo` en tamaño grande (32px), integrando el verdadero isotipo de la marca en la landing.
+  - `src/app/pasaporte/[codigo]/collapse-section.tsx`: Reemplazamos el SVG inline rudimentario del botón "Compartir este pasaporte" por el componente `WhatsappLogo`.
+- **Verificación**: Compilación de Next.js (`npm run build`) completada con éxito y tests de unidad al 100%.
+
+## Sesión 2026-07-07 — AnimateIcons y Transiciones de Página (V15.7)
+
+- **Auditoría e Implementación de AnimateIcons**:
+  - Explicado y documentado el uso de la lógica CSS de micro-interacciones sobre SVGs internos mediante clases hover como `hover-bell`, `hover-gear`, `hover-slide-r`, `hover-copy`, `hover-trash`, etc., combinadas con `hover-press` para feedback táctil al presionar.
+  - `src/app/sistema-diseno/page.tsx`: Creada una nueva subsección interactiva en **Iconografía (Sección 11)** que actúa como catálogo de demostración de *AnimateIcons (Lucide Lab)* con 12 botones dinámicos para previsualizar los efectos de micro-interacción.
+  - Aplicados los comportamientos de micro-animaciones a las acciones principales del sistema:
+    - Enlaces de llamada a la acción en la landing page (`src/app/page.tsx`): Habilitado `hover-slide-r hover-press` en botones principales con icono `ArrowRight` (hero CTA y sección de registro).
+    - Enlace de creación de empresa en el dashboard (`src/app/(dashboard)/dashboard/page.tsx`): Aplicado `hover-slide-r hover-press` al enlace del banner de upgrade.
+    - Accesos rápidos del empleado en el dashboard (`src/app/(dashboard)/dashboard/page.tsx`): Mapeado e implementado `hover-package` (Registrar reúso), `hover-spin` (Mi historial) y `hover-lifebuoy` (Soporte).
+- **Transiciones de Página**:
+  - `src/app/globals.css`: Creada la animación `@keyframes pageFadeIn` y las clases utilitarias `.animate-page-enter` y `.animate-fade-in` (que resuelven un bug del formulario de registro donde no estaba declarada).
+  - `src/components/layout-shell.tsx`: Se importó `usePathname` de `next/navigation` y se asignó como `key` al contenedor principal del contenido (`children`) con la clase `animate-page-enter`. Esto fuerza a React a recrear el componente de contenido en cada cambio de ruta, logrando una transición marcada de fade-in, slide-up y desenfoque (blur-in) sin afectar visualmente a los componentes del cabecero, sidebar y footer (respetando la zona protegida).
+  - `src/app/(auth)/recuperar/page.tsx`: Integrada la transición `.animate-page-enter` al contenedor principal del formulario.
+- **Verificación**: Compilación de Next.js (`npm run build`) completada con éxito y pruebas de unidad superadas al 100%.
+
+## Sesión 2026-07-07 — Auditoría y Eliminación de Phosphor (V15.6)
+
+- **Auditoría completa**: Verificado que `@phosphor-icons/react` no está en `package.json` ni en `package-lock.json`, garantizando su completa remoción de las dependencias.
+- **Remoción de referencias residuales**:
+  - `src/app/sistema-diseno/page.tsx`: Actualizado el título de la sección 11 a "Iconografía Lucide", reemplazado el enlace de Phosphor Icons por el oficial de Lucide Icons (`https://lucide.dev/`), y modificado el muestrario de pesos visuales para utilizar y explicar los valores de `strokeWidth` (1.5 Delgado, 2.0 Regular, 2.5 Destacado).
+  - `e2e/05-legal-pages.spec.ts` y `e2e/07-auth.spec.ts`: Actualizados los títulos de los tests y comentarios que hacían referencia a iconos Phosphor para apuntar a Lucide Icons.
+  - `resumen-tecnico-reuso.txt`: Actualizada la especificación del sistema de diseño para indicar el uso de Lucide Icons en lugar de Phosphor.
+- **Verificación**: Compilación de Next.js (`npm run build`) y pruebas de unidad finalizadas con 100% de éxito.
+
+## Sesión 2026-07-07 — Migración de Iconos (Phosphor → Lucide) (V15.5)
 
 - **94 archivos migrados**: Eliminado `@phosphor-icons/react` por completo. Todas las importaciones convertidas a `lucide-react`.
 - **Hub `src/components/ui/icons.tsx`**: Reescrito para exportar desde `lucide-react` con aliases compatibles con nombres Phosphor (para los 12 archivos que importan del hub).

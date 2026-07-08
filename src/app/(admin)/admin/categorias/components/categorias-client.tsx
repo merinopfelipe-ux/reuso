@@ -123,6 +123,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
       <div style={{ marginBottom: 16 }}>
         <button
           onClick={() => setMostrarFormCat(!mostrarFormCat)}
+          className="hover-pop hover-press"
           style={{ ...btnBase, background: 'var(--color-brand)', color: 'var(--text-on-brand)', border: 'none' }}
         >
           <Plus size={15} /> Nueva categoría
@@ -153,10 +154,12 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <button type="submit" disabled={guardando}
+              className={guardando ? '' : 'hover-download hover-press'}
               style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
               {guardando ? 'Guardando...' : 'Guardar'}
             </button>
             <button type="button" onClick={() => setMostrarFormCat(false)}
+              className="hover-pop hover-press"
               style={{ ...btnBase, background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>
               Cancelar
             </button>
@@ -205,6 +208,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
               <button
                 onClick={e => { e.stopPropagation(); toggleCategoria(cat.id, cat.activa) }}
                 title={cat.activa ? 'Desactivar' : 'Activar'}
+                className="hover-pop hover-press"
                 style={{ ...btnBase, padding: '4px 10px', marginLeft: 4 }}
               >
                 <Power size={14} style={{ color: cat.activa ? 'var(--color-brand)' : 'var(--text-secondary)' }} />
@@ -234,7 +238,8 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                         </td>
                         <td style={{ padding: '10px 16px' }}>
                           <button onClick={() => toggleItem(item.id, item.activo)}
-                            style={{ 
+                            className="hover-pop hover-press"
+                            style={{
                               ...btnBase, padding: '2px 10px', fontSize: 10, fontWeight: 800,
                               textTransform: 'uppercase', letterSpacing: '0.04em',
                               background: item.activo ? 'rgba(56,185,142,0.08)' : 'rgba(255,94,75,0.06)', 
@@ -277,10 +282,12 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                       </div>
                       <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                         <button type="submit" disabled={guardando}
+                          className={guardando ? '' : 'hover-download hover-press'}
                           style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
                           {guardando ? 'Guardando...' : 'Guardar item'}
                         </button>
                         <button type="button" onClick={() => setMostrarFormItem(null)}
+                          className="hover-pop hover-press"
                           style={{ ...btnBase, background: 'transparent', color: 'var(--text-secondary)' }}>
                           Cancelar
                         </button>
@@ -288,6 +295,7 @@ export function CategoriasClient({ categorias, modulos }: { categorias: Categori
                     </form>
                   ) : (
                     <button onClick={() => setMostrarFormItem(cat.id)}
+                      className="hover-pop hover-press"
                       style={{ ...btnBase, background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>
                       <Plus size={14} /> Nuevo item
                     </button>

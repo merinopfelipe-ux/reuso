@@ -166,6 +166,7 @@ export function LeadsForm() {
             gap: 10,
             boxShadow: '0 4px 12px rgba(0,130,124,0.2)'
           }}
+          className={loading ? '' : 'hover-send hover-press'}
         >
           {loading ? (
             <CircleNotch size={18} style={{ animation: 'spin 2s linear infinite' }} />

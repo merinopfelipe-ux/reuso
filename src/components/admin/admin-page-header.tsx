@@ -40,6 +40,7 @@ export function AdminPageHeader({ titulo, subtitulo, accion, showBack = false }:
               gap: 8,
               cursor: 'pointer',
             }}
+            className="hover-slide-r"
           >
             <ArrowLeft size={22} />
             {titulo}

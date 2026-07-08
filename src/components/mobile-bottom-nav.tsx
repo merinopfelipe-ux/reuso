@@ -149,6 +149,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                 color: isActive ? activeColor : inactiveColor,
                 transition: 'color 0.2s ease',
               }}
+              className="hover-pop hover-press"
             >
               <item.icon size={26} strokeWidth={isActive ? 2.5 : 2} />
               <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 60 }}>
@@ -173,6 +174,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
             color: isOpen ? activeColor : inactiveColor,
             transition: 'color 0.2s ease',
           }}
+          className={isOpen ? 'hover-rotate-90 hover-press' : 'hover-wiggle hover-press'}
         >
           {isOpen ? <X size={26} strokeWidth={2.5} /> : <List size={26} />}
           <span style={{ fontSize: 10, fontWeight: isOpen ? 700 : 500 }}>Más</span>
@@ -236,6 +238,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                     textDecoration: 'none',
                     transition: 'all 0.2s ease',
                   }}
+                  className="hover-pop hover-press"
                 >
                   <item.icon size={28} strokeWidth={isActive ? 2.5 : 2} />
                   <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 600, textAlign: 'center' }}>

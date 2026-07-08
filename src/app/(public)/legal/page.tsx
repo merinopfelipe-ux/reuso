@@ -9,10 +9,10 @@ import {
   Database,
   Cookie,
   Lock,
-  BarChart2 as ChartBar,
-  MessageCircle as ChatCircle,
-  Cpu,
+  Scale,
+  MessageSquare as ChatCircle,
 } from 'lucide-react'
+import { IaIcon } from '@/components/ui/icons'
 
 const T = {
   ES: {
@@ -24,27 +24,27 @@ const T = {
     docs: [
       { href: '/legal/terminos', titulo: 'Términos y Condiciones', descripcion: 'Reglas de uso de la plataforma, derechos y obligaciones de ambas partes.' },
       { href: '/legal/privacidad', titulo: 'Política de Privacidad', descripcion: 'Cómo protegemos y tratamos la información de los usuarios.' },
-      { href: '/legal/datos', titulo: 'Tratamiento de Datos', descripcion: 'Política conforme a la Ley 1581 de 2012 (Colombia), RGPD y CCPA.' },
-      { href: '/legal/cookies', titulo: 'Política de Cookies', descripcion: 'Qué cookies usamos (incluyendo Google Analytics y Hotjar), para qué y cómo gestionarlas.' },
-      { href: '/legal/reglamento', titulo: 'Reglamento de Uso', descripcion: 'Condiciones técnicas de la calculadora, cálculos y certificados.' },
-      { href: '/legal/confidencialidad', titulo: 'Acuerdo de Confidencialidad', descripcion: 'Compromiso de no replicar ni extraer información de la plataforma.' },
-      { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos IA para construir la plataforma y calcular el CO₂ evitado.' },
+      { href: '/legal/datos', titulo: 'Tratamiento de Datos', descripcion: 'Política de tratamiento de datos personales (Ley 1581 de 2012).' },
+      { href: '/legal/cookies', titulo: 'Política de Cookies', descripcion: 'Qué cookies usamos, para qué y cómo puedes gestionarlas.' },
+      { href: '/legal/reglamento', titulo: 'Reglamento de Uso', descripcion: 'Condiciones y políticas de uso de los certificados e informes.' },
+      { href: '/legal/confidencialidad', titulo: 'Acuerdo de Confidencialidad', descripcion: 'Garantía de confidencialidad para usuarios y empresas registradas.' },
+      { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
     ],
   },
   ENG: {
-    titulo: 'Legal documents',
-    subtitulo: 'All legal documentation for the Reúso Calculator. Designed to comply with GDPR (Europe), CCPA (USA) and Law 1581 (Colombia).',
+    titulo: 'Legal Documents',
+    subtitulo: 'All legal documentation of the Calculadora de Reúso. Compliant with GDPR (Europe), CCPA (US), and Law 1581 (Colombia).',
     inicio: 'Home',
-    duda: 'I have a legal question',
-    dudaDesc: 'Write to us directly. The Grupo MLP S.A.S. team responds within a maximum of 10 business days.',
+    duda: 'Legal inquiries',
+    dudaDesc: 'Write to us directly. The Grupo MLP S.A.S. team will reply within 10 business days.',
     docs: [
       { href: '/legal/terminos', titulo: 'Terms and Conditions', descripcion: 'Platform usage rules, rights and obligations of both parties.' },
       { href: '/legal/privacidad', titulo: 'Privacy Policy', descripcion: 'How we protect and process user information.' },
-      { href: '/legal/datos', titulo: 'Data Processing', descripcion: 'Policy under Law 1581 of 2012 (Colombia), GDPR and CCPA.' },
-      { href: '/legal/cookies', titulo: 'Cookie Policy', descripcion: 'What cookies we use (including Google Analytics and Hotjar), why, and how to manage them.' },
-      { href: '/legal/reglamento', titulo: 'Usage Regulations', descripcion: 'Technical conditions of the calculator, calculations and certificates.' },
-      { href: '/legal/confidencialidad', titulo: 'Confidentiality Agreement', descripcion: 'Commitment not to replicate or extract information from the platform.' },
-      { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use AI to build the platform and calculate avoided CO₂.' },
+      { href: '/legal/datos', titulo: 'Data Processing', descripcion: 'Personal data processing policy (Law 1581 of 2012).' },
+      { href: '/legal/cookies', titulo: 'Cookie Policy', descripcion: 'What cookies we use, why, and how you can manage them.' },
+      { href: '/legal/reglamento', titulo: 'Usage Regulations', descripcion: 'Terms and policies for certificates and reports usage.' },
+      { href: '/legal/confidencialidad', titulo: 'Confidentiality Agreement', descripcion: 'Confidentiality guarantee for registered users and companies.' },
+      { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
     ],
   },
 }
@@ -54,9 +54,9 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
   '/legal/privacidad': Shield,
   '/legal/datos': Database,
   '/legal/cookies': Cookie,
-  '/legal/reglamento': ChartBar,
+  '/legal/reglamento': Scale,
   '/legal/confidencialidad': Lock,
-  '/legal/ia': Cpu,
+  '/legal/ia': IaIcon,
 }
 
 export default function LegalIndexPage() {

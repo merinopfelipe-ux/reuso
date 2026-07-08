@@ -227,7 +227,7 @@ DESIGN SYSTEM PROPIO
 
   Color brand principal : #00827C (teal)
   Tipografía           : Open Sans únicamente
-  Iconos               : Phosphor Icons
+  Iconos               : Lucide Icons
   Modo oscuro          : fondo #474747, brand pistacho #D6F391
   Radios               : 12px cards, 10px botones, 8px inputs
   Sin grises puros     : todos los colores derivan del brand #00827C

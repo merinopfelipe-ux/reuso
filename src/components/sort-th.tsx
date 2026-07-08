@@ -34,6 +34,7 @@ export function SortTh({ col, sort, onToggle, children, style }: SortThProps) {
         userSelect: 'none',
         ...style,
       }}
+      className="hover-pop"
     >
       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
         {children}

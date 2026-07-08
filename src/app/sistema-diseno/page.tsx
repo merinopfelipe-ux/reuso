@@ -3,22 +3,54 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
   Users,
-  Building2 as Buildings,
+  Buildings,
   Calculator,
   Leaf,
   ArrowRight,
   Eye,
-  EyeOff as EyeSlash,
+  EyeSlash,
   Target,
   Plus,
-  Search as MagnifyingGlass,
-  TreeDeciduous as Tree,
+  MagnifyingGlass,
+  Tree,
   Globe,
   User,
-  Layers as Stack,
-  ChevronDown as CaretDown,
+  Stack,
+  CaretDown,
   Copy,
-} from 'lucide-react'
+  Bell,
+  Gear,
+  Trash,
+  PencilSimple,
+  Envelope,
+  Download,
+  Upload,
+  IaIcon,
+  WhatsappLogo,
+  LinkedinLogo,
+  InstagramLogo,
+  FacebookLogo,
+  XLogo,
+  YoutubeLogo,
+} from '@/components/ui/icons'
+import { Icon } from 'lucide-react'
+import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
+import {
+  BellRingIcon,
+  SettingsIcon,
+  ChevronRightIcon,
+  DownloadIcon,
+  UploadIcon,
+  CopyIcon,
+  TrashIcon,
+  SendIcon,
+  EyeIcon,
+  EyeOffIcon,
+  PlusIcon,
+  StarIcon,
+  HeartIcon,
+  ZapIcon
+} from '@animateicons/react/lucide'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { DesignSystemHeader } from '@/components/design-system-header'
 
@@ -360,7 +392,7 @@ export default function ManualDisenoPage() {
             <h1 className={`text-4xl sm:text-5xl md:text-[5rem] font-bold tracking-tighter leading-[1.05] mb-8 ${isDark ? 'text-white' : 'text-[#474747]'}`}>
               Identidad de la<br/>Calculadora de Reúso
             </h1>
-            <p className={`${isDark ? 'text-white/60' : 'text-[#00827C]/70'} text-xl leading-relaxed max-w-2xl font-medium`}>
+            <p className={`${isDark ? 'text-white/60' : 'text-[#474747]'} text-xl leading-relaxed max-w-2xl font-medium`}>
               Guía oficial de estilos y componentes. Descubre lo que puedes hacer en nuestro sistema de diseño.
             </p>
           </div>
@@ -371,7 +403,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de color</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Lurdes (#474747)</strong> es el fondo de página en modo noche. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Lurdes</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Lurdes (#474747)</strong> es el fondo de página en modo noche. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Lurdes</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
           
           <div className="space-y-16">
             
@@ -509,7 +541,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fuentes</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>
             Tres familias tipográficas conforman la identidad textual de Reúso: <strong>Seravek</strong> para títulos y encabezados de gran formato, <strong>Open Sans</strong> para la interfaz general, cuerpo de texto y comunicación, y la <strong>monoespaciada del sistema</strong> para tokens técnicos y código.
           </p>
           <div className={`p-10 md:p-14 rounded-[2.5rem] space-y-12 ${liquidGlassClass} border-[#00827C]/10`}>
@@ -542,7 +574,7 @@ export default function ManualDisenoPage() {
                 <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Monoespaciada</div>
                 <div className="md:col-span-9">
                   <code className={`text-sm font-mono ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>var(--color-brand): #00827C</code>
-                  <p className={`text-xs mt-2 ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>JetBrains Mono · Tokens técnicos y código</p>
+                  <p className={`text-xs mt-2 ${isDark ? 'text-white/40' : 'text-[#474747]/70'}`}>JetBrains Mono · Tokens técnicos y código</p>
                 </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6">
@@ -644,7 +676,7 @@ export default function ManualDisenoPage() {
                  <div className={`w-full h-64 rounded-[120px] border border-[#00827C]/10 shadow-[0_24px_48px_rgba(0,130,124,0.06)] flex items-center justify-center p-12 text-center transition-transform hover:rotate-1 duration-500 ${isDark ? 'bg-white/10' : 'bg-[#FCFBFA]'}`}>
                     <div className="flex flex-col items-center">
                       <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fila Editorial Cápsula</h4>
-                      <p className={`text-[10px] font-bold ${isDark ? 'text-white/40' : 'text-[#00827C]/40'}`}>Radio 999px &bull; bg Blanco Roto &bull; sombra 0 24 48 / 0.08</p>
+                      <p className={`text-[10px] font-bold ${isDark ? 'text-white/40' : 'text-[#474747]/60'}`}>Radio 999px &bull; bg Blanco Roto &bull; sombra 0 24 48 / 0.08</p>
                     </div>
                  </div>
                  <div className="text-center"><span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>&bull; Cápsula editorial</span></div>
@@ -755,7 +787,7 @@ export default function ManualDisenoPage() {
                 <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] saturate-[180%]' : 'bg-white border border-[#00827C]/10'} ${el.base}`}>
                   {isDark && <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/[0.05] to-transparent pointer-events-none" />}
                   <h4 className={`font-bold ${isDark ? 'text-white' : 'text-[#474747]'} select-all relative z-10`}>{el.name}</h4>
-                  <p className={`text-sm ${isDark ? 'text-white/60' : 'text-[#00827C]/60'} relative z-10`}>{el.text}</p>
+                  <p className={`text-sm ${isDark ? 'text-white/60' : 'text-[#474747]'} relative z-10`}>{el.text}</p>
                 </div>
               ))}
             </div>
@@ -774,14 +806,14 @@ export default function ManualDisenoPage() {
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`}><Globe size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
                    <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Voz Positiva y Activa</h4>
-                   <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/70'} leading-relaxed font-medium`}>Construimos confianza ambiental con datos trazables y un lenguaje visual premium y transparente que no oculta nada. El Liquid Glass comunica que somos limpios como el cristal corporativo más alto.</p>
+                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>Construimos confianza ambiental con datos trazables y un lenguaje visual premium y transparente que no oculta nada. El Liquid Glass comunica que somos limpios como el cristal corporativo más alto.</p>
                  </div>
               </div>
               <div className="flex gap-4">
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#38B98E]/10'}`}><Tree size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
                    <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Filosofía de Cuidado Bio</h4>
-                   <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/70'} leading-relaxed font-medium`}>No solo certificamos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
+                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>No solo certificamos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
                  </div>
               </div>
             </div>
@@ -805,7 +837,7 @@ export default function ManualDisenoPage() {
                  <div className={`glass-shimmer-text text-5xl font-black tracking-tight mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>
                    Liquid Glass
                  </div>
-                 <p className={`glass-subtitle text-sm font-bold tracking-[0.3em] ${isDark ? 'text-[#D6F391]/60' : 'text-[#00827C]/40'}`}>Transparencia &middot; Blur &middot; Saturación</p>
+                 <p className={`glass-subtitle text-sm font-bold tracking-[0.3em] ${isDark ? 'text-[#D6F391]/60' : 'text-[#474747]/60'}`}>Transparencia &middot; Blur &middot; Saturación</p>
                </div>
             </div>
           </div>
@@ -817,7 +849,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-10">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Estándar de tablas y datos</h2>
           </div>
-          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#00827C]/60'} font-medium mb-10 max-w-xl`}>
+          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-10 max-w-xl`}>
             La legibilidad en scroll es un mandato institucional. Las tablas deben ser sólidas para evitar el ruido visual.
           </p>
           
@@ -850,7 +882,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tokens del sistema</h2>
           </div>
-          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#00827C]/60'} font-medium mb-3 max-w-2xl`}>
+          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-3 max-w-2xl`}>
             Cada elemento del manual tiene un nombre. Úsalos para dar instrucciones exactas.
           </p>
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-12 ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/8 text-[#00827C]'}`}>
@@ -920,10 +952,10 @@ export default function ManualDisenoPage() {
                         </div>
 
                         {/* Valor */}
-                        <p className={`text-[10px] font-mono leading-relaxed mb-1.5 ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{token.value}</p>
+                        <p className={`text-[10px] font-mono leading-relaxed mb-1.5 ${isDark ? 'text-white/30' : 'text-[#474747]/60'}`}>{token.value}</p>
 
                         {/* Descripción */}
-                        <p className={`text-[11px] font-medium ${isDark ? 'text-white/50' : 'text-[#00827C]/60'}`}>{token.desc}</p>
+                        <p className={`text-[11px] font-medium ${isDark ? 'text-white/50' : 'text-[#474747]/80'}`}>{token.desc}</p>
                       </button>
                     )
                   })}
@@ -933,69 +965,194 @@ export default function ManualDisenoPage() {
           </div>
         </section>
 
-        {/* SECCION 11: ICONOGRAFÍA Phosphor */}
+        {/* SECCION 11: ICONOGRAFÍA Lucide */}
         <section id="s11-iconografia" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div className="flex items-center gap-4">
               <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Iconografía</h2>
             </div>
             <a 
-              href="https://phosphoricons.com/" 
+              href="https://lucide.dev/" 
               target="_blank" 
               rel="noopener noreferrer"
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-black transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#00827C]/5 text-[#00827C] hover:bg-[#00827C]/10'}`}
             >
-              Explorar librería Phosphor <ArrowRight size={16} strokeWidth={2.5} />
+              Explorar librería Lucide <ArrowRight size={16} strokeWidth={2.5} />
             </a>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres pesos</strong> según el contexto: <strong>Light</strong> (delgado) para decoración sutil, <strong>Regular</strong> (normal) para la interfaz general, y <strong>Duotone</strong> (bicromático) para estados activos y visualización de informes.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres grosores de trazo (strokeWidth)</strong> según el contexto: <strong>1.5 (Delgado)</strong>, <strong>2.0 (Regular)</strong> y <strong>2.5 (Destacado)</strong>. Adicionalmente, el hub de iconos local da soporte al atributo <code>duotone</code>, el cual aplica un **relleno al 20% de opacidad** para emular visualmente el estilo duotone nativo.</p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Light (Delgado)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Delgado (strokeWidth=1.5)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
                   <Icon key={i} size={28} strokeWidth={1.5} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Decorativo &middot; Fondos &middot; Ilustraciones</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Decorativo &middot; Fondos &middot; Ilustraciones</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (Normal)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (strokeWidth=2.0)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                  <Icon key={i} size={28} strokeWidth={2} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Interfaz general &middot; Navegación &middot; Formularios</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Interfaz general &middot; Navegación &middot; Formularios</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (Bicromático)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Destacado (strokeWidth=2.5)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                  <Icon key={i} size={28} strokeWidth={2.5} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Activo &middot; Seleccionado &middot; Informes</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Activo &middot; Seleccionado &middot; Informes</p>
+            </div>
+            <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (duotone=true)</span>
+              <div className="flex justify-center gap-5 mb-4">
+                {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
+                  <Icon key={i} size={28} duotone className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                ))}
+              </div>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Relleno 20% &middot; Enfoque visual &middot; Destacados</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-6">
             {[
-              { i: ArrowRight, n: 'ArrowRight' },
-              { i: Eye, n: 'Ojo (Mostrar)' },
-              { i: EyeSlash, n: 'EyeSlash' },
-              { i: Plus, n: 'Más (FAB)' },
-              { i: Target, n: 'Meta (Objetivo)' },
-              { i: MagnifyingGlass, n: 'Magnify' },
-              { i: Leaf, n: 'Hoja (Eco)' },
-              { i: Calculator, n: 'Calculadora' },
+              { i: ArrowRight, n: 'ArrowRight', c: 'hover-slide-r hover-press' },
+              { i: Eye, n: 'Ojo (Mostrar)', c: 'hover-press' },
+              { i: EyeSlash, n: 'EyeSlash', c: 'hover-press' },
+              { i: Plus, n: 'Más (FAB)', c: 'hover-press' },
+              { i: Target, n: 'Meta (Objetivo)', c: 'hover-target hover-press' },
+              { i: MagnifyingGlass, n: 'Magnify', c: 'hover-press' },
+              { i: Leaf, n: 'Hoja (Eco)', c: 'hover-leaf hover-press' },
+              { i: Calculator, n: 'Calculadora', c: 'hover-calc hover-press' },
+              { i: IaIcon, n: 'IA (Font Seravek)', c: 'hover-press' },
             ].map((icon, idx) => (
-              <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#00827C]/10'}`}>
-                <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#00827C]'} transition-colors mb-4`} />
-                <span className={`text-[10px] font-bold tracking-tighter ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{icon.n}</span>
+              <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${icon.c} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#474747]/10'}`}>
+                <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#474747]'} transition-colors mb-4`} />
+                <span className={`text-[10px] font-bold tracking-tighter text-center ${isDark ? 'text-white/30' : 'text-[#474747]/60'}`}>{icon.n}</span>
               </div>
             ))}
+          </div>
+
+          {/* Reglas de Uso de Iconografía Duotone y Marcas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12">
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black uppercase tracking-wider mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Iconos Duotone</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                El estilo <strong>duotone</strong> (relleno sutil al 20% de opacidad) debe emplearse únicamente para elementos destacados que requieran mayor peso visual, como estados activos en menús (sidebar), accesos directos principales en el dashboard o componentes de estado de alto impacto. No se debe usar para botones de acción regulares ni en flujos de texto inline.
+              </p>
+            </div>
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black uppercase tracking-wider mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
+                Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, **se debe utilizar siempre la librería Phosphor Icons sin animación**. Nuestro hub exporta automáticamente estas marcas envueltas en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
+              </p>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-black/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                <div className="font-bold mb-2">Mapeo de Grosores Automático:</div>
+                <div>• strokeWidth=1.5  → weight=&quot;light&quot;</div>
+                <div>• strokeWidth=2.0  → weight=&quot;regular&quot; (Predeterminado)</div>
+                <div>• strokeWidth=2.5  → weight=&quot;bold&quot;</div>
+                <div>• duotone=true     → weight=&quot;duotone&quot;</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Subsección: Logotipos de Marcas Oficiales (Brand Logos) */}
+          <div className="mt-16">
+            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Logotipos de Marca Oficiales (Brand Logos)</h3>
+            <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
+              Logotipos vectoriales oficiales de empresas, redes sociales y plataformas de terceros. Para garantizar la máxima fidelidad y reconocimiento oficial, **se utiliza la librería Phosphor Icons (`@phosphor-icons/react`) de forma exclusiva para estos casos**. Se muestran de forma estática (sin animaciones interactivas de hover) y con colores corporativos oficiales.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              {[
+                { i: WhatsappLogo, n: 'WhatsApp', c: 'text-[#25D366]' },
+                { i: LinkedinLogo, n: 'LinkedIn', c: 'text-[#0A66C2]' },
+                { i: InstagramLogo, n: 'Instagram', c: isDark ? 'text-white' : 'text-[#E4405F]' },
+                { i: FacebookLogo, n: 'Facebook', c: 'text-[#1877F2]' },
+                { i: XLogo, n: 'X (Twitter)', c: isDark ? 'text-white' : 'text-black' },
+                { i: YoutubeLogo, n: 'YouTube', c: 'text-[#FF0000]' },
+              ].map((logo, idx) => (
+                <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl group ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#00827C]/10'}`}>
+                  <logo.i size={36} className={`${logo.c} mb-4 transition-transform group-hover:scale-110 duration-200`} />
+                  <span className={`text-[11px] font-bold ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>{logo.n}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Subsección: AnimateIcons (Micro-interacciones de Lucide Lab) */}
+          <div className="mt-16">
+            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>AnimateIcons (Micro-interacciones de Interfaz)</h3>
+            <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
+              Micro-interacciones y animaciones de alta fidelidad integradas a través de la librería oficial de <code>@animateicons/react</code>. Estas animaciones están optimizadas para la web y se activan de forma nativa al pasar el cursor (hover) por encima de cada cajón, aportando un feedback visual excepcional al usuario.
+            </p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
+              {[
+                { i: BellRingIcon, n: 'Notificaciones', d: 'Campana oscilante' },
+                { i: SettingsIcon, n: 'Ajustes / Engranaje', d: 'Rotación con inercia' },
+                { i: ChevronRightIcon, n: 'Siguiente / Flecha', d: 'Desplazamiento lateral' },
+                { i: DownloadIcon, n: 'Descargar', d: 'Rebote hacia abajo' },
+                { i: UploadIcon, n: 'Subir Archivo', d: 'Rebote hacia arriba' },
+                { i: CopyIcon, n: 'Copiar Portapapeles', d: 'Comprimir / Escala' },
+                { i: TrashIcon, n: 'Eliminar / Basura', d: 'Tapa basculante' },
+                { i: SendIcon, n: 'Enviar / Correo', d: 'Ángulo lanzamiento' },
+                { i: EyeIcon, n: 'Mostrar Contraseña', d: 'Movimiento de pupila' },
+                { i: EyeOffIcon, n: 'Ocultar Contraseña', d: 'Línea diagonal' },
+                { i: PlusIcon, n: 'Añadir / FAB', d: 'Rotación de 90°' },
+                { i: StarIcon, n: 'Destacar / Estrella', d: 'Giro de estrella' },
+                { i: HeartIcon, n: 'Favorito / Corazón', d: 'Latido de corazón' },
+                { i: ZapIcon, n: 'Rápido / Energía', d: 'Destello de energía' },
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-white border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                >
+                  <div className={`${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-4 transition-colors`}>
+                    <item.i size={28} />
+                  </div>
+                  <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
+                  <span className={`text-[9px] font-medium mt-1 block opacity-50 ${isDark ? 'text-white/50' : 'text-[#00827C]/50'}`}>{item.d}</span>
+                  <code className="text-[8px] font-mono mt-2 bg-black/10 px-1.5 py-0.5 rounded opacity-40">@animateicons/react</code>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Subsección: Lucide Lab (Iconos Experimentales) */}
+          <div className="mt-16">
+            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Lucide Lab (Iconos Experimentales)</h3>
+            <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
+              Iconos experimentales oficiales importados directamente del repositorio oficial de <code>@lucide/lab</code>. Estos diseños están en fase experimental y no pertenecen a la librería Core, pero se integran perfectamente mediante el componente contenedor <code>Icon</code> de <code>lucide-react</code>.
+            </p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              {[
+                { node: avocado, n: 'Aguacate (avocado)' },
+                { node: ufo, n: 'OVNI (ufo)' },
+                { node: snowman, n: 'Muñeco de Nieve (snowman)' },
+                { node: strawberry, n: 'Fresa (strawberry)' },
+                { node: penguin, n: 'Pingüino (penguin)' },
+                { node: chameleon, n: 'Camaleón (chameleon)' },
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-white border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                >
+                  <div className={`${isDark ? 'text-[#D6F391] group-hover:scale-110' : 'text-[#00827C] group-hover:scale-110'} mb-4 transition-transform duration-200`}>
+                    <Icon iconNode={item.node} size={32} />
+                  </div>
+                  <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
+                  <code className="text-[8px] font-mono mt-2 bg-black/10 px-1.5 py-0.5 rounded opacity-40">@lucide/lab</code>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -1004,7 +1161,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-10">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Mosaicos embebidos de servicios</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Tarjetas de servicio con imagen prominente y llamada a la acción clara.</p>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Tarjetas de servicio con imagen prominente y llamada a la acción clara.</p>
           
           {/* Cards - scroll horizontal en móvil, grid en desktop */}
           <div className="relative">
@@ -1032,7 +1189,7 @@ export default function ManualDisenoPage() {
                   </div>
                   <div className="p-6">
                     <h4 className={`text-base font-bold mb-1.5 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{card.title}</h4>
-                    <p className={`text-sm mb-5 leading-relaxed ${isDark ? 'text-white/50' : 'text-[#00827C]/60'}`}>{card.desc}</p>
+                    <p className={`text-sm mb-5 leading-relaxed ${isDark ? 'text-white/50' : 'text-[#474747]/80'}`}>{card.desc}</p>
                     <button className={`px-5 py-2 rounded-full border text-sm font-semibold transition-all ${isDark ? 'border-white/20 text-white hover:bg-white hover:text-[#474747]' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C] hover:text-white'}`}>
                       {card.btn}
                     </button>
@@ -1090,7 +1247,7 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-10">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de navegación</h2>
           </div>
-          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#00827C]/60'} font-medium mb-10 max-w-xl`}>
+          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-10 max-w-xl`}>
             Optimización absoluta de espacio y carga cognitiva mediante la regla institucional <strong>7/22/2</strong>.
           </p>
           
@@ -1144,7 +1301,7 @@ export default function ManualDisenoPage() {
               <span className={`text-sm font-bold ${isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Anual</span>
             </div>
           </div>
-          <p className={`text-center text-sm mb-12 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} font-medium`}>{isYearly ? 'Ahorra 2 meses al pagar anualmente' : 'Facturación mensual sin permanencia'}</p>
+          <p className={`text-center text-sm mb-12 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'} font-medium`}>{isYearly ? 'Ahorra 2 meses al pagar anualmente' : 'Facturación mensual sin permanencia'}</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
             {PRICING_PLANS.map((plan: typeof PLANS[0]) => {
@@ -1164,7 +1321,7 @@ export default function ManualDisenoPage() {
                     <h3 className={`text-3xl font-black mt-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{formattedPrice}</h3>
                     {plan.id !== 'free' && <div className={`text-[10px] mt-1 font-bold ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{isYearly ? 'al año' : 'mensual'}</div>}
                   </div>
-                  <p className={`text-sm leading-relaxed mb-8 font-medium ${isDark ? 'text-white/60' : 'text-[#00827C]/70'}`}>{plan.id === 'free' ? 'Para individuos que inician su viaje circular.' : plan.tagline}</p>
+                  <p className={`text-sm leading-relaxed mb-8 font-medium ${isDark ? 'text-white/60' : 'text-[#474747]'}`}>{plan.id === 'free' ? 'Para individuos que inician su viaje circular.' : plan.tagline}</p>
                   <div className={`w-full h-px mb-8 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
                   <ul className="space-y-4 mb-10 flex-grow">{plan.features.map((feat: string, idx: number) => (<li key={idx} className="flex items-start gap-3"><div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}><span className="text-[10px] font-bold">&#10003;</span></div><span className={`text-sm ${isDark ? 'text-white/80' : 'text-[#474747]'}`}>{feat}</span></li>))}</ul>
                   <button className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${plan.popular ? 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg hover:shadow-[#00827C]/20' : (isDark ? 'border border-white/20 text-white hover:bg-white/5' : 'border border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5')}`}>{plan.cta || 'Seleccionar Plan'}</button>

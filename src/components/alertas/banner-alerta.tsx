@@ -89,6 +89,7 @@ export function BannerAlerta() {
           alignItems: 'center',
           flexShrink: 0,
         }}
+        className="hover-rotate-90 hover-press"
       >
         <X size={16} />
       </button>

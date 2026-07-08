@@ -385,6 +385,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 opacity: isPending ? 0.7 : 1,
               }}
+              className={isPending ? '' : 'hover-filter hover-press'}
             >
               <Funnel size={13} /> Filtrar
             </button>
@@ -398,6 +399,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                   background: 'transparent', color: TEXT_MED, fontSize: 13,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
+                className="hover-rotate-90 hover-press"
               >
                 <X size={13} /> Limpiar
               </button>
@@ -482,6 +484,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                 cursor: page === 1 ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
+              className={page === 1 || isPending ? '' : 'hover-pop hover-press'}
             >
               <CaretLeft size={16} />
             </button>
@@ -494,6 +497,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                 cursor: page === totalPages ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
+              className={page === totalPages || isPending ? '' : 'hover-slide-r hover-press'}
             >
               <CaretRight size={16} />
             </button>
@@ -577,6 +581,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
               color: TEXT_MED,
               flexShrink: 0,
             }}
+            className="hover-rotate-90 hover-press"
           >
             <X size={18} />
           </button>

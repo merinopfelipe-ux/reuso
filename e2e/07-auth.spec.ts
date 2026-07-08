@@ -61,7 +61,7 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     const testEmail = 'recordar@test.com'
     await page.locator('#email').fill(testEmail)
     // Click recuérdame (el label contiene el texto)
-    // El checkbox real es visual con Phosphor icons dentro de un label.
+    // El checkbox real es visual con Lucide icons dentro de un label.
     await page.getByText(/Recuérdame/i).first().click()
     await page.locator('#password').fill('TestReuso2024!')
     await page.getByRole('button', { name: /aceptar términos legales/i }).click()

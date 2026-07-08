@@ -13,7 +13,7 @@ export function HeaderAyudaModal() {
       onClick={() => router.push('/ayuda')}
       style={circleButtonStyle}
       aria-label="Centro de ayuda"
-      className="icon-circle"
+      className="icon-circle hover-wiggle hover-press"
     >
       <Question size={20} />
     </button>

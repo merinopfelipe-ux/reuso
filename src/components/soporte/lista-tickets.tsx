@@ -81,6 +81,7 @@ export function ListaTickets({ esAdmin }: Props) {
                 padding: '9px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
               }}
+              className="hover-pop hover-press"
             >
               <Plus size={16} strokeWidth={2.5} /> Crear Ticket
             </button>

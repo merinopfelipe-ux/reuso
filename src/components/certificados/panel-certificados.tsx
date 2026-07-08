@@ -142,6 +142,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
           onClick={() => generar('certificado')}
           disabled={generando}
           style={{ ...btn, background: 'var(--color-brand)', color: '#FFFFFF' }}
+          className={generando ? '' : 'hover-medal hover-press'}
         >
           {generando ? <CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Medal size={16} />}
           Generar certificado
@@ -154,6 +155,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
             background: 'transparent', color: 'var(--color-brand)',
             border: '1.5px solid var(--color-brand)',
           }}
+          className="hover-pop hover-press"
         >
           <FileText size={16} />
           Generar informe
@@ -235,6 +237,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
                       borderRadius: 8, background: 'rgba(0,130,124,0.07)', border: 'none', cursor: 'pointer',
                       textDecoration: 'none', color: 'var(--color-brand)',
                     }}
+                    className="hover-external"
                   >
                     <ArrowSquareOut size={15} />
                   </a>
@@ -247,6 +250,7 @@ export function PanelCertificados({ certificados, empresaId, modo }: PanelCertif
                         borderRadius: 8, background: 'rgba(0,130,124,0.07)', border: 'none', cursor: 'pointer',
                         color: 'var(--color-brand)',
                       }}
+                      className="hover-download hover-press"
                     >
                       <Download size={15} />
                     </button>

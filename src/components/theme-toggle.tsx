@@ -44,7 +44,7 @@ export function ThemeToggle() {
         padding: 0,
         boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
       }}
-      className="theme-toggle-circle"
+      className="theme-toggle-circle hover-rotate-180 hover-press"
     >
       {isDark ? <Sun size={20} /> : <Moon size={20} />}
       <style>{`

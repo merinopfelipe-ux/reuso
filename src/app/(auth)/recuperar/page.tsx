@@ -313,7 +313,7 @@ function Wrapper({ children, isDark }: { children: React.ReactNode; isDark: bool
       <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>
         <ThemeToggle />
       </div>
-      <div style={{ width: '100%', maxWidth: 400 }}>
+      <div style={{ width: '100%', maxWidth: 400 }} className="animate-page-enter">
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -383,6 +383,7 @@ function TogglePass({ show, onClick }: { show: boolean; onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
+      className="hover-pop hover-press"
       style={{
         position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
         background: 'transparent', border: 'none', padding: 0,

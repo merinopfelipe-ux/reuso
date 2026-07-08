@@ -3,11 +3,11 @@
 import { useState, useTransition } from 'react'
 import {
   Save as FloppyDisk,
-  MessageCircle as ChatCircle,
   BarChart2 as ChartBar,
   CircleHelp as Question,
   Layers as Stack,
 } from 'lucide-react'
+import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {
@@ -35,7 +35,7 @@ const DEFAULTS: Record<string, Record<string, unknown>> = {
 }
 
 const TABS = [
-  { id: 'whatsapp', label: 'WhatsApp', icon: ChatCircle },
+  { id: 'whatsapp', label: 'WhatsApp', icon: WhatsappLogo },
   { id: 'hero', label: 'Hero', icon: Stack },
   { id: 'stats', label: 'Estadísticas', icon: ChartBar },
   { id: 'faq', label: 'FAQ', icon: Question },

@@ -6,7 +6,7 @@ import Image from 'next/image'
 import {
   Check,
   ChevronDown as CaretDown,
-  MessageCircle as ChatCircle,
+  MessageSquare as ChatCircle,
   ArrowRight,
   X,
   TrendingUp as TrendUp,
@@ -29,6 +29,8 @@ const C = {
 }
 
 // ─── Componentes auxiliares ──────────────────────────────────────────────────
+import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
+
 function WhatsAppButton() {
   return (
     <a
@@ -48,7 +50,7 @@ function WhatsAppButton() {
       onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.1)')}
       onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
     >
-      <ChatCircle size={28} color="#fff" fill="#fff" />
+      <WhatsappLogo size={32} className="text-[#25D366]" />
     </a>
   )
 }
@@ -210,7 +212,7 @@ export default function LandingPage() {
               Transformamos tus iniciativas de sostenibilidad en confianza mediante un pasaporte digital inmutable, inteligencia artificial y acompañamiento estratégico. Hacemos visible el ahorro real de tu circularidad (E-ROI) y convertimos la transparencia en tu mayor ventaja competitiva.
             </p>
             <div className="hero-ctas" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              <Link href="/registro" style={{
+              <Link href="/registro" className="hover-slide-r hover-press transition-transform duration-200" style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '14px 28px', borderRadius: 14,
                 background: C.brand, color: '#fff',
@@ -388,7 +390,7 @@ export default function LandingPage() {
           <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.55)', marginBottom: 36 }}>
             Sin tarjeta de crédito. Activa en 5 minutos.
           </p>
-          <Link href="/registro" style={{
+          <Link href="/registro" className="hover-slide-r hover-press transition-transform duration-200" style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
             padding: '16px 36px', borderRadius: 14,
             background: C.brand, color: '#fff',

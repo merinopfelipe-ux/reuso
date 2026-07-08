@@ -542,6 +542,7 @@ export default async function DashboardPage() {
           </div>
           <a
             href="/empresa/nueva"
+            className="hover-slide-r hover-press transition-transform duration-200"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '9px 18px',
@@ -590,14 +591,14 @@ export default async function DashboardPage() {
           }}
         >
           {[
-            { href: '/dashboard/objetos', label: 'Registrar reúso', icon: Package, desc: 'Nuevo cálculo' },
-            { href: '/dashboard/historial', label: 'Mi historial', icon: ClockCounterClockwise, desc: 'Ver cálculos anteriores' },
-            { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy, desc: 'Abrir ticket' },
-          ].map(({ href, label, icon: Icon, desc }) => (
+            { href: '/dashboard/objetos', label: 'Registrar reúso', icon: Package, desc: 'Nuevo cálculo', animClass: 'hover-package hover-press' },
+            { href: '/dashboard/historial', label: 'Mi historial', icon: ClockCounterClockwise, desc: 'Ver cálculos anteriores', animClass: 'hover-spin hover-press' },
+            { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy, desc: 'Abrir ticket', animClass: 'hover-lifebuoy hover-press' },
+          ].map(({ href, label, icon: Icon, desc, animClass }) => (
             <a
               key={href}
               href={href}
-              className="group backdrop-blur-md hover:-translate-y-1 transition-all duration-300"
+              className={`group backdrop-blur-md hover:-translate-y-1 transition-all duration-300 ${animClass}`}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -615,7 +616,7 @@ export default async function DashboardPage() {
                 width: 44, height: 44, borderRadius: '50%',
                 background: 'rgba(0,130,124,0.10)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }} className="group-hover:scale-110 transition-transform duration-300">
+              }} className="transition-transform duration-300">
                 <Icon size={20} color="var(--color-brand)" />
               </div>
               <div>

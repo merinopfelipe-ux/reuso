@@ -117,7 +117,7 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     await expect(bannerEng).not.toBeVisible({ timeout: 3000 })
   })
 
-  test('06 - Se han reemplazado los emojis de tarjetas en cookies y privacidad por iconos Phosphor', async ({ page }) => {
+  test('06 - Se han reemplazado los emojis de tarjetas en cookies y privacidad por iconos Lucide', async ({ page }) => {
     // 1. En la página de cookies
     await page.goto('/legal/cookies')
     await page.waitForLoadState('load')

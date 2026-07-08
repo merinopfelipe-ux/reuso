@@ -40,6 +40,7 @@ export default function BotonExportarCSV({ plan }: Props) {
           transition: 'all 0.2s',
           userSelect: 'none',
         }}
+        className={habilitado ? 'hover-download hover-press' : ''}
       >
         <Download size={16} />
         Exportar CSV

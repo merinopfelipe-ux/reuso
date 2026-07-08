@@ -63,7 +63,7 @@ export function CampanaDropdown() {
           padding: 0,
           boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
         }}
-        className="icon-circle"
+        className="icon-circle hover-bell hover-press"
       >
         <Bell size={20} />
         {noLeidasCount > 0 && (

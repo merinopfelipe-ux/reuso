@@ -43,6 +43,7 @@ export function PopupAmbiental({ url, onClose }: Props) {
             background: 'var(--bg-hover)', border: 'none', borderRadius: 8,
             cursor: 'pointer', color: 'var(--text-secondary)', transition: 'background 0.2s'
           }}
+          className="hover-rotate-90 hover-press"
         >
           <X size={16} />
         </button>
@@ -75,6 +76,7 @@ export function PopupAmbiental({ url, onClose }: Props) {
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               transition: 'transform 0.1s, opacity 0.2s', boxShadow: '0 4px 12px rgba(0,130,124,0.2)'
             }}
+            className="hover-download"
             onMouseDown={e => e.currentTarget.style.transform = 'scale(0.98)'}
             onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
           >

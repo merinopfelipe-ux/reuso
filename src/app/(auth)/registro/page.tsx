@@ -726,7 +726,7 @@ export default function RegistroPage() {
                 type="button"
                 onClick={avanzarPaso1}
                 disabled={verificandoEmail || !nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim()}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                 style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
               >
                 {verificandoEmail
@@ -838,7 +838,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(1) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
@@ -857,7 +857,7 @@ export default function RegistroPage() {
                     type="button"
                     onClick={avanzarPaso2}
                     disabled={loading}
-                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                     style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                   >
                     Siguiente <ArrowRight size={16} strokeWidth={2.5} />
@@ -892,7 +892,7 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwd(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors hover-pop hover-press"
                   >
                     {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
@@ -953,7 +953,7 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwdConf(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors hover-pop hover-press"
                   >
                     {showPwdConf ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
@@ -969,7 +969,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(2) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
@@ -977,7 +977,7 @@ export default function RegistroPage() {
                   type="button"
                   onClick={avanzarPaso3}
                   disabled={!password || !passwordConfirm || password !== passwordConfirm || password.length < 8}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                   style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                 >
                   Siguiente <ArrowRight size={16} strokeWidth={2.5} />
@@ -1078,7 +1078,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(3) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>

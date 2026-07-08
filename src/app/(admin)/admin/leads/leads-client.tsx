@@ -7,11 +7,11 @@ import {
   Mail as Envelope,
   Building2 as Buildings,
   Calendar,
-  MessageCircle as ChatCircle,
   ChevronDown as CaretDown,
   ChevronUp as CaretUp,
   Phone,
 } from 'lucide-react'
+import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {
@@ -171,7 +171,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
                   {/* WhatsApp */}
                   <button onClick={() => abrirWhatsApp(lead)}
                     style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <ChatCircle size={13} /> WA
+                    <WhatsappLogo size={13} /> WA
                   </button>
 
                   {/* Expandir */}

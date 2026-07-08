@@ -128,7 +128,7 @@ export default function PanelCotizadorPage() {
           <AdminPageHeader titulo="Cotizaciones" />
           <button
             onClick={() => router.push('/empresa/cotizador/nueva')}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press"
           >
             <Plus size={16} strokeWidth={2.5} />
             Nueva cotización

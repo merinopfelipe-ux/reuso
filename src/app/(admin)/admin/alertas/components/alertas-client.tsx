@@ -82,6 +82,7 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
     <div>
       <div style={{ marginBottom: 16 }}>
         <button onClick={() => setMostrarForm(!mostrarForm)}
+          className="hover-pop hover-press"
           style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
           <Plus size={15} /> Nueva alerta
         </button>
@@ -132,10 +133,12 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
             <button type="submit" disabled={guardando}
+              className={guardando ? '' : 'hover-download hover-press'}
               style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
               {guardando ? 'Publicando...' : 'Publicar alerta'}
             </button>
             <button type="button" onClick={() => setMostrarForm(false)}
+              className="hover-pop hover-press"
               style={{ ...btnBase, background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>Cancelar</button>
           </div>
         </form>
@@ -158,6 +161,7 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
                 </p>
               </div>
               <button onClick={() => toggleAlerta(a.id, a.activa)} title={a.activa ? 'Desactivar' : 'Activar'}
+                className="hover-pop hover-press"
                 style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none', background: a.activa ? 'rgba(56,185,142,0.10)' : 'rgba(255,94,75,0.08)', color: a.activa ? '#1F8C65' : '#CC3C2A', flexShrink: 0 }}>
                 <Power size={13} /> {a.activa ? 'Activa' : 'Inactiva'}
               </button>

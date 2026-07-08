@@ -591,6 +591,7 @@ function ResultadoPanel({ resultado, onReset }: {
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             opacity: generandoCert ? 0.7 : 1,
           }}
+          className={generandoCert ? '' : 'hover-medal hover-press'}
         >
           {generandoCert
             ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Generando...</>
@@ -607,6 +608,7 @@ function ResultadoPanel({ resultado, onReset }: {
             display: 'flex', alignItems: 'center', gap: 8,
             fontFamily: "'Open Sans', sans-serif",
           }}
+          className="hover-pop hover-press"
         >
           <IdentificationCard size={16} />
           Asocia a un Pasaporte DPP
@@ -621,6 +623,7 @@ function ResultadoPanel({ resultado, onReset }: {
             fontSize: 14, fontWeight: 600, cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}
+          className="hover-spin hover-press"
         >
           <ArrowCounterClockwise size={16} /> Calcular más objetos
         </button>

@@ -128,7 +128,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                   Creado por {ticket.profiles_user?.nombre} &middot; Estado: <strong>{ticket.estado.replace('_', ' ')}</strong>
                 </span>
               </div>
-              <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}><X size={20} color={TEXT_MED} /></button>
+              <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }} className="hover-rotate-90 hover-press"><X size={20} color={TEXT_MED} /></button>
             </div>
 
             {/* Hilo Histórico */}
@@ -206,6 +206,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                         onClick={handleEnviar}
                         disabled={enviando}
                         style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: BRAND, color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, cursor: enviando ? 'not-allowed' : 'pointer' }}
+                        className={enviando ? '' : 'hover-send hover-press'}
                      >
                        {enviando ? <CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <><PaperPlaneRight size={16} /> Enviar</>}
                      </button>

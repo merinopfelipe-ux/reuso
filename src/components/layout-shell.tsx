@@ -6,6 +6,7 @@ import { Sidebar } from './sidebar'
 import { Footer } from './footer'
 import { BannerAlerta } from './alertas/banner-alerta'
 import { MobileBottomNav } from './mobile-bottom-nav'
+import { usePathname } from 'next/navigation'
 import type { Rol } from '@/types'
 
 interface LayoutShellProps {
@@ -23,6 +24,7 @@ interface LayoutShellProps {
 export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, avatarText, ip, lastVisit }: LayoutShellProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
@@ -81,13 +83,17 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
           {/* Main Content */}
           <BannerAlerta />
           <main style={{ flex: 1 }}>
-            <div style={{
-              width: '100%',
-              padding: isMobile ? '32px 24px 104px' : '40px 60px',
-              boxSizing: 'border-box' as const,
-              maxWidth: '1600px', // Limitar ancho para legibilidad
-              margin: '0 auto'
-            }}>
+            <div 
+              key={pathname}
+              className="animate-page-enter"
+              style={{
+                width: '100%',
+                padding: isMobile ? '32px 24px 104px' : '40px 60px',
+                boxSizing: 'border-box' as const,
+                maxWidth: '1600px', // Limitar ancho para legibilidad
+                margin: '0 auto'
+              }}
+            >
               {children}
             </div>
           </main>

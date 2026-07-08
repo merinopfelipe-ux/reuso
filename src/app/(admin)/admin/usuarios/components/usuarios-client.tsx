@@ -174,6 +174,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
           <BotonDescargar endpoint="/api/admin/usuarios/exportar" queryParams={queryParams.toString()} label="Exportar" />
           <button
             onClick={() => { setModalOpen(true); setErrorModal('') }}
+            className="hover-pop hover-press"
             style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '8px 16px', borderRadius: 8,

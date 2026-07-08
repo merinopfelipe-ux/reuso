@@ -201,7 +201,7 @@ export default function AdminStatusPage() {
             href="/status"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border border-[#00827C]/30 text-[#00827C] hover:bg-[#00827C]/05 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border border-[#00827C]/30 text-[#00827C] hover:bg-[#00827C]/05 transition-colors hover-pop"
           >
             <Pulse size={16} />
             Ver página pública ↗
@@ -377,7 +377,7 @@ export default function AdminStatusPage() {
                       <button
                         onClick={() => handleEliminarIncidente(i.id)}
                         disabled={actionLoading != null}
-                        className="p-1 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50"
+                        className="p-1 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50 hover-trash hover-press"
                         title="Eliminar incidencia"
                       >
                         <Trash size={16} />
@@ -413,7 +413,7 @@ export default function AdminStatusPage() {
                     <button
                       onClick={() => handleEliminarIncidente(i.id)}
                       disabled={actionLoading != null}
-                      className="p-1.5 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/08 transition-colors disabled:opacity-50"
+                      className="p-1.5 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/08 transition-colors disabled:opacity-50 hover-trash hover-press"
                       title="Eliminar"
                     >
                       <Trash size={15} />

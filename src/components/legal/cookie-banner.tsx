@@ -237,7 +237,7 @@ export function CookieBanner() {
             <button onClick={abrirPersonalizar} style={btnGhost}>
               {t.btnPersonalizar}
             </button>
-            <button onClick={aceptarTodo} style={btnPrimary}>
+            <button onClick={aceptarTodo} style={btnPrimary} className="hover-pop hover-press">
               <CheckCircle size={14} />
               {t.btnAceptarTodo}
             </button>
@@ -249,7 +249,7 @@ export function CookieBanner() {
         <div style={{ background: 'var(--bg-card)', padding: '20px 24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 16, justifyContent: 'space-between' }}>
             <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{t.personalizarTitle}</p>
-            <button onClick={() => setStep('banner')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-secondary)' }}>
+            <button onClick={() => setStep('banner')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--text-secondary)' }} className="hover-rotate-90 hover-press">
               <X size={16} />
             </button>
           </div>
@@ -281,7 +281,7 @@ export function CookieBanner() {
 
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
             <button onClick={soloEsenciales} style={btnGhost}>{t.btnEsenciales}</button>
-            <button onClick={guardarPreferencias} style={btnPrimary}>
+            <button onClick={guardarPreferencias} style={btnPrimary} className="hover-pop hover-press">
               <CheckCircle size={14} />
               {t.btnGuardar}
             </button>

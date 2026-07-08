@@ -124,7 +124,7 @@ export function DesignSystemHeader({
 
   const liquidGlassClass = isDark 
     ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#474747]/10 shadow-[0_12px_40px_rgba(71,71,71,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   const filteredResults = searchResults.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
@@ -149,19 +149,28 @@ export function DesignSystemHeader({
                 setIsMobileNavOpen(prev => !prev);
               }}
               className="lg:hidden flex flex-col items-center justify-center gap-0.5 group transition-all duration-300 hover:scale-110 active:scale-95 bg-transparent border-none p-0 outline-none"
-              style={{ color: isDark ? '#FFFFFF' : '#00827C', touchAction: 'manipulation' }}
+              style={{ color: isDark ? '#FFFFFF' : '#474747', touchAction: 'manipulation' }}
             >
               <div className="transition-transform duration-300 group-hover:scale-110 group-active:scale-90">
                 {isMobileNavOpen ? <X size={20} strokeWidth={2.5} /> : <List size={22} strokeWidth={2.5} />}
               </div>
               <span className="text-[9px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
             </button>
-            <Link href={logoHref} className="flex items-center gap-4">
-              <Image src="/logo-icono.svg" alt="Reuso" width={40} height={40} className="drop-shadow-sm pointer-events-none" />
-              <span className={`text-lg font-bold tracking-tight leading-tight pointer-events-none ${isDark ? 'text-white' : 'text-[#474747]'}`}>
-                <span className="hidden xs:inline">{title}</span>
-                <span className="xs:hidden block text-base text-left">{title}</span>
-              </span>
+            <Link href={logoHref} className="flex items-center gap-3 pointer-events-auto">
+              <Image src="/logo-icono.svg" alt="Reuso" width={42} height={42} className="drop-shadow-sm pointer-events-none" />
+              <div 
+                style={{ 
+                  fontFamily: 'seravek, ui-sans-serif, sans-serif',
+                  lineHeight: '1.05',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  textAlign: 'left'
+                }}
+                className={isDark ? 'text-white' : 'text-[#474747]'}
+              >
+                <span className="text-[12px] font-normal tracking-wide opacity-80">sistema de</span>
+                <span className="text-[22px] font-black tracking-tighter">diseño</span>
+              </div>
             </Link>
           </div>
 
@@ -176,7 +185,7 @@ export function DesignSystemHeader({
                   onMouseEnter={() => handleMenuEnter(group.name, idx)}
                   onMouseLeave={handleMenuLeave}
                 >
-                  <div className={`px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? 'bg-[#00827C]/10 text-[#00827C]' : isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
+                  <div className={`px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? 'bg-[#474747]/10 text-[#474747]' : isDark ? 'text-white/60' : 'text-[#474747]/60'}`}>
                     {group.name}
                     <CaretDown size={14} strokeWidth={2.5} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
@@ -197,11 +206,11 @@ export function DesignSystemHeader({
                   setTimeout(() => document.getElementById('search-input')?.focus(), 100);
                 }
               }}
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#474747] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#474747]/10')}`}
             >
               {searchOpen ? <X size={16} strokeWidth={2.5} /> : <MagnifyingGlass size={16} strokeWidth={2.5} />}
             </button>
-            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
+            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#474747]/10'}`}>
               {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
             </button>
           </div>
@@ -210,7 +219,7 @@ export function DesignSystemHeader({
         {/* BARRA DE BÚSQUEDA FLOTANTE */}
         <div className={`w-full max-w-2xl px-6 py-4 rounded-full pointer-events-auto transition-all duration-500 shadow-2xl relative z-50 ${searchOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'} ${liquidGlassClass}`}>
            <div className="flex items-center gap-4">
-             <MagnifyingGlass size={20} className={isDark ? 'text-white/40' : 'text-[#00827C]/40'} />
+             <MagnifyingGlass size={20} className={isDark ? 'text-white/40' : 'text-[#474747]/40'} />
              <input 
                id="search-input"
                type="text" 
@@ -218,7 +227,7 @@ export function DesignSystemHeader({
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
                autoComplete="off"
-               className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#00827C]/30'}`}
+               className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#474747]/30'}`}
              />
              {searchQuery && (
                <button onClick={() => setSearchQuery('')}>
@@ -229,16 +238,16 @@ export function DesignSystemHeader({
 
            {/* RESULTADOS DE BÚSQUEDA */}
            {searchQuery && (
-             <div className={`absolute top-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#00827C]/10 backdrop-blur-2xl'}`}>
+             <div className={`absolute top-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#474747]/10 backdrop-blur-2xl'}`}>
                 <div className="grid grid-cols-2 gap-2">
                   {filteredResults.slice(0, 8).map((r, i) => (
                     <a 
                       key={i} 
                       href={r.link} 
-                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${isDark ? 'hover:bg-white/10 text-white/80' : 'hover:bg-[#00827C]/5 text-[#474747] hover:text-[#00827C]'}`}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${isDark ? 'hover:bg-white/10 text-white/80' : 'hover:bg-[#474747]/5 text-[#474747] hover:text-[#474747]'}`}
                       onClick={() => { setSearchOpen(false); setSearchQuery(''); }}
                     >
-                      <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'} opacity-40`} />
+                      <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#D6F391]' : 'bg-[#474747]'} opacity-40`} />
                       <span className="font-bold text-sm">{r.title}</span>
                     </a>
                   ))}
@@ -257,7 +266,7 @@ export function DesignSystemHeader({
           <div
             id="mobile-menu-panel"
             ref={mobileMenuRef}
-            className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-white border-[#00827C]/10'}`}
+            className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-white border-[#474747]/10'}`}
             style={{
               top: mobileMenuTop,
               left: 0,
@@ -267,8 +276,8 @@ export function DesignSystemHeader({
             }}
           >
             <div className="flex justify-between items-center mb-6">
-               <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
-               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
+               <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Menú de Navegación</div>
+               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#474747]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
@@ -281,7 +290,7 @@ export function DesignSystemHeader({
                          key={i}
                          href={item.link}
                          onClick={() => setIsMobileNavOpen(false)}
-                         className={`block py-3 px-4 rounded-xl text-[13px] font-bold tracking-tight transition-all active:scale-95 ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/70 hover:bg-[#00827C]/5 hover:text-[#00827C]'}`}
+                         className={`block py-3 px-4 rounded-xl text-[13px] font-bold tracking-tight transition-all active:scale-95 ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]/70 hover:bg-[#474747]/5 hover:text-[#474747]'}`}
                        >
                          {item.name}
                        </a>
@@ -309,14 +318,14 @@ export function DesignSystemHeader({
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-[#00827C]/12'}`}>
+          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-[#474747]/12'}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items.map((item, i) => (
                 <a
                   key={i}
                   href={item.link}
                   onClick={() => setActiveMenu(null)}
-                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#1A3A38]/70 hover:bg-[#00827C]/08 hover:text-[#00827C]'}`}
+                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]/70 hover:bg-[#474747]/08 hover:text-[#474747]'}`}
                 >
                   {item.name}
                 </a>

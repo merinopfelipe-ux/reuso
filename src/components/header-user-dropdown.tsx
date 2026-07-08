@@ -127,7 +127,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
             <button
               onClick={activarModoEmpleado}
               style={{ ...itemStyle, color: 'var(--color-brand)' }}
-              className="dropdown-item"
+              className="dropdown-item hover-pop"
             >
               <UserCheck size={15} /> Ver como colaborador
             </button>
@@ -136,7 +136,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
             <button
               onClick={desactivarModoEmpleado}
               style={{ ...itemStyle, color: 'var(--color-brand)' }}
-              className="dropdown-item"
+              className="dropdown-item hover-pop"
             >
               <Buildings size={15} /> Volver a mi empresa
             </button>
@@ -147,14 +147,14 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
           <button
             onClick={() => { setOpen(false); router.push('/settings#datos') }}
             style={itemStyle}
-            className="dropdown-item"
+            className="dropdown-item hover-pop"
           >
             <User size={15} /> Mis datos
           </button>
           <button
             onClick={() => { setOpen(false); router.push('/settings#preferencias') }}
             style={itemStyle}
-            className="dropdown-item"
+            className="dropdown-item hover-gear"
           >
             <Gear size={15} /> Preferencias
           </button>
@@ -162,7 +162,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
           <button
             onClick={cerrarSesion}
             style={{ ...itemStyle, color: 'var(--color-error)' }}
-            className="dropdown-item"
+            className="dropdown-item hover-slide-r"
           >
             <SignOut size={15} /> Cerrar sesión
           </button>

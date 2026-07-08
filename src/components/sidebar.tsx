@@ -292,7 +292,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                     }} />
                   )}
                 
-                <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="hover-pop">
                   {/* Ícono delgado por defecto, grueso solo en activo V13.31 */}
                   <item.icon size={20} color="currentColor" strokeWidth={(isDirectActive || hasActiveSub) ? 2.5 : 2} />
                 </div>
@@ -439,8 +439,9 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             transition: 'width 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-radius 0.6s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s ease, padding 0.6s cubic-bezier(0.22, 1, 0.36, 1)',
             willChange: 'width, border-radius',
           }}
+          className="hover-slide-r"
         >
-          <SignOut size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} />
+          <SignOut size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} className="transition-transform duration-200" />
           <span style={{ 
             fontSize: '13px', 
             fontWeight: 900, 

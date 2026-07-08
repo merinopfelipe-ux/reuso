@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Cpu,
   ArrowDown,
 } from 'lucide-react'
+import { IaIcon } from '@/components/ui/icons'
 import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'
 
@@ -234,7 +234,7 @@ export function LegalPageLayout({
                     flexShrink: 0,
                   }}
                 >
-                  <Cpu size={16} color="#59A6E4" />
+                  <IaIcon size={16} color="#59A6E4" />
                 </div>
                 <h2
                   style={{

@@ -2013,13 +2013,13 @@ export default function QAPage() {
               </div>
               <button
                 onClick={resetear}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-spin`}
               >
                 <ArrowCounterClockwise size={13} /> Reiniciar
               </button>
               <button
                 onClick={() => { guardar(); guardarIntento('completo') }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-download ${
                   guardadoReciente
                     ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
                     : `${theme.cardBg} ${theme.textSecondary}`
@@ -2029,13 +2029,13 @@ export default function QAPage() {
               </button>
               <button
                 onClick={() => setMostrarHistorial('completo')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-pop ${theme.cardBg} ${theme.textSecondary}`}
               >
                 <FileText size={13} /> Historial ({intentos.filter(i => i.alcance === 'completo').length})
               </button>
               <button
                 onClick={() => setMostrarInforme(true)}
-                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${
                   isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
                 }`}
               >
@@ -2443,19 +2443,19 @@ export default function QAPage() {
               <div className="flex items-center gap-2 flex-wrap justify-end">
                 <button
                   onClick={() => { guardar(); guardarIntento(categoriaActiva) }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-download ${theme.cardBg} ${theme.textSecondary}`}
                 >
                   <FloppyDisk size={13} /> Guardar módulo
                 </button>
                 <button
                   onClick={() => setMostrarHistorial(categoriaActiva)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all ${theme.cardBg} ${theme.textSecondary}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-pop ${theme.cardBg} ${theme.textSecondary}`}
                 >
                   <FileText size={13} /> Ver historial ({intentos.filter(i => i.alcance === categoriaActiva).length})
                 </button>
                 <button
                   onClick={() => setMostrarInforme(true)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
                 >
                   <FileText size={13} /> Informe parcial
                 </button>
@@ -2485,19 +2485,19 @@ export default function QAPage() {
               <div className="flex gap-2 items-center">
                 <button
                   onClick={() => navigator.clipboard.writeText(generarInforme())}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${theme.cardBg} ${theme.textSecondary}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer hover-copy hover-press ${theme.cardBg} ${theme.textSecondary}`}
                 >
                   <ClipboardText size={12} /> Copiar
                 </button>
                 <button
                   onClick={descargar}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer hover-download hover-press ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
                 >
                   <DownloadSimple size={12} /> .txt
                 </button>
                 <button
                   onClick={() => setMostrarInforme(false)}
-                  className={`ml-1 flex items-center justify-center w-10 h-10 rounded-xl border ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                  className={`ml-1 flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
                   aria-label="Cerrar"
                 >
                   <X size={20} />
@@ -2572,7 +2572,7 @@ export default function QAPage() {
               </div>
               <button
                 onClick={() => setMostrarHistorial(null)}
-                className={`flex items-center justify-center w-10 h-10 rounded-xl border ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                className={`flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
                 aria-label="Cerrar"
               >
                 <X size={20} />
@@ -2623,7 +2623,7 @@ export default function QAPage() {
                             a.click()
                             URL.revokeObjectURL(a.href)
                           }}
-                          className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs ${theme.cardBg} ${theme.textSecondary} hover:opacity-80`}
+                          className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs hover-download hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80`}
                         >
                           <DownloadSimple size={12} /> .txt
                         </button>

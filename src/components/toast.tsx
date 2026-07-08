@@ -73,6 +73,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           display: 'flex',
           alignItems: 'center',
         }}
+        className="hover-rotate-90 hover-press"
       >
         <X size={15} />
       </button>
