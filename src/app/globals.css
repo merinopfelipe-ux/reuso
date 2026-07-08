@@ -263,9 +263,15 @@ body {
   transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Slide derecha: flechas, cerrar sesión */
+/* Slide derecha: flechas next, cerrar sesión */
 .hover-slide-r:hover svg {
   transform: translateX(4px);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Slide izquierda: flechas prev / back */
+.hover-slide-l:hover svg {
+  transform: translateX(-4px);
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 

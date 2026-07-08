@@ -189,7 +189,7 @@ export default function PanelCotizadorPage() {
           <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
             <p className={`text-sm ${ts}`}>No hay cotizaciones que coincidan.</p>
             <button onClick={() => router.push('/empresa/cotizador/nueva')}
-              className="mt-3 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors">
+              className="mt-3 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press">
               Crea la primera
             </button>
           </div>
@@ -254,7 +254,7 @@ function CotizacionCard({ cot, onClick }: { cot: Cotizacion; isDark: boolean; on
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-[12px] border p-4 text-left transition-all ${cardBg}`}
+      className={`w-full rounded-[12px] border p-4 text-left transition-all hover-slide-r ${cardBg}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">

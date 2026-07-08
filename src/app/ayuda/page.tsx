@@ -185,7 +185,7 @@ export default function AyudaPage() {
                   color: 'var(--text-primary)', textDecoration: 'none',
                   fontSize: 14, transition: 'border-color 0.2s',
                 }}
-                className="ayuda-link"
+                className="ayuda-link hover-pop"
               >
                 <div style={{ padding: 8, borderRadius: 8, background: 'var(--color-brand-light)' }}>
                   <Envelope size={16} color="var(--color-brand)" />

@@ -507,7 +507,7 @@ export default async function VerificarPage({ params }: PageProps) {
                 color: 'var(--text-primary)',
               }}
             />
-            <button type="submit" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-brand)' }}>
+            <button type="submit" className="hover-pop hover-press" style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-brand)' }}>
               <MagnifyingGlass size={18} />
             </button>
           </form>

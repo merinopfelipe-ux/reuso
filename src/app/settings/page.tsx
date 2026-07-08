@@ -573,6 +573,7 @@ export default function SettingsPage() {
                           key={key}
                           type="button"
                           onClick={() => seleccionarTema(key)}
+                          className="hover-pop"
                           style={{
                             flex: 1, padding: '10px 6px',
                             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,

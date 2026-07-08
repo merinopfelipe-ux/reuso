@@ -302,7 +302,7 @@ export default function LoginPage() {
         <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto my-12 px-8 md:px-12">
 
           <div className="flex flex-col items-center text-center mb-10">
-            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mb-4 text-brand">
+            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mb-4 text-brand hover-pop">
               <UserCircle size={40} strokeWidth={1.5} />
             </div>
             <h1 className="text-3xl font-bold text-primary mb-1">{T[idioma].titulo}</h1>
@@ -624,7 +624,7 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 hover-pop hover-press"
+                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-l hover-press"
                 aria-label="Testimonio anterior"
               >
                 <CaretLeft size={24} strokeWidth={2.5} />

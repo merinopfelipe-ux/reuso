@@ -68,6 +68,7 @@ export function ShareWhatsApp({ codigo }: { codigo: string }) {
               encodeURIComponent('Mira el pasaporte digital de este producto reutilizado: ' + url)
           )
         }}
+        className="hover-pop hover-press"
         style={{
           background: '#25D366',
           color: '#fff',
@@ -83,7 +84,7 @@ export function ShareWhatsApp({ codigo }: { codigo: string }) {
           fontFamily: "'Open Sans', sans-serif",
         }}
       >
-        <WhatsappLogo size={20} className="text-[#25D366]" />
+        <WhatsappLogo size={20} color="white" />
         Compartir este pasaporte
       </button>
     </div>

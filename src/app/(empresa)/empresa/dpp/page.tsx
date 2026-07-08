@@ -8,7 +8,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { KpiCard } from '@/components/admin/kpi-card'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { EmptyState } from '@/components/empty-state'
-import { Package, Leaf, ArrowCounterClockwise, Stack, Scroll } from '@/components/ui/icons'
+import { Package, Leaf, ArrowCounterClockwise, Stack, Scroll, Plus } from '@/components/ui/icons'
 import { FiltrosDpp } from './filtros-dpp'
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
@@ -78,12 +78,14 @@ export default async function DppPage({
         titulo="Pasaportes Digitales"
         subtitulo="Gestiona tus activos circulares y su trazabilidad"
         accion={
-          <Link href="/empresa/dpp/nuevo" style={{ textDecoration: 'none' }}>
+          <Link href="/empresa/dpp/nuevo" className="hover-pop hover-press" style={{ textDecoration: 'none' }}>
             <button style={{
               background: '#00827C', color: '#fff', border: 'none',
               borderRadius: 10, padding: '10px 20px', fontSize: 14,
               fontWeight: 700, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif",
+              display: 'flex', alignItems: 'center', gap: 6,
             }}>
+              <Plus size={16} strokeWidth={2.5} />
               Registra nuevo activo
             </button>
           </Link>
