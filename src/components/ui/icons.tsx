@@ -16,7 +16,7 @@ export type Icon = React.ForwardRefExoticComponent<IconProps & React.RefAttribut
 // Wrapper HOC to add duotone (20% fill) support
 function wrapIcon(LucideIcon: React.ComponentType<any>): Icon {
   const Component = React.forwardRef<SVGSVGElement, IconProps>(
-    ({ duotone, ...props }, ref) => {
+    ({ duotone, size = 24, ...props }, ref) => {
       const extraProps: any = {}
       if (duotone) {
         extraProps.fill = 'currentColor'
