@@ -150,7 +150,7 @@ export default function ConfigModulosPage() {
                             <p className={`text-xs truncate ${ts}`}>{p.email ?? p.rol}</p>
                           </div>
                           <label
-                            className="flex items-center gap-2 cursor-pointer select-none"
+                            className="flex items-center gap-2 cursor-pointer select-none hover-pop"
                             onClick={() => toggleAcceso(p.user_id, modulo.id)}
                           >
                             <span className={`text-xs font-medium ${acceso ? 'text-[#00827C]' : ts}`}>
@@ -192,7 +192,7 @@ export default function ConfigModulosPage() {
                     href="https://wa.me/573214567890?text=Hola%2C%20quiero%20activar%20el%20Cotizador%20CRM%20para%20mi%20empresa%20en%20Re%C3%BAso%20Lurdes."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#25D366]/10 text-[#128C7E] text-sm font-semibold hover:bg-[#25D366]/20 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#25D366]/10 text-[#128C7E] text-sm font-semibold hover:bg-[#25D366]/20 transition-colors hover-pop"
                   >
                     <WhatsappLogo size={16} />
                     Escríbenos para activarlo
@@ -212,7 +212,7 @@ export default function ConfigModulosPage() {
                   href="https://wa.me/573214567890?text=Hola%2C%20quiero%20saber%20sobre%20los%20m%C3%B3dulos%20de%20Re%C3%BAso%20Lurdes."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors"
+                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop"
                 >
                   <WhatsappLogo size={14} />
                   Contáctanos

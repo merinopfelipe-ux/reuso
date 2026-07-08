@@ -34,6 +34,7 @@ export default function EmpresaError({
       </p>
       <button
         onClick={reset}
+        className="hover-pop hover-press"
         style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 20px', background: '#00827C', color: '#fff',
