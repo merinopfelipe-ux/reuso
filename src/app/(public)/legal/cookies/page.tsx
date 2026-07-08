@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
-import { Lock, ChartBar, SlidersHorizontal } from '@phosphor-icons/react'
+import {
+  Lock,
+  BarChart2 as ChartBar,
+  SlidersHorizontal,
+} from 'lucide-react'
 
 const ICONOS_CONFIANZA = {
   Lock: Lock,
@@ -266,7 +270,7 @@ export default function CookiesPage() {
               <div style={{ color: 'var(--color-brand)', marginBottom: 8 }}>
                 {(() => {
                   const Icono = ICONOS_CONFIANZA[card.icon as keyof typeof ICONOS_CONFIANZA]
-                  return Icono ? <Icono size={22} weight="regular" /> : null
+                  return Icono ? <Icono size={22} /> : null
                 })()}
               </div>
               <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{card.title}</p>

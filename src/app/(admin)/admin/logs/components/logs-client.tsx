@@ -2,7 +2,11 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Funnel, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import {
+  Filter as Funnel,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+} from 'lucide-react'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import type { LogAuditoria } from '@/types'

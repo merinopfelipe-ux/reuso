@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { FloppyDisk, Upload, FileText, Medal } from '@phosphor-icons/react'
+import {
+  Save as FloppyDisk,
+  Upload,
+  FileText,
+  Medal,
+} from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

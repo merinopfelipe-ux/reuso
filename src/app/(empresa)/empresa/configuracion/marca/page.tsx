@@ -2,9 +2,15 @@
 
 import { useState, useEffect, useRef } from 'react'
 import {
-  Camera, FloppyDisk, CheckCircle, WarningCircle,
-  CheckSquare, Square, Eye, Buildings,
-} from '@phosphor-icons/react'
+  Camera,
+  Save as FloppyDisk,
+  CheckCircle,
+  AlertCircle as WarningCircle,
+  SquareCheck as CheckSquare,
+  Square,
+  Eye,
+  Building2 as Buildings,
+} from 'lucide-react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
@@ -312,8 +318,8 @@ export default function ConfigMarcaPage() {
             onClick={() => setMostrarMarca(p => !p)}
           >
             {mostrarMarca
-              ? <CheckSquare size={20} weight="duotone" className="text-[#00827C] flex-shrink-0" />
-              : <Square size={20} weight="regular" className={`flex-shrink-0 ${ts}`} />
+              ? <CheckSquare size={20} className="text-[#00827C] flex-shrink-0" />
+              : <Square size={20} className={`flex-shrink-0 ${ts}`} />
             }
             <div>
               <span className={`text-sm font-medium ${tp}`}>Mostrar &quot;Hecho con Calculadora de Reúso&quot;</span>
@@ -338,10 +344,10 @@ export default function ConfigMarcaPage() {
           }`}
         >
           {guardado
-            ? <><CheckCircle size={16} weight="duotone" /> Marca guardada</>
+            ? <><CheckCircle size={16} /> Marca guardada</>
             : guardando
               ? 'Guardando...'
-              : <><FloppyDisk size={16} weight="bold" /> Guarda tu marca</>
+              : <><FloppyDisk size={16} strokeWidth={2.5} /> Guarda tu marca</>
           }
         </button>
       </div>

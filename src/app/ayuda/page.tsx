@@ -2,7 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, ChatCircle, Envelope, Question, Warning, CreditCard } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+  MessageCircle as ChatCircle,
+  Mail as Envelope,
+  CircleHelp as Question,
+  TriangleAlert as Warning,
+  CreditCard,
+} from 'lucide-react'
 import { useToast } from '@/components/toast-provider'
 import { PageSubmenu } from '@/components/page-submenu'
 

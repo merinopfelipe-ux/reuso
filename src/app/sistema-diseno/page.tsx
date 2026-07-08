@@ -2,9 +2,23 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import {
-  Users, Buildings, Calculator, Leaf, ArrowRight, Eye, EyeSlash,
-  Target, Plus, MagnifyingGlass, Tree, Globe, User, Stack, CaretDown, Copy
-} from '@phosphor-icons/react'
+  Users,
+  Building2 as Buildings,
+  Calculator,
+  Leaf,
+  ArrowRight,
+  Eye,
+  EyeOff as EyeSlash,
+  Target,
+  Plus,
+  Search as MagnifyingGlass,
+  TreeDeciduous as Tree,
+  Globe,
+  User,
+  Layers as Stack,
+  ChevronDown as CaretDown,
+  Copy,
+} from 'lucide-react'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { DesignSystemHeader } from '@/components/design-system-header'
 
@@ -381,7 +395,7 @@ export default function ManualDisenoPage() {
                             className="opacity-0 group-hover/hex:opacity-100 transition-opacity hover:scale-110 active:scale-95"
                             title="Copiar HEX"
                           >
-                            <Copy size={12} weight="bold" className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
+                            <Copy size={12} strokeWidth={2.5} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
                           </button>
                         </div>
                       </div>
@@ -412,7 +426,7 @@ export default function ManualDisenoPage() {
                             onClick={() => navigator.clipboard.writeText(color.hex)}
                             className="opacity-0 group-hover/hex:opacity-100 transition-opacity"
                           >
-                            <Copy size={10} weight="bold" className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
+                            <Copy size={10} strokeWidth={2.5} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
                           </button>
                         </div>
                       </div>
@@ -441,7 +455,7 @@ export default function ManualDisenoPage() {
                             onClick={() => navigator.clipboard.writeText(color.hex)}
                             className="opacity-0 group-hover/hex:opacity-100 transition-opacity"
                           >
-                            <Copy size={10} weight="bold" className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
+                            <Copy size={10} strokeWidth={2.5} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
                           </button>
                         </div>
                       </div>
@@ -561,7 +575,7 @@ export default function ManualDisenoPage() {
               </div>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>4. Enlace Icono (Fantasma)</span>
-                <button className={`px-4 py-2 font-bold rounded-full transition-colors flex items-center gap-2 group ${isDark ? 'text-[#D6F391] hover:bg-white/10' : 'text-[#00827C] hover:bg-[#00827C]/10'}`}>Saber más <ArrowRight size={16} weight="bold" className="group-hover:translate-x-1 transition-transform"/></button>
+                <button className={`px-4 py-2 font-bold rounded-full transition-colors flex items-center gap-2 group ${isDark ? 'text-[#D6F391] hover:bg-white/10' : 'text-[#00827C] hover:bg-[#00827C]/10'}`}>Saber más <ArrowRight size={16} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform"/></button>
               </div>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>5. Alerta / Feedback</span>
@@ -569,7 +583,7 @@ export default function ManualDisenoPage() {
               </div>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>6. Flotante Celeste Acción</span>
-                <button className="w-16 h-16 bg-[#59A6E4] text-white rounded-full flex items-center justify-center font-bold shadow-[0_12px_24px_rgba(89,166,228,0.3)] hover:scale-110 active:scale-95 transition-transform"><Plus size={24} weight="bold"/></button>
+                <button className="w-16 h-16 bg-[#59A6E4] text-white rounded-full flex items-center justify-center font-bold shadow-[0_12px_24px_rgba(89,166,228,0.3)] hover:scale-110 active:scale-95 transition-transform"><Plus size={24} strokeWidth={2.5}/></button>
               </div>
               <div className="flex flex-col gap-4 items-start md:col-span-3">
                 <div className="flex items-center gap-4 mb-4">
@@ -577,9 +591,9 @@ export default function ManualDisenoPage() {
                 </div>
                 <div className="flex flex-col gap-8 w-full">
                   <div className="flex gap-8">
-                    <button className={`pb-2 border-b-2 font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'border-[#D6F391] text-[#D6F391]' : 'border-[#00827C] text-[#00827C]'}`}><Tree size={16} weight="bold"/> Activo</button>
-                    <button className={`pb-2 border-b-2 border-transparent ${isDark ? 'text-white/40' : 'text-[#00827C]/40'} font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'hover:text-[#D6F391] hover:border-[#D6F391]/40' : 'hover:text-[#00827C] hover:border-[#00827C]/30'}`}><Leaf size={16} weight="bold"/> Inactivo</button>
-                    <button className={`pb-2 border-b-2 border-transparent ${isDark ? 'text-white/40' : 'text-[#00827C]/40'} font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'hover:text-[#D6F391] hover:border-[#D6F391]/40' : 'hover:text-[#00827C] hover:border-[#00827C]/30'}`}><Buildings size={16} weight="bold"/> Otro Tab</button>
+                    <button className={`pb-2 border-b-2 font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'border-[#D6F391] text-[#D6F391]' : 'border-[#00827C] text-[#00827C]'}`}><Tree size={16} strokeWidth={2.5}/> Activo</button>
+                    <button className={`pb-2 border-b-2 border-transparent ${isDark ? 'text-white/40' : 'text-[#00827C]/40'} font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'hover:text-[#D6F391] hover:border-[#D6F391]/40' : 'hover:text-[#00827C] hover:border-[#00827C]/30'}`}><Leaf size={16} strokeWidth={2.5}/> Inactivo</button>
+                    <button className={`pb-2 border-b-2 border-transparent ${isDark ? 'text-white/40' : 'text-[#00827C]/40'} font-bold text-sm transition-all flex items-center gap-2 ${isDark ? 'hover:text-[#D6F391] hover:border-[#D6F391]/40' : 'hover:text-[#00827C] hover:border-[#00827C]/30'}`}><Buildings size={16} strokeWidth={2.5}/> Otro Tab</button>
                   </div>
                   <div className="flex gap-8">
                     <button className={`pb-2 border-b-2 font-bold text-sm transition-all ${isDark ? 'border-[#D6F391] text-[#D6F391]' : 'border-[#00827C] text-[#00827C]'}`}>Solo Texto</button>
@@ -613,10 +627,10 @@ export default function ManualDisenoPage() {
                 <div className="flex flex-col gap-6 items-center group">
                   <div className="w-64 h-64 relative transition-all hover:scale-105 duration-500">
                     <div className="w-full h-full rounded-full shadow-2xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#D6F391' }}>
-                      <User size={80} weight="duotone" className="text-[#00827C] opacity-40 group-hover:scale-110 transition-transform duration-700" />
+                      <User size={80} className="text-[#00827C] opacity-40 group-hover:scale-110 transition-transform duration-700" />
                     </div>
                     <button className="absolute bottom-[18%] -right-2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg text-[#474747] hover:rotate-45 transition-transform z-10 border border-black/5">
-                      <ArrowRight size={20} weight="bold" />
+                      <ArrowRight size={20} strokeWidth={2.5} />
                     </button>
                   </div>
                   <div className="text-center">
@@ -650,7 +664,7 @@ export default function ManualDisenoPage() {
               ].map((k, i) => (
                 <div key={i} className={`p-6 rounded-[1.5rem] flex items-start gap-4 transition-all hover:-translate-y-2 hover:shadow-xl ${liquidGlassClass}`}>
                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0`}>
-                     <k.icon size={24} className={isDark ? 'text-white' : ''} style={{ color: !isDark ? k.c.replace('bg-[', '').replace(']', '') : '' }} weight="duotone" />
+                     <k.icon size={24} className={isDark ? 'text-white' : ''} style={{ color: !isDark ? k.c.replace('bg-[', '').replace(']', '') : '' }} />
                    </div>
                    <div className="flex flex-col">
                      <span className={`text-xs mb-1 font-semibold ${isDark ? 'text-white/40' : 'text-[#00827C]/60'}`}>{k.title}</span>
@@ -686,7 +700,7 @@ export default function ManualDisenoPage() {
                  <div className="relative">
                    <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                    <button type="button" onClick={() => setShowPwd(!showPwd)} className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${isDark ? 'text-[#D6F391]/60 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/50 hover:bg-[#00827C]/10 hover:text-[#00827C]'}`}>
-                     {showPwd ? <EyeSlash size={22} weight="light"/> : <Eye size={22} weight="light"/>}
+                     {showPwd ? <EyeSlash size={22} strokeWidth={1.5}/> : <Eye size={22} strokeWidth={1.5}/>}
                    </button>
                  </div>
                </div>
@@ -840,7 +854,7 @@ export default function ManualDisenoPage() {
             Cada elemento del manual tiene un nombre. Úsalos para dar instrucciones exactas.
           </p>
           <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-12 ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/8 text-[#00827C]'}`}>
-            <Copy size={13} weight="bold" /> Toca el nombre de cualquier token para copiarlo
+            <Copy size={13} strokeWidth={2.5} /> Toca el nombre de cualquier token para copiarlo
           </div>
 
           <div className="space-y-14">
@@ -902,7 +916,7 @@ export default function ManualDisenoPage() {
                           <code className={`text-sm font-black tracking-tight ${isCopied ? 'text-[#38B98E]' : isDark ? 'text-white' : 'text-[#474747]'}`}>
                             {isCopied ? '¡Copiado!' : token.name}
                           </code>
-                          <Copy size={12} weight="bold" className={`flex-shrink-0 opacity-0 group-hover:opacity-40 transition-opacity ${isDark ? 'text-white' : 'text-[#474747]'}`} />
+                          <Copy size={12} strokeWidth={2.5} className={`flex-shrink-0 opacity-0 group-hover:opacity-40 transition-opacity ${isDark ? 'text-white' : 'text-[#474747]'}`} />
                         </div>
 
                         {/* Valor */}
@@ -931,7 +945,7 @@ export default function ManualDisenoPage() {
               rel="noopener noreferrer"
               className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-black transition-all ${isDark ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-[#00827C]/5 text-[#00827C] hover:bg-[#00827C]/10'}`}
             >
-              Explorar librería Phosphor <ArrowRight size={16} weight="bold" />
+              Explorar librería Phosphor <ArrowRight size={16} strokeWidth={2.5} />
             </a>
           </div>
           <p className={`${isDark ? 'text-white/50' : 'text-[#00827C]/60'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres pesos</strong> según el contexto: <strong>Light</strong> (delgado) para decoración sutil, <strong>Regular</strong> (normal) para la interfaz general, y <strong>Duotone</strong> (bicromático) para estados activos y visualización de informes.</p>
@@ -941,7 +955,7 @@ export default function ManualDisenoPage() {
               <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Light (Delgado)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} weight="light" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                  <Icon key={i} size={28} strokeWidth={1.5} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
               <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Decorativo &middot; Fondos &middot; Ilustraciones</p>
@@ -950,7 +964,7 @@ export default function ManualDisenoPage() {
               <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (Normal)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} weight="regular" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                  <Icon key={i} size={28} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
               <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Interfaz general &middot; Navegación &middot; Formularios</p>
@@ -959,7 +973,7 @@ export default function ManualDisenoPage() {
               <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (Bicromático)</span>
               <div className="flex justify-center gap-5 mb-4">
                 {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} weight="duotone" className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                  <Icon key={i} size={28} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
               <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#00827C]/40'} mt-2`}>Activo &middot; Seleccionado &middot; Informes</p>
@@ -978,7 +992,7 @@ export default function ManualDisenoPage() {
               { i: Calculator, n: 'Calculadora' },
             ].map((icon, idx) => (
               <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#00827C]/10'}`}>
-                <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#00827C]'} transition-colors mb-4`} weight="regular" />
+                <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#00827C]'} transition-colors mb-4`} />
                 <span className={`text-[10px] font-bold tracking-tighter ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{icon.n}</span>
               </div>
             ))}
@@ -1013,7 +1027,7 @@ export default function ManualDisenoPage() {
                   <div className={`w-full h-48 bg-gradient-to-br ${card.gradient} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-[#474747]/5 group-hover:bg-[#474747]/0 transition-all duration-500" />
                     <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/20 rounded-full backdrop-blur-md flex items-center justify-center">
-                      <Leaf size={20} weight="fill" className="text-white" />
+                      <Leaf size={20} className="text-white" />
                     </div>
                   </div>
                   <div className="p-6">
@@ -1038,7 +1052,7 @@ export default function ManualDisenoPage() {
                 }}
                 className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${activeCard === 0 ? 'opacity-30 pointer-events-none' : ''} ${isDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}
               >
-                <CaretDown size={16} weight="bold" className="rotate-90" />
+                <CaretDown size={16} strokeWidth={2.5} className="rotate-90" />
               </button>
 
               <div className="flex gap-2">
@@ -1065,7 +1079,7 @@ export default function ManualDisenoPage() {
                 }}
                 className={`w-9 h-9 rounded-full flex items-center justify-center border transition-all ${activeCard === 2 ? 'opacity-30 pointer-events-none' : ''} ${isDark ? 'border-white/20 text-white hover:bg-white/10' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}
               >
-                <CaretDown size={16} weight="bold" className="-rotate-90" />
+                <CaretDown size={16} strokeWidth={2.5} className="-rotate-90" />
               </button>
             </div>
           </div>
@@ -1101,7 +1115,7 @@ export default function ManualDisenoPage() {
           <div className={`mt-10 p-10 rounded-[2.5rem] border border-[#00827C]/20 bg-[#00827C]/5 relative overflow-hidden group`}>
             <div className="flex items-center gap-6 relative z-10">
                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <Stack size={32} weight="duotone" className="text-[#00827C]" />
+                  <Stack size={32} className="text-[#00827C]" />
                </div>
                <div>
                   <h4 className={`text-xl font-bold ${isDark ? 'text-white' : ''}`}>Liquid Glass Flyout</h4>

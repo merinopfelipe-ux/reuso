@@ -1,7 +1,15 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Medal, FileText, Download, ArrowSquareOut, X, Calendar, CircleNotch } from '@phosphor-icons/react'
+import {
+  Medal,
+  FileText,
+  Download,
+  ExternalLink as ArrowSquareOut,
+  X,
+  Calendar,
+  Loader2 as CircleNotch,
+} from 'lucide-react'
 import type { Certificado } from '@/types'
 import { PopupAmbiental } from './popup-ambiental'
 

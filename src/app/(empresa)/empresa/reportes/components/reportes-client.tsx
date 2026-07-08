@@ -1,7 +1,12 @@
 'use client'
 
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
-import { Leaf, Drop, Tree, Car } from '@phosphor-icons/react'
+import {
+  Leaf,
+  Droplet as Drop,
+  TreeDeciduous as Tree,
+  Car,
+} from 'lucide-react'
 
 interface Props {
   serieTemporalCO2: { fecha: string; co2: number; calculos: number }[]

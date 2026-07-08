@@ -3,7 +3,10 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import { MagnifyingGlass, ShieldCheck } from '@phosphor-icons/react'
+import {
+  Search as MagnifyingGlass,
+  ShieldCheck,
+} from 'lucide-react'
 
 function VerificarForm() {
   const [codigo, setCodigo] = useState('')

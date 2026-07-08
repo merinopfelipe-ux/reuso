@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useCallback, useEffect, useRef } from 'react'
-import { X, PaperPlaneRight, CircleNotch, Info } from '@phosphor-icons/react'
+import {
+  X,
+  SendHorizontal as PaperPlaneRight,
+  Loader2 as CircleNotch,
+  Info,
+} from 'lucide-react'
 import type { EstadoTicket, PrioridadTicket } from './lista-tickets'
 
 interface Mensaje {

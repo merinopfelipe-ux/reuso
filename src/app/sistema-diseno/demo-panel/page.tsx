@@ -2,9 +2,20 @@
 
 import React, { useState } from 'react'
 import {
-  List, SquaresFour, Buildings, Stack,
-  Gear, Calculator, TrendUp, SignOut, Sun, Moon, CaretRight, Leaf, Scales
-} from '@phosphor-icons/react'
+  List,
+  LayoutGrid as SquaresFour,
+  Building2 as Buildings,
+  Layers as Stack,
+  Settings as Gear,
+  Calculator,
+  TrendingUp as TrendUp,
+  LogOut as SignOut,
+  Sun,
+  Moon,
+  ChevronRight as CaretRight,
+  Leaf,
+  Scale as Scales,
+} from 'lucide-react'
 
 export default function LayoutDemoPage() {
   const [isDark, setIsDark] = useState(true)
@@ -59,13 +70,13 @@ export default function LayoutDemoPage() {
             className="flex flex-col items-center justify-center gap-1 group transition-all duration-300 hover:scale-95 active:scale-90"
             style={{ color: '#FFFFFF' }}
           >
-            <List size={22} weight="bold" />
+            <List size={22} strokeWidth={2.5} />
             <span className="text-[11px] font-black tracking-widest opacity-90">Menú</span>
           </button>
           
           <div className="flex items-center gap-3 select-none">
              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white shadow-sm border border-white/10">
-               <Leaf size={24} color="#00827C" weight="bold" />
+               <Leaf size={24} color="#00827C" strokeWidth={2.5} />
              </div>
              <div className="flex flex-col leading-[1.1]">
                <span className="text-lg font-bold tracking-tighter" style={{ color: '#FFFFFF' }}>REÚSO</span>
@@ -139,8 +150,7 @@ export default function LayoutDemoPage() {
 
                     <div className="flex items-center gap-4 min-w-0">
                       <item.icon 
-                        size={20} 
-                        weight="bold"
+                        size={20} strokeWidth={2.5}
                         className={`shrink-0 transition-all ${isActive ? 'scale-110' : 'opacity-80 group-hover:opacity-100'}`}
                       />
                       <span 
@@ -153,7 +163,7 @@ export default function LayoutDemoPage() {
                     </div>
 
                     {item.hasSub && isSidebarExpanded && (
-                      <CaretRight size={16} weight="bold" className={`transition-all duration-400 ${openSubmenu === item.label ? 'rotate-180' : 'opacity-60'}`} />
+                      <CaretRight size={16} strokeWidth={2.5} className={`transition-all duration-400 ${openSubmenu === item.label ? 'rotate-180' : 'opacity-60'}`} />
                     )}
                   </button>
                 </div>
@@ -198,7 +208,7 @@ export default function LayoutDemoPage() {
 
           <div className="px-4 mt-auto">
              <button className="w-full h-11 flex items-center justify-center gap-3 rounded-full border border-pistacho text-pistacho transition-all hover:bg-white/10">
-               <SignOut size={18} weight="bold" />
+               <SignOut size={18} strokeWidth={2.5} />
                <span className={`text-sm font-bold transition-all ${isSidebarExpanded ? 'opacity-100' : 'opacity-0 scale-0 w-0'}`}>
                  Cerrar sesión
                </span>
@@ -213,7 +223,7 @@ export default function LayoutDemoPage() {
                  {[1, 2, 3].map(i => (
                    <div key={i} className="h-44 p-8 transition-all hover:-translate-y-2 cursor-pointer group" style={glassStyle}>
                       <div className="w-12 h-12 rounded-2xl bg-white/10 mb-6 flex items-center justify-center transition-transform group-hover:scale-110">
-                         <Stack size={24} weight="regular" className="opacity-50" />
+                         <Stack size={24} className="opacity-50" />
                       </div>
                       <div className="h-2 w-3/4 bg-white/10 rounded mb-3" />
                       <div className="h-2 w-1/2 bg-white/20 rounded" />

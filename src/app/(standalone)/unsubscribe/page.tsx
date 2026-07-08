@@ -4,7 +4,10 @@ import { useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { CheckCircle, WarningCircle } from '@phosphor-icons/react'
+import {
+  CheckCircle,
+  AlertCircle as WarningCircle,
+} from 'lucide-react'
 
 type Estado = 'pendiente' | 'confirmando' | 'exito' | 'error'
 
@@ -63,7 +66,7 @@ function UnsubscribeContent() {
         {estado === 'exito' ? (
           <div className="text-center">
             <div className="flex justify-center mb-5">
-              <CheckCircle size={52} weight="fill" color="#38B98E" />
+              <CheckCircle size={52} color="#38B98E" />
             </div>
             <h1 className="text-[20px] font-bold text-[#474747] dark:text-white mb-3 leading-snug">
               Baja confirmada
@@ -78,7 +81,7 @@ function UnsubscribeContent() {
         ) : estado === 'error' || !token ? (
           <div className="text-center">
             <div className="flex justify-center mb-5">
-              <WarningCircle size={52} weight="fill" color="#F6BF3E" />
+              <WarningCircle size={52} color="#F6BF3E" />
             </div>
             <h1 className="text-[20px] font-bold text-[#474747] dark:text-white mb-3 leading-snug">
               Enlace no válido

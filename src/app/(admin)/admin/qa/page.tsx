@@ -2,13 +2,33 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
-  CheckCircle, XCircle, Circle, ClipboardText, DownloadSimple,
-  ArrowCounterClockwise, Lightning, Lock, Moon, ChartBar,
-  Robot, FileText, Storefront, Buildings, Bell,
-  ShieldCheck, Globe, Gear, BookOpen,
-  MagnifyingGlass, CaretDown, CaretUp, FloppyDisk, X,
-  MinusCircle, Question,
-} from '@phosphor-icons/react'
+  CheckCircle,
+  XCircle,
+  Circle,
+  ClipboardList as ClipboardText,
+  Download as DownloadSimple,
+  RotateCcw as ArrowCounterClockwise,
+  Zap as Lightning,
+  Lock,
+  Moon,
+  BarChart2 as ChartBar,
+  Bot as Robot,
+  FileText,
+  Store as Storefront,
+  Building2 as Buildings,
+  Bell,
+  ShieldCheck,
+  Globe,
+  Settings as Gear,
+  BookOpen,
+  Search as MagnifyingGlass,
+  ChevronDown as CaretDown,
+  ChevronUp as CaretUp,
+  Save as FloppyDisk,
+  X,
+  MinusCircle,
+  CircleHelp as Question,
+} from 'lucide-react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -1966,7 +1986,7 @@ export default function QAPage() {
               <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
               {guardadoReciente ? (
                 <span className="text-[#38B98E] font-semibold flex items-center gap-1">
-                  <CheckCircle size={12} weight="fill" /> Guardado
+                  <CheckCircle size={12} /> Guardado
                 </span>
               ) : ultimoGuardado ? (
                 <span>
@@ -2073,7 +2093,7 @@ export default function QAPage() {
                           className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide flex items-center gap-1"
                           style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
                         >
-                          <Icon size={11} weight="duotone" />
+                          <Icon size={11} />
                           {cat.key.split(' ')[0]}
                         </span>
                         <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-80`}>
@@ -2084,8 +2104,8 @@ export default function QAPage() {
                               <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
                                 {cOk}/{ct.length}
                               </span>
-                              {isDone && <CheckCircle size={11} weight="fill" className="text-[#38B98E]" />}
-                              {cFail > 0 && <XCircle size={11} weight="fill" className="text-[#FF5E4B]" />}
+                              {isDone && <CheckCircle size={11} className="text-[#38B98E]" />}
+                              {cFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
                             </>
                           )}
                         </div>
@@ -2125,7 +2145,7 @@ export default function QAPage() {
                 <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
-                    <catActual.icono size={16} weight="duotone" style={{ color: catActual.color }} />
+                    <catActual.icono size={16} style={{ color: catActual.color }} />
                     <span className="text-xs font-boldr" style={{ color: catActual.color }}>
                       {catActual.key}
                     </span>
@@ -2174,7 +2194,7 @@ export default function QAPage() {
                       className="flex items-center gap-3 px-5 py-4 cursor-pointer select-none"
                       style={{ paddingLeft: 20 }}
                     >
-                      <EstIcon size={18} weight="fill" style={{ color: ESTADO_CFG[tarea.estado].color, flexShrink: 0 }} />
+                      <EstIcon size={18} style={{ color: ESTADO_CFG[tarea.estado].color, flexShrink: 0 }} />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
@@ -2223,10 +2243,10 @@ export default function QAPage() {
                                   }}
                                 >
                                   {label}
-                                  {val === 'ok' && <CheckCircle size={8} weight="fill" />}
-                                  {val === 'falla' && <XCircle size={8} weight="fill" />}
-                                  {val === 'parcial' && <MinusCircle size={8} weight="fill" />}
-                                  {val === 'no_clara' && <Question size={8} weight="fill" />}
+                                  {val === 'ok' && <CheckCircle size={8} />}
+                                  {val === 'falla' && <XCircle size={8} />}
+                                  {val === 'parcial' && <MinusCircle size={8} />}
+                                  {val === 'no_clara' && <Question size={8} />}
                                 </span>
                               )
                             })}
@@ -2250,7 +2270,7 @@ export default function QAPage() {
                                 background: activo ? `${ESTADO_CFG[est].color}18` : 'transparent',
                               }}
                             >
-                              <Ic size={13} weight="fill" style={{ color: activo ? ESTADO_CFG[est].color : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,130,124,0.4)' }} />
+                              <Ic size={13} style={{ color: activo ? ESTADO_CFG[est].color : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,130,124,0.4)' }} />
                             </button>
                           )
                         })}
@@ -2320,7 +2340,7 @@ export default function QAPage() {
                                   <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${
                                     checked ? 'bg-[#38B98E] border-[#38B98E] text-white' : 'border-current'
                                   }`}>
-                                    {checked && <CheckCircle size={10} weight="fill" />}
+                                    {checked && <CheckCircle size={10} />}
                                   </span>
                                   <span>{ROL_LABELS[rol]}</span>
                                 </button>
@@ -2353,7 +2373,7 @@ export default function QAPage() {
                                         border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                       }}
                                     >
-                                      <Ic size={10} weight="fill" />
+                                      <Ic size={10} />
                                       {ESTADO_CFG[est].label}
                                     </button>
                                   )
@@ -2400,7 +2420,7 @@ export default function QAPage() {
                                   border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                 }}
                               >
-                                <Ic size={13} weight="fill" />
+                                <Ic size={13} />
                                 {ESTADO_CFG[est].label}
                               </button>
                             )

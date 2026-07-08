@@ -1,7 +1,11 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { CheckCircle, XCircle, X } from '@phosphor-icons/react'
+import {
+  CheckCircle,
+  XCircle,
+  X,
+} from 'lucide-react'
 
 export type ToastVariant = 'success' | 'error'
 

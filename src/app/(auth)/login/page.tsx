@@ -7,18 +7,18 @@ import Link from 'next/link'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
   Eye,
-  EyeSlash,
-  Envelope,
-  LockKey,
-  CaretLeft,
-  CaretRight,
-  CaretDown,
-  CircleNotch,
-  UserCircle,
-  Quotes,
+  EyeOff as EyeSlash,
+  Mail as Envelope,
+  KeyRound as LockKey,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+  ChevronDown as CaretDown,
+  Loader2 as CircleNotch,
+  CircleUser as UserCircle,
+  Quote as Quotes,
   Square,
-  CheckSquare,
-} from '@phosphor-icons/react'
+  SquareCheck as CheckSquare,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type { Rol } from '@/types'
@@ -316,7 +316,7 @@ export default function LoginPage() {
 
           <div className="flex flex-col items-center text-center mb-10">
             <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mb-4 text-brand">
-              <UserCircle size={40} weight="light" />
+              <UserCircle size={40} strokeWidth={1.5} />
             </div>
             <h1 className="text-3xl font-bold text-primary mb-1">{T[idioma].titulo}</h1>
             <p className="text-secondary text-sm leading-relaxed max-w-[280px]">
@@ -401,8 +401,8 @@ export default function LoginPage() {
                 onClick={() => setRecordarme(!recordarme)}
               >
                 {recordarme
-                  ? <CheckSquare size={18} weight="duotone" className="text-brand flex-shrink-0" />
-                  : <Square size={18} weight="regular" className="text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
+                  ? <CheckSquare size={18} className="text-brand flex-shrink-0" />
+                  : <Square size={18} className="text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
                 }
                 <span className="text-sm font-medium text-secondary group-hover:text-primary transition-colors">
                   {T[idioma].recordarme}
@@ -423,8 +423,8 @@ export default function LoginPage() {
                   aria-label="Aceptar términos legales"
                 >
                   {aceptaLegal
-                    ? <CheckSquare size={18} weight="duotone" className="text-brand" />
-                    : <Square size={18} weight="regular" className={`transition-colors ${legalError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
+                    ? <CheckSquare size={18} className="text-brand" />
+                    : <Square size={18} className={`transition-colors ${legalError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
                   }
                 </button>
                 <span className="text-sm font-medium text-secondary">
@@ -587,7 +587,7 @@ export default function LoginPage() {
           {/* Card testimonio - sombra siempre visible */}
           <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
             <div className="absolute -top-6 -left-6 bg-brand text-white p-4 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]">
-              <Quotes size={32} weight="fill" />
+              <Quotes size={32} />
             </div>
 
             <div key={activeTestimonial} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} min-h-[220px] flex flex-col justify-center`}>
@@ -639,14 +639,14 @@ export default function LoginPage() {
                 className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-all hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
                 aria-label="Testimonio anterior"
               >
-                <CaretLeft size={24} weight="bold" />
+                <CaretLeft size={24} strokeWidth={2.5} />
               </button>
               <button
                 onClick={nextTestimonial}
                 className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/50"
                 aria-label="Testimonio siguiente"
               >
-                <CaretRight size={24} weight="bold" />
+                <CaretRight size={24} strokeWidth={2.5} />
               </button>
             </div>
 

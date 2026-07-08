@@ -1,7 +1,19 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import { Leaf, Drop, Tree, Car, Shower, CircleNotch, CheckCircle, ArrowCounterClockwise, Medal, Image as ImageIcon, IdentificationCard } from '@phosphor-icons/react'
+import {
+  Leaf,
+  Droplet as Drop,
+  TreeDeciduous as Tree,
+  Car,
+  ShowerHead as Shower,
+  Loader2 as CircleNotch,
+  CheckCircle,
+  RotateCcw as ArrowCounterClockwise,
+  Medal,
+  Image as ImageIcon,
+  IdCard as IdentificationCard,
+} from 'lucide-react'
 import { factorCo2PorKg } from '@/lib/calculos/co2'
 import type { Categoria, Item, Rol } from '@/types'
 

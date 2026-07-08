@@ -1,6 +1,10 @@
 'use client'
 
-import { CaretUp, CaretDown, CaretUpDown } from '@phosphor-icons/react'
+import {
+  ChevronUp as CaretUp,
+  ChevronDown as CaretDown,
+  ChevronsUpDown as CaretUpDown,
+} from 'lucide-react'
 import type { SortState } from '@/lib/use-sortable'
 
 interface SortThProps {

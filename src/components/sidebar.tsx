@@ -5,8 +5,23 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  SquaresFour, Buildings, Stack, Package, Gear, House, Medal, SignOut, ClockCounterClockwise, Lifebuoy, TrendUp, Target, Calculator, Scales, CaretRight, IdentificationCard
-} from '@phosphor-icons/react'
+  LayoutGrid as SquaresFour,
+  Building2 as Buildings,
+  Layers as Stack,
+  Package,
+  Settings as Gear,
+  Home as House,
+  Medal,
+  LogOut as SignOut,
+  History as ClockCounterClockwise,
+  LifeBuoy as Lifebuoy,
+  TrendingUp as TrendUp,
+  Target,
+  Calculator,
+  Scale as Scales,
+  ChevronRight as CaretRight,
+  IdCard as IdentificationCard,
+} from 'lucide-react'
 import type { Rol } from '@/types'
 
 interface SubItem {
@@ -279,7 +294,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                 
                 <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {/* Ícono delgado por defecto, grueso solo en activo V13.31 */}
-                  <item.icon size={20} color="currentColor" weight={(isDirectActive || hasActiveSub) ? 'bold' : 'regular'} />
+                  <item.icon size={20} color="currentColor" strokeWidth={(isDirectActive || hasActiveSub) ? 2.5 : 2} />
                 </div>
                 
                 {isExpanded && (
@@ -289,7 +304,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                 )}
 
                 {item.subItems && isExpanded && (
-                  <CaretRight size={16} weight="regular" color="currentColor" style={{ marginLeft: 'auto', opacity: isInteracting ? 1 : 0.6, transform: isInteracting ? 'rotate(90deg)' : 'none', transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease' }} />
+                  <CaretRight size={16} color="currentColor" style={{ marginLeft: 'auto', opacity: isInteracting ? 1 : 0.6, transform: isInteracting ? 'rotate(90deg)' : 'none', transition: 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease' }} />
                 )}
               </div>
             </div>
@@ -425,7 +440,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             willChange: 'width, border-radius',
           }}
         >
-          <SignOut size={22} weight="bold" color="currentColor" style={{ flexShrink: 0 }} />
+          <SignOut size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} />
           <span style={{ 
             fontSize: '13px', 
             fontWeight: 900, 

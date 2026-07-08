@@ -1,7 +1,9 @@
 'use client'
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts'
-import { Info } from '@phosphor-icons/react'
+import {
+  Info,
+} from 'lucide-react'
 
 interface DatoActividad {
   fecha: string

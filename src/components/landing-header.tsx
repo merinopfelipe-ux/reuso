@@ -5,8 +5,13 @@ import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
-  MagnifyingGlass, Sun, Moon, X, List, CaretDown
-} from '@phosphor-icons/react'
+  Search as MagnifyingGlass,
+  Sun,
+  Moon,
+  X,
+  List,
+  ChevronDown as CaretDown,
+} from 'lucide-react'
 
 interface MenuItem {
   name: string
@@ -147,7 +152,7 @@ export function LandingHeader({
               style={{ color: isDark ? '#FFFFFF' : '#00827C', touchAction: 'manipulation' }}
             >
               <div className="transition-transform duration-300 group-hover:scale-110 group-active:scale-90">
-                {isMobileNavOpen ? <X size={20} weight="bold" /> : <List size={22} weight="bold" />}
+                {isMobileNavOpen ? <X size={20} strokeWidth={2.5} /> : <List size={22} strokeWidth={2.5} />}
               </div>
               <span className="text-[9px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
             </button>
@@ -176,7 +181,7 @@ export function LandingHeader({
                 >
                   <div className={`px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? 'bg-[#00827C]/10 text-[#00827C]' : isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
                     {group.name}
-                    <CaretDown size={14} weight="bold" className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    <CaretDown size={14} strokeWidth={2.5} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
                 </div>
               )
@@ -198,11 +203,11 @@ export function LandingHeader({
                 }}
                 className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
               >
-                {searchOpen ? <X size={16} weight="bold" /> : <MagnifyingGlass size={16} weight="bold" />}
+                {searchOpen ? <X size={16} strokeWidth={2.5} /> : <MagnifyingGlass size={16} strokeWidth={2.5} />}
               </button>
             )}
             <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
-              {isDark ? <Sun size={16} weight="bold" /> : <Moon size={16} weight="bold" />}
+              {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
             </button>
           </div>
         </header>
@@ -268,7 +273,7 @@ export function LandingHeader({
           >
             <div className="flex justify-between items-center mb-6">
                <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Menú de Navegación</div>
-               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} weight="bold" /></button>
+               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">

@@ -2,7 +2,13 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Users, Calculator, Medal, FileText } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+  Users,
+  Calculator,
+  Medal,
+  FileText,
+} from 'lucide-react'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import type { Empresa } from '@/types'
 

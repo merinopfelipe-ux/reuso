@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Sun, Moon } from '@phosphor-icons/react'
+import {
+  Sun,
+  Moon,
+} from 'lucide-react'
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(false)

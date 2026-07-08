@@ -641,7 +641,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                   {c.descripcion && <p style={{ margin: '0 0 8px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{c.descripcion}</p>}
                   {(c.co2_evitado_kg ?? 0) > 0 && (
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#38B98E' }}>
-                      <CheckCircle size={14} weight="fill" />
+                      <CheckCircle size={14} />
                       Evitaste {c.co2_evitado_kg?.toFixed(2)} kg CO₂e
                     </div>
                   )}

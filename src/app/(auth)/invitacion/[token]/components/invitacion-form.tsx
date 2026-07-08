@@ -3,7 +3,13 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { Eye, EyeSlash, CheckCircle, CircleNotch, Leaf } from '@phosphor-icons/react'
+import {
+  Eye,
+  EyeOff as EyeSlash,
+  CheckCircle,
+  Loader2 as CircleNotch,
+  Leaf,
+} from 'lucide-react'
 
 interface Props {
   token: string

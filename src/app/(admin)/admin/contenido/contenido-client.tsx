@@ -1,7 +1,13 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { FloppyDisk, ChatCircle, ChartBar, Question, Stack } from '@phosphor-icons/react'
+import {
+  Save as FloppyDisk,
+  MessageCircle as ChatCircle,
+  BarChart2 as ChartBar,
+  CircleHelp as Question,
+  Layers as Stack,
+} from 'lucide-react'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {

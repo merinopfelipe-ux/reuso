@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calculator, Warning, X, Check } from '@phosphor-icons/react'
+import {
+  Calculator,
+  TriangleAlert as Warning,
+  X,
+  Check,
+} from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

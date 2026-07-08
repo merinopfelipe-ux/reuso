@@ -3,10 +3,18 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Plus, MagnifyingGlass, Funnel,
-  Leaf, CurrencyCircleDollar, Percent,
-  Clock, CheckCircle, XCircle, Warning, CaretRight,
-} from '@phosphor-icons/react'
+  Plus,
+  Search as MagnifyingGlass,
+  Filter as Funnel,
+  Leaf,
+  CircleDollarSign as CurrencyCircleDollar,
+  Percent,
+  Clock,
+  CheckCircle,
+  XCircle,
+  TriangleAlert as Warning,
+  ChevronRight as CaretRight,
+} from 'lucide-react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -122,27 +130,27 @@ export default function PanelCotizadorPage() {
             onClick={() => router.push('/empresa/cotizador/nueva')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors"
           >
-            <Plus size={16} weight="bold" />
+            <Plus size={16} strokeWidth={2.5} />
             Nueva cotización
           </button>
         </div>
 
         {error && (
           <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
-            <XCircle size={16} weight="fill" />
+            <XCircle size={16} />
             {error}
           </div>
         )}
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-          <KpiCard icon={<CurrencyCircleDollar size={20} weight="duotone" className="text-[#00827C]" />}
+          <KpiCard icon={<CurrencyCircleDollar size={20} className="text-[#00827C]" />}
             label="Valor del embudo" value={formatCOP(valorEmbudo)} isDark={isDark} />
-          <KpiCard icon={<Percent size={20} weight="duotone" className="text-[#38B98E]" />}
+          <KpiCard icon={<Percent size={20} className="text-[#38B98E]" />}
             label="Tasa de cierre" value={`${tasaCierre}%`} isDark={isDark} />
-          <KpiCard icon={<Leaf size={20} weight="duotone" className="text-[#38B98E]" />}
+          <KpiCard icon={<Leaf size={20} className="text-[#38B98E]" />}
             label="CO2 comprometido" value={`${co2Total.toFixed(1)} kg`} isDark={isDark} />
-          <KpiCard icon={<CheckCircle size={20} weight="duotone" className="text-[#00827C]" />}
+          <KpiCard icon={<CheckCircle size={20} className="text-[#00827C]" />}
             label="Cotizaciones activas" value={String(activas.length)} isDark={isDark} />
         </div>
 
@@ -273,12 +281,12 @@ function CotizacionCard({ cot, onClick }: { cot: Cotizacion; isDark: boolean; on
             )}
             {fria && (
               <span className="text-xs px-2 py-0.5 rounded-full font-medium text-[#F6BF3E] bg-[#F6BF3E]/10 flex items-center gap-1">
-                <Warning size={11} weight="bold" /> Fría {dias}d
+                <Warning size={11} strokeWidth={2.5} /> Fría {dias}d
               </span>
             )}
             {cot.fecha_apertura_cliente && (
               <span className={`text-xs flex items-center gap-1 ${ts}`}>
-                <CheckCircle size={11} weight="duotone" className="text-[#38B98E]" /> Abierta
+                <CheckCircle size={11} className="text-[#38B98E]" /> Abierta
               </span>
             )}
           </div>
@@ -290,7 +298,7 @@ function CotizacionCard({ cot, onClick }: { cot: Cotizacion; isDark: boolean; on
               {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Number(cot.total))}
             </p>
             <p className={`text-xs ${ts} flex items-center gap-1 justify-end`}>
-              <Leaf size={11} weight="duotone" className="text-[#38B98E]" />
+              <Leaf size={11} className="text-[#38B98E]" />
               {Number(cot.co2_evitado_total_kg).toFixed(1)} kg CO2
             </p>
           </div>

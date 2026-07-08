@@ -6,11 +6,27 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import {
-  ShieldCheck, Eye, EyeSlash, Square, CheckSquare,
-  Buildings, EnvelopeSimple, Phone, User, CaretDown,
-  ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle, CircleNotch,
-  FileText, CaretRight,
-} from '@phosphor-icons/react'
+  ShieldCheck,
+  Eye,
+  EyeOff as EyeSlash,
+  Square,
+  SquareCheck as CheckSquare,
+  Building2 as Buildings,
+  Mail as EnvelopeSimple,
+  Phone,
+  User,
+  ChevronDown as CaretDown,
+  ArrowRight,
+  ArrowLeft,
+  X,
+  Check,
+  Headset,
+  Circle,
+  CheckCircle,
+  Loader2 as CircleNotch,
+  FileText,
+  ChevronRight as CaretRight,
+} from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 function normalizeStr(str: string): string {
@@ -359,7 +375,7 @@ export default function RegistroPage() {
         <div className="px-8 pt-8 pb-0">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5 text-xs text-[var(--color-brand)] font-semibold">
-              <ShieldCheck size={14} weight="duotone" />
+              <ShieldCheck size={14} />
               <span>Estás en un entorno seguro</span>
             </div>
             <span className="text-xs text-[var(--text-secondary)]/50 font-medium">Paso {paso} de 4</span>
@@ -384,7 +400,7 @@ export default function RegistroPage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 color: 'var(--color-brand)'
               }}>
-                <CheckCircle size={32} weight="duotone" />
+                <CheckCircle size={32} />
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>¡Solicitud recibida!</h2>
               <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6, margin: 0 }}>
@@ -692,7 +708,7 @@ export default function RegistroPage() {
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-[var(--color-brand)] border-t-transparent rounded-full animate-spin" />
                   )}
                   {codigoStatus === 'ok' && (
-                    <Check size={16} weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 text-[#38B98E]" />
+                    <Check size={16} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#38B98E]" />
                   )}
                   {codigoStatus === 'error' && (
                     <X size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#FF5E4B]" />
@@ -715,7 +731,7 @@ export default function RegistroPage() {
               >
                 {verificandoEmail
                   ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Verificando...</>
-                  : <>Siguiente <ArrowRight size={16} weight="bold" /></>}
+                  : <>Siguiente <ArrowRight size={16} strokeWidth={2.5} /></>}
               </button>
 
               <p className="text-center text-xs text-[var(--text-secondary)]/50 mt-1">
@@ -785,7 +801,7 @@ export default function RegistroPage() {
                             : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)]/50'
                         }`}
                       >
-                        {activo && <Check size={14} weight="bold" className="inline mr-2" />}
+                        {activo && <Check size={14} strokeWidth={2.5} className="inline mr-2" />}
                         {m}
                       </button>
                     )
@@ -803,7 +819,7 @@ export default function RegistroPage() {
                 onClick={() => setQuiereAsesoria(v => !v)}
               >
                 <div className="flex items-center gap-3">
-                  <Headset size={20} weight="duotone" className={quiereAsesoria ? 'text-[var(--color-brand)]' : 'text-[var(--text-placeholder)]'} />
+                  <Headset size={20} className={quiereAsesoria ? 'text-[var(--color-brand)]' : 'text-[var(--text-placeholder)]'} />
                   <div>
                     <p className="text-sm font-semibold text-[var(--text-primary)]">Asesoría personalizada</p>
                     <p className="text-xs text-[var(--text-secondary)]/60">Un experto te contactará directamente para guiarte de forma personalizada.</p>
@@ -824,7 +840,7 @@ export default function RegistroPage() {
                   onClick={() => { setError(''); setPaso(1) }}
                   className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
                 >
-                  <ArrowLeft size={15} weight="bold" /> Atrás
+                  <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
                 {quiereAsesoria ? (
                   <button
@@ -844,7 +860,7 @@ export default function RegistroPage() {
                     className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                   >
-                    Siguiente <ArrowRight size={16} weight="bold" />
+                    Siguiente <ArrowRight size={16} strokeWidth={2.5} />
                   </button>
                 )}
               </div>
@@ -910,8 +926,8 @@ export default function RegistroPage() {
                     ].map(({ ok, texto }) => (
                       <div key={texto} className="flex items-center gap-2">
                         {ok
-                          ? <CheckCircle size={14} weight="duotone" className="text-[#38B98E] flex-shrink-0" />
-                          : <Circle size={14} weight="regular" className="text-secondary opacity-40 flex-shrink-0" />
+                          ? <CheckCircle size={14} className="text-[#38B98E] flex-shrink-0" />
+                          : <Circle size={14} className="text-secondary opacity-40 flex-shrink-0" />
                         }
                         <span className={`text-xs font-medium ${ok ? 'text-[#38B98E]' : 'text-secondary opacity-70'}`}>{texto}</span>
                       </div>
@@ -955,7 +971,7 @@ export default function RegistroPage() {
                   onClick={() => { setError(''); setPaso(2) }}
                   className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
                 >
-                  <ArrowLeft size={15} weight="bold" /> Atrás
+                  <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
                 <button
                   type="button"
@@ -964,7 +980,7 @@ export default function RegistroPage() {
                   className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                 >
-                  Siguiente <ArrowRight size={16} weight="bold" />
+                  Siguiente <ArrowRight size={16} strokeWidth={2.5} />
                 </button>
               </div>
             </div>
@@ -1003,7 +1019,7 @@ export default function RegistroPage() {
                     <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
                   </div>
                   {aceptoTerminos
-                    ? <CheckCircle size={22} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0" />
+                    ? <CheckCircle size={22} className="text-[var(--color-brand)] flex-shrink-0" />
                     : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
                   }
                 </button>
@@ -1018,14 +1034,14 @@ export default function RegistroPage() {
                   }}
                 >
                   <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ShieldCheck size={18} weight="duotone" className="text-[var(--color-brand)]" />
+                    <ShieldCheck size={18} className="text-[var(--color-brand)]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight">Política de privacidad y datos</p>
                     <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
                   </div>
                   {aceptoPrivacidad
-                    ? <CheckCircle size={22} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0" />
+                    ? <CheckCircle size={22} className="text-[var(--color-brand)] flex-shrink-0" />
                     : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
                   }
                 </button>
@@ -1037,8 +1053,8 @@ export default function RegistroPage() {
                 onClick={() => setSuscritoNewsletter(v => !v)}
               >
                 {suscritoNewsletter
-                  ? <CheckSquare size={20} weight="duotone" className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} weight="regular" className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
+                  ? <CheckSquare size={20} className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
+                  : <Square size={20} className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
                 }
                 <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
                   Quiero recibir novedades sobre economía circular
@@ -1064,7 +1080,7 @@ export default function RegistroPage() {
                   onClick={() => { setError(''); setPaso(3) }}
                   className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all"
                 >
-                  <ArrowLeft size={15} weight="bold" /> Atrás
+                  <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
                 {(() => {
                   const formValido = !loading && aceptoTerminos && aceptoPrivacidad
@@ -1125,7 +1141,7 @@ export default function RegistroPage() {
               {(modalDoc === 'terminos' ? PUNTOS_TERMINOS : PUNTOS_PRIVACIDAD).map((punto, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: isDark ? 'rgba(214,243,145,0.15)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <Check size={11} weight="bold" className="text-[var(--color-brand)]" />
+                    <Check size={11} strokeWidth={2.5} className="text-[var(--color-brand)]" />
                   </div>
                   <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{punto}</p>
                 </div>
@@ -1138,7 +1154,7 @@ export default function RegistroPage() {
                 style={{ fontSize: 13, color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}
               >
                 Leer documento completo
-                <ArrowRight size={13} weight="bold" />
+                <ArrowRight size={13} strokeWidth={2.5} />
               </a>
             </div>
 

@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { PencilSimpleLine, CaretDown } from '@phosphor-icons/react'
+import {
+  PenLine as PencilSimpleLine,
+  ChevronDown as CaretDown,
+} from 'lucide-react'
 import { LegalPageLayout } from '@/components/legal/legal-page-layout'
 
 /* ── Traducciones ─────────────────────────────────────────────────── */
@@ -612,7 +615,7 @@ function FirmaSection({ tf }: { tf: typeof T['ES']['firma'] }) {
                 color: '#00827C',
               }}
             >
-              <PencilSimpleLine size={24} weight="duotone" />
+              <PencilSimpleLine size={24} />
             </div>
             <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12, lineHeight: 1.4 }}>
               {tf.modalTexto}
@@ -808,7 +811,7 @@ function FirmaSection({ tf }: { tf: typeof T['ES']['firma'] }) {
                   color: 'var(--text-secondary)',
                   fontSize: 12,
                 }}>
-                  <PencilSimpleLine size={14} weight="duotone" style={{ color: '#00827C', flexShrink: 0 }} />
+                  <PencilSimpleLine size={14} style={{ color: '#00827C', flexShrink: 0 }} />
                   <span>Escribe tu tipo de documento directamente en la casilla superior.</span>
                 </div>
               )}

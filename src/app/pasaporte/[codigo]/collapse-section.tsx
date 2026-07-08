@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { CaretDown } from '@phosphor-icons/react'
+import {
+  ChevronDown as CaretDown,
+} from 'lucide-react'
 
 export function CollapseSection({
   titulo,

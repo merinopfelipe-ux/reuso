@@ -1,7 +1,19 @@
 'use client'
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
-import { Calendar, Funnel, X, CaretLeft, CaretRight, MagnifyingGlass, CircleNotch, Leaf, Drop, ShieldCheck, Link as LinkIcon } from '@phosphor-icons/react'
+import {
+  Calendar,
+  Filter as Funnel,
+  X,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+  Search as MagnifyingGlass,
+  Loader2 as CircleNotch,
+  Leaf,
+  Droplet as Drop,
+  ShieldCheck,
+  Link as LinkIcon,
+} from 'lucide-react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'

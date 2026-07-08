@@ -2,7 +2,16 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Tray, Envelope, Buildings, Calendar, ChatCircle, CaretDown, CaretUp, Phone } from '@phosphor-icons/react'
+import {
+  Inbox as Tray,
+  Mail as Envelope,
+  Building2 as Buildings,
+  Calendar,
+  MessageCircle as ChatCircle,
+  ChevronDown as CaretDown,
+  ChevronUp as CaretUp,
+  Phone,
+} from 'lucide-react'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 
 const C = {

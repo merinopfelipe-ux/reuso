@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Medal, ArrowSquareOut, XCircle, MagnifyingGlass } from '@phosphor-icons/react'
+import {
+  Medal,
+  ExternalLink as ArrowSquareOut,
+  XCircle,
+  Search as MagnifyingGlass,
+} from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',

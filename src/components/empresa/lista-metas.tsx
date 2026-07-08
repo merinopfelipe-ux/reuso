@@ -1,7 +1,14 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Target, Plus, Pulse, Trash, Calendar, CircleNotch } from '@phosphor-icons/react'
+import {
+  Target,
+  Plus,
+  Activity as Pulse,
+  Trash2 as Trash,
+  Calendar,
+  Loader2 as CircleNotch,
+} from 'lucide-react'
 
 // Metricas support
 const METRICAS = {

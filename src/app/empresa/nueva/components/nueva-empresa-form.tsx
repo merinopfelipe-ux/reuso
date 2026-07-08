@@ -3,7 +3,10 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Upload, Leaf } from '@phosphor-icons/react'
+import {
+  Upload,
+  Leaf,
+} from 'lucide-react'
 
 const BRAND = '#00827C'
 

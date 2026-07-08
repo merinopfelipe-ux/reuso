@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
-import { Lock, CheckCircle, XCircle } from '@phosphor-icons/react'
+import {
+  Lock,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react'
 
 interface ConsentData {
   v: number
@@ -196,8 +200,8 @@ function ImpactoRow({
     >
       <div style={{ marginTop: 2, flexShrink: 0 }}>
         {isOn
-          ? <CheckCircle size={16} color="#00827C" weight="fill" />
-          : <XCircle size={16} color="#aaa" weight="fill" />
+          ? <CheckCircle size={16} color="#00827C" />
+          : <XCircle size={16} color="#aaa" />
         }
       </div>
       <div>
@@ -323,7 +327,7 @@ export default function CookiesPreferenciasPage() {
               transition: 'opacity 0.2s',
             }}
           >
-            <CheckCircle size={16} weight="fill" />
+            <CheckCircle size={16} />
             {t.btnGuardar}
           </button>
           {saved && (
@@ -342,7 +346,7 @@ export default function CookiesPreferenciasPage() {
                 animation: 'fadeIn 0.2s ease',
               }}
             >
-              <CheckCircle size={14} color="#38B98E" weight="fill" />
+              <CheckCircle size={14} color="#38B98E" />
               {t.savedMsg}
             </div>
           )}
@@ -402,7 +406,7 @@ export default function CookiesPreferenciasPage() {
             transition: 'background 0.2s',
           }}
         >
-          <XCircle size={16} weight="fill" />
+          <XCircle size={16} />
           {t.btnReiniciar}
         </button>
       </section>

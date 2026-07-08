@@ -1,8 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { TrendUp, TrendDown, Minus, type Icon } from '@phosphor-icons/react'
-import * as PhosphorIcons from '@phosphor-icons/react'
+import {
+  TrendingUp as TrendUp,
+  TrendingDown as TrendDown,
+  Minus,
+} from 'lucide-react'
+import type { LucideIcon as Icon } from 'lucide-react'
+import { Leaf, Droplet, Package, Medal } from 'lucide-react'
 
 export interface IndicadorSemanal {
   porcentaje: number
@@ -13,10 +18,10 @@ export type FormatoKpi = 'decimal2' | 'agua' | 'entero'
 export type IconoKpi = 'leaf' | 'droplets' | 'box' | 'award'
 
 const ICONOS: Record<IconoKpi, Icon> = {
-  leaf: PhosphorIcons.Leaf,
-  droplets: PhosphorIcons.Drop,
-  box: PhosphorIcons.Package,
-  award: PhosphorIcons.Medal,
+  leaf: Leaf,
+  droplets: Droplet,
+  box: Package,
+  award: Medal,
 }
 
 const FORMATEADORES: Record<FormatoKpi, (v: number) => string> = {
@@ -101,7 +106,7 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
           justifyContent: 'center',
         }}
       >
-        <Icono size={20} color={color} weight="duotone" />
+        <Icono size={20} color={color} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <p

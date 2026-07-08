@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Plus, Lifebuoy, CircleNotch, ArrowRight } from '@phosphor-icons/react'
+import {
+  Plus,
+  LifeBuoy as Lifebuoy,
+  Loader2 as CircleNotch,
+  ArrowRight,
+} from 'lucide-react'
 import { HiloTicket } from './hilo-ticket'
 
 export type TipoTicket = 'bug' | 'duda' | 'solicitud' | 'queja'
@@ -77,7 +82,7 @@ export function ListaTickets({ esAdmin }: Props) {
                 display: 'flex', alignItems: 'center', gap: 6, transition: 'all 0.2s'
               }}
             >
-              <Plus size={16} weight="bold" /> Crear Ticket
+              <Plus size={16} strokeWidth={2.5} /> Crear Ticket
             </button>
           )}
         </div>

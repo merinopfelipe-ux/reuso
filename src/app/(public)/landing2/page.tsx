@@ -3,9 +3,20 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
-  Tree, Globe, Medal, Users, Calculator, Leaf, ArrowRight, Check,
-  CaretDown, Flask, ShieldCheck, Target, ArrowsClockwise,
-} from '@phosphor-icons/react'
+  TreeDeciduous as Tree,
+  Globe,
+  Medal,
+  Users,
+  Calculator,
+  Leaf,
+  ArrowRight,
+  Check,
+  ChevronDown as CaretDown,
+  FlaskConical as Flask,
+  ShieldCheck,
+  Target,
+  RefreshCw as ArrowsClockwise,
+} from 'lucide-react'
 import { PLANS, CURRENCIES, ANNUAL_DISCOUNT } from '@/lib/constants/pricing'
 import { LandingHeader } from '@/components/landing-header'
 
@@ -264,7 +275,7 @@ export default function Landing2Page() {
           {/* Texto izquierdo */}
           <div>
             <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
-              <Leaf size={13} weight="fill" /> Economía circular con datos reales
+              <Leaf size={13} /> Economía circular con datos reales
             </div>
             <h1 className={`text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-6 ${tp}`}>
               Calcula el ahorro exacto de extender la vida útil de tus productos.
@@ -274,7 +285,7 @@ export default function Landing2Page() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <a href="#planes" className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#00827C] text-white font-bold text-base hover:bg-[#006B66] transition-all shadow-[0_8px_32px_rgba(0,130,124,0.3)] hover:shadow-[0_12px_40px_rgba(0,130,124,0.4)] hover:-translate-y-0.5">
-                Iniciar mi primer diagnóstico <ArrowRight size={18} weight="bold" />
+                Iniciar mi primer diagnóstico <ArrowRight size={18} strokeWidth={2.5} />
               </a>
               <a href="#proceso" className={`inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border font-bold text-base transition-all ${isDark ? 'border-[#D6F391]/20 text-[#D6F391] hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5'}`}>
                 Ver cómo funciona
@@ -297,7 +308,7 @@ export default function Landing2Page() {
                 <p className={`text-xs font-medium ${ts}`}>Último lote registrado · Hoy</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-[#D6F391] flex items-center justify-center">
-                <Leaf size={16} weight="fill" className="text-[#474747]" />
+                <Leaf size={16} className="text-[#474747]" />
               </div>
             </div>
 
@@ -332,17 +343,17 @@ export default function Landing2Page() {
       <section id="autoridad" className={`py-6 px-6 border-y transition-colors duration-300 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#00827C]/5 border-[#00827C]/10'}`}>
         <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-center gap-6 text-center md:text-left">
           <div className="flex items-center gap-3 text-[#00827C]">
-            <Tree size={22} weight="duotone" />
-            <Medal size={22} weight="duotone" />
-            <Globe size={22} weight="duotone" />
+            <Tree size={22} />
+            <Medal size={22} />
+            <Globe size={22} />
           </div>
           <h2 className={`text-sm font-bold max-w-2xl ${tp}`}>
             La métrica de confianza para la economía circular. Datos trazables a fuentes internacionales - IPCC, ecoinvent, DEFRA.
           </h2>
           <div className="flex items-center gap-3 text-[#00827C]">
-            <ShieldCheck size={22} weight="duotone" />
-            <Flask size={22} weight="duotone" />
-            <Users size={22} weight="duotone" />
+            <ShieldCheck size={22} />
+            <Flask size={22} />
+            <Users size={22} />
           </div>
         </div>
       </section>
@@ -395,7 +406,7 @@ export default function Landing2Page() {
                 style={{ willChange: 'transform' }} />
               <div className="relative z-10 flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center">
-                  <Check size={20} weight="bold" className="text-[#00827C]" />
+                  <Check size={20} strokeWidth={2.5} className="text-[#00827C]" />
                 </div>
                 <h3 className={`text-lg font-black ${tp}`}>Economía Circular - Reutilizar y optimizar</h3>
               </div>
@@ -408,7 +419,7 @@ export default function Landing2Page() {
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <div className="mt-0.5 w-5 h-5 rounded-full bg-[#00827C]/10 flex items-center justify-center flex-shrink-0">
-                      <Check size={10} weight="bold" className="text-[#00827C]" />
+                      <Check size={10} strokeWidth={2.5} className="text-[#00827C]" />
                     </div>
                     <span className={`text-sm font-medium leading-relaxed ${tp}`}>{item}</span>
                   </li>
@@ -459,7 +470,7 @@ export default function Landing2Page() {
                         : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20' : 'border-[#00827C]/12 hover:border-[#00827C]/20'}`
                     }`}
                   >
-                    <Icon size={18} weight={activeCategory === c.id ? 'fill' : 'regular'} />
+                    <Icon size={18} strokeWidth={activeCategory === c.id ? 2.5 : 2} />
                     {c.label}
                   </button>
                 )
@@ -483,7 +494,7 @@ export default function Landing2Page() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#00827C]/5 border-[#00827C]/10'}`}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Tree size={18} weight="duotone" className="text-[#00827C]" />
+                      <Tree size={18} className="text-[#00827C]" />
                       <span className="text-[10px] font-black text-[#00827C]">Ahorra al planeta</span>
                     </div>
                     <div className={`glass-number text-4xl font-black mb-1 ${tp}`}>{cat.planeta.valor}</div>
@@ -492,7 +503,7 @@ export default function Landing2Page() {
 
                   <div className={`p-6 rounded-2xl border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/20' : 'bg-[#D6F391]/20 border-[#D6F391]/40'}`}>
                     <div className="flex items-center gap-2 mb-3">
-                      <Calculator size={18} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#474747]'} />
+                      <Calculator size={18} className={isDark ? 'text-[#D6F391]' : 'text-[#474747]'} />
                       <span className={`text-[10px] font-black ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Ahorra al bolsillo</span>
                     </div>
                     <div className={`glass-number text-4xl font-black mb-1 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>{cat.bolsillo.valor}</div>
@@ -533,7 +544,7 @@ export default function Landing2Page() {
                 <div className="flex items-start justify-between mb-6">
                   <span className={`text-5xl font-black leading-none select-none ${isDark ? 'text-white/10' : 'text-[#00827C]/15'}`}>{paso.n}</span>
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-[#00827C]/8'}`}>
-                    <paso.Icon size={24} weight="duotone" className="text-[#00827C]" />
+                    <paso.Icon size={24} className="text-[#00827C]" />
                   </div>
                 </div>
                 <h3 className={`text-xl font-black mb-3 ${tp}`}>{paso.titulo}</h3>
@@ -593,7 +604,7 @@ export default function Landing2Page() {
                 <ul className="space-y-3 mb-8 flex-grow">
                   {plan.features.map((f, j) => (
                     <li key={j} className={`flex items-start gap-2.5 text-sm font-medium ${ts}`}>
-                      <Check size={14} weight="bold" className="text-[#00827C] mt-0.5 flex-shrink-0" />
+                      <Check size={14} strokeWidth={2.5} className="text-[#00827C] mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
                   ))}
@@ -638,7 +649,7 @@ export default function Landing2Page() {
 
             <div className="relative z-10">
               <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold text-[#00827C] mb-8 ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/25' : 'bg-[#00827C]/8 border-[#00827C]/15'}`}>
-                <Leaf size={13} weight="fill" /> Para el planeta y el bolsillo
+                <Leaf size={13} /> Para el planeta y el bolsillo
               </div>
               <h2 className={`text-4xl sm:text-5xl font-black tracking-tight mb-6 leading-tight ${tp}`}>
                 El mundo ya no acepta excusas. Exige datos.
@@ -650,7 +661,7 @@ export default function Landing2Page() {
                 href="/registro"
                 className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-[#00827C] text-white font-black text-base hover:bg-[#006B66] transition-all shadow-[0_12px_40px_rgba(0,130,124,0.35)] hover:shadow-[0_16px_48px_rgba(0,130,124,0.45)] hover:-translate-y-1"
               >
-                Crear mi cuenta y diagnosticar mis primeros productos <ArrowRight size={20} weight="bold" />
+                Crear mi cuenta y diagnosticar mis primeros productos <ArrowRight size={20} strokeWidth={2.5} />
               </Link>
               <p className={`mt-6 text-sm font-medium ${ts}`}>Sin tarjeta de crédito. Plan Explora gratis para siempre.</p>
             </div>

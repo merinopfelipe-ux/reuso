@@ -1,7 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { PaperPlaneRight, CircleNotch, CheckCircle } from '@phosphor-icons/react'
+import {
+  SendHorizontal as PaperPlaneRight,
+  Loader2 as CircleNotch,
+  CheckCircle,
+} from 'lucide-react'
 
 export function LeadsForm() {
   const [loading, setLoading] = useState(false)

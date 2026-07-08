@@ -4,7 +4,15 @@ import { LeadsForm } from '@/components/leads-form'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
-  Check, CaretDown, ChatCircle, ArrowRight, X, TrendUp, Medal, Users } from '@phosphor-icons/react'
+  Check,
+  ChevronDown as CaretDown,
+  MessageCircle as ChatCircle,
+  ArrowRight,
+  X,
+  TrendingUp as TrendUp,
+  Medal,
+  Users,
+} from 'lucide-react'
 import { CURRENCIES, ANNUAL_DISCOUNT, PLANS, VALUE_PROPS } from '@/lib/constants/pricing'
 import { waLink } from '@/lib/constants/contacto'
 

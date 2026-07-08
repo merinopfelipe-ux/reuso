@@ -1,6 +1,8 @@
 'use client'
 
-import { Trophy } from '@phosphor-icons/react'
+import {
+  Trophy,
+} from 'lucide-react'
 
 export interface ItemRanking {
   user_id: string

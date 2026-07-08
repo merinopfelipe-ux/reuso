@@ -1,6 +1,8 @@
 'use client'
 
-import { X } from '@phosphor-icons/react'
+import {
+  X,
+} from 'lucide-react'
 
 export function CloseTabButton() {
   return (

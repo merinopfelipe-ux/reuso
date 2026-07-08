@@ -2,7 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sun, Moon, Monitor, ArrowLeft, Check, Bell, Question, FloppyDisk, LockSimple } from '@phosphor-icons/react'
+import {
+  Sun,
+  Moon,
+  Monitor,
+  ArrowLeft,
+  Check,
+  Bell,
+  CircleHelp as Question,
+  Save as FloppyDisk,
+  LockKeyhole as LockSimple,
+} from 'lucide-react'
 import { useToast } from '@/components/toast-provider'
 import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'
@@ -406,7 +416,7 @@ export default function SettingsPage() {
                       title="Cambiar correo"
                       style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}
                     >
-                      <LockSimple size={16} weight="bold" />
+                      <LockSimple size={16} strokeWidth={2.5} />
                     </button>
                   </div>
                   {unlockField === 'email' && (
@@ -444,7 +454,7 @@ export default function SettingsPage() {
                         title="Cambiar teléfono"
                         style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', display: 'flex', padding: 4 }}
                       >
-                        <LockSimple size={16} weight="bold" />
+                        <LockSimple size={16} strokeWidth={2.5} />
                       </button>
                     </div>
                     {unlockField === 'phone' && (
@@ -744,11 +754,11 @@ export default function SettingsPage() {
             }}
           >
             {saved ? (
-              <><Check size={17} weight="bold" /> Guardado</>
+              <><Check size={17} strokeWidth={2.5} /> Guardado</>
             ) : loading ? (
               <>Guardando...</>
             ) : (
-              <><FloppyDisk size={17} weight="bold" /> Guardar cambios</>
+              <><FloppyDisk size={17} strokeWidth={2.5} /> Guardar cambios</>
             )}
           </button>
         </div>

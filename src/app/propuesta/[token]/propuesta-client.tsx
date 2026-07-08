@@ -3,10 +3,16 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import {
-  ArrowUpRight, CheckCircle, ChatCircleText,
-  Leaf, Drop, Tree, Bathtub, ArrowsCounterClockwise,
-  Question,
-} from '@phosphor-icons/react'
+  ArrowUpRight,
+  CheckCircle,
+  MessageSquareText as ChatCircleText,
+  Leaf,
+  Droplet as Drop,
+  TreeDeciduous as Tree,
+  Bath as Bathtub,
+  RefreshCcw as ArrowsCounterClockwise,
+  CircleHelp as Question,
+} from 'lucide-react'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -136,7 +142,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
             <Image src={logoUrl} alt={empresaNombre} width={40} height={40} className="rounded-[8px] object-contain" />
           ) : (
             <div className="w-10 h-10 rounded-[8px] bg-[#00827C]/10 flex items-center justify-center">
-              <Leaf size={20} weight="duotone" className="text-[#00827C]" />
+              <Leaf size={20} className="text-[#00827C]" />
             </div>
           )}
           <span className="text-base font-semibold text-[#474747]">{empresaNombre}</span>
@@ -147,7 +153,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 text-sm text-[#474747]/70 hover:text-[#474747] transition-colors"
         >
-          <ArrowUpRight size={16} weight="bold" />
+          <ArrowUpRight size={16} strokeWidth={2.5} />
           Compartir
         </a>
       </header>
@@ -204,7 +210,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
 
         {/* ── Transporte ── */}
         <div className="flex items-center justify-center gap-2 text-sm text-[#474747]/50 mb-10 border-t border-b border-gray-100 py-3">
-          <ArrowsCounterClockwise size={16} weight="duotone" className="text-[#474747]/40" />
+          <ArrowsCounterClockwise size={16} className="text-[#474747]/40" />
           Transporte de recogida y entrega sin costo
         </div>
 
@@ -218,7 +224,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                 <span>Evitas:</span>
               </div>
               <div className="flex items-center justify-center gap-2 mb-1">
-                <ArrowsCounterClockwise size={28} weight="duotone" className="text-[#00827C]" />
+                <ArrowsCounterClockwise size={28} className="text-[#00827C]" />
                 <span className="text-3xl font-bold text-[#474747]">{co2 >= 1 ? co2.toFixed(0) : co2.toFixed(1)}</span>
               </div>
               <p className="text-xs text-[#474747]/60">
@@ -231,7 +237,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                 <span>Equivale a:</span>
               </div>
               <div className="flex items-center justify-center gap-2 mb-1">
-                <Tree size={28} weight="duotone" className="text-[#38B98E]" />
+                <Tree size={28} className="text-[#38B98E]" />
                 <span className="text-3xl font-bold text-[#474747]">{arboles}</span>
               </div>
               <p className="text-xs text-[#474747]/60">
@@ -244,7 +250,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                 <span>Evitas:</span>
               </div>
               <div className="flex items-center justify-center gap-2 mb-1">
-                <Drop size={28} weight="duotone" className="text-[#59A6E4]" />
+                <Drop size={28} className="text-[#59A6E4]" />
                 <span className="text-3xl font-bold text-[#474747]">{agua >= 1000 ? agua.toLocaleString('es-CO') : agua.toFixed(0)}</span>
               </div>
               <p className="text-xs text-[#474747]/60">litros de agua</p>
@@ -255,7 +261,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                 <span>Equivale a:</span>
               </div>
               <div className="flex items-center justify-center gap-2 mb-1">
-                <Bathtub size={28} weight="duotone" className="text-[#59A6E4]" />
+                <Bathtub size={28} className="text-[#59A6E4]" />
                 <span className="text-3xl font-bold text-[#474747]">{duchas}</span>
               </div>
               <p className="text-xs text-[#474747]/60">duchas de cinco minutos.</p>
@@ -272,7 +278,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
         <div className="text-center mb-10">
           {aceptada ? (
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#38B98E]/10 text-[#38B98E] font-semibold">
-              <CheckCircle size={20} weight="duotone" />
+              <CheckCircle size={20} />
               Propuesta aceptada - Te contactamos pronto
             </div>
           ) : (
@@ -296,7 +302,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm text-[#474747]/50 hover:text-[#474747] transition-colors"
                   >
-                    <ChatCircleText size={16} weight="duotone" />
+                    <ChatCircleText size={16} />
                     Tengo dudas
                   </a>
                 </div>
@@ -320,7 +326,7 @@ export default function PropuestaClient({ cotizacion, muebles, token }: Props) {
                 'Transporte de recogida y entrega sin costo.',
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-sm text-[#474747]/80">
-                  <CheckCircle size={16} weight="duotone" className="text-[#00827C] flex-shrink-0 mt-0.5" />
+                  <CheckCircle size={16} className="text-[#00827C] flex-shrink-0 mt-0.5" />
                   {item}
                 </li>
               ))}

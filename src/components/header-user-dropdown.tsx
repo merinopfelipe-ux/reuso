@@ -2,7 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { User, Gear, SignOut, UserCheck, Buildings } from '@phosphor-icons/react'
+import {
+  User,
+  Settings as Gear,
+  LogOut as SignOut,
+  UserCheck,
+  Building2 as Buildings,
+} from 'lucide-react'
 import type { Rol } from '@/types'
 
 const ROL_LABELS: Record<string, string> = {

@@ -2,7 +2,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { CaretDown } from '@phosphor-icons/react'
+import {
+  ChevronDown as CaretDown,
+} from 'lucide-react'
 
 interface FooterProps {
   ip?: string

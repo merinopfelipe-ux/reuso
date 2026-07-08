@@ -76,7 +76,7 @@ export function OnboardingCard() {
                   flexShrink: 0,
                 }}
               >
-                <Icono size={16} color="var(--color-brand)" weight="duotone" />
+                <Icono size={16} color="var(--color-brand)" />
               </div>
               <span
                 style={{

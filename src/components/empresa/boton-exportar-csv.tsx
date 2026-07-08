@@ -1,6 +1,8 @@
 'use client'
 
-import { Download } from '@phosphor-icons/react'
+import {
+  Download,
+} from 'lucide-react'
 import type { Plan } from '@/types'
 
 interface Props {

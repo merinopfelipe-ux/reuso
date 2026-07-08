@@ -3,7 +3,16 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
-import { FileText, Shield, Database, Cookie, Lock, ChartBar, ChatCircle, Cpu } from '@phosphor-icons/react'
+import {
+  FileText,
+  Shield,
+  Database,
+  Cookie,
+  Lock,
+  BarChart2 as ChartBar,
+  MessageCircle as ChatCircle,
+  Cpu,
+} from 'lucide-react'
 
 const T = {
   ES: {

@@ -3,11 +3,21 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import {
-  CheckCircle, WarningCircle, XCircle,
-  Cpu, Database, ShieldCheck,
-  ArrowLeft, Clock, CaretLeft, CaretRight, CaretDown, CaretUp,
-  Warning, Hammer
-} from '@phosphor-icons/react'
+  CheckCircle,
+  AlertCircle as WarningCircle,
+  XCircle,
+  Cpu,
+  Database,
+  ShieldCheck,
+  ArrowLeft,
+  Clock,
+  ChevronLeft as CaretLeft,
+  ChevronRight as CaretRight,
+  ChevronDown as CaretDown,
+  ChevronUp as CaretUp,
+  TriangleAlert as Warning,
+  Hammer,
+} from 'lucide-react'
 import type { ChecksResult } from '@/lib/status-checker'
 
 interface StatusComponent {
@@ -928,11 +938,11 @@ export default function StatusPage() {
           marginBottom: 32
         }}>
           {globalStatus === 'ok' ? (
-            <CheckCircle size={36} color={bannerColor} weight="fill" style={{ flexShrink: 0 }} />
+            <CheckCircle size={36} color={bannerColor} style={{ flexShrink: 0 }} />
           ) : globalStatus === 'degradado' ? (
-            <WarningCircle size={36} color={bannerColor} weight="fill" style={{ flexShrink: 0 }} />
+            <WarningCircle size={36} color={bannerColor} style={{ flexShrink: 0 }} />
           ) : (
-            <XCircle size={36} color={bannerColor} weight="fill" style={{ flexShrink: 0 }} />
+            <XCircle size={36} color={bannerColor} style={{ flexShrink: 0 }} />
           )}
           <div>
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: t.textPrimary }}>
@@ -1040,11 +1050,11 @@ export default function StatusPage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {isCompOk ? (
-                          <CheckCircle size={18} color="#38B98E" weight="fill" style={{ flexShrink: 0 }} />
+                          <CheckCircle size={18} color="#38B98E" style={{ flexShrink: 0 }} />
                         ) : isCompDegradado ? (
-                          <WarningCircle size={18} color="#F6BF3E" weight="fill" style={{ flexShrink: 0 }} />
+                          <WarningCircle size={18} color="#F6BF3E" style={{ flexShrink: 0 }} />
                         ) : (
-                          <XCircle size={18} color="#FF5E4B" weight="fill" style={{ flexShrink: 0 }} />
+                          <XCircle size={18} color="#FF5E4B" style={{ flexShrink: 0 }} />
                         )}
                         <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
                           <span style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary }}>
@@ -1112,11 +1122,11 @@ export default function StatusPage() {
                         style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', userSelect: 'none' }}
                       >
                         {isOk ? (
-                          <CheckCircle size={18} color="#38B98E" weight="fill" style={{ flexShrink: 0 }} />
+                          <CheckCircle size={18} color="#38B98E" style={{ flexShrink: 0 }} />
                         ) : isDegradado ? (
-                          <WarningCircle size={18} color="#F6BF3E" weight="fill" style={{ flexShrink: 0 }} />
+                          <WarningCircle size={18} color="#F6BF3E" style={{ flexShrink: 0 }} />
                         ) : (
-                          <XCircle size={18} color="#FF5E4B" weight="fill" style={{ flexShrink: 0 }} />
+                          <XCircle size={18} color="#FF5E4B" style={{ flexShrink: 0 }} />
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontSize: 14, fontWeight: 600, color: t.textPrimary }}>
@@ -1159,7 +1169,7 @@ export default function StatusPage() {
                             }}
                           >
                             <span>{grupo.components.length} componentes</span>
-                            {isExpanded ? <CaretUp size={12} weight="bold" /> : <CaretDown size={12} weight="bold" />}
+                            {isExpanded ? <CaretUp size={12} strokeWidth={2.5} /> : <CaretDown size={12} strokeWidth={2.5} />}
                           </button>
                         </div>
                       </div>
@@ -1219,11 +1229,11 @@ export default function StatusPage() {
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                   {isCompOk ? (
-                                    <CheckCircle size={14} color="#38B98E" weight="fill" />
+                                    <CheckCircle size={14} color="#38B98E" />
                                   ) : isCompDegradado ? (
-                                    <WarningCircle size={14} color="#F6BF3E" weight="fill" />
+                                    <WarningCircle size={14} color="#F6BF3E" />
                                   ) : (
-                                    <XCircle size={14} color="#FF5E4B" weight="fill" />
+                                    <XCircle size={14} color="#FF5E4B" />
                                   )}
                                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
                                     <span style={{ fontSize: 13, fontWeight: 600, color: t.textPrimary }}>
@@ -1323,7 +1333,7 @@ export default function StatusPage() {
               }}
             >
               <span>Ver historial</span>
-              {historyExpanded ? <CaretUp size={12} weight="bold" /> : <CaretDown size={12} weight="bold" />}
+              {historyExpanded ? <CaretUp size={12} strokeWidth={2.5} /> : <CaretDown size={12} strokeWidth={2.5} />}
             </button>
           </div>
 
@@ -1619,16 +1629,16 @@ export default function StatusPage() {
           {/* Información del Estado */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {tooltip.status === 'ok' && (
-              <CheckCircle size={16} color="#38B98E" weight="fill" style={{ flexShrink: 0 }} />
+              <CheckCircle size={16} color="#38B98E" style={{ flexShrink: 0 }} />
             )}
             {tooltip.status === 'mantenimiento' && (
-              <Hammer size={16} color="#59A6E4" weight="fill" style={{ flexShrink: 0 }} />
+              <Hammer size={16} color="#59A6E4" style={{ flexShrink: 0 }} />
             )}
             {tooltip.status === 'degradado' && (
-              <Warning size={16} color="#F6BF3E" weight="fill" style={{ flexShrink: 0 }} />
+              <Warning size={16} color="#F6BF3E" style={{ flexShrink: 0 }} />
             )}
             {tooltip.status === 'error' && (
-              <WarningCircle size={16} color="#FF5E4B" weight="fill" style={{ flexShrink: 0 }} />
+              <WarningCircle size={16} color="#FF5E4B" style={{ flexShrink: 0 }} />
             )}
             <span style={{
               fontSize: 13,

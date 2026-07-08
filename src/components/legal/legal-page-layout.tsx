@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Cpu, ArrowDown } from '@phosphor-icons/react'
+import {
+  Cpu,
+  ArrowDown,
+} from 'lucide-react'
 import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'
 

@@ -3,7 +3,11 @@
 import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { CheckCircle, CircleNotch, Envelope } from '@phosphor-icons/react'
+import {
+  CheckCircle,
+  Loader2 as CircleNotch,
+  Mail as Envelope,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { OTPInput } from '@/components/otp-input'
 import { ThemeToggle } from '@/components/theme-toggle'

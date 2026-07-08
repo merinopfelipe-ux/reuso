@@ -1,6 +1,11 @@
 'use client'
 
-import { X, Info, Tag, Warning } from '@phosphor-icons/react'
+import {
+  X,
+  Info,
+  Tag,
+  TriangleAlert as Warning,
+} from 'lucide-react'
 import { useAlertas } from './alertas-context'
 import type { TipoAlerta } from '@/types'
 

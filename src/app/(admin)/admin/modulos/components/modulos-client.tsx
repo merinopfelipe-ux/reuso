@@ -2,9 +2,18 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Power, Stack, Check, X, Tag, Buildings, PencilSimple } from '@phosphor-icons/react'
+import {
+  Plus,
+  Power,
+  Layers as Stack,
+  Check,
+  X,
+  Tag,
+  Building2 as Buildings,
+  Pencil as PencilSimple,
+} from 'lucide-react'
 import type { ModuloConCategorias } from '@/types'
-import * as PhosphorIcons from '@phosphor-icons/react'
+import * as LucideIcons from 'lucide-react'
 
 const C = {
   brand: 'var(--color-brand)',
@@ -16,7 +25,7 @@ const C = {
 }
 
 function LucidePreview({ name }: { name: string }) {
-  const Icon = (PhosphorIcons as Record<string, unknown>)[name] as React.ComponentType<{ size?: number; color?: string }> | undefined
+  const Icon = (LucideIcons as Record<string, unknown>)[name] as React.ComponentType<{ size?: number; color?: string }> | undefined
   if (!Icon) return <Stack size={20} color={C.mid} />
   return <Icon size={20} color={C.brand} />
 }

@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Stack, Warning } from '@phosphor-icons/react'
+import {
+  Layers as Stack,
+  TriangleAlert as Warning,
+} from 'lucide-react'
 import type { ModuloConActivo } from '@/types'
 
 const C = {
@@ -94,7 +97,7 @@ export function ModulosEmpresaClient({
             boxShadow: 'var(--shadow)', border: `1px solid ${C.border}`,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <Warning size={22} color={C.warning} weight="duotone" />
+              <Warning size={22} color={C.warning} />
               <span style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>
                 ¿Apagar {pendiente.nombre}?
               </span>

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Download } from '@phosphor-icons/react'
+import {
+  Download,
+} from 'lucide-react'
 
 type Formato = 'csv' | 'xlsx' | 'pdf'
 

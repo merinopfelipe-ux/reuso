@@ -4,8 +4,19 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  House, Package, ClockCounterClockwise, Lifebuoy, Buildings, Target, Medal, SquaresFour, List, X, Gear, TrendUp
-} from '@phosphor-icons/react'
+  Home as House,
+  Package,
+  History as ClockCounterClockwise,
+  LifeBuoy as Lifebuoy,
+  Building2 as Buildings,
+  Target,
+  Medal,
+  LayoutGrid as SquaresFour,
+  List,
+  X,
+  Settings as Gear,
+  TrendingUp as TrendUp,
+} from 'lucide-react'
 import type { Rol } from '@/types'
 
 interface MobileBottomNavProps {
@@ -139,7 +150,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                 transition: 'color 0.2s ease',
               }}
             >
-              <item.icon size={26} weight={isActive ? 'bold' : 'regular'} />
+              <item.icon size={26} strokeWidth={isActive ? 2.5 : 2} />
               <span style={{ fontSize: 10, fontWeight: isActive ? 700 : 500, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 60 }}>
                 {item.label}
               </span>
@@ -163,7 +174,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
             transition: 'color 0.2s ease',
           }}
         >
-          {isOpen ? <X size={26} weight="bold" /> : <List size={26} weight="regular" />}
+          {isOpen ? <X size={26} strokeWidth={2.5} /> : <List size={26} />}
           <span style={{ fontSize: 10, fontWeight: isOpen ? 700 : 500 }}>Más</span>
         </button>
       </nav>
@@ -226,7 +237,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                     transition: 'all 0.2s ease',
                   }}
                 >
-                  <item.icon size={28} weight={isActive ? 'bold' : 'regular'} />
+                  <item.icon size={28} strokeWidth={isActive ? 2.5 : 2} />
                   <span style={{ fontSize: 12, fontWeight: isActive ? 700 : 600, textAlign: 'center' }}>
                     {item.label}
                   </span>

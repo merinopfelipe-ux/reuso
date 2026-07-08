@@ -3,7 +3,13 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Key, CircleNotch, Eye, EyeSlash, CheckCircle } from '@phosphor-icons/react'
+import {
+  Key,
+  Loader2 as CircleNotch,
+  Eye,
+  EyeOff as EyeSlash,
+  CheckCircle,
+} from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OTPInput } from '@/components/otp-input'

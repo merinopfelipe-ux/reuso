@@ -1,10 +1,16 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  IdentificationCard, Leaf, Drop, Car, Tree,
-  ShieldCheck, ArrowCounterClockwise, Barbell,
-  WarningCircle,
-} from '@phosphor-icons/react/dist/ssr'
+  IdCard as IdentificationCard,
+  Leaf,
+  Droplet as Drop,
+  Car,
+  TreeDeciduous as Tree,
+  ShieldCheck,
+  RotateCcw as ArrowCounterClockwise,
+  Dumbbell as Barbell,
+  AlertCircle as WarningCircle,
+} from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'
@@ -302,7 +308,7 @@ export default async function PasaportePage({ params }: PageProps) {
                 )}
                 {(c.co2_evitado_kg ?? 0) > 0 && (
                   <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#38B98E' }}>
-                    <ArrowCounterClockwise size={14} weight="bold" />
+                    <ArrowCounterClockwise size={14} strokeWidth={2.5} />
                     Evitaste {c.co2_evitado_kg?.toFixed(2)} kg CO₂e
                   </div>
                 )}
@@ -340,7 +346,7 @@ export default async function PasaportePage({ params }: PageProps) {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     margin: '0 auto 8px',
                   }}>
-                    <Icon size={22} color={color} weight="fill" />
+                    <Icon size={22} color={color} />
                   </div>
                   <p style={{ margin: '0 0 2px', fontSize: 24, fontWeight: 700, color }}>{value}</p>
                   <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{label}</p>
@@ -360,7 +366,7 @@ export default async function PasaportePage({ params }: PageProps) {
             borderRadius: 12, padding: 16,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-              <ShieldCheck size={24} color="#00827C" weight="fill" />
+              <ShieldCheck size={24} color="#00827C" />
               <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Cadena de bloques verificada</span>
             </div>
             {activo.hash_integridad && (

@@ -1,7 +1,9 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ArrowLeft } from '@phosphor-icons/react'
+import {
+  ArrowLeft,
+} from 'lucide-react'
 
 interface AdminPageHeaderProps {
   titulo: string

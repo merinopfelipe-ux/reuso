@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Cookie, X, CheckCircle, Lock } from '@phosphor-icons/react'
+import {
+  Cookie,
+  X,
+  CheckCircle,
+  Lock,
+} from 'lucide-react'
 
 interface ConsentData {
   v: number
@@ -233,7 +238,7 @@ export function CookieBanner() {
               {t.btnPersonalizar}
             </button>
             <button onClick={aceptarTodo} style={btnPrimary}>
-              <CheckCircle size={14} weight="fill" />
+              <CheckCircle size={14} />
               {t.btnAceptarTodo}
             </button>
           </div>
@@ -277,7 +282,7 @@ export function CookieBanner() {
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
             <button onClick={soloEsenciales} style={btnGhost}>{t.btnEsenciales}</button>
             <button onClick={guardarPreferencias} style={btnPrimary}>
-              <CheckCircle size={14} weight="fill" />
+              <CheckCircle size={14} />
               {t.btnGuardar}
             </button>
           </div>

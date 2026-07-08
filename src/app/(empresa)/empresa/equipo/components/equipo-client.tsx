@@ -2,9 +2,21 @@
 
 import { useState, useCallback } from 'react'
 import {
-  UserPlus, Envelope, Clock, CheckCircle, XCircle, Users, CircleNotch,
-  Copy, Check, Link, Trash, PencilSimple, X, WarningCircle,
-} from '@phosphor-icons/react'
+  UserPlus,
+  Mail as Envelope,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Users,
+  Loader2 as CircleNotch,
+  Copy,
+  Check,
+  Link,
+  Trash2 as Trash,
+  Pencil as PencilSimple,
+  X,
+  AlertCircle as WarningCircle,
+} from 'lucide-react'
 import type { Rol } from '@/types'
 
 interface Miembro {

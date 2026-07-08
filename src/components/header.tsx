@@ -3,8 +3,15 @@
 
 import { useState, useEffect, useRef } from 'react'
 import {
-  List, MagnifyingGlass, User, Buildings, Calculator, UserCheck, Gear, SignOut
-} from '@phosphor-icons/react'
+  List,
+  Search as MagnifyingGlass,
+  User,
+  Building2 as Buildings,
+  Calculator,
+  UserCheck,
+  Settings as Gear,
+  LogOut as SignOut,
+} from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'
@@ -255,7 +262,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             }}
           >
             <div className="transition-transform duration-300 group-hover:scale-110">
-              <List size={22} weight="bold" color={primaryColor} />
+              <List size={22} strokeWidth={2.5} color={primaryColor} />
             </div>
             <span className="menu-label-tech" style={{
               fontSize: '9px',

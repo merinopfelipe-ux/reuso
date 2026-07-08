@@ -51,7 +51,7 @@ export function LegalHeader() {
     >
       {/* Izquierda: cerrar → home con tooltip */}
       <Link href="/" className="legal-header-btn">
-        <X size={18} weight="bold" />
+        <X size={18} strokeWidth={2.5} />
         <span className="legal-tooltip legal-tooltip--bottom">Volver al inicio</span>
       </Link>
 
@@ -77,14 +77,14 @@ export function LegalHeader() {
           className="legal-header-btn"
           aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
         >
-          {mounted && isDark ? <Sun size={18} weight="bold" /> : <Moon size={18} weight="bold" />}
+          {mounted && isDark ? <Sun size={18} strokeWidth={2.5} /> : <Moon size={18} strokeWidth={2.5} />}
           <span className="legal-tooltip legal-tooltip--bottom">
             {mounted && isDark ? 'Modo día' : 'Modo noche'}
           </span>
         </button>
         
         <Link href="/legal/dudas" className="legal-header-btn">
-          <Question size={18} weight="bold" />
+          <Question size={18} strokeWidth={2.5} />
           <span className="legal-tooltip legal-tooltip--bottom">Tengo una duda</span>
         </Link>
       </div>

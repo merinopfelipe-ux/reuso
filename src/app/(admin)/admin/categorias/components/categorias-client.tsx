@@ -2,7 +2,12 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { CaretDown, CaretRight, Plus, Power } from '@phosphor-icons/react'
+import {
+  ChevronDown as CaretDown,
+  ChevronRight as CaretRight,
+  Plus,
+  Power,
+} from 'lucide-react'
 import { ConfianzaBadge } from '@/components/admin/confianza-badge'
 import type { CategoriaConItems, Modulo, NivelConfianza } from '@/types'
 

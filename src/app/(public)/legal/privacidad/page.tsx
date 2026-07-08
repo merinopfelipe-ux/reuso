@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout } from '@/components/legal/legal-page-layout'
-import { Lock, ShieldCheck, HandHeart } from '@phosphor-icons/react'
+import {
+  Lock,
+  ShieldCheck,
+  HeartHandshake as HandHeart,
+} from 'lucide-react'
 
 const ICONOS_PRIVACIDAD = {
   Lock: Lock,
@@ -260,7 +264,7 @@ export default function PrivacidadPage() {
               <div style={{ color: 'var(--color-brand)', marginBottom: 8 }}>
                 {(() => {
                   const Icono = ICONOS_PRIVACIDAD[card.icono as keyof typeof ICONOS_PRIVACIDAD]
-                  return Icono ? <Icono size={24} weight="regular" /> : null
+                  return Icono ? <Icono size={24} /> : null
                 })()}
               </div>
               <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>{card.nombre}</div>

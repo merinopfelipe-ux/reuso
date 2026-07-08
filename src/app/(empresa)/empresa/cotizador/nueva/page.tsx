@@ -4,9 +4,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Camera, XCircle, CheckSquare, Square, Leaf, Drop,
-  Plus, ArrowRight, WarningCircle,
-} from '@phosphor-icons/react'
+  Camera,
+  XCircle,
+  SquareCheck as CheckSquare,
+  Square,
+  Leaf,
+  Droplet as Drop,
+  Plus,
+  ArrowRight,
+  AlertCircle as WarningCircle,
+} from 'lucide-react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { calcularCotizacion } from '@/lib/cotizador/motor-cotizacion'
 import type { ConfigCostosMueble, Oficios, ResultadoCotizacion } from '@/lib/cotizador/motor-cotizacion'
@@ -304,7 +311,7 @@ export default function NuevaCotizacionPage() {
         {estado === 'idle' && (
           <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
             <div className="w-14 h-14 rounded-full bg-[#00827C]/10 flex items-center justify-center mx-auto mb-4">
-              <Camera size={28} weight="duotone" className="text-[#00827C]" />
+              <Camera size={28} className="text-[#00827C]" />
             </div>
             <p className={`text-base font-semibold mb-1 ${tp}`}>
               {muebles.length === 0 ? 'Sube la foto del mueble' : 'Agrega otro mueble'}
@@ -354,7 +361,7 @@ export default function NuevaCotizacionPage() {
               <img src={imagenPreview} alt="" className="w-full h-40 object-cover rounded-[8px] mb-4 opacity-60" />
             )}
             <div className="flex items-start gap-3">
-              <XCircle size={24} weight="duotone" className="text-[#FF5E4B] flex-shrink-0 mt-0.5" />
+              <XCircle size={24} className="text-[#FF5E4B] flex-shrink-0 mt-0.5" />
               <div>
                 <p className={`text-base font-semibold mb-1 ${tp}`}>Este mueble no es viable para restauración</p>
                 <p className={`text-sm ${ts}`}>{diagnostico.motivo ?? 'Material o daño estructural no apto.'}</p>
@@ -411,8 +418,8 @@ export default function NuevaCotizacionPage() {
                 ] as { key: keyof Oficios; label: string }[]).map(({ key, label }) => (
                   <label key={key} className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setOficios(prev => ({ ...prev, [key]: !prev[key] }))}>
                     {oficios[key]
-                      ? <CheckSquare size={20} weight="duotone" className="text-[#00827C] flex-shrink-0" />
-                      : <Square size={20} weight="regular" className={`flex-shrink-0 ${ts}`} />
+                      ? <CheckSquare size={20} className="text-[#00827C] flex-shrink-0" />
+                      : <Square size={20} className={`flex-shrink-0 ${ts}`} />
                     }
                     <span className={`text-sm font-medium ${oficios[key] ? tp : ts}`}>{label}</span>
                   </label>
@@ -423,8 +430,8 @@ export default function NuevaCotizacionPage() {
                 <p className={`text-sm font-semibold mb-3 ${tp}`}>Ajustes del comercial</p>
                 <label className="flex items-center gap-3 cursor-pointer select-none" onClick={() => setDanosOcultos(p => !p)}>
                   {danosOcultos
-                    ? <CheckSquare size={20} weight="duotone" className="text-[#F6BF3E] flex-shrink-0" />
-                    : <Square size={20} weight="regular" className={`flex-shrink-0 ${ts}`} />
+                    ? <CheckSquare size={20} className="text-[#F6BF3E] flex-shrink-0" />
+                    : <Square size={20} className={`flex-shrink-0 ${ts}`} />
                   }
                   <div>
                     <span className={`text-sm font-medium ${tp}`}>Daños ocultos</span>
@@ -462,14 +469,14 @@ export default function NuevaCotizacionPage() {
                   </p>
                   <div className="flex gap-6">
                     <div className="flex items-center gap-2">
-                      <Leaf size={20} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
+                      <Leaf size={20} className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
                       <div>
                         <p className={`text-lg font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>{resultado.co2_evitado_kg.toFixed(1)} kg</p>
                         <p className={`text-xs ${isDark ? 'text-[#D6F391]/70' : 'text-[#1A3A38]/70'}`}>CO2 evitado</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Drop size={20} weight="duotone" className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
+                      <Drop size={20} className={isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'} />
                       <div>
                         <p className={`text-lg font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>{resultado.agua_evitada_l.toFixed(0)} L</p>
                         <p className={`text-xs ${isDark ? 'text-[#D6F391]/70' : 'text-[#1A3A38]/70'}`}>agua ahorrada</p>
@@ -501,7 +508,7 @@ export default function NuevaCotizacionPage() {
               disabled={estado === 'guardando'}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors disabled:opacity-50"
             >
-              <Plus size={16} weight="bold" />
+              <Plus size={16} strokeWidth={2.5} />
               {estado === 'guardando' ? 'Guardando...' : 'Agrega otro mueble'}
             </button>
             {(cotizacionId || muebles.length > 0) && (
@@ -511,7 +518,7 @@ export default function NuevaCotizacionPage() {
                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold transition-colors disabled:opacity-50 ${isDark ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90' : 'bg-[var(--text-primary)] text-[var(--bg-primary)] hover:opacity-90'}`}
               >
                 Genera la propuesta
-                <ArrowRight size={16} weight="bold" />
+                <ArrowRight size={16} strokeWidth={2.5} />
               </button>
             )}
           </div>

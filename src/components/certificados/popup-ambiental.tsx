@@ -1,6 +1,10 @@
 'use client'
 
-import { Download, Leaf, X } from '@phosphor-icons/react'
+import {
+  Download,
+  Leaf,
+  X,
+} from 'lucide-react'
 
 interface Props {
   url: string
