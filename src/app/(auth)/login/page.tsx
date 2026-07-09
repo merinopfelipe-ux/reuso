@@ -576,9 +576,7 @@ export default function LoginPage() {
 
           {/* Card testimonio - sombra siempre visible */}
           <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
-            <div className="absolute -top-6 -left-6 bg-brand text-white w-14 h-14 flex items-center justify-center rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)]" aria-hidden="true">
-              <span style={{ fontSize: 32, lineHeight: 1, fontWeight: 900, fontFamily: 'seravek, ui-sans-serif, sans-serif', letterSpacing: '-0.02em', userSelect: 'none' }}>"</span>
-            </div>
+
 
             <div key={activeTestimonial} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} min-h-[220px] flex flex-col justify-center`}>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
