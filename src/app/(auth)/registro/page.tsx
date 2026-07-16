@@ -245,6 +245,7 @@ export default function RegistroPage() {
         motivacion: motivaciones.join(', '),
         quiere_asesoria: quiereAsesoria,
         codigo_empresa: codigoStatus === 'ok' ? codigoEmpresa.trim().toUpperCase() : undefined,
+        suscrito_newsletter: suscritoNewsletter,
         turnstile_token: turnstileToken || 'skip',
       }),
     })

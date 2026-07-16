@@ -224,7 +224,7 @@ export default function ConfirmarEmailPage() {
       justifyContent: 'center',
       fontFamily: "'Open Sans', sans-serif",
       padding: '24px',
-      userSelect: 'none',
+      userSelect: 'auto',
       background: 'var(--bg-primary)',
     }}>
       <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 10 }}>

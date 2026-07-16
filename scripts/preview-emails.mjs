@@ -400,7 +400,7 @@ const DARK_FORCED = `
     .ea td { background-color: rgba(246,191,62,0.10) !important; }
     .ea p { color: #F6BF3E !important; }
     .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    .ek span { color: #D6F391 !important; }
+    .ek a, .ek span { color: #D6F391 !important; }
     .ek p { color: #E0E0E0 !important; }
     .et { background-color: rgba(214,243,145,0.08) !important; }
     .et td { color: #E0E0E0 !important; }
