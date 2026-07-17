@@ -40,7 +40,7 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
         background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 12, padding: '16px',
       }}>
-        <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>
           Costos ({moneda})
         </p>
         <ResponsiveContainer width="100%" height={180}>
@@ -68,7 +68,7 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
         background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 12, padding: '16px',
       }}>
-        <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>
           Circularidad y Retorno (%)
         </p>
         <ResponsiveContainer width="100%" height={180}>

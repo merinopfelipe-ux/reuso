@@ -332,7 +332,7 @@ export default function RegistroPage() {
       <div className="mb-6 flex items-center justify-center">
         <Image
           src="/logo-completo.svg"
-          alt="Reúso"
+          alt="Calculadora de Reúso"
           width={140}
           height={44}
           priority

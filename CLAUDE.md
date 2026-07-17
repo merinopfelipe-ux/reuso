@@ -172,5 +172,22 @@ Auditoría y refactor completo del primer módulo. Todos los flujos de autentica
 
 **Supabase configurado (2026-06-16):** 6 templates de email con diseño gradiente y narrativa 3 pasos aplicados. OTP Expiry ≥ 600s. El flujo OTP de recuperación funciona end-to-end.
 
+## AUDITORÍA EXHAUSTIVA — MÓDULO AUTH + SISTEMA COMPLETO (2026-07-17)
+
+Revisión de 5 pasadas sobre auth y toda la app. 40 archivos corregidos, build y TypeScript limpios.
+
+| Ítem | Estado |
+|---|---|
+| OTP recovery de 8 dígitos: OTPInput con `length={8}` y validación `!== 8` en `/recuperar` | ✓ |
+| `suscrito_newsletter` faltaba en el schema Zod del API de registro, se descartaba en silencio | ✓ |
+| Errores de Supabase filtrados crudos en inglés al usuario, ahora mensajes genéricos en español | ✓ |
+| `legal_aceptado_en` con hack de zona horaria que desfasaba el timestamp 5h, ahora UTC directo | ✓ |
+| Directriz #5 (mayúsculas sostenidas): eliminado `uppercase`/`textTransform: 'uppercase'` de 27 archivos, incluida zona protegida (header, sidebar) con clave 2680 | ✓ |
+| `/admin/qa` tenía 3 blobs `animate-blob` como fondo de página en modo noche, prohibido por directriz #0, eliminados | ✓ |
+| `alt="Reúso"` en login y registro corregido a "Calculadora de Reúso" (regla de nombre) | ✓ |
+| DARK_FORCED en `preview-emails.mjs` sin `.ek a` en selector OTP noche, corregido | ✓ |
+| `userSelect: 'none'` en confirmar-email, corregido a `'auto'` | ✓ |
+| Verificado: tickets sanitizan con DOMPurify antes de INSERT, `getPublicUrl` solo en bucket público `logos` | ✓ |
+
 ## PRINCIPIO FINAL
 No es proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.

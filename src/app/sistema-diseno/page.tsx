@@ -1043,13 +1043,13 @@ export default function ManualDisenoPage() {
           {/* Reglas de Uso de Iconografía Duotone y Marcas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12">
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
-              <h4 className={`text-sm font-black uppercase tracking-wider mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Iconos Duotone</h4>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Iconos Duotone</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 El estilo <strong>duotone</strong> (relleno sutil al 20% de opacidad) debe emplearse únicamente para elementos destacados que requieran mayor peso visual, como estados activos en menús (sidebar), accesos directos principales en el dashboard o componentes de estado de alto impacto. No se debe usar para botones de acción regulares ni en flujos de texto inline.
               </p>
             </div>
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
-              <h4 className={`text-sm font-black uppercase tracking-wider mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
                 Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong>. Se permite el uso de Phosphor Icons en la interfaz general <strong>si y solo si</strong> el ícono requerido no existe en Lucide y es un caso extremo. En estos escenarios, nuestro hub exporta automáticamente estos íconos envueltos en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
               </p>

@@ -190,7 +190,7 @@ export default function LandingPage() {
               border: `1px solid ${C.border}`, borderRadius: 100, marginBottom: 28,
             }}>
               <span style={{ width: 6, height: 6, background: C.brand, borderRadius: '50%' }} />
-              <span style={{ fontSize: 10, fontWeight: 800, color: C.brand, textTransform: 'uppercase', letterSpacing: '0.12em' }}>
+              <span style={{ fontSize: 10, fontWeight: 800, color: C.brand }}>
                 Plataforma de Impacto Ambiental
               </span>
             </div>
@@ -259,7 +259,7 @@ export default function LandingPage() {
         background: '#fff',
       }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: C.mid, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 20 }}>
+          <p style={{ textAlign: 'center', fontSize: 11, fontWeight: 700, color: C.mid, marginBottom: 20 }}>
             Organizaciones que ya certifican su impacto
           </p>
           <div className="logos-strip" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 40, flexWrap: 'nowrap' }}>
@@ -484,7 +484,7 @@ export default function LandingPage() {
                   <div style={{
                     position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
                     padding: '4px 16px', background: C.brand, color: '#fff',
-                    fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em',
+                    fontSize: 10, fontWeight: 900,
                     borderRadius: 100, boxShadow: C.shadow, whiteSpace: 'nowrap',
                   }}>Más recomendado</div>
                 )}
@@ -492,14 +492,14 @@ export default function LandingPage() {
                   <div style={{
                     position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
                     padding: '4px 16px', background: '#AD7C43', color: '#fff',
-                    fontSize: 10, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.1em',
+                    fontSize: 10, fontWeight: 900,
                     borderRadius: 100, whiteSpace: 'nowrap',
                   }}>Próximamente</div>
                 )}
 
                 <div style={{ marginBottom: 20 }}>
                   <h3 style={{ fontSize: 17, fontWeight: 900, color: C.dark, margin: '0 0 4px' }}>{plan.name}</h3>
-                  <p style={{ fontSize: 11, color: C.mid, textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0, lineHeight: 1.4 }}>{plan.tagline}</p>
+                  <p style={{ fontSize: 11, color: C.mid, margin: 0, lineHeight: 1.4 }}>{plan.tagline}</p>
                 </div>
 
                 <PlanPrice plan={plan} currency={currency} billing={billing} />

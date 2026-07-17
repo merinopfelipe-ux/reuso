@@ -285,7 +285,7 @@ export default function LoginPage() {
           <Link href="/" aria-label="Ir al inicio">
             <Image
               src="/logo-completo.svg"
-              alt="Reúso"
+              alt="Calculadora de Reúso"
               width={140}
               height={44}
               className="object-contain"

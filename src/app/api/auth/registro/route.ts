@@ -60,6 +60,7 @@ const bodySchema = z
     frecuencia_reuso: z.string().max(20).optional(),
     motivacion: z.string().max(80).optional(),
     quiere_asesoria: z.boolean().optional(),
+    suscrito_newsletter: z.boolean().optional(),
     // Código de empresa (paso 1)
     codigo_empresa: z.string().max(10).regex(/^[A-Z0-9]*$/).optional(),
   })
@@ -112,7 +113,7 @@ export async function POST(request: NextRequest) {
   }
 
   const { nombre, apellido, apodo, telefono, email, password, turnstile_token,
-          sector, frecuencia_reuso, motivacion, quiere_asesoria, codigo_empresa } = parsed.data
+          sector, frecuencia_reuso, motivacion, quiere_asesoria, suscrito_newsletter, codigo_empresa } = parsed.data
 
   const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
   if (!skipTurnstile) {
@@ -125,9 +126,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const legal_aceptado_en = new Date(
-    new Date().toLocaleString('en-US', { timeZone: 'America/Bogota' })
-  ).toISOString()
+  const legal_aceptado_en = new Date().toISOString()
 
   // Ciframos los datos PII a Nivel de Aplicación antes de que toquen la BD
   const encryptedTelefono = await encryptSensitive(telefono)
@@ -148,6 +147,7 @@ export async function POST(request: NextRequest) {
         frecuencia_reuso: frecuencia_reuso ?? null,
         motivacion: motivacion ?? null,
         quiere_asesoria: quiere_asesoria ?? false,
+        suscrito_newsletter: suscrito_newsletter ?? false,
         codigo_empresa: codigo_empresa ?? null,
       },
     },
@@ -155,10 +155,11 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error('SUPABASE SIGNUP ERROR:', error)
-    return NextResponse.json(
-      { error: `Error de registro: ${error.message}` },
-      { status: 400 }
-    )
+    const msg = error.message?.toLowerCase() ?? ''
+    const mensaje = msg.includes('already registered') || msg.includes('already been registered')
+      ? 'Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña.'
+      : 'No pudimos crear tu cuenta. Intenta de nuevo en unos minutos.'
+    return NextResponse.json({ error: mensaje }, { status: 400 })
   }
 
   return NextResponse.json({ ok: true })

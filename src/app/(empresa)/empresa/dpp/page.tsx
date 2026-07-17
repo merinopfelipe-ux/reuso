@@ -128,7 +128,7 @@ export default async function DppPage({
                 {['Código DPP', 'Nombre', 'Estado', 'Ciclos', 'CO₂ evitado', 'Actualizado'].map((h) => (
                   <th key={h} style={{
                     padding: '10px 14px', textAlign: 'left', fontSize: 11,
-                    fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+                    fontWeight: 700,
                     color: 'var(--color-brand)', borderBottom: '1px solid var(--border)',
                     whiteSpace: 'nowrap',
                   }}>{h}</th>

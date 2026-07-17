@@ -1882,15 +1882,6 @@ export default function QAPage() {
   return (
     <div className={`min-h-screen ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
 
-      {/* Blobs de fondo - solo en modo noche (directriz #0: fondo blanco puro en luz) */}
-      {isDark && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full filter blur-[130px] opacity-20 animate-blob bg-[#D6F391]" />
-          <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] rounded-full filter blur-[110px] animate-blob animation-delay-2000 bg-[#D6F391]/10" />
-          <div className="absolute top-[40%] left-[20%] w-[350px] h-[350px] rounded-full filter blur-[100px] animate-blob animation-delay-4000 bg-[#D6F391]/5" />
-        </div>
-      )}
-
       <div className="relative z-10 max-w-7xl mx-auto">
 
         {/* ── Header glass ──────────────────────────────────────────────────── */}
@@ -1901,7 +1892,7 @@ export default function QAPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className={`text-xs font-semibold px-3 py-1 rounded-fullr border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
+                <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
                   Auditoría & QA
                 </span>
                 <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>

@@ -34,7 +34,7 @@ function KpiMini({ icono: Icon, color, valor, label }: {
       </div>
       <div>
         <p style={{ fontSize: 20, fontWeight: 700, color: TEXT_DARK, margin: 0, lineHeight: 1 }}>{valor}</p>
-        <p style={{ fontSize: 11, color: TEXT_MED, margin: '2px 0 0', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>{label}</p>
+        <p style={{ fontSize: 11, color: TEXT_MED, margin: '2px 0 0', fontWeight: 600 }}>{label}</p>
       </div>
     </div>
   )

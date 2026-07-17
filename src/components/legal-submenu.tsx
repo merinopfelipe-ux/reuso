@@ -42,8 +42,6 @@ export function LegalSubmenu({ secciones, titulo = '' }: LegalSubmenuProps) {
           style={{
             fontSize: 14,
             fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
             color: 'var(--text-secondary)',
             marginBottom: 8,
             paddingLeft: 16,

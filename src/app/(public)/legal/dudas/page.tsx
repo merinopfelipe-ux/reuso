@@ -125,8 +125,6 @@ export default function DudasPage() {
             style={{
               fontSize: 11,
               fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
               color: 'var(--text-secondary)',
               marginBottom: 14,
             }}

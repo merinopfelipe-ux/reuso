@@ -413,8 +413,6 @@ export default function NuevoActivoDppPage() {
                     fontSize: 11,
                     fontWeight: 700,
                     color: 'var(--text-secondary)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
                   }}
                 >
                   {h}

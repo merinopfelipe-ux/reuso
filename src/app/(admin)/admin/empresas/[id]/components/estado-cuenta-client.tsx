@@ -70,7 +70,7 @@ function KpiCard({
         <div style={{ padding: 8, borderRadius: 8, background: `${color}18` }}>
           <Icono size={16} style={{ color }} />
         </div>
-        <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
           {titulo}
         </p>
       </div>
@@ -144,7 +144,7 @@ export function EstadoCuentaClient({
             <div style={{ padding: 8, borderRadius: 8, background: 'rgba(160,130,200,0.12)' }}>
               <Medal size={16} style={{ color: '#9B6DD6' }} />
             </div>
-            <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Plan actual</p>
+            <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Plan actual</p>
           </div>
           <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{empresa.plan}</p>
         </div>

@@ -214,7 +214,6 @@ function ImpactoRow({
               borderRadius: 6,
               padding: '1px 7px',
               letterSpacing: '0.04em',
-              textTransform: 'uppercase',
             }}>
               {siempreLabel}
             </span>

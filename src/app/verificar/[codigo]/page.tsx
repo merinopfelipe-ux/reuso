@@ -207,7 +207,7 @@ export default async function VerificarPage({ params }: PageProps) {
             padding: '4px 16px', marginBottom: 16,
           }}>
             {revocado ? <FileX size={13} color="#EF4444" /> : <Leaf size={13} color="var(--color-brand)" />}
-            <span style={{ fontSize: 11, fontWeight: 600, color: revocado ? '#B91C1C' : 'var(--color-brand)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: revocado ? '#B91C1C' : 'var(--color-brand)' }}>
               {revocado ? 'DOCUMENTO INVÁLIDO' : 'Documento auténtico · reuso.lurdes.co'}
             </span>
           </div>
@@ -243,7 +243,7 @@ export default async function VerificarPage({ params }: PageProps) {
               gap: 16, marginBottom: 24, flexWrap: 'wrap',
             }}>
               <div>
-                <p style={{ fontSize: 11, color: 'var(--text-placeholder)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 600 }}>
+                <p style={{ fontSize: 11, color: 'var(--text-placeholder)', margin: '0 0 4px', fontWeight: 600 }}>
                   Otorgado a
                 </p>
                 <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px' }}>
@@ -272,7 +272,7 @@ export default async function VerificarPage({ params }: PageProps) {
             }}>
               <div style={{ width: 3, height: 32, background: 'var(--color-brand)', borderRadius: 2, flexShrink: 0 }} />
               <div>
-                <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600 }}>
                   {cert.tipo === 'certificado' ? 'Período de impacto verificado' : 'Período del informe'}
                 </p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
@@ -284,7 +284,7 @@ export default async function VerificarPage({ params }: PageProps) {
             {/* Métricas */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
               <div style={{ background: 'var(--color-brand)', borderRadius: 12, padding: '20px' }}>
-                <p style={{ fontSize: 10, color: 'color-mix(in srgb, var(--text-on-brand) 75%, transparent)', margin: '0 0 6px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <p style={{ fontSize: 10, color: 'color-mix(in srgb, var(--text-on-brand) 75%, transparent)', margin: '0 0 6px', fontWeight: 600 }}>
                   CO₂ evitado
                 </p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-on-brand)', margin: '0 0 2px', lineHeight: 1 }}>
@@ -295,7 +295,7 @@ export default async function VerificarPage({ params }: PageProps) {
               <div style={{ background: 'var(--color-brand-light)', borderRadius: 12, padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                   <Drop size={13} color="var(--color-brand)" />
-                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0, fontWeight: 600 }}>
                     Agua ahorrada
                   </p>
                 </div>
@@ -308,7 +308,7 @@ export default async function VerificarPage({ params }: PageProps) {
 
             {/* Equivalencias */}
             <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-placeholder)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-placeholder)', margin: '0 0 10px' }}>
                 Equivale a...
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
@@ -342,7 +342,7 @@ export default async function VerificarPage({ params }: PageProps) {
             {/* Desglose */}
             {desglose.length > 0 && (
               <div>
-                <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-placeholder)', margin: '0 0 10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-placeholder)', margin: '0 0 10px' }}>
                   Desglose por categoría
                 </p>
                 <div style={{ border: '1px solid var(--border)', borderRadius: 10, overflow: 'hidden' }}>
@@ -376,7 +376,7 @@ export default async function VerificarPage({ params }: PageProps) {
             gap: 12, flexWrap: 'wrap',
           }}>
             <div>
-              <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600 }}>
                 Código de verificación
               </p>
               <code style={{ fontSize: 15, fontWeight: 700, color: 'var(--color-brand)', letterSpacing: '0.04em' }}>
@@ -387,7 +387,7 @@ export default async function VerificarPage({ params }: PageProps) {
               <div style={{ flex: 1, minWidth: 200, paddingLeft: 20, borderLeft: '1px solid var(--border)' }}>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 2 }}>
                   <ShieldCheck size={12} color="var(--color-brand)" />
-                  <p style={{ fontSize: 10, color: 'var(--color-brand)', margin: 0, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  <p style={{ fontSize: 10, color: 'var(--color-brand)', margin: 0, fontWeight: 700 }}>
                     Sello de Seguridad Digital
                   </p>
                 </div>
@@ -397,7 +397,7 @@ export default async function VerificarPage({ params }: PageProps) {
               </div>
             )}
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600 }}>
                 Fecha de emisión
               </p>
               <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>
@@ -451,14 +451,14 @@ export default async function VerificarPage({ params }: PageProps) {
                 <div style={{ width: 2, flex: 1, background: 'linear-gradient(to bottom, var(--color-brand), transparent)', margin: '4px 0' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', textTransform: 'uppercase', marginBottom: 2 }}>Código de Seguridad del Registro</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Código de Seguridad del Registro</p>
                 <code style={{ fontSize: 11, color: 'var(--text-primary)', wordBreak: 'break-all' }}>{cert.hash_integridad}</code>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)' }} />
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', textTransform: 'uppercase', marginBottom: 2 }}>Estado de Autenticidad</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Estado de Autenticidad</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)' }} />
                   <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-success-content)' }}>Nosotros confirmamos que este registro es auténtico</span>
@@ -491,7 +491,7 @@ export default async function VerificarPage({ params }: PageProps) {
           maxWidth: 400,
           margin: '0 auto'
         }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>Verificar otro código</p>
+          <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Verificar otro código</p>
           <form action="/verificar" method="GET" style={{ position: 'relative' }}>
             <input 
               name="codigo"

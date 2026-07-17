@@ -231,7 +231,7 @@ export default function DetalleCotizacionPage() {
 
         {/* Estado + cambio */}
         <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-          <p className={`text-xs uppercase tracking-wide font-semibold mb-3 ${ts}`}>Estado del embudo</p>
+          <p className={`text-xs font-semibold mb-3 ${ts}`}>Estado del embudo</p>
           <div className="flex flex-wrap gap-2">
             {ESTADOS.map(e => (
               <button
@@ -252,7 +252,7 @@ export default function DetalleCotizacionPage() {
 
         {/* Timeline apertura */}
         <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-          <p className={`text-xs uppercase tracking-wide font-semibold mb-3 ${ts}`}>Actividad</p>
+          <p className={`text-xs font-semibold mb-3 ${ts}`}>Actividad</p>
           <div className="space-y-2">
             <TimelineItem
               icon={<CheckCircle size={14} className="text-[#00827C]" />}
@@ -290,7 +290,7 @@ export default function DetalleCotizacionPage() {
         {/* Muebles */}
         {muebles.length > 0 && (
           <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-            <p className={`text-xs uppercase tracking-wide font-semibold mb-3 ${ts}`}>
+            <p className={`text-xs font-semibold mb-3 ${ts}`}>
               {muebles.length} {muebles.length === 1 ? 'mueble' : 'muebles'}
             </p>
             <div className="space-y-3">
@@ -335,7 +335,7 @@ export default function DetalleCotizacionPage() {
 
         {/* Enlace público */}
         <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-          <p className={`text-xs uppercase tracking-wide font-semibold mb-3 ${ts}`}>Enlace de propuesta</p>
+          <p className={`text-xs font-semibold mb-3 ${ts}`}>Enlace de propuesta</p>
           {enlace ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2 rounded-[8px] border px-3 py-2 border-[var(--border)] bg-[var(--bg-input)]">

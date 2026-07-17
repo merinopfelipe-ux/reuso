@@ -268,7 +268,7 @@ export default function NuevaCotizacionPage() {
         {/* Lista de muebles agregados */}
         {muebles.length > 0 && (
           <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${ts}`}>
+            <p className={`text-xs font-semibold mb-3 ${ts}`}>
               {muebles.length} {muebles.length === 1 ? 'mueble agregado' : 'muebles agregados'}
             </p>
             <div className="space-y-2">
@@ -435,7 +435,7 @@ export default function NuevaCotizacionPage() {
             {resultado && (
               <>
                 <div className={`rounded-[12px] border p-4 ${cardBg}`}>
-                  <p className={`text-xs uppercase tracking-wide font-semibold mb-1 ${ts}`}>Precio estimado</p>
+                  <p className={`text-xs font-semibold mb-1 ${ts}`}>Precio estimado</p>
                   <p className="text-3xl font-bold text-[#00827C]">{formatCOP(resultado.precio_mueble)}</p>
                   {resultado.desglose.length > 0 && (
                     <div className="mt-2 space-y-0.5">
@@ -454,7 +454,7 @@ export default function NuevaCotizacionPage() {
 
                 {/* Contraprestación ambiental */}
                 <div className={`rounded-[12px] p-4 ${isDark ? 'bg-[#D6F391]/15 border border-[#D6F391]/20' : 'bg-[#D6F391] border border-[#D6F391]'}`}>
-                  <p className={`text-xs font-semibold uppercase tracking-wide mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>
+                  <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#1A3A38]'}`}>
                     Contraprestación ambiental
                   </p>
                   <div className="flex gap-6">

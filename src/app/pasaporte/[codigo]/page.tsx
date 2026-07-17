@@ -229,7 +229,7 @@ export default async function PasaportePage({ params }: PageProps) {
                   <thead>
                     <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
                       {['Material', 'Peso kg', 'CO₂/kg', 'Fuente', 'Confianza'].map((h) => (
-                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
+                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
                       ))}
                     </tr>
                   </thead>

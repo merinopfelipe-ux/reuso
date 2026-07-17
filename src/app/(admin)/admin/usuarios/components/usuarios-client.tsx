@@ -265,7 +265,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
               <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Empresa</th>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap' }}>Empresa</th>
                 <SortTh col="rol" sort={sort} onToggle={toggleSort}>Rol</SortTh>
                 <SortTh col="created_at" sort={sort} onToggle={toggleSort}>Registro</SortTh>
               </tr>

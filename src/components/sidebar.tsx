@@ -427,8 +427,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           <SignOut size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} className="transition-transform duration-200" />
           <span style={{ 
             fontSize: '13px', 
-            fontWeight: 900, 
-            textTransform: 'uppercase', 
+            fontWeight: 900,
             letterSpacing: '0.1em',
             opacity: isExpanded ? 1 : 0,
             maxWidth: isExpanded ? 200 : 0,

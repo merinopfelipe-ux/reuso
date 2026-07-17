@@ -534,7 +534,7 @@ function ResultadoPanel({ resultado, onReset }: {
         background: BRAND, borderRadius: 16, padding: '20px 24px',
         textAlign: 'center', marginBottom: 16,
       }}>
-        <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+        <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px' }}>
           CO₂ evitado
         </p>
         <p style={{ fontSize: 36, fontWeight: 700, color: '#fff', margin: '0 0 2px' }}>

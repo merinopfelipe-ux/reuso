@@ -226,7 +226,7 @@ export default function AdminStatusPage() {
 
           <form onSubmit={handleCrearIncidente} className="space-y-4">
             <div>
-              <label className={`block text-xs font-semibold mb-1 uppercase tracking-wide ${ts}`}>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Título del Incidente
               </label>
               <input
@@ -240,7 +240,7 @@ export default function AdminStatusPage() {
             </div>
 
             <div>
-              <label className={`block text-xs font-semibold mb-1 uppercase tracking-wide ${ts}`}>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Componente Afectado
               </label>
               <select
@@ -256,7 +256,7 @@ export default function AdminStatusPage() {
             </div>
 
             <div>
-              <label className={`block text-xs font-semibold mb-1 uppercase tracking-wide ${ts}`}>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Severidad
               </label>
               <select
@@ -272,7 +272,7 @@ export default function AdminStatusPage() {
             </div>
 
             <div>
-              <label className={`block text-xs font-semibold mb-1 uppercase tracking-wide ${ts}`}>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Estado Inicial
               </label>
               <select
@@ -288,7 +288,7 @@ export default function AdminStatusPage() {
             </div>
 
             <div>
-              <label className={`block text-xs font-semibold mb-1 uppercase tracking-wide ${ts}`}>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Descripción / Detalles
               </label>
               <textarea
@@ -336,7 +336,7 @@ export default function AdminStatusPage() {
                           Afecta a: <strong className="font-semibold">{COMPONENTE_OPTS.find(o => o.value === i.componente)?.label ?? i.componente}</strong>
                         </span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded font-bold uppercase ${
+                      <span className={`text-xs px-2 py-0.5 rounded font-bold ${
                         i.severidad === 'critico' ? 'bg-[#FF5E4B]/15 text-[#FF5E4B]' : 'bg-[#F6BF3E]/15 text-[#F6BF3E]'
                       }`}>
                         {i.severidad} · {i.estado}

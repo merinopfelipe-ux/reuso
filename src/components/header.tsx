@@ -258,7 +258,6 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             <span className="menu-label-tech" style={{
               fontSize: '9px',
               fontWeight: 900,
-              textTransform: 'uppercase',
               letterSpacing: '0.15em',
               opacity: 0.9,
               color: primaryColor // Dinámico V13.6
@@ -424,7 +423,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                     <>
                       {resultados.usuarios.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Usuarios</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Usuarios</p>
                           {resultados.usuarios.map((u) => (
                             <button key={u.id} onClick={() => navegarA(`/admin/usuarios?search=${encodeURIComponent(u.nombre ?? '')}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
@@ -437,7 +436,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                       )}
                       {resultados.empresas.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Empresas</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Empresas</p>
                           {resultados.empresas.map((e) => (
                             <button key={e.id} onClick={() => navegarA(`/admin/empresas/${e.id}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
@@ -450,7 +449,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                       )}
                       {resultados.calculos.length > 0 && (
                         <div>
-                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', textTransform: 'uppercase', margin: 0, letterSpacing: '0.06em' }}>Cálculos</p>
+                          <p style={{ padding: '12px 16px 4px', fontSize: 14, fontWeight: 800, color: '#00827C', margin: 0, letterSpacing: '0.06em' }}>Cálculos</p>
                           {resultados.calculos.map((c) => (
                             <button key={c.id} onClick={() => navegarA(rol === 'super_admin' || rol === 'empresa_admin' ? `/empresa/objetos?search=${encodeURIComponent(searchValue)}` : `/dashboard?search=${encodeURIComponent(searchValue)}`)}
                               style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 16px', background: 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
