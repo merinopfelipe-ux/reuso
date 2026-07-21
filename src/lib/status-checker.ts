@@ -73,7 +73,7 @@ export async function runChecks() {
   }
   const dbLatency = Date.now() - dbStart
 
-  // 2. Verificar Google Gemini 2.0 API
+  // 2. Verificar Google Gemini API
   const geminiStart = Date.now()
   let geminiStatus: 'ok' | 'error' = 'ok'
   let geminiDetails = 'API operacional.'
@@ -216,7 +216,7 @@ export async function runChecks() {
   if (dbStatus === 'ok') {
     try {
       const reportables = [
-        { key: 'gemini', label: 'Google Gemini 2.0 API', status: geminiStatus, details: geminiDetails, sev: 'mayor' as const },
+        { key: 'gemini', label: 'Google Gemini API', status: geminiStatus, details: geminiDetails, sev: 'mayor' as const },
         { key: 'groq', label: 'Groq Cloud (LLaMA 3.3)', status: groqStatus, details: groqDetails, sev: 'mayor' as const },
         { key: 'openrouter', label: 'OpenRouter Gateway', status: orStatus, details: orDetails, sev: 'mayor' as const },
         { key: 'qwen', label: 'Qwen-VL 8B (OpenRouter)', status: qwenStatus, details: qwenDetails, sev: 'mayor' as const },

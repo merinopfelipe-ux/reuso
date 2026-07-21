@@ -4,7 +4,7 @@ import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash'
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
 
 // ── Tipos ────────────────────────────────────────────────────────────────────
 

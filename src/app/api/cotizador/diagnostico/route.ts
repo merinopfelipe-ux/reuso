@@ -5,7 +5,7 @@ import { rateLimit } from '@/lib/rate-limit'
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
-const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-2.0-flash'
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
 
 const bodySchema = z.object({
   imagen_base64: z.string().max(5_600_000, 'Imagen demasiado grande (máx 4 MB).').optional(),
