@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/cotizaciones-frias",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/keep-alive-supabase",
+      "schedule": "0 13 * * 1,4"
     }
   ]
 }
