@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   const adminClient = await createAdminClient()
 
   const { error } = await adminClient
-    .from('config_sistema')
+    .from('categorias')
     .select('id')
     .limit(1)
 
