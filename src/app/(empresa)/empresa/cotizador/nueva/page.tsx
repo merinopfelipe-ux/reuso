@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Camera, XCircle, SquareCheck as CheckSquare, Square, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { calcularCotizacion } from '@/lib/cotizador/motor-cotizacion'
@@ -65,7 +65,19 @@ function formatCOP(valor: number): string {
 // ── Componente principal ──────────────────────────────────────────────────────
 
 export default function NuevaCotizacionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
+      <NuevaCotizacionContent />
+    </Suspense>
+  )
+}
+
+function NuevaCotizacionContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const empresaIdParam = searchParams.get('empresa_id')
+  const conEmpresa = (url: string) =>
+    empresaIdParam ? `${url}${url.includes('?') ? '&' : '?'}empresa_id=${empresaIdParam}` : url
   const inputFotoRef = useRef<HTMLInputElement>(null)
 
   // Config de costos de la empresa (se carga al montar)
@@ -102,7 +114,7 @@ export default function NuevaCotizacionPage() {
 
   // Cargar configs de costos
   useEffect(() => {
-    fetch('/api/cotizador/config')
+    fetch(conEmpresa('/api/cotizador/config'))
       .then(r => r.json())
       .then(d => { if (d.configs) setConfigs(d.configs) })
       .catch(() => {})
@@ -146,7 +158,7 @@ export default function NuevaCotizacionPage() {
       setImagenBase64(base64)
       setImagenPreview(preview)
 
-      const res = await fetch('/api/cotizador/diagnostico', {
+      const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imagen_base64: base64, mime_type: 'image/webp' }),
@@ -191,7 +203,7 @@ export default function NuevaCotizacionPage() {
       // Crear cotización si aún no existe
       let id = cotizacionId
       if (!id) {
-        const resCot = await fetch('/api/cotizador/cotizaciones', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
+        const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })
         const dataCot = await resCot.json()
         if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); setEstado('ajustando'); return }
         id = dataCot.id as string
@@ -201,7 +213,7 @@ export default function NuevaCotizacionPage() {
       // Detectar si el comercial corrigió algo
       const fueCorregido = JSON.stringify(oficios) !== JSON.stringify(diagnosticoOriginal?.oficios)
 
-      const resMueble = await fetch(`/api/cotizador/cotizaciones/${id}/mueble`, {
+      const resMueble = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/mueble`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -242,7 +254,7 @@ export default function NuevaCotizacionPage() {
 
   function handleGenerarPropuesta() {
     if (!cotizacionId) return
-    router.push(`/empresa/cotizador/${cotizacionId}/propuesta`)
+    router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}/propuesta`))
   }
 
   // ── Colores tema ──────────────────────────────────────────────────────────────

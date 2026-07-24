@@ -26,9 +26,12 @@ export default async function EmpresaLayout({
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
 
-  // super_admin no usa páginas de empresa (tiene /admin para gestión)
-  if (rol === 'super_admin') redirect('/admin')
-  if (rol !== 'empresa_admin') redirect('/dashboard')
+  // super_admin no usa páginas de empresa (tiene /admin para gestión),
+  // excepto el Cotizador: ahí puede elegir a qué empresa cotizar (ver layout de cotizador)
+  const pathname = headers().get('x-pathname') ?? ''
+  const esCotizador = pathname.startsWith('/empresa/cotizador')
+  if (rol === 'super_admin' && !esCotizador) redirect('/admin')
+  if (rol !== 'empresa_admin' && rol !== 'super_admin') redirect('/dashboard')
 
   const nombre = displayName(perfil ?? { nombre: user.email })
 

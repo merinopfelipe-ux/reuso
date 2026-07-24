@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { randomUUID } from 'crypto'
-import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 
@@ -22,9 +22,12 @@ const schema = z.object({
   mostrar_marca_reuso: z.boolean().optional(),
 })
 
-export async function GET() {
-  const auth = await dppAuthCheck(['empresa_admin'])
-  if (!auth.ok) return NextResponse.json({ error: 'Sin permiso.' }, { status: auth.status })
+export async function GET(request: NextRequest) {
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin'])
+  if (!auth.ok) {
+    const msg = auth.status === 400 ? 'Selecciona una empresa para continuar.' : 'Sin permiso.'
+    return NextResponse.json({ error: msg }, { status: auth.status })
+  }
   const { empresa_id, adminClient } = auth
 
   const { data, error } = await adminClient
@@ -41,8 +44,11 @@ export async function GET() {
 }
 
 export async function PATCH(request: NextRequest) {
-  const auth = await dppAuthCheck(['empresa_admin'])
-  if (!auth.ok) return NextResponse.json({ error: 'Sin permiso.' }, { status: auth.status })
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin'])
+  if (!auth.ok) {
+    const msg = auth.status === 400 ? 'Selecciona una empresa para continuar.' : 'Sin permiso.'
+    return NextResponse.json({ error: msg }, { status: auth.status })
+  }
   const { user_id, empresa_id, adminClient } = auth
   const ip = getIp(request)
 

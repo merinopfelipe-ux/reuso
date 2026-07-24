@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, CheckCircle, Copy, Link, Leaf, Droplet as Drop, Send as PaperPlaneTilt, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 
@@ -60,8 +60,20 @@ function formatFecha(iso: string) {
 // ── Componente ────────────────────────────────────────────────────────────────
 
 export default function DetalleCotizacionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
+      <DetalleCotizacionContent />
+    </Suspense>
+  )
+}
+
+function DetalleCotizacionContent() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const empresaIdParam = searchParams.get('empresa_id')
+  const conEmpresa = (url: string) =>
+    empresaIdParam ? `${url}${url.includes('?') ? '&' : '?'}empresa_id=${empresaIdParam}` : url
 
   const [cot, setCot] = useState<Cotizacion | null>(null)
   const [muebles, setMuebles] = useState<Mueble[]>([])
@@ -89,8 +101,8 @@ export default function DetalleCotizacionPage() {
       setCargando(true)
       try {
         const [resCot, resMuebles] = await Promise.all([
-          fetch(`/api/cotizador/cotizaciones/${id}`),
-          fetch(`/api/cotizador/cotizaciones/${id}/muebles`),
+          fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}`)),
+          fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/muebles`)),
         ])
         const dCot = await resCot.json()
         const dMuebles = await resMuebles.json()
@@ -111,7 +123,7 @@ export default function DetalleCotizacionPage() {
     if (!id) return
     setEnviando(true)
     try {
-      const res = await fetch(`/api/cotizador/cotizaciones/${id}/enviar`, { method: 'POST' })
+      const res = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/enviar`), { method: 'POST' })
       const d = await res.json()
       if (d.enlace) {
         setEnlace(d.enlace)
@@ -138,7 +150,7 @@ export default function DetalleCotizacionPage() {
     setConfirmarEstado(null)
     setEstadoCambiando(true)
     try {
-      const res = await fetch(`/api/cotizador/cotizaciones/${id}`, {
+      const res = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ estado: nuevoEstado }),
@@ -215,7 +227,7 @@ export default function DetalleCotizacionPage() {
 
         {/* Cabecero */}
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push('/empresa/cotizador')} className={`p-2 rounded-full hover-pop hover-press ${isDark ? 'hover:bg-white/10' : 'hover:bg-[#00827C]/08'} transition-colors`}>
+          <button onClick={() => router.push(conEmpresa('/empresa/cotizador'))} className={`p-2 rounded-full hover-pop hover-press ${isDark ? 'hover:bg-white/10' : 'hover:bg-[#00827C]/08'} transition-colors`}>
             <ArrowLeft size={20} className={tp} />
           </button>
           <div className="flex-1 min-w-0">

@@ -64,7 +64,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       ]
     },
     { href: '/admin/legal', label: 'Legales', icon: Scales },
-    { href: '#', label: 'Cotizador', icon: Calculator },
+    { href: '/empresa/cotizador', label: 'Cotizador', icon: Calculator },
   ],
   empresa_admin: [
     { 

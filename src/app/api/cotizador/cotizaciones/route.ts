@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { randomBytes } from 'crypto'
-import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 
@@ -23,10 +23,16 @@ interface CotizacionItem {
 }
 
 export async function GET(request: NextRequest) {
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
+      {
+        error: auth.status === 401
+          ? 'Inicia sesión para continuar.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'Sin permiso.',
+      },
       { status: auth.status }
     )
   }
@@ -84,10 +90,16 @@ function generarCodigoCot(empresaId: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'No tienes permiso para crear cotizaciones.' },
+      {
+        error: auth.status === 401
+          ? 'Inicia sesión para continuar.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'No tienes permiso para crear cotizaciones.',
+      },
       { status: auth.status }
     )
   }

@@ -1861,7 +1861,7 @@ export default function QAPage() {
   const theme = {
     bg:                isDark ? 'bg-[#474747]'                           : 'bg-white',
     textPrimary:       isDark ? 'text-white'                             : 'text-[#474747]',
-    textSecondary:     isDark ? 'text-white/70'                          : 'text-[#00827C]/70',
+    textSecondary:     isDark ? 'text-white/70'                          : 'text-[#474747]/70',
     textTitle:         isDark ? 'text-white'                             : 'text-[#474747]',
     headerBg:          isDark ? 'bg-[#D6F391]/[0.08] backdrop-blur-md border-[#D6F391]/15'
                               : 'bg-white/60 backdrop-blur-md border-[rgba(0,130,124,0.12)]',

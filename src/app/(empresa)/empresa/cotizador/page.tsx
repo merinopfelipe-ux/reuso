@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { Plus, Search as MagnifyingGlass, Filter as Funnel, Leaf, CircleDollarSign as CurrencyCircleDollar, Percent, Clock, CheckCircle, XCircle, TriangleAlert as Warning, ChevronRight as CaretRight } from '@/components/ui/icons'
+import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Plus, Search as MagnifyingGlass, Filter as Funnel, Leaf, CircleDollarSign as CurrencyCircleDollar, Percent, Clock, CheckCircle, XCircle, TriangleAlert as Warning, ChevronRight as CaretRight, Buildings } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+
+interface EmpresaOpcion { id: string; nombre: string }
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -50,7 +52,16 @@ function diasDesde(fecha: string): number {
 // ── Componente ────────────────────────────────────────────────────────────────
 
 export default function PanelCotizadorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[var(--bg-primary)]" />}>
+      <PanelCotizadorContent />
+    </Suspense>
+  )
+}
+
+function PanelCotizadorContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [cotizaciones, setCotizaciones] = useState<Cotizacion[]>([])
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,6 +69,30 @@ export default function PanelCotizadorPage() {
   const [filtroEstado, setFiltroEstado] = useState('')
   const [tabEstado, setTabEstado] = useState('todos')
   const [isDark, setIsDark] = useState(false)
+
+  // ── Selector de empresa (solo super_admin) ──────────────────────────────────
+  const [esSuperAdmin, setEsSuperAdmin] = useState(false)
+  const [empresas, setEmpresas] = useState<EmpresaOpcion[]>([])
+  const [cargandoContexto, setCargandoContexto] = useState(true)
+  const empresaId = searchParams.get('empresa_id')
+
+  useEffect(() => {
+    fetch('/api/cotizador/empresas')
+      .then(res => (res.ok ? res.json() : null))
+      .then(d => {
+        if (d?.empresas) {
+          setEsSuperAdmin(true)
+          setEmpresas(d.empresas)
+        }
+      })
+      .finally(() => setCargandoContexto(false))
+  }, [])
+
+  function cambiarEmpresa(id: string) {
+    const params = new URLSearchParams(searchParams)
+    if (id) params.set('empresa_id', id); else params.delete('empresa_id')
+    router.replace(`/empresa/cotizador?${params}`)
+  }
 
   useEffect(() => {
     const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
@@ -68,11 +103,13 @@ export default function PanelCotizadorPage() {
   }, [])
 
   const cargarCotizaciones = useCallback(async () => {
+    if (esSuperAdmin && !empresaId) { setCotizaciones([]); setCargando(false); return }
     setCargando(true)
     try {
       const params = new URLSearchParams()
       if (filtroEstado) params.set('estado', filtroEstado)
       if (busqueda) params.set('q', busqueda)
+      if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
       const res = await fetch(`/api/cotizador/cotizaciones?${params}`)
       const d = await res.json()
       if (d.cotizaciones) setCotizaciones(d.cotizaciones)
@@ -80,9 +117,17 @@ export default function PanelCotizadorPage() {
       setError('No se pudieron cargar las cotizaciones. Intenta de nuevo.')
     }
     finally { setCargando(false) }
-  }, [filtroEstado, busqueda])
+  }, [filtroEstado, busqueda, esSuperAdmin, empresaId])
 
-  useEffect(() => { cargarCotizaciones() }, [cargarCotizaciones])
+  useEffect(() => {
+    if (cargandoContexto) return
+    cargarCotizaciones()
+  }, [cargarCotizaciones, cargandoContexto])
+
+  const linkConEmpresa = useCallback((ruta: string) => {
+    if (esSuperAdmin && empresaId) return `${ruta}?empresa_id=${empresaId}`
+    return ruta
+  }, [esSuperAdmin, empresaId])
 
   // ── KPIs ───────────────────────────────────────────────────────────────────
 
@@ -115,13 +160,39 @@ export default function PanelCotizadorPage() {
         <div className="flex items-center justify-between mb-6">
           <AdminPageHeader titulo="Cotizaciones" />
           <button
-            onClick={() => router.push('/empresa/cotizador/nueva')}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press"
+            onClick={() => router.push(linkConEmpresa('/empresa/cotizador/nueva'))}
+            disabled={esSuperAdmin && !empresaId}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Plus size={16} strokeWidth={2.5} />
             Nueva cotización
           </button>
         </div>
+
+        {esSuperAdmin && (
+          <div className={`rounded-[12px] border p-4 mb-4 flex items-center gap-3 ${cardBg}`}>
+            <Buildings size={18} className="text-[#00827C] flex-shrink-0" />
+            <div className="flex-1">
+              <p className={`text-xs font-semibold ${ts} mb-1`}>Cotizando para</p>
+              <select
+                className={`w-full bg-transparent text-sm font-semibold outline-none cursor-pointer ${tp}`}
+                value={empresaId ?? ''}
+                onChange={e => cambiarEmpresa(e.target.value)}
+              >
+                <option value="">Selecciona una empresa</option>
+                {empresas.map(e => (
+                  <option key={e.id} value={e.id}>{e.nombre}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {esSuperAdmin && !empresaId && !cargandoContexto && (
+          <div className={`rounded-[12px] border p-8 text-center mb-4 ${cardBg}`}>
+            <p className={`text-sm ${ts}`}>Selecciona una empresa arriba para ver o crear sus cotizaciones.</p>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
@@ -186,13 +257,15 @@ export default function PanelCotizadorPage() {
             ))}
           </div>
         ) : cotsFiltradas.length === 0 ? (
-          <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
-            <p className={`text-sm ${ts}`}>No hay cotizaciones que coincidan.</p>
-            <button onClick={() => router.push('/empresa/cotizador/nueva')}
-              className="mt-3 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press">
-              Crea la primera
-            </button>
-          </div>
+          (esSuperAdmin && !empresaId) ? null : (
+            <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
+              <p className={`text-sm ${ts}`}>No hay cotizaciones que coincidan.</p>
+              <button onClick={() => router.push(linkConEmpresa('/empresa/cotizador/nueva'))}
+                className="mt-3 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop hover-press">
+                Crea la primera
+              </button>
+            </div>
+          )
         ) : (
           <div className="space-y-2">
             {cotsFiltradas.map(c => (
@@ -200,7 +273,7 @@ export default function PanelCotizadorPage() {
                 key={c.id}
                 cot={c}
                 isDark={isDark}
-                onClick={() => router.push(`/empresa/cotizador/${c.id}`)}
+                onClick={() => router.push(linkConEmpresa(`/empresa/cotizador/${c.id}`))}
               />
             ))}
           </div>

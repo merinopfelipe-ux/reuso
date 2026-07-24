@@ -55,6 +55,7 @@ const REDIRECT_BY_ROL: Record<Rol, string> = {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  request.headers.set('x-pathname', pathname)
 
   // Rutas públicas sin sesión requerida o protegidas que no deben redirigir a sesión
   if (

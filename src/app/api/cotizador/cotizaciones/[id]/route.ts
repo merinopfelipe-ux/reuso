@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 
@@ -15,13 +15,19 @@ const schema = z.object({
 }).refine(d => Object.keys(d).length > 0, { message: 'Envía al menos un campo para actualizar.' })
 
 export async function GET(
-  _: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
+      {
+        error: auth.status === 401
+          ? 'Inicia sesión para continuar.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'Sin permiso.',
+      },
       { status: auth.status }
     )
   }
@@ -57,10 +63,16 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
+      {
+        error: auth.status === 401
+          ? 'Inicia sesión para continuar.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'Sin permiso.',
+      },
       { status: auth.status }
     )
   }

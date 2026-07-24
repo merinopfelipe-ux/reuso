@@ -1,3 +1,4 @@
+import type { NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -42,4 +43,40 @@ export async function dppAuthCheck(
     rol: perfil.rol,
     adminClient,
   }
+}
+
+// ── Cotizador: super_admin elige a qué empresa cotiza ─────────────────────────
+// A diferencia de dppAuthCheck, aquí un super_admin no queda restringido a "sin
+// empresa": puede operar el Cotizador de cualquier empresa pasando ?empresa_id=
+// en la URL. Los demás roles siguen atados a su propia empresa (perfil.empresa_id).
+
+export type CotizadorAuthResult =
+  | {
+      ok: true
+      user_id: string
+      empresa_id: string
+      rol: string
+      adminClient: Awaited<ReturnType<typeof createAdminClient>>
+    }
+  | { ok: false; status: 400 | 401 | 403 }
+
+export async function cotizadorAuthCheck(
+  request: NextRequest,
+  rolesPermitidos: string[]
+): Promise<CotizadorAuthResult> {
+  const base = await dppAuthCheck(rolesPermitidos)
+  if (!base.ok) return base
+  if (base.rol !== 'super_admin') return base
+
+  const empresaOverride = request.nextUrl.searchParams.get('empresa_id')
+  if (!empresaOverride) return { ok: false, status: 400 }
+
+  const { data: empresa } = await base.adminClient
+    .from('empresas')
+    .select('id')
+    .eq('id', empresaOverride)
+    .single()
+  if (!empresa) return { ok: false, status: 400 }
+
+  return { ...base, empresa_id: empresaOverride }
 }

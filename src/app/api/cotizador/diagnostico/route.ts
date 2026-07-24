@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { rateLimit } from '@/lib/rate-limit'
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
@@ -154,10 +154,16 @@ async function llamarOpenRouter(
 
 export async function POST(request: NextRequest) {
   // 1. Auth - empresa_admin o empleado
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'No autenticado.' : 'Sin permiso para usar el Cotizador.' },
+      {
+        error: auth.status === 401
+          ? 'No autenticado.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'Sin permiso para usar el Cotizador.',
+      },
       { status: auth.status }
     )
   }

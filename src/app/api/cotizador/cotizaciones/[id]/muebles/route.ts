@@ -1,14 +1,20 @@
-import { NextResponse } from 'next/server'
-import { dppAuthCheck } from '@/lib/dpp/auth-check'
+import { NextRequest, NextResponse } from 'next/server'
+import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 
 export async function GET(
-  _: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
-      { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
+      {
+        error: auth.status === 401
+          ? 'Inicia sesión para continuar.'
+          : auth.status === 400
+            ? 'Selecciona una empresa para continuar.'
+            : 'Sin permiso.',
+      },
       { status: auth.status }
     )
   }
