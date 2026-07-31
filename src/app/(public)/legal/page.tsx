@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
-import { FileText, Shield, Database, Cookie, Lock, Scale, MessageSquare as ChatCircle } from '@/components/ui/icons'
+import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, MessageSquare as ChatCircle } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {
@@ -20,6 +20,7 @@ const T = {
       { href: '/legal/cookies', titulo: 'Política de Cookies', descripcion: 'Qué cookies usamos, para qué y cómo puedes gestionarlas.' },
       { href: '/legal/reglamento', titulo: 'Reglamento de Uso', descripcion: 'Condiciones y políticas de uso de los certificados e informes.' },
       { href: '/legal/confidencialidad', titulo: 'Acuerdo de Confidencialidad', descripcion: 'Garantía de confidencialidad para usuarios y empresas registradas.' },
+      { href: '/legal/medicion', titulo: 'Metodología de Medición', descripcion: 'Cómo calculamos el CO₂ eq evitado y la huella hídrica de cada reúso.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
     ],
   },
@@ -36,6 +37,7 @@ const T = {
       { href: '/legal/cookies', titulo: 'Cookie Policy', descripcion: 'What cookies we use, why, and how you can manage them.' },
       { href: '/legal/reglamento', titulo: 'Usage Regulations', descripcion: 'Terms and policies for certificates and reports usage.' },
       { href: '/legal/confidencialidad', titulo: 'Confidentiality Agreement', descripcion: 'Confidentiality guarantee for registered users and companies.' },
+      { href: '/legal/medicion', titulo: 'Measurement Methodology', descripcion: 'How we calculate CO₂ eq avoided and the water footprint of each reuse.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
     ],
   },
@@ -48,6 +50,7 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
   '/legal/cookies': Cookie,
   '/legal/reglamento': Scale,
   '/legal/confidencialidad': Lock,
+  '/legal/medicion': Calculator,
   '/legal/ia': IaIcon,
 }
 
