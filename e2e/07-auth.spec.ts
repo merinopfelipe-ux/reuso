@@ -1,5 +1,20 @@
 import { test, expect } from '@playwright/test'
 import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
+
+// usuario_libre y empleado son cuentas efímeras que auth.setup.ts crea con
+// contraseña aleatoria en cada corrida (ver e2e/auth.setup.ts) — sus
+// credenciales viven en este archivo, generado por ese mismo setup, nunca
+// en .env.local ni hardcodeadas aquí.
+const EFIMEROS_PATH = path.join('playwright/.auth', 'efimeros.json')
+
+function credencialesEfimeras(rol: 'usuario_libre' | 'empleado' | 'empresa_admin'): { email: string; password: string } {
+  if (!fs.existsSync(EFIMEROS_PATH)) throw new Error(`Falta ${EFIMEROS_PATH} — corre la suite completa (incluye el proyecto "setup") para que exista.`)
+  const cuentas = JSON.parse(fs.readFileSync(EFIMEROS_PATH, 'utf-8'))
+  if (!cuentas[rol]) throw new Error(`No hay cuenta efímera registrada para "${rol}" en ${EFIMEROS_PATH}.`)
+  return cuentas[rol]
+}
 
 test.describe('Autenticación (auth-01 a auth-12)', () => {
 
@@ -9,8 +24,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page.goto('/login')
     await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
     
-    await page.locator('#email').fill(process.env.TEST_USER_EMAIL ?? 'test@reuso.lurdes.co')
-    await page.locator('#password').fill(process.env.TEST_USER_PASSWORD ?? 'TestReuso2024!')
+    const _cred1 = credencialesEfimeras('usuario_libre')
+    await page.locator('#email').fill(_cred1.email)
+    await page.locator('#password').fill(_cred1.password)
     await page.getByRole('button', { name: /aceptar términos legales/i }).click()
     
     await Promise.all([
@@ -158,8 +174,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
   test('auth-10 - Onboarding incompleto bloquea', async ({ page }) => {
     await page.goto('/login')
     await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
-    await page.locator('#email').fill(process.env.TEST_USER_EMAIL ?? 'test@reuso.lurdes.co')
-    await page.locator('#password').fill(process.env.TEST_USER_PASSWORD ?? 'TestReuso2024!')
+    const _cred1 = credencialesEfimeras('usuario_libre')
+    await page.locator('#email').fill(_cred1.email)
+    await page.locator('#password').fill(_cred1.password)
     await page.getByRole('button', { name: /aceptar términos legales/i }).click()
     await page.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page.waitForURL(/.*\/dashboard.*/)
@@ -206,8 +223,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
 
     await page1.goto('/login')
     await page1.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
-    await page1.locator('#email').fill(process.env.TEST_EMPLEADO_EMAIL ?? 'empleado@reuso.lurdes.co')
-    await page1.locator('#password').fill(process.env.TEST_EMPLEADO_PASSWORD ?? 'TestReuso2024!')
+    const _cred2 = credencialesEfimeras('empleado')
+    await page1.locator('#email').fill(_cred2.email)
+    await page1.locator('#password').fill(_cred2.password)
     await page1.getByRole('button', { name: /aceptar términos legales/i }).click()
     await page1.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page1.waitForURL(/.*\/dashboard.*/, { timeout: 60_000 })

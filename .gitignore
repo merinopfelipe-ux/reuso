@@ -37,5 +37,8 @@ next-env.d.ts
 .env.test.local
 e2e/results/
 playwright-report/
+# Sesiones guardadas por Playwright — contienen tokens de auth reales, nunca
+# deben subirse (encontrado y corregido: estaban comiteadas hasta ahora).
+playwright/.auth/*.json
 scratch/
 .claude/skills/claude-seo/

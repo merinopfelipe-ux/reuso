@@ -3,13 +3,17 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EstadoCuentaClient } from './components/estado-cuenta-client'
 import { ModulosEmpresaClient } from './components/modulos-empresa-client'
-import type { Plan, ModuloConActivo } from '@/types'
+import { MarcaEmpresaClient } from './components/marca-empresa-client'
+import { AdminEmpresaClient } from './components/admin-empresa-client'
+import { CatalogoRestringidoEmpresaClient } from './components/catalogo-restringido-empresa-client'
+import { LineasEmpresaClient } from './components/lineas-empresa-client'
+import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
 
-const LIMITES: Record<Plan, { empleados: number; calculos_mes: number; certificados_mes: number; informes_mes: number }> = {
-  free:      { empleados: 1,        calculos_mes: 10,       certificados_mes: 0,        informes_mes: 0 },
-  lab:       { empleados: 5,        calculos_mes: 200,      certificados_mes: 2,        informes_mes: 5 },
-  impulso:   { empleados: 10,       calculos_mes: 200,      certificados_mes: 2,        informes_mes: 5 },
-  ilimitado: { empleados: Infinity, calculos_mes: Infinity, certificados_mes: Infinity, informes_mes: Infinity },
+const LIMITES: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number }> = {
+  free:      { empleados: 1,        calculos_mes: 10,       informes_mes: 0 },
+  lab:       { empleados: 5,        calculos_mes: 200,      informes_mes: 5 },
+  impulso:   { empleados: 10,       calculos_mes: 200,      informes_mes: 5 },
+  ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity },
 }
 
 export default async function EmpresaDetallePage({
@@ -23,7 +27,7 @@ export default async function EmpresaDetallePage({
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('rol')
+    .select('nombre, apellido, rol')
     .eq('user_id', user.id)
     .single()
 
@@ -34,7 +38,7 @@ export default async function EmpresaDetallePage({
 
   const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
-  const [empresaRes, empleadosRes, calculosMesRes, logsRes, modulosRes, asignadosRes] = await Promise.all([
+  const [empresaRes, empleadosRes, calculosMesRes, logsRes, modulosRes, asignadosRes, lineasRes, lineasAsignadasRes, adminsEmpresaRes] = await Promise.all([
     adminClient.from('empresas').select('*').eq('id', id).single(),
     adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', id),
     adminClient
@@ -51,13 +55,27 @@ export default async function EmpresaDetallePage({
       .limit(30),
     adminClient
       .from('modulos')
-      .select('id, nombre, icono_lucide, descripcion, activo, orden, created_at, updated_at')
+      .select('id, clave, nombre, icono_lucide, descripcion, activo, orden, created_at, updated_at')
       .eq('activo', true)
       .order('orden', { ascending: true }),
     adminClient
       .from('modulos_empresas')
       .select('modulo_id, activo')
       .eq('empresa_id', id),
+    adminClient
+      .from('lineas_negocio')
+      .select('id, clave, nombre, icono_lucide, descripcion, activa, orden, created_at, updated_at')
+      .eq('activa', true)
+      .order('orden', { ascending: true }),
+    adminClient
+      .from('lineas_negocio_empresas')
+      .select('linea_negocio_id, activa')
+      .eq('empresa_id', id),
+    adminClient
+      .from('profiles')
+      .select('user_id, nombre, apellido, email')
+      .eq('empresa_id', id)
+      .eq('rol', 'empresa_admin'),
   ])
 
   if (!empresaRes.data || empresaRes.error) notFound()
@@ -70,26 +88,34 @@ export default async function EmpresaDetallePage({
 
   // Resolver nombres de admins en logs
   const adminIds = Array.from(new Set(logsEmpresa.map((l) => l.user_id).filter(Boolean)))
-  let adminsMap = new Map<string, string>()
+  let adminsMap = new Map<string, { nombreCompleto: string; rol: string }>()
   if (adminIds.length > 0) {
     const { data: admins } = await adminClient
       .from('profiles')
-      .select('user_id, nombre')
+      .select('user_id, nombre, apellido, rol')
       .in('user_id', adminIds)
-    adminsMap = new Map((admins ?? []).map((a) => [a.user_id, a.nombre]))
+    adminsMap = new Map((admins ?? []).map((a) => [
+      a.user_id,
+      {
+        nombreCompleto: `${a.nombre || ''} ${a.apellido || ''}`.trim() || 'Admin',
+        rol: a.rol === 'super_admin' ? 'superadmin' : a.rol === 'empresa_admin' ? 'empresa admin' : a.rol || '',
+      }
+    ]))
   }
 
-  const historialPlan = logsEmpresa
+  const historialCambios = logsEmpresa
     .map((log) => {
       const d = log.detalle_json as Record<string, unknown> | null
       const cambios = d?.cambios as Record<string, unknown> | undefined
+      const adminData = adminsMap.get(log.user_id as string) ?? { nombreCompleto: 'Admin', rol: 'superadmin' }
       return {
         created_at: log.created_at as string,
-        admin: adminsMap.get(log.user_id as string) ?? 'Admin',
+        admin: adminData.nombreCompleto,
+        adminRol: adminData.rol,
         cambios: cambios ?? {},
       }
     })
-    .filter((l) => 'plan' in l.cambios)
+    .filter((l) => Object.keys(l.cambios).length > 0)
 
   const asignadosMap = new Map(
     (asignadosRes.data ?? []).map((a) => [a.modulo_id, a.activo])
@@ -99,22 +125,52 @@ export default async function EmpresaDetallePage({
     activo_en_empresa: asignadosMap.get(m.id) ?? false,
   }))
 
+  const lineasAsignadasMap = new Map(
+    (lineasAsignadasRes.data ?? []).map((a) => [a.linea_negocio_id, a.activa])
+  )
+  const lineasConActivo: LineaNegocioConActivo[] = (lineasRes.data ?? []).map((l) => ({
+    ...l,
+    activa_en_empresa: lineasAsignadasMap.get(l.id) ?? false,
+  }))
+
   return (
-    <div>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 w-full space-y-8">
       <EstadoCuentaClient
         empresa={empresa}
         totalEmpleados={empleadosRes.count ?? 0}
         limiteEmpleados={limite.empleados}
         calculosMes={calculosMesRes.count ?? 0}
         limiteCalculosMes={limite.calculos_mes}
-        historialPlan={historialPlan}
+        historialPlan={historialCambios}
+        adminNombre={`${perfil?.nombre || ''} ${perfil?.apellido || ''}`.trim() || 'Admin'}
       />
-      <div style={{ marginTop: 32, padding: '0 0 40px' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1A3A38', marginBottom: 4 }}>Módulos activos</h3>
-        <p style={{ fontSize: 13, color: '#4D7C79', marginBottom: 16 }}>
-          Activa o desactiva los módulos disponibles para esta empresa.
+
+      <MarcaEmpresaClient empresa={empresa} />
+
+      <AdminEmpresaClient empresaId={id} admins={adminsEmpresaRes.data ?? []} />
+
+      <div>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Módulos activos</h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          Qué partes de la plataforma puede usar esta empresa. Apagar un módulo bloquea de inmediato sus rutas para todos sus usuarios.
         </p>
         <ModulosEmpresaClient empresaId={id} modulos={modulosConActivo} />
+      </div>
+
+      <div className="border-t pt-8" style={{ borderColor: 'var(--border)' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Líneas de Negocio (Industrias/Productos)</h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          Habilita las verticales de negocio sobre las que operan los módulos habilitados arriba.
+        </p>
+        <LineasEmpresaClient empresaId={id} lineas={lineasConActivo} />
+      </div>
+
+      <div className="border-t pt-8 pb-10" style={{ borderColor: 'var(--border)' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Permisos de Insumos y Materiales Base</h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          Habilita qué materiales e insumos (creados por otras empresas o por la tuya) pueden usarse en los cálculos ambientales de esta empresa.
+        </p>
+        <CatalogoRestringidoEmpresaClient empresaId={id} />
       </div>
     </div>
   )

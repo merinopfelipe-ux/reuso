@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import DOMPurify from 'isomorphic-dompurify'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { patchEmpresaSchema } from '@/lib/schemas/empresa.schema'
+import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 
 export async function PATCH(
   request: NextRequest,
@@ -13,12 +15,26 @@ export async function PATCH(
   const body = await request.json().catch(() => null)
   const parsed = patchEmpresaSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Datos inválidos.' }, { status: 400 })
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
+  }
+
+  const datos = { ...parsed.data }
+  if (typeof datos.notas_admin === 'string') {
+    try {
+      const feed = JSON.parse(datos.notas_admin)
+      if (Array.isArray(feed)) {
+        datos.notas_admin = JSON.stringify(
+          feed.map((n) => ({ ...n, nota: DOMPurify.sanitize(String(n?.nota ?? ''), NOTA_SANITIZE_CONFIG) }))
+        )
+      }
+    } catch {
+      // No es un feed JSON válido (nota legada en texto plano) — se guarda tal cual, sin HTML que sanitizar.
+    }
   }
 
   const { data, error } = await guard.supabase
     .from('empresas')
-    .update(parsed.data)
+    .update(datos)
     .eq('id', params.id)
     .select()
     .single()

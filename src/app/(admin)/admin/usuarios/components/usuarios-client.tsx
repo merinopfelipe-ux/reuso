@@ -2,10 +2,12 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight, PlusCircle, X } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight, PlusCircle, KeyRound } from '@/components/ui/icons'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
+import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
 import type { Rol } from '@/types'
 
 const PAGE_SIZES = [10, 20, 50, 100]
@@ -22,7 +24,7 @@ interface PerfilRow {
 
 const ROLES: Rol[] = ['super_admin', 'empresa_admin', 'empleado', 'usuario_libre']
 const ROL_LABEL: Record<Rol, string> = {
-  super_admin: 'Super Admin', empresa_admin: 'Empresa Admin',
+  super_admin: 'Superadmin', empresa_admin: 'Empresa Admin',
   empleado: 'Empleado', usuario_libre: 'Usuario Libre',
 }
 
@@ -34,13 +36,15 @@ interface Props {
   search: string
   rolFiltro: string
   currentUserId: string
+  empresasDisponibles: { id: string; nombre: string }[]
 }
 
 const ROL_CREAR: Rol[] = ['empleado', 'empresa_admin', 'super_admin']
+const ROLES_CON_EMPRESA: Rol[] = ['empleado', 'empresa_admin']
 
 const EMPTY_FORM = { email: '', nombre: '', apellido: '', apodo: '', rol: 'empleado' as Rol, empresa_id: '' }
 
-export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFiltro, currentUserId }: Props) {
+export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFiltro, currentUserId, empresasDisponibles }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
   const [cambiando, setCambiando] = useState<string | null>(null)
@@ -50,6 +54,8 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   const [formNuevo, setFormNuevo] = useState(EMPTY_FORM)
   const [creando, setCreando] = useState(false)
   const [errorModal, setErrorModal] = useState('')
+  const [restableciendo, setRestableciendo] = useState<string | null>(null)
+  const [restablecido, setRestablecido] = useState<string | null>(null)
   const { sorted: usuariosOrdenados, sort, toggleSort } = useSortable(usuarios as unknown as Record<string, unknown>[])
 
   const totalPages = Math.ceil(total / pageSize)
@@ -86,8 +92,18 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
     startTransition(() => router.refresh())
   }
 
-  async function crearUsuario(e: React.FormEvent) {
-    e.preventDefault()
+  async function restablecerPassword(userId: string) {
+    setRestableciendo(userId)
+    const res = await fetch(`/api/admin/usuarios/${userId}/restablecer-password`, { method: 'POST' })
+    setRestableciendo(null)
+    if (res.ok) {
+      setRestablecido(userId)
+      setTimeout(() => setRestablecido(null), 3000)
+    }
+  }
+
+  async function crearUsuario(e?: React.FormEvent) {
+    e?.preventDefault()
     setCreando(true)
     setErrorModal('')
     const res = await fetch('/api/admin/usuarios/crear', {
@@ -166,42 +182,27 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <BotonDescargar endpoint="/api/admin/usuarios/exportar" queryParams={queryParams.toString()} label="Exportar" />
-          <button
+          <Button
             onClick={() => { setModalOpen(true); setErrorModal('') }}
-            className="hover-pop hover-press"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 8,
-              background: 'var(--color-brand)', color: 'var(--text-on-brand)',
-              border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer',
-            }}
+            icon={<PlusCircle size={15} />}
+            size="md"
           >
-            <PlusCircle size={15} />
             Nuevo usuario
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Modal nuevo usuario */}
-      {modalOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, zIndex: 2500,
-          background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: 24,
-        }}>
-          <div style={{
-            background: 'var(--bg-card)', borderRadius: 16,
-            padding: 28, width: '100%', maxWidth: 440,
-            boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Nuevo usuario</h2>
-              <button onClick={() => setModalOpen(false)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                <X size={18} />
-              </button>
-            </div>
-
+      <Modal
+        abierto={modalOpen}
+        onClose={() => setModalOpen(false)}
+        titulo="Nuevo usuario"
+        textoCancelar="Cancelar"
+        textoConfirmar={creando ? 'Creando...' : 'Crear usuario'}
+        onCancelar={() => setModalOpen(false)}
+        onConfirmar={() => { if (!creando) crearUsuario() }}
+      >
+        <>
             {errorModal && (
               <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,94,75,0.08)', border: '1px solid var(--color-error)', color: 'var(--color-error-content)', fontSize: 13, marginBottom: 16 }}>
                 {errorModal}
@@ -244,61 +245,99 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                 </select>
               </div>
 
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button type="button" onClick={() => setModalOpen(false)} className="hover-pop hover-press" style={{ padding: '9px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-primary)', fontSize: 13, cursor: 'pointer' }}>
-                  Cancelar
-                </button>
-                <button type="submit" disabled={creando} className={creando ? '' : 'hover-download hover-press'} style={{ padding: '9px 20px', borderRadius: 8, background: creando ? '#4D7C79' : 'var(--color-brand)', color: '#fff', border: 'none', fontSize: 13, fontWeight: 600, cursor: creando ? 'not-allowed' : 'pointer' }}>
-                  {creando ? 'Creando...' : 'Crear usuario'}
-                </button>
-              </div>
+              {ROLES_CON_EMPRESA.includes(formNuevo.rol) && (
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>Empresa *</label>
+                  <select
+                    value={formNuevo.empresa_id}
+                    onChange={e => setFormNuevo(prev => ({ ...prev, empresa_id: e.target.value }))}
+                    required
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
+                  >
+                    <option value="">Selecciona una empresa...</option>
+                    {empresasDisponibles.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}
+                  </select>
+                </div>
+              )}
+
+              <button type="submit" style={{ display: 'none' }} aria-hidden="true" tabIndex={-1} />
             </form>
-          </div>
-        </div>
-      )}
+        </>
+      </Modal>
 
       {/* Tabla */}
-      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
+      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
-              <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
+              <tr style={{ background: 'var(--bg-table-header)', borderBottom: '1px solid var(--border)' }}>
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', fontSize: 11, whiteSpace: 'nowrap' }}>Empresa</th>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: 'var(--color-brand)', fontSize: 11, whiteSpace: 'nowrap' }}>Empresa</th>
                 <SortTh col="rol" sort={sort} onToggle={toggleSort}>Rol</SortTh>
                 <SortTh col="created_at" sort={sort} onToggle={toggleSort}>Registro</SortTh>
+                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: 'var(--color-brand)', fontSize: 11, whiteSpace: 'nowrap' }}>Acceso</th>
               </tr>
             </thead>
             <tbody>
               {usuariosOrdenados.length === 0 && (
-                <tr><td colSpan={5} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                <tr><td colSpan={6} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                   {search ? 'Sin resultados para esa búsqueda.' : 'No hay usuarios registrados.'}
                 </td></tr>
               )}
-              {(usuariosOrdenados as unknown as PerfilRow[]).map(u => (
-                <tr key={u.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{u.nombre || '-'}</td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{u.email}</td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{getNombreEmpresa(u.empresas)}</td>
-                  <td style={{ padding: '10px 16px' }}>
-                    <select
-                      value={u.rol}
-                      disabled={cambiando === u.user_id || u.user_id === currentUserId}
-                      onChange={e => cambiarRol(u.user_id, e.target.value as Rol)}
-                      style={{
-                        padding: '4px 8px', borderRadius: 6, fontSize: 12,
-                        border: '1px solid var(--border)', background: 'var(--bg-input)',
-                        color: 'var(--text-primary)', cursor: u.user_id === currentUserId ? 'not-allowed' : 'pointer',
-                        opacity: cambiando === u.user_id ? 0.5 : 1,
-                      }}
-                    >
-                      {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
-                    </select>
-                  </td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{formatFecha(u.created_at)}</td>
-                </tr>
-              ))}
+              {(usuariosOrdenados as unknown as PerfilRow[]).map((u, idx) => {
+                return (
+                  <tr
+                    key={u.id}
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <td style={{ padding: '10px 16px', color: 'var(--text-primary)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{u.nombre || '-'}</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '10px 16px' }}>{u.email}</td>
+                    <td style={{ padding: '10px 16px' }}>{getNombreEmpresa(u.empresas)}</td>
+                    <td style={{ padding: '10px 16px' }}>
+                      <select
+                        value={u.rol}
+                        disabled={cambiando === u.user_id || u.user_id === currentUserId}
+                        onChange={e => cambiarRol(u.user_id, e.target.value as Rol)}
+                        style={{
+                          padding: '4px 8px', borderRadius: 6, fontSize: 12,
+                          border: '1px solid var(--border)', background: 'var(--bg-input)',
+                          color: 'var(--text-primary)', cursor: u.user_id === currentUserId ? 'not-allowed' : 'pointer',
+                          opacity: cambiando === u.user_id ? 0.5 : 1,
+                        }}
+                      >
+                        {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
+                      </select>
+                    </td>
+                    <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{formatFecha(u.created_at)}</td>
+                    <td style={{ padding: '10px 16px' }}>
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); restablecerPassword(u.user_id) }}
+                        disabled={restableciendo === u.user_id}
+                        title="Enviar correo para restablecer contraseña"
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6,
+                          fontSize: 11, fontWeight: 600, border: '1px solid var(--border)', background: 'var(--bg-input)',
+                          color: restablecido === u.user_id ? 'var(--color-brand)' : 'var(--text-secondary)',
+                          cursor: restableciendo === u.user_id ? 'not-allowed' : 'pointer',
+                          opacity: restableciendo === u.user_id ? 0.5 : 1,
+                        }}
+                      >
+                        <KeyRound size={12} />
+                        {restablecido === u.user_id ? 'Correo enviado' : 'Restablecer'}
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

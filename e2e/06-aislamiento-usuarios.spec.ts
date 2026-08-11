@@ -28,7 +28,8 @@ loadEnv()
 
 const emailA = `test_security_a_${Date.now()}@reuso.lurdes.co`
 const emailB = `test_security_b_${Date.now()}@reuso.lurdes.co`
-const password = 'TestSecurity123!'
+if (!process.env.TEST_SECURITY_PASSWORD) throw new Error('Falta TEST_SECURITY_PASSWORD en .env.local')
+const password = process.env.TEST_SECURITY_PASSWORD
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!

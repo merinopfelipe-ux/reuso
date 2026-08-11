@@ -16,11 +16,32 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
 
   function handleChange(index: number, e: React.ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value.replace(/\D/g, '')
-    const digit = raw.slice(-1)
+
+    // El navegador/celular a veces autocompleta el código completo en una
+    // sola casilla (autofill de SMS o portapapeles) sin disparar el evento
+    // de "pegar" — si llegan varios dígitos de una vez, se reparten igual
+    // que un paste, en vez de quedarse solo con el último.
+    if (raw.length > 1) {
+      distribuirDesde(index, raw)
+      return
+    }
+
     const newDigits = [...digits]
-    newDigits[index] = digit
+    newDigits[index] = raw
     onChange(newDigits.join(''))
-    if (digit && index < length - 1) refs.current[index + 1]?.focus()
+    if (raw && index < length - 1) refs.current[index + 1]?.focus()
+  }
+
+  function distribuirDesde(indexInicial: number, texto: string) {
+    const nuevos = [...digits]
+    let pos = indexInicial
+    for (const char of texto) {
+      if (pos >= length) break
+      nuevos[pos] = char
+      pos++
+    }
+    onChange(nuevos.join(''))
+    refs.current[Math.min(pos, length - 1)]?.focus()
   }
 
   function handleKeyDown(index: number, e: KeyboardEvent<HTMLInputElement>) {
@@ -47,10 +68,9 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
 
   function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
     e.preventDefault()
-    const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, length)
+    const pasted = e.clipboardData.getData('text').replace(/\D/g, '')
     if (!pasted) return
-    onChange(pasted)
-    refs.current[Math.min(pasted.length, length - 1)]?.focus()
+    distribuirDesde(0, pasted)
   }
 
   return (
@@ -62,7 +82,7 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
-          maxLength={2}
+          maxLength={length}
           value={digit}
           disabled={disabled}
           autoFocus={i === 0}
@@ -79,7 +99,7 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
             background: digit
               ? (isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.06)')
               : (isDark ? '#5A5A5A' : '#FFFFFF'),
-            color: isDark ? '#FFFFFF' : '#1A3A38',
+            color: isDark ? '#FFFFFF' : '#474747',
             fontSize: 22,
             fontWeight: 800,
             textAlign: 'center',

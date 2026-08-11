@@ -38,6 +38,11 @@ export default async function UsuariosPage({
     .order('created_at', { ascending: false })
     .range(offset, offset + pageSize - 1)
 
+  const { data: empresas } = await adminClient
+    .from('empresas')
+    .select('id, nombre')
+    .order('nombre', { ascending: true })
+
   return (
     <div>
       <AdminPageHeader
@@ -53,6 +58,7 @@ export default async function UsuariosPage({
         search={search}
         rolFiltro={rolFiltro}
         currentUserId={user.id}
+        empresasDisponibles={empresas ?? []}
       />
     </div>
   )

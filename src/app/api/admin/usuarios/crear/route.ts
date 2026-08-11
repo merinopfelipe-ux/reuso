@@ -66,5 +66,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Error al crear perfil' }, { status: 500 })
   }
 
+  // El usuario se crea sin contraseña (createUser no la pide) — sin este correo
+  // nunca podría entrar. Reusa el mismo flujo/plantilla de "Restablece tu
+  // contraseña" que ya usa /recuperar, así el nuevo usuario la define él mismo.
+  await supabase.auth.resetPasswordForEmail(parsed.data.email)
+
   return NextResponse.json({ ok: true })
 }
