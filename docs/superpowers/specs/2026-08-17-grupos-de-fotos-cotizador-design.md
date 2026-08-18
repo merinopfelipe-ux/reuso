@@ -52,3 +52,5 @@ Cuando `gruposUsados >= 3`, el botón "+ Agregar otro grupo de fotos" (y la zona
 - Confirmar 3 grupos seguidos: al terminar el tercero, la zona de carga desaparece y aparece el aviso con el link a editar la cotización.
 - Confirmar que un ítem agregado vía "Buscar en catálogo" desde `sin_match` no incrementa `gruposUsados` ni bloquea el tope.
 - `npx tsc --noEmit` y `npx eslint` limpios sobre `nueva/page.tsx` y `components/grupo-item-card.tsx`.
+
+**Estado: implementado 2026-08-18.**

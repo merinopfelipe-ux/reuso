@@ -189,6 +189,11 @@ function NuevaCotizacionContent() {
   // Cotización acumulada
   const [cotizacionId, setCotizacionId] = useState<string | null>(null)
   const [muebles, setMuebles] = useState<MuebleAgregado[]>([])
+  // Sube en 1 SOLO al confirmar el ítem resultante de un grupo de fotos (IA
+  // o Manual) — nunca vía "rescate" (Buscar en catálogo / Agregar ítem que
+  // no existe), esos no consumen un grupo. Tope: 3 grupos por cotización
+  // nueva, ver JSX del botón "+ Agregar otro grupo de fotos" más abajo.
+  const [gruposUsados, setGruposUsados] = useState(0)
 
   // Fila de rescate: "Agregar ítem" que la IA no detectó
   const [mostrarRescate, setMostrarRescate] = useState(false)
@@ -418,10 +423,13 @@ function NuevaCotizacionContent() {
   function continuarManual() {
     if (fotos.length === 0) return
     setError(null)
-    const items = fotos.map((foto, i) => construirItemStub({
-      imagenIndex: i, imagenPreview: foto.preview, imagenBase64: foto.base64,
-    }))
-    setItemsDetectados(items)
+    // Un solo ítem por grupo, sin importar cuántas fotos tenga — usa la
+    // primera como imagen por defecto, el vendedor puede cambiarla desde el
+    // selector de "foto principal" dentro de GrupoItemCard.
+    const item = construirItemStub({
+      imagenIndex: 0, imagenPreview: fotos[0].preview, imagenBase64: fotos[0].base64,
+    })
+    setItemsDetectados([item])
     setNoIdentificados([])
     setSinMatch([])
     setObservaciones('')
@@ -471,6 +479,12 @@ function NuevaCotizacionContent() {
       const copia: ItemConImagen = { ...original, titulo: `${original.titulo} (copia)`, _uiKey: crypto.randomUUID() }
       return [...prev.slice(0, index + 1), copia, ...prev.slice(index + 1)]
     })
+  }
+
+  // Modo IA con más de 1 candidato: elegir uno colapsa itemsDetectados a
+  // solo ese — el grupo de fotos siempre produce UN ítem, nunca varios.
+  function elegirCandidato(index: number) {
+    setItemsDetectados(prev => prev[index] ? [prev[index]] : prev)
   }
 
   // Crea la cotización apenas se identifica el cliente, no hasta el primer
@@ -579,6 +593,7 @@ function NuevaCotizacionContent() {
 
       setMuebles(prev => [...prev, ...nuevos])
       for (const nuevo of nuevos) dispararPrecioMercado(nuevo.id)
+      setGruposUsados(g => g + 1)
 
       // Reiniciar para agregar otra tanda de fotos
       setEstado('idle')
@@ -595,6 +610,18 @@ function NuevaCotizacionContent() {
   function handleGenerarPropuesta() {
     if (!cotizacionId) return
     router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))
+  }
+
+  // Botón fijo "+ Agregar otro grupo de fotos" de la barra inferior —
+  // descarta cualquier revisión sin confirmar del grupo actual (si la
+  // había) y vuelve a la zona de carga en blanco.
+  function iniciarNuevoGrupo() {
+    setEstado('idle')
+    setFotos([])
+    setItemsDetectados([])
+    setNoIdentificados([])
+    setSinMatch([])
+    setError(null)
   }
 
   // ── Precio de mercado nuevo (IA + búsqueda web) — fire-and-forget ──────────
@@ -838,7 +865,7 @@ function NuevaCotizacionContent() {
 
         {/* Zona de carga de foto: archivo o pegar (Cmd+V) — el modo Con IA /
             Manual se elige siempre aquí, antes o mientras se arma la tanda. */}
-        {cliente && estado === 'idle' && (
+        {cliente && estado === 'idle' && gruposUsados < 3 && (
           <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
             <div className="flex items-center justify-center mb-4">
               <div className="inline-flex rounded-full border p-1" style={{ borderColor: 'var(--border)' }}>
@@ -931,6 +958,18 @@ function NuevaCotizacionContent() {
           </div>
         )}
 
+        {/* Tope de 3 grupos alcanzado */}
+        {cliente && estado === 'idle' && gruposUsados >= 3 && (
+          <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
+            <p className={`text-sm mb-3 ${ts}`}>Ya agregaste 3 ítems a esta cotización. Para agregar más, edítala después de guardarla.</p>
+            {cotizacionId && (
+              <Button variant="secondary" onClick={() => router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))}>
+                Ir a la cotización
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Analizando */}
         {estado === 'analizando' && (
           <div className={`rounded-[12px] border p-6 ${cardBg}`}>
@@ -978,6 +1017,8 @@ function NuevaCotizacionContent() {
                 item={item}
                 catalogo={catalogo}
                 conEmpresa={conEmpresa}
+                fotosGrupo={fotos}
+                onElegir={modo === 'ia' && itemsDetectados.length > 1 ? () => elegirCandidato(i) : undefined}
                 onChange={(nuevo) => actualizarItem(i, nuevo)}
                 onQuitar={() => quitarDetectado(i)}
                 onDuplicar={() => duplicarDetectado(i)}
@@ -1087,11 +1128,21 @@ function NuevaCotizacionContent() {
                 {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
               </Button>
             )}
+            {estado === 'idle' && gruposUsados < 3 && (
+              <Button
+                variant="secondary"
+                onClick={iniciarNuevoGrupo}
+                icon={<Plus size={16} strokeWidth={2.5} />}
+                className="flex-1 w-full"
+              >
+                Agregar otro grupo de fotos
+              </Button>
+            )}
             {(cotizacionId || muebles.length > 0) && (
               <Button
                 variant="secondary"
                 onClick={handleGenerarPropuesta}
-                disabled={estado === 'guardando'}
+                disabled={estado === 'guardando' || gruposUsados === 0}
                 icon={<ArrowRight size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
