@@ -22,7 +22,7 @@ Nuevo estado `gruposUsados` (número, inicia en 0), **separado** de `muebles.len
 
 ### 3. Modo Manual — una tarjeta por grupo, no por foto
 `continuarManual()` cambia de `fotos.map(...)` (una tarjeta por foto) a construir **una sola** tarjeta con `construirItemStub`, usando la primera foto del grupo como imagen por defecto.
-- Si el grupo tiene más de una foto, se muestra el mismo selector de miniaturas del punto 2 para elegir cuál foto es la principal antes de mostrar la tarjeta (o dentro de ella, ver "Preguntas abiertas").
+- Si el grupo tiene más de una foto, la tarjeta nace con el mismo selector de miniaturas del punto 2 (dentro de `GrupoItemCard`, ver "Decisiones de detalle") para elegir cuál foto es la principal.
 - Con una sola foto, se usa esa directamente, sin preguntar.
 
 ### 4. Tope de 3 grupos
