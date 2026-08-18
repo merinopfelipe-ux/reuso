@@ -904,7 +904,7 @@ function NuevaCotizacionContent() {
                     : `Elige tú la categoría y llena todo a mano, hasta ${MAX_FOTOS_POR_TANDA} fotos a la vez`}
                 </p>
                 <p className={`text-xs mb-4 flex items-center justify-center gap-1 text-center ${ts}`}>
-                  <Clipboard size={13} className="flex-shrink-0" /> También puedes pegar imágenes copiadas, una o varias veces: Cmd+V en Mac, Ctrl+V en PC, o mantén presionado y elige Pegar en iOS
+                  <Clipboard size={13} className="flex-shrink-0" /> También puedes pegar imágenes copiadas, una o varias veces: ⌘V en Mac, Ctrl+V en PC, o mantén presionado y elige Pegar en iOS
                 </p>
               </>
             ) : (
@@ -1128,7 +1128,14 @@ function NuevaCotizacionContent() {
                 {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
               </Button>
             )}
-            {estado === 'idle' && gruposUsados < 3 && (
+            {/* Visible en todo momento mientras no se llegue al tope, no
+                solo en estado idle — si solo se mostrara ahí, clic no hacía
+                nada porque ya estaba en ese mismo estado vacío (bug real
+                reportado). Al hacer clic estando en 'resultado'/'guardando'/
+                'analizando', descarta esa revisión y vuelve a la zona de
+                carga en blanco (mismo criterio que "Cambiar" cliente: es una
+                acción explícita del vendedor, no algo accidental). */}
+            {gruposUsados < 3 && estado !== 'idle' && (
               <Button
                 variant="secondary"
                 onClick={iniciarNuevoGrupo}
