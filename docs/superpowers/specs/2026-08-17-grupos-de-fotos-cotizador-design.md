@@ -8,6 +8,8 @@ El usuario redefinió el modelo mental: un **grupo de fotos** es una serie de fo
 
 No se toca la palabra "mueble" en código ni UI — sigue siendo el término usado hoy (el modelo de datos ya es genérico por categorías, ver "Motor Lógico Universal" en `CLAUDE.md`; renombrar la palabra es un cambio aparte, fuera de este alcance).
 
+**Cambio ya implementado, fuera de este plan pero relevante para el punto 4**: la cotización ahora se crea (`cotizacion_id`) apenas se identifica el cliente, no hasta el primer ítem confirmado — arregla que refrescar la página antes de subir fotos perdiera la selección de cliente. Esto significa que `cotizacionId` deja de ser un buen indicador de "ya hay al menos un ítem" — hay que usar el nuevo `gruposUsados` para eso.
+
 ## Comportamiento
 
 ### 1. Contador de grupos
@@ -25,8 +27,12 @@ Nuevo estado `gruposUsados` (número, inicia en 0), **separado** de `muebles.len
 - Si el grupo tiene más de una foto, la tarjeta nace con el mismo selector de miniaturas del punto 2 (dentro de `GrupoItemCard`, ver "Decisiones de detalle") para elegir cuál foto es la principal.
 - Con una sola foto, se usa esa directamente, sin preguntar.
 
-### 4. Tope de 3 grupos
-Cuando `gruposUsados >= 3`, la zona de "sube otro grupo de fotos" (la que hoy dice "Agrega otra tanda de fotos" cuando `muebles.length > 0`) deja de mostrarse. En su lugar, un aviso: *"Ya agregaste 3 ítems a esta cotización. Para agregar más, edítala después de guardarla."* con un botón que navega a `/empresa/cotizador/[cotizacionId]` (la cotización ya existe desde que se confirmó el primer grupo, vía `handleConfirmarTodos`).
+### 4. Botón fijo "+ Agregar otro grupo de fotos" + tope de 3 grupos
+En vez de depender solo de que la zona de carga reaparezca sola tras confirmar (como hoy), se agrega un botón fijo **"+ Agregar otro grupo de fotos"**, ubicado arriba de "Genera la propuesta" en la barra inferior, visible en todo momento mientras `gruposUsados < 3` — no solo cuando `estado === 'idle'`.
+
+**"Genera la propuesta"** pasa a estar deshabilitado (gris tenue) hasta que se confirme al menos un grupo (`gruposUsados >= 1`) — hoy se habilita apenas existe `cotizacionId`, que con el fix de persistencia (ver bug de "se pierde el progreso al refrescar") ahora se crea desde que se identifica el cliente, antes de cualquier ítem. Debe depender de `gruposUsados >= 1`, no de `cotizacionId`.
+
+Cuando `gruposUsados >= 3`, el botón "+ Agregar otro grupo de fotos" (y la zona de carga si estaba abierta) deja de mostrarse. En su lugar, un aviso: *"Ya agregaste 3 ítems a esta cotización. Para agregar más, edítala después de guardarla."* con un botón que navega a `/empresa/cotizador/[cotizacionId]` (la cotización ya existe desde que se identificó el cliente).
 
 ### 5. Lo que no cambia
 - Tope de `MAX_FOTOS_POR_TANDA = 3` fotos por grupo (ya implementado).
