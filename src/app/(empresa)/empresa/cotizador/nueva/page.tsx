@@ -1128,14 +1128,15 @@ function NuevaCotizacionContent() {
                 {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
               </Button>
             )}
-            {/* Visible en todo momento mientras no se llegue al tope, no
-                solo en estado idle — si solo se mostrara ahí, clic no hacía
-                nada porque ya estaba en ese mismo estado vacío (bug real
-                reportado). Al hacer clic estando en 'resultado'/'guardando'/
-                'analizando', descarta esa revisión y vuelve a la zona de
-                carga en blanco (mismo criterio que "Cambiar" cliente: es una
-                acción explícita del vendedor, no algo accidental). */}
-            {gruposUsados < 3 && estado !== 'idle' && (
+            {/* SIEMPRE visible mientras no se llegue al tope de 3 grupos —
+                directriz explícita, no solo cuando hay algo que revisar. Si
+                ya está en 'idle' sin nada pendiente, el clic es inofensivo
+                (resetea a lo mismo que ya había). Si hay una revisión sin
+                confirmar ('resultado'/'guardando'/'analizando'), sí hace
+                algo real: la descarta y vuelve a la zona de carga en blanco
+                — mismo criterio que "Cambiar" cliente, es una acción
+                explícita del vendedor, no algo accidental. */}
+            {gruposUsados < 3 && (
               <Button
                 variant="secondary"
                 onClick={iniciarNuevoGrupo}
