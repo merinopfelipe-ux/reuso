@@ -103,9 +103,27 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   if (error || !nuevo) {
     console.error('[POST /api/cotizador/clientes/[id]/convertir-b2c]', error)
     if (error?.code === '23505') {
-      // Defensivo: con el índice único actual (que excluye duplicado_de_id no nulo)
-      // este insert nunca debería chocar contra otra fila B2C, pero se deja la rama
-      // por si el índice cambia en el futuro.
+      // Dos peticiones simultáneas pueden pasar ambas la comprobación "¿ya existe?"
+      // de arriba antes de que cualquiera de los dos INSERT llegue a la base de
+      // datos (condición de carrera real, no solo doble clic secuencial). El índice
+      // único idx_crm_clientes_duplicado_de_id_unico (ver
+      // sql/102_duplicado_de_id_unico.sql) hace que la segunda de las dos choque
+      // con 23505 — pero también puede chocar por el índice de teléfono
+      // (idx_crm_clientes_telefono). No distinguimos por el mensaje del error
+      // porque Postgres/Supabase no garantiza un formato estable para eso: en vez
+      // de eso, volvemos a buscar por duplicado_de_id. Si aparece una fila, es que
+      // la otra petición ganó la carrera y devolvemos esa fila con 200 (mismo
+      // resultado idempotente que el caso secuencial). Si no aparece, el choque
+      // fue realmente por el teléfono duplicado y mantenemos el 409 de siempre.
+      const { data: ganadora } = await adminClient
+        .from('crm_clientes')
+        .select(CLIENTE_SELECT)
+        .eq('empresa_id', empresa_id)
+        .eq('duplicado_de_id', original.id)
+        .maybeSingle()
+      if (ganadora) {
+        return NextResponse.json({ cliente: ganadora }, { status: 200 })
+      }
       return NextResponse.json({ error: 'Ya existe un cliente con ese celular.' }, { status: 409 })
     }
     return NextResponse.json({ error: 'Error al crear el cliente B2C.' }, { status: 500 })
