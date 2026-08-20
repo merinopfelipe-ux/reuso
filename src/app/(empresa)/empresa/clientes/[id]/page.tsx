@@ -217,14 +217,14 @@ function DetalleClienteContent() {
         }),
       })
       const d = await res.json()
-      if (!res.ok) { setError(d.error ?? 'Error al guardar.'); return }
+      if (!res.ok) { setError(d.error ?? 'Error al guardar.'); setGuardando(false); return }
       setCliente(d.cliente)
       setTelefonoOriginal(telefono)
+      setConfirmandoTelefono(false)
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
     } finally {
       setGuardando(false)
-      setConfirmandoTelefono(false)
     }
   }
 
@@ -239,6 +239,10 @@ function DetalleClienteContent() {
   async function agregarContactoNuevo() {
     const emp = cliente && (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
     if (!emp) return
+    if (!nuevoContacto.nombre.trim()) {
+      setErrorAgregar('El nombre del contacto es obligatorio.')
+      return
+    }
     setAgregandoContacto(true)
     setErrorAgregar(null)
     try {
