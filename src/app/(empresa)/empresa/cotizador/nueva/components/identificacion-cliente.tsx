@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
 import { InputDireccion } from '@/components/ui/input-direccion'
@@ -38,7 +39,8 @@ type Paso = 'buscar' | 'resultados' | 'encontrado' | 'crear'
 export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   const [paso, setPaso] = useState<Paso>('buscar')
   const [q, setQ] = useState('')
-  
+  const [filtroTipo, setFiltroTipo] = useState<'todos' | 'persona' | 'empresa'>('todos')
+
   // Para el formulario de crear
   const [indicativo, setIndicativo] = useState<Pais>(PAISES[0])
   const [telefono, setTelefono] = useState('')
@@ -93,6 +95,41 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   const [posibleDuplicadoContactoIdx, setPosibleDuplicadoContactoIdx] = useState<number | null>(null)
   const [buscandoDuplicado, setBuscandoDuplicado] = useState(false)
 
+  // Convertir un contacto B2B en un cliente B2C independiente, sin dejar de
+  // ser contacto de su empresa (endpoint POST /convertir-b2c, ya existente).
+  const [convirtiendo, setConvirtiendo] = useState<ClienteIdentificado | null>(null)
+  const [telefonoConversion, setTelefonoConversion] = useState('')
+  const [convirtiendoGuardando, setConvirtiendoGuardando] = useState(false)
+  const [errorConversion, setErrorConversion] = useState<string | null>(null)
+
+  function abrirConvertirB2C(c: ClienteIdentificado) {
+    setConvirtiendo(c)
+    setTelefonoConversion('')
+    setErrorConversion(null)
+  }
+
+  async function confirmarConvertirB2C() {
+    if (!convirtiendo) return
+    setConvirtiendoGuardando(true)
+    setErrorConversion(null)
+    try {
+      const res = await fetch(conEmpresa(`/api/cotizador/clientes/${convirtiendo.id}/convertir-b2c`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telefono: telefonoConversion.trim() || undefined, telefono_indicativo: indicativo.dial }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setErrorConversion(data.error ?? 'No se pudo convertir.'); return }
+      setConvirtiendo(null)
+      // Se queda en la lista de resultados — el vendedor puede ahora
+      // buscar de nuevo y encontrar el B2C recién creado si lo necesita.
+    } catch {
+      setErrorConversion('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setConvirtiendoGuardando(false)
+    }
+  }
+
   const tp = 'text-[var(--text-primary)]'
   const ts = 'text-[var(--text-secondary)]'
   const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
@@ -104,6 +141,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
     setBuscando(true)
     try {
       const params = new URLSearchParams({ q: q.trim() })
+      if (filtroTipo !== 'todos') params.set('tipo', filtroTipo)
       const res = await fetch(conEmpresa(`/api/cotizador/clientes?${params}`))
       const data = await res.json()
       if (!res.ok) { setError(data.error ?? 'Error al buscar clientes.'); return }
@@ -292,40 +330,74 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   }
 
   if (paso === 'resultados') {
+    const empresasAgrupadas = new Map<string, { emp: { id: string; nit: string; razon_social: string; nombre_comercial: string | null }; contactos: ClienteIdentificado[] }>()
+    const personasSueltas: ClienteIdentificado[] = []
+    resultados.forEach(c => {
+      const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
+      if (emp) {
+        if (!empresasAgrupadas.has(emp.id)) empresasAgrupadas.set(emp.id, { emp, contactos: [] })
+        empresasAgrupadas.get(emp.id)!.contactos.push(c)
+      } else {
+        personasSueltas.push(c)
+      }
+    })
+
     return (
       <div className={`rounded-[12px] border p-5 ${cardBg}`}>
         <p className={`text-sm font-semibold mb-1 ${tp}`}>Resultados de búsqueda</p>
-        <p className={`text-xs mb-4 ${ts}`}>Se encontraron {resultados.length} cliente{resultados.length !== 1 ? 's' : ''} para &quot;{q}&quot;</p>
-        
-        <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1 mb-4">
-          {resultados.map(c => {
-            const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
-            return (
+        <p className={`text-xs mb-4 ${ts}`}>Se encontraron {resultados.length} resultado{resultados.length !== 1 ? 's' : ''} para &quot;{q}&quot;</p>
+
+        <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 mb-4">
+          {Array.from(empresasAgrupadas.values()).map(({ emp, contactos: contactosEmp }) => (
+            <div key={emp.id} className="rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] p-3">
               <button
-                key={c.id}
-                onClick={() => seleccionarCliente(c)}
-                className={`w-full text-left p-3 rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] transition-colors`}
+                onClick={() => seleccionarCliente(contactosEmp[0])}
+                className="w-full text-left"
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className={`text-sm font-bold ${tp}`}>
-                      {c.nombre} {c.apellido ?? ''}
-                    </p>
-                    <p className={`text-xs ${ts}`}>{formatTelefonoVista(c.telefono, c.telefono_indicativo)}</p>
-                  </div>
-                  {c.tipo === 'empresa' && (
-                    <span className="text-[10px] uppercase font-bold bg-[#F6BF3E]/20 text-[#8a6d1f] px-2 py-0.5 rounded-full">B2B</span>
-                  )}
-                  {c.tipo === 'persona' && (
-                    <span className="text-[10px] uppercase font-bold bg-[#59A6E4]/20 text-[#59A6E4] px-2 py-0.5 rounded-full">B2C</span>
-                  )}
-                </div>
-                {emp && (
-                  <p className={`text-xs mt-1 font-semibold ${ts}`}>{emp.razon_social} · NIT {emp.nit}</p>
-                )}
+                <p className={`text-sm font-bold ${tp}`}>{emp.razon_social}</p>
+                <p className={`text-xs ${ts}`}>NIT {emp.nit}{emp.nombre_comercial ? ` · ${emp.nombre_comercial}` : ''}</p>
               </button>
-            )
-          })}
+              {/* La fila-ancla (es_contacto_real: false) nunca se muestra como
+                  si fuera un contacto elegible — su nombre autocompletado
+                  (el de la empresa) haría que "Convertir en cliente B2C"
+                  no tuviera sentido sobre ella. */}
+              {contactosEmp.filter(c => c.es_contacto_real).length > 0 && (
+                <div className="mt-2 pt-2 border-t border-[var(--border)] space-y-1.5">
+                  {contactosEmp.filter(c => c.es_contacto_real).map(c => (
+                    <div key={c.id} className="flex items-center justify-between gap-2">
+                      <button onClick={() => seleccionarCliente(c)} className="text-left flex-1 min-w-0">
+                        <p className={`text-xs font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
+                        {c.telefono && <p className={`text-[11px] ${ts}`}>{formatTelefonoVista(c.telefono, c.telefono_indicativo)}</p>}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => abrirConvertirB2C(c)}
+                        className="text-[11px] font-semibold px-2 py-1 rounded-full border border-[var(--border)] hover-pop flex-shrink-0"
+                        style={{ color: 'var(--color-brand)' }}
+                      >
+                        Convertir en cliente B2C
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {personasSueltas.map(c => (
+            <button
+              key={c.id}
+              onClick={() => seleccionarCliente(c)}
+              className="w-full text-left p-3 rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] transition-colors"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className={`text-sm font-bold ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
+                  <p className={`text-xs ${ts}`}>{formatTelefonoVista(c.telefono, c.telefono_indicativo)}</p>
+                </div>
+                <span className="text-[10px] uppercase font-bold bg-[#59A6E4]/20 text-[#59A6E4] px-2 py-0.5 rounded-full">B2C</span>
+              </div>
+            </button>
+          ))}
         </div>
 
         <div className="flex gap-3">
@@ -338,6 +410,33 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             No está en la lista, crear nuevo
           </Button>
         </div>
+
+        {/* Confirmar conversión a B2C */}
+        <Modal
+          abierto={convirtiendo !== null}
+          onClose={() => setConvirtiendo(null)}
+          titulo="Convertir en cliente B2C"
+          descripcion={convirtiendo ? `${convirtiendo.nombre} ${convirtiendo.apellido ?? ''} pasa a existir también como cliente independiente, sin dejar de ser contacto de su empresa.` : ''}
+          textoConfirmar={convirtiendoGuardando ? 'Creando...' : 'Convertir'}
+          onConfirmar={confirmarConvertirB2C}
+        >
+          {convirtiendo && !convirtiendo.telefono && (
+            <div>
+              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Celular (obligatorio para el cliente B2C)</label>
+              <div className="flex gap-2">
+                <SelectorPais value={indicativo} onChange={setIndicativo} />
+                <input
+                  value={telefonoConversion}
+                  onChange={e => setTelefonoConversion(e.target.value.replace(/[^\d]/g, ''))}
+                  placeholder="Número de celular"
+                  inputMode="tel"
+                  className={`${inputSt} flex-1`}
+                />
+              </div>
+            </div>
+          )}
+          {errorConversion && <p className="mt-2 text-sm text-[#FF5E4B]">{errorConversion}</p>}
+        </Modal>
       </div>
     )
   }
@@ -594,6 +693,20 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
     <div className={`rounded-[12px] border p-5 ${cardBg}`}>
       <p className={`text-sm font-semibold mb-1 ${tp}`}>¿A quién le cotizas?</p>
       <p className={`text-xs mb-4 ${ts}`}>Ingresa el NIT, celular o nombre del cliente para buscarlo o crearlo</p>
+      <div className="flex gap-2 mb-3">
+        {(['todos', 'persona', 'empresa'] as const).map(t => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => setFiltroTipo(t)}
+            className={`flex-1 py-2 rounded-full text-xs font-semibold transition-colors ${
+              filtroTipo === t ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : 'bg-[var(--bg-input)] text-[var(--text-secondary)]'
+            }`}
+          >
+            {t === 'todos' ? 'Ambos' : t === 'persona' ? 'Persona (B2C)' : 'Empresa (B2B)'}
+          </button>
+        ))}
+      </div>
       <div className="flex gap-2">
         <input
           value={q}

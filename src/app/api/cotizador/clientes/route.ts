@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
   }
   const { empresa_id, adminClient } = auth
   const q = request.nextUrl.searchParams.get('q')?.trim().toLowerCase()
+  const tipoFiltro = request.nextUrl.searchParams.get('tipo')
 
   const { data, error } = await adminClient
     .from('crm_clientes')
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
   }
 
   interface ClienteRow {
+    tipo: 'persona' | 'empresa'
     nombre: string
     apellido: string | null
     telefono: string | null
@@ -50,6 +52,9 @@ export async function GET(request: NextRequest) {
   }
 
   let clientes = (data ?? []) as unknown as ClienteRow[]
+  if (tipoFiltro === 'persona' || tipoFiltro === 'empresa') {
+    clientes = clientes.filter(c => c.tipo === tipoFiltro)
+  }
   if (q) {
     clientes = clientes.filter((c) => {
       const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
