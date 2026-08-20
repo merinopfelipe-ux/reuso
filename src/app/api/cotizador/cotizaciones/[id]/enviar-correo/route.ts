@@ -11,6 +11,11 @@ const schema = z.object({
   email: z.string().email(),
   mensaje: z.string().max(500).optional(),
   guardarCorreo: z.boolean().optional(),
+  // Fila real de crm_clientes cuyo correo se eligió en el selector de
+  // contactos (no siempre es el cliente-ancla de la cotización) — sin esto,
+  // "guardar correo" y el saludo del email terminaban aplicados a la
+  // persona equivocada cuando el vendedor elegía otro contacto.
+  contacto_id: z.string().uuid().optional(),
 })
 
 export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
@@ -33,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   if (!parsed.success) {
     return NextResponse.json({ error: 'Ingresa un correo válido.' }, { status: 400 })
   }
-  const { email, mensaje, guardarCorreo } = parsed.data
+  const { email, mensaje, guardarCorreo, contacto_id } = parsed.data
 
   const { data: cot, error: fetchError } = await adminClient
     .from('crm_cotizaciones')
@@ -55,6 +60,22 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   const cliente = Array.isArray(cot.crm_clientes) ? cot.crm_clientes[0] : cot.crm_clientes
   const empresa = Array.isArray(cot.empresas) ? cot.empresas[0] : cot.empresas
 
+  // Si el vendedor eligió un contacto del selector (no siempre es el
+  // cliente-ancla de la cotización), resolvemos esa fila real para no
+  // guardar el correo ni saludar a nombre de la persona equivocada.
+  // Se busca acotado a esta empresa (multi-tenant) — nunca se confía en
+  // que el contacto_id del cliente pertenezca a quien dice pertenecer.
+  let destinatario = cliente
+  if (contacto_id) {
+    const { data: contactoElegido } = await adminClient
+      .from('crm_clientes')
+      .select('id, nombre, email, es_contacto_real')
+      .eq('id', contacto_id)
+      .eq('empresa_id', empresa_id)
+      .maybeSingle()
+    if (contactoElegido) destinatario = contactoElegido
+  }
+
   // Asegurar que el enlace público exista (mismo criterio que /enviar).
   const token = cot.enlace_publico_token ?? cot.codigo_cotizacion
   const yaEnviada = cot.estado !== 'por_cotizar'
@@ -71,8 +92,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Error al generar el enlace.' }, { status: 500 })
   }
 
-  if (guardarCorreo && cliente && email !== cliente.email) {
-    await adminClient.from('crm_clientes').update({ email }).eq('id', cliente.id)
+  if (guardarCorreo && destinatario && email !== destinatario.email) {
+    await adminClient.from('crm_clientes').update({ email }).eq('id', destinatario.id)
   }
 
   const pdf = await construirPdfCotizacion(cot.id, adminClient)
@@ -84,7 +105,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   try {
     await enviarPropuestaCotizacion(
       email,
-      cliente?.es_contacto_real ? (cliente.nombre ?? null) : null,
+      destinatario?.es_contacto_real ? (destinatario.nombre ?? null) : null,
       empresa?.nombre ?? 'Calculadora de Reúso',
       cot.codigo_cotizacion,
       enlace,

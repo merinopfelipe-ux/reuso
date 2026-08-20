@@ -173,6 +173,11 @@ function DetalleCotizacionContent() {
   const [copiado, setCopiado] = useState(false)
   const [modalCorreoAbierto, setModalCorreoAbierto] = useState(false)
   const [correoDestino, setCorreoDestino] = useState('')
+  // Cuál fila de crm_clientes corresponde al correo elegido — null cuando el
+  // vendedor escribió un correo libre en vez de elegir un contacto de la
+  // lista. El backend usa esto para no confundir la identidad de un contacto
+  // con la de otro al guardar el correo o al saludar en el email.
+  const [contactoIdSeleccionado, setContactoIdSeleccionado] = useState<string | null>(null)
   const [mensajeCorreo, setMensajeCorreo] = useState('')
   const [guardarCorreo, setGuardarCorreo] = useState(false)
   const [enviandoCorreo, setEnviandoCorreo] = useState(false)
@@ -442,6 +447,7 @@ function DetalleCotizacionContent() {
   function abrirModalCorreo() {
     const conCorreo = contactosEmpresa.find(c => c.email)
     setCorreoDestino(conCorreo?.email ?? cot?.crm_clientes?.email ?? '')
+    setContactoIdSeleccionado(conCorreo?.id ?? null)
     setMensajeCorreo('')
     setGuardarCorreo(false)
     setModalCorreoAbierto(true)
@@ -458,6 +464,7 @@ function DetalleCotizacionContent() {
           email: correoDestino.trim(),
           mensaje: mensajeCorreo.trim() || undefined,
           guardarCorreo,
+          contacto_id: contactoIdSeleccionado ?? undefined,
         }),
       })
       const d = await res.json()
@@ -1788,8 +1795,8 @@ function DetalleCotizacionContent() {
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => setCorreoDestino(c.email!)}
-                  className={`text-left px-3 py-2 rounded-xl border text-sm transition-colors ${correoDestino === c.email ? 'border-[var(--color-brand)] bg-[var(--color-brand-light)]' : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'}`}
+                  onClick={() => { setCorreoDestino(c.email!); setContactoIdSeleccionado(c.id) }}
+                  className={`text-left px-3 py-2 rounded-xl border text-sm transition-colors ${contactoIdSeleccionado === c.id ? 'border-[var(--color-brand)] bg-[var(--color-brand-light)]' : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'}`}
                 >
                   <span className={`font-semibold ${tp}`}>{c.nombre} {c.apellido ?? ''}</span>
                   <span className={`ml-2 ${ts}`}>{c.email}</span>
@@ -1803,7 +1810,7 @@ function DetalleCotizacionContent() {
           <input
             type="email"
             value={correoDestino}
-            onChange={e => setCorreoDestino(e.target.value)}
+            onChange={e => { setCorreoDestino(e.target.value); setContactoIdSeleccionado(null) }}
             placeholder="cliente@correo.com"
             className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
           />
