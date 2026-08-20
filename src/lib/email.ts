@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 
 // ── Dark mode - espejo fiel de globals.css [data-theme="dark"] ───────────────
 // --bg-primary:#474747  --bg-card:#525252  --text-primary:#FFFFFF
@@ -160,7 +161,7 @@ function emailPlantilla({
 
           <!-- Footer -->
           <tr>
-            <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
               ${avisoPie ?? `<p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
                 Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
               </p>`}
@@ -332,6 +333,174 @@ export async function enviarNotificacionTicket(
   })
 }
 
+// ── Firmas de documentos legales (invitación cerrada, un solo uso) ──────────
+
+export async function enviarInvitacionFirma(
+  to: string,
+  rawToken: string,
+  nombreDestinatario: string,
+  documentoLabel: string,
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const link = `${APP_URL}/legal/firma/${rawToken}`
+
+  const boton = `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        Firmar documento
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
+        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
+      </p>
+    </td>
+  </tr>
+</table>`
+
+  const bloqueExpiracion = `
+<p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
+  <strong>Recuerda:</strong> Este enlace es de un solo uso y expira en <strong>7 días</strong>.
+  Si ya venció, pídele a quien te lo envió que genere uno nuevo.
+</p>`
+
+  const html = emailPlantilla({
+    preheader: `Tienes un ${documentoLabel} pendiente de firma en Calculadora de Reúso`,
+    subtituloHeader: 'Solicitud de firma',
+    saludo: `¡Hola, ${nombreDestinatario}! 👋`,
+    cuerpo: `Calculadora de Reúso te invita a firmar el <strong>${documentoLabel}</strong>. Usa el enlace para revisarlo y firmarlo digitalmente. En cuanto lo firmes, recibirás tu copia en PDF.`,
+    contenidoCentral: boton + bloqueExpiracion,
+    alertaAccion: 'firmes el documento',
+    mostrarAlerta: true,
+  })
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Firma tu ${documentoLabel} en Calculadora de Reúso`,
+    html,
+  })
+}
+
+export async function enviarConfirmacionFirma(
+  to: string,
+  nombreDestinatario: string,
+  documentoLabel: string,
+  fecha: string,
+  pdfBuffer: Buffer,
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) return
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+
+  const filas = [
+    { label: 'Documento', valor: documentoLabel },
+    { label: 'Nombre', valor: nombreDestinatario },
+    { label: 'Fecha', valor: fecha },
+  ].map(f =>
+    `<tr>
+      <td style="padding:5px 0;font-weight:700;color:#474747;width:100px;vertical-align:top;font-size:13px;">${f.label}</td>
+      <td style="padding:5px 0;color:#474747;font-size:13px;">${f.valor}</td>
+    </tr>`
+  ).join('')
+
+  const contenidoCentral = `
+<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+  ${filas}
+</table>
+<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">Adjuntamos tu copia en PDF. Verifica su autenticidad en <a href="https://reuso.lurdes.co/verificar" style="color:#00827C;">reuso.lurdes.co/verificar</a>.</p>`
+
+  const html = emailPlantilla({
+    preheader: `Tu ${documentoLabel} quedó firmado. Adjuntamos tu copia en PDF`,
+    subtituloHeader: 'Documento firmado',
+    saludo: `¡Listo, ${nombreDestinatario}! ✅`,
+    cuerpo: `Firmaste tu ${documentoLabel}. Guarda esta copia para tus registros.`,
+    contenidoCentral,
+    mostrarAlerta: false,
+  })
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Tu ${documentoLabel} está firmado`,
+    html,
+    attachments: [
+      { filename: `${documentoLabel.toLowerCase().replace(/\s+/g, '-')}-reuso.pdf`, content: pdfBuffer },
+    ],
+  })
+}
+
+export async function enviarPropuestaCotizacion(
+  to: string,
+  nombreCliente: string | null,
+  empresaNombre: string,
+  codigoCotizacion: string,
+  link: string,
+  pdfBuffer: Buffer,
+  mensajeAsesor?: string | null,
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+
+  const boton = `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        Ver propuesta
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
+        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
+      </p>
+    </td>
+  </tr>
+</table>`
+
+  const bloqueMensaje = mensajeAsesor
+    ? `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;background-color:#F0F7F6;border-radius:10px;">
+  <tr>
+    <td style="padding:16px 20px;">
+      <p style="margin:0;font-size:14px;color:#474747;line-height:1.7;white-space:pre-line;">${mensajeAsesor}</p>
+    </td>
+  </tr>
+</table>`
+    : ''
+
+  const html = emailPlantilla({
+    preheader: `Tu propuesta de restauración de ${empresaNombre} ya está lista`,
+    subtituloHeader: 'Tu propuesta está lista',
+    saludo: nombreCliente ? `¡Hola, ${nombreCliente}!` : '¡Hola!',
+    cuerpo: `${empresaNombre} preparó tu propuesta de restauración con el código <strong>${formatCodigoCotizacion(codigoCotizacion)}</strong>. Revisa los detalles en el enlace o abre el PDF que adjuntamos a este correo.`,
+    contenidoCentral: bloqueMensaje + boton,
+    mostrarAlerta: false,
+  })
+
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Tu propuesta de ${empresaNombre} ya está lista`,
+    html,
+    attachments: [
+      { filename: `cotizacion-${codigoCotizacion.replace(/\s+/g, '-')}.pdf`, content: pdfBuffer },
+    ],
+  })
+}
+
 // ── Helpers de marketing ──────────────────────────────────────────────────────
 
 export function urlBaja(token: string): string {
@@ -359,3 +528,92 @@ export function emailMarketing(params: {
 
   return emailPlantilla({ ...plantillaParams, mostrarFirma: false, avisoPie })
 }
+
+// ── Envíos desde el panel de Superadministrador ──────────────────────────────
+
+export async function enviarCorreoAdmin({
+  destinatarios,
+  asunto,
+  preheader,
+  subtituloHeader,
+  saludo,
+  cuerpoHtml,
+  tipo = 'comunicado',
+}: {
+  destinatarios: { email: string; nombre?: string | null; empresaNombre?: string | null; unsubscribeToken?: string | null }[]
+  asunto: string
+  preheader?: string
+  subtituloHeader?: string
+  saludo?: string
+  cuerpoHtml: string
+  tipo?: 'comunicado' | 'plataforma' | 'individual'
+}): Promise<{ exitosos: number; fallidos: number; errores: string[] }> {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY no configurada')
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+
+  let exitosos = 0
+  let fallidos = 0
+  const errores: string[] = []
+
+  for (const d of destinatarios) {
+    try {
+      const nombreFinal = d.nombre || 'Usuario'
+      const empresaFinal = d.empresaNombre || 'tu empresa'
+      const emailFinal = d.email
+
+      // Sustituir variables en saludo y cuerpo
+      const saludoParseado = (saludo || '¡Hola, {nombre}!')
+        .replace(/{nombre}/gi, nombreFinal)
+        .replace(/{empresa}/gi, empresaFinal)
+        .replace(/{email}/gi, emailFinal)
+
+      const cuerpoParseado = cuerpoHtml
+        .replace(/{nombre}/gi, nombreFinal)
+        .replace(/{empresa}/gi, empresaFinal)
+        .replace(/{email}/gi, emailFinal)
+
+      const preheaderFinal = preheader ? preheader.replace(/{nombre}/gi, nombreFinal).replace(/{empresa}/gi, empresaFinal) : asunto
+
+      let html: string
+      if (tipo === 'comunicado') {
+        html = emailMarketing({
+          preheader: preheaderFinal,
+          subtituloHeader: subtituloHeader || 'Comunicado oficial',
+          saludo: saludoParseado,
+          cuerpo: '',
+          contenidoCentral: `<div style="font-size:15px;color:#474747;line-height:1.75;">${cuerpoParseado}</div>`,
+          unsubscribeToken: d.unsubscribeToken || 'general',
+        })
+      } else {
+        html = emailPlantilla({
+          preheader: preheaderFinal,
+          subtituloHeader: subtituloHeader || 'Aviso de plataforma',
+          saludo: saludoParseado,
+          cuerpo: '',
+          contenidoCentral: `<div style="font-size:15px;color:#474747;line-height:1.75;">${cuerpoParseado}</div>`,
+          mostrarAlerta: false,
+        })
+      }
+
+      await resend.emails.send({
+        from: FROM,
+        to: d.email,
+        subject: asunto.replace(/{nombre}/gi, nombreFinal).replace(/{empresa}/gi, empresaFinal),
+        html,
+      })
+
+      exitosos++
+    } catch (err: unknown) {
+      fallidos++
+      const msg = err instanceof Error ? err.message : String(err)
+      errores.push(`${d.email}: ${msg}`)
+    }
+  }
+
+  return { exitosos, fallidos, errores }
+}
+
