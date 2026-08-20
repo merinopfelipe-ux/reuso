@@ -84,23 +84,42 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
+  // El nombre vacío solo tiene sentido en un contacto B2B (vuelve a ser el
+  // ancla autocompletada de la empresa). Un contacto B2C no tiene ancla a
+  // la cual volver, así que un nombre vacío se rechaza igual que antes.
+  if (parsed.data.nombre === '' && !actual.empresa_cliente_id) {
+    return NextResponse.json({ error: 'El nombre no puede quedar vacío.' }, { status: 400 })
+  }
   const { razon_social, nombre_comercial, empresa_direccion, ...contactoFields } = parsed.data
 
   if (Object.keys(contactoFields).length > 0) {
     const limpio: Record<string, unknown> = { ...contactoFields, email: contactoFields.email || null }
     // Si mandan nombre vacío en un contacto de empresa, vuelve a ser el
     // ancla autocompletada; si mandan un nombre real, se vuelve contacto
-    // real. En B2C (sin empresa_cliente_id) siempre es contacto real.
+    // real. En B2C (sin empresa_cliente_id) el nombre vacío ya se rechazó
+    // arriba, así que siempre es contacto real.
     if ('nombre' in contactoFields) {
       if (!actual.empresa_cliente_id) {
         limpio.es_contacto_real = true
       } else if (!contactoFields.nombre) {
-        const { data: empActual } = await adminClient
-          .from('crm_empresas_clientes')
-          .select('razon_social, nombre_comercial')
-          .eq('id', actual.empresa_cliente_id)
-          .single()
-        limpio.nombre = empActual?.nombre_comercial || empActual?.razon_social || 'Empresa'
+        // Si el mismo PATCH ya trae el nombre_comercial/razon_social nuevo,
+        // usarlo directamente en vez de re-consultar la base (evita anclar
+        // con el nombre VIEJO cuando ambos cambian en la misma petición).
+        let nombreComercialAncla = nombre_comercial
+        let razonSocialAncla = razon_social
+        if (nombre_comercial === undefined && razon_social === undefined) {
+          const { data: empActual, error: empError } = await adminClient
+            .from('crm_empresas_clientes')
+            .select('razon_social, nombre_comercial')
+            .eq('id', actual.empresa_cliente_id)
+            .single()
+          if (empError) {
+            console.error('[PATCH /api/cotizador/clientes/[id]] crm_empresas_clientes', empError)
+          }
+          nombreComercialAncla = empActual?.nombre_comercial ?? undefined
+          razonSocialAncla = empActual?.razon_social
+        }
+        limpio.nombre = nombreComercialAncla || razonSocialAncla || 'Empresa'
         limpio.es_contacto_real = false
       } else {
         limpio.es_contacto_real = true
