@@ -105,11 +105,12 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   function abrirConvertirB2C(c: ClienteIdentificado) {
     setConvirtiendo(c)
     setTelefonoConversion('')
+    setIndicativo(PAISES[0])
     setErrorConversion(null)
   }
 
   async function confirmarConvertirB2C() {
-    if (!convirtiendo) return
+    if (!convirtiendo || convirtiendoGuardando) return
     setConvirtiendoGuardando(true)
     setErrorConversion(null)
     try {
@@ -418,7 +419,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           titulo="Convertir en cliente B2C"
           descripcion={convirtiendo ? `${convirtiendo.nombre} ${convirtiendo.apellido ?? ''} pasa a existir también como cliente independiente, sin dejar de ser contacto de su empresa.` : ''}
           textoConfirmar={convirtiendoGuardando ? 'Creando...' : 'Convertir'}
-          onConfirmar={confirmarConvertirB2C}
+          onConfirmar={() => { if (!convirtiendoGuardando) confirmarConvertirB2C() }}
         >
           {convirtiendo && !convirtiendo.telefono && (
             <div>
