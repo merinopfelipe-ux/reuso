@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
@@ -68,14 +68,21 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
 
   interface ContactoNuevo { nombre: string; apellido: string; telefono: string; email: string }
   const [contactos, setContactos] = useState<ContactoNuevo[]>([])
+  // Recuerda qué contactos ya se crearon con éxito en un intento previo de
+  // crearClienteEmpresa, para que un reintento tras un error parcial no
+  // vuelva a crear los mismos contactos ya guardados. Se reinicia siempre
+  // que la lista de contactos cambia de tamaño (agregar/quitar).
+  const contactosCreadosRef = useRef<(ClienteIdentificado | null)[]>([])
 
   function agregarContacto() {
+    contactosCreadosRef.current = []
     setContactos(prev => [...prev, { nombre: '', apellido: '', telefono: '', email: '' }])
   }
   function actualizarContacto(idx: number, patch: Partial<ContactoNuevo>) {
     setContactos(prev => prev.map((c, i) => i === idx ? { ...c, ...patch } : c))
   }
   function quitarContacto(idx: number) {
+    contactosCreadosRef.current = []
     setContactos(prev => prev.filter((_, i) => i !== idx))
   }
 
@@ -83,6 +90,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   // (típico typo de un dígito) y se le pregunta al vendedor si es la misma
   // persona, en vez de dejar que se cree un cliente duplicado en silencio.
   const [posibleDuplicado, setPosibleDuplicado] = useState<ClienteIdentificado | null>(null)
+  const [posibleDuplicadoContactoIdx, setPosibleDuplicadoContactoIdx] = useState<number | null>(null)
   const [buscandoDuplicado, setBuscandoDuplicado] = useState(false)
 
   const tp = 'text-[var(--text-primary)]'
@@ -171,6 +179,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           )
           if (match) {
             setPosibleDuplicado(match)
+            setPosibleDuplicadoContactoIdx(contactos.indexOf(c))
             setBuscandoDuplicado(false)
             return
           }
@@ -237,9 +246,19 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         direccion: direccion.trim() || undefined,
         direccion_notas: direccionNotas.trim() || undefined,
       }
-      const lista = contactos.length > 0 ? contactos : [null]
+      // Contactos dejados en blanco (agregados con "+ Agregar contacto" pero
+      // nunca llenados) no se envían — evita crear una segunda fila-ancla
+      // idéntica a la primera.
+      const conDatos = contactos.filter(c => c.nombre.trim() || c.apellido.trim() || c.telefono.trim() || c.email.trim())
+      const lista: (ContactoNuevo | null)[] = conDatos.length > 0 ? conDatos : [null]
       let primero: ClienteIdentificado | null = null
-      for (const c of lista) {
+      for (let i = 0; i < lista.length; i++) {
+        const yaCreado = contactosCreadosRef.current[i]
+        if (yaCreado) {
+          if (!primero) primero = yaCreado
+          continue
+        }
+        const c = lista[i]
         const res = await fetch(conEmpresa('/api/cotizador/clientes'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -254,8 +273,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         })
         const data = await res.json()
         if (!res.ok) { setError(data.error ?? 'Error al crear el cliente.'); setGuardando(false); return }
+        contactosCreadosRef.current[i] = data.cliente
         if (!primero) primero = data.cliente
       }
+      contactosCreadosRef.current = []
       onClienteListo(primero!)
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
@@ -532,10 +553,27 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
               {posibleDuplicado.nombre} {posibleDuplicado.apellido ?? ''} · {formatTelefonoVista(posibleDuplicado.telefono, posibleDuplicado.telefono_indicativo)}
             </p>
             <div className="flex gap-2">
-              <Button size="sm" variant="secondary" className="flex-1" onClick={() => seleccionarCliente(posibleDuplicado)}>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="flex-1"
+                onClick={() => {
+                  // En B2B no se abandona el formulario de la empresa (NIT,
+                  // razón social, otros contactos ya llenados) — el contacto
+                  // que ya existe como cliente simplemente se quita de la
+                  // lista para no duplicarlo, y el vendedor confirma de nuevo.
+                  if (tipoNuevo === 'empresa' && posibleDuplicadoContactoIdx !== null) {
+                    quitarContacto(posibleDuplicadoContactoIdx)
+                    setPosibleDuplicado(null)
+                    setPosibleDuplicadoContactoIdx(null)
+                    return
+                  }
+                  seleccionarCliente(posibleDuplicado)
+                }}
+              >
                 Sí, es la misma persona
               </Button>
-              <Button size="sm" className="flex-1" loading={guardando} onClick={() => { setPosibleDuplicado(null); if (tipoNuevo === 'persona') { crearClientePersona() } else { crearClienteEmpresa() } }}>
+              <Button size="sm" className="flex-1" loading={guardando} onClick={() => { setPosibleDuplicado(null); setPosibleDuplicadoContactoIdx(null); if (tipoNuevo === 'persona') { crearClientePersona() } else { crearClienteEmpresa() } }}>
                 No, es alguien distinto
               </Button>
             </div>
