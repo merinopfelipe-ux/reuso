@@ -45,6 +45,26 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json({ error: 'Este cliente ya es B2C, no hace falta convertirlo.' }, { status: 400 })
   }
 
+  // Idempotencia: el índice único de teléfono excluye filas con duplicado_de_id
+  // no nulo (ver sql/101_empresa_cliente_contactos_opcionales.sql), así que sin
+  // esta comprobación una doble llamada (doble clic, reintento de red) crearía
+  // dos filas B2C distintas para el mismo original. Si ya existe una conversión
+  // previa, la devolvemos tal cual en vez de crear otra.
+  const { data: existente, error: existenteError } = await adminClient
+    .from('crm_clientes')
+    .select(CLIENTE_SELECT)
+    .eq('empresa_id', empresa_id)
+    .eq('duplicado_de_id', original.id)
+    .maybeSingle()
+
+  if (existenteError) {
+    console.error('[POST /api/cotizador/clientes/[id]/convertir-b2c]', existenteError)
+    return NextResponse.json({ error: 'Error al verificar el contacto.' }, { status: 500 })
+  }
+  if (existente) {
+    return NextResponse.json({ cliente: existente }, { status: 200 })
+  }
+
   const raw = await request.json().catch(() => ({}))
   const parsed = schema.safeParse(raw)
   if (!parsed.success) {
@@ -83,6 +103,9 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   if (error || !nuevo) {
     console.error('[POST /api/cotizador/clientes/[id]/convertir-b2c]', error)
     if (error?.code === '23505') {
+      // Defensivo: con el índice único actual (que excluye duplicado_de_id no nulo)
+      // este insert nunca debería chocar contra otra fila B2C, pero se deja la rama
+      // por si el índice cambia en el futuro.
       return NextResponse.json({ error: 'Ya existe un cliente con ese celular.' }, { status: 409 })
     }
     return NextResponse.json({ error: 'Error al crear el cliente B2C.' }, { status: 500 })
