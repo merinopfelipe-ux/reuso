@@ -108,7 +108,7 @@ export async function GET(
         created_at, updated_at, empresa_id, cliente_id,
         crm_clientes (
           id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo, email,
-          pais, ciudad, direccion, direccion_notas, empresa_cliente_id,
+          pais, ciudad, direccion, direccion_notas, empresa_cliente_id, es_contacto_real,
           crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
         )
       `)
@@ -125,7 +125,22 @@ export async function GET(
       return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
     }
 
-    return NextResponse.json({ cotizacion })
+    // Contactos reales de la empresa del cliente (si el cliente es un
+    // contacto/ancla B2B) — usados por el modal "Enviar propuesta" para
+    // elegir a quién mandar el correo en vez de escribir uno a ciegas.
+    let contactosEmpresa: unknown[] = []
+    const clienteInfo = Array.isArray(cotizacion.crm_clientes) ? cotizacion.crm_clientes[0] : cotizacion.crm_clientes
+    if (clienteInfo?.empresa_cliente_id) {
+      const { data: hermanos } = await adminClient
+        .from('crm_clientes')
+        .select('id, nombre, apellido, email, telefono, telefono_indicativo')
+        .eq('empresa_cliente_id', clienteInfo.empresa_cliente_id)
+        .eq('es_contacto_real', true)
+        .order('created_at', { ascending: true })
+      contactosEmpresa = hermanos ?? []
+    }
+
+    return NextResponse.json({ cotizacion, contactos_empresa: contactosEmpresa })
   } catch (e) {
     console.error('[GET /api/cotizador/cotizaciones/[id]] excepción no prevista', e)
     return NextResponse.json({ error: 'Error al cargar la cotización. Intenta de nuevo.' }, { status: 500 })
@@ -239,7 +254,7 @@ export async function PATCH(
       created_at, updated_at, empresa_id, cliente_id,
       crm_clientes (
         id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo, email,
-        pais, ciudad, direccion, direccion_notas, empresa_cliente_id,
+        pais, ciudad, direccion, direccion_notas, empresa_cliente_id, es_contacto_real,
         crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
       )
     `)
