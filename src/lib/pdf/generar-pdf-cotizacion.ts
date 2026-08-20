@@ -89,7 +89,7 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
     ? (datos.empresa_cliente_nit ? `NIT ${datos.empresa_cliente_nit}` : (datos.cliente_identificacion ? `NIT ${datos.cliente_identificacion}` : null))
     : (datos.cliente_identificacion ? `CC ${datos.cliente_identificacion}` : null)
 
-  const nombreContacto = esEmpresa && datos.cliente_es_contacto_real && datos.cliente_nombre ? `${datos.cliente_nombre} ${datos.cliente_apellido ?? ''}`.trim() : null
+  const nombreContacto = esEmpresa && (datos.cliente_es_contacto_real ?? true) && datos.cliente_nombre ? `${datos.cliente_nombre} ${datos.cliente_apellido ?? ''}`.trim() : null
   const direccionMostrar = datos.empresa_cliente_direccion || datos.cliente_direccion
 
   doc.setFontSize(9)
