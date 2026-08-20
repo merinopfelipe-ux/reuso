@@ -30,13 +30,14 @@ export async function GET(request: NextRequest) {
   const { empresa_id, adminClient } = auth
   const q = request.nextUrl.searchParams.get('q')?.trim().toLowerCase()
   const tipoFiltro = request.nextUrl.searchParams.get('tipo')
+  const empresaClienteId = request.nextUrl.searchParams.get('empresa_cliente_id')
 
-  const { data, error } = await adminClient
+  let query = adminClient
     .from('crm_clientes')
     .select(CLIENTE_SELECT)
     .eq('empresa_id', empresa_id)
-    .order('created_at', { ascending: false })
-    .limit(300)
+  if (empresaClienteId) query = query.eq('empresa_cliente_id', empresaClienteId)
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(300)
 
   if (error) {
     console.error('[GET /api/cotizador/clientes]', error)
