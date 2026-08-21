@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning, X } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning, X, ArrowLeft, Plus, Save } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
 import { InputDireccion } from '@/components/ui/input-direccion'
 import { InputTelefono } from '@/components/ui/input-telefono'
+import { SwitchOpciones } from '@/components/ui/switch-opciones'
 import { InputDocumento } from '@/components/ui/input-documento'
 import { distanciaLevenshtein } from '@/lib/similitud'
 import { validarTelefono, formatTelefonoVista } from '@/lib/telefono'
@@ -377,7 +378,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                         className="text-[11px] font-semibold px-2 py-1 rounded-full border border-[var(--border)] hover-pop flex-shrink-0"
                         style={{ color: 'var(--color-brand)' }}
                       >
-                        Convertir en cliente B2C
+                        Convertir en cliente independiente
                       </button>
                     </div>
                   ))}
@@ -396,15 +397,15 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                   <p className={`text-sm font-bold ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
                   <p className={`text-xs ${ts}`}>{formatTelefonoVista(c.telefono, c.telefono_indicativo)}</p>
                 </div>
-                <span className="text-[10px] uppercase font-bold bg-[#59A6E4]/20 text-[#59A6E4] px-2 py-0.5 rounded-full">B2C</span>
+                <span className="text-[10px] font-bold bg-[#59A6E4]/20 text-[#59A6E4] px-2 py-0.5 rounded-full">Persona</span>
               </div>
             </button>
           ))}
         </div>
 
         <div className="flex gap-3">
-          <Button variant="secondary" size="sm" onClick={() => setPaso('buscar')}>Atrás</Button>
-          <Button size="sm" onClick={() => {
+          <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso('buscar')}>Atrás</Button>
+          <Button icon={<Plus size={16} />} onClick={() => {
             const qNum = q.replace(/[^\d]/g, '')
             if (qNum.length >= 7) setTelefono(qNum)
             setPaso('crear')
@@ -413,28 +414,24 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           </Button>
         </div>
 
-        {/* Confirmar conversión a B2C */}
+        {/* Confirmar conversión a cliente independiente */}
         <Modal
           abierto={convirtiendo !== null}
           onClose={() => setConvirtiendo(null)}
-          titulo="Convertir en cliente B2C"
+          titulo="Convertir en cliente independiente"
           descripcion={convirtiendo ? `${convirtiendo.nombre} ${convirtiendo.apellido ?? ''} pasa a existir también como cliente independiente, sin dejar de ser contacto de su empresa.` : ''}
           textoConfirmar={convirtiendoGuardando ? 'Creando...' : 'Convertir'}
           onConfirmar={() => { if (!convirtiendoGuardando) confirmarConvertirB2C() }}
         >
           {convirtiendo && !convirtiendo.telefono && (
             <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Celular (obligatorio para el cliente B2C)</label>
-              <div className="flex gap-2">
-                <SelectorPais value={indicativo} onChange={setIndicativo} />
-                <input
-                  value={telefonoConversion}
-                  onChange={e => setTelefonoConversion(e.target.value.replace(/[^\d]/g, ''))}
-                  placeholder="Número de celular"
-                  inputMode="tel"
-                  className={`${inputSt} flex-1`}
-                />
-              </div>
+              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Celular (obligatorio para convertir)</label>
+              <InputTelefono
+                indicativo={indicativo.dial}
+                onChangeIndicativo={val => setIndicativo(PAISES.find(p => p.dial === val) || PAISES[0])}
+                telefono={telefonoConversion}
+                onChangeTelefono={setTelefonoConversion}
+              />
             </div>
           )}
           {errorConversion && <p className="mt-2 text-sm text-[#FF5E4B]">{errorConversion}</p>}
@@ -468,11 +465,11 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           </div>
         )}
         <div className="flex gap-3 mt-4">
-          <Button variant="secondary" size="sm" onClick={() => { setEncontrado(null); setPaso('buscar'); setQ('') }}>
+          <Button variant="secondary" icon={<X size={15} />} onClick={() => { setEncontrado(null); setPaso('buscar'); setQ('') }}>
             No es este cliente
           </Button>
           <Button
-            size="sm"
+            icon={<CheckCircle size={16} />}
             loading={guardandoIdentificacion}
             onClick={async () => {
               const nueva = identificacionEncontrado.trim()
@@ -506,26 +503,15 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         <p className={`text-sm font-semibold mb-1 ${tp}`}>Cliente nuevo</p>
         <p className={`text-xs mb-4 ${ts}`}>&quot;{q}&quot; — no está registrado, crea su perfil.</p>
 
-        <div className="flex gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setTipoNuevo('persona')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-colors ${
-              tipoNuevo === 'persona' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : 'bg-[var(--bg-input)] text-[var(--text-secondary)]'
-            }`}
-          >
-            <User size={15} /> Persona (B2C)
-          </button>
-          <button
-            type="button"
-            onClick={() => setTipoNuevo('empresa')}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full text-sm font-semibold transition-colors ${
-              tipoNuevo === 'empresa' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : 'bg-[var(--bg-input)] text-[var(--text-secondary)]'
-            }`}
-          >
-            <Buildings size={15} /> Empresa (B2B)
-          </button>
-        </div>
+        <SwitchOpciones
+          className="max-w-[220px] mb-4"
+          valor={tipoNuevo}
+          onChange={setTipoNuevo}
+          opciones={[
+            { valor: 'persona', label: 'Persona', icon: <User size={14} sinAnimacion /> },
+            { valor: 'empresa', label: 'Empresa', icon: <Buildings size={14} sinAnimacion /> },
+          ]}
+        />
 
         <div className="flex flex-col gap-3">
           {tipoNuevo === 'persona' ? (
@@ -542,24 +528,20 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
               </div>
               <div>
                 <label className={`text-xs font-semibold mb-1 block ${ts}`}>Celular</label>
-                <div className="flex gap-2">
-                  <SelectorPais value={indicativo} onChange={setIndicativo} />
-                  <input
-                    value={telefono}
-                    onChange={e => setTelefono(e.target.value.replace(/[^\d]/g, ''))}
-                    placeholder="Número de celular"
-                    inputMode="tel"
-                    className={`${inputSt} flex-1`}
-                  />
-                </div>
+                <InputTelefono
+                  indicativo={indicativo.dial}
+                  onChangeIndicativo={val => setIndicativo(PAISES.find(p => p.dial === val) || PAISES[0])}
+                  telefono={telefono}
+                  onChangeTelefono={setTelefono}
+                />
               </div>
               <div>
                 <label className={`text-xs font-semibold mb-1 block ${ts}`}>Cédula</label>
-                <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={inputSt} placeholder="Opcional" inputMode="numeric" />
+                <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={inputSt} placeholder="Ej: 1023456789" inputMode="numeric" />
               </div>
               <div>
                 <label className={`text-xs font-semibold mb-1 block ${ts}`}>Correo electrónico</label>
-                <input value={email} onChange={e => setEmail(e.target.value)} className={inputSt} placeholder="Opcional" type="email" />
+                <input value={email} onChange={e => setEmail(e.target.value)} className={inputSt} placeholder="correo@ejemplo.com" type="email" />
               </div>
             </>
           ) : (
@@ -573,7 +555,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                   </div>
                   <div>
                     <label className={`text-xs font-semibold mb-1 block ${ts}`}>Nombre comercial</label>
-                    <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={inputSt} placeholder="Opcional" />
+                    <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={inputSt} placeholder="Ej: Muebles Reúso" />
                   </div>
                 </div>
                 <div className="mt-3">
@@ -584,7 +566,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <p className={`text-xs font-semibold ${ts}`}>Contactos (opcional)</p>
+                  <p className={`text-xs font-semibold ${ts}`}>Contactos</p>
                   <button type="button" onClick={agregarContacto} className={`text-xs font-semibold hover-pop ${tp}`} style={{ color: 'var(--color-brand)' }}>
                     + Agregar contacto
                   </button>
@@ -613,7 +595,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                           onChangeTelefono={val => actualizarContacto(idx, { telefono: val })}
                         />
                       </div>
-                      <input value={c.email} onChange={e => actualizarContacto(idx, { email: e.target.value })} className={inputSt} placeholder="Correo (opcional)" type="email" />
+                      <input value={c.email} onChange={e => actualizarContacto(idx, { email: e.target.value })} className={inputSt} placeholder="correo@ejemplo.com" type="email" />
                     </div>
                   ))}
                 </div>
@@ -680,8 +662,8 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         )}
 
         <div className="flex gap-3 mt-5">
-          <Button variant="secondary" size="sm" onClick={() => setPaso(resultados.length > 0 ? 'resultados' : 'buscar')}>Atrás</Button>
-          <Button size="sm" loading={guardando || buscandoDuplicado} onClick={intentarCrear} className="flex-1">
+          <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso(resultados.length > 0 ? 'resultados' : 'buscar')}>Atrás</Button>
+          <Button icon={<Save size={16} />} loading={guardando || buscandoDuplicado} onClick={intentarCrear} className="flex-1">
             Crear y continuar
           </Button>
         </div>
