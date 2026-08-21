@@ -7,6 +7,7 @@ import { CheckCircle, Loader2 as CircleNotch, Mail as Envelope } from '@/compone
 import { createClient } from '@/lib/supabase/client'
 import { OTPInput } from '@/components/otp-input'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 
 function ConfirmarEmailContent() {
   const router = useRouter()
@@ -97,9 +98,9 @@ function ConfirmarEmailContent() {
   }
 
   const BRAND = isDark ? '#D6F391' : '#00827C'
-  const TEXT_DARK = isDark ? '#FFFFFF' : '#1A3A38'
-  const TEXT_MED = isDark ? 'rgba(255,255,255,0.70)' : '#4D7C79'
-  const TEXT_LIGHT = isDark ? 'rgba(255,255,255,0.40)' : '#7FA8A5'
+  const TEXT_DARK = isDark ? '#FFFFFF' : '#474747'
+  const TEXT_MED = isDark ? 'rgba(255,255,255,0.70)' : 'rgba(71,71,71,0.70)'
+  const TEXT_LIGHT = isDark ? 'rgba(255,255,255,0.40)' : 'rgba(71,71,71,0.40)'
   const ERROR_BG = isDark ? 'rgba(255,94,75,0.12)' : 'rgba(255,94,75,0.08)'
   const ERROR_BORDER = isDark ? 'rgba(255,94,75,0.40)' : 'rgba(255,94,75,0.25)'
 
@@ -240,7 +241,11 @@ export default function ConfirmarEmailPage() {
           />
         </div>
         <Suspense fallback={
-          <div style={{ textAlign: 'center', color: '#4D7C79', fontSize: 14 }}>Cargando...</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+            <Skeleton style={{ width: 64, height: 64, borderRadius: '50%' }} />
+            <Skeleton style={{ width: 200, height: 20 }} />
+            <SkeletonCard lineas={3} className="w-full border-0 p-0" />
+          </div>
         }>
           <ConfirmarEmailContent />
         </Suspense>
