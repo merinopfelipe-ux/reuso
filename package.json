@@ -20,7 +20,7 @@
     "prepare": "node .husky/install.mjs"
   },
   "dependencies": {
-    "@animateicons/react": "^0.3.4",
+    "@animateicons/react": "^0.4.3",
     "@lucide/lab": "^0.1.2",
     "@marsidev/react-turnstile": "^1.5.0",
     "@phosphor-icons/react": "^2.1.10",
@@ -30,6 +30,7 @@
     "jspdf": "^4.2.1",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^1.23.0",
+    "motion": "^13.1.1",
     "next": "14.2.35",
     "nextjs-toploader": "^3.9.17",
     "pdf-parse": "^2.4.5",

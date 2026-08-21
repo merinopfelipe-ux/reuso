@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { List, Search as MagnifyingGlass, User, Building2 as Buildings, Calculator, UserCheck, Settings as Gear, LogOut as SignOut } from '@/components/ui/icons'
+import { Menu, Search as MagnifyingGlass, User, Building2 as Buildings, Calculator, UserCheck, Settings as Gear, LogOut as SignOut } from '@/components/ui/icons'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from './theme-toggle'
@@ -38,7 +38,7 @@ interface HeaderProps {
 }
 
 const ROL_LABELS: Record<string, string> = {
-  super_admin: 'Super Admin',
+  super_admin: 'Superadmin',
   empresa_admin: 'Administrador',
   empleado: 'Colaborador',
   usuario_libre: 'Usuario',
@@ -253,7 +253,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             }}
           >
             <div className="transition-transform duration-300 group-hover:scale-110">
-              <List size={22} strokeWidth={2.5} color={primaryColor} />
+              <Menu size={22} strokeWidth={2.5} color={primaryColor} />
             </div>
             <span className="menu-label-tech" style={{
               fontSize: '9px',
@@ -262,7 +262,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
               opacity: 0.9,
               color: primaryColor // Dinámico V13.6
             }}>
-              Menú
+              MENÚ
             </span>
           </button>
         )}
@@ -314,7 +314,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                   height: 36,
                   borderRadius: '50%',
                   background: avatarColor || '#D6F391',
-                  color: '#1A3A38',
+                  color: '#474747',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -377,7 +377,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
                     style={{ ...itemStyle, color: 'var(--color-error)' }}
                     className="dropdown-item hover-slide-r"
                   >
-                    <SignOut size={15} /> Cerrar sesión
+                    <SignOut size={15} /> CERRAR SESIÓN
                   </button>
                 </div>
               )}

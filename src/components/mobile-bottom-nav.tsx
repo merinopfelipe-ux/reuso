@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home as House, Package, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, Building2 as Buildings, Target, Medal, LayoutGrid as SquaresFour, List, X, Settings as Gear, TrendingUp as TrendUp } from '@/components/ui/icons'
+import { Home as House, Package, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, Building2 as Buildings, Target, FileText, LayoutGrid as SquaresFour, Menu, X, Settings as Gear, TrendingUp as TrendUp, Mail } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface MobileBottomNavProps {
@@ -43,11 +43,11 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           { href: '/admin/usuarios', label: 'Usuarios', icon: Gear },
         ],
         drawerItems: [
+          { href: '/admin/correos', label: 'Correos', icon: Mail },
           { href: '/admin/leads', label: 'Leads', icon: SquaresFour },
           { href: '/admin/categorias', label: 'Categorías', icon: SquaresFour },
           { href: '/admin/modulos', label: 'Módulos', icon: SquaresFour },
           { href: '/admin/reportes', label: 'Reportes', icon: TrendUp },
-          { href: '/admin/certificados', label: 'Certificados', icon: Medal },
           { href: '/admin/logs', label: 'Auditoría', icon: Gear },
           { href: '/admin/alertas', label: 'Alertas', icon: Gear },
           { href: '/admin/configuracion', label: 'Configuración', icon: Gear },
@@ -64,7 +64,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
         bottomItems: [
           { href: '/empresa', label: 'Perfil', icon: Buildings },
           { href: '/empresa/calculos', label: 'Cálculos', icon: Target },
-          { href: '/empresa/certificados', label: 'Certificados', icon: Medal },
+          { href: '/empresa/informes', label: 'Informes', icon: FileText },
           { href: '/empresa/soporte', label: 'Soporte', icon: Lifebuoy },
         ],
         drawerItems: [
@@ -163,7 +163,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           }}
           className={isOpen ? 'hover-rotate-90 hover-press' : 'hover-wiggle hover-press'}
         >
-          {isOpen ? <X size={26} strokeWidth={2.5} /> : <List size={26} />}
+          {isOpen ? <X size={26} strokeWidth={2.5} /> : <Menu size={26} />}
           <span style={{ fontSize: 10, fontWeight: isOpen ? 700 : 500 }}>Más</span>
         </button>
       </nav>

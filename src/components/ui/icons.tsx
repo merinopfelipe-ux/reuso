@@ -21,11 +21,30 @@ export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
 
 export type Icon = React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>
 
+// @animateicons/react/lucide (la librería de lucide-animated.com) está rota
+// en este proyecto: confirmado con depuración en vivo (2026-08-20) que su
+// motor interno de animación (framer-motion embebido, minificado, con
+// LazyMotion desde la 0.3.3) nunca produce un cambio visual real, aunque
+// nuestro startAnimation()/stopAnimation() se invoque correctamente en el
+// momento correcto (verificado con getComputedStyle — el transform nunca
+// cambia de 'none'). Descartado: (a) prefers-reduced-motion del sistema
+// (confirmado desactivado en la prueba), (b) nuestra integración (ref,
+// .group, listeners — el ref sí queda poblado y sí se llama
+// startAnimation() en el momento correcto), (c) la versión instalada —
+// se probó actualizando de 0.3.4 a la última publicada (0.4.3) y el bug
+// persiste idéntico. Es un problema interno del paquete en este entorno de
+// build (Next.js 14 + Turbopack/webpack), no algo que una reinstalación o
+// actualización resuelva. Mientras no se corrija upstream, todo ícono usa
+// el fallback de zoom estándar del sistema — es exactamente la regla ya
+// definida ("lucide-animated si existe, si no, zoom in"): si la librería
+// no funciona, cae al "si no" de la misma regla, nunca queda sin animación.
+const LUCIDE_ANIMATED_ROTO = true
+
 // Wrapper HOC to add duotone (20% fill) support, auto-inject animations, and handle group hovers
 function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>): Icon {
   const name = LucideIcon.displayName
   let AnimatedIcon: React.ComponentType<IconProps> | null = null
-  if (name && (LucideAnimated as Record<string, React.ComponentType<IconProps>>)[`${name}Icon`]) {
+  if (!LUCIDE_ANIMATED_ROTO && name && (LucideAnimated as Record<string, React.ComponentType<IconProps>>)[`${name}Icon`]) {
     AnimatedIcon = (LucideAnimated as Record<string, React.ComponentType<IconProps>>)[`${name}Icon`]
   }
 
@@ -238,6 +257,7 @@ export const Gear = wrapIcon(Lucide.Settings)
 export const SignOut = wrapIcon(Lucide.LogOut)
 export const UserCheck = wrapIcon(Lucide.UserCheck)
 export const List = wrapIcon(Lucide.List)
+export const Menu = wrapIcon(Lucide.Menu)
 export const SquaresFour = wrapIcon(Lucide.LayoutGrid)
 export const Scroll = wrapIcon(Lucide.Scroll)
 export const House = wrapIcon(Lucide.Home)
