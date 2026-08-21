@@ -581,14 +581,16 @@ export function SalesDashboard({
   const todasLasGanadas = cotizacionesReales.filter(c => c.estado === 'cerrado_ganado')
   const valorVentasReal = todasLasGanadas.reduce((sum, c) => sum + totalSinIva(c), 0)
   
-  // TICKET PROMEDIO — nunca con decimales, siempre redondeado hacia arriba.
+  // TICKET PROMEDIO — nunca con decimales, siempre redondeado hacia arriba
+  // al millar más cercano (más grueso que Meta, que redondea al peso).
   const tpv = actual.tpv ?? 0
   let labelTicket = '$ 0'
   if (tpv >= 1_000_000) {
     const millones = Math.ceil(tpv / 1_000_000)
     labelTicket = `$ ${millones} M`
   } else if (tpv > 0) {
-    labelTicket = formatCOPEntero(tpv)
+    const redondeadoMil = Math.ceil(tpv / 1000) * 1000
+    labelTicket = `$ ${formatEnteroMillones(redondeadoMil)}`
   }
 
   const metaAComparar = metaTipo === 'mensual' ? metaValorMensual : metaValorAnual
