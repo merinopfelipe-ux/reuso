@@ -14,6 +14,7 @@ import { InputDireccion } from '@/components/ui/input-direccion'
 import { Selector } from '@/components/ui/selector'
 import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
+import { SkeletonLista } from '@/components/ui/skeleton'
 
 interface TicketResumen {
   id: string
@@ -331,8 +332,8 @@ function DetalleClienteContent() {
   if (cargando) {
     return (
       <div className="h-full min-h-[60vh] bg-[var(--bg-primary)]">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-          {[1, 2, 3].map(i => <div key={i} className="h-24 rounded-[12px] animate-pulse bg-[#00827C]/05" />)}
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <SkeletonLista filas={3} />
         </div>
       </div>
     )

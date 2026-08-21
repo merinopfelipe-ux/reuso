@@ -6,6 +6,7 @@ import { Search as MagnifyingGlass, User, Building2 as Buildings, ChevronRight a
 import { formatTelefonoVista } from '@/lib/telefono'
 import { SelectorEmpresa } from '@/components/ui/selector-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { SkeletonLista } from '@/components/ui/skeleton'
 
 interface EmpresaOpcion { id: string; nombre: string }
 
@@ -219,9 +220,7 @@ function ClientesContent() {
             </div>
 
             {cargando ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-[12px] animate-pulse bg-[#00827C]/05" />)}
-              </div>
+              <SkeletonLista filas={3} />
             ) : clientes.length === 0 ? (
               <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
                 <p className={`text-sm ${ts}`}>Aún no hay clientes registrados. Se crean desde una nueva cotización.</p>

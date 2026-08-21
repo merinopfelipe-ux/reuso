@@ -14,6 +14,7 @@ import { formatTelefonoVista } from '@/lib/telefono'
 import { GrupoItemCard, type ItemConImagen } from './components/grupo-item-card'
 import type { ItemDetectadoConSnapshot, SinMatchDetalle } from '@/app/api/cotizador/diagnostico/route'
 import { comprimirImagenBase64, recortarImagenBase64, boundingBoxEsUtil, type BoundingBox } from '@/lib/image-compress'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 // ── Tipos locales ─────────────────────────────────────────────────────────────
 
@@ -266,6 +267,8 @@ function NuevaCotizacionContent() {
           email: c.email, pais: c.pais ?? null, ciudad: c.ciudad, direccion: c.direccion,
           empresa_cliente_id: c.empresa_cliente_id,
           crm_empresas_clientes: c.crm_empresas_clientes,
+          es_contacto_real: c.es_contacto_real ?? false,
+          duplicado_de_id: c.duplicado_de_id ?? null,
         })
         setCotizacionId(cotizacionIdParam)
         if (dMuebles.muebles) {
@@ -915,7 +918,7 @@ function NuevaCotizacionContent() {
                     <button
                       type="button"
                       onClick={() => quitarFotoCola(i)}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[#474747] text-white flex items-center justify-center hover-pop hover-press"
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] flex items-center justify-center hover-pop hover-press"
                       title="Quitar esta foto"
                     >
                       <X size={12} />
@@ -980,11 +983,7 @@ function NuevaCotizacionContent() {
                 ))}
               </div>
             )}
-            <div className="space-y-3">
-              <div className={`h-5 rounded-full animate-pulse ${isDark ? 'bg-white/10' : 'bg-[#00827C]/08'}`} />
-              <div className={`h-4 rounded-full w-3/4 animate-pulse ${isDark ? 'bg-white/10' : 'bg-[#00827C]/08'}`} />
-              <div className={`h-4 rounded-full w-1/2 animate-pulse ${isDark ? 'bg-white/10' : 'bg-[#00827C]/08'}`} />
-            </div>
+            <SkeletonCard lineas={3} className="border-0 p-0" />
             <p className={`text-sm text-center mt-4 ${ts}`}>{mensajesAnalizando(fotos.length)[analizandoMsgIndex]}</p>
           </div>
         )}
@@ -1114,7 +1113,14 @@ function NuevaCotizacionContent() {
           ítem y la pantalla volvía a "Sube otra foto", el botón desaparecía
           por completo y no había forma de terminar la cotización. */}
       {(estado === 'resultado' || estado === 'guardando' || cotizacionId || muebles.length > 0) && (
-        <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 border-t border-[var(--border)] mt-3">
+        // El espacio real hasta este botón no es solo el margin: el wrapper
+        // de arriba cierra con py-6 (24px de padding inferior) Y este div
+        // tiene su propio py-3 (12px de padding superior) antes de la fila
+        // de botones. Sin descontar ambos, el hueco visual duplica el
+        // espacio de 16px (mb-4) que hay entre el cliente y las fotos.
+        // Cuenta exacta: 24px (padding wrapper) + 12px (py-3 de este div)
+        // + margen = 16px objetivo → margen = -20px → -mt-5.
+        <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 border-t border-[var(--border)] -mt-5">
           <div aria-hidden="true" className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent" />
           <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-3 px-4 sm:px-6 lg:px-8">
             {(estado === 'resultado' || estado === 'guardando') && (
@@ -1128,18 +1134,22 @@ function NuevaCotizacionContent() {
                 {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
               </Button>
             )}
-            {/* SIEMPRE visible mientras no se llegue al tope de 3 grupos —
-                directriz explícita, no solo cuando hay algo que revisar. Si
-                ya está en 'idle' sin nada pendiente, el clic es inofensivo
-                (resetea a lo mismo que ya había). Si hay una revisión sin
-                confirmar ('resultado'/'guardando'/'analizando'), sí hace
-                algo real: la descarta y vuelve a la zona de carga en blanco
-                — mismo criterio que "Cambiar" cliente, es una acción
+            {/* Visible mientras no se llegue al tope de 3 grupos, pero
+                deshabilitado (gris) mientras no hay nada que reiniciar todavía
+                — 'idle' sin ningún grupo confirmado y sin fotos en curso. En
+                ese momento un clic sería un no-op silencioso, así que se ve
+                apagado para no dar la impresión de que se puede abrir otra
+                caja de fotos antes de terminar la primera. En cuanto hay una
+                revisión sin confirmar ('resultado'/'guardando'/'analizando')
+                o ya se confirmó al menos un grupo, se activa: el clic
+                descarta la revisión en curso y vuelve a la zona de carga en
+                blanco — mismo criterio que "Cambiar" cliente, acción
                 explícita del vendedor, no algo accidental. */}
             {gruposUsados < 3 && (
               <Button
                 variant="secondary"
                 onClick={iniciarNuevoGrupo}
+                disabled={gruposUsados === 0 && estado === 'idle'}
                 icon={<Plus size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
@@ -1147,8 +1157,11 @@ function NuevaCotizacionContent() {
               </Button>
             )}
             {(cotizacionId || muebles.length > 0) && (
+              // primary (verde sólido), no secondary: al lado de "Agregar otro
+              // grupo de fotos" (secondary/borde) los botones deben alternar,
+              // nunca dos con borde pegados — regla de la skill design-system.
               <Button
-                variant="secondary"
+                variant="primary"
                 onClick={handleGenerarPropuesta}
                 disabled={estado === 'guardando' || gruposUsados === 0}
                 icon={<ArrowRight size={16} strokeWidth={2.5} />}

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { SquareCheck as CheckSquare, Square, Lock, CircleUser as UserCircle, Leaf } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 interface Modulo {
   id: string
@@ -100,21 +101,22 @@ export default function ConfigModulosPage() {
   const tieneCoizador = modulos.some(m => m.clave === 'cotizador_crm')
 
   return (
-    <div className="min-h-screen pb-20 bg-[var(--bg-primary)]">
-      <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="pb-6 bg-[var(--bg-primary)]">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AdminPageHeader titulo="Acceso a módulos" showBack />
         <p className={`text-sm mb-6 ${ts}`}>
           Gestiona qué miembros de tu equipo usan cada módulo activo.
         </p>
 
         {cargando ? (
-          <div className="space-y-4">
-            {[1,2].map(i => (
-              <div key={i} className="h-32 rounded-[12px] animate-pulse bg-[var(--skeleton-base)]" />
-            ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SkeletonCard lineas={4} />
+            <SkeletonCard lineas={4} />
+            <SkeletonCard lineas={4} />
+            <SkeletonCard lineas={4} />
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Módulos activos */}
             {modulos.map(modulo => (
               <div key={modulo.id} className={`rounded-[12px] border ${cardBg}`}>
@@ -212,7 +214,7 @@ export default function ConfigModulosPage() {
                   href="https://wa.me/573214567890?text=Hola%2C%20quiero%20saber%20sobre%20los%20m%C3%B3dulos%20de%20Re%C3%BAso%20Lurdes."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00827C] text-white text-sm font-semibold hover:bg-[#006B66] transition-colors hover-pop"
+                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] text-sm font-semibold hover:opacity-90 transition-colors hover-pop"
                 >
                   <WhatsappLogo size={14} />
                   Contáctanos
