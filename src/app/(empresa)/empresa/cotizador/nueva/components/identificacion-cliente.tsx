@@ -404,12 +404,12 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="secondary" size="sm" icon={<ArrowLeft size={13} />} onClick={() => setPaso('buscar')}>Atrás</Button>
-          <Button size="sm" icon={<Plus size={14} />} onClick={() => {
+          <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso('buscar')}>Atrás</Button>
+          <Button icon={<Plus size={16} />} onClick={() => {
             const qNum = q.replace(/[^\d]/g, '')
             if (qNum.length >= 7) setTelefono(qNum)
             setPaso('crear')
-          }} className="flex-1">
+          }}>
             No está en la lista, crear nuevo
           </Button>
         </div>
@@ -466,12 +466,11 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           </div>
         )}
         <div className="flex gap-3 mt-4">
-          <Button variant="secondary" size="sm" icon={<X size={13} />} onClick={() => { setEncontrado(null); setPaso('buscar'); setQ('') }}>
+          <Button variant="secondary" icon={<X size={15} />} onClick={() => { setEncontrado(null); setPaso('buscar'); setQ('') }}>
             No es este cliente
           </Button>
           <Button
-            size="sm"
-            icon={<CheckCircle size={14} />}
+            icon={<CheckCircle size={16} />}
             loading={guardandoIdentificacion}
             onClick={async () => {
               const nueva = identificacionEncontrado.trim()
@@ -664,8 +663,8 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         )}
 
         <div className="flex gap-3 mt-5">
-          <Button variant="secondary" size="sm" icon={<ArrowLeft size={13} />} onClick={() => setPaso(resultados.length > 0 ? 'resultados' : 'buscar')}>Atrás</Button>
-          <Button size="sm" icon={<Save size={14} />} loading={guardando || buscandoDuplicado} onClick={intentarCrear} className="flex-1">
+          <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso(resultados.length > 0 ? 'resultados' : 'buscar')}>Atrás</Button>
+          <Button icon={<Save size={16} />} loading={guardando || buscandoDuplicado} onClick={intentarCrear}>
             Crear y continuar
           </Button>
         </div>
