@@ -18,13 +18,6 @@ import {
   Stack,
   CaretDown,
   Copy,
-  Bell,
-  Gear,
-  Trash,
-  PencilSimple,
-  Envelope,
-  Download,
-  Upload,
   IaIcon,
   WhatsappLogo,
   LinkedinLogo,
@@ -32,27 +25,31 @@ import {
   FacebookLogo,
   XLogo,
   YoutubeLogo,
+  Bell,
+  Gear,
+  ChevronRight,
+  Download,
+  Upload,
+  Trash,
+  Send,
+  Star,
+  Heart,
+  Lightning,
+  Save,
+  Check,
 } from '@/components/ui/icons'
 import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
-import {
-  BellRingIcon,
-  SettingsIcon,
-  ChevronRightIcon,
-  DownloadIcon,
-  UploadIcon,
-  CopyIcon,
-  TrashIcon,
-  SendIcon,
-  EyeIcon,
-  EyeOffIcon,
-  PlusIcon,
-  StarIcon,
-  HeartIcon,
-  ZapIcon
-} from '@animateicons/react/lucide'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { DesignSystemHeader } from '@/components/design-system-header'
+import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { SwitchOpciones } from '@/components/ui/switch-opciones'
+import { Selector } from '@/components/ui/selector'
+import { InputTelefono } from '@/components/ui/input-telefono'
+import { Pagination } from '@/components/ui/pagination'
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
+import { PAISES } from '@/components/ui/selector-pais'
 
 const PRICING_PLANS = PLANS;
 
@@ -141,6 +138,7 @@ const menuGroups = [
       { name: 'Escala de radios', link: '#s06-radii' },
       { name: 'Elevación y profundidad', link: '#s07-elevation' },
       { name: 'Tono e interacción', link: '#s08-tono' },
+      { name: 'Componentes reutilizables', link: '#s15-componentes' },
     ]
   },
   {
@@ -174,6 +172,15 @@ export default function ManualDisenoPage() {
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
   const [copiedToken, setCopiedToken] = useState<string | null>(null)
+  const [demoModalAbierto, setDemoModalAbierto] = useState(false)
+  const [demoSwitch2, setDemoSwitch2] = useState<'persona' | 'empresa'>('persona')
+  const [demoSwitch3, setDemoSwitch3] = useState<'todos' | 'activos' | 'inactivos'>('todos')
+  const [demoSelector, setDemoSelector] = useState('')
+  const [demoIndicativo, setDemoIndicativo] = useState('+57')
+  const [demoTelefono, setDemoTelefono] = useState('')
+  const [demoPagina, setDemoPagina] = useState(1)
+  const [demoPorPagina, setDemoPorPagina] = useState(25)
+  const [demoBotonCargando, setDemoBotonCargando] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -268,6 +275,7 @@ export default function ManualDisenoPage() {
     { title: 'Mosaicos embebidos de servicios', link: '#s12-mosaicos' },
     { title: 'Arquitectura de navegación', link: '#s13-nav' },
     { title: 'Precios', link: '#s14-pricing' },
+    { title: 'Componentes reutilizables', link: '#s15-componentes' },
   ]
 
   return (
@@ -813,7 +821,7 @@ export default function ManualDisenoPage() {
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#38B98E]/10'}`}><Tree size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
                    <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Filosofía de Cuidado Bio</h4>
-                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>No solo certificamos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
+                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>No solo medimos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
                  </div>
               </div>
             </div>
@@ -854,22 +862,44 @@ export default function ManualDisenoPage() {
           </p>
           
           <div className={`rounded-2xl border border-[#00827C]/10 overflow-x-auto custom-scrollbar ${liquidGlassClass}`}>
-            <table className="w-full border-collapse text-sm">
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className={`${isDark ? 'bg-white/10' : 'bg-[#EBF5F4]'} border-b border-[#00827C]/10`}>
-                  <th className={`px-6 py-4 text-left font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Categoría</th>
-                  <th className={`px-6 py-4 text-left font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Estado</th>
-                  <th className={`px-6 py-4 text-right font-bold text-[11px] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cifra de Impacto</th>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <th className="px-6 py-3.5 text-left font-bold text-xs">Categoría</th>
+                  <th className="px-6 py-3.5 text-left font-bold text-xs">Estado</th>
+                  <th className="px-6 py-3.5 text-right font-bold text-xs">Cifra de impacto</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#00827C]/5">
-                {[1,2].map(i => (
-                  <tr key={i} className={`transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-[#00827C]/5'}`}>
-                    <td className={`px-6 py-5 font-semibold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Textiles Reutilizados</td>
-                    <td className="px-6 py-5">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold border ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391] border-[#D6F391]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/20'}`}>Activo</span>
+              <tbody>
+                {[
+                  { id: 1, cat: 'Textiles Reutilizados', estado: 'Activo', co2: '-42,8 kg CO₂' },
+                  { id: 2, cat: 'Madera de Roble Recuperada', estado: 'Activo', co2: '-125,4 kg CO₂' },
+                  { id: 3, cat: 'Estructuras Metálicas', estado: 'Inactivo', co2: '-310,0 kg CO₂' },
+                ].map((item, idx) => (
+                  <tr
+                    key={item.id}
+                    className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <td className="px-6 py-4 font-medium flex items-center gap-2">
+                      <span className="text-[var(--text-primary)]">
+                        {item.cat}
+                      </span>
                     </td>
-                    <td className={`px-6 py-5 text-right font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>-42.8kg CO&#8322;</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold border ${
+                        item.estado === 'Activo'
+                          ? (isDark ? 'bg-[#D6F391]/10 text-[#D6F391] border-[#D6F391]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/20')
+                          : 'bg-red-500/10 text-red-500 border-red-500/20'
+                      }`}>
+                        {item.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right font-bold text-[var(--text-secondary)]">
+                      {item.co2}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -1053,13 +1083,25 @@ export default function ManualDisenoPage() {
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
                 Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong>. Se permite el uso de Phosphor Icons en la interfaz general <strong>si y solo si</strong> el ícono requerido no existe en Lucide y es un caso extremo. En estos escenarios, nuestro hub exporta automáticamente estos íconos envueltos en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
               </p>
-              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-black/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
                 <div className="font-bold mb-2">Mapeo de Grosores Automático:</div>
                 <div>• strokeWidth=1.5  → weight=&quot;light&quot;</div>
                 <div>• strokeWidth=2.0  → weight=&quot;regular&quot; (Predeterminado)</div>
                 <div>• strokeWidth=2.5  → weight=&quot;bold&quot;</div>
                 <div>• duotone=true     → weight=&quot;duotone&quot;</div>
               </div>
+            </div>
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos de Eliminación</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                <strong>Prohibido usar &quot;X&quot; o &quot;×&quot;:</strong> Para acciones de borrar o eliminar ítems, se debe usar siempre el bote de basura <code>&lt;Trash /&gt;</code> de Lucide. Este botón no debe tener bordes, y debe utilizar el color rojo de error <code>text-[var(--color-error)]</code>. Al hacer hover, se debe aplicar una reducción de opacidad al 50% (<code>hover:opacity-50</code>) sin cambiar el fondo. El texto &quot;Eliminar&quot; puede acompañar al ícono si el espacio lo permite.
+              </p>
+            </div>
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Color Sostenible</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                <strong>Cálculo Ambiental y Énfasis:</strong> Todo lo referente a &quot;Cálculo ambiental&quot;, totales de CO₂, o elementos principales de la marca, debe usar ESTRICTAMENTE el verde sostenible mediante la variable global <code>var(--color-brand)</code>. Se prohíbe usar verdes &quot;raros&quot; o genéricos (como <code>text-green-500</code> o <code>color-success</code>) para el branding principal.
+              </p>
             </div>
           </div>
 
@@ -1086,29 +1128,29 @@ export default function ManualDisenoPage() {
             </div>
           </div>
 
-          {/* Subsección: AnimateIcons (Micro-interacciones de Lucide Lab) */}
+          {/* Subsección: Lucide Animated (Micro-interacciones de Interfaz) */}
           <div className="mt-16">
-            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>AnimateIcons (Micro-interacciones de Interfaz)</h3>
+            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Lucide Animated (Micro-interacciones de Interfaz)</h3>
             <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
-              Micro-interacciones y animaciones de alta fidelidad integradas a través de la librería oficial de <code>@animateicons/react</code>. Estas animaciones están optimizadas para la web y se activan de forma nativa al pasar el cursor (hover) por encima de cada cajón, aportando un feedback visual excepcional al usuario.
+              Micro-interacciones basadas en el registro real de <code>lucide-animated.com</code>, integradas directo al hub de íconos del sistema (no la librería <code>@animateicons/react</code>, que resultó no funcionar en este proyecto). Se activan al pasar el cursor (hover) por encima de cada cajón. Basura y Estrella no tienen versión animada en ese registro, así que muestran el zoom estándar del sistema en vez de una animación propia.
             </p>
             
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
               {[
-                { i: BellRingIcon, n: 'Notificaciones', d: 'Campana oscilante' },
-                { i: SettingsIcon, n: 'Ajustes / Engranaje', d: 'Rotación con inercia' },
-                { i: ChevronRightIcon, n: 'Siguiente / Flecha', d: 'Desplazamiento lateral' },
-                { i: DownloadIcon, n: 'Descargar', d: 'Rebote hacia abajo' },
-                { i: UploadIcon, n: 'Subir Archivo', d: 'Rebote hacia arriba' },
-                { i: CopyIcon, n: 'Copiar Portapapeles', d: 'Comprimir / Escala' },
-                { i: TrashIcon, n: 'Eliminar / Basura', d: 'Tapa basculante' },
-                { i: SendIcon, n: 'Enviar / Correo', d: 'Ángulo lanzamiento' },
-                { i: EyeIcon, n: 'Mostrar Contraseña', d: 'Movimiento de pupila' },
-                { i: EyeOffIcon, n: 'Ocultar Contraseña', d: 'Línea diagonal' },
-                { i: PlusIcon, n: 'Añadir / FAB', d: 'Rotación de 90°' },
-                { i: StarIcon, n: 'Destacar / Estrella', d: 'Giro de estrella' },
-                { i: HeartIcon, n: 'Favorito / Corazón', d: 'Latido de corazón' },
-                { i: ZapIcon, n: 'Rápido / Energía', d: 'Destello de energía' },
+                { i: Bell, n: 'Notificaciones', d: 'Campana oscilante' },
+                { i: Gear, n: 'Ajustes / Engranaje', d: 'Rotación con inercia' },
+                { i: ChevronRight, n: 'Siguiente / Flecha', d: 'Desplazamiento lateral' },
+                { i: Download, n: 'Descargar', d: 'Rebote hacia abajo' },
+                { i: Upload, n: 'Subir Archivo', d: 'Rebote hacia arriba' },
+                { i: Copy, n: 'Copiar Portapapeles', d: 'Comprimir / Escala' },
+                { i: Trash, n: 'Eliminar / Basura', d: 'Zoom estándar (sin animación crafteada disponible)' },
+                { i: Send, n: 'Enviar / Correo', d: 'Ángulo lanzamiento' },
+                { i: Eye, n: 'Mostrar Contraseña', d: 'Movimiento de pupila' },
+                { i: EyeSlash, n: 'Ocultar Contraseña', d: 'Línea diagonal' },
+                { i: Plus, n: 'Añadir / FAB', d: 'Rotación de 90°' },
+                { i: Star, n: 'Destacar / Estrella', d: 'Zoom estándar (sin animación crafteada disponible)' },
+                { i: Heart, n: 'Favorito / Corazón', d: 'Latido de corazón' },
+                { i: Lightning, n: 'Rápido / Energía', d: 'Destello de energía' },
               ].map((item, idx) => (
                 <div 
                   key={idx} 
@@ -1119,7 +1161,7 @@ export default function ManualDisenoPage() {
                   </div>
                   <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
                   <span className={`text-[9px] font-medium mt-1 block opacity-50 ${isDark ? 'text-white/50' : 'text-[#00827C]/50'}`}>{item.d}</span>
-                  <code className="text-[8px] font-mono mt-2 bg-black/10 px-1.5 py-0.5 rounded opacity-40">@animateicons/react</code>
+                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">lucide-animated.com</code>
                 </div>
               ))}
             </div>
@@ -1149,7 +1191,7 @@ export default function ManualDisenoPage() {
                     <Icon iconNode={item.node} size={32} />
                   </div>
                   <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
-                  <code className="text-[8px] font-mono mt-2 bg-black/10 px-1.5 py-0.5 rounded opacity-40">@lucide/lab</code>
+                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">@lucide/lab</code>
                 </div>
               ))}
             </div>
@@ -1176,7 +1218,7 @@ export default function ManualDisenoPage() {
               }}
             >
               {[
-                { title: 'Soporte Ambiental', desc: 'Asesoría técnica para procesos de certificación nacional.', btn: 'Inscríbete', gradient: 'from-[#006B66] via-[#00827C] to-[#8AD0B2]' },
+                { title: 'Soporte Ambiental', desc: 'Asesoría técnica para procesos de medición nacional.', btn: 'Inscríbete', gradient: 'from-[#006B66] via-[#00827C] to-[#8AD0B2]' },
                 { title: 'Logística Verde', desc: 'Gestión in situ de materiales para maximizar el ahorro de CO₂.', btn: 'Pide tu seguro', gradient: 'from-[#8AD0B2] via-[#59A6E4] to-[#59A6E4]' },
                 { title: 'Trazabilidad Tokenizada', desc: 'Cada gramo cuenta. Registro inmutable en el historial Reúso.', btn: 'Empieza aquí', gradient: 'from-[#D6F391] via-[#8AD0B2] to-[#00827C]' },
               ].map((card, i) => (
@@ -1331,38 +1373,250 @@ export default function ManualDisenoPage() {
           </div>
 
           <div className={`rounded-2xl border overflow-x-auto custom-scrollbar ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
-            <table className="w-full text-sm min-w-[800px]">
+            <table className="w-full text-sm min-w-[800px]" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className={isDark ? 'bg-[#4D4D4D]' : 'bg-[#EBF5F4]'}>
-                  <th className={`px-6 py-5 text-left font-bold text-[11px] ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>Característica</th>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <th className="px-6 py-5 text-left font-bold text-xs">Característica</th>
                   {PRICING_PLANS.map((p: typeof PLANS[0]) => (
-                    <th key={p.id} className={`px-4 py-5 text-center ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
-                      <div className="font-bold text-[11px]">{p.name}</div>
-                      <div className={`text-[10px] font-normal mt-1 ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>
+                    <th key={p.id} className="px-4 py-5 text-center">
+                      <div className="font-bold text-xs">{p.name}</div>
+                      <div className={`text-[10px] font-normal mt-1 ${isDark ? 'text-white/50' : 'text-[var(--text-secondary)]'}`}>
                         {p.id === 'free' ? 'Gratis' : `${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].symbol}${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].format((p.priceMonthlyCOP * CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].rate) * (isYearly ? 10 : 1))}/${isYearly ? 'año' : 'mes'}`}
                       </div>
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className={`divide-y ${isDark ? 'divide-white/5' : 'divide-[#00827C]/5'}`}>
+              <tbody>
                 {[
                   { feature: 'Cálculos por mes', vals: ['10', '200', '200', 'Ilimitados'] },
                   { feature: 'Informes por mes', vals: ['-', '5', '5', 'Ilimitados'] },
-                  { feature: 'Certificados por mes', vals: ['-', '2', '2', 'Ilimitados'] },
                   { feature: 'Usuarios / Empleados', vals: ['1', '5', '10', 'Ilimitados'] },
                   { feature: 'Cotizador Circular', vals: ['no', 'no', 'yes', 'yes'] },
                   { feature: 'Seguridad Inalterable', vals: ['no', 'yes', 'yes', 'yes'], desc: 'Cada cálculo tiene un código único que nadie puede borrar.' },
                   { feature: 'Blockchain Reúso', vals: ['no', 'no', 'yes', 'yes'], desc: 'Guardamos una copia del impacto en una red para confianza total.' },
                   { feature: 'Soporte Privado', vals: ['no', 'yes', 'yes', 'yes'], desc: 'Chat prioritario para resolver dudas ambientales.' },
                 ].map((row, i) => (
-                  <tr key={i} className={`${isDark ? 'hover:bg-white/5' : 'hover:bg-[#00827C]/[0.02]'} transition-colors group`}>
-                    <td className={`px-6 py-4 transition-colors ${isDark ? 'text-white/70 group-hover:text-white' : 'text-[#474747]'}`}><div className="font-bold">{row.feature}</div>{row.desc && <div className={`text-[10px] font-normal mt-0.5 opacity-60`}>{row.desc}</div>}</td>
-                    {row.vals.map((v, vi) => (<td key={vi} className={`px-4 py-4 text-center font-semibold ${isDark ? 'text-white/60' : 'text-[#00827C]/70'}`}>{v === 'yes' ? <span className="text-[#38B98E]">&#10003;</span> : v === 'no' ? <span className="opacity-30">&mdash;</span> : v}</td>))}
+                  <tr
+                    key={i}
+                    className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
+                      i % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <td className={`px-6 py-4 font-medium flex items-start gap-2`}>
+                      <div>
+                        <div className="font-bold text-[var(--text-primary)]">
+                          {row.feature}
+                        </div>
+                        {row.desc && <div className="text-[10px] font-normal mt-0.5 text-[var(--text-secondary)] opacity-80">{row.desc}</div>}
+                      </div>
+                    </td>
+                    {row.vals.map((v, vi) => (
+                      <td key={vi} className={`px-4 py-4 text-center font-semibold text-[var(--text-primary)]`}>
+                        {v === 'yes' ? <span className="text-[var(--color-brand)]">&#10003;</span> : v === 'no' ? <span className="opacity-30">&mdash;</span> : v}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* SECCION 15: COMPONENTES REUTILIZABLES */}
+        <section id="s15-componentes" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
+          <div className="flex items-center gap-4 mb-4">
+            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Componentes reutilizables</h2>
+          </div>
+          <p className={`text-sm mb-10 max-w-3xl ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+            A diferencia de las secciones anteriores (mockups ilustrativos), todo lo que ves aquí abajo es el componente real de <code className="text-[10px] font-mono opacity-70">src/components/ui/</code>, importado tal cual se usa en producción — funcional, interactivo, con el mismo estado que tendría en cualquier pantalla de la app. Antes de construir un control nuevo (botón, switch, selector, paginador), revisa primero si ya existe aquí.
+          </p>
+
+          <div className={`p-8 md:p-10 rounded-[2.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05' : 'border-[#00827C]/10 bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] flex flex-col gap-14`}>
+
+            {/* A. BUTTON */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Button</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/button.tsx</code>
+              </div>
+              <div className="flex flex-wrap items-center gap-4 mb-5">
+                <Button variant="primary">Primario</Button>
+                <Button variant="secondary">Secundario</Button>
+                <Button variant="danger">Peligro</Button>
+                <Button variant="ghost">Ghost</Button>
+                <Button variant="primary" size="sm">Chico</Button>
+                <Button variant="primary" icon={<Save size={16} />}>Con ícono</Button>
+                <Button
+                  variant="primary"
+                  icon={<Check size={16} />}
+                  loading={demoBotonCargando}
+                  onClick={() => {
+                    setDemoBotonCargando(true)
+                    setTimeout(() => setDemoBotonCargando(false), 1600)
+                  }}
+                >
+                  {demoBotonCargando ? 'Guardando...' : 'Probar loading'}
+                </Button>
+                <Button variant="primary" disabled>Deshabilitado</Button>
+              </div>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<Button variant="primary" icon={<Save size={16} />} loading={guardando}>Guardar</Button>'}
+              </div>
+            </div>
+
+            {/* B. SWITCH OPCIONES */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. SwitchOpciones</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/switch-opciones.tsx</code>
+              </div>
+              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Fondo + píldora deslizante, único permitido para elegir entre 2-3 opciones excluyentes con apariencia de switch. Nunca crear uno ad-hoc por pantalla.</p>
+              <div className="flex flex-wrap items-center gap-8 mb-5">
+                <SwitchOpciones
+                  className="max-w-[220px]"
+                  valor={demoSwitch2}
+                  onChange={setDemoSwitch2}
+                  opciones={[
+                    { valor: 'persona', label: 'Persona', icon: <User size={14} sinAnimacion /> },
+                    { valor: 'empresa', label: 'Empresa', icon: <Buildings size={14} sinAnimacion /> },
+                  ]}
+                />
+                <SwitchOpciones
+                  className="max-w-[320px]"
+                  valor={demoSwitch3}
+                  onChange={setDemoSwitch3}
+                  opciones={[
+                    { valor: 'todos', label: 'Todos' },
+                    { valor: 'activos', label: 'Activos' },
+                    { valor: 'inactivos', label: 'Inactivos' },
+                  ]}
+                />
+              </div>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<SwitchOpciones valor={tipo} onChange={setTipo} opciones={[{ valor: \'persona\', label: \'Persona\', icon: <User/> }, { valor: \'empresa\', label: \'Empresa\', icon: <Buildings/> }]} />'}
+              </div>
+            </div>
+
+            {/* C. SELECTOR */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>C. Selector</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/selector.tsx</code>
+              </div>
+              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Reemplazo genérico del <code className="text-[10px] font-mono opacity-70">{'<select>'}</code> nativo — prohibido en toda la plataforma, cada sistema operativo lo dibuja distinto.</p>
+              <div className="max-w-xs mb-5">
+                <Selector
+                  opciones={[
+                    { value: 'lab', label: 'Circular Lab' },
+                    { value: 'impulso', label: 'Impulso Sostenible' },
+                    { value: 'ilimitado', label: 'Impacto Ilimitado' },
+                  ]}
+                  value={demoSelector}
+                  onChange={setDemoSelector}
+                  placeholder="Elige un plan"
+                />
+              </div>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<Selector opciones={[{value,label}]} value={plan} onChange={setPlan} placeholder="Elige un plan" />'}
+              </div>
+            </div>
+
+            {/* D. INPUT TELEFONO */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>D. InputTelefono</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/input-telefono.tsx</code>
+              </div>
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Indicativo de país (bandera + código, ancho fijo 140px) + número con formato automático — nunca un {'<SelectorPais>'} suelto junto a un input a mano, deja el número reducido a un cuadro diminuto.</p>
+              <p className={`text-xs mb-5 rounded-lg px-3 py-2 border ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#AD7C43]'}`}>
+                <strong>Regla global de validación de celular</strong> (src/lib/telefono.ts, función validarTelefono): cada indicativo tiene su propio número exacto de dígitos y prefijo — hoy solo Colombia está verificada (+57, 10 dígitos, empieza en 3). InputTelefono ya la aplica solo, mostrando el error al salir del campo (no antes, para no regañar al usuario mientras todavía está escribiendo) — ninguna pantalla nueva necesita repetir esta validación a mano. Escribe menos de 10 dígitos abajo y sal del campo para verlo.
+              </p>
+              <div className="max-w-sm mb-5">
+                <InputTelefono
+                  indicativo={demoIndicativo}
+                  onChangeIndicativo={setDemoIndicativo}
+                  telefono={demoTelefono}
+                  onChangeTelefono={setDemoTelefono}
+                  required
+                />
+              </div>
+              {demoTelefono && (
+                <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+                  Valor sin formato que llega al backend: <code className="text-[10px] font-mono opacity-70">{PAISES.find(p => p.dial === demoIndicativo)?.dial}{demoTelefono}</code>
+                </p>
+              )}
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<InputTelefono indicativo={ind} onChangeIndicativo={setInd} telefono={tel} onChangeTelefono={setTel} required />'}
+              </div>
+            </div>
+
+            {/* E. PAGINATION */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>E. Pagination</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/pagination.tsx</code>
+              </div>
+              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Paginado único de la plataforma — numeración con página actual recuadrada, Anterior/Siguiente y selector de &quot;N por página&quot;. Prohibido armar uno ad-hoc por tabla.</p>
+              <div className="mb-5">
+                <Pagination
+                  page={demoPagina}
+                  totalPages={12}
+                  onPageChange={setDemoPagina}
+                  porPagina={demoPorPagina}
+                  onPorPaginaChange={setDemoPorPagina}
+                />
+              </div>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<Pagination page={page} totalPages={12} onPageChange={setPage} porPagina={porPagina} onPorPaginaChange={setPorPagina} />'}
+              </div>
+            </div>
+
+            {/* F. SKELETON */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>F. Skeleton / SkeletonCard</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/skeleton.tsx</code>
+              </div>
+              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único estado de carga permitido — nunca texto plano &quot;Cargando...&quot; ni <code className="text-[10px] font-mono opacity-70">animate-pulse</code> con colores inventados.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 max-w-2xl">
+                <SkeletonCard />
+                <div className="flex flex-col gap-2 justify-center">
+                  <Skeleton style={{ width: '100%' }} />
+                  <Skeleton style={{ width: '70%' }} />
+                  <Skeleton style={{ width: '85%' }} />
+                </div>
+              </div>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<SkeletonCard lineas={3} /> · <Skeleton style={{ width: \'70%\' }} />'}
+              </div>
+            </div>
+
+            {/* G. MODAL */}
+            <div>
+              <div className="flex items-center justify-between mb-5">
+                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>G. Modal</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/modal.tsx</code>
+              </div>
+              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único componente permitido para confirmaciones/formularios cortos — overlay Negro Lurdes, nunca <code className="text-[10px] font-mono opacity-70">bg-black</code>, pie siempre con dos acciones.</p>
+              <Button variant="secondary" icon={<Trash size={16} />} onClick={() => setDemoModalAbierto(true)}>Abrir modal de ejemplo</Button>
+              <Modal
+                abierto={demoModalAbierto}
+                onClose={() => setDemoModalAbierto(false)}
+                titulo="Eliminar elemento"
+                descripcion="Esta acción no se puede deshacer."
+                varianteConfirmar="error"
+                textoConfirmar="Eliminar"
+                onConfirmar={() => setDemoModalAbierto(false)}
+              >
+                <p className={`text-sm ${isDark ? 'text-white/70' : 'text-[#474747]'}`}>Este es el mismo componente Modal usado en toda la plataforma — portal a document.body, overlay Negro Lurdes al 60%, panel rounded-3xl.</p>
+              </Modal>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-5 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'<Modal abierto={open} onClose={...} titulo="..." varianteConfirmar="error" textoConfirmar="Eliminar" onConfirmar={...}>{children}</Modal>'}
+              </div>
+            </div>
+
           </div>
         </section>
 

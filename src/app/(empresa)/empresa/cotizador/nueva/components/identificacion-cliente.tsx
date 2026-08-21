@@ -431,6 +431,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                 onChangeIndicativo={val => setIndicativo(PAISES.find(p => p.dial === val) || PAISES[0])}
                 telefono={telefonoConversion}
                 onChangeTelefono={setTelefonoConversion}
+                required
               />
             </div>
           )}
