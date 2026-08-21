@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, User, Building2 as Buildings, CheckCircle, TriangleAlert as Warning, X } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
@@ -725,6 +725,20 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           </button>
         ))}
       </div>
+      {filtroTipo !== 'todos' && (
+        <div className="flex items-center gap-1.5 mt-2.5">
+          <span className={`text-[11px] ${ts}`}>Buscando solo en</span>
+          <button
+            type="button"
+            onClick={() => setFiltroTipo('todos')}
+            title="Quitar filtro y volver a buscar en ambos"
+            className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[var(--color-brand-light)] text-[var(--color-brand)] text-[11px] font-semibold hover:opacity-70 transition-opacity"
+          >
+            {filtroTipo === 'persona' ? 'Personas' : 'Empresa'}
+            <X size={11} sinAnimacion />
+          </button>
+        </div>
+      )}
       {error && (
         <p className="mt-3 text-sm text-[#FF5E4B] flex items-center gap-1"><Warning size={14} /> {error}</p>
       )}
