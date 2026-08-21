@@ -691,7 +691,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   }
 
   return (
-    <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+    <div className={`rounded-[12px] border p-5 shadow-sm ${cardBg}`}>
       <div className="flex items-center gap-2 mb-1">
         <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[var(--color-brand-light)]">
           <MagnifyingGlass size={15} className="text-[var(--color-brand)]" sinAnimacion />
@@ -712,16 +712,16 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             key={t}
             type="button"
             aria-pressed={filtroTipo === t}
-            title={t === 'persona' ? 'Buscar solo personas (B2C)' : 'Buscar solo empresas (B2B)'}
+            title={t === 'persona' ? 'Buscar solo personas' : 'Buscar solo empresas'}
             onClick={() => setFiltroTipo(filtroTipo === t ? 'todos' : t)}
-            className={`flex-shrink-0 w-[52px] h-[46px] rounded-2xl border flex flex-col items-center justify-center gap-0.5 transition-all ${
+            className={`group flex-shrink-0 w-[64px] h-[46px] rounded-2xl border flex flex-col items-center justify-center gap-0.5 transition-all duration-200 hover:scale-105 active:scale-95 ${
               filtroTipo === t
-                ? 'bg-[var(--color-brand)] border-[var(--color-brand)] text-[var(--text-on-brand)] shadow-sm'
+                ? 'bg-[var(--color-brand)] border-[var(--color-brand)] text-[var(--text-on-brand)] shadow-md scale-105'
                 : 'bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--color-brand)]/50'
             }`}
           >
-            {t === 'persona' ? <User size={16} sinAnimacion /> : <Buildings size={16} sinAnimacion />}
-            <span className="text-[8px] font-bold leading-none">{t === 'persona' ? 'B2C' : 'B2B'}</span>
+            {t === 'persona' ? <User size={16} /> : <Buildings size={16} />}
+            <span className="text-[8px] font-bold leading-none">{t === 'persona' ? 'Personas' : 'Empresa'}</span>
           </button>
         ))}
       </div>
