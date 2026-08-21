@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trophy, AnimatedClock, Sofa, Target, Plus, Trash, ArrowUp, ArrowDown, GripVertical, Eye, EyeOff, MapPinHouse, Question, Funnel, ChartLine, Receipt, Handshake } from '@/components/ui/icons'
+import { Pencil, Trophy, Clock, Sofa, Target, Plus, Trash, ArrowUp, ArrowDown, GripVertical, Eye, EyeOff, MapPinHouse, Question, Funnel, ChartLine, Receipt, Handshake } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { formatCOP } from '@/lib/format'
@@ -922,7 +922,7 @@ export function SalesDashboard({
           className="grid grid-cols-2 grid-rows-[auto_1.1fr] xl:grid-rows-[auto_1.7fr] gap-2 xl:gap-4 transition-all duration-500"
           style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '180ms' }}
         >
-          <KpiCard icon={<AnimatedClock size={14} className="text-[#F6BF3E]" />} label={['Tiempo', 'de apertura']} value={labelTiempo} t={tTiempo} cardBg={cardBg} tp={tp} ts={ts} />
+          <KpiCard icon={<Clock size={14} className="text-[#F6BF3E]" />} label={['Tiempo', 'de apertura']} value={labelTiempo} t={tTiempo} cardBg={cardBg} tp={tp} ts={ts} />
           <KpiCard icon={<Sofa size={14} className="text-[#38B98E]" />} label={['Muebles', 'cotizados']} value={String(totalMuebles)} t={tMuebles} cardBg={cardBg} tp={tp} ts={ts} />
           <CityChartCard cotizaciones={cotsKpi} ciudadesAgrupadas={ciudadesAgrupadas} agrupar={ciudadesAgruparActivo} onConfigClick={() => setModalCiudadesAbierto(true)} cardBg={cardBg} tp={tp} ts={ts} />
           <B2BChartCard cotizaciones={cotsKpi} cardBg={cardBg} tp={tp} ts={ts} />
@@ -1152,7 +1152,7 @@ export function SalesDashboard({
                     )}
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button onClick={() => iniciarRenombrarGrupo(grupo)} className="p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors" title="Renombrar grupo"><Pencil size={12} /></button>
-                      <button onClick={() => setGrupoAEliminar(grupo)} className="p-1 bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar grupo"><Trash size={14} /></button>
+                      <button onClick={() => setGrupoAEliminar(grupo)} className="p-1 bg-transparent text-[var(--color-rosa)] transition-opacity duration-200 hover:opacity-50" title="Eliminar grupo"><Trash size={14} /></button>
                     </div>
                   </div>
 
@@ -1170,7 +1170,7 @@ export function SalesDashboard({
                           style={{ backgroundColor: `color-mix(in srgb, ${colorGrupo} 15%, transparent)`, border: `1px solid color-mix(in srgb, ${colorGrupo} 35%, transparent)` }}
                         >
                           {c}
-                          <button onClick={() => quitarCiudad(grupo, c)} className="bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+                          <button onClick={() => quitarCiudad(grupo, c)} className="bg-transparent text-[var(--color-rosa)] transition-opacity duration-200 hover:opacity-50">
                             <Trash size={11} />
                           </button>
                         </span>
@@ -1343,7 +1343,10 @@ function KpiCard({ icon, label, value, t, cardBg, tp, ts, className, style }: {
   return (
     <div className={`group rounded-[12px] border ${cardBg} p-2 xl:p-3 flex flex-col justify-center h-full cursor-default ${className || ''}`} style={style}>
       <div className="flex items-center gap-1.5 mb-1 xl:mb-2">
-        <span className="flex-shrink-0 transition-transform duration-200 group-hover:scale-125">{icon}</span>
+        {/* El ícono ya trae su propia animación de hover desde el hub
+            (lucide-animated.com o zoom estándar vía wrapIcon) — nunca se
+            le agrega un segundo scale encima, o el zoom queda doble. */}
+        <span className="flex-shrink-0">{icon}</span>
         <p className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
           <span className="block xl:inline">{label[0]}</span>
           <span className="hidden xl:inline"> </span>
