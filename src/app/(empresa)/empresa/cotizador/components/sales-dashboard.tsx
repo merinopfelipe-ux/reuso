@@ -4,7 +4,15 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Pencil, Trophy, Clock, Sofa, Target, Plus, Trash, ArrowUp, ArrowDown, GripVertical, Eye, EyeOff, MapPinHouse, Question, Funnel, ChartLine, Receipt, Handshake } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
-import { formatCOP } from '@/lib/format'
+import { formatCOP, formatEnteroMillones } from '@/lib/format'
+
+// Meta y Ticket promedio nunca muestran decimales, a diferencia del resto
+// de la plataforma (formatCOP sí redondea a 1 decimal) — directriz
+// explícita del usuario solo para estas 2 cards, siempre redondeando hacia
+// arriba (Math.ceil), nunca hacia el más cercano.
+function formatCOPEntero(val: number): string {
+  return `$ ${formatEnteroMillones(Math.ceil(val))}`
+}
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { DateRangePicker } from './date-range-picker'
@@ -573,15 +581,14 @@ export function SalesDashboard({
   const todasLasGanadas = cotizacionesReales.filter(c => c.estado === 'cerrado_ganado')
   const valorVentasReal = todasLasGanadas.reduce((sum, c) => sum + totalSinIva(c), 0)
   
-  // TICKET PROMEDIO
+  // TICKET PROMEDIO — nunca con decimales, siempre redondeado hacia arriba.
   const tpv = actual.tpv ?? 0
   let labelTicket = '$ 0'
   if (tpv >= 1_000_000) {
-    const millones = Math.round((tpv / 1_000_000) * 10) / 10
-    const formatMillones = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 1 }).format(millones)
-    labelTicket = `$ ${formatMillones} M`
+    const millones = Math.ceil(tpv / 1_000_000)
+    labelTicket = `$ ${millones} M`
   } else if (tpv > 0) {
-    labelTicket = formatCOP(tpv)
+    labelTicket = formatCOPEntero(tpv)
   }
 
   const metaAComparar = metaTipo === 'mensual' ? metaValorMensual : metaValorAnual
@@ -706,7 +713,7 @@ export function SalesDashboard({
 
         {/* 1. Embudo (2.5 de 6 columnas = 41.7%) */}
         <div
-          className={`rounded-[12px] border ${cardBg} p-3 xl:p-5 flex flex-col relative items-center transition-all duration-500`}
+          className={`group rounded-[12px] border ${cardBg} p-3 xl:p-5 flex flex-col relative items-center transition-all duration-500`}
           style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)' }}
         >
           <button
@@ -806,7 +813,7 @@ export function SalesDashboard({
         {/* 2. Meta (1.5 de 6 columnas = 25%) y Ticket Promedio */}
         <div className="flex flex-col gap-4 xl:gap-6">
           <div
-            className={`flex-1 rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-5 flex flex-col relative transition-all duration-300 hover:border-[var(--color-brand)]/40`}
+            className={`group flex-1 rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-5 flex flex-col relative transition-all duration-300 hover:border-[var(--color-brand)]/40`}
             style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '90ms' }}
             onMouseEnter={handleMetaMouseEnter}
           >
@@ -870,8 +877,8 @@ export function SalesDashboard({
                       </div>
                     </div>
                     <div className="flex flex-col items-center gap-1 text-center mt-2 mb-1">
-                      <span className={`text-sm xl:text-base font-black ${tp}`}>{formatCOP(valorVentasReal)}</span>
-                      <span className={`text-[11px] xl:text-xs font-normal ${ts}`}>de {formatCOP(metaAComparar)}</span>
+                      <span className={`text-sm xl:text-base font-black ${tp}`}>{formatCOPEntero(valorVentasReal)}</span>
+                      <span className={`text-[11px] xl:text-xs font-normal ${ts}`}>de {formatCOPEntero(metaAComparar)}</span>
                     </div>
                   </>
                 ) : (
@@ -882,8 +889,8 @@ export function SalesDashboard({
           </div>
 
           {configListo && (
-            <div 
-              className={`rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-4 flex flex-col justify-center transition-all duration-300 hover:border-[var(--color-brand)]/40`}
+            <div
+              className={`group rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-4 flex flex-col justify-center transition-all duration-300 hover:border-[var(--color-brand)]/40`}
               style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '120ms' }}
             >
               <div className="flex items-center gap-1.5 mb-2 z-10 w-full text-left">
