@@ -403,7 +403,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           ))}
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 justify-center">
           <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso('buscar')}>Atrás</Button>
           <Button icon={<Plus size={16} />} onClick={() => {
             const qNum = q.replace(/[^\d]/g, '')
@@ -465,7 +465,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             />
           </div>
         )}
-        <div className="flex gap-3 mt-4">
+        <div className="flex gap-3 mt-4 justify-center">
           <Button variant="secondary" icon={<X size={15} />} onClick={() => { setEncontrado(null); setPaso('buscar'); setQ('') }}>
             No es este cliente
           </Button>
@@ -505,7 +505,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         <p className={`text-xs mb-4 ${ts}`}>&quot;{q}&quot; — no está registrado, crea su perfil.</p>
 
         <SwitchOpciones
-          className="max-w-[220px] mb-4"
+          className="max-w-[220px] mb-4 mx-auto"
           valor={tipoNuevo}
           onChange={setTipoNuevo}
           opciones={[
@@ -662,7 +662,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           </div>
         )}
 
-        <div className="flex gap-3 mt-5">
+        <div className="flex gap-3 mt-5 justify-center">
           <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso(resultados.length > 0 ? 'resultados' : 'buscar')}>Atrás</Button>
           <Button icon={<Save size={16} />} loading={guardando || buscandoDuplicado} onClick={intentarCrear}>
             Crear y continuar

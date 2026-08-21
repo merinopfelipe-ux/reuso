@@ -108,6 +108,24 @@ Nunca declares tu propio `btnPrimario`/`btnGuardar`/`btnBase` local en un compon
 
 **Regla de alternancia en grupos de botones (al lado o debajo uno de otro):** en cualquier fila o columna de `Button` contiguos (barras sticky, pies de tarjeta, toolbars), nunca dos `variant="secondary"` (borde) ni dos `variant="primary"` (verde sólido) quedan pegados entre sí. Cada botón alterna con el de al lado: sólido-borde-sólido o borde-sólido-borde, nunca sólido-sólido ni borde-borde consecutivos. Con 2 botones adyacentes: uno `primary`, el otro `secondary` (mismo criterio ya fijado para el pie de `Modal`, línea de abajo). Con 3 o más en fila/columna, revisa cada par consecutivo, no solo el conjunto completo — el del medio debe contrastar con AMBOS vecinos.
 
+**Regla de centrado (directriz explícita del usuario, 2026-08-21):** una fila de acción tipo "Atrás + acción principal" (pie de formulario multi-paso, ej. Atrás/Crear y continuar, No es este cliente/Continuar) SIEMPRE se centra horizontalmente (`flex gap-3 justify-center`), nunca alineada a la izquierda ni estirada a ancho completo con `flex-1`/`w-full` — cada botón mide su ancho natural según el texto. Aplica también a `SwitchOpciones` (abajo): siempre `mx-auto` dentro de su contenedor, nunca pegado al borde izquierdo. Excepción: filas de botones de igual ancho por diseño (ej. el pie de una tarjeta de advertencia con 2 opciones que deben verse balanceadas, `flex-1` en ambos) — ahí sí se justifica el ancho completo porque ninguno es "el principal".
+
+### SwitchOpciones — `src/components/ui/switch-opciones.tsx`
+Único componente permitido para elegir entre 2-3 opciones excluyentes con apariencia de switch (fondo + píldora deslizante). Nunca un switch ad-hoc por pantalla.
+```tsx
+import { SwitchOpciones } from '@/components/ui/switch-opciones'
+
+<SwitchOpciones
+  className="max-w-[220px] mx-auto"   // siempre centrado, ver regla de arriba
+  valor={tipo}
+  onChange={setTipo}
+  opciones={[
+    { valor: 'persona', label: 'Persona', icon: <User size={14} /> },
+    { valor: 'empresa', label: 'Empresa', icon: <Buildings size={14} /> },
+  ]}
+/>
+```
+
 ### Modal — `src/components/ui/modal.tsx`
 Único componente permitido para modales/popups de confirmación o formularios cortos.
 ```tsx
