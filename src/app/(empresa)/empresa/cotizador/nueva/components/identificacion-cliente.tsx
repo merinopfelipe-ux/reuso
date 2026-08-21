@@ -692,22 +692,13 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
 
   return (
     <div className={`rounded-[12px] border p-5 ${cardBg}`}>
-      <p className={`text-sm font-semibold mb-1 ${tp}`}>¿A quién le cotizas?</p>
-      <p className={`text-xs mb-4 ${ts}`}>Ingresa el NIT, celular o nombre del cliente para buscarlo o crearlo</p>
-      <div className="flex gap-2 mb-3">
-        {(['todos', 'persona', 'empresa'] as const).map(t => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setFiltroTipo(t)}
-            className={`flex-1 py-2 rounded-full text-xs font-semibold transition-colors ${
-              filtroTipo === t ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : 'bg-[var(--bg-input)] text-[var(--text-secondary)]'
-            }`}
-          >
-            {t === 'todos' ? 'Ambos' : t === 'persona' ? 'Persona (B2C)' : 'Empresa (B2B)'}
-          </button>
-        ))}
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[var(--color-brand-light)]">
+          <MagnifyingGlass size={15} className="text-[var(--color-brand)]" sinAnimacion />
+        </div>
+        <p className={`text-sm font-semibold ${tp}`}>¿A quién le cotizas?</p>
       </div>
+      <p className={`text-xs mb-4 ${ts}`}>Ingresa el NIT, celular o nombre del cliente para buscarlo o crearlo</p>
       <div className="flex gap-2">
         <input
           value={q}
@@ -716,6 +707,23 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           placeholder="Ej: 900123456, 310..., Juan"
           className={`${inputSt} flex-1`}
         />
+        {(['persona', 'empresa'] as const).map(t => (
+          <button
+            key={t}
+            type="button"
+            aria-pressed={filtroTipo === t}
+            title={t === 'persona' ? 'Buscar solo personas (B2C)' : 'Buscar solo empresas (B2B)'}
+            onClick={() => setFiltroTipo(filtroTipo === t ? 'todos' : t)}
+            className={`flex-shrink-0 w-[52px] h-[46px] rounded-2xl border flex flex-col items-center justify-center gap-0.5 transition-all ${
+              filtroTipo === t
+                ? 'bg-[var(--color-brand)] border-[var(--color-brand)] text-[var(--text-on-brand)] shadow-sm'
+                : 'bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--color-brand)]/50'
+            }`}
+          >
+            {t === 'persona' ? <User size={16} sinAnimacion /> : <Buildings size={16} sinAnimacion />}
+            <span className="text-[8px] font-bold leading-none">{t === 'persona' ? 'B2C' : 'B2B'}</span>
+          </button>
+        ))}
       </div>
       {error && (
         <p className="mt-3 text-sm text-[#FF5E4B] flex items-center gap-1"><Warning size={14} /> {error}</p>
