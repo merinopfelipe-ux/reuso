@@ -7,6 +7,7 @@ import { Modal } from '@/components/ui/modal'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
 import { InputDireccion } from '@/components/ui/input-direccion'
+import { InputTelefono } from '@/components/ui/input-telefono'
 import { InputDocumento } from '@/components/ui/input-documento'
 import { distanciaLevenshtein } from '@/lib/similitud'
 import { validarTelefono, formatTelefonoVista } from '@/lib/telefono'
@@ -68,7 +69,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   const [nombreComercial, setNombreComercial] = useState('')
   const [guardando, setGuardando] = useState(false)
 
-  interface ContactoNuevo { nombre: string; apellido: string; telefono: string; email: string }
+  interface ContactoNuevo { nombre: string; apellido: string; telefono: string; telefono_indicativo: string; email: string }
   const [contactos, setContactos] = useState<ContactoNuevo[]>([])
   // Recuerda qué contactos ya se crearon con éxito en un intento previo de
   // crearClienteEmpresa, para que un reintento tras un error parcial no
@@ -78,7 +79,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
 
   function agregarContacto() {
     contactosCreadosRef.current = []
-    setContactos(prev => [...prev, { nombre: '', apellido: '', telefono: '', email: '' }])
+    setContactos(prev => [...prev, { nombre: '', apellido: '', telefono: '', telefono_indicativo: PAISES[0].dial, email: '' }])
   }
   function actualizarContacto(idx: number, patch: Partial<ContactoNuevo>) {
     setContactos(prev => prev.map((c, i) => i === idx ? { ...c, ...patch } : c))
@@ -306,7 +307,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             nombre: c?.nombre.trim() || undefined,
             apellido: c?.apellido.trim() || undefined,
             telefono: c?.telefono.trim() || undefined,
-            telefono_indicativo: indicativo.dial,
+            telefono_indicativo: c?.telefono_indicativo || indicativo.dial,
             email: c?.email.trim() || undefined,
           }),
         })
@@ -604,14 +605,12 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                         <input value={c.nombre} onChange={e => actualizarContacto(idx, { nombre: e.target.value })} className={inputSt} placeholder="Nombre" />
                         <input value={c.apellido} onChange={e => actualizarContacto(idx, { apellido: e.target.value })} className={inputSt} placeholder="Apellido" />
                       </div>
-                      <div className="flex gap-2 mb-3">
-                        <SelectorPais value={indicativo} onChange={setIndicativo} />
-                        <input
-                          value={c.telefono}
-                          onChange={e => actualizarContacto(idx, { telefono: e.target.value.replace(/[^\d]/g, '') })}
-                          placeholder="Celular (opcional)"
-                          inputMode="tel"
-                          className={`${inputSt} flex-1`}
+                      <div className="mb-3">
+                        <InputTelefono
+                          indicativo={c.telefono_indicativo}
+                          onChangeIndicativo={val => actualizarContacto(idx, { telefono_indicativo: val })}
+                          telefono={c.telefono}
+                          onChangeTelefono={val => actualizarContacto(idx, { telefono: val })}
                         />
                       </div>
                       <input value={c.email} onChange={e => actualizarContacto(idx, { email: e.target.value })} className={inputSt} placeholder="Correo (opcional)" type="email" />
