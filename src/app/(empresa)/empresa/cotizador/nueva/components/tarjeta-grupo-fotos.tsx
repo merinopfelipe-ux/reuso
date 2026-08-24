@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useRef } from 'react'
-import { Camera, Sparkles, Pencil, ClipboardPaste as Clipboard, X, TriangleAlert as Warning } from '@/components/ui/icons'
+import { Camera, Sparkles, Pencil, ClipboardPaste as Clipboard, X, TriangleAlert as Warning, Trash2 as Trash } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 
 export type ModoAnalisis = 'ia' | 'manual'
@@ -24,12 +24,16 @@ interface Props {
   onCambiarModo: (modo: ModoAnalisis) => void
   onAgregarFotos: (files: File[]) => void
   onQuitarFoto: (index: number) => void
+  // Ausente cuando esta tarjeta no se puede borrar completa — hoy solo pasa
+  // si es la única tarjeta en pantalla (siempre debe quedar al menos una
+  // zona de carga visible).
+  onQuitarGrupo?: () => void
 }
 
 // Una tarjeta de staging por ítem — se repite hasta 4 veces en cascada en
 // page.tsx, ninguna analiza nada por sí sola. El disparo real vive en
 // "Genera la propuesta", en page.tsx.
-export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, onCambiarModo, onAgregarFotos, onQuitarFoto }: Props) {
+export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, onCambiarModo, onAgregarFotos, onQuitarFoto, onQuitarGrupo }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const ts = 'text-[var(--text-secondary)]'
   const tp = 'text-[var(--text-primary)]'
@@ -43,7 +47,19 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
 
   return (
     <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
-      <p className={`text-xs font-semibold mb-3 ${ts}`}>Ítem {numero}</p>
+      <div className="flex items-center justify-between mb-3">
+        <p className={`text-xs font-semibold ${ts}`}>Ítem {numero}</p>
+        {onQuitarGrupo && (
+          <button
+            type="button"
+            onClick={onQuitarGrupo}
+            className="text-xs font-semibold text-[#FF5E4B] hover-pop hover-press flex items-center gap-1"
+            title="Quitar este ítem"
+          >
+            <Trash size={13} sinAnimacion /> Quitar ítem
+          </button>
+        )}
+      </div>
 
       <div className="flex items-center justify-center mb-4">
         <div className="inline-flex rounded-full border p-1" style={{ borderColor: 'var(--border)' }}>

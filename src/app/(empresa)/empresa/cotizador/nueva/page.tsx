@@ -336,6 +336,16 @@ function NuevaCotizacionContent() {
     setGruposPendientes(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: g.fotos.filter((_, i) => i !== index) } : g))
   }
 
+  // Quita la tarjeta completa de un ítem (todas sus fotos, no una por una).
+  // Si es la única que queda, se reemplaza por una tarjeta vacía en vez de
+  // dejar la pantalla sin ninguna zona de carga.
+  function quitarGrupo(grupoId: string) {
+    setGruposPendientes(prev => {
+      const restantes = prev.filter(g => g.id !== grupoId)
+      return restantes.length > 0 ? restantes : [nuevoGrupoVacio()]
+    })
+  }
+
   // Pegar una o varias imágenes desde el portapapeles (Cmd+V) — activo
   // mientras la cola se sigue armando, así que varios pegados seguidos se
   // acumulan en vez de perderse. Se agregan al último grupo pendiente.
@@ -930,6 +940,7 @@ function NuevaCotizacionContent() {
               onCambiarModo={(modo) => setGruposPendientes(prev => prev.map(g => g.id === grupo.id ? { ...g, modo } : g))}
               onAgregarFotos={(files) => agregarFotosAGrupo(grupo.id, files)}
               onQuitarFoto={(idx) => quitarFotoDeGrupo(grupo.id, idx)}
+              onQuitarGrupo={(gruposPendientes.length > 1 || grupo.fotos.length > 0) ? () => quitarGrupo(grupo.id) : undefined}
             />
           </div>
         ))}
