@@ -156,6 +156,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         // Pre-llenar el telefono si q parece ser numerico
         const qNum = q.replace(/[^\d]/g, '')
         if (qNum.length >= 7) setTelefono(qNum)
+        // El formulario de "crear nuevo" arranca en el tipo que el usuario
+        // ya eligió al filtrar la búsqueda (Persona/Empresa) — si no filtró
+        // (filtroTipo === 'todos'), el valor por defecto sigue siendo persona.
+        if (filtroTipo !== 'todos') setTipoNuevo(filtroTipo)
         setPaso('crear')
       }
     } catch {
@@ -408,6 +412,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
           <Button icon={<Plus size={16} />} onClick={() => {
             const qNum = q.replace(/[^\d]/g, '')
             if (qNum.length >= 7) setTelefono(qNum)
+            if (filtroTipo !== 'todos') setTipoNuevo(filtroTipo)
             setPaso('crear')
           }}>
             No está en la lista, crear nuevo
