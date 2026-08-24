@@ -627,16 +627,20 @@ function NuevaCotizacionContent() {
       modo: 'ia',
     }
     setColaProcesar(prev => [...prev, nuevoGrupo])
-    setSinMatch(prev => prev.filter(d => d !== preguntaItemAparte))
-    setPreguntaItemAparte(null)
+    const restante = sinMatch.filter(d => d !== preguntaItemAparte)
+    setSinMatch(restante)
+    // Si el mismo grupo trajo más de una pieza sin_match, se pregunta por
+    // la siguiente recién ahora — una decisión a la vez, nunca todas juntas.
+    setPreguntaItemAparte(restante.length > 0 ? restante[0] : null)
   }
 
   // El vendedor dice que NO es un ítem aparte: se descarta, sigue siendo
   // solo contexto de las fotos del ítem actual.
   function descartarPiezaComoItemAparte() {
     if (!preguntaItemAparte) return
-    setSinMatch(prev => prev.filter(d => d !== preguntaItemAparte))
-    setPreguntaItemAparte(null)
+    const restante = sinMatch.filter(d => d !== preguntaItemAparte)
+    setSinMatch(restante)
+    setPreguntaItemAparte(restante.length > 0 ? restante[0] : null)
   }
 
   // Botón fijo "+ Agregar otro ítem" de la barra inferior — SUMA una
