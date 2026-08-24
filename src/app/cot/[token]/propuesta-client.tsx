@@ -1,13 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createPortal } from 'react-dom'
 import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, X, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { useTopLoader } from 'nextjs-toploader'
 import { VistaCot } from './vista-cot'
 import { PARAM_EQUIV } from '@/lib/calculos/co2'
 import { Modal } from '@/components/ui/modal'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { formatNumero, formatEnteroMillones } from '@/lib/format'
 import DOMPurify from 'isomorphic-dompurify'
 import { NOTA_SANITIZE_CONFIG, LEGAL_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
@@ -154,61 +154,6 @@ function ImagenPorQueElegirnos({ url, alt, isDark, posicion }: { url: string | n
   )
 }
 
-function ModalImagenZoom({
-  imagenUrl,
-  onClose,
-}: {
-  imagenUrl: string | null
-  onClose: () => void
-}) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  useEffect(() => {
-    if (!imagenUrl) return
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [imagenUrl, onClose])
-
-  if (!imagenUrl || !mounted) return null
-
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
-      onClick={onClose}
-    >
-      {/* Contenedor de la imagen con la X ubicada directamente sobre su esquina superior derecha */}
-      <div
-        className="relative max-w-5xl max-h-[85vh] inline-flex items-center justify-center animate-in zoom-in-95 duration-200"
-        onClick={e => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full bg-black/75 hover:bg-black/95 text-white flex items-center justify-center border border-white/25 shadow-xl transition-all duration-150 hover:scale-105 active:scale-95 flex-shrink-0 cursor-pointer"
-          aria-label="Cerrar imagen"
-        >
-          <X size={18} className="text-white flex-shrink-0" />
-        </button>
-
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          draggable={false}
-          src={imagenUrl}
-          alt="Vista ampliada"
-          className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl select-none"
-        />
-      </div>
-    </div>,
-    document.body
-  )
-}
 
 // ── Componente ─────────────────────────────────────────────────────────────────
 
