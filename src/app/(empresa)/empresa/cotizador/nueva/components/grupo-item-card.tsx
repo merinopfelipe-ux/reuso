@@ -6,6 +6,7 @@ import { Trash2 as Trash, Leaf, CircleDollarSign, Plus, Copy } from '@/component
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
 import { mergeServicios, mergeInsumos, mergeMateriales } from '@/lib/cotizador/plantillas-base'
 import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/route'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 
 export interface ItemConImagen extends ItemDetectadoConSnapshot {
   // Miniatura para mostrar (recorte si el recuadro fue útil, si no la foto
@@ -56,6 +57,7 @@ const rowInputSt = 'bg-transparent border-none p-0 outline-none focus:ring-0 tex
 export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, onDuplicar, fotosGrupo, onElegir }: Props) {
   const [categoriaSel, setCategoriaSel] = useState('')
   const [cargandoMatch, setCargandoMatch] = useState(false)
+  const [zoomAbierto, setZoomAbierto] = useState(false)
 
   const ts = 'text-[var(--text-secondary)]'
   const tp = 'text-[var(--text-primary)]'
@@ -142,14 +144,12 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
       {/* ── Tarjeta 1: Foto + identificación ── */}
       <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-xs min-w-0 ${cardBg}`}>
         <div className="flex items-center justify-between gap-2">
-          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-            item.manual ? 'bg-[#59A6E4]/15 text-[#59A6E4]'
-              : item.confianza >= 0.8 ? 'bg-[#38B98E]/15 text-[#38B98E]'
-              : item.confianza >= 0.5 ? 'bg-[#F6BF3E]/15 text-[#F6BF3E]'
-              : 'bg-[#FF5E4B]/15 text-[#FF5E4B]'
-          }`}>
-            {item.manual ? 'Manual' : item.confianza >= 0.8 ? 'Alta confianza' : item.confianza >= 0.5 ? 'Confianza media' : 'Baja confianza'}
-          </span>
+          {item.manual && (
+            <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[#59A6E4]/15 text-[#59A6E4]">
+              Manual
+            </span>
+          )}
+          {!item.manual && <span />}
           <div className="flex items-center gap-1 flex-shrink-0">
             {onElegir && (
               <button
@@ -173,10 +173,16 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
           // Alto fijo, ancho natural — nunca se fuerza a cuadrado ni se
           // vuelve a recortar aquí. El recuadro que ya devolvió la IA es el
           // que decide qué parte de la foto es relevante, no el CSS.
-          <div className="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)] overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setZoomAbierto(true)}
+            className="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)] overflow-hidden cursor-zoom-in"
+            title="Ampliar imagen"
+          >
             <img src={item.imagenPreview} alt="" className="h-48 w-auto max-w-full object-contain" />
-          </div>
+          </button>
         )}
+        <ModalImagenZoom imagenUrl={zoomAbierto ? item.imagenPreview : null} onClose={() => setZoomAbierto(false)} />
 
         {fotosGrupo && fotosGrupo.length > 1 && (
           <div>
