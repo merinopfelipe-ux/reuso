@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil } from '@/components/ui/icons'
+import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
@@ -42,10 +42,10 @@ interface MuebleAgregado {
 
 type EstadoUI = 'idle' | 'analizando' | 'resultado' | 'guardando'
 
-// Cada conjunto de fotos es de máximo 3 — directriz explícita. No hay tope
-// de cuántos conjuntos se pueden subir: al confirmar uno (handleConfirmarTodos),
-// el estado vuelve a 'idle' con `fotos`/`itemsDetectados` vacíos, listo para
-// subir el siguiente conjunto sin límite.
+// Cada ítem admite hasta 4 fotos, y una cotización nueva admite hasta 4
+// ítems apilados en cascada — se arman todos primero (sin analizar nada) y
+// se procesan en orden, uno a la vez, recién al confirmar "Genera la
+// propuesta" (ver procesarIndiceCola/generarPropuesta más abajo).
 const MAX_FOTOS_POR_TANDA = 4
 const MAX_ITEMS_POR_COTIZACION = 4
 
@@ -190,9 +190,8 @@ function NuevaCotizacionContent() {
   const [noIdentificados, setNoIdentificados] = useState<string[]>([])
   const [sinMatch, setSinMatch] = useState<SinMatchConImagen[]>([])
   const [observaciones, setObservaciones] = useState('')
-  // Se usa en la tarea siguiente (pregunta al vendedor si una pieza "sin
-  // match" es un ítem aparte) — declarado ya para que analizarGrupoConIA
-  // compile, aún no tiene consumidor en el JSX.
+  // Pieza "sin_match" pendiente de que el vendedor confirme si es un ítem
+  // aparte — una por vez, ver confirmarPiezaComoItemAparte más abajo.
   const [preguntaItemAparte, setPreguntaItemAparte] = useState<SinMatchConImagen | null>(null)
 
   // Cola de procesamiento — se llena al confirmar "Genera la propuesta" con
@@ -490,9 +489,9 @@ function NuevaCotizacionContent() {
         setCotizacionId(data.id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${data.id}`))
       }
-      // Si falla, no se muestra error acá — handleConfirmarTodos ya trae su
-      // propio intento de creación como respaldo (`if (!id) { ... }`), el
-      // vendedor puede seguir subiendo fotos sin interrupción.
+      // Si falla, no se muestra error acá — guardarItemsDetectadosEnCotizacion
+      // ya trae su propio intento de creación como respaldo (`if (!id) { ... }`),
+      // el vendedor puede seguir subiendo fotos sin interrupción.
     } catch {
       // Mismo criterio: falla silenciosa, hay un respaldo más adelante.
     }
@@ -512,13 +511,17 @@ function NuevaCotizacionContent() {
       return false
     }
     setError(null)
+    // Protege contra doble clic mientras guarda — sin esto, dos clics
+    // seguidos en "Guardar y seguir" disparan dos POST en paralelo y
+    // duplican el mueble en la cotización.
+    setEstado('guardando')
 
     try {
       let id = cotizacionId
       if (!id) {
         const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
         const dataCot = await resCot.json()
-        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); return false }
+        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); setEstado('resultado'); return false }
         id = dataCot.id as string
         setCotizacionId(id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))
@@ -545,7 +548,7 @@ function NuevaCotizacionContent() {
           }),
         })
         const dataMueble = await resMueble.json()
-        if (!resMueble.ok) { setError(dataMueble.error ?? `Error al guardar "${item.item_nombre}".`); return false }
+        if (!resMueble.ok) { setError(dataMueble.error ?? `Error al guardar "${item.item_nombre}".`); setEstado('resultado'); return false }
 
         nuevos.push({
           id: dataMueble.mueble.id,
@@ -566,6 +569,7 @@ function NuevaCotizacionContent() {
       return true
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
+      setEstado('resultado')
       return false
     }
   }
@@ -581,12 +585,15 @@ function NuevaCotizacionContent() {
 
     setProcesandoIdx(idx)
     setEstado('analizando')
+    // Limpia el resultado del ítem anterior ANTES de procesar este — sin
+    // esto, si el análisis falla, la pantalla se queda mostrando (y
+    // permitiendo volver a guardar) el ítem anterior, que ya se guardó.
+    setItemsDetectados([])
+    setNoIdentificados([])
+    setSinMatch([])
+    setObservaciones('')
 
-    const ok = grupo.modo === 'ia'
-      ? await analizarGrupoConIA(grupo)
-      : (continuarGrupoManual(grupo), true)
-
-    if (!ok) { setEstado('resultado'); return }
+    await (grupo.modo === 'ia' ? analizarGrupoConIA(grupo) : Promise.resolve(continuarGrupoManual(grupo)))
     setEstado('resultado')
   }
 
@@ -1113,13 +1120,32 @@ function NuevaCotizacionContent() {
                 </Button>
               </>
             )}
-            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && (
+            {/* El análisis de este ítem falló (itemsDetectados quedó vacío
+                al limpiar en procesarIndiceCola) — nada que guardar, se
+                reintenta el mismo índice en vez de avanzar y perder sus
+                fotos. */}
+            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && itemsDetectados.length === 0 && (
+              <Button
+                variant="secondary"
+                onClick={() => procesarIndiceCola(procesandoIdx, colaProcesar)}
+                icon={<RefreshCw size={16} strokeWidth={2.5} />}
+                className="flex-1 w-full"
+              >
+                Reintentar
+              </Button>
+            )}
+            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && itemsDetectados.length > 0 && (
               <Button
                 onClick={confirmarYAvanzar}
                 icon={<Plus size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
                 {procesandoIdx + 1 < colaProcesar.length ? 'Guardar y seguir con el siguiente' : 'Guardar y terminar'}
+              </Button>
+            )}
+            {procesandoIdx !== null && estado === 'guardando' && (
+              <Button loading disabled icon={<Plus size={16} strokeWidth={2.5} />} className="flex-1 w-full">
+                Guardando...
               </Button>
             )}
           </div>
