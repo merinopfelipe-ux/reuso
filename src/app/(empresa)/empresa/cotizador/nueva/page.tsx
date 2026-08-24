@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useRef, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Camera, XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, ClipboardPaste as Clipboard, Loader2, ExternalLink, CheckCircle, Pencil, Sparkles, X } from '@/components/ui/icons'
+import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
@@ -15,6 +15,7 @@ import { GrupoItemCard, type ItemConImagen } from './components/grupo-item-card'
 import type { ItemDetectadoConSnapshot, SinMatchDetalle } from '@/app/api/cotizador/diagnostico/route'
 import { comprimirImagenBase64, recortarImagenBase64, boundingBoxEsUtil, type BoundingBox } from '@/lib/image-compress'
 import { SkeletonCard } from '@/components/ui/skeleton'
+import { TarjetaGrupoFotos, type GrupoPendiente, type FotoCola } from './components/tarjeta-grupo-fotos'
 
 // ── Tipos locales ─────────────────────────────────────────────────────────────
 
@@ -45,7 +46,12 @@ type EstadoUI = 'idle' | 'analizando' | 'resultado' | 'guardando'
 // de cuántos conjuntos se pueden subir: al confirmar uno (handleConfirmarTodos),
 // el estado vuelve a 'idle' con `fotos`/`itemsDetectados` vacíos, listo para
 // subir el siguiente conjunto sin límite.
-const MAX_FOTOS_POR_TANDA = 3
+const MAX_FOTOS_POR_TANDA = 4
+const MAX_ITEMS_POR_COTIZACION = 4
+
+function nuevoGrupoVacio(modo: ModoAnalisis = 'ia'): GrupoPendiente {
+  return { id: crypto.randomUUID(), fotos: [], modo }
+}
 
 function precioUnidad(item: ItemDetectadoConSnapshot): number {
   const servicios = item.servicios.reduce((s, x) => s + x.precio, 0)
@@ -157,7 +163,6 @@ function NuevaCotizacionContent() {
   const conEmpresa = useCallback((url: string) =>
     empresaIdParam ? `${url}${url.includes('?') ? '&' : '?'}empresa_id=${empresaIdParam}` : url,
     [empresaIdParam])
-  const inputFotoRef = useRef<HTMLInputElement>(null)
 
   // Estado del flujo
   const [estado, setEstado] = useState<EstadoUI>('idle')
@@ -172,29 +177,35 @@ function NuevaCotizacionContent() {
   // cliente (ya está fijado) y se sigue guardando en la MISMA cotización.
   const [cargandoExistente, setCargandoExistente] = useState(!!cotizacionIdParam)
 
-  // Fotos y resultado del diagnóstico multi-ítem — "fotos" es la tanda que se
-  // acaba de analizar (una o varias), cada ítem detectado ya trae su propia
-  // miniatura (recortada o la foto completa) lista para mostrar y subir.
-  const [fotos, setFotos] = useState<{ base64: string; preview: string }[]>([])
+  // Ítems en armado (staging): hasta MAX_ITEMS_POR_COTIZACION tarjetas en
+  // cascada, cada una con sus propias fotos y su propio modo IA/Manual.
+  // Nada de esto se analiza — eso solo pasa al procesar la cola, ver más
+  // abajo (colaProcesar). Arranca con 1 tarjeta vacía siempre visible.
+  const [gruposPendientes, setGruposPendientes] = useState<GrupoPendiente[]>([nuevoGrupoVacio()])
+
+  // Resultado del grupo que se está procesando AHORA MISMO (índice de
+  // colaProcesar) — mismo shape que antes, pero ya no es "la tanda actual
+  // del vendedor", es "lo que la cola está resolviendo en este momento".
   const [itemsDetectados, setItemsDetectados] = useState<ItemConImagen[]>([])
   const [noIdentificados, setNoIdentificados] = useState<string[]>([])
   const [sinMatch, setSinMatch] = useState<SinMatchConImagen[]>([])
   const [observaciones, setObservaciones] = useState('')
+  // Se usa en la tarea siguiente (pregunta al vendedor si una pieza "sin
+  // match" es un ítem aparte) — declarado ya para que analizarGrupoConIA
+  // compile, aún no tiene consumidor en el JSX.
+  const [preguntaItemAparte, setPreguntaItemAparte] = useState<SinMatchConImagen | null>(null)
 
-  // Con IA (por defecto) analiza y clasifica solo; Manual salta la IA por
-  // completo y deja que el vendedor elija categoría y llene todo a mano
-  // desde la misma tarjeta — siempre visible, el vendedor decide antes de
-  // subir o pegar cualquier foto.
-  const [modo, setModo] = useState<ModoAnalisis>('ia')
+  // Cola de procesamiento — se llena al confirmar "Genera la propuesta" con
+  // los gruposPendientes que sí tienen fotos, y puede CRECER en caliente si
+  // al procesar un grupo aparece una pieza extra que el vendedor confirma
+  // como ítem aparte (ver Task 7). procesandoIdx === null significa que la
+  // cola no está corriendo (estamos en la etapa de armar, no de procesar).
+  const [colaProcesar, setColaProcesar] = useState<GrupoPendiente[]>([])
+  const [procesandoIdx, setProcesandoIdx] = useState<number | null>(null)
 
   // Cotización acumulada
   const [cotizacionId, setCotizacionId] = useState<string | null>(null)
   const [muebles, setMuebles] = useState<MuebleAgregado[]>([])
-  // Sube en 1 SOLO al confirmar el ítem resultante de un grupo de fotos (IA
-  // o Manual) — nunca vía "rescate" (Buscar en catálogo / Agregar ítem que
-  // no existe), esos no consumen un grupo. Tope: 3 grupos por cotización
-  // nueva, ver JSX del botón "+ Agregar otro ítem" más abajo.
-  const [gruposUsados, setGruposUsados] = useState(0)
 
   // Fila de rescate: "Agregar ítem" que la IA no detectó
   const [mostrarRescate, setMostrarRescate] = useState(false)
@@ -234,12 +245,13 @@ function NuevaCotizacionContent() {
 
   // Proteger trabajo no guardado: advertir al salir si hay progreso pendiente
   useEffect(() => {
-    const hayProgresoNoGuardado = fotos.length > 0 || itemsDetectados.length > 0 || (!cotizacionIdParam && cliente !== null && muebles.length === 0)
+    const hayFotosSinProcesar = gruposPendientes.some(g => g.fotos.length > 0)
+    const hayProgresoNoGuardado = hayFotosSinProcesar || itemsDetectados.length > 0 || (!cotizacionIdParam && cliente !== null && muebles.length === 0)
     if (!hayProgresoNoGuardado) return
     const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
-  }, [fotos.length, itemsDetectados.length, cliente, cotizacionIdParam, muebles.length])
+  }, [gruposPendientes, itemsDetectados.length, cliente, cotizacionIdParam, muebles.length])
 
   // Modo "agregar más ítems": carga la cotización existente (cliente ya fijo
   // + líneas ya guardadas) en vez de arrancar el flujo de identificación.
@@ -298,160 +310,118 @@ function NuevaCotizacionContent() {
   // seguidos van sumando a la misma tanda hasta que el vendedor decide
   // analizar (Con IA) o continuar (Manual). ──
 
-  const agregarFotos = useCallback(async (archivos: Blob[]) => {
-    const imagenes = archivos.filter(a => a.type.startsWith('image/'))
-    const rechazados = archivos.length - imagenes.length
-
-    if (imagenes.length === 0) {
-      setError(rechazados > 0 ? 'Solo se aceptan imágenes, no videos ni otro tipo de archivo.' : 'No se detectó ninguna imagen.')
+  const agregarFotosAGrupo = useCallback(async (grupoId: string, files: File[]) => {
+    const actual = gruposPendientes.find(g => g.id === grupoId)
+    const disponibles = MAX_FOTOS_POR_TANDA - (actual?.fotos.length ?? 0)
+    if (disponibles <= 0) {
+      setError(`Ese ítem ya tiene el máximo de ${MAX_FOTOS_POR_TANDA} fotos.`)
       return
     }
-    if (fotos.length + imagenes.length > MAX_FOTOS_POR_TANDA) {
-      setError(`Sube máximo ${MAX_FOTOS_POR_TANDA} fotos por tanda. Ya tienes ${fotos.length}.`)
-      return
+    const aProcesar = files.slice(0, disponibles)
+    const resultados = await Promise.allSettled(aProcesar.map(f => comprimirImagenBase64(f)))
+    const comprimidas: FotoCola[] = []
+    let fallidas = 0
+    for (const r of resultados) {
+      if (r.status === 'fulfilled') comprimidas.push(r.value)
+      else fallidas++
     }
-    const pesada = imagenes.find(a => a.size > 10 * 1024 * 1024)
-    if (pesada) {
-      setError('Cada imagen debe pesar máximo 10 MB. Quita la más pesada e intenta de nuevo.')
-      return
+    if (comprimidas.length > 0) {
+      setGruposPendientes(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: [...g.fotos, ...comprimidas] } : g))
     }
-
-    setError(rechazados > 0 ? `Se ignoraron ${rechazados} archivo${rechazados > 1 ? 's' : ''} que no ${rechazados > 1 ? 'eran' : 'era'} imagen.` : null)
-
-    // Promise.allSettled (no Promise.all): si una imagen viene corrupta, no
-    // se pierde toda la tanda pegada, solo esa una.
-    const resultados = await Promise.allSettled(imagenes.map(a => comprimirImagenBase64(a)))
-    const comprimidas = resultados
-      .filter((r): r is PromiseFulfilledResult<{ base64: string; preview: string }> => r.status === 'fulfilled')
-      .map(r => r.value)
-    const fallidas = resultados.length - comprimidas.length
-
-    if (comprimidas.length > 0) setFotos(prev => [...prev, ...comprimidas])
     if (fallidas > 0) {
       setError(`No se pudo procesar ${fallidas} imagen${fallidas > 1 ? 'es' : ''}.${comprimidas.length > 0 ? ' El resto se agregó bien.' : ' Intenta de nuevo.'}`)
     }
-  }, [fotos.length])
+  }, [gruposPendientes])
 
-  function quitarFotoCola(index: number) {
-    setFotos(prev => prev.filter((_, i) => i !== index))
+  function quitarFotoDeGrupo(grupoId: string, index: number) {
+    setGruposPendientes(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: g.fotos.filter((_, i) => i !== index) } : g))
   }
-
-  function handleFotoSeleccionada(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files ?? [])
-    if (files.length > 0) agregarFotos(files)
-    if (inputFotoRef.current) inputFotoRef.current.value = ''
-  }
-
-  // Rotar el mensaje de "Analizando..." mientras dura la llamada a la IA —
-  // ver mensajesAnalizando() arriba.
-  useEffect(() => {
-    if (estado !== 'analizando') { setAnalizandoMsgIndex(0); return }
-    const totalMensajes = mensajesAnalizando(fotos.length).length
-    const interval = setInterval(() => {
-      setAnalizandoMsgIndex(i => (i + 1) % totalMensajes)
-    }, 2800)
-    return () => clearInterval(interval)
-  }, [estado, fotos.length])
 
   // Pegar una o varias imágenes desde el portapapeles (Cmd+V) — activo
-  // mientras la cola se sigue armando (estado idle), así que varios pegados
-  // seguidos se acumulan en vez de perderse. Cualquier archivo pegado que no
-  // sea imagen (ej. un video) se recoge igual para que agregarFotos lo
-  // rechace con mensaje, en vez de ignorarlo en silencio.
+  // mientras la cola se sigue armando, así que varios pegados seguidos se
+  // acumulan en vez de perderse. Se agregan al último grupo pendiente.
   useEffect(() => {
-    if (estado !== 'idle' || !cliente) return
+    if (procesandoIdx !== null || !cliente) return
     function onPaste(e: ClipboardEvent) {
       const items = Array.from(e.clipboardData?.items ?? []).filter(i => i.kind === 'file')
       if (items.length === 0) return
       e.preventDefault()
       const archivos = items.map(i => i.getAsFile()).filter((f): f is File => !!f)
-      if (archivos.length > 0) agregarFotos(archivos)
+      const ultimoGrupo = gruposPendientes[gruposPendientes.length - 1]
+      if (archivos.length > 0 && ultimoGrupo) agregarFotosAGrupo(ultimoGrupo.id, archivos)
     }
     window.addEventListener('paste', onPaste)
     return () => window.removeEventListener('paste', onPaste)
-  }, [estado, agregarFotos, cliente])
+  }, [procesandoIdx, agregarFotosAGrupo, cliente, gruposPendientes])
+
+  // Rotar el mensaje de "Analizando..." mientras dura la llamada a la IA —
+  // ver mensajesAnalizando() arriba.
+  useEffect(() => {
+    if (estado !== 'analizando') { setAnalizandoMsgIndex(0); return }
+    const nFotos = procesandoIdx !== null ? (colaProcesar[procesandoIdx]?.fotos.length ?? 1) : 1
+    const totalMensajes = mensajesAnalizando(nFotos).length
+    const interval = setInterval(() => {
+      setAnalizandoMsgIndex(i => (i + 1) % totalMensajes)
+    }, 2800)
+    return () => clearInterval(interval)
+  }, [estado, procesandoIdx, colaProcesar])
 
   // ── Con IA: una sola llamada a la IA para toda la tanda acumulada, cada
   // ítem detectado ya trae su recuadro para poder recortar su propia
   // miniatura. ──
 
-  async function analizarConIA() {
-    if (fotos.length === 0) return
-    setError(null)
-    setEstado('analizando')
-
+  async function analizarGrupoConIA(grupo: GrupoPendiente): Promise<boolean> {
     try {
       const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          imagenes: fotos.map(c => ({ imagen_base64: c.base64, mime_type: 'image/webp' })),
+          imagenes: grupo.fotos.map(c => ({ imagen_base64: c.base64, mime_type: 'image/webp' })),
         }),
       })
       const data = await res.json()
 
       if (!res.ok) {
         setError(data.error ?? 'Error al analizar las imágenes.')
-        setEstado('idle')
-        return
+        return false
       }
 
       const itemsCrudos = (data.items_detectados ?? []) as ItemDetectadoConSnapshot[]
       const itemsConImagen: ItemConImagen[] = await Promise.all(itemsCrudos.map(async (item) => ({
         ...item,
-        ...(await construirMiniatura(item.imagen_index, item.bounding_box, fotos)),
+        ...(await construirMiniatura(item.imagen_index, item.bounding_box, grupo.fotos)),
         _uiKey: crypto.randomUUID(),
       })))
 
       const sinMatchCrudos = (data.sin_match_detalle ?? []) as SinMatchDetalle[]
       const sinMatchConImagen: SinMatchConImagen[] = await Promise.all(sinMatchCrudos.map(async (d) => ({
         ...d,
-        ...(await construirMiniatura(d.imagen_index, d.bounding_box, fotos)),
+        ...(await construirMiniatura(d.imagen_index, d.bounding_box, grupo.fotos)),
       })))
 
       setItemsDetectados(itemsConImagen)
       setNoIdentificados(data.no_identificados ?? [])
       setSinMatch(sinMatchConImagen)
       setObservaciones(data.observaciones_visuales ?? '')
-      setEstado('resultado')
+      if (sinMatchConImagen.length > 0) setPreguntaItemAparte(sinMatchConImagen[0])
+      return true
     } catch {
       setError('No se pudo analizar la imagen. Verifica tu conexión.')
-      setEstado('idle')
+      return false
     }
   }
 
   // ── Manual: salta la IA por completo — una tarjeta en blanco por foto,
   // el vendedor elige categoría y llena todo desde GrupoItemCard. ──
 
-  function continuarManual() {
-    if (fotos.length === 0) return
-    setError(null)
-    // Un solo ítem por grupo, sin importar cuántas fotos tenga — usa la
-    // primera como imagen por defecto, el vendedor puede cambiarla desde el
-    // selector de "foto principal" dentro de GrupoItemCard.
+  function continuarGrupoManual(grupo: GrupoPendiente) {
     const item = construirItemStub({
-      imagenIndex: 0, imagenPreview: fotos[0].preview, imagenBase64: fotos[0].base64,
+      imagenIndex: 0, imagenPreview: grupo.fotos[0].preview, imagenBase64: grupo.fotos[0].base64,
     })
     setItemsDetectados([item])
     setNoIdentificados([])
     setSinMatch([])
     setObservaciones('')
-    setEstado('resultado')
-  }
-
-  // "Buscar en catálogo" para un ítem que la IA no logró encuadrar: convierte
-  // la pieza no reconocida en una tarjeta en blanco (con su propia foto si la
-  // tenía) que reutiliza el mismo selector de categoría de GrupoItemCard, en
-  // vez de forzar al vendedor a crear un ítem nuevo a ciegas.
-  function buscarEnCatalogoDesdeSinMatch(index: number) {
-    const d = sinMatch[index]
-    if (!d) return
-    const nuevo = construirItemStub({
-      imagenIndex: d.imagen_index, imagenPreview: d.imagenPreview, imagenBase64: d.imagenBase64,
-      titulo: d.titulo, descripcion: d.descripcion, cantidad: d.cantidad, confianza: d.confianza,
-    })
-    setItemsDetectados(prev => [...prev, nuevo])
-    setSinMatch(prev => prev.filter((_, i) => i !== index))
   }
 
   // Igual, pero para el texto plano de "no_identificados" (la IA nunca lo
@@ -530,13 +500,17 @@ function NuevaCotizacionContent() {
 
   // ── Confirmar: agrega todos los ítems detectados a la cotización ───────────
 
-  async function handleConfirmarTodos() {
-    if (itemsDetectados.length === 0 || !cliente) return
+  // Guarda TODOS los itemsDetectados vigentes (el resultado del grupo que
+  // se está procesando ahora mismo) en la cotización — se llama automático
+  // apenas la tarjeta de un ítem queda armada, sin esperar un clic aparte
+  // del vendedor. Devuelve false si algo falló, para que el orquestador
+  // detenga la cola en vez de seguir con el siguiente ítem.
+  async function guardarItemsDetectadosEnCotizacion(): Promise<boolean> {
+    if (itemsDetectados.length === 0 || !cliente) return false
     if (itemsDetectados.some(it => !it.item_id)) {
       setError('Elige la categoría del catálogo para cada ítem antes de continuar.')
-      return
+      return false
     }
-    setEstado('guardando')
     setError(null)
 
     try {
@@ -544,7 +518,7 @@ function NuevaCotizacionContent() {
       if (!id) {
         const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
         const dataCot = await resCot.json()
-        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); setEstado('resultado'); return }
+        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); return false }
         id = dataCot.id as string
         setCotizacionId(id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))
@@ -552,9 +526,6 @@ function NuevaCotizacionContent() {
 
       const nuevos: MuebleAgregado[] = []
 
-      // Cada ítem sube su propia miniatura (recortada o la foto completa que
-      // le tocó) — ya no se reutiliza una sola imagen para todos, porque con
-      // varias fotos y recortes cada ítem puede verse distinto de verdad.
       for (const item of itemsDetectados) {
         const resMueble = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/mueble`), {
           method: 'POST',
@@ -567,10 +538,6 @@ function NuevaCotizacionContent() {
             diagnostico_ia_json: { item_nombre: item.item_nombre, confianza: item.confianza },
             titulo: item.titulo,
             descripcion: item.descripcion || undefined,
-            // El editor muestra la lista base aunque esté en cero (para que
-            // el vendedor la vea sin tener que "+ Añadir"), pero solo se
-            // guarda lo que realmente tiene datos — mismo criterio que
-            // EditarMuebleModal al guardar una línea ya creada.
             servicios_json: item.servicios.filter(s => s.nombre.trim()),
             insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
             materiales_json: item.materiales.filter(m => m.nombre.trim() && m.peso_kg > 0 && m.factor_co2_kg > 0),
@@ -578,7 +545,7 @@ function NuevaCotizacionContent() {
           }),
         })
         const dataMueble = await resMueble.json()
-        if (!resMueble.ok) { setError(dataMueble.error ?? `Error al guardar "${item.item_nombre}".`); setEstado('resultado'); return }
+        if (!resMueble.ok) { setError(dataMueble.error ?? `Error al guardar "${item.item_nombre}".`); return false }
 
         nuevos.push({
           id: dataMueble.mueble.id,
@@ -596,35 +563,89 @@ function NuevaCotizacionContent() {
 
       setMuebles(prev => [...prev, ...nuevos])
       for (const nuevo of nuevos) dispararPrecioMercado(nuevo.id)
-      setGruposUsados(g => g + 1)
-
-      // Reiniciar para agregar otra tanda de fotos
-      setEstado('idle')
-      setFotos([])
-      setItemsDetectados([])
-      setNoIdentificados([])
-      setSinMatch([])
+      return true
     } catch {
       setError('Error de conexión. Intenta de nuevo.')
-      setEstado('resultado')
+      return false
     }
   }
 
-  function handleGenerarPropuesta() {
-    if (!cotizacionId) return
-    router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))
+  // Procesa UN índice de la cola: analiza (o arma manual), y si hay una
+  // pieza sin_match pendiente de resolver, se detiene ahí — la pregunta al
+  // vendedor es la que decide si sigue o no. Si no hay pregunta pendiente,
+  // el vendedor guarda con el botón de la barra inferior y eso avanza sola
+  // al siguiente vía confirmarYAvanzar.
+  async function procesarIndiceCola(idx: number, cola: GrupoPendiente[]) {
+    const grupo = cola[idx]
+    if (!grupo) { setProcesandoIdx(null); return }
+
+    setProcesandoIdx(idx)
+    setEstado('analizando')
+
+    const ok = grupo.modo === 'ia'
+      ? await analizarGrupoConIA(grupo)
+      : (continuarGrupoManual(grupo), true)
+
+    if (!ok) { setEstado('resultado'); return }
+    setEstado('resultado')
   }
 
-  // Botón fijo "+ Agregar otro ítem" de la barra inferior —
-  // descarta cualquier revisión sin confirmar del grupo actual (si la
-  // había) y vuelve a la zona de carga en blanco.
-  function iniciarNuevoGrupo() {
-    setEstado('idle')
-    setFotos([])
-    setItemsDetectados([])
-    setNoIdentificados([])
-    setSinMatch([])
+  // Dispara la cola completa desde cero — solo los gruposPendientes que sí
+  // tienen fotos entran a la cola (una tarjeta vacía sin fotos no genera un
+  // ítem fantasma).
+  async function generarPropuesta() {
+    const inicial = gruposPendientes.filter(g => g.fotos.length > 0)
+    if (inicial.length === 0) return
+    setColaProcesar(inicial)
+    await procesarIndiceCola(0, inicial)
+  }
+
+  // Se llama después de que el vendedor ya resolvió (o no había) la
+  // pregunta de "ítem aparte" para el grupo actual — guarda ese ítem y
+  // avanza al siguiente de la cola, o termina y va a la cotización.
+  async function confirmarYAvanzar() {
+    const guardado = await guardarItemsDetectadosEnCotizacion()
+    if (!guardado) return
+    const siguienteIdx = (procesandoIdx ?? 0) + 1
+    if (siguienteIdx < colaProcesar.length) {
+      await procesarIndiceCola(siguienteIdx, colaProcesar)
+    } else {
+      setProcesandoIdx(null)
+      setEstado('idle')
+      if (cotizacionId) router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))
+    }
+  }
+
+  // El vendedor confirma que la pieza extra SÍ es un ítem aparte: se agrega
+  // al FINAL de colaProcesar (no interrumpe al que ya estaba esperando) y
+  // se quita de sinMatch para no repetir la pregunta.
+  function confirmarPiezaComoItemAparte() {
+    if (!preguntaItemAparte) return
+    const nuevoGrupo: GrupoPendiente = {
+      id: crypto.randomUUID(),
+      fotos: [{ base64: preguntaItemAparte.imagenBase64, preview: preguntaItemAparte.imagenPreview }],
+      modo: 'ia',
+    }
+    setColaProcesar(prev => [...prev, nuevoGrupo])
+    setSinMatch(prev => prev.filter(d => d !== preguntaItemAparte))
+    setPreguntaItemAparte(null)
+  }
+
+  // El vendedor dice que NO es un ítem aparte: se descarta, sigue siendo
+  // solo contexto de las fotos del ítem actual.
+  function descartarPiezaComoItemAparte() {
+    if (!preguntaItemAparte) return
+    setSinMatch(prev => prev.filter(d => d !== preguntaItemAparte))
+    setPreguntaItemAparte(null)
+  }
+
+  // Botón fijo "+ Agregar otro ítem" de la barra inferior — SUMA una
+  // tarjeta nueva en blanco debajo de las que ya existen, nunca las
+  // reemplaza. Solo tiene sentido mientras se está armando (procesandoIdx
+  // === null); una vez arrancó "Genera la propuesta" este botón se oculta.
+  function agregarGrupoNuevo() {
     setError(null)
+    setGruposPendientes(prev => prev.length >= MAX_ITEMS_POR_COTIZACION ? prev : [...prev, nuevoGrupoVacio()])
   }
 
   // ── Precio de mercado nuevo (IA + búsqueda web) — fire-and-forget ──────────
@@ -884,134 +905,51 @@ function NuevaCotizacionContent() {
           </div>
         )}
 
-        {/* Zona de carga de foto: archivo o pegar (Cmd+V) — el modo Con IA /
-            Manual se elige siempre aquí, antes o mientras se arma la tanda. */}
-        {cliente && estado === 'idle' && gruposUsados < 3 && (
-          <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
-            <div className="flex items-center justify-center mb-4">
-              <div className="inline-flex rounded-full border p-1" style={{ borderColor: 'var(--border)' }}>
-                <button
-                  type="button"
-                  onClick={() => setModo('ia')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors hover-pop hover-press ${
-                    modo === 'ia' ? 'bg-[#00827C] text-white' : ts
-                  }`}
-                >
-                  <Sparkles size={14} /> Con IA
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setModo('manual')}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors hover-pop hover-press ${
-                    modo === 'manual' ? 'bg-[#00827C] text-white' : ts
-                  }`}
-                >
-                  <Pencil size={14} /> Manual
-                </button>
-              </div>
-            </div>
-
-            {fotos.length === 0 ? (
-              <>
-                <div className="w-14 h-14 rounded-full bg-[#00827C]/10 flex items-center justify-center mx-auto mb-4">
-                  <Camera size={28} className="text-[#00827C]" />
-                </div>
-                <p className={`text-base font-semibold mb-1 ${tp}`}>
-                  {muebles.length === 0 ? 'Sube las fotos del mueble' : 'Agrega otra tanda de fotos'}
-                </p>
-                <p className={`text-sm mb-1 ${ts}`}>
-                  {modo === 'ia'
-                    ? `La IA detecta todos los muebles que veas, hasta ${MAX_FOTOS_POR_TANDA} fotos a la vez`
-                    : `Elige tú la categoría y llena todo a mano, hasta ${MAX_FOTOS_POR_TANDA} fotos a la vez`}
-                </p>
-                <p className={`text-xs mb-4 flex items-center justify-center gap-1 text-center ${ts}`}>
-                  <Clipboard size={13} className="flex-shrink-0" /> También puedes pegar imágenes copiadas, una o varias veces: ⌘V en Mac, Ctrl+V en PC, o mantén presionado y elige Pegar en iOS
-                </p>
-              </>
-            ) : (
-              <div className="flex gap-2 overflow-x-auto mb-4">
-                {fotos.map((f, i) => (
-                  <div key={i} className="relative flex-shrink-0">
-                    <img src={f.preview} alt="" className="h-24 rounded-[10px] object-cover bg-[var(--bg-input)]" />
-                    <button
-                      type="button"
-                      onClick={() => quitarFotoCola(i)}
-                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#474747] text-white flex items-center justify-center shadow-md hover-pop hover-press"
-                      title="Quitar esta foto"
-                    >
-                      <X size={11} strokeWidth={2.5} sinAnimacion />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex flex-col items-center gap-2">
-              <Button onClick={() => inputFotoRef.current?.click()} variant={fotos.length > 0 ? 'secondary' : 'primary'}>
-                {fotos.length > 0 ? 'Agregar otra foto' : 'Elegir fotos'}
-              </Button>
-              {fotos.length > 0 && (
-                <Button
-                  onClick={modo === 'ia' ? analizarConIA : continuarManual}
-                  icon={modo === 'ia' ? <Sparkles size={16} /> : <Pencil size={16} />}
-                >
-                  {modo === 'ia'
-                    ? `Analizar ${fotos.length} foto${fotos.length > 1 ? 's' : ''} con IA`
-                    : `Continuar manual con ${fotos.length} foto${fotos.length > 1 ? 's' : ''}`}
-                </Button>
-              )}
-            </div>
-
-            <input
-              ref={inputFotoRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              multiple
-              className="hidden"
-              onChange={handleFotoSeleccionada}
+        {/* Cascada de tarjetas de staging — una por ítem que se está
+            armando, ninguna analiza nada por sí sola. Solo se muestran
+            mientras no está corriendo la cola (procesandoIdx === null). */}
+        {cliente && procesandoIdx === null && gruposPendientes.map((grupo, i) => (
+          <div key={grupo.id} className="mb-4">
+            <TarjetaGrupoFotos
+              grupo={grupo}
+              numero={i + 1}
+              esPrimero={i === 0}
+              maxFotos={MAX_FOTOS_POR_TANDA}
+              error={i === gruposPendientes.length - 1 ? error : null}
+              onCambiarModo={(modo) => setGruposPendientes(prev => prev.map(g => g.id === grupo.id ? { ...g, modo } : g))}
+              onAgregarFotos={(files) => agregarFotosAGrupo(grupo.id, files)}
+              onQuitarFoto={(idx) => quitarFotoDeGrupo(grupo.id, idx)}
             />
-            {error && (
-              <p className="mt-3 text-sm text-[#FF5E4B] flex items-center justify-center gap-1">
-                <WarningCircle size={16} /> {error}
-              </p>
-            )}
           </div>
-        )}
+        ))}
 
-        {/* Tope de 3 grupos alcanzado */}
-        {cliente && estado === 'idle' && gruposUsados >= 3 && (
-          <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
-            <p className={`text-sm mb-3 ${ts}`}>Ya agregaste 3 ítems a esta cotización. Para agregar más, edítala después de guardarla.</p>
-            {cotizacionId && (
-              <Button variant="secondary" onClick={() => router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))}>
-                Ir a la cotización
-              </Button>
-            )}
-          </div>
+        {cliente && procesandoIdx === null && gruposPendientes.length >= MAX_ITEMS_POR_COTIZACION && (
+          <p className={`text-xs text-center mb-4 ${ts}`}>Ya armaste el máximo de {MAX_ITEMS_POR_COTIZACION} ítems para esta cotización.</p>
         )}
 
         {/* Analizando */}
         {estado === 'analizando' && (
           <div className={`rounded-[12px] border p-6 ${cardBg}`}>
-            {fotos.length > 0 && (
+            {procesandoIdx !== null && colaProcesar[procesandoIdx]?.fotos.length > 0 && (
               <div className="flex gap-2 overflow-x-auto mb-4">
-                {fotos.map((f, i) => (
+                {colaProcesar[procesandoIdx].fotos.map((f, i) => (
                   <img key={i} src={f.preview} alt="Vista previa" className="h-32 flex-shrink-0 rounded-[8px] object-cover bg-[var(--bg-input)]" />
                 ))}
               </div>
             )}
             <SkeletonCard lineas={3} className="border-0 p-0" />
-            <p className={`text-sm text-center mt-4 ${ts}`}>{mensajesAnalizando(fotos.length)[analizandoMsgIndex]}</p>
+            <p className={`text-sm text-center mt-4 ${ts}`}>
+              {mensajesAnalizando(procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos.length ?? 1 : 1)[analizandoMsgIndex]}
+            </p>
           </div>
         )}
 
         {/* Resultado multi-ítem */}
         {(estado === 'resultado' || estado === 'guardando') && (
           <div className="space-y-4">
-            {fotos.length > 0 && (
+            {procesandoIdx !== null && colaProcesar[procesandoIdx]?.fotos.length > 0 && (
               <div className="flex gap-2 overflow-x-auto">
-                {fotos.map((f, i) => (
+                {colaProcesar[procesandoIdx].fotos.map((f, i) => (
                   <img key={i} src={f.preview} alt="" className="h-24 flex-shrink-0 rounded-[10px] object-cover bg-[var(--bg-input)]" />
                 ))}
               </div>
@@ -1024,7 +962,7 @@ function NuevaCotizacionContent() {
             {itemsDetectados.length === 0 && noIdentificados.length === 0 && sinMatch.length === 0 && (
               <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
                 <XCircle size={24} className="text-[#FF5E4B] mx-auto mb-2" />
-                <p className={`text-sm ${ts}`}>No se detectó ningún mueble en {fotos.length > 1 ? 'las fotos' : 'la foto'}. Intenta con otra imagen.</p>
+                <p className={`text-sm ${ts}`}>No se detectó ningún mueble en {(procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos.length ?? 0 : 0) > 1 ? 'las fotos' : 'la foto'}. Intenta con otra imagen.</p>
               </div>
             )}
 
@@ -1034,8 +972,8 @@ function NuevaCotizacionContent() {
                 item={item}
                 catalogo={catalogo}
                 conEmpresa={conEmpresa}
-                fotosGrupo={fotos}
-                onElegir={modo === 'ia' && itemsDetectados.length > 1 ? () => elegirCandidato(i) : undefined}
+                fotosGrupo={procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos : undefined}
+                onElegir={procesandoIdx !== null && colaProcesar[procesandoIdx]?.modo === 'ia' && itemsDetectados.length > 1 ? () => elegirCandidato(i) : undefined}
                 onChange={(nuevo) => actualizarItem(i, nuevo)}
                 onQuitar={() => quitarDetectado(i)}
                 onDuplicar={() => duplicarDetectado(i)}
@@ -1053,32 +991,36 @@ function NuevaCotizacionContent() {
               <Plus size={16} /> Agregar ítem que no existe en el catálogo
             </button>
 
-            {/* No reconocidos: piezas SIN_MATCH con foto propia (bounding box)
-                primero, luego el texto plano sin foto — ambos con "Buscar en
-                catálogo" para vincularlas a un ítem real en vez de crear uno
-                nuevo a ciegas. */}
-            {(sinMatch.length > 0 || noIdentificados.length > 0) && (
+            {/* Pregunta explícita: una pieza sin_match a la vez, nunca una
+                lista pasiva — el vendedor decide si es un ítem aparte antes
+                de seguir. */}
+            {preguntaItemAparte && (
+              <div className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
+                <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>Se detectó algo más en las fotos</p>
+                <div className="flex items-center gap-3 mb-3">
+                  {preguntaItemAparte.imagenPreview && (
+                    <img src={preguntaItemAparte.imagenPreview} alt="" className="w-16 h-16 rounded-[8px] object-cover flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0 text-left">
+                    <p className={`text-sm font-semibold ${tp}`}>{preguntaItemAparte.titulo}</p>
+                    <p className={`text-xs ${ts}`}>{preguntaItemAparte.descripcion}</p>
+                  </div>
+                </div>
+                <p className={`text-sm font-semibold mb-3 ${tp}`}>¿Esto es un ítem aparte?</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="secondary" className="flex-1" onClick={descartarPiezaComoItemAparte}>No</Button>
+                  <Button size="sm" className="flex-1" onClick={confirmarPiezaComoItemAparte}>Sí, agregarlo a la cola</Button>
+                </div>
+              </div>
+            )}
+
+            {/* No reconocidos por texto plano (sin foto propia) — sigue
+                usando "Buscar en catálogo" directo, no es una pieza nueva
+                detectada visualmente. */}
+            {noIdentificados.length > 0 && (
               <div className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
                 <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>No reconocidos en el catálogo</p>
                 <div className="flex flex-col gap-3">
-                  {sinMatch.map((d, i) => (
-                    <div key={`sm-${i}`} className="flex items-center gap-3">
-                      {d.imagenPreview && (
-                        <img src={d.imagenPreview} alt="" className="w-12 h-12 rounded-[8px] object-cover flex-shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0 text-left">
-                        <p className={`text-xs font-semibold truncate ${tp}`}>{d.titulo}</p>
-                        <p className={`text-xs truncate ${ts}`}>{d.descripcion}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => buscarEnCatalogoDesdeSinMatch(i)}
-                        className="text-xs font-semibold text-[#00827C] hover-pop hover-press flex-shrink-0 px-2 py-1"
-                      >
-                        Buscar en catálogo
-                      </button>
-                    </div>
-                  ))}
                   {noIdentificados.map((n, i) => (
                     <div key={`ni-${i}`} className="flex items-center gap-3">
                       <p className={`text-xs flex-1 ${ts}`}>• {n}</p>
@@ -1130,7 +1072,7 @@ function NuevaCotizacionContent() {
           "Agregar a la cotización", así que en cuanto se guardaba el primer
           ítem y la pantalla volvía a "Sube otra foto", el botón desaparecía
           por completo y no había forma de terminar la cotización. */}
-      {(estado === 'resultado' || estado === 'guardando' || cotizacionId || muebles.length > 0) && (
+      {(gruposPendientes.some(g => g.fotos.length > 0) || procesandoIdx !== null || cotizacionId || muebles.length > 0) && (
         // El espacio real hasta este botón no es solo el margin: el wrapper
         // de arriba cierra con py-6 (24px de padding inferior) Y este div
         // tiene su propio py-3 (12px de padding superior) antes de la fila
@@ -1141,53 +1083,39 @@ function NuevaCotizacionContent() {
         <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 border-t border-[var(--border)] -mt-5">
           <div aria-hidden="true" className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent" />
           <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-3 px-4 sm:px-6 lg:px-8">
-            {(estado === 'resultado' || estado === 'guardando') && (
+            {/* Mientras se arma (procesandoIdx === null): agregar otro ítem
+                y generar la propuesta. Mientras se procesa: solo la
+                pregunta de "ítem aparte" (arriba) controla el avance, sin
+                botones sueltos que puedan interrumpir la cola. */}
+            {procesandoIdx === null && (
+              <>
+                {gruposPendientes.length < MAX_ITEMS_POR_COTIZACION && (
+                  <Button
+                    variant="secondary"
+                    onClick={agregarGrupoNuevo}
+                    icon={<Plus size={16} strokeWidth={2.5} />}
+                    className="flex-1 w-full"
+                  >
+                    Agregar otro ítem
+                  </Button>
+                )}
+                <Button
+                  onClick={generarPropuesta}
+                  disabled={!gruposPendientes.some(g => g.fotos.length > 0)}
+                  icon={<ArrowRight size={16} strokeWidth={2.5} />}
+                  className="flex-1 w-full"
+                >
+                  Genera la propuesta
+                </Button>
+              </>
+            )}
+            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && (
               <Button
-                onClick={handleConfirmarTodos}
-                disabled={itemsDetectados.length === 0}
-                loading={estado === 'guardando'}
+                onClick={confirmarYAvanzar}
                 icon={<Plus size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
-                {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
-              </Button>
-            )}
-            {/* Visible mientras no se llegue al tope de 3 ítems, pero
-                deshabilitado (gris) mientras no hay nada que reiniciar todavía
-                — 'idle' sin fotos elegidas, sin revisión pendiente y sin
-                ningún ítem confirmado aún. En ese momento un clic sería un
-                no-op silencioso, así que se ve apagado. En cuanto ya elegiste
-                al menos una foto (aunque no la hayas analizado todavía), hay
-                una revisión sin confirmar ('resultado'/'guardando'/
-                'analizando'), o ya se confirmó al menos un ítem, se activa:
-                el clic descarta las fotos/revisión en curso del ítem actual
-                y vuelve a la zona de carga en blanco para empezar OTRO ítem
-                — distinto de "Agregar otra foto", que suma una foto más al
-                MISMO ítem que ya estás armando. Mismo criterio que "Cambiar"
-                cliente: acción explícita del vendedor, no algo accidental. */}
-            {gruposUsados < 3 && (
-              <Button
-                variant="secondary"
-                onClick={iniciarNuevoGrupo}
-                disabled={gruposUsados === 0 && estado === 'idle' && fotos.length === 0}
-                icon={<Plus size={16} strokeWidth={2.5} />}
-                className="flex-1 w-full"
-              >
-                Agregar otro ítem
-              </Button>
-            )}
-            {(cotizacionId || muebles.length > 0) && (
-              // primary (verde sólido), no secondary: al lado de "Agregar otro
-              // ítem" (secondary/borde) los botones deben alternar,
-              // nunca dos con borde pegados — regla de la skill design-system.
-              <Button
-                variant="primary"
-                onClick={handleGenerarPropuesta}
-                disabled={estado === 'guardando' || gruposUsados === 0}
-                icon={<ArrowRight size={16} strokeWidth={2.5} />}
-                className="flex-1 w-full"
-              >
-                Genera la propuesta
+                {procesandoIdx + 1 < colaProcesar.length ? 'Guardar y seguir con el siguiente' : 'Guardar y terminar'}
               </Button>
             )}
           </div>
