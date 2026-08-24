@@ -193,7 +193,7 @@ function NuevaCotizacionContent() {
   // Sube en 1 SOLO al confirmar el ítem resultante de un grupo de fotos (IA
   // o Manual) — nunca vía "rescate" (Buscar en catálogo / Agregar ítem que
   // no existe), esos no consumen un grupo. Tope: 3 grupos por cotización
-  // nueva, ver JSX del botón "+ Agregar otro grupo de fotos" más abajo.
+  // nueva, ver JSX del botón "+ Agregar otro ítem" más abajo.
   const [gruposUsados, setGruposUsados] = useState(0)
 
   // Fila de rescate: "Agregar ítem" que la IA no detectó
@@ -615,7 +615,7 @@ function NuevaCotizacionContent() {
     router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))
   }
 
-  // Botón fijo "+ Agregar otro grupo de fotos" de la barra inferior —
+  // Botón fijo "+ Agregar otro ítem" de la barra inferior —
   // descarta cualquier revisión sin confirmar del grupo actual (si la
   // había) y vuelve a la zona de carga en blanco.
   function iniciarNuevoGrupo() {
@@ -801,14 +801,32 @@ function NuevaCotizacionContent() {
         {cliente && (
           <div className={`rounded-[12px] border p-3 mb-4 flex items-center justify-between gap-2 ${cardBg}`}>
             <div className="min-w-0">
-              <p className={`text-sm font-semibold truncate ${tp}`}>{cliente.nombre} {cliente.apellido ?? ''}</p>
-              <p className={`text-xs ${ts}`}>
-                {formatTelefonoVista(cliente.telefono, cliente.telefono_indicativo)}
-                {(() => {
-                  const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
-                  return emp ? ` · NIT ${emp.nit}` : ''
-                })()}
-              </p>
+              {(() => {
+                const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
+                // Sin celular es la fila-ancla (la empresa misma, sin contacto
+                // real elegido) — se muestra el nombre comercial (con la razón
+                // social entre paréntesis si existe) y el NIT en su propia
+                // línea, nunca el nombre/teléfono vacíos de un contacto.
+                if (emp && !cliente.telefono) {
+                  return (
+                    <>
+                      <p className={`text-sm font-semibold truncate ${tp}`}>
+                        {emp.nombre_comercial ? `${emp.nombre_comercial} (${emp.razon_social})` : emp.razon_social}
+                      </p>
+                      <p className={`text-xs ${ts}`}>NIT {emp.nit}</p>
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    <p className={`text-sm font-semibold truncate ${tp}`}>{cliente.nombre} {cliente.apellido ?? ''}</p>
+                    <p className={`text-xs ${ts}`}>
+                      {formatTelefonoVista(cliente.telefono, cliente.telefono_indicativo)}
+                      {emp ? ` · NIT ${emp.nit}` : ''}
+                    </p>
+                  </>
+                )
+              })()}
             </div>
             {muebles.length === 0 && (
               <button onClick={() => setCliente(null)} className="text-xs font-semibold text-[var(--color-brand)] hover-pop hover-press flex-shrink-0">
@@ -918,10 +936,10 @@ function NuevaCotizacionContent() {
                     <button
                       type="button"
                       onClick={() => quitarFotoCola(i)}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-[var(--text-primary)] text-[var(--bg-primary)] flex items-center justify-center hover-pop hover-press"
+                      className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#474747] text-white flex items-center justify-center shadow-md hover-pop hover-press"
                       title="Quitar esta foto"
                     >
-                      <X size={12} />
+                      <X size={11} strokeWidth={2.5} sinAnimacion />
                     </button>
                   </div>
                 ))}
@@ -1134,31 +1152,33 @@ function NuevaCotizacionContent() {
                 {estado === 'guardando' ? 'Guardando...' : 'Agregar a la cotización'}
               </Button>
             )}
-            {/* Visible mientras no se llegue al tope de 3 grupos, pero
+            {/* Visible mientras no se llegue al tope de 3 ítems, pero
                 deshabilitado (gris) mientras no hay nada que reiniciar todavía
-                — 'idle' sin ningún grupo confirmado y sin fotos en curso. En
-                ese momento un clic sería un no-op silencioso, así que se ve
-                apagado para no dar la impresión de que se puede abrir otra
-                caja de fotos antes de terminar la primera. En cuanto hay una
-                revisión sin confirmar ('resultado'/'guardando'/'analizando')
-                o ya se confirmó al menos un grupo, se activa: el clic
-                descarta la revisión en curso y vuelve a la zona de carga en
-                blanco — mismo criterio que "Cambiar" cliente, acción
-                explícita del vendedor, no algo accidental. */}
+                — 'idle' sin fotos elegidas, sin revisión pendiente y sin
+                ningún ítem confirmado aún. En ese momento un clic sería un
+                no-op silencioso, así que se ve apagado. En cuanto ya elegiste
+                al menos una foto (aunque no la hayas analizado todavía), hay
+                una revisión sin confirmar ('resultado'/'guardando'/
+                'analizando'), o ya se confirmó al menos un ítem, se activa:
+                el clic descarta las fotos/revisión en curso del ítem actual
+                y vuelve a la zona de carga en blanco para empezar OTRO ítem
+                — distinto de "Agregar otra foto", que suma una foto más al
+                MISMO ítem que ya estás armando. Mismo criterio que "Cambiar"
+                cliente: acción explícita del vendedor, no algo accidental. */}
             {gruposUsados < 3 && (
               <Button
                 variant="secondary"
                 onClick={iniciarNuevoGrupo}
-                disabled={gruposUsados === 0 && estado === 'idle'}
+                disabled={gruposUsados === 0 && estado === 'idle' && fotos.length === 0}
                 icon={<Plus size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
-                Agregar otro grupo de fotos
+                Agregar otro ítem
               </Button>
             )}
             {(cotizacionId || muebles.length > 0) && (
               // primary (verde sólido), no secondary: al lado de "Agregar otro
-              // grupo de fotos" (secondary/borde) los botones deben alternar,
+              // ítem" (secondary/borde) los botones deben alternar,
               // nunca dos con borde pegados — regla de la skill design-system.
               <Button
                 variant="primary"

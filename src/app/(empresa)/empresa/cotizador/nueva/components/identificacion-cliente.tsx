@@ -10,6 +10,7 @@ import { InputDireccion } from '@/components/ui/input-direccion'
 import { InputTelefono } from '@/components/ui/input-telefono'
 import { SwitchOpciones } from '@/components/ui/switch-opciones'
 import { InputDocumento } from '@/components/ui/input-documento'
+import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { distanciaLevenshtein } from '@/lib/similitud'
 import { validarTelefono, formatTelefonoVista } from '@/lib/telefono'
 
@@ -68,6 +69,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   const [nit, setNit] = useState('')
   const [razonSocial, setRazonSocial] = useState('')
   const [nombreComercial, setNombreComercial] = useState('')
+  const [sector, setSector] = useState('')
   const [guardando, setGuardando] = useState(false)
 
   interface ContactoNuevo { nombre: string; apellido: string; telefono: string; telefono_indicativo: string; email: string }
@@ -138,6 +140,32 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
   const inputSt = 'w-full px-4 py-3 rounded-2xl border text-sm outline-none bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]'
 
+  // Reutiliza lo que el vendedor ya escribió en el buscador en vez de
+  // descartarlo: si son solo dígitos, es NIT (empresa) o teléfono/cédula
+  // (persona, según si arranca en 3, indicativo de celular colombiano); si
+  // son solo letras, es razón social (empresa) o nombre (persona). Si la
+  // búsqueda mezcla letras y dígitos no se puede distinguir con seguridad,
+  // así que no se autocompleta nada — mejor vacío que un dato equivocado.
+  function precargarDesdeQ(qOriginal: string, tipo: 'persona' | 'empresa') {
+    const trimmed = qOriginal.trim()
+    if (!trimmed) return
+    const soloDigitos = trimmed.replace(/[.\s-]/g, '')
+    const esNumerico = soloDigitos.length > 0 && /^\d+$/.test(soloDigitos)
+    const esTexto = /^[a-zA-ZÀ-ÿ\s.'-]+$/.test(trimmed)
+    if (esNumerico) {
+      if (tipo === 'empresa') {
+        setNit(soloDigitos)
+      } else if (soloDigitos.startsWith('3')) {
+        setTelefono(soloDigitos)
+      } else {
+        setIdentificacion(soloDigitos)
+      }
+    } else if (esTexto) {
+      if (tipo === 'empresa') setRazonSocial(trimmed)
+      else setNombre(trimmed)
+    }
+  }
+
   async function buscar() {
     if (!q.trim()) { setError('Ingresa un término de búsqueda.'); return }
     setError(null)
@@ -153,13 +181,12 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         setResultados(data.clientes)
         setPaso('resultados')
       } else {
-        // Pre-llenar el telefono si q parece ser numerico
-        const qNum = q.replace(/[^\d]/g, '')
-        if (qNum.length >= 7) setTelefono(qNum)
         // El formulario de "crear nuevo" arranca en el tipo que el usuario
         // ya eligió al filtrar la búsqueda (Persona/Empresa) — si no filtró
         // (filtroTipo === 'todos'), el valor por defecto sigue siendo persona.
+        const tipoResuelto = filtroTipo !== 'todos' ? filtroTipo : tipoNuevo
         if (filtroTipo !== 'todos') setTipoNuevo(filtroTipo)
+        precargarDesdeQ(q, tipoResuelto)
         setPaso('crear')
       }
     } catch {
@@ -286,6 +313,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         nit: nit.trim(),
         razon_social: razonSocial.trim(),
         nombre_comercial: nombreComercial.trim() || undefined,
+        sector: sector.trim() || undefined,
         pais: pais.trim() || undefined,
         ciudad: ciudad.trim() || undefined,
         direccion: direccion.trim() || undefined,
@@ -410,9 +438,9 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
         <div className="flex gap-3 justify-center">
           <Button variant="secondary" icon={<ArrowLeft size={15} />} onClick={() => setPaso('buscar')}>Atrás</Button>
           <Button icon={<Plus size={16} />} onClick={() => {
-            const qNum = q.replace(/[^\d]/g, '')
-            if (qNum.length >= 7) setTelefono(qNum)
+            const tipoResuelto = filtroTipo !== 'todos' ? filtroTipo : tipoNuevo
             if (filtroTipo !== 'todos') setTipoNuevo(filtroTipo)
+            precargarDesdeQ(q, tipoResuelto)
             setPaso('crear')
           }}>
             No está en la lista, crear nuevo
@@ -552,7 +580,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             </>
           ) : (
             <>
-              <div className="rounded-xl p-3 border border-[var(--border)] bg-[var(--bg-input)]">
+              <div>
                 <p className={`text-xs font-semibold mb-2 ${ts}`}>Datos de la empresa</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -567,6 +595,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                 <div className="mt-3">
                   <label className={`text-xs font-semibold mb-1 block ${ts}`}>Razón social</label>
                   <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={inputSt} placeholder="Razón social completa" />
+                </div>
+                <div className="mt-3">
+                  <label className={`text-xs font-semibold mb-1 block ${ts}`}>Actividad económica (CIIU)</label>
+                  <SelectorCiiu value={sector} onChange={setSector} />
                 </div>
               </div>
 

@@ -7,7 +7,7 @@ const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
   email, pais, ciudad, direccion, direccion_notas, notas, empresa_cliente_id, created_at,
   es_contacto_real, duplicado_de_id,
-  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
+  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion, sector )
 `
 
 // Lista/busca los contactos del CRM de esta empresa — base de /empresa/clientes.
@@ -88,6 +88,7 @@ const schema = z.object({
   nit: z.string().max(50).optional(),
   razon_social: z.string().max(200).optional(),
   nombre_comercial: z.string().max(200).optional(),
+  sector: z.string().max(200).optional(),
 }).refine(
   (d) => d.tipo !== 'empresa' || (!!d.nit && !!d.razon_social),
   { message: 'NIT y razón social son obligatorios para un cliente empresa.' }
@@ -149,6 +150,7 @@ export async function POST(request: NextRequest) {
           razon_social: d.razon_social!,
           nombre_comercial: d.nombre_comercial || null,
           direccion: d.direccion || null,
+          sector: d.sector || null,
         })
         .select('id')
         .single()

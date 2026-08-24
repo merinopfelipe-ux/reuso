@@ -11,6 +11,7 @@ import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
 import { InputDireccion } from '@/components/ui/input-direccion'
+import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { Selector } from '@/components/ui/selector'
 import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
@@ -41,6 +42,7 @@ interface EmpresaClienteDetalle {
   razon_social: string
   nombre_comercial: string | null
   direccion: string | null
+  sector: string | null
 }
 
 interface ClienteDetalle {
@@ -129,6 +131,7 @@ function DetalleClienteContent() {
   const [direccionNotas, setDireccionNotas] = useState('')
   const [razonSocial, setRazonSocial] = useState('')
   const [nombreComercial, setNombreComercial] = useState('')
+  const [sector, setSector] = useState('')
 
   interface ContactoHermano { id: string; nombre: string; apellido: string | null; telefono: string | null; telefono_indicativo: string | null; email: string | null }
   const [otrosContactos, setOtrosContactos] = useState<ContactoHermano[]>([])
@@ -178,7 +181,7 @@ function DetalleClienteContent() {
           setDireccionNotas(c.direccion_notas ?? '')
           const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
           if (emp) {
-            setRazonSocial(emp.razon_social); setNombreComercial(emp.nombre_comercial ?? '')
+            setRazonSocial(emp.razon_social); setNombreComercial(emp.nombre_comercial ?? ''); setSector(emp.sector ?? '')
             const resHermanos = await fetch(conEmpresa(`/api/cotizador/clientes?q=&empresa_cliente_id=${emp.id}`))
             const dHermanos = await resHermanos.json().catch(() => null)
             if (dHermanos?.clientes) {
@@ -214,7 +217,7 @@ function DetalleClienteContent() {
           telefono: telefono || null, telefono_indicativo: telefonoIndicativo.dial,
           pais: pais || null, ciudad: ciudad || null, direccion: direccion || null,
           direccion_notas: direccionNotas || null,
-          ...(emp ? { razon_social: razonSocial, nombre_comercial: nombreComercial || null } : {}),
+          ...(emp ? { razon_social: razonSocial, nombre_comercial: nombreComercial || null, sector: sector || null } : {}),
         }),
       })
       const d = await res.json()
@@ -376,9 +379,13 @@ function DetalleClienteContent() {
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Razón social</label>
               <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={inputSt} />
             </div>
-            <div>
+            <div className="mb-3">
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Nombre comercial</label>
               <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={inputSt} placeholder="Opcional" />
+            </div>
+            <div>
+              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Actividad económica (CIIU)</label>
+              <SelectorCiiu value={sector} onChange={setSector} />
             </div>
           </div>
         )}

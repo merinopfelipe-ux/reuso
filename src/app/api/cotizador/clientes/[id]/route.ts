@@ -6,7 +6,7 @@ const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
   email, pais, ciudad, direccion, direccion_notas, notas, empresa_cliente_id, created_at,
   es_contacto_real, duplicado_de_id,
-  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
+  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion, sector )
 `
 
 // Detalle de un contacto del CRM + sus cotizaciones (historial) + sus
@@ -62,6 +62,7 @@ const schema = z.object({
   razon_social: z.string().max(200).optional(),
   nombre_comercial: z.string().max(200).nullable().optional(),
   empresa_direccion: z.string().max(300).nullable().optional(),
+  sector: z.string().max(200).nullable().optional(),
 }).refine(d => Object.keys(d).length > 0, { message: 'Envía al menos un campo para actualizar.' })
 
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
@@ -90,7 +91,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
   if (parsed.data.nombre === '' && !actual.empresa_cliente_id) {
     return NextResponse.json({ error: 'El nombre no puede quedar vacío.' }, { status: 400 })
   }
-  const { razon_social, nombre_comercial, empresa_direccion, ...contactoFields } = parsed.data
+  const { razon_social, nombre_comercial, empresa_direccion, sector, ...contactoFields } = parsed.data
 
   if (Object.keys(contactoFields).length > 0) {
     const limpio: Record<string, unknown> = { ...contactoFields, email: contactoFields.email || null }
@@ -132,11 +133,12 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
     }
   }
 
-  if ((razon_social || nombre_comercial !== undefined || empresa_direccion !== undefined) && actual.empresa_cliente_id) {
+  if ((razon_social || nombre_comercial !== undefined || empresa_direccion !== undefined || sector !== undefined) && actual.empresa_cliente_id) {
     const empresaFields: Record<string, unknown> = {}
     if (razon_social) empresaFields.razon_social = razon_social
     if (nombre_comercial !== undefined) empresaFields.nombre_comercial = nombre_comercial
     if (empresa_direccion !== undefined) empresaFields.direccion = empresa_direccion
+    if (sector !== undefined) empresaFields.sector = sector
     const { error } = await adminClient.from('crm_empresas_clientes').update(empresaFields).eq('id', actual.empresa_cliente_id)
     if (error) {
       console.error('[PATCH /api/cotizador/clientes/[id]] empresa cliente', error)
