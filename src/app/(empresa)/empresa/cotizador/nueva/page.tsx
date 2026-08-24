@@ -929,14 +929,18 @@ function NuevaCotizacionContent() {
         {/* Cascada de tarjetas de staging — una por ítem que se está
             armando, ninguna analiza nada por sí sola. Solo se muestran
             mientras no está corriendo la cola (procesandoIdx === null).
-            El espacio ENTRE tarjetas va con space-y-4 en el contenedor, no
-            con mb-4 en cada una — con mb-4 por tarjeta, la última suma su
-            margen al -mt-5 ya calculado de la barra sticky de abajo y
-            duplica el hueco visual (bug real reportado 2026-08-24). Un solo
-            mb-4 en el contenedor deja siempre 16px antes de la barra, sin
-            importar cuántas tarjetas haya. */}
+            El espacio ENTRE tarjetas va con space-y-4 en el contenedor —
+            pero el contenedor en sí NO lleva mb-4 propio, mismo criterio
+            que los bloques "Analizando" y "Resultado" de más abajo: el
+            hueco de 16px antes de la barra sticky ya está resuelto por su
+            propio cálculo (-mt-5, ver comentario ahí) sin ayuda de ningún
+            margen del contenido. Agregarle mb-4 aquí sumaba un segundo
+            hueco de 16px encima del ya calculado, duplicándolo (bug real
+            reportado 2026-08-24, corregido dos veces: primero se bajó de
+            "un mb-4 por tarjeta" a "uno solo en el contenedor", pero seguía
+            sobrando ese único mb-4 también). */}
         {cliente && procesandoIdx === null && (
-          <div className="space-y-4 mb-4">
+          <div className="space-y-4">
             {gruposPendientes.map((grupo, i) => (
               <TarjetaGrupoFotos
                 key={grupo.id}
