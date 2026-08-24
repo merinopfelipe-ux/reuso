@@ -1,0 +1,16 @@
+# Config de Gitleaks — Calculadora de Reúso.
+# Extiende el set de reglas por defecto de Gitleaks (detecta claves de AWS,
+# Google, Stripe, Supabase, GitHub, JWT, claves privadas, etc. por patrón +
+# entropía) y solo añade rutas que NUNCA deben escanearse: artefactos de
+# build, no código fuente. No se desactiva ninguna regla real.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Artefactos de build y dependencias, nunca se commitean"
+paths = [
+  '''(?:^|/)\.next/.*''',
+  '''(?:^|/)node_modules/.*''',
+  '''(?:^|/)test-results/.*''',
+  '''(?:^|/)playwright-report/.*''',
+]
