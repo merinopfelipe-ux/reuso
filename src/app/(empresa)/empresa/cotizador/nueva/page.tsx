@@ -928,25 +928,33 @@ function NuevaCotizacionContent() {
 
         {/* Cascada de tarjetas de staging — una por ítem que se está
             armando, ninguna analiza nada por sí sola. Solo se muestran
-            mientras no está corriendo la cola (procesandoIdx === null). */}
-        {cliente && procesandoIdx === null && gruposPendientes.map((grupo, i) => (
-          <div key={grupo.id} className="mb-4">
-            <TarjetaGrupoFotos
-              grupo={grupo}
-              numero={i + 1}
-              esPrimero={i === 0}
-              maxFotos={MAX_FOTOS_POR_TANDA}
-              error={i === gruposPendientes.length - 1 ? error : null}
-              onCambiarModo={(modo) => setGruposPendientes(prev => prev.map(g => g.id === grupo.id ? { ...g, modo } : g))}
-              onAgregarFotos={(files) => agregarFotosAGrupo(grupo.id, files)}
-              onQuitarFoto={(idx) => quitarFotoDeGrupo(grupo.id, idx)}
-              onQuitarGrupo={(gruposPendientes.length > 1 || grupo.fotos.length > 0) ? () => quitarGrupo(grupo.id) : undefined}
-            />
+            mientras no está corriendo la cola (procesandoIdx === null).
+            El espacio ENTRE tarjetas va con space-y-4 en el contenedor, no
+            con mb-4 en cada una — con mb-4 por tarjeta, la última suma su
+            margen al -mt-5 ya calculado de la barra sticky de abajo y
+            duplica el hueco visual (bug real reportado 2026-08-24). Un solo
+            mb-4 en el contenedor deja siempre 16px antes de la barra, sin
+            importar cuántas tarjetas haya. */}
+        {cliente && procesandoIdx === null && (
+          <div className="space-y-4 mb-4">
+            {gruposPendientes.map((grupo, i) => (
+              <TarjetaGrupoFotos
+                key={grupo.id}
+                grupo={grupo}
+                numero={i + 1}
+                esPrimero={i === 0}
+                maxFotos={MAX_FOTOS_POR_TANDA}
+                error={i === gruposPendientes.length - 1 ? error : null}
+                onCambiarModo={(modo) => setGruposPendientes(prev => prev.map(g => g.id === grupo.id ? { ...g, modo } : g))}
+                onAgregarFotos={(files) => agregarFotosAGrupo(grupo.id, files)}
+                onQuitarFoto={(idx) => quitarFotoDeGrupo(grupo.id, idx)}
+                onQuitarGrupo={(gruposPendientes.length > 1 || grupo.fotos.length > 0) ? () => quitarGrupo(grupo.id) : undefined}
+              />
+            ))}
+            {gruposPendientes.length >= MAX_ITEMS_POR_COTIZACION && (
+              <p className={`text-xs text-center ${ts}`}>Ya armaste el máximo de {MAX_ITEMS_POR_COTIZACION} ítems para esta cotización.</p>
+            )}
           </div>
-        ))}
-
-        {cliente && procesandoIdx === null && gruposPendientes.length >= MAX_ITEMS_POR_COTIZACION && (
-          <p className={`text-xs text-center mb-4 ${ts}`}>Ya armaste el máximo de {MAX_ITEMS_POR_COTIZACION} ítems para esta cotización.</p>
         )}
 
         {/* Analizando */}
