@@ -1,10 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useEffect, FormEvent } from 'react'
+import { useState, useLayoutEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { Button } from '@/components/ui/button'
+import { Selector } from '@/components/ui/selector'
 import { createClient } from '@/lib/supabase/client'
+import { comprimirImagenWebP } from '@/lib/image-compress'
+import { TooltipInfo } from '@/components/ui/tooltip-info'
+import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 
 interface Material {
   material: string
@@ -12,6 +17,12 @@ interface Material {
   factor_co2_kg: string
   origen_fuente: string
   nivel_confianza: 'alta' | 'media' | 'baja'
+}
+
+interface ClienteResultado {
+  id: string
+  nombre: string
+  apellido: string | null
 }
 
 const inputStyle: React.CSSProperties = {
@@ -42,11 +53,13 @@ function FilaMaterial({
   onChange,
   onRemove,
   isMobile = false,
+  descripcion = '',
 }: {
   material: Material
   onChange: (m: Material) => void
   onRemove: () => void
   isMobile?: boolean
+  descripcion?: string
 }) {
   return (
     <div
@@ -58,12 +71,15 @@ function FilaMaterial({
         alignItems: 'center',
       }}
     >
-      <input
-        placeholder="Material (ej: madera)"
-        value={material.material}
-        onChange={(e) => onChange({ ...material, material: e.target.value })}
-        style={inputStyle}
-      />
+      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <input
+          placeholder="Material (ej: madera)"
+          value={material.material}
+          onChange={(e) => onChange({ ...material, material: e.target.value })}
+          style={inputStyle}
+        />
+        <TooltipInfo texto={descripcion} />
+      </span>
       <input
         type="number"
         placeholder="Peso kg"
@@ -75,7 +91,7 @@ function FilaMaterial({
       />
       <input
         type="number"
-        placeholder="Factor CO₂"
+        placeholder="Factor CO₂ eq"
         min="0"
         step="0.0001"
         value={material.factor_co2_kg}
@@ -88,17 +104,15 @@ function FilaMaterial({
         onChange={(e) => onChange({ ...material, origen_fuente: e.target.value })}
         style={inputStyle}
       />
-      <select
+      <Selector
         value={material.nivel_confianza}
-        onChange={(e) =>
-          onChange({ ...material, nivel_confianza: e.target.value as 'alta' | 'media' | 'baja' })
-        }
-        style={{ ...inputStyle, cursor: 'pointer' }}
-      >
-        <option value="alta">Alta</option>
-        <option value="media">Media</option>
-        <option value="baja">Baja</option>
-      </select>
+        onChange={(val) => onChange({ ...material, nivel_confianza: val as 'alta' | 'media' | 'baja' })}
+        opciones={[
+          { value: 'alta', label: 'Alta' },
+          { value: 'media', label: 'Media' },
+          { value: 'baja', label: 'Baja' },
+        ]}
+      />
       <button
         type="button"
         onClick={onRemove}
@@ -122,53 +136,48 @@ function FilaMaterial({
   )
 }
 
-async function comprimirImagenWebP(file: File): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image()
-    img.onload = () => {
-      const MAX = 1200
-      const ratio = Math.min(MAX / img.width, MAX / img.height, 1)
-      const canvas = document.createElement('canvas')
-      canvas.width = Math.round(img.width * ratio)
-      canvas.height = Math.round(img.height * ratio)
-      const ctx = canvas.getContext('2d')
-      if (!ctx) {
-        reject(new Error('canvas'))
-        return
-      }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob(
-        (blob) => {
-          if (blob) resolve(blob)
-          else reject(new Error('blob null'))
-        },
-        'image/webp',
-        0.85
-      )
-    }
-    img.onerror = reject
-    img.src = URL.createObjectURL(file)
-  })
-}
-
 export default function NuevoActivoDppPage() {
   const [nombre, setNombre] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [peso_total_kg, setPeso] = useState('')
   const [materiales, setMateriales] = useState<Material[]>([])
+  // El ítem nunca es de la empresa que cotiza, es del cliente dueño del
+  // mueble — siempre opcional, un DPP también puede crearse de cero sin
+  // saber todavía a quién pertenece.
+  const [clienteQuery, setClienteQuery] = useState('')
+  const [clienteResultados, setClienteResultados] = useState<ClienteResultado[]>([])
+  const [clienteSeleccionado, setClienteSeleccionado] = useState<ClienteResultado | null>(null)
+  const [buscandoCliente, setBuscandoCliente] = useState(false)
+  const [clienteBusquedaHecha, setClienteBusquedaHecha] = useState(false)
   const [imagenFile, setImagenFile] = useState<File | null>(null)
   const [imagenPreview, setImagenPreview] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
+  const descripcionesMaterial = useMaterialDescripciones((url: string) => url)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
     check()
     window.addEventListener('resize', check, { passive: true })
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  async function buscarCliente() {
+    if (!clienteQuery.trim()) return
+    setBuscandoCliente(true)
+    try {
+      const res = await fetch(`/api/cotizador/clientes?q=${encodeURIComponent(clienteQuery.trim())}`)
+      const data = await res.json()
+      setClienteResultados(res.ok ? (data.clientes ?? []) : [])
+    } catch {
+      setClienteResultados([])
+    } finally {
+      setClienteBusquedaHecha(true)
+      setBuscandoCliente(false)
+    }
+  }
 
   function handleImagenChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -199,7 +208,7 @@ export default function NuevoActivoDppPage() {
     let imagen_url: string | undefined
     if (imagenFile) {
       try {
-        const blob = await comprimirImagenWebP(imagenFile)
+        const blob = await comprimirImagenWebP(imagenFile, { calidad: 0.85 })
         const supabase = createClient()
         const path = `dpp/imagenes/${Date.now()}.webp`
         const { data: uploadData } = await supabase.storage
@@ -232,6 +241,7 @@ export default function NuevoActivoDppPage() {
         peso_total_kg: parseFloat(peso_total_kg),
         composicion_json: composicion_json.length > 0 ? composicion_json : undefined,
         imagen_url,
+        cliente_id: clienteSeleccionado?.id,
       }),
     })
 
@@ -310,6 +320,100 @@ export default function NuevoActivoDppPage() {
           />
         </div>
 
+        {/* Cliente dueño del ítem — siempre opcional, el mueble nunca es de
+            la empresa que cotiza sino de su dueño real. */}
+        <div style={fieldStyle}>
+          <label style={labelStyle}>Cliente dueño del ítem</label>
+          <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--text-secondary)' }}>
+            Opcional · Búscalo si ya sabes de quién es, o crea el pasaporte sin cliente todavía
+          </p>
+          {clienteSeleccionado ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '10px 12px',
+                borderRadius: 8,
+                border: '1px solid rgba(0,130,124,0.30)',
+                background: 'rgba(0,130,124,0.06)',
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                {clienteSeleccionado.nombre} {clienteSeleccionado.apellido ?? ''}
+              </span>
+              <button
+                type="button"
+                onClick={() => setClienteSeleccionado(null)}
+                style={{ background: 'none', border: 'none', color: '#00827C', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Quitar
+              </button>
+            </div>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <input
+                  value={clienteQuery}
+                  onChange={(e) => { setClienteQuery(e.target.value); setClienteBusquedaHecha(false) }}
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); buscarCliente() } }}
+                  placeholder="Busca por nombre, celular o NIT"
+                  style={{ ...inputStyle, flex: 1 }}
+                />
+                <button
+                  type="button"
+                  onClick={buscarCliente}
+                  disabled={buscandoCliente}
+                  style={{
+                    background: 'transparent',
+                    color: '#00827C',
+                    border: '1.5px solid rgba(0,130,124,0.40)',
+                    borderRadius: 8,
+                    padding: '0 16px',
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: buscandoCliente ? 'not-allowed' : 'pointer',
+                    fontFamily: "'Open Sans', sans-serif",
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {buscandoCliente ? 'Buscando...' : 'Buscar'}
+                </button>
+              </div>
+              {clienteResultados.length > 0 && (
+                <div style={{ marginTop: 8, borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}>
+                  {clienteResultados.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => { setClienteSeleccionado(c); setClienteResultados([]); setClienteQuery(''); setClienteBusquedaHecha(false) }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '10px 12px',
+                        background: 'var(--bg-card)',
+                        border: 'none',
+                        borderTop: '1px solid var(--border)',
+                        fontSize: 14,
+                        color: 'var(--text-primary)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {c.nombre} {c.apellido ?? ''}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {clienteBusquedaHecha && !buscandoCliente && clienteResultados.length === 0 && (
+                <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
+                  No se encontraron clientes con ese término.
+                </p>
+              )}
+            </>
+          )}
+        </div>
+
         {/* Imagen */}
         <div style={fieldStyle}>
           <label style={labelStyle}>Imagen del activo</label>
@@ -356,7 +460,7 @@ export default function NuevoActivoDppPage() {
                 Composición de materiales
               </h3>
               <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-                Agrega los materiales para calcular el CO₂ evitado con fuentes verificables
+                Agrega los materiales para calcular el CO₂ eq evitado con fuentes verificables
               </p>
             </div>
             <button
@@ -406,7 +510,7 @@ export default function NuevoActivoDppPage() {
                 marginBottom: 4,
               }}
             >
-              {['Material', 'Peso kg', 'CO₂/kg', 'Fuente', 'Confianza', ''].map((h) => (
+              {['Material', 'Peso kg', 'CO₂ eq/kg', 'Fuente', 'Confianza', ''].map((h) => (
                 <span
                   key={h}
                   style={{
@@ -426,6 +530,7 @@ export default function NuevoActivoDppPage() {
               key={i}
               material={m}
               isMobile={isMobile}
+              descripcion={descripcionesMaterial[m.material] ?? ''}
               onChange={(updated) =>
                 setMateriales((prev) => prev.map((x, j) => (j === i ? updated : x)))
               }
@@ -444,41 +549,12 @@ export default function NuevoActivoDppPage() {
             borderTop: '1px solid var(--border)',
           }}
         >
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              background: loading ? '#7FA8A5' : '#00827C',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 10,
-              padding: '12px 28px',
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              fontFamily: "'Open Sans', sans-serif",
-              transition: 'background 0.2s',
-            }}
-          >
-            {loading ? 'Creando pasaporte...' : 'Crea el pasaporte'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            style={{
-              background: 'transparent',
-              color: 'var(--text-secondary)',
-              border: '1px solid var(--border)',
-              borderRadius: 10,
-              padding: '12px 20px',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: "'Open Sans', sans-serif",
-            }}
-          >
+          <Button type="submit" loading={loading}>
+            Crea el pasaporte
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => router.back()}>
             Cancelar
-          </button>
+          </Button>
         </div>
       </form>
     </div>
