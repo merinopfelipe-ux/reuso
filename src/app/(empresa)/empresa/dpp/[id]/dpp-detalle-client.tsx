@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { KpiCard } from '@/components/admin/kpi-card'
 import { EmptyState } from '@/components/empty-state'
+import { Selector } from '@/components/ui/selector'
 import {
   CreditCard, Leaf, TrendUp, Target, FileText, CaretDown,
   ArrowCounterClockwise, CheckCircle,
@@ -52,23 +53,27 @@ const errorBannerStyle: React.CSSProperties = {
   fontSize: 14, fontWeight: 600, marginTop: 12,
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
+import { formatFecha, formatNumero, formatCOP } from '@/lib/format'
 
-function formatFecha(iso: string | null) {
-  if (!iso) return '-'
-  return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
-}
+// Esta pantalla deja elegir la moneda del análisis financiero (COP/USD/EUR,
+// ver el selector `moneda` más abajo), así que el segundo parámetro no es
+// opcional a nivel de intención — sin él, un TCO en dólares se mostraba con
+// el símbolo de pesos. `formatCOP` sigue siendo la única fuente del formato
+// numérico (separadores, decimales); acá solo se cambia el símbolo.
+const SIMBOLO_MONEDA: Record<string, string> = { COP: '$', USD: 'US$', EUR: '€' }
 
-function formatMoneda(n: number | null | undefined, moneda: string) {
+function formatMoneda(n: number | null | undefined, moneda: 'COP' | 'USD' | 'EUR' = 'COP') {
   if (n == null) return '-'
-  return n.toLocaleString('es-CO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 })
+  const enPesos = formatCOP(n)
+  if (moneda === 'COP') return enPesos
+  return enPesos.replace('$', SIMBOLO_MONEDA[moneda])
 }
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
   activo: { label: 'Activo', color: '#38B98E' },
   en_reuso: { label: 'En reúso', color: '#00827C' },
   disposicion_final: { label: 'Disposición final', color: '#FF5E4B' },
-  archivado: { label: 'Archivado', color: '#7FA8A5' },
+  archivado: { label: 'Archivado', color: '#8AD0B2' },
 }
 
 const CONFIANZA_COLOR: Record<string, string> = {
@@ -118,7 +123,7 @@ function GrupoFormulario({
         style={{ width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-secondary)', border: 'none', cursor: 'pointer', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}
       >
         {titulo}
-        <CaretDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--text-secondary)' }} />
+        <CaretDown size={16} style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', color: 'var(--color-brand)' }} />
       </button>
       {open && <div style={{ padding: 16 }}>{children}</div>}
     </div>
@@ -139,7 +144,7 @@ interface CampoExtraido {
 
 const DOC_TIPO_LABEL: Record<string, string> = {
   factura_compra: 'Factura de compra', recibo_energia: 'Recibo de energía',
-  certificado_origen: 'Certificado de origen', foto_objeto: 'Foto del objeto', otro: 'Otro',
+  declaracion_origen: 'Declaración de origen', foto_objeto: 'Foto del objeto', otro: 'Otro',
 }
 
 const DOC_ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
@@ -150,7 +155,7 @@ const DOC_ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
 }
 
 function DocEstadoBadge({ estado }: { estado: string }) {
-  const conf = DOC_ESTADO_CONFIG[estado] ?? { label: estado, color: '#7FA8A5' }
+  const conf = DOC_ESTADO_CONFIG[estado] ?? { label: estado, color: '#8AD0B2' }
   return (
     <span style={{ background: `${conf.color}1A`, color: conf.color, padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>
       {conf.label}
@@ -175,37 +180,52 @@ function ModalResultadosIA({
         {resultado.resumen && (
           <p style={{ margin: '0 0 14px', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{resultado.resumen}</p>
         )}
-        <div style={{ background: 'rgba(89,166,228,0.08)', border: '1px solid rgba(89,166,228,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: '#1A3A38' }}>
+        <div style={{ background: 'rgba(89,166,228,0.08)', border: '1px solid rgba(89,166,228,0.25)', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: 13, color: 'var(--text-primary)' }}>
           Revisa los valores antes de aceptarlos. La IA extrae lo que ve - tú confirmas lo que es correcto.
         </div>
         {campos.length === 0 ? (
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>La IA no encontró datos extraíbles. Ingresa los valores manualmente en el tab de Métricas.</p>
         ) : (
-          <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid var(--border)', marginBottom: 20 }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
-                  {['Campo en doc', 'Valor extraído', 'Confianza', 'Destino DPP'].map(h => (
-                    <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {campos.map((c, i) => (
-                  <tr key={i} style={{ borderTop: '1px solid var(--border)' }}>
-                    <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{c.campo_original}</td>
-                    <td style={{ padding: '9px 10px', fontWeight: 600 }}>{c.valor_extraido}{c.unidad ? ` ${c.unidad}` : ''}</td>
-                    <td style={{ padding: '9px 10px' }}>
-                      <span style={{ color: c.confianza >= 0.85 ? '#38B98E' : c.confianza >= 0.6 ? '#F6BF3E' : '#FF5E4B', fontWeight: 700 }}>
-                        {Math.round(c.confianza * 100)}%
-                      </span>
-                    </td>
-                    <td style={{ padding: '9px 10px', fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)' }}>{c.campo_destino_dpp}</td>
+          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden mb-5">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                    <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Campo en doc</th>
+                    <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Valor extraído</th>
+                    <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Confianza</th>
+                    <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Destino DPP</th>
                   </tr>
-                ))}
+                </thead>
+                <tbody>
+                {campos.map((c, idx) => {
+                  return (
+                    <tr
+                      key={idx}
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">
+                        <div className="flex items-center gap-2">
+                          <span>{c.campo_original}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">{c.valor_extraido}{c.unidad ? ` ${c.unidad}` : ''}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span style={{ color: c.confianza >= 0.85 ? 'var(--color-brand)' : c.confianza >= 0.6 ? '#F6BF3E' : '#FF5E4B', fontWeight: 700 }}>
+                          {Math.round(c.confianza * 100)} %
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-[var(--text-secondary)]">{c.campo_destino_dpp}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
+        </div>
         )}
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           <button onClick={onClose} style={{ background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif" }}>
@@ -289,6 +309,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
   const [showModalCiclo, setShowModalCiclo] = useState(false)
   const [cicloForm, setCicloForm] = useState({
     operacion_realizada: '', fecha_inicio: '', fecha_fin: '', descripcion: '', distancia_transporte_km: '0',
+    tipo_vehiculo_transporte: '', peso_residuo_taller_kg: '0', peso_residuo_reciclado_kg: '0', destino_residuo: '',
   })
   const [loadingCiclo, setLoadingCiclo] = useState(false)
   const [errorCiclo, setErrorCiclo] = useState<string | null>(null)
@@ -356,12 +377,22 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     setLoadingCiclo(true)
     const res = await fetch(`/api/dpp/activos/${activo.id}/ciclo`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...cicloForm, distancia_transporte_km: parseFloat(cicloForm.distancia_transporte_km) || 0 }),
+      body: JSON.stringify({
+        ...cicloForm,
+        distancia_transporte_km: parseFloat(cicloForm.distancia_transporte_km) || 0,
+        tipo_vehiculo_transporte: cicloForm.tipo_vehiculo_transporte || undefined,
+        peso_residuo_taller_kg: parseFloat(cicloForm.peso_residuo_taller_kg) || 0,
+        peso_residuo_reciclado_kg: parseFloat(cicloForm.peso_residuo_reciclado_kg) || 0,
+        destino_residuo: cicloForm.destino_residuo || undefined,
+      }),
     })
     const data = await res.json()
     if (!res.ok) { setErrorCiclo(data.error ?? 'Error al registrar el ciclo.'); setLoadingCiclo(false); return }
     setShowModalCiclo(false)
-    setCicloForm({ operacion_realizada: '', fecha_inicio: '', fecha_fin: '', descripcion: '', distancia_transporte_km: '0' })
+    setCicloForm({
+      operacion_realizada: '', fecha_inicio: '', fecha_fin: '', descripcion: '', distancia_transporte_km: '0',
+      tipo_vehiculo_transporte: '', peso_residuo_taller_kg: '0', peso_residuo_reciclado_kg: '0', destino_residuo: '',
+    })
     setLoadingCiclo(false)
     router.refresh()
   }
@@ -407,8 +438,8 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     doc.setFontSize(13)
     doc.text(`TCO (costo total de propiedad): ${formatMoneda(resultados.tco, moneda)}`, 20, 94)
     doc.text(`Costo evitado: ${formatMoneda(resultados.costo_evitado, moneda)}`, 20, 108)
-    doc.text(`E-ROI: ${resultados.e_roi}%`, 20, 122)
-    doc.text(`ICE (Índice Circularidad Económica): ${resultados.ice_porcentaje}%`, 20, 136)
+    doc.text(`E-ROI: ${resultados.e_roi} %`, 20, 122)
+    doc.text(`ICE (Índice Circularidad Económica): ${resultados.ice_porcentaje} %`, 20, 136)
     doc.setFont('helvetica', 'bolditalic')
     doc.setFontSize(12)
     doc.setTextColor(0, 130, 124)
@@ -539,7 +570,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 {estadoConf.label}
               </span>
               {activo.peso_total_kg != null && (
-                <span style={{ background: 'rgba(0,130,124,0.08)', color: '#4D7C79', padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>
+                <span style={{ background: 'rgba(0,130,124,0.08)', color: 'var(--text-secondary)', padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>
                   {activo.peso_total_kg} kg
                 </span>
               )}
@@ -560,34 +591,50 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
                 Composición de materiales
               </p>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', minWidth: '400px', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
-                      {['Material', 'Peso kg', 'CO₂/kg', 'Fuente', 'Confianza'].map((h) => (
-                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {composicion.map((m, i) => (
-                      <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(0,130,124,0.02)' }}>
-                        <td style={{ padding: '9px 10px', fontWeight: 600 }}>{m.material}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.peso_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.factor_co2_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '-'}</td>
-                        <td style={{ padding: '9px 10px' }}>
-                          {m.nivel_confianza ? (
-                            <span style={{ background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5'}1A`, color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
-                              {m.nivel_confianza}
-                            </span>
-                          ) : '-'}
-                        </td>
+              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                        <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Material</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Peso</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ eq/kg</th>
+                        <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Fuente</th>
+                        <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Confianza</th>
                       </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                    {composicion.map((m, idx) => {
+                      return (
+                        <tr
+                          key={idx}
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                          style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                        >
+                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                            <div className="flex items-center gap-2">
+                              <span>{m.material}</span>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(m.factor_co2_kg)}</td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">{m.origen_fuente ?? '-'}</td>
+                          <td className="px-4 py-3 text-center">
+                            {m.nivel_confianza ? (
+                              <span style={{ background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2'}1A`, color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
+                                {m.nivel_confianza}
+                              </span>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
+            </div>
             </div>
           )}
 
@@ -610,7 +657,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
             <div>
               <p style={{ margin: 0, fontSize: 14, color: 'var(--text-secondary)' }}>
-                {ciclos.length > 0 ? `${ciclos.length} ciclo${ciclos.length > 1 ? 's' : ''} registrado${ciclos.length > 1 ? 's' : ''} · ${co2Total.toFixed(2)} kg CO₂ evitados en total` : 'Sin ciclos registrados aún'}
+                {ciclos.length > 0 ? `${ciclos.length} ciclo${ciclos.length > 1 ? 's' : ''} registrado${ciclos.length > 1 ? 's' : ''} · ${co2Total.toFixed(2)} kg CO₂ eq evitados en total` : 'Sin ciclos registrados aún'}
               </p>
             </div>
             <button onClick={() => setShowModalCiclo(true)} style={btnPrimaryStyle}>
@@ -622,7 +669,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
             <EmptyState
               icono={ArrowCounterClockwise}
               titulo="Registra el primer ciclo"
-              descripcion="Cada vez que reutilizas este activo, un ciclo registra el impacto real: CO₂ evitado, operación realizada y fecha."
+              descripcion="Cada vez que reutilizas este activo, un ciclo registra el impacto real: CO₂ eq evitado, operación realizada y fecha."
               cta={{ label: 'Registra el primer ciclo', onClick: () => setShowModalCiclo(true) }}
             />
           ) : (
@@ -642,7 +689,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                   {(c.co2_evitado_kg ?? 0) > 0 && (
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#38B98E' }}>
                       <CheckCircle size={14} />
-                      Evitaste {c.co2_evitado_kg?.toFixed(2)} kg CO₂e
+                      Evitaste {c.co2_evitado_kg?.toFixed(2)} kg CO₂ eq
                     </div>
                   )}
                 </div>
@@ -674,10 +721,39 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                   <label style={labelStyle}>Descripción</label>
                   <textarea value={cicloForm.descripcion} onChange={(e) => setCicloForm((p) => ({ ...p, descripcion: e.target.value }))} placeholder="Describe los detalles del ciclo..." rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
                 </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle}>Distancia de transporte (km)</label>
+                    <input type="number" min="0" step="0.1" value={cicloForm.distancia_transporte_km} onChange={(e) => setCicloForm((p) => ({ ...p, distancia_transporte_km: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle}>Tipo de vehículo</label>
+                    <Selector
+                      value={cicloForm.tipo_vehiculo_transporte}
+                      onChange={(val) => setCicloForm((p) => ({ ...p, tipo_vehiculo_transporte: val }))}
+                      opciones={[
+                        { value: '', label: 'Sin transporte registrado' },
+                        { value: 'liviano_diesel', label: 'Furgoneta / van ligera diésel' },
+                        { value: 'mediano_diesel', label: 'Camión mediano rígido diésel' },
+                        { value: 'pesado_diesel', label: 'Camión pesado diésel' },
+                      ]}
+                    />
+                  </div>
+                </div>
+                <p style={{ margin: '-6px 0 12px', fontSize: 11, color: 'var(--text-secondary)' }}>Factor DEFRA según el vehículo, aplicado al peso del activo para estimar la huella de transporte</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle}>Residuo retirado en taller (kg)</label>
+                    <input type="number" min="0" step="0.1" value={cicloForm.peso_residuo_taller_kg} onChange={(e) => setCicloForm((p) => ({ ...p, peso_residuo_taller_kg: e.target.value }))} style={inputStyle} />
+                  </div>
+                  <div style={fieldStyle}>
+                    <label style={labelStyle}>De eso, cuánto reciclaste (kg)</label>
+                    <input type="number" min="0" step="0.1" value={cicloForm.peso_residuo_reciclado_kg} onChange={(e) => setCicloForm((p) => ({ ...p, peso_residuo_reciclado_kg: e.target.value }))} style={inputStyle} />
+                  </div>
+                </div>
                 <div style={fieldStyle}>
-                  <label style={labelStyle}>Distancia de transporte (km)</label>
-                  <input type="number" min="0" step="0.1" value={cicloForm.distancia_transporte_km} onChange={(e) => setCicloForm((p) => ({ ...p, distancia_transporte_km: e.target.value }))} style={{ ...inputStyle, maxWidth: 160 }} />
-                  <p style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>Usamos 0.21 kg CO₂/km (factor DEFRA) para calcular la huella del transporte</p>
+                  <label style={labelStyle}>Destino del residuo no reciclado</label>
+                  <input value={cicloForm.destino_residuo} onChange={(e) => setCicloForm((p) => ({ ...p, destino_residuo: e.target.value }))} placeholder="Relleno sanitario, incineración..." style={inputStyle} />
                 </div>
                 {errorCiclo && <div style={errorBannerStyle}>{errorCiclo}</div>}
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20 }}>
@@ -833,15 +909,15 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
           {resultados && (
             <div style={{ marginTop: 32 }}>
               <div style={{ background: 'rgba(56,185,142,0.08)', border: '1px solid rgba(56,185,142,0.25)', borderRadius: 12, padding: '16px 20px', marginBottom: 24 }}>
-                <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: '#1A3A38', lineHeight: 1.7, fontFamily: "'Open Sans', sans-serif" }}>
+                <p style={{ margin: 0, fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.7, fontFamily: "'Open Sans', sans-serif" }}>
                   {resultados.narrativa}
                 </p>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10, marginBottom: 20 }}>
                 <KpiCard titulo="Costo total (TCO)" valor={formatMoneda(resultados.tco, moneda)} icono={CreditCard} color="#00827C" />
                 <KpiCard titulo="Costo evitado" valor={formatMoneda(resultados.costo_evitado, moneda)} icono={Leaf} color="#38B98E" />
-                <KpiCard titulo="E-ROI" valor={`${resultados.e_roi}%`} icono={TrendUp} color="#59A6E4" subtitulo="Retorno sobre inversión circular" />
-                <KpiCard titulo="ICE" valor={`${resultados.ice_porcentaje}%`} icono={Target} color="#F6BF3E" subtitulo="Índice Circularidad Económica" />
+                <KpiCard titulo="E-ROI" valor={`${resultados.e_roi} %`} icono={TrendUp} color="#59A6E4" subtitulo="Retorno sobre inversión circular" />
+                <KpiCard titulo="ICE" valor={`${resultados.ice_porcentaje} %`} icono={Target} color="#F6BF3E" subtitulo="Índice Circularidad Económica" />
               </div>
               <GraficaMetricas resultados={resultados} moneda={moneda} />
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -856,29 +932,44 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '0 0 12px' }}>
                 Historial de métricas
               </p>
-              <div style={{ overflowX: 'auto', borderRadius: 10, border: '1px solid var(--border)' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: 'var(--bg-secondary)' }}>
-                      {['Fecha', 'TCO', 'Costo evitado', 'E-ROI %', 'ICE %', 'Versión'].map((h) => (
-                        <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', color: '#00827C' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {metricas.map((m, i) => (
-                      <tr key={m.id} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(0,130,124,0.02)', borderTop: '1px solid var(--border)' }}>
-                        <td style={{ padding: '9px 12px', color: 'var(--text-secondary)', fontSize: 12 }}>{formatFecha(m.calculado_at)}</td>
-                        <td style={{ padding: '9px 12px', fontWeight: 600 }}>{formatMoneda(m.tco, 'COP')}</td>
-                        <td style={{ padding: '9px 12px', color: '#38B98E', fontWeight: 600 }}>{formatMoneda(m.costo_evitado, 'COP')}</td>
-                        <td style={{ padding: '9px 12px' }}>{m.e_roi != null ? `${m.e_roi}%` : '-'}</td>
-                        <td style={{ padding: '9px 12px' }}>{m.ice_porcentaje != null ? `${m.ice_porcentaje}%` : '-'}</td>
-                        <td style={{ padding: '9px 12px', fontFamily: 'monospace', fontSize: 11, color: 'var(--text-secondary)' }}>{m.version ?? '-'}</td>
+              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                        <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">TCO</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Costo evitado</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">E-ROI</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">ICE</th>
+                        <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Versión</th>
                       </tr>
-                    ))}
+                    </thead>
+                    <tbody>
+                    {metricas.map((m, idx) => {
+                      return (
+                        <tr
+                          key={m.id}
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                          style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                        >
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-xs text-center">
+                            {formatFecha(m.calculado_at)}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)] text-right">{formatMoneda(m.tco, 'COP')}</td>
+                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right">{formatMoneda(m.costo_evitado, 'COP')}</td>
+                          <td className="px-4 py-3 text-[var(--text-primary)] text-right">{m.e_roi != null ? `${formatNumero(m.e_roi)} %` : '-'}</td>
+                          <td className="px-4 py-3 text-[var(--text-primary)] text-right">{m.ice_porcentaje != null ? `${formatNumero(m.ice_porcentaje)} %` : '-'}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-[var(--text-secondary)] text-center">{m.version ?? '-'}</td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
+            </div>
             </div>
           )}
         </div>
@@ -897,13 +988,17 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: 14 }}>
               <div>
                 <label style={labelStyle}>Tipo de documento</label>
-                <select value={uploadTipo} onChange={e => setUploadTipo(e.target.value)} style={{ ...inputStyle, cursor: 'pointer' }}>
-                  <option value="factura_compra">Factura de compra</option>
-                  <option value="recibo_energia">Recibo de energía</option>
-                  <option value="certificado_origen">Certificado de origen</option>
-                  <option value="foto_objeto">Foto del objeto</option>
-                  <option value="otro">Otro</option>
-                </select>
+                <Selector
+                  value={uploadTipo}
+                  onChange={setUploadTipo}
+                  opciones={[
+                    { value: 'factura_compra', label: 'Factura de compra' },
+                    { value: 'recibo_energia', label: 'Recibo de energía' },
+                    { value: 'declaracion_origen', label: 'Declaración de origen' },
+                    { value: 'foto_objeto', label: 'Foto del objeto' },
+                    { value: 'otro', label: 'Otro' },
+                  ]}
+                />
               </div>
               <div>
                 <label style={labelStyle}>Archivo (JPG, PNG · máx 10 MB)</label>
