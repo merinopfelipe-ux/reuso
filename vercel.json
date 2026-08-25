@@ -7,6 +7,26 @@
     {
       "path": "/api/cron/keep-alive-supabase",
       "schedule": "0 13 * * 1,4"
+    },
+    {
+      "path": "/api/cron/cotizador-purga-90d",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/status-purga-30d",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/alertas-retencion",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/cotizador-purga-vacias-8h",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron/cotizador-purga-borradores-8h",
+      "schedule": "0 18 * * *"
     }
   ]
 }
