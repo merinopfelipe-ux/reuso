@@ -7,6 +7,8 @@ import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
 import { mergeServicios, mergeInsumos, mergeMateriales } from '@/lib/cotizador/plantillas-base'
 import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/route'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import { TooltipInfo } from '@/components/ui/tooltip-info'
+import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 
 export interface ItemConImagen extends ItemDetectadoConSnapshot {
   // Miniatura para mostrar (recorte si el recuadro fue útil, si no la foto
@@ -62,6 +64,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
   const [categoriaSel, setCategoriaSel] = useState('')
   const [cargandoMatch, setCargandoMatch] = useState(false)
   const [zoomAbierto, setZoomAbierto] = useState(false)
+  const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
 
   const ts = 'text-[var(--text-secondary)]'
   const tp = 'text-[var(--text-primary)]'
@@ -357,7 +360,10 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
               {(m as { _esNuevo?: boolean })._esNuevo ? (
                 <input value={m.nombre} onChange={e => actualizarMaterial(i, { nombre: e.target.value })} placeholder="Ej: Hierro" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
               ) : (
-                <span className="flex-1 min-w-[80px] text-sm font-medium text-[var(--text-primary)] line-clamp-2 leading-tight" title={m.nombre}>{m.nombre}</span>
+                <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
+                  <span className="line-clamp-2 leading-tight" title={m.nombre}>{m.nombre}</span>
+                  <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
+                </span>
               )}
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent flex-shrink-0">
                 <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseNumero(e.target.value) })} className="w-16 text-right text-sm outline-none border-none p-0 bg-transparent" />
