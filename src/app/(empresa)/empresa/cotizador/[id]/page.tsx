@@ -1768,7 +1768,7 @@ function DetalleCotizacionContent() {
         titulo="¿Eliminar esta cotización?"
         descripcion={`Se borra ${formatCodigoCotizacion(cot.codigo_cotizacion)} junto con sus muebles, notas y trazabilidad. Esta acción no se puede deshacer.`}
         icono={<Trash size={22} />}
-        colorIcono="#F3BBD3"
+        colorIcono="var(--color-error)"
         varianteConfirmar="error"
         textoConfirmar={eliminando ? 'Eliminando...' : 'Eliminar'}
         onConfirmar={eliminarCotizacion}
