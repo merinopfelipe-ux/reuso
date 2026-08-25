@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw } from '@/components/ui/icons'
+import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw, Clock } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
@@ -1095,6 +1095,26 @@ function NuevaCotizacionContent() {
             )}
           </div>
         )}
+
+        {/* Ítems que ya quedaron en la cola pero todavía no arranca su turno
+            — visible tanto durante "Analizando" como durante "Resultado" del
+            ítem actual, para que no parezca que se perdieron (bug real
+            reportado: "no se veía que estaba procesando la segunda"). Nunca
+            se muestran como "analizando" ellos mismos — serían mentira,
+            el procesamiento es secuencial, uno a la vez. */}
+        {procesandoIdx !== null && colaProcesar.map((grupo, i) => i > procesandoIdx && (
+          <div key={grupo.id} className={`rounded-[12px] border p-3 mt-3 flex items-center gap-3 opacity-60 ${cardBg}`}>
+            {grupo.fotos[0] && (
+              <img src={grupo.fotos[0].preview} alt="" className="w-12 h-12 rounded-[8px] object-cover flex-shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-semibold ${tp}`}>Ítem {i + 1}</p>
+              <p className={`text-xs flex items-center gap-1 ${ts}`}>
+                <Clock size={12} sinAnimacion /> En cola, espera su turno
+              </p>
+            </div>
+          </div>
+        ))}
           </>
         )}
       </div>
