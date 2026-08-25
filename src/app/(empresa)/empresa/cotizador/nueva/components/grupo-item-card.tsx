@@ -248,19 +248,19 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
             value={item.titulo}
             onChange={e => onChange({ ...item, titulo: e.target.value })}
             placeholder={item.item_nombre}
+            maxLength={40}
             className={inputSt}
           />
         </div>
 
-        <div>
+        <div className="flex-1 flex flex-col min-h-[90px]">
           <label className={`text-xs font-bold tracking-wide mb-1.5 block ${ts}`}>Descripción del ítem</label>
           <textarea
             value={item.descripcion}
             onChange={e => onChange({ ...item, descripcion: e.target.value })}
             placeholder={item.manual ? 'Describe el ítem...' : 'Descripción del ítem generada por la IA...'}
-            rows={3}
-            maxLength={400}
-            className={`${inputSt} resize-none`}
+            maxLength={190}
+            className={`${inputSt} flex-1 min-h-[76px] resize-none leading-relaxed overflow-y-auto`}
           />
         </div>
       </div>

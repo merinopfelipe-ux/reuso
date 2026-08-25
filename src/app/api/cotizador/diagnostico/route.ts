@@ -4,6 +4,14 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { rateLimit } from '@/lib/rate-limit'
 import type { Material as MaterialCompleto } from '@/lib/cotizador/plantillas-base'
 
+// Sin esto, Vercel mata la función a los 10s por defecto (plan Hobby) —
+// la llamada real a Gemini con varias fotos puede tardar 60s+ (medido en
+// vivo: 61.5s con 2 fotos), así que se veía como "no hace nada" y fallaba
+// en producción mucho antes de que el usuario viera cualquier resultado,
+// aunque en `next dev` (sin este límite) sí terminaba respondiendo. 60 es
+// el máximo permitido en el plan Hobby.
+export const maxDuration = 60
+
 // ── Schemas ──────────────────────────────────────────────────────────────────
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
@@ -38,11 +46,13 @@ const boundingBoxSchema = z.object({
 // línea y el vendedor lo puede reescribir en cualquier momento.
 const itemDetectadoSchema = z.object({
   item_nombre: z.string(),
-  titulo: z.string().max(150),
-  // Párrafo corto de lo que la IA vio en esta pieza específica (estado,
-  // rasgos, uso probable) — distinto de "titulo" (nombre corto tipo
-  // etiqueta). Editable por el vendedor, visible para el cliente.
-  descripcion: z.string().max(400),
+  // Tope real, directriz explícita del usuario: 40 caracteres, directo, sin
+  // adornos ni viñetas.
+  titulo: z.string().max(40),
+  // Qué trabajo concreto se le va a hacer a la pieza (no lo que se ve) —
+  // tope real 190 caracteres, directo, sin adornos ni viñetas. Editable por
+  // el vendedor, visible para el cliente.
+  descripcion: z.string().max(190),
   cantidad: z.number().int().min(1).max(50),
   confianza: z.number().min(0).max(1),
   imagen_index: z.number().int().min(0),
@@ -120,9 +130,9 @@ Vas a recibir ${nImagenes} foto${nImagenes > 1 ? 's' : ''} en un solo análisis,
 Para cada mueble que identifiques, indica en "imagen_index" de cuál de las fotos (0 a ${nImagenes - 1}) salió, y encuádralo en uno de estos ítems EXACTOS del catálogo (usa el nombre tal cual, sin inventar variantes):
 ${nombresCatalogo.map(n => `- ${n}`).join('\n')}
 
-Además, para cada mueble escribe un "titulo" corto (máx 12 palabras) que describa la pieza específica que ves (material, color, estilo) — sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual.
+Además, para cada mueble escribe un "titulo" que describa la pieza específica que ves (material, color, estilo) — sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 40 caracteres, directo y sin adornos.
 
-También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla (2-3 frases) — ej. cambiar tapizado, reforzar estructura, pulir y barnizar, reemplazar espuma. Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar. Es lo que el cliente final lee en su propuesta, así que sé concreto y sin inventar datos que no puedas ver en la foto.
+También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla — ej. cambiar tapizado, reforzar estructura, pulir y barnizar, reemplazar espuma. Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar. Máximo 190 caracteres. Es lo que el cliente final lee en su propuesta: directo, al grano, sin adornos, sin viñetas y sin punto y coma (solo punto o coma), sin inventar datos que no puedas ver en la foto.
 
 Cuando en una misma foto haya más de un mueble distinto (ej. un sofá y una mesa juntos), o varias unidades del mismo mueble que quieras distinguir, devuelve también "bounding_box": el recuadro que encierra SOLO esa pieza en la foto original, como { "y_min", "x_min", "y_max", "x_max" } en una escala de 0 a 1000 (0,0 es la esquina superior izquierda). Si la foto ya muestra un único mueble ocupando casi todo el encuadre, puedes omitir "bounding_box" — se usará la foto completa.
 
@@ -174,8 +184,8 @@ async function llamarGemini(
                   type: 'OBJECT',
                   properties: {
                     item_nombre: { type: 'STRING', enum: enumNombres, description: 'Nombre exacto del catálogo, o NINGUNO si no hay match.' },
-                    titulo: { type: 'STRING', description: 'Título corto y específico de esta pieza (material, color o rasgo distintivo), distinto del nombre del catálogo.' },
-                    descripcion: { type: 'STRING', description: 'Párrafo corto (2-3 frases) del trabajo concreto a realizar en la pieza, nunca de lo que se ve ahora ni "se observa"/sinónimos.' },
+                    titulo: { type: 'STRING', description: 'Título específico de esta pieza (material, color o rasgo distintivo), distinto del nombre del catálogo. Máximo 40 caracteres, directo, sin adornos.' },
+                    descripcion: { type: 'STRING', description: 'Trabajo concreto a realizar en la pieza, nunca de lo que se ve ahora ni "se observa"/sinónimos. Máximo 190 caracteres, directo, sin adornos, sin viñetas, sin punto y coma.' },
                     cantidad: { type: 'INTEGER', description: 'Cuántas unidades de este mueble hay.' },
                     confianza: { type: 'NUMBER', description: 'Confianza del match entre 0.0 y 1.0.' },
                     imagen_index: { type: 'INTEGER', description: 'De cuál foto salió este ítem (0 es la primera).' },
