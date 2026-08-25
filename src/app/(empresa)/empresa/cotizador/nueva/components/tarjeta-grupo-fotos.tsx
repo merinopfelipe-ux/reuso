@@ -118,7 +118,7 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
               <button
                 type="button"
                 onClick={() => onQuitarFoto(i)}
-                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#474747] text-white flex items-center justify-center shadow-md hover-pop hover-press"
+                className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#474747]/80 text-white flex items-center justify-center shadow-md hover-pop hover-press"
                 title="Quitar esta foto"
               >
                 <X size={11} strokeWidth={2.5} sinAnimacion />
