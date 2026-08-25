@@ -130,7 +130,7 @@ Vas a recibir ${nImagenes} foto${nImagenes > 1 ? 's' : ''} en un solo análisis,
 Para cada mueble que identifiques, indica en "imagen_index" de cuál de las fotos (0 a ${nImagenes - 1}) salió, y encuádralo en uno de estos ítems EXACTOS del catálogo (usa el nombre tal cual, sin inventar variantes):
 ${nombresCatalogo.map(n => `- ${n}`).join('\n')}
 
-Además, para cada mueble escribe un "titulo" que describa la pieza específica que ves (material, color, estilo) — sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 40 caracteres, directo y sin adornos.
+Además, para cada mueble escribe un "titulo" con esta estructura fija: elemento, material, estilo — nunca incluyas color ni acabados. Sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 40 caracteres, directo y sin adornos.
 
 También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla — ej. cambiar tapizado, reforzar estructura, pulir y barnizar, reemplazar espuma. Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar. Máximo 190 caracteres. Es lo que el cliente final lee en su propuesta: directo, al grano, sin adornos, sin viñetas y sin punto y coma (solo punto o coma), sin inventar datos que no puedas ver en la foto.
 
@@ -184,7 +184,7 @@ async function llamarGemini(
                   type: 'OBJECT',
                   properties: {
                     item_nombre: { type: 'STRING', enum: enumNombres, description: 'Nombre exacto del catálogo, o NINGUNO si no hay match.' },
-                    titulo: { type: 'STRING', description: 'Título específico de esta pieza (material, color o rasgo distintivo), distinto del nombre del catálogo. Máximo 40 caracteres, directo, sin adornos.' },
+                    titulo: { type: 'STRING', description: 'Título con estructura fija elemento, material, estilo — nunca color ni acabados. Distinto del nombre del catálogo. Máximo 40 caracteres, directo, sin adornos.' },
                     descripcion: { type: 'STRING', description: 'Trabajo concreto a realizar en la pieza, nunca de lo que se ve ahora ni "se observa"/sinónimos. Máximo 190 caracteres, directo, sin adornos, sin viñetas, sin punto y coma.' },
                     cantidad: { type: 'INTEGER', description: 'Cuántas unidades de este mueble hay.' },
                     confianza: { type: 'NUMBER', description: 'Confianza del match entre 0.0 y 1.0.' },
