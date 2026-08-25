@@ -1,9 +1,10 @@
 'use client'
 /* eslint-disable @next/next/no-img-element */
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Camera, Sparkles, Pencil, ClipboardPaste as Clipboard, X, TriangleAlert as Warning, Trash2 as Trash } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 
 export type ModoAnalisis = 'ia' | 'manual'
 
@@ -35,6 +36,7 @@ interface Props {
 // "Genera la propuesta", en page.tsx.
 export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, onCambiarModo, onAgregarFotos, onQuitarFoto, onQuitarGrupo }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const [zoomUrl, setZoomUrl] = useState<string | null>(null)
   const ts = 'text-[var(--text-secondary)]'
   const tp = 'text-[var(--text-primary)]'
   const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
@@ -105,7 +107,14 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
         <div className="flex gap-2 overflow-x-auto mb-4">
           {grupo.fotos.map((f, i) => (
             <div key={i} className="relative flex-shrink-0">
-              <img src={f.preview} alt="" className="h-24 rounded-[10px] object-cover bg-[var(--bg-input)]" />
+              <button
+                type="button"
+                onClick={() => setZoomUrl(f.preview)}
+                className="block cursor-zoom-in"
+                title="Ampliar imagen"
+              >
+                <img src={f.preview} alt="" className="h-24 rounded-[10px] object-cover bg-[var(--bg-input)]" />
+              </button>
               <button
                 type="button"
                 onClick={() => onQuitarFoto(i)}
@@ -118,6 +127,7 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
           ))}
         </div>
       )}
+      <ModalImagenZoom imagenUrl={zoomUrl} onClose={() => setZoomUrl(null)} />
 
       <Button onClick={() => inputRef.current?.click()} variant={grupo.fotos.length > 0 ? 'secondary' : 'primary'}>
         {grupo.fotos.length > 0 ? 'Agregar otra foto' : 'Elegir fotos'}
