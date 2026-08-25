@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { XCircle, Leaf, Droplet as Drop, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw, Clock } from '@/components/ui/icons'
+import { Leaf, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
@@ -40,40 +40,15 @@ interface MuebleAgregado {
   precio_mercado_estado: EstadoPrecioMercado
 }
 
-type EstadoUI = 'idle' | 'analizando' | 'resultado' | 'guardando'
-
-// Cada ítem admite hasta 4 fotos, y una cotización nueva admite hasta 4
-// ítems apilados en cascada — se arman todos primero (sin analizar nada) y
-// se procesan en orden, uno a la vez, recién al confirmar "Genera la
-// propuesta" (ver procesarIndiceCola/generarPropuesta más abajo).
+// Cada ítem admite hasta 4 fotos. Ya no hay tope de ítems por cotización —
+// se agregan uno a la vez, tantos como el vendedor necesite (decisión
+// explícita del usuario, ver spec 2026-08-25-cotizador-agregar-items-
+// automatico-design.md): cada ítem se analiza y se guarda automático apenas
+// está listo, sin armar varios de antemano.
 const MAX_FOTOS_POR_TANDA = 4
-const MAX_ITEMS_POR_COTIZACION = 4
 
 function nuevoGrupoVacio(modo: ModoAnalisis = 'ia'): GrupoPendiente {
   return { id: crypto.randomUUID(), fotos: [], modo }
-}
-
-function precioUnidad(item: ItemDetectadoConSnapshot): number {
-  const servicios = item.servicios.reduce((s, x) => s + x.precio, 0)
-  const insumos = item.insumos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
-  return (servicios + insumos) * item.factor_rentabilidad
-}
-
-// CO2/agua por unidad EN VIVO desde los materiales actuales del ítem (si el
-// vendedor los editó en la tarjeta, o si es un ítem Manual que arrancó en
-// cero) — nunca el snapshot congelado que trajo la IA al detectar, o el
-// resumen "Total de esta foto" quedaría desactualizado apenas alguien toque
-// un peso en la Tarjeta 3. Mismo criterio que ya usa el backend en
-// mueble/route.ts al recalcular cuando llegan materiales_json.
-function co2PorUnidad(item: ItemDetectadoConSnapshot): number {
-  return item.materiales.length > 0
-    ? item.materiales.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0)
-    : item.co2_evitado_kg_unidad
-}
-function aguaPorUnidad(item: ItemDetectadoConSnapshot): number {
-  return item.materiales.length > 0
-    ? item.materiales.reduce((s, m) => s + m.peso_kg * (m.factor_agua_l_kg ?? 0), 0)
-    : item.agua_evitada_l_unidad
 }
 
 // Recorta la miniatura de un ítem detectado (o usa la foto completa si el
@@ -165,7 +140,6 @@ function NuevaCotizacionContent() {
     [empresaIdParam])
 
   // Estado del flujo
-  const [estado, setEstado] = useState<EstadoUI>('idle')
   const [error, setError] = useState<string | null>(null)
   const [analizandoMsgIndex, setAnalizandoMsgIndex] = useState(0)
 
@@ -177,30 +151,40 @@ function NuevaCotizacionContent() {
   // cliente (ya está fijado) y se sigue guardando en la MISMA cotización.
   const [cargandoExistente, setCargandoExistente] = useState(!!cotizacionIdParam)
 
-  // Ítems en armado (staging): hasta MAX_ITEMS_POR_COTIZACION tarjetas en
-  // cascada, cada una con sus propias fotos y su propio modo IA/Manual.
-  // Nada de esto se analiza — eso solo pasa al procesar la cola, ver más
-  // abajo (colaProcesar). Arranca con 1 tarjeta vacía siempre visible.
-  const [gruposPendientes, setGruposPendientes] = useState<GrupoPendiente[]>([nuevoGrupoVacio()])
+  // Ítem activo: fotos + modo (IA/Manual) del ítem que el vendedor está
+  // armando AHORA MISMO. Nunca se pre-arman varios — cuando este queda
+  // resuelto (guardado o movido a itemsPendientes), "Agregar otro ítem" trae
+  // uno nuevo vacío. `mostrandoTarjeta` controla si la tarjeta de subir
+  // fotos está visible (se oculta mientras procesa, y también apenas
+  // termina de procesar, hasta que el vendedor pide explícitamente otro
+  // ítem — así "Agregar otro ítem" siempre significa algo real).
+  const [grupoActivo, setGrupoActivo] = useState<GrupoPendiente>(nuevoGrupoVacio())
+  const [mostrandoTarjeta, setMostrandoTarjeta] = useState(true)
+  const [numeroItemActivo, setNumeroItemActivo] = useState(1)
+  const [procesando, setProcesando] = useState(false)
 
-  // Resultado del grupo que se está procesando AHORA MISMO (índice de
-  // colaProcesar) — mismo shape que antes, pero ya no es "la tanda actual
-  // del vendedor", es "lo que la cola está resolviendo en este momento".
-  const [itemsDetectados, setItemsDetectados] = useState<ItemConImagen[]>([])
-  const [noIdentificados, setNoIdentificados] = useState<string[]>([])
+  // Ítems que necesitan al vendedor antes de poder guardarse solos:
+  // - sin coincidencia de catálogo (item_id vacío, GrupoItemCard deja elegir
+  //   categoría/ítem existente; si de plano no existe, "Crear ítem nuevo"
+  //   reusa el mismo flujo que antes vivía en el botón de rescate).
+  // - guardado automático que falló (item_id sí resuelto, pero el POST a
+  //   /mueble falló) — trae `_errorGuardado` con el motivo.
+  // Pueden acumularse varios a la vez, la cola de análisis no espera a que
+  // se resuelvan.
+  const [itemsPendientes, setItemsPendientes] = useState<ItemConImagen[]>([])
+
+  // Piezas "sin_match" detectadas dentro de las fotos de CUALQUIER ítem que
+  // ya se analizó — se muestran TODAS a la vez (no una por una), el
+  // vendedor las responde en el orden que quiera, sin que eso bloquee nada.
   const [sinMatch, setSinMatch] = useState<SinMatchConImagen[]>([])
-  const [observaciones, setObservaciones] = useState('')
-  // Pieza "sin_match" pendiente de que el vendedor confirme si es un ítem
-  // aparte — una por vez, ver confirmarPiezaComoItemAparte más abajo.
-  const [preguntaItemAparte, setPreguntaItemAparte] = useState<SinMatchConImagen | null>(null)
+  const [noIdentificados, setNoIdentificados] = useState<string[]>([])
 
-  // Cola de procesamiento — se llena al confirmar "Genera la propuesta" con
-  // los gruposPendientes que sí tienen fotos, y puede CRECER en caliente si
-  // al procesar un grupo aparece una pieza extra que el vendedor confirma
-  // como ítem aparte (ver Task 7). procesandoIdx === null significa que la
-  // cola no está corriendo (estamos en la etapa de armar, no de procesar).
-  const [colaProcesar, setColaProcesar] = useState<GrupoPendiente[]>([])
-  const [procesandoIdx, setProcesandoIdx] = useState<number | null>(null)
+  // Micro-cola interna, invisible para el vendedor: cuando confirma que una
+  // pieza sin_match SÍ es un ítem aparte, su foto entra acá y se procesa
+  // sola en cuanto el análisis actual (si hay uno corriendo) termina —
+  // nunca dos análisis de IA a la vez, mismo criterio que el resto del
+  // flujo, pero sin necesitar que el vendedor haga nada para que avance.
+  const [colaExtra, setColaExtra] = useState<GrupoPendiente[]>([])
 
   // Cotización acumulada
   const [cotizacionId, setCotizacionId] = useState<string | null>(null)
@@ -214,6 +198,11 @@ function NuevaCotizacionContent() {
   const [rescateCategoriaId, setRescateCategoriaId] = useState('')
   const [categoriasHoja, setCategoriasHoja] = useState<{ id: string; nombre: string }[]>([])
   const [confirmarTipoRescate, setConfirmarTipoRescate] = useState(false)
+  // Cuando el rescate se abre desde una tarjeta de itemsPendientes (en vez
+  // del botón general), guarda cuál para poder quitarla apenas el rescate
+  // termine con éxito — su propio stub ya no hace falta, el rescate crea su
+  // propio mueble directo.
+  const [rescateDesdeUiKey, setRescateDesdeUiKey] = useState<string | undefined>(undefined)
 
   // Catálogo completo (id, nombre, categoria_nombre) para los selectores de
   // "Coincidencia de categoría" de cada GrupoItemCard — se carga una sola
@@ -244,13 +233,12 @@ function NuevaCotizacionContent() {
 
   // Proteger trabajo no guardado: advertir al salir si hay progreso pendiente
   useEffect(() => {
-    const hayFotosSinProcesar = gruposPendientes.some(g => g.fotos.length > 0)
-    const hayProgresoNoGuardado = hayFotosSinProcesar || itemsDetectados.length > 0 || (!cotizacionIdParam && cliente !== null && muebles.length === 0)
+    const hayProgresoNoGuardado = grupoActivo.fotos.length > 0 || itemsPendientes.length > 0 || (!cotizacionIdParam && cliente !== null && muebles.length === 0)
     if (!hayProgresoNoGuardado) return
     const handler = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
-  }, [gruposPendientes, itemsDetectados.length, cliente, cotizacionIdParam, muebles.length])
+  }, [grupoActivo.fotos.length, itemsPendientes.length, cliente, cotizacionIdParam, muebles.length])
 
   // Modo "agregar más ítems": carga la cotización existente (cliente ya fijo
   // + líneas ya guardadas) en vez de arrancar el flujo de identificación.
@@ -304,14 +292,48 @@ function NuevaCotizacionContent() {
     return () => { cancelado = true }
   }, [cotizacionIdParam, conEmpresa])
 
+  // ── Respaldo local (localStorage) ────────────────────────────────────────
+  // El internet en campo puede ser malo o inexistente — nada de este
+  // respaldo depende del servidor, así que sigue funcionando sin conexión.
+  // Guarda tanto el ítem activo (fotos sin analizar todavía) como los
+  // itemsPendientes (ya analizados, con datos que el vendedor pudo haber
+  // escrito a mano — precio, materiales — antes de guardarlos), porque
+  // ambos representan trabajo real que no se puede perder. Se restaura una
+  // sola vez, apenas se conoce el id real de la cotización.
+  const restauradoLocalRef = useRef(false)
+
+  useEffect(() => {
+    if (!cotizacionId || restauradoLocalRef.current) return
+    restauradoLocalRef.current = true
+    try {
+      const guardado = localStorage.getItem(`cotizador_borrador_${cotizacionId}`)
+      if (!guardado) return
+      const parsed = JSON.parse(guardado) as { grupoActivo?: GrupoPendiente; itemsPendientes?: ItemConImagen[] }
+      if (parsed.grupoActivo && parsed.grupoActivo.fotos.length > 0) setGrupoActivo(parsed.grupoActivo)
+      if (Array.isArray(parsed.itemsPendientes) && parsed.itemsPendientes.length > 0) setItemsPendientes(parsed.itemsPendientes)
+    } catch {
+      // Respaldo corrupto o localStorage no disponible — se sigue con la
+      // tarjeta vacía normal, nunca bloquea al vendedor.
+    }
+  }, [cotizacionId])
+
+  useEffect(() => {
+    if (!cotizacionId) return
+    try {
+      localStorage.setItem(`cotizador_borrador_${cotizacionId}`, JSON.stringify({ grupoActivo, itemsPendientes }))
+    } catch {
+      // Cupo de localStorage lleno (muchas fotos en alta resolución) — no
+      // bloquea el flujo, solo se pierde el respaldo local de esta tanda.
+    }
+  }, [grupoActivo, itemsPendientes, cotizacionId])
+
   // ── Acumular fotos en una cola (compartido entre selector de archivo y
   // pegado Cmd+V) — NO dispara ningún análisis todavía. Varios Cmd+V
   // seguidos van sumando a la misma tanda hasta que el vendedor decide
   // analizar (Con IA) o continuar (Manual). ──
 
-  const agregarFotosAGrupo = useCallback(async (grupoId: string, files: File[]) => {
-    const actual = gruposPendientes.find(g => g.id === grupoId)
-    const disponibles = MAX_FOTOS_POR_TANDA - (actual?.fotos.length ?? 0)
+  const agregarFotosAlActivo = useCallback(async (files: File[]) => {
+    const disponibles = MAX_FOTOS_POR_TANDA - grupoActivo.fotos.length
     if (disponibles <= 0) {
       setError(`Ese ítem ya tiene el máximo de ${MAX_FOTOS_POR_TANDA} fotos.`)
       return
@@ -325,61 +347,61 @@ function NuevaCotizacionContent() {
       else fallidas++
     }
     if (comprimidas.length > 0) {
-      setGruposPendientes(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: [...g.fotos, ...comprimidas] } : g))
+      setGrupoActivo(prev => ({ ...prev, fotos: [...prev.fotos, ...comprimidas] }))
     }
     if (fallidas > 0) {
       setError(`No se pudo procesar ${fallidas} imagen${fallidas > 1 ? 'es' : ''}.${comprimidas.length > 0 ? ' El resto se agregó bien.' : ' Intenta de nuevo.'}`)
     }
-  }, [gruposPendientes])
+  }, [grupoActivo])
 
-  function quitarFotoDeGrupo(grupoId: string, index: number) {
-    setGruposPendientes(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: g.fotos.filter((_, i) => i !== index) } : g))
+  function quitarFotoDelActivo(index: number) {
+    setGrupoActivo(prev => ({ ...prev, fotos: prev.fotos.filter((_, i) => i !== index) }))
   }
 
-  // Quita la tarjeta completa de un ítem (todas sus fotos, no una por una).
-  // Si es la única que queda, se reemplaza por una tarjeta vacía en vez de
-  // dejar la pantalla sin ninguna zona de carga.
-  function quitarGrupo(grupoId: string) {
-    setGruposPendientes(prev => {
-      const restantes = prev.filter(g => g.id !== grupoId)
-      return restantes.length > 0 ? restantes : [nuevoGrupoVacio()]
-    })
-  }
-
-  // Pegar una o varias imágenes desde el portapapeles (Cmd+V) — activo
-  // mientras la cola se sigue armando, así que varios pegados seguidos se
-  // acumulan en vez de perderse. Se agregan al último grupo pendiente.
+  // Pegar una o varias imágenes desde el portapapeles (Cmd+V) — solo
+  // mientras la tarjeta del ítem activo está visible y no está procesando.
   useEffect(() => {
-    if (procesandoIdx !== null || !cliente) return
+    if (!mostrandoTarjeta || procesando || !cliente) return
     function onPaste(e: ClipboardEvent) {
       const items = Array.from(e.clipboardData?.items ?? []).filter(i => i.kind === 'file')
       if (items.length === 0) return
       e.preventDefault()
       const archivos = items.map(i => i.getAsFile()).filter((f): f is File => !!f)
-      const ultimoGrupo = gruposPendientes[gruposPendientes.length - 1]
-      if (archivos.length > 0 && ultimoGrupo) agregarFotosAGrupo(ultimoGrupo.id, archivos)
+      if (archivos.length > 0) agregarFotosAlActivo(archivos)
     }
     window.addEventListener('paste', onPaste)
     return () => window.removeEventListener('paste', onPaste)
-  }, [procesandoIdx, agregarFotosAGrupo, cliente, gruposPendientes])
+  }, [mostrandoTarjeta, procesando, agregarFotosAlActivo, cliente])
 
   // Rotar el mensaje de "Analizando..." mientras dura la llamada a la IA —
   // ver mensajesAnalizando() arriba.
   useEffect(() => {
-    if (estado !== 'analizando') { setAnalizandoMsgIndex(0); return }
-    const nFotos = procesandoIdx !== null ? (colaProcesar[procesandoIdx]?.fotos.length ?? 1) : 1
-    const totalMensajes = mensajesAnalizando(nFotos).length
+    if (!procesando) { setAnalizandoMsgIndex(0); return }
+    // Nunca vuelve a "Casi listo..." en bucle — con fotos grandes o mala
+    // conexión el análisis puede tardar hasta un minuto (medido en vivo:
+    // 61.5s), y repetir "Casi listo" por más de un minuto seguido se ve
+    // como que la app se congeló. Después del último mensaje real, sube
+    // sin tope y el render muestra un aviso de espera fijo en su lugar.
     const interval = setInterval(() => {
-      setAnalizandoMsgIndex(i => (i + 1) % totalMensajes)
+      setAnalizandoMsgIndex(i => i + 1)
     }, 2800)
     return () => clearInterval(interval)
-  }, [estado, procesandoIdx, colaProcesar])
+  }, [procesando])
 
-  // ── Con IA: una sola llamada a la IA para toda la tanda acumulada, cada
-  // ítem detectado ya trae su recuadro para poder recortar su propia
-  // miniatura. ──
+  // ── Analizar un grupo (Con IA o Manual) — nunca guarda nada, solo
+  // devuelve lo que encontró. El llamador decide qué hacer con cada ítem. ──
 
-  async function analizarGrupoConIA(grupo: GrupoPendiente): Promise<boolean> {
+  async function analizarGrupo(grupo: GrupoPendiente): Promise<{
+    items: ItemConImagen[]
+    noIdentificados: string[]
+    sinMatch: SinMatchConImagen[]
+  } | null> {
+    if (grupo.modo === 'manual') {
+      const item = construirItemStub({
+        imagenIndex: 0, imagenPreview: grupo.fotos[0].preview, imagenBase64: grupo.fotos[0].base64,
+      })
+      return { items: [item], noIdentificados: [], sinMatch: [] }
+    }
     try {
       const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
         method: 'POST',
@@ -389,52 +411,34 @@ function NuevaCotizacionContent() {
         }),
       })
       const data = await res.json()
-
       if (!res.ok) {
         setError(data.error ?? 'Error al analizar las imágenes.')
-        return false
+        return null
       }
-
       const itemsCrudos = (data.items_detectados ?? []) as ItemDetectadoConSnapshot[]
-      const itemsConImagen: ItemConImagen[] = await Promise.all(itemsCrudos.map(async (item) => ({
+      const items: ItemConImagen[] = await Promise.all(itemsCrudos.map(async (item) => ({
         ...item,
         ...(await construirMiniatura(item.imagen_index, item.bounding_box, grupo.fotos)),
         _uiKey: crypto.randomUUID(),
       })))
-
       const sinMatchCrudos = (data.sin_match_detalle ?? []) as SinMatchDetalle[]
-      const sinMatchConImagen: SinMatchConImagen[] = await Promise.all(sinMatchCrudos.map(async (d) => ({
+      const sinMatchNuevo: SinMatchConImagen[] = await Promise.all(sinMatchCrudos.map(async (d) => ({
         ...d,
         ...(await construirMiniatura(d.imagen_index, d.bounding_box, grupo.fotos)),
       })))
-
-      setItemsDetectados(itemsConImagen)
-      setNoIdentificados(data.no_identificados ?? [])
-      setSinMatch(sinMatchConImagen)
-      setObservaciones(data.observaciones_visuales ?? '')
-      if (sinMatchConImagen.length > 0) setPreguntaItemAparte(sinMatchConImagen[0])
-      return true
+      if (items.length === 0 && sinMatchNuevo.length === 0 && (data.no_identificados ?? []).length === 0) {
+        setError((grupo.fotos.length > 1 ? 'No se detectó ningún mueble en las fotos.' : 'No se detectó ningún mueble en la foto.') + ' Intenta con otra imagen.')
+      }
+      return { items, noIdentificados: data.no_identificados ?? [], sinMatch: sinMatchNuevo }
     } catch {
       setError('No se pudo analizar la imagen. Verifica tu conexión.')
-      return false
+      return null
     }
   }
 
-  // ── Manual: salta la IA por completo — una tarjeta en blanco por foto,
-  // el vendedor elige categoría y llena todo desde GrupoItemCard. ──
-
-  function continuarGrupoManual(grupo: GrupoPendiente) {
-    const item = construirItemStub({
-      imagenIndex: 0, imagenPreview: grupo.fotos[0].preview, imagenBase64: grupo.fotos[0].base64,
-    })
-    setItemsDetectados([item])
-    setNoIdentificados([])
-    setSinMatch([])
-    setObservaciones('')
-  }
-
   // Igual, pero para el texto plano de "no_identificados" (la IA nunca lo
-  // liga a ninguna foto) — la tarjeta nace sin miniatura.
+  // liga a ninguna foto) — la tarjeta nace sin miniatura, directo a
+  // itemsPendientes (no tiene item_id, necesita categoría).
   function buscarEnCatalogoDesdeTexto(index: number) {
     const texto = noIdentificados[index]
     if (!texto) return
@@ -442,31 +446,132 @@ function NuevaCotizacionContent() {
       imagenIndex: 0, imagenPreview: '', imagenBase64: '',
       titulo: texto.slice(0, 150), descripcion: texto,
     })
-    setItemsDetectados(prev => [...prev, nuevo])
+    setItemsPendientes(prev => [...prev, nuevo])
     setNoIdentificados(prev => prev.filter((_, i) => i !== index))
   }
 
-  function actualizarItem(index: number, item: ItemConImagen) {
-    setItemsDetectados(prev => prev.map((it, i) => i === index ? item : it))
+  // ── Guardar un ítem individual — intenta el POST, nunca decide por sí
+  // solo qué hacer si falla (eso lo maneja cada llamador). ──
+
+  async function intentarGuardarItem(item: ItemConImagen): Promise<{ ok: true } | { ok: false; error: string }> {
+    try {
+      let id = cotizacionId
+      if (!id && cliente) {
+        const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
+        const dataCot = await resCot.json()
+        if (!resCot.ok) return { ok: false, error: dataCot.error ?? 'Error al crear la cotización.' }
+        id = dataCot.id as string
+        setCotizacionId(id)
+        window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))
+      }
+      if (!id) return { ok: false, error: 'No se pudo identificar la cotización.' }
+
+      const resMueble = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/mueble`), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item_id: item.item_id,
+          cantidad: item.cantidad,
+          imagen_base64: item.imagenBase64,
+          mime_type: 'image/webp',
+          diagnostico_ia_json: { item_nombre: item.item_nombre, confianza: item.confianza },
+          titulo: item.titulo || item.item_nombre,
+          descripcion: item.descripcion || undefined,
+          servicios_json: item.servicios.filter(s => s.nombre.trim()),
+          insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
+          materiales_json: item.materiales.filter(m => m.nombre.trim() && m.peso_kg > 0 && m.factor_co2_kg > 0),
+          factor_rentabilidad: item.factor_rentabilidad,
+        }),
+      })
+      const dataMueble = await resMueble.json()
+      if (!resMueble.ok) return { ok: false, error: dataMueble.error ?? `Error al guardar "${item.item_nombre}".` }
+
+      setMuebles(prev => [...prev, {
+        id: dataMueble.mueble.id,
+        titulo: item.titulo || item.item_nombre,
+        cantidad: item.cantidad,
+        precio_mueble: dataMueble.mueble.precio_mueble,
+        co2_evitado_kg: dataMueble.mueble.co2_evitado_kg,
+        imagen_preview: item.imagenPreview,
+        precio_mercado_nuevo: null,
+        precio_mercado_fuente_url: null,
+        precio_mercado_fuente_titulo: null,
+        precio_mercado_estado: 'pendiente',
+      }])
+      dispararPrecioMercado(dataMueble.mueble.id)
+      return { ok: true }
+    } catch {
+      return { ok: false, error: 'Error de conexión al guardar.' }
+    }
   }
 
-  function quitarDetectado(index: number) {
-    setItemsDetectados(prev => prev.filter((_, i) => i !== index))
+  // Reintento manual desde "Necesita tu atención" — sirve tanto para un
+  // guardado que falló (item_id ya resuelto) como para un ítem que recién
+  // consiguió su categoría (item_id que antes estaba vacío).
+  async function guardarItemPendiente(item: ItemConImagen) {
+    if (!item.item_id) { setError('Elige la categoría del catálogo para este ítem antes de guardar.'); return }
+    setError(null)
+    const resultado = await intentarGuardarItem(item)
+    if (resultado.ok) {
+      setItemsPendientes(prev => prev.filter(it => it._uiKey !== item._uiKey))
+    } else {
+      setItemsPendientes(prev => prev.map(it => it._uiKey === item._uiKey ? { ...it, _errorGuardado: resultado.error } : it))
+    }
   }
 
-  function duplicarDetectado(index: number) {
-    setItemsDetectados(prev => {
-      const original = prev[index]
-      if (!original) return prev
-      const copia: ItemConImagen = { ...original, titulo: `${original.titulo} (copia)`, _uiKey: crypto.randomUUID() }
-      return [...prev.slice(0, index + 1), copia, ...prev.slice(index + 1)]
-    })
+  function actualizarItemPendiente(uiKey: string | undefined, item: ItemConImagen) {
+    setItemsPendientes(prev => prev.map(it => it._uiKey === uiKey ? item : it))
   }
 
-  // Modo IA con más de 1 candidato: elegir uno colapsa itemsDetectados a
-  // solo ese — el grupo de fotos siempre produce UN ítem, nunca varios.
-  function elegirCandidato(index: number) {
-    setItemsDetectados(prev => prev[index] ? [prev[index]] : prev)
+  function quitarItemPendiente(uiKey: string | undefined) {
+    setItemsPendientes(prev => prev.filter(it => it._uiKey !== uiKey))
+  }
+
+  // ── Orquestador: analiza UN grupo y resuelve cada ítem automáticamente —
+  // nunca espera un clic del vendedor para avanzar. ──
+
+  async function procesarGrupo(grupo: GrupoPendiente) {
+    setProcesando(true)
+    const resultado = await analizarGrupo(grupo)
+    setProcesando(false)
+    if (!resultado) { drenarColaExtra(); return }
+
+    if (resultado.sinMatch.length > 0) setSinMatch(prev => [...prev, ...resultado.sinMatch])
+    if (resultado.noIdentificados.length > 0) setNoIdentificados(prev => [...prev, ...resultado.noIdentificados])
+
+    for (const item of resultado.items) {
+      if (item.item_id) {
+        const guardado = await intentarGuardarItem(item)
+        if (!guardado.ok) setItemsPendientes(prev => [...prev, { ...item, _errorGuardado: guardado.error }])
+      } else {
+        setItemsPendientes(prev => [...prev, item])
+      }
+    }
+
+    drenarColaExtra()
+  }
+
+  // Arranca lo que haya en colaExtra si nada más está analizando — se llama
+  // apenas termina cualquier análisis, así nunca hay dos llamadas a la IA
+  // en curso a la vez, pero tampoco hace falta que el vendedor haga nada.
+  const colaExtraRef = useRef<GrupoPendiente[]>([])
+  colaExtraRef.current = colaExtra
+
+  function drenarColaExtra() {
+    const [siguiente, ...resto] = colaExtraRef.current
+    if (!siguiente) return
+    setColaExtra(resto)
+    procesarGrupo(siguiente)
+  }
+
+  // Dispara el análisis del ítem activo — único punto de "ya subí las fotos
+  // que quería, procesa esto" por ítem (no hay más botones entre pasos).
+  async function analizarItemActivo() {
+    if (grupoActivo.fotos.length === 0) return
+    setMostrandoTarjeta(false)
+    const grupo = grupoActivo
+    setGrupoActivo(nuevoGrupoVacio(grupo.modo))
+    await procesarGrupo(grupo)
   }
 
   // Crea la cotización apenas se identifica el cliente, no hasta el primer
@@ -479,9 +584,6 @@ function NuevaCotizacionContent() {
     setCliente(c)
     try {
       if (cotizacionId) {
-        // El vendedor le dio "Cambiar" con la cotización ya creada (sin
-        // ítems todavía) — se actualiza el cliente de ESA cotización, en
-        // vez de crear una nueva fila huérfana ligada al cliente anterior.
         await fetch(conEmpresa(`/api/cotizador/cotizaciones/${cotizacionId}`), {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -499,174 +601,37 @@ function NuevaCotizacionContent() {
         setCotizacionId(data.id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${data.id}`))
       }
-      // Si falla, no se muestra error acá — guardarItemsDetectadosEnCotizacion
-      // ya trae su propio intento de creación como respaldo (`if (!id) { ... }`),
-      // el vendedor puede seguir subiendo fotos sin interrupción.
     } catch {
-      // Mismo criterio: falla silenciosa, hay un respaldo más adelante.
+      // Falla silenciosa — intentarGuardarItem ya trae su propio intento de
+      // creación como respaldo, el vendedor puede seguir subiendo fotos.
     }
   }
 
-  // ── Confirmar: agrega todos los ítems detectados a la cotización ───────────
-
-  // Guarda TODOS los itemsDetectados vigentes (el resultado del grupo que
-  // se está procesando ahora mismo) en la cotización — se llama automático
-  // apenas la tarjeta de un ítem queda armada, sin esperar un clic aparte
-  // del vendedor. Devuelve false si algo falló, para que el orquestador
-  // detenga la cola en vez de seguir con el siguiente ítem.
-  async function guardarItemsDetectadosEnCotizacion(): Promise<boolean> {
-    if (itemsDetectados.length === 0 || !cliente) return false
-    if (itemsDetectados.some(it => !it.item_id)) {
-      setError('Elige la categoría del catálogo para cada ítem antes de continuar.')
-      return false
-    }
-    setError(null)
-    // Protege contra doble clic mientras guarda — sin esto, dos clics
-    // seguidos en "Guardar y seguir" disparan dos POST en paralelo y
-    // duplican el mueble en la cotización.
-    setEstado('guardando')
-
-    try {
-      let id = cotizacionId
-      if (!id) {
-        const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
-        const dataCot = await resCot.json()
-        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); setEstado('resultado'); return false }
-        id = dataCot.id as string
-        setCotizacionId(id)
-        window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))
-      }
-
-      const nuevos: MuebleAgregado[] = []
-
-      for (const item of itemsDetectados) {
-        const resMueble = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/mueble`), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            item_id: item.item_id,
-            cantidad: item.cantidad,
-            imagen_base64: item.imagenBase64,
-            mime_type: 'image/webp',
-            diagnostico_ia_json: { item_nombre: item.item_nombre, confianza: item.confianza },
-            titulo: item.titulo,
-            descripcion: item.descripcion || undefined,
-            servicios_json: item.servicios.filter(s => s.nombre.trim()),
-            insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
-            materiales_json: item.materiales.filter(m => m.nombre.trim() && m.peso_kg > 0 && m.factor_co2_kg > 0),
-            factor_rentabilidad: item.factor_rentabilidad,
-          }),
-        })
-        const dataMueble = await resMueble.json()
-        if (!resMueble.ok) { setError(dataMueble.error ?? `Error al guardar "${item.item_nombre}".`); setEstado('resultado'); return false }
-
-        nuevos.push({
-          id: dataMueble.mueble.id,
-          titulo: item.titulo || item.item_nombre,
-          cantidad: item.cantidad,
-          precio_mueble: dataMueble.mueble.precio_mueble,
-          co2_evitado_kg: dataMueble.mueble.co2_evitado_kg,
-          imagen_preview: item.imagenPreview,
-          precio_mercado_nuevo: null,
-          precio_mercado_fuente_url: null,
-          precio_mercado_fuente_titulo: null,
-          precio_mercado_estado: 'pendiente',
-        })
-      }
-
-      setMuebles(prev => [...prev, ...nuevos])
-      for (const nuevo of nuevos) dispararPrecioMercado(nuevo.id)
-      return true
-    } catch {
-      setError('Error de conexión. Intenta de nuevo.')
-      setEstado('resultado')
-      return false
-    }
-  }
-
-  // Procesa UN índice de la cola: analiza (o arma manual), y si hay una
-  // pieza sin_match pendiente de resolver, se detiene ahí — la pregunta al
-  // vendedor es la que decide si sigue o no. Si no hay pregunta pendiente,
-  // el vendedor guarda con el botón de la barra inferior y eso avanza sola
-  // al siguiente vía confirmarYAvanzar.
-  async function procesarIndiceCola(idx: number, cola: GrupoPendiente[]) {
-    const grupo = cola[idx]
-    if (!grupo) { setProcesandoIdx(null); return }
-
-    setProcesandoIdx(idx)
-    setEstado('analizando')
-    // Limpia el resultado del ítem anterior ANTES de procesar este — sin
-    // esto, si el análisis falla, la pantalla se queda mostrando (y
-    // permitiendo volver a guardar) el ítem anterior, que ya se guardó.
-    setItemsDetectados([])
-    setNoIdentificados([])
-    setSinMatch([])
-    setObservaciones('')
-
-    await (grupo.modo === 'ia' ? analizarGrupoConIA(grupo) : Promise.resolve(continuarGrupoManual(grupo)))
-    setEstado('resultado')
-  }
-
-  // Dispara la cola completa desde cero — solo los gruposPendientes que sí
-  // tienen fotos entran a la cola (una tarjeta vacía sin fotos no genera un
-  // ítem fantasma).
-  async function generarPropuesta() {
-    const inicial = gruposPendientes.filter(g => g.fotos.length > 0)
-    if (inicial.length === 0) return
-    setColaProcesar(inicial)
-    await procesarIndiceCola(0, inicial)
-  }
-
-  // Se llama después de que el vendedor ya resolvió (o no había) la
-  // pregunta de "ítem aparte" para el grupo actual — guarda ese ítem y
-  // avanza al siguiente de la cola, o termina y va a la cotización.
-  async function confirmarYAvanzar() {
-    const guardado = await guardarItemsDetectadosEnCotizacion()
-    if (!guardado) return
-    const siguienteIdx = (procesandoIdx ?? 0) + 1
-    if (siguienteIdx < colaProcesar.length) {
-      await procesarIndiceCola(siguienteIdx, colaProcesar)
-    } else {
-      setProcesandoIdx(null)
-      setEstado('idle')
-      if (cotizacionId) router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))
-    }
-  }
-
-  // El vendedor confirma que la pieza extra SÍ es un ítem aparte: se agrega
-  // al FINAL de colaProcesar (no interrumpe al que ya estaba esperando) y
-  // se quita de sinMatch para no repetir la pregunta.
-  function confirmarPiezaComoItemAparte() {
-    if (!preguntaItemAparte) return
+  // El vendedor confirma que la pieza extra SÍ es un ítem aparte: entra a
+  // la micro-cola interna, se procesa sola cuando le toque.
+  function confirmarPiezaComoItemAparte(pieza: SinMatchConImagen) {
+    setSinMatch(prev => prev.filter(d => d !== pieza))
     const nuevoGrupo: GrupoPendiente = {
       id: crypto.randomUUID(),
-      fotos: [{ base64: preguntaItemAparte.imagenBase64, preview: preguntaItemAparte.imagenPreview }],
+      fotos: [{ base64: pieza.imagenBase64, preview: pieza.imagenPreview }],
       modo: 'ia',
     }
-    setColaProcesar(prev => [...prev, nuevoGrupo])
-    const restante = sinMatch.filter(d => d !== preguntaItemAparte)
-    setSinMatch(restante)
-    // Si el mismo grupo trajo más de una pieza sin_match, se pregunta por
-    // la siguiente recién ahora — una decisión a la vez, nunca todas juntas.
-    setPreguntaItemAparte(restante.length > 0 ? restante[0] : null)
+    setColaExtra(prev => [...prev, nuevoGrupo])
+    if (!procesando) drenarColaExtra()
   }
 
-  // El vendedor dice que NO es un ítem aparte: se descarta, sigue siendo
-  // solo contexto de las fotos del ítem actual.
-  function descartarPiezaComoItemAparte() {
-    if (!preguntaItemAparte) return
-    const restante = sinMatch.filter(d => d !== preguntaItemAparte)
-    setSinMatch(restante)
-    setPreguntaItemAparte(restante.length > 0 ? restante[0] : null)
+  function descartarPiezaComoItemAparte(pieza: SinMatchConImagen) {
+    setSinMatch(prev => prev.filter(d => d !== pieza))
   }
 
-  // Botón fijo "+ Agregar otro ítem" de la barra inferior — SUMA una
-  // tarjeta nueva en blanco debajo de las que ya existen, nunca las
-  // reemplaza. Solo tiene sentido mientras se está armando (procesandoIdx
-  // === null); una vez arrancó "Genera la propuesta" este botón se oculta.
-  function agregarGrupoNuevo() {
+  // Botón "+ Agregar otro ítem" — vuelve a mostrar la tarjeta de subir fotos
+  // para un ítem nuevo, vacío. Solo tiene sentido cuando no hay nada
+  // procesando y la tarjeta actual ya se ocultó (analizandoItemActivo la
+  // esconde apenas dispara el análisis).
+  function agregarOtroItem() {
     setError(null)
-    setGruposPendientes(prev => prev.length >= MAX_ITEMS_POR_COTIZACION ? prev : [...prev, nuevoGrupoVacio()])
+    setNumeroItemActivo(n => n + 1)
+    setMostrandoTarjeta(true)
   }
 
   // ── Precio de mercado nuevo (IA + búsqueda web) — fire-and-forget ──────────
@@ -720,9 +685,10 @@ function NuevaCotizacionContent() {
 
   // ── Fila de rescate: crear un ítem que la IA no detectó ─────────────────────
 
-  async function abrirRescate() {
+  async function abrirRescate(desdeUiKey?: string, nombreSugerido?: string) {
     setMostrarRescate(true)
-    setRescateNombre(''); setRescatePrecio(''); setRescateCo2(''); setRescateCategoriaId('')
+    setRescateDesdeUiKey(desdeUiKey)
+    setRescateNombre(nombreSugerido ?? ''); setRescatePrecio(''); setRescateCo2(''); setRescateCategoriaId('')
     setError(null)
     if (categoriasHoja.length === 0) {
       const res = await fetch(conEmpresa('/api/cotizador/categorias'))
@@ -803,6 +769,11 @@ function NuevaCotizacionContent() {
         precio_mercado_estado: 'pendiente',
       }])
       dispararPrecioMercado(dataMueble.mueble.id)
+      // Si venía de una tarjeta de itemsPendientes, esa tarjeta ya cumplió
+      // su propósito (guía de título/descripción) — el rescate creó su
+      // propio mueble, así que se quita para no dejar un duplicado fantasma.
+      if (rescateDesdeUiKey) quitarItemPendiente(rescateDesdeUiKey)
+      setRescateDesdeUiKey(undefined)
       setMostrarRescate(false)
     } catch {
       setError('Error de conexión al agregar el ítem especial.')
@@ -814,10 +785,6 @@ function NuevaCotizacionContent() {
   const tp = 'text-[var(--text-primary)]'
   const ts = 'text-[var(--text-secondary)]'
   const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-
-  const totalPrecioDetectado = itemsDetectados.reduce((s, it) => s + precioUnidad(it) * it.cantidad, 0)
-  const totalCo2Detectado = itemsDetectados.reduce((s, it) => s + co2PorUnidad(it) * it.cantidad, 0)
-  const totalAguaDetectada = itemsDetectados.reduce((s, it) => s + aguaPorUnidad(it) * it.cantidad, 0)
 
   const totalPrecio = muebles.reduce((s, m) => s + m.precio_mueble, 0)
   const totalCo2 = muebles.reduce((s, m) => s + m.co2_evitado_kg, 0)
@@ -835,224 +802,198 @@ function NuevaCotizacionContent() {
           </div>
         ) : (
           <>
-        {/* Identificación del cliente — obligatoria antes de subir cualquier foto */}
-        {!cliente && (
-          <IdentificacionCliente conEmpresa={conEmpresa} onClienteListo={handleClienteListo} />
-        )}
-
-        {cliente && (
-          <div className={`rounded-[12px] border p-3 mb-4 flex items-center justify-between gap-2 ${cardBg}`}>
-            <div className="min-w-0">
-              {(() => {
-                const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
-                // Sin celular es la fila-ancla (la empresa misma, sin contacto
-                // real elegido) — se muestra el nombre comercial (con la razón
-                // social entre paréntesis si existe) y el NIT en su propia
-                // línea, nunca el nombre/teléfono vacíos de un contacto.
-                if (emp && !cliente.telefono) {
-                  return (
-                    <>
-                      <p className={`text-sm font-semibold truncate ${tp}`}>
-                        {emp.nombre_comercial ? `${emp.nombre_comercial} (${emp.razon_social})` : emp.razon_social}
-                      </p>
-                      <p className={`text-xs ${ts}`}>NIT {emp.nit}</p>
-                    </>
-                  )
-                }
-                return (
-                  <>
-                    <p className={`text-sm font-semibold truncate ${tp}`}>{cliente.nombre} {cliente.apellido ?? ''}</p>
-                    <p className={`text-xs ${ts}`}>
-                      {formatTelefonoVista(cliente.telefono, cliente.telefono_indicativo)}
-                      {emp ? ` · NIT ${emp.nit}` : ''}
-                    </p>
-                  </>
-                )
-              })()}
-            </div>
-            {muebles.length === 0 && (
-              <button onClick={() => setCliente(null)} className="text-xs font-semibold text-[var(--color-brand)] hover-pop hover-press flex-shrink-0">
-                Cambiar
-              </button>
+            {/* Identificación del cliente — obligatoria antes de subir cualquier foto */}
+            {!cliente && (
+              <IdentificacionCliente conEmpresa={conEmpresa} onClienteListo={handleClienteListo} />
             )}
-          </div>
-        )}
 
-        {/* Lista de muebles ya agregados a la cotización */}
-        {cliente && muebles.length > 0 && (
-          <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold mb-3 ${ts}`}>
-              {formatNumero(muebles.length)} línea{muebles.length === 1 ? '' : 's'} agregada{muebles.length === 1 ? '' : 's'}
-            </p>
-            <div className="space-y-2">
-              {muebles.map((m, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  {m.imagen_preview && (
-                    <img src={m.imagen_preview} alt="" className="w-10 h-10 rounded-[8px] object-cover object-center flex-shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className={`text-sm font-semibold truncate ${tp}`}>{m.titulo}{m.cantidad > 1 ? ` × ${m.cantidad}` : ''}</p>
-                    <p className={`text-xs ${ts}`}>{formatCOP(m.precio_mueble)}</p>
-                    {m.precio_mercado_estado === 'pendiente' && (
-                      <p className={`text-xs flex items-center gap-1 mt-0.5 ${ts}`}>
-                        <Loader2 size={11} className="animate-spin" /> Buscando precio de referencia...
-                      </p>
-                    )}
-                    {(m.precio_mercado_estado === 'sugerido' || m.precio_mercado_estado === 'confirmado') && m.precio_mercado_nuevo && (
-                      <button onClick={() => abrirEdicionPrecio(m)} className="text-xs flex items-center gap-1 mt-0.5 hover-pop hover-press text-[#00827C]">
-                        {m.precio_mercado_estado === 'confirmado'
-                          ? <CheckCircle size={11} />
-                          : <Pencil size={11} />}
-                        Nuevo: {formatCOP(m.precio_mercado_nuevo)}
-                        {m.precio_mercado_fuente_url && <ExternalLink size={11} />}
-                      </button>
-                    )}
-                    {m.precio_mercado_estado === 'sin_resultado' && (
-                      <button onClick={() => abrirEdicionPrecio(m)} className={`text-xs flex items-center gap-1 mt-0.5 hover-pop hover-press ${ts}`}>
-                        <Pencil size={11} /> Agregar precio de mercado nuevo
-                      </button>
-                    )}
-                  </div>
+            {cliente && (
+              <div className={`rounded-[12px] border p-3 mb-4 flex items-center justify-between gap-2 ${cardBg}`}>
+                <div className="min-w-0">
+                  {(() => {
+                    const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
+                    if (emp && !cliente.telefono) {
+                      return (
+                        <>
+                          <p className={`text-sm font-semibold truncate ${tp}`}>
+                            {emp.nombre_comercial ? `${emp.nombre_comercial} (${emp.razon_social})` : emp.razon_social}
+                          </p>
+                          <p className={`text-xs ${ts}`}>NIT {emp.nit}</p>
+                        </>
+                      )
+                    }
+                    return (
+                      <>
+                        <p className={`text-sm font-semibold truncate ${tp}`}>{cliente.nombre} {cliente.apellido ?? ''}</p>
+                        <p className={`text-xs ${ts}`}>
+                          {formatTelefonoVista(cliente.telefono, cliente.telefono_indicativo)}
+                          {emp ? ` · NIT ${emp.nit}` : ''}
+                        </p>
+                      </>
+                    )
+                  })()}
                 </div>
-              ))}
-            </div>
-            <div className={`mt-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
-              <div className="flex justify-between items-center">
-                <span className={`text-sm font-bold ${tp}`}>Total</span>
-                <span className="text-sm font-bold text-[#00827C]">{formatCOP(totalPrecio)}</span>
+                {muebles.length === 0 && (
+                  <button onClick={() => setCliente(null)} className="text-xs font-semibold text-[var(--color-brand)] hover-pop hover-press flex-shrink-0">
+                    Cambiar
+                  </button>
+                )}
               </div>
-              <div className={`mt-1 text-xs ${ts}`}>Evitas {formatNumero(totalCo2, { unidad: 'kg CO2 eq' })}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Cascada de tarjetas de staging — una por ítem que se está
-            armando, ninguna analiza nada por sí sola. Solo se muestran
-            mientras no está corriendo la cola (procesandoIdx === null).
-            El espacio ENTRE tarjetas va con space-y-4 en el contenedor —
-            pero el contenedor en sí NO lleva mb-4 propio, mismo criterio
-            que los bloques "Analizando" y "Resultado" de más abajo: el
-            hueco de 16px antes de la barra sticky ya está resuelto por su
-            propio cálculo (-mt-5, ver comentario ahí) sin ayuda de ningún
-            margen del contenido. Agregarle mb-4 aquí sumaba un segundo
-            hueco de 16px encima del ya calculado, duplicándolo (bug real
-            reportado 2026-08-24, corregido dos veces: primero se bajó de
-            "un mb-4 por tarjeta" a "uno solo en el contenedor", pero seguía
-            sobrando ese único mb-4 también). */}
-        {cliente && procesandoIdx === null && (
-          <div className="space-y-4">
-            {gruposPendientes.map((grupo, i) => (
-              <TarjetaGrupoFotos
-                key={grupo.id}
-                grupo={grupo}
-                numero={i + 1}
-                esPrimero={i === 0}
-                maxFotos={MAX_FOTOS_POR_TANDA}
-                error={i === gruposPendientes.length - 1 ? error : null}
-                onCambiarModo={(modo) => setGruposPendientes(prev => prev.map(g => g.id === grupo.id ? { ...g, modo } : g))}
-                onAgregarFotos={(files) => agregarFotosAGrupo(grupo.id, files)}
-                onQuitarFoto={(idx) => quitarFotoDeGrupo(grupo.id, idx)}
-                onQuitarGrupo={(gruposPendientes.length > 1 || grupo.fotos.length > 0) ? () => quitarGrupo(grupo.id) : undefined}
-              />
-            ))}
-            {gruposPendientes.length >= MAX_ITEMS_POR_COTIZACION && (
-              <p className={`text-xs text-center ${ts}`}>Ya armaste el máximo de {MAX_ITEMS_POR_COTIZACION} ítems para esta cotización.</p>
             )}
-          </div>
-        )}
 
-        {/* Analizando */}
-        {estado === 'analizando' && (
-          <div className={`rounded-[12px] border p-6 ${cardBg}`}>
-            {procesandoIdx !== null && colaProcesar[procesandoIdx]?.fotos.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto mb-4">
-                {colaProcesar[procesandoIdx].fotos.map((f, i) => (
-                  <img key={i} src={f.preview} alt="Vista previa" className="h-32 flex-shrink-0 rounded-[8px] object-cover bg-[var(--bg-input)]" />
+            {/* Lista de muebles ya agregados a la cotización */}
+            {cliente && muebles.length > 0 && (
+              <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+                <p className={`text-xs font-semibold mb-3 ${ts}`}>
+                  {formatNumero(muebles.length)} línea{muebles.length === 1 ? '' : 's'} agregada{muebles.length === 1 ? '' : 's'}
+                </p>
+                <div className="space-y-2">
+                  {muebles.map((m, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      {m.imagen_preview && (
+                        <img src={m.imagen_preview} alt="" className="w-10 h-10 rounded-[8px] object-cover object-center flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-sm font-semibold truncate ${tp}`}>{m.titulo}{m.cantidad > 1 ? ` × ${m.cantidad}` : ''}</p>
+                        <p className={`text-xs ${ts}`}>{formatCOP(m.precio_mueble)}</p>
+                        {m.precio_mercado_estado === 'pendiente' && (
+                          <p className={`text-xs flex items-center gap-1 mt-0.5 ${ts}`}>
+                            <Loader2 size={11} className="animate-spin" /> Buscando precio de referencia...
+                          </p>
+                        )}
+                        {(m.precio_mercado_estado === 'sugerido' || m.precio_mercado_estado === 'confirmado') && m.precio_mercado_nuevo && (
+                          <button onClick={() => abrirEdicionPrecio(m)} className="text-xs flex items-center gap-1 mt-0.5 hover-pop hover-press text-[#00827C]">
+                            {m.precio_mercado_estado === 'confirmado'
+                              ? <CheckCircle size={11} />
+                              : <Pencil size={11} />}
+                            Nuevo: {formatCOP(m.precio_mercado_nuevo)}
+                            {m.precio_mercado_fuente_url && <ExternalLink size={11} />}
+                          </button>
+                        )}
+                        {m.precio_mercado_estado === 'sin_resultado' && (
+                          <button onClick={() => abrirEdicionPrecio(m)} className={`text-xs flex items-center gap-1 mt-0.5 hover-pop hover-press ${ts}`}>
+                            <Pencil size={11} /> Agregar precio de mercado nuevo
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className={`mt-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-sm font-bold ${tp}`}>Total</span>
+                    <span className="text-sm font-bold text-[#00827C]">{formatCOP(totalPrecio)}</span>
+                  </div>
+                  <div className={`mt-1 text-xs ${ts}`}>Evitas {formatNumero(totalCo2, { unidad: 'kg CO2 eq' })}</div>
+                </div>
+              </div>
+            )}
+
+            {/* Zona 1: ítem activo — tarjeta de subir fotos, o el skeleton de
+                "Analizando..." mientras corre la IA. Nunca las dos a la vez:
+                mostrandoTarjeta se apaga apenas se dispara el análisis. */}
+            {cliente && mostrandoTarjeta && !procesando && (
+              <div className="space-y-4">
+                <TarjetaGrupoFotos
+                  grupo={grupoActivo}
+                  numero={numeroItemActivo}
+                  esPrimero={numeroItemActivo === 1}
+                  maxFotos={MAX_FOTOS_POR_TANDA}
+                  error={error}
+                  onCambiarModo={(modo) => setGrupoActivo(prev => ({ ...prev, modo }))}
+                  onAgregarFotos={agregarFotosAlActivo}
+                  onQuitarFoto={quitarFotoDelActivo}
+                />
+              </div>
+            )}
+
+            {procesando && (
+              <div className={`rounded-[12px] border p-6 ${cardBg}`}>
+                <SkeletonCard lineas={3} className="border-0 p-0" />
+                <p className={`text-sm text-center mt-4 ${ts}`}>
+                  {(() => {
+                    const mensajes = mensajesAnalizando(1)
+                    return analizandoMsgIndex < mensajes.length
+                      ? mensajes[analizandoMsgIndex]
+                      : 'Sigue en proceso, puede tardar hasta un minuto con conexión lenta.'
+                  })()}
+                </p>
+              </div>
+            )}
+
+            {/* Zona 2: necesita tu atención — tarjetas sin categoría (o con
+                guardado fallido) + preguntas "¿ítem aparte?" sin responder.
+                Pueden acumularse varias a la vez, nunca bloquean que se
+                agregue o analice otro ítem. */}
+            {itemsPendientes.length > 0 && (
+              <div className="space-y-4 mt-4">
+                <p className={`text-xs font-semibold ${ts}`}>Necesita tu atención</p>
+                {itemsPendientes.map((item) => (
+                  <div key={item._uiKey} className="space-y-2">
+                    <GrupoItemCard
+                      item={item}
+                      catalogo={catalogo}
+                      conEmpresa={conEmpresa}
+                      onChange={(nuevo) => actualizarItemPendiente(item._uiKey, nuevo)}
+                      onQuitar={() => quitarItemPendiente(item._uiKey)}
+                      onDuplicar={() => {}}
+                    />
+                    {item._errorGuardado && (
+                      <p className="text-sm text-[#FF5E4B] flex items-center gap-1">
+                        <WarningCircle size={16} /> {item._errorGuardado}
+                      </p>
+                    )}
+                    <div className="flex gap-2">
+                      {!item.item_id && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="flex-1"
+                          onClick={() => abrirRescate(item._uiKey, item.titulo)}
+                        >
+                          No lo encuentro, crear ítem nuevo
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        className="flex-1"
+                        icon={item._errorGuardado ? <RefreshCw size={16} strokeWidth={2.5} /> : undefined}
+                        onClick={() => guardarItemPendiente(item)}
+                      >
+                        {item._errorGuardado ? 'Reintentar guardar' : 'Guardar'}
+                      </Button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
-            <SkeletonCard lineas={3} className="border-0 p-0" />
-            <p className={`text-sm text-center mt-4 ${ts}`}>
-              {mensajesAnalizando(procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos.length ?? 1 : 1)[analizandoMsgIndex]}
-            </p>
-          </div>
-        )}
 
-        {/* Resultado multi-ítem */}
-        {(estado === 'resultado' || estado === 'guardando') && (
-          <div className="space-y-4">
-            {procesandoIdx !== null && colaProcesar[procesandoIdx]?.fotos.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto">
-                {colaProcesar[procesandoIdx].fotos.map((f, i) => (
-                  <img key={i} src={f.preview} alt="" className="h-24 flex-shrink-0 rounded-[10px] object-cover bg-[var(--bg-input)]" />
+            {sinMatch.length > 0 && (
+              <div className="space-y-3 mt-4">
+                {sinMatch.map((pieza, i) => (
+                  <div key={i} className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
+                    <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>Se detectó algo más en las fotos</p>
+                    <div className="flex items-center gap-3 mb-3">
+                      {pieza.imagenPreview && (
+                        <img src={pieza.imagenPreview} alt="" className="w-16 h-16 rounded-[8px] object-cover flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className={`text-sm font-semibold ${tp}`}>{pieza.titulo}</p>
+                        <p className={`text-xs ${ts}`}>{pieza.descripcion}</p>
+                      </div>
+                    </div>
+                    <p className={`text-sm font-semibold mb-3 ${tp}`}>¿Esto es un ítem aparte?</p>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="secondary" className="flex-1" onClick={() => descartarPiezaComoItemAparte(pieza)}>No</Button>
+                      <Button size="sm" className="flex-1" onClick={() => confirmarPiezaComoItemAparte(pieza)}>Sí, es aparte</Button>
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
 
-            {observaciones && (
-              <p className={`text-xs italic ${ts}`}>&ldquo;{observaciones}&rdquo;</p>
-            )}
-
-            {itemsDetectados.length === 0 && noIdentificados.length === 0 && sinMatch.length === 0 && (
-              <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
-                <XCircle size={24} className="text-[#FF5E4B] mx-auto mb-2" />
-                <p className={`text-sm ${ts}`}>No se detectó ningún mueble en {(procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos.length ?? 0 : 0) > 1 ? 'las fotos' : 'la foto'}. Intenta con otra imagen.</p>
-              </div>
-            )}
-
-            {itemsDetectados.map((item, i) => (
-              <GrupoItemCard
-                key={item._uiKey ?? i}
-                item={item}
-                catalogo={catalogo}
-                conEmpresa={conEmpresa}
-                fotosGrupo={procesandoIdx !== null ? colaProcesar[procesandoIdx]?.fotos : undefined}
-                onElegir={procesandoIdx !== null && colaProcesar[procesandoIdx]?.modo === 'ia' && itemsDetectados.length > 1 ? () => elegirCandidato(i) : undefined}
-                onChange={(nuevo) => actualizarItem(i, nuevo)}
-                onQuitar={() => quitarDetectado(i)}
-                onDuplicar={() => duplicarDetectado(i)}
-              />
-            ))}
-
-            {/* Fila de rescate: crear un ítem nuevo que todavía no existe en
-                el catálogo (independiente del modo Con IA / Manual) */}
-            <button
-              type="button"
-              onClick={abrirRescate}
-              className={`w-full flex items-center justify-center gap-2 py-3 rounded-full border-2 border-dashed text-sm font-semibold transition-colors hover-pop ${ts}`}
-              style={{ borderColor: 'var(--border)' }}
-            >
-              <Plus size={16} /> Agregar ítem que no existe en el catálogo
-            </button>
-
-            {/* Pregunta explícita: una pieza sin_match a la vez, nunca una
-                lista pasiva — el vendedor decide si es un ítem aparte antes
-                de seguir. */}
-            {preguntaItemAparte && (
-              <div className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
-                <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>Se detectó algo más en las fotos</p>
-                <div className="flex items-center gap-3 mb-3">
-                  {preguntaItemAparte.imagenPreview && (
-                    <img src={preguntaItemAparte.imagenPreview} alt="" className="w-16 h-16 rounded-[8px] object-cover flex-shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className={`text-sm font-semibold ${tp}`}>{preguntaItemAparte.titulo}</p>
-                    <p className={`text-xs ${ts}`}>{preguntaItemAparte.descripcion}</p>
-                  </div>
-                </div>
-                <p className={`text-sm font-semibold mb-3 ${tp}`}>¿Esto es un ítem aparte?</p>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="secondary" className="flex-1" onClick={descartarPiezaComoItemAparte}>No</Button>
-                  <Button size="sm" className="flex-1" onClick={confirmarPiezaComoItemAparte}>Sí, agregarlo a la cola</Button>
-                </div>
-              </div>
-            )}
-
-            {/* No reconocidos por texto plano (sin foto propia) — sigue
-                usando "Buscar en catálogo" directo, no es una pieza nueva
-                detectada visualmente. */}
             {noIdentificados.length > 0 && (
-              <div className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
+              <div className={`rounded-[12px] border p-4 mt-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
                 <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>No reconocidos en el catálogo</p>
                 <div className="flex flex-col gap-3">
                   {noIdentificados.map((n, i) => (
@@ -1071,139 +1012,68 @@ function NuevaCotizacionContent() {
               </div>
             )}
 
-            {itemsDetectados.length > 0 && (
-              <div className={`rounded-[12px] border p-4 ${cardBg}`}>
-                <div className={`flex items-center justify-between ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
-                  <span className={`text-sm font-bold ${tp}`}>Total de esta foto</span>
-                  <span className="text-lg font-bold text-[#00827C]">{formatCOP(totalPrecioDetectado)}</span>
-                </div>
-                <div className="flex items-center gap-1 mt-1">
-                  <Leaf size={14} className="text-[#38B98E]" />
-                  <span className={`text-xs ${ts}`}>{formatNumero(totalCo2Detectado, { unidad: 'kg CO2 eq evitado' })}</span>
-                </div>
-                <div className="flex items-center gap-1 mt-1">
-                  <Drop size={14} className="text-[#59A6E4]" />
-                  <span className={`text-xs ${ts}`}>Total agua evitada: {formatNumero(totalAguaDetectada, { unidad: 'L' })}</span>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <p className="text-sm text-[#FF5E4B] flex items-center gap-1">
+            {error && !procesando && itemsPendientes.length === 0 && (
+              <p className="text-sm text-[#FF5E4B] flex items-center gap-1 mt-4">
                 <WarningCircle size={16} /> {error}
               </p>
             )}
-          </div>
-        )}
-
-        {/* Ítems que ya quedaron en la cola pero todavía no arranca su turno
-            — visible tanto durante "Analizando" como durante "Resultado" del
-            ítem actual, para que no parezca que se perdieron (bug real
-            reportado: "no se veía que estaba procesando la segunda"). Nunca
-            se muestran como "analizando" ellos mismos — serían mentira,
-            el procesamiento es secuencial, uno a la vez. */}
-        {procesandoIdx !== null && colaProcesar.map((grupo, i) => i > procesandoIdx && (
-          <div key={grupo.id} className={`rounded-[12px] border p-3 mt-3 flex items-center gap-3 opacity-60 ${cardBg}`}>
-            {grupo.fotos[0] && (
-              <img src={grupo.fotos[0].preview} alt="" className="w-12 h-12 rounded-[8px] object-cover flex-shrink-0" />
-            )}
-            <div className="flex-1 min-w-0">
-              <p className={`text-sm font-semibold ${tp}`}>Ítem {i + 1}</p>
-              <p className={`text-xs flex items-center gap-1 ${ts}`}>
-                <Clock size={12} sinAnimacion /> En cola, espera su turno
-              </p>
-            </div>
-          </div>
-        ))}
           </>
         )}
       </div>
 
       {/* Barra de acciones sticky — mismo patrón que /admin/categorias: degradado de
-          desvanecido, nunca línea divisoria dura ni position:fixed.
-          "Genera la propuesta" debe seguir visible aunque el usuario vuelva al
-          estado idle (para subir otra foto) — antes solo aparecía junto con
-          "Agregar a la cotización", así que en cuanto se guardaba el primer
-          ítem y la pantalla volvía a "Sube otra foto", el botón desaparecía
-          por completo y no había forma de terminar la cotización. */}
-      {(gruposPendientes.some(g => g.fotos.length > 0) || procesandoIdx !== null || cotizacionId || muebles.length > 0) && (
-        // El espacio real hasta este botón no es solo el margin: el wrapper
-        // de arriba cierra con py-6 (24px de padding inferior) Y este div
-        // tiene su propio py-3 (12px de padding superior) antes de la fila
-        // de botones. Sin descontar ambos, el hueco visual duplica el
-        // espacio de 16px (mb-4) que hay entre el cliente y las fotos.
-        // Cuenta exacta: 24px (padding wrapper) + 12px (py-3 de este div)
-        // + margen = 16px objetivo → margen = -20px → -mt-5.
+          desvanecido, nunca línea divisoria dura ni position:fixed. */}
+      {!cargandoExistente && cliente && (
         <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 border-t border-[var(--border)] -mt-5">
           <div aria-hidden="true" className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent" />
           <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-3 px-4 sm:px-6 lg:px-8">
-            {/* Mientras se arma (procesandoIdx === null): agregar otro ítem
-                y generar la propuesta. Mientras se procesa: solo la
-                pregunta de "ítem aparte" (arriba) controla el avance, sin
-                botones sueltos que puedan interrumpir la cola. */}
-            {procesandoIdx === null && (
-              <>
-                {gruposPendientes.length < MAX_ITEMS_POR_COTIZACION && (
-                  <Button
-                    variant="secondary"
-                    onClick={agregarGrupoNuevo}
-                    icon={<Plus size={16} strokeWidth={2.5} />}
-                    className="flex-1 w-full"
-                  >
-                    Agregar otro ítem
-                  </Button>
-                )}
-                <Button
-                  onClick={generarPropuesta}
-                  disabled={!gruposPendientes.some(g => g.fotos.length > 0)}
-                  icon={<ArrowRight size={16} strokeWidth={2.5} />}
-                  className="flex-1 w-full"
-                >
-                  Genera la propuesta
-                </Button>
-              </>
-            )}
-            {/* El análisis de este ítem falló (itemsDetectados quedó vacío
-                al limpiar en procesarIndiceCola) — nada que guardar, se
-                reintenta el mismo índice en vez de avanzar y perder sus
-                fotos. */}
-            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && itemsDetectados.length === 0 && (
+            {!procesando && mostrandoTarjeta && (
               <Button
-                variant="secondary"
-                onClick={() => procesarIndiceCola(procesandoIdx, colaProcesar)}
-                icon={<RefreshCw size={16} strokeWidth={2.5} />}
+                onClick={analizarItemActivo}
+                disabled={grupoActivo.fotos.length === 0}
+                icon={<ArrowRight size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
-                Reintentar
+                Analizar este ítem
               </Button>
             )}
-            {procesandoIdx !== null && estado === 'resultado' && !preguntaItemAparte && itemsDetectados.length > 0 && (
+            {!procesando && !mostrandoTarjeta && (
               <Button
-                onClick={confirmarYAvanzar}
+                variant="secondary"
+                onClick={agregarOtroItem}
                 icon={<Plus size={16} strokeWidth={2.5} />}
                 className="flex-1 w-full"
               >
-                {procesandoIdx + 1 < colaProcesar.length ? 'Guardar y seguir con el siguiente' : 'Guardar y terminar'}
+                Agregar otro ítem
               </Button>
             )}
-            {procesandoIdx !== null && estado === 'guardando' && (
-              <Button loading disabled icon={<Plus size={16} strokeWidth={2.5} />} className="flex-1 w-full">
-                Guardando...
+            {procesando && (
+              <Button loading disabled className="flex-1 w-full">
+                Analizando...
               </Button>
             )}
+            <Button
+              variant="secondary"
+              disabled={procesando || itemsPendientes.length > 0 || muebles.length === 0}
+              onClick={() => cotizacionId && router.push(conEmpresa(`/empresa/cotizador/${cotizacionId}`))}
+              className="flex-1 w-full"
+            >
+              Ir a la cotización
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Formulario de rescate: ítem que la IA no detectó */}
+      {/* Formulario de rescate: ítem que la IA no detectó, o que un ítem
+          pendiente no logró encontrar en el catálogo */}
       <Modal
         abierto={mostrarRescate && !confirmarTipoRescate}
-        onClose={() => setMostrarRescate(false)}
+        onClose={() => { setMostrarRescate(false); setRescateDesdeUiKey(undefined) }}
         titulo="Agregar ítem"
         descripcion="Descríbelo tal como lo verías en el catálogo. El impacto ambiental es tu mejor estimado, el super_admin lo revisa después."
         textoConfirmar="Continuar"
         onConfirmar={() => { if (validarRescate()) setConfirmarTipoRescate(true) }}
-        onCancelar={() => setMostrarRescate(false)}
+        onCancelar={() => { setMostrarRescate(false); setRescateDesdeUiKey(undefined) }}
       >
         <div className="flex flex-col gap-3">
           <div>
