@@ -46,7 +46,15 @@ function renderCeldaColumna(clave: ClaveColumna, c: Cotizacion): React.ReactNode
   const tipo = definicionDe(clave).tipo
   if (clave === 'estado') {
     const info = ESTADOS.find(e => e.key === c.estado)
-    return info ? <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${info.color}`}>{info.label}</span> : '—'
+    if (!info) return '—'
+    // Toda cotización 'por_cotizar' que llega hasta acá ya tiene al menos 1
+    // ítem guardado (las de 0 ítems ni siquiera llegan, GET ya las filtra) —
+    // así que "Por cotizar" se muestra como "Borrador" en esta lista: se
+    // borra sola a las 8h de guardado el primer ítem si no avanza de estado
+    // (cron cotizador-purga-borradores-8h), sin afectar el nombre del
+    // embudo en ninguna otra pantalla (tabs, sales-dashboard).
+    const label = c.estado === 'por_cotizar' ? 'Borrador' : info.label
+    return <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${info.color}`}>{label}</span>
   }
   if (clave === 'codigo_cotizacion') {
     // "COT XXXXXXXX" nunca se parte en móvil ni en tablet — directriz
