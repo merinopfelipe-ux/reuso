@@ -23,6 +23,10 @@ export interface ItemConImagen extends ItemDetectadoConSnapshot {
   // ítem, React reutilice el estado interno (categoriaSel) de la tarjeta
   // anterior en esa posición, mostrando una categoría que no corresponde.
   _uiKey?: string
+  // Presente solo cuando el guardado automático de este ítem ya falló una
+  // vez (ej. sin internet) — page.tsx lo usa para mostrar el motivo junto
+  // al botón "Reintentar guardar" en vez de un guardado silencioso.
+  _errorGuardado?: string
 }
 
 interface ItemCatalogo { id: string; nombre: string; categoria_nombre: string | null }
