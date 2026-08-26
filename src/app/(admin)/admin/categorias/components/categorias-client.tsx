@@ -983,7 +983,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             )}
 
             <p className="text-xs text-[var(--text-secondary)] mt-2 mb-2">
-              Para agregar, quitar o renombrar materiales, edita la categoría — el cambio aplica a todos sus ítems. Aquí deja en 0 lo que este mueble no lleve.
+              Para agregar, quitar o renombrar materiales, edita la categoría. El cambio aplica a todos sus ítems. Aquí deja en 0 lo que este mueble no lleve.
             </p>
           </div>
 

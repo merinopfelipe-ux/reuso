@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
+import { dppAuthCheck } from '@/lib/dpp/auth-check'
 
 // Mapa { nombre: descripcion } de los conceptos del Cotizador (materiales,
 // servicios e insumos) — un solo texto compartido por toda la plataforma
@@ -12,11 +12,18 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 // Una descripción vacía equivale a "sin tooltip" — el front no pinta nada.
 //
 // GET abierto a cualquier rol con acceso al Cotizador; PATCH solo
-// empresa_admin o super_admin (cotizadorAuthCheck ya incluye el bypass
-// automático de super_admin).
+// empresa_admin o super_admin (dppAuthCheck ya incluye el bypass automático
+// de super_admin).
+//
+// Usa dppAuthCheck y NO cotizadorAuthCheck a propósito: este catálogo es
+// global, no de una empresa, y cotizadorAuthCheck exige `?empresa_id=` a
+// todo super_admin. Como en /admin/categorias el super_admin no opera por
+// cuenta de ninguna empresa, ese check devolvía 400 y la pantalla se quedaba
+// sin ningún texto de ayuda (bug real: se veían los lápices pero nunca el
+// ícono de información, ni siquiera en los materiales que sí tenían texto).
 
-export async function GET(request: NextRequest) {
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+export async function GET() {
+  const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
       { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
@@ -52,7 +59,7 @@ const patchSchema = z.object({
 })
 
 export async function PATCH(request: NextRequest) {
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin'])
+  const auth = await dppAuthCheck(['empresa_admin'])
   if (!auth.ok) {
     return NextResponse.json(
       { error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' },
