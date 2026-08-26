@@ -9,6 +9,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
 import { formatNumero, formatCOP } from '@/lib/format'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
+import { BASE_MATERIALES } from '@/lib/cotizador/plantillas-base'
 
 const cardBg = 'bg-[var(--bg-card)] border border-[var(--border)]'
 const inputSt: React.CSSProperties = {
@@ -694,6 +695,10 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 }) {
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
+  // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
+  // es donde el super_admin realmente los edita, junto a cada material de
+  // la lista, no solo en el editor del esquema base de la categoría.
+  const [descripcionesMaterial, setDescripcionesMaterial] = useMaterialDescripcionesState((url: string) => url)
 
   const [pesos, setPesos] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
@@ -974,9 +979,23 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <div className="flex flex-col gap-2.5 mb-3">
                 {categoriaMaterialesBaseVisibles.map(m => {
                   return (
-                    <div key={m.id} className="flex items-center gap-2">
+                    <div key={m.id} className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-[var(--text-primary)]">{m.nombre}</p>
+                        <div className="flex items-center gap-1">
+                          <p className="text-sm font-medium text-[var(--text-primary)]">{m.nombre}</p>
+                          {/* Solo los 8 materiales base admiten texto de ayuda —
+                              el guardado los valida contra esa misma lista, así
+                              que mostrar el lápiz en otro material daría un error
+                              al guardar en vez de funcionar. */}
+                          {BASE_MATERIALES.includes(m.nombre) && (
+                            <TooltipEditable
+                              nombre={m.nombre}
+                              texto={descripcionesMaterial[m.nombre] ?? ''}
+                              conEmpresa={(url: string) => url}
+                              onGuardado={(nom, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: nuevoTexto }))}
+                            />
+                          )}
+                        </div>
                       </div>
                       <div className="w-28 flex-shrink-0">
                         <InputConUnidad value={pesos[m.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [m.nombre]: v }))} unidad="kg" paso="0.01" />
