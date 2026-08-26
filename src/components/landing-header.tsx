@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search as MagnifyingGlass, Sun, Moon, X, List, ChevronDown as CaretDown } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, Sun, Moon, X, ChevronDown as CaretDown, Package, Building2 as Buildings, TrendingUp as TrendUp, LifeBuoy as Lifebuoy, Menu } from '@/components/ui/icons'
 
 interface MenuItem {
   name: string
@@ -52,7 +52,7 @@ export function LandingHeader({
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const mobileTriggerRef = useRef<HTMLButtonElement>(null)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-  const [mobileMenuTop, setMobileMenuTop] = useState(0)
+  const [mobileMenuBottom, setMobileMenuBottom] = useState(0)
 
   useEffect(() => {
     setMounted(true)
@@ -69,11 +69,12 @@ export function LandingHeader({
 
   const handleMenuEnter = (name: string, idx: number) => {
     if (isMobileNavOpen) return
+    if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current)
     setActiveMenu(name)
     const el = triggerRefs.current[idx]
     if (el) {
       const r = el.getBoundingClientRect()
-      setMenuPos({ left: r.left - 8, top: r.bottom + 6 })
+      setMenuPos({ left: r.left, top: r.bottom + 6 })
     }
     setSearchOpen(false)
   }
@@ -115,40 +116,34 @@ export function LandingHeader({
 
   if (!mounted) return null
 
-  const liquidGlassClass = isDark 
-    ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+  const headerStyle: React.CSSProperties = {
+    background: isDark ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)' : 'rgba(255, 255, 255, 0.5)',
+    backdropFilter: 'blur(8px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(8px) saturate(180%)',
+    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.1)',
+    boxShadow: isDark 
+      ? '0 4px 24px rgba(214,243,145,0.12), inset 0 1px 0 rgba(214,243,145,0.15), inset 0 -1px 0 rgba(214,243,145,0.10)' 
+      : '0 4px 24px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,130,124,0.04)'
+  }
+
+  const getGroupIcon = (name: string) => {
+    if (name.includes('Producto') || name.includes('Fundamentos')) return Package
+    if (name.includes('Industrias') || name.includes('Componentes')) return Buildings
+    if (name.includes('Planes') || name.includes('Datos')) return TrendUp
+    return Lifebuoy
+  }
 
   const filteredResults = searchResults.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
     <>
-      {/* WRAPPER DEL HEADER */}
-      <div className="fixed top-8 left-0 w-full z-[100] px-6 flex flex-col items-center gap-4 pointer-events-none">
+      {/* WRAPPER DEL HEADER TOP */}
+      <div className="fixed top-4 lg:top-8 left-0 w-full z-[100] px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
         
         {/* HEADER PRINCIPAL */}
-        <header className={`flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-full pointer-events-auto transition-all relative z-50 ${liquidGlassClass}`}>
+        <header style={headerStyle} className="flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-[2.5rem] pointer-events-auto transition-all relative z-50">
           <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto flex-shrink-0">
-            <button
-              id="mobile-menu-trigger"
-              ref={mobileTriggerRef}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (mobileTriggerRef.current) {
-                  const r = mobileTriggerRef.current.getBoundingClientRect();
-                  setMobileMenuTop(r.bottom + 12);
-                }
-                setIsMobileNavOpen(prev => !prev);
-              }}
-              className="lg:hidden flex flex-col items-center justify-center gap-0.5 group transition-all duration-300 hover:scale-110 active:scale-95 bg-transparent border-none p-0 outline-none"
-              style={{ color: isDark ? '#FFFFFF' : '#00827C', touchAction: 'manipulation' }}
-            >
-              <div className="transition-transform duration-300 group-hover:scale-110 group-active:scale-90">
-                {isMobileNavOpen ? <X size={20} strokeWidth={2.5} /> : <List size={22} strokeWidth={2.5} />}
-              </div>
-              <span className="text-[9px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
-            </button>
+
             <Link href={logoHref} className="flex items-center flex-shrink-0">
               <Image 
                 src="/logo-completo.svg" 
@@ -172,7 +167,7 @@ export function LandingHeader({
                   onMouseEnter={() => handleMenuEnter(group.name, idx)}
                   onMouseLeave={handleMenuLeave}
                 >
-                  <div className={`px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? 'bg-[#00827C]/10 text-[#00827C]' : isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
+                  <div className={`px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? (isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]') : isDark ? 'text-white/60' : 'text-[#474747]/60'}`}>
                     {group.name}
                     <CaretDown size={14} strokeWidth={2.5} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
@@ -206,7 +201,7 @@ export function LandingHeader({
         </header>
 
         {/* BARRA DE BÚSQUEDA FLOTANTE */}
-        <div className={`w-full max-w-2xl px-6 py-4 rounded-full pointer-events-auto transition-all duration-500 shadow-2xl relative z-50 ${searchOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'} ${liquidGlassClass}`}>
+        <div style={headerStyle} className={`w-full max-w-2xl px-6 py-4 rounded-[2.5rem] pointer-events-auto transition-all duration-500 shadow-2xl relative z-50 ${searchOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
            <div className="flex items-center gap-4">
              <MagnifyingGlass size={20} className={isDark ? 'text-white/40' : 'text-[#00827C]/40'} />
              <input 
@@ -227,7 +222,7 @@ export function LandingHeader({
 
            {/* RESULTADOS DE BÚSQUEDA */}
            {searchQuery && (
-             <div className={`absolute top-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#00827C]/10 backdrop-blur-2xl'}`}>
+             <div className={`absolute bottom-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#00827C]/10 backdrop-blur-2xl'}`}>
                 <div className="grid grid-cols-2 gap-2">
                   {filteredResults.slice(0, 8).map((r, i) => (
                     <a 
@@ -247,7 +242,56 @@ export function LandingHeader({
         </div>
       </div>
 
-      {/* MENÚ MÓVIL */}
+      {/* FOOTER MÓVIL (Sustituye al hamburger) */}
+      <nav 
+        className="fixed bottom-4 left-4 right-4 z-[100] flex lg:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
+        style={headerStyle}
+      >
+        {menuGroups.slice(0, 3).map((group, idx) => {
+          const Icon = getGroupIcon(group.name)
+          return (
+            <button
+              key={idx}
+              onClick={() => {
+                const el = document.querySelector(group.items[0].link)
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+                setIsMobileNavOpen(false)
+              }}
+              className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
+              style={{
+                color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+                transition: 'color 0.2s ease',
+              }}
+            >
+              <Icon size={26} strokeWidth={2} />
+              <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 60 }}>
+                {group.name}
+              </span>
+            </button>
+          )
+        })}
+
+        {/* BOTÓN MÁS (Oculto temporalmente) */}
+        <button
+          id="mobile-menu-trigger"
+          ref={mobileTriggerRef}
+          onClick={() => {
+            setMobileMenuBottom(88); // 72px height + 16px bottom
+            setIsMobileNavOpen(!isMobileNavOpen);
+          }}
+          className={`hidden flex-col items-center gap-1 w-16 ${isMobileNavOpen ? 'hover-rotate-90 hover-press' : 'hover-wiggle hover-press'}`}
+          style={{
+            display: 'none',
+            color: isMobileNavOpen ? (isDark ? '#D6F391' : '#006B66') : (isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)'),
+            transition: 'color 0.2s ease',
+          }}
+        >
+          {isMobileNavOpen ? <X size={26} strokeWidth={2.5} /> : <Menu size={26} />}
+          <span style={{ fontSize: 10, fontWeight: isMobileNavOpen ? 700 : 500 }}>Más</span>
+        </button>
+      </nav>
+
+      {/* MENÚ MÓVIL (Drawer) */}
       {mounted && isMobileNavOpen && createPortal(
         <div className="fixed inset-0 z-[9999] lg:hidden">
           <div className="absolute inset-0" onClick={() => setIsMobileNavOpen(false)} />
@@ -257,10 +301,10 @@ export function LandingHeader({
             ref={mobileMenuRef}
             className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-white border-[#00827C]/10'}`}
             style={{
-              top: mobileMenuTop,
+              bottom: mobileMenuBottom,
               left: 0,
               right: 0,
-              transformOrigin: 'top left',
+              transformOrigin: 'bottom left',
               animation: 'mobileMenuIn 0.22s cubic-bezier(0.22,1,0.36,1) forwards'
             }}
           >
@@ -278,7 +322,14 @@ export function LandingHeader({
                        <a
                          key={i}
                          href={item.link}
-                         onClick={() => setIsMobileNavOpen(false)}
+                         onClick={(e) => {
+                           setIsMobileNavOpen(false)
+                           const targetEl = document.querySelector(item.link)
+                           if (targetEl) {
+                             e.preventDefault()
+                             targetEl.scrollIntoView({ behavior: 'smooth' })
+                           }
+                         }}
                          className={`block py-3 px-4 rounded-xl text-[13px] font-bold tracking-tight transition-all active:scale-95 ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/70 hover:bg-[#00827C]/5 hover:text-[#00827C]'}`}
                        >
                          {item.name}
@@ -296,25 +347,32 @@ export function LandingHeader({
       {/* DROPDOWN PORTAL DESKTOP */}
       {mounted && activeMenu && createPortal(
           <div
-            className="nav-group md:pointer-events-auto hidden lg:block"
+            className="nav-group pointer-events-auto hidden lg:block"
             style={{ 
               position: 'fixed', 
               left: menuPos.left, 
               top: menuPos.top, 
               zIndex: 99999, 
-              minWidth: 240
+              minWidth: 220
             }}
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-[#00827C]/12'}`}>
+          <div className={`p-2 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#1E1E1E] border-white/10' : 'bg-white border-[#00827C]/12'}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items.map((item, i) => (
                 <a
                   key={i}
                   href={item.link}
-                  onClick={() => setActiveMenu(null)}
-                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#1A3A38]/70 hover:bg-[#00827C]/08 hover:text-[#00827C]'}`}
+                  onClick={(e) => {
+                    setActiveMenu(null)
+                    const targetEl = document.querySelector(item.link)
+                    if (targetEl) {
+                      e.preventDefault()
+                      targetEl.scrollIntoView({ behavior: 'smooth' })
+                    }
+                  }}
+                  className={`block px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/80 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747] hover:bg-[#00827C]/8 hover:text-[#00827C]'}`}
                 >
                   {item.name}
                 </a>

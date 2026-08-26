@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search as MagnifyingGlass, Sun, Moon, X, List, ChevronDown as CaretDown } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, Sun, Moon, X, ChevronDown as CaretDown, Package, Building2 as Buildings, TrendingUp as TrendUp, LifeBuoy as Lifebuoy, Menu } from '@/components/ui/icons'
 
 interface MenuItem {
   name: string
@@ -22,7 +22,7 @@ interface SearchResult {
 }
 
 interface DesignSystemHeaderProps {
-  title?: string
+
   menuGroups: MenuGroup[]
   searchResults: SearchResult[]
   extraActions?: React.ReactNode
@@ -32,7 +32,7 @@ interface DesignSystemHeaderProps {
 }
 
 export function DesignSystemHeader({
-  title = 'Sistema de diseño',
+
   menuGroups,
   searchResults,
   extraActions,
@@ -52,7 +52,6 @@ export function DesignSystemHeader({
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const mobileTriggerRef = useRef<HTMLButtonElement>(null)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
-  const [mobileMenuTop, setMobileMenuTop] = useState(0)
 
   useEffect(() => {
     setMounted(true)
@@ -115,40 +114,34 @@ export function DesignSystemHeader({
 
   if (!mounted) return null
 
-  const liquidGlassClass = isDark 
-    ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#474747]/10 shadow-[0_12px_40px_rgba(71,71,71,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+  const headerStyle: React.CSSProperties = {
+    background: isDark ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)' : 'rgba(255, 255, 255, 0.5)',
+    backdropFilter: 'blur(8px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(8px) saturate(180%)',
+    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.1)',
+    boxShadow: isDark 
+      ? '0 4px 24px rgba(214,243,145,0.12), inset 0 1px 0 rgba(214,243,145,0.15), inset 0 -1px 0 rgba(214,243,145,0.10)' 
+      : '0 4px 24px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,130,124,0.04)'
+  }
+
+  const getGroupIcon = (name: string) => {
+    if (name.includes('Producto') || name.includes('Fundamentos')) return Package
+    if (name.includes('Industrias') || name.includes('Componentes')) return Buildings
+    if (name.includes('Planes') || name.includes('Datos')) return TrendUp
+    return Lifebuoy
+  }
 
   const filteredResults = searchResults.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()))
 
   return (
     <>
-      {/* WRAPPER DEL HEADER */}
-      <div className="fixed top-8 left-0 w-full z-[100] px-6 flex flex-col items-center gap-4 pointer-events-none">
+      {/* WRAPPER DEL HEADER TOP */}
+      <div className="fixed top-4 lg:top-8 left-0 w-full z-[100] px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
         
         {/* HEADER PRINCIPAL */}
-        <header className={`flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-full pointer-events-auto transition-all relative z-50 ${liquidGlassClass}`}>
+        <header style={headerStyle} className="flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-[2.5rem] pointer-events-auto transition-all relative z-50">
           <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto">
-            <button
-              id="mobile-menu-trigger"
-              ref={mobileTriggerRef}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (mobileTriggerRef.current) {
-                  const r = mobileTriggerRef.current.getBoundingClientRect();
-                  setMobileMenuTop(r.bottom + 12);
-                }
-                setIsMobileNavOpen(prev => !prev);
-              }}
-              className="lg:hidden flex flex-col items-center justify-center gap-0.5 group transition-all duration-300 hover:scale-110 active:scale-95 bg-transparent border-none p-0 outline-none"
-              style={{ color: isDark ? '#FFFFFF' : '#474747', touchAction: 'manipulation' }}
-            >
-              <div className="transition-transform duration-300 group-hover:scale-110 group-active:scale-90">
-                {isMobileNavOpen ? <X size={20} strokeWidth={2.5} /> : <List size={22} strokeWidth={2.5} />}
-              </div>
-              <span className="text-[9px] font-black tracking-widest opacity-60 group-hover:opacity-100 transition-opacity">MENÚ</span>
-            </button>
+
             <Link href={logoHref} className="flex items-center gap-3 pointer-events-auto">
               <Image src="/logo-icono.svg" alt="Reuso" width={42} height={42} className="drop-shadow-sm pointer-events-none" />
               <div 
@@ -210,7 +203,7 @@ export function DesignSystemHeader({
         </header>
 
         {/* BARRA DE BÚSQUEDA FLOTANTE */}
-        <div className={`w-full max-w-2xl px-6 py-4 rounded-full pointer-events-auto transition-all duration-500 shadow-2xl relative z-50 ${searchOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'} ${liquidGlassClass}`}>
+        <div style={headerStyle} className={`w-full max-w-2xl px-6 py-4 rounded-[2.5rem] pointer-events-auto transition-all duration-500 shadow-2xl relative z-50 ${searchOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-4 scale-95 pointer-events-none'}`}>
            <div className="flex items-center gap-4">
              <MagnifyingGlass size={20} className={isDark ? 'text-white/40' : 'text-[#474747]/40'} />
              <input 
@@ -251,7 +244,55 @@ export function DesignSystemHeader({
         </div>
       </div>
 
-      {/* MENÚ MÓVIL */}
+      {/* FOOTER MÓVIL (Sustituye al hamburger) */}
+      <nav 
+        className="fixed bottom-4 left-4 right-4 z-[100] flex lg:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
+        style={headerStyle}
+      >
+        {menuGroups.slice(0, 3).map((group, idx) => {
+          const Icon = getGroupIcon(group.name)
+          return (
+            <button
+              key={idx}
+              onClick={() => {
+                const el = document.querySelector(group.items[0].link)
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+                setIsMobileNavOpen(false)
+              }}
+              className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
+              style={{
+                color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+                transition: 'color 0.2s ease',
+              }}
+            >
+              <Icon size={26} strokeWidth={2} />
+              <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 60 }}>
+                {group.name}
+              </span>
+            </button>
+          )
+        })}
+
+        {/* BOTÓN MÁS */}
+        <button
+          id="mobile-menu-trigger"
+          ref={mobileTriggerRef}
+          onClick={() => {
+            // El menú en diseño usa mobileMenuTop, lo cambiamos a usar mobileMenuBottom
+            setIsMobileNavOpen(!isMobileNavOpen);
+          }}
+          className={`flex flex-col items-center gap-1 w-16 ${isMobileNavOpen ? 'hover-rotate-90 hover-press' : 'hover-wiggle hover-press'}`}
+          style={{
+            color: isMobileNavOpen ? (isDark ? '#D6F391' : '#006B66') : (isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)'),
+            transition: 'color 0.2s ease',
+          }}
+        >
+          {isMobileNavOpen ? <X size={26} strokeWidth={2.5} /> : <Menu size={26} />}
+          <span style={{ fontSize: 10, fontWeight: isMobileNavOpen ? 700 : 500 }}>Más</span>
+        </button>
+      </nav>
+
+      {/* MENÚ MÓVIL (Drawer) */}
       {mounted && isMobileNavOpen && createPortal(
         <div className="fixed inset-0 z-[9999] lg:hidden">
           <div className="absolute inset-0" onClick={() => setIsMobileNavOpen(false)} />
@@ -261,10 +302,10 @@ export function DesignSystemHeader({
             ref={mobileMenuRef}
             className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-white border-[#474747]/10'}`}
             style={{
-              top: mobileMenuTop,
+              bottom: 88, // 72 height + 16 bottom
               left: 0,
               right: 0,
-              transformOrigin: 'top left',
+              transformOrigin: 'bottom left',
               animation: 'mobileMenuIn 0.22s cubic-bezier(0.22,1,0.36,1) forwards'
             }}
           >

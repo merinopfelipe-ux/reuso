@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, X, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { useTopLoader } from 'nextjs-toploader'
 import { VistaCot } from './vista-cot'
