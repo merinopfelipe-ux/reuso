@@ -1,193 +1,117 @@
 # CLAUDE.MD — Calculadora de Reúso
-V14.9 (2026-06-09) · reuso.lurdes.co · Grupo MLP S.A.S
+V15.1 (2026-07-27) · reuso.lurdes.co · Grupo MLP S.A.S
 VOZ ACTIVA. MOBILE-FIRST. USUARIO PRIMERO. CONFIANZA EN DATOS.
 
-## COLORES DEL SISTEMA — REGLA ABSOLUTA (DOS TOKENS SAGRADOS)
+## REGLA DE ESTE ARCHIVO — LÉELA ANTES DE EDITAR CLAUDE.MD
+Este archivo NUNCA debe superar **180 líneas**. Es una regla dura, no una meta.
+Antes de agregar algo aquí, pregúntate: ¿es una regla que SIEMPRE aplica y cabe en 1-3 líneas? Si no, va en una skill (`.claude/skills/`), no aquí.
+**Nunca agregues aquí** un log de auditoría, un changelog de versión, una tabla de "bugs corregidos" ni el estado de un módulo terminado — eso es historia, no instrucción. Historia va en el Obsidian Vault (ver Reglas de Oro). Si algo deja de ser cierto, corrígelo o bórralo, no lo apiles debajo.
+Si necesitas espacio para algo nuevo e importante, comprime o elimina otra línea primero.
 
-**Negro Lurdes `#474747`** — el único negro permitido en la UI. PROHIBIDO `#000000`.
-- Fondo de página en noche: `#474747`
-- Texto sobre pistacho/brand: `#474747`
-- CSS variables en `globals.css`: `--bg-primary`, `--text-on-brand`, `--btn-error-text` → siempre `#474747`
-- Sin excepciones. Ni siquiera en overlays semitransparentes: Liquid Glass noche usa `bg-[#474747]/35`.
-- Si en cualquier archivo aparece `#000000` → es un bug, corrígelo de inmediato a `#474747`.
+## SKILLS DEL PROYECTO — cárgalas, no las repitas aquí
+| Skill | Cuándo usarla |
+|---|---|
+| `design-system` | Antes de escribir CSS/className. Tiene TODAS las variables de color, Button/Modal canónicos, reglas de contraste. |
+| `calculo-ambiental` | Antes de tocar `co2.ts`, `/api/calcular` o `item_materiales`. |
+| `seguridad-reuso` | Al auditar bugs, tocar API routes, auth, storage o HTML de usuario. |
+| `modelo-negocio-reuso` | Antes de tocar planes, límites, roles o permisos de empresa. |
+| `email-design` | Antes de crear o modificar cualquier correo (Resend o Supabase Auth). |
+| `dominios-datos` | Antes de crear una tabla nueva o escribir un cálculo/query que mezcle Costos, Cálculo Ambiental o DPP. |
+Si vas a documentar un hecho nuevo del negocio/diseño/seguridad, escríbelo en la skill correspondiente, no aquí.
 
-**Sueños de Pistacho `#D6F391`** — el único pistacho permitido. PROHIBIDO cualquier variante (no `#8AD0B2`, no otro valor).
-- Acento de modo noche: `bg-[#D6F391]`, `text-[#D6F391]`
-- CSS variable `--color-brand` en dark theme → `#D6F391`
-- CSS variable `--color-pistacho` → `#D6F391`
-- **REGLA CRÍTICA DE CONTRASTE:** Cuando el fondo ES pistacho (`bg-[#D6F391]`), el texto SIEMPRE es Negro Lurdes `text-[#474747]`. PROHIBIDO usar texto blanco (`text-white`, `#fff`, `#ffffff`) sobre fondo pistacho. El pistacho es un color claro — el texto blanco no se lee.
+## COLORES — DOS TOKENS SAGRADOS (detalle completo en skill `design-system`)
+**Negro Lurdes `#474747`** — único negro permitido. PROHIBIDO `#000000` sin excepción, ni en overlays semitransparentes (`bg-[#474747]/35`, nunca `bg-black/NN`).
+**Sueños de Pistacho `#D6F391`** — único pistacho permitido, ninguna variante.
+**Regla crítica de contraste:** fondo pistacho → texto SIEMPRE `#474747`. Prohibido texto blanco sobre pistacho.
+**Antes de cambiar un hex en más de 2 archivos**, el usuario debe escribir el valor nuevo explícitamente en su mensaje. Si parece "no autorizado" → preguntar, nunca asumir.
+**Fondos siempre planos:** día `#FFFFFF`, noche `#474747`. Prohibido gradiente/blob/glow como fondo de página completa (sí permitido dentro de cards/modales).
 
-**REGLA GENERAL DE COLORES:** Antes de reemplazar cualquier valor hex en más de 2 archivos, el usuario debe escribir explícitamente el nuevo valor hex en su mensaje. Si algo parece "no autorizado" → PREGUNTAR antes de cambiar, nunca asumir.
+## NOMBRE DEL PRODUCTO
+Es **Calculadora de Reúso**, nunca solo "Reúso" (UI, correos, commits, skills). Excepción técnica: slugs de URL y variables de código.
 
-**FONDOS SIEMPRE PLANOS — REGLA ABSOLUTA:**
-- Día: `#FFFFFF` blanco puro. Noche: `#474747` Negro Lurdes.
-- PROHIBIDO en fondos de página: gradientes, blobs, efectos de luz, glows, animate-blob, radial-gradient, linear-gradient como fondo de pantalla completa.
-- Los efectos visuales (glass, blur, sombras) solo se permiten en componentes internos (cards, modales, sidebar, header), NUNCA como fondo de página.
-- Si una página tiene `animate-blob`, blobs absolutos o gradientes de fondo → son bugs, eliminarlos de inmediato.
+## PÚBLICO OBJETIVO
+Empresas o personas con negocio en **restauración**, **diseño interior** o **producto** (moda o industrial) que usan materiales/objetos reciclados o reusados (economía circular). No es un público genérico ni de consumo masivo — toda copy, feature y priorización se piensa para estos 3 perfiles de negocio.
 
-## NOMBRE DEL PRODUCTO — REGLA ABSOLUTA
-El nombre es **Calculadora de Reúso**. NUNCA escribir solo "Reúso" como nombre del producto.
-Aplica a: UI, correos, documentación, commits, comentarios de código, respuestas al usuario, skills.
-Excepción técnica permitida: slugs de URL y variables en código (`reuso.lurdes.co`, `const reuso = ...`).
+## DIRECTRICES IRRENUNCIABLES
+0) **Fondo interior blanco puro**: dentro de la app autenticada el fondo de página es SIEMPRE `#FFFFFF`. `#F5FAFA`/`#F2F9F8` solo en tarjetas/secciones internas o páginas públicas, nunca pantalla completa en rutas protegidas.
+1) **Mobile-first**: diseña 375px primero. Carga <2s en 4G, Lighthouse >80. Login→dashboard <1s, formulario→guardar <2s, QR→pasaporte <2s.
+2) **Usuario primero**: cada pantalla resuelve UN problema (Sylvia admin <4min a reporte CFO, Marco empleado <90seg registra reúso, Roberto CFO <3seg ve el PDF, Patricia <30seg escanea QR y confía).
+3) **Voz activa**: "Evitaste 125 kg CO2" no "Se evitaron 125 kg". Imperativo directo, celebra logros.
+4) **Confianza en datos**: fuentes visibles, hash SHA-256, el usuario SIEMPRE confirma lo que la IA extrajo (la IA nunca inventa). Cada factor CO2 muestra su origen.
+5) **Sin mayúsculas sostenidas**: nunca `uppercase`/`text-transform:uppercase` en texto visible (labels, botones, badges, headers de tabla). Title Case o Sentence case. Excepción: `capitalize` en nombres/roles dinámicos.
+6) **Eficiencia**: reutiliza código y patrones existentes, no reescribas. <2s carga, ISR en públicas, lazy-load. Prohibido alucinar: no inventes colores, componentes, tablas ni factores — si no existe o no lo sabes, dilo o verifícalo con grep.
+7) **Sin `;` ni `—` en copy**: ningún texto que el usuario lea (UI, correos, tooltips, errores) usa punto y coma o guión largo. Solo punto o coma.
+8) **Turnstile siempre fail-open**: nunca bloquea al usuario. Frontend no exige `turnstileToken` para habilitar submit. Backend: token vacío → se omite la verificación y se continúa. Solo se rechaza si el token llega Y falla contra Cloudflare.
+9) **Loading.tsx por grupo de rutas**: cada grupo `(auth)/(dashboard)/(empresa)/(admin)` tiene su propio `loading.tsx` en la RAÍZ del grupo, con skeleton mobile-first que muestra la forma real del contenido (no un spinner genérico). Nunca lo pongas en una carpeta literal fuera del grupo de rutas — ahí Next.js no lo ejecuta nunca (bug real ya corregido, no lo repitas).
+10) **Solo páginas públicas (sin sesión) usan `<ProteccionPublica>`**: envuelve su contenido con `src/components/proteccion-publica.tsx` (bloquea copiar/cortar/pegar/seleccionar texto/clic derecho/arrastrar imágenes), sin que el usuario lo pida cada vez. Única excepción interna: dentro de una casilla real de formulario (input/textarea) sí se permite copiar/cortar/pegar, o se rompe pegar contraseñas desde un gestor. NUNCA en `(dashboard)/(empresa)/(admin)` ni en ninguna ruta autenticada. Excepción de página completa: `/sistema-diseno`.
 
-## 6 DIRECTRICES IRRENUNCIABLES
+## SEGURIDAD — MÍNIMAS INQUEBRANTABLES (detalle en skill `seguridad-reuso`)
+- Nunca `dangerouslySetInnerHTML` con datos de usuario sin `DOMPurify.sanitize()` antes del INSERT.
+- Nunca confíes en `user_id`/`empresa_id` del body del cliente: extrae siempre de `supabase.auth.getUser()`.
+- Nunca `getPublicUrl()` para archivos privados: usa `createSignedUrl(ttl≤60s)`. Buckets privados: `documentos`, `dpp`, `firmas`, `cotizador`. Público: `logos`.
+- Todo archivo subido por un tercero se sanitiza según su tipo (SVG con DOMPurify, imágenes recomprimidas) y se optimiza antes de guardarlo, nunca se sube el original tal cual llegó.
 
-0) FONDO INTERIOR BLANCO PURO: Dentro de la app autenticada el fondo de página es SIEMPRE #FFFFFF.
-   Prohibido usar #F5FAFA, #F2F9F8, #F8FBFA u otro tono como fondo de pantalla completa en rutas protegidas.
-   Solo se permiten fondos de color en: tarjetas internas, secciones destacadas, páginas públicas (landing, legal, status).
-
-1) MOBILE-FIRST: Diseña 375px primero. Carga menos de 2s en 4G. Lighthouse mayor a 80.
-   Login a dashboard menos de 1s. Formulario a guardar menos de 2s. QR a pasaporte menos de 2s.
-
-2) USUARIO PRIMERO: Cada pantalla resuelve UN problema.
-   Sylvia (admin): menos de 4 min de login a reporte CFO listo.
-   Marco (empleado): menos de 90 seg para registrar un reúso.
-   Roberto (CFO): menos de 3 seg abre PDF, ve números grandes.
-   Patricia (consumidor): menos de 30 seg escanea QR y confía.
-
-3) VOZ ACTIVA: Imperativo directo, cercano, celebra logros.
-   SI "Evitaste 125 kg CO2" NO "Se evitaron 125 kg".
-   SI "Registra nuevo ciclo" NO "Un ciclo puede registrarse".
-   SI "Completa estos 3 campos" NO "Faltan campos por completar".
-
-4) CONFIANZA DATOS: Fuentes visibles, hash SHA-256, usuario SIEMPRE confirma.
-   OCR IA extrae, usuario valida (la IA nunca inventa).
-   Cada factor CO2 muestra su origen (ecoinvent, ELCD, DEFRA).
-
-5) SIN MAYÚSCULAS SOSTENIDAS: NUNCA usar `text-transform: uppercase` ni clase `uppercase` de Tailwind en texto visible de UI.
-   Aplica a labels, títulos, botones, badges, cabeceras de tabla y cualquier texto que el usuario vea.
-   Los textos van en Title Case ("Nombre") o Sentence case ("Correo electrónico") según corresponda.
-   Solo se permite `textTransform: 'capitalize'` para nombres y roles generados dinámicamente.
-
-6) EFICIENCIA: Rápido, ligero, inteligente.
-   Prompts Claude Code: reutiliza código existente, no re-escribas.
-   Performance: menos de 2s carga, ISR en públicas, lazy-load.
-   Prohibido alucinar: no inventar colores, componentes ni factores.
-
-7) SIN PUNTO Y COMA NI GUIÓN LARGO EN COPY: NUNCA usar `;` ni `—` en textos visibles de UI, correos, tooltips, placeholders, mensajes de error ni botones.
-   Solo punto (`.`) o coma (`,`) para separar oraciones y listas. Aplica a todo texto que el usuario lea.
-   El guión largo hace pesada la lectura. Reemplazar con punto seguido o punto aparte según el contexto.
-
-8) TURNSTILE SIEMPRE FAIL-OPEN: El widget de Cloudflare Turnstile protege pero NUNCA bloquea al usuario si no carga.
-   Frontend: el botón de submit NUNCA requiere `turnstileToken` en `formValido`. El token se envía si llegó, pero no se exige.
-   Backend: si `turnstile_token` está vacío o ausente, se omite la verificación y se continúa el flujo (fail-open).
-   Solo se rechaza si el token llega Y falla la verificación con Cloudflare.
-
-## 🔐 SEGURIDAD — REGLAS MÍNIMAS INQUEBRANTABLES
-- **NUNCA** renderizar HTML de usuario con `dangerouslySetInnerHTML` sin `DOMPurify.sanitize()` antes (en el API route, antes del INSERT).
-- **NUNCA** confiar en `user_id`/`empresa_id` del body del cliente: extraer siempre de la sesión de servidor (`supabase.auth.getUser()`).
-- **NUNCA** usar `getPublicUrl()` para archivos privados de usuarios: usar `createSignedUrl(ttl≤60s)`. Buckets privados: `documentos`, `dpp`, `firmas`.
-
-## 🔒 REGLAS DE ORO — INQUEBRANTABLES
-1. **PROHIBIDO MODIFICAR LO QUE EL USUARIO NO PIDA ESPECÍFICAMENTE.** Seguir estrictamente las instrucciones sin cambios colaterales.
-2. **ZONA PROTEGIDA (CABECERO, SIDEBAR Y FLYOUT CONGELADOS).** Los siguientes archivos NO se pueden modificar visual o estructuralmente a menos que el usuario incluya la clave secreta **2680**:
-   - `src/components/header.tsx` — Cabecero
-   - `src/components/sidebar.tsx` — Sidebar y Flyout
-   - `src/components/footer.tsx` — Pie de página (Footer)
-   - globals.css o layout-shell.tsx que afecten visualmente al cabecero, sidebar o footer.
-3. **Obsidian Vault (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`):**
-   - Al INICIAR: leer STATE.md, diarios y conceptos.
-   - Al TERMINAR: registrar diario/YYYY-MM-DD.md, actualizar STATE.md y conceptos de patrones nuevos.
+## REGLAS DE ORO
+1. **Prohibido modificar lo que el usuario no pida específicamente.** Sin cambios colaterales.
+2. **Zona protegida (clave 2680 para tocar visual/estructuralmente)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx`, y cualquier CSS/layout que los afecte visualmente. Sin la clave en el mensaje del usuario, no se tocan.
+3. **Obsidian Vault** (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`): al iniciar, lee `STATE.md` + diarios recientes. Al terminar, registra `diario/YYYY-MM-DD.md`, actualiza `STATE.md` y conceptos nuevos. **Aquí va la historia/changelog, no en este archivo.**
 
 ## STACK, COMANDOS Y ARQUITECTURA
 - **Stack**: Next.js 14 App Router, TS, Tailwind, Supabase (Auth/Storage/RLS), jsPDF, Recharts, Zod.
-- **Comandos**: Local: `npm run dev` / `npm run dev:clean`. Build: `npm run build` · Deploy: `vercel`.
-- **Arquitectura**: (auth) `/login`, (dashboard) `/dashboard`, (empresa) `/empresa`, (admin) `/admin`, `/verificar/[codigo]`.
-- **Matar caché Next**: `pkill -f "next dev" && rm -rf .next` antes de build o de pedir revisión tras cambios en múltiples archivos.
+- **Comandos**: `npm run dev` / `npm run dev:clean`. Build `npm run build`. Deploy `vercel`.
+- **Arquitectura**: `(auth)` login/registro/recuperar, `(dashboard)` /dashboard, `(empresa)` /empresa, `(admin)` /admin, públicas sueltas `/verificar/[codigo]`, `/pasaporte/[codigo]`, `/propuesta/[token]`.
+- **Arquitectura de Permisos (3 capas)**:
+  1. **Módulos base (software)**: Ej. Cotizador CRM, Cálculo Ambiental, Pasaporte DPP.
+  2. **Líneas de negocio (industrias/productos)**: Ej. Muebles, luminarias, remodelaciones.
+  3. **Insumos y materiales (Auditoría/base)**: Ej. Maderas compartidas, aceros, factores de CO₂.
+  *(Con esto, una empresa puede tener permiso para usar el "Cotizador" + "Cálculo", pero estar limitada únicamente a la línea de "Muebles").*
+- **Matar caché**: `pkill -f "next dev" && rm -rf .next` antes de build o de pedir revisión tras cambios en múltiples archivos. Tras reiniciar, avisa siempre que hace falta refresh forzado (Cmd+Shift+R) en el navegador, antes de que el usuario pruebe, no después.
+- **Nunca `next build` con el dev server corriendo**: si `next dev` (PM2) ya está activo, nunca correr `next build` u otro comando que toque `.next` en paralelo — deja el dev server en un estado mezclado. Parar PM2 primero, compilar, y reiniciar limpio.
 
-## DESIGN SYSTEM (NO INVENTAR NADA)
-- Fuente autoridad: `src/design-system-SKILL-v3.md`. TODO color derivado de `#00827C`. Cero grises puros (#f5f5f5, #ccc, #333).
-- Tipografía: Open Sans únicamente, sin emojis. Iconos: Lucide Icons (`lucide-react`). Banderas: lipis/flag-icons en SVG con `borderRadius: '3px'`.
-- **Logotipos de redes sociales y empresas (Phosphor Icons):** Usar SIEMPRE los logotipos oficiales de marca (WhatsApp, LinkedIn, Instagram, Facebook, X, YouTube) provistos por el hub local (`brand-logos.tsx` / `icons.tsx`) que los importa de `@phosphor-icons/react` sin animación. **REGLA ESTRICTA:** Para la interfaz general, DEBES usar Lucide Icons por defecto (animados con animateicons). Se permite usar un ícono de Phosphor **si y solo si** es un logotipo de marca, o en el caso extremo de que el ícono requerido no exista en Lucide y sea imposible de reemplazar. En esos casos, se mapean automáticamente sus grosores mediante `wrapPhosphorIcon` para que coincidan dinámicamente con Lucide (strokeWidth=1.5 → weight="light", 2.0 → weight="regular", 2.5 → weight="bold", duotone → weight="duotone") y evitar discrepancias visuales.
-- OBLIGATORIO claro: fondos #FFFFFF/#F5FAFA/#F2F9F8, textos #1A3A38/#4D7C79/#7FA8A5, bordes rgba(0,130,124,0.12).
-- OBLIGATORIO oscuro (modo noche): fondos #474747 (negro noche), textos #FFFFFF (fuente blanca), resaltado #D6F391 (pistacho). Prohibido usar otros grises en el fondo de noche, solo #474747.
-- Acentos: brand #00827C, success #38B98E, error #FF5E4B, warning #F6BF3E, info #59A6E4.
-- Componentes SOLO: KPICard, DataTable, Badge, StatusBadge, EmptyState, LoadingSkeleton, Modal, AlertBanner, Tabs, Button.
-- Radios: 12px cards, 10px buttons, 8px inputs. Transiciones: 0.2s hovers, 0.3s modals. `user-select: auto` activo.
-
-## TABLAS SUPABASE
-- **Existentes (NO TOCAR)**: profiles, empresas, invitaciones, modulos, modulos_empresa, categorias, items, calculos, certificados, metas, tickets, mensajes_ticket, alertas, leads, logs_auditoria, config_sistema, log_firmas_confidencialidad.
-- **DPP (Migración 017 ✓)**: dpp_activos, dpp_ciclos, dpp_metricas_financieras, dpp_documentos_ingesta, dpp_verificaciones.
-- **Columnas nuevas (017 ✓)**: empresas (tiene_dpp, sector_dpp, moneda_preferida), items (es_activo_circular, vida_util_anos, categoria_dpp).
+## TABLAS SUPABASE (inventario, no tocar sin migración)
+`profiles, empresas, invitaciones, modulos, modulos_empresa, categorias, items, calculos, informes, metas, tickets, tickets_mensajes, alertas, leads, logs_auditoria, config_sistema, log_firmas_confidencialidad` + DPP (`dpp_activos, dpp_ciclos, dpp_metricas_financieras, dpp_documentos_ingesta, dpp_verificaciones`) + Catálogo Universal (`item_materiales, item_servicios, item_insumos, categoria_materiales_base, categoria_servicios_base, categoria_insumos_base`) + Cotizador (`crm_cotizaciones, crm_clientes, crm_muebles_cotizados`).
+Antes de asumir el nombre o las columnas de una tabla, verifica con `grep` en `sql/` — no lo inventes ni lo recuerdes de memoria.
+**Migraciones expandir-contraer (obligatorio)**: nunca `DROP COLUMN`, `DROP TABLE` ni `RENAME` de algo en uso. Solo `ADD COLUMN IF NOT EXISTS` y actualizaciones — lo que se deja de usar se ignora, no se borra, para que la versión nueva y la anterior convivan sin romperse durante un despliegue.
+**Una migración escrita no es una migración aplicada**: se corren a mano en el SQL Editor de Supabase. Antes de depurar un 500 en un endpoint que escribe, verifica que la columna exista de verdad en la base (`select` de esa columna con el service role), no que exista el archivo en `sql/`.
+**5 dominios de datos (DDD, detalle en skill `dominios-datos`):** toda tabla se clasifica en Costos / Cálculo Ambiental / DPP / Metadatos del Negocio / Genérico. Prohibido cruzar datos de más de un dominio en un mismo cálculo salvo por un punto de unión ya definido explícitamente (snapshot, rollup, FK de trazabilidad) — nunca un join ad hoc.
 
 ## ROLES, PLANES Y LÍMITES
-- **Roles (RBAC)**: super_admin (/admin), empresa_admin (/empresa), empleado (/dashboard), usuario_libre (/dashboard).
-- **Planes y límites mensuales**:
-  | Display name | ID en BD | Cálculos/mes | Informes/mes | Certificados/mes | Cotizador | Empleados |
-  |---|---|---|---|---|---|---|
-  | Explora | `free` | 10 | 0 | 0 | No | 1 |
-  | Circular Lab | `lab` | 200 | 5 | 2 | No | 5 |
-  | Impulso Sostenible | `impulso` | 200 | 5 | 2 | Si | 10 |
-  | Impacto Ilimitado | `ilimitado` | ∞ | ∞ | ∞ | Si | ∞ |
-- **Invitaciones**: (1) libre -> crea empresa -> empresa_admin, (2) admin -> invita por email -> token, (3) abre link -> empleado.
-- **Documentos**: Certificado (acumulado) / Informe (fechas) con código `RCO2-XXXX-YYYY` + QR.
+- **Roles (RBAC)**: `super_admin` (/admin, sin empresa_id), `empresa_admin` (/empresa, una empresa), `empleado` (/dashboard, invitado), `usuario_libre` (/dashboard, plan Explora).
+- **Planes** (fuente exacta: `src/lib/plan-limits.ts`):
 
-## PROMPTS TRANSVERSALES CLAUDE CODE
-1. Lee `design-system-SKILL-v3.md` antes de escribir CSS.
-2. Reutiliza: co2.ts patrón, componentes design system, rutas /api/calcular patrón.
-3. Voz activa e imperativos en copy y errores: "Completa el nombre" no "Falta el nombre".
-4. Mobile-first estricto (375px a 768px a 1024px).
-5. Sin alucinaciones (enumera valores permitidos) and sin stack traces de BD en producción (usar mensajes genéricos).
-6. Rate limiting (endpoints públicos 3/min con `src/lib/rate-limit.ts`). Parámetros query validados con Zod.
+  | Display name | ID | Cálculos/mes | Informes/mes | Cotizador | Empleados |
+  |---|---|---|---|---|---|
+  | Explora | `free` | 10 | 0 | No | 1 |
+  | Circular Lab | `lab` | 200 | 5 | No | 5 |
+  | Impulso Sostenible | `impulso` | 200 | 5 | Sí | 10 |
+  | Impacto Ilimitado | `ilimitado` | ∞ | ∞ | Sí | ∞ |
+- **Invitaciones**: libre→crea empresa→empresa_admin | admin→invita por email→token | invitado abre link→empleado.
+- **Documentos**: Informe (rango de fechas), código `RCO2-XXXX-YYYY` + QR.
 
-## AUDITORÍA V14.9 — COMPLETA (2026-06-09)
-22 bugs corregidos: 4 críticos (race conditions, double-submit, dark mode), 8 medios (rate limit persistente, máquina de estados, hash DPP, invitaciones expiradas, CASCADE FK), 10 bajos (error boundaries, env vars, beforeunload, responsive). Migración 026 ejecutada ✓.
+## MOTOR LÓGICO UNIVERSAL DE ECONOMÍA CIRCULAR (Migración 031)
+**Léelo antes de tocar `categorias`, `items` o el Cotizador.** No es un cotizador de muebles — es un motor genérico. Muebles es el primer caso de uso real, no el techo del sistema.
 
-## REGLA GENERAL PDF→TXT (V14.9)
-Todo PDF subido a la plataforma se convierte automáticamente a TXT estructurado (formato Benchmark) antes de almacenarse. Aplica a `POST /api/dpp/ingesta/subir`. La IA procesa texto plano en lugar de binario de visión → ahorra tokens. Utilidad: `src/lib/pdf-to-txt.ts`. Fallback automático si la conversión falla.
+1. **Árbol de profundidad libre**: `categorias.parent_id` autoreferenciado, sin tabla fija de "subcategorías", sin límite de niveles. Un `item` cuelga de cualquier nodo vía `categoria_id`.
+2. **Dimensiones aisladas, nunca cruzadas**: `item_materiales` (ambiental: peso_kg, factor_co2_kg, origen_fuente → alimenta `co2.ts`/`/api/calcular`) vive completamente separado de `item_servicios`+`item_insumos` (financiero: precio → alimenta el Cotizador). `items.peso_kg`/`co2_por_unidad` son un rollup de `item_materiales`, mantenido para que la Calculadora funcione sin cambios de código. Ningún query combina ambas dimensiones.
+3. **Cotización = snapshot editable**: al confirmar un ítem detectado, `crm_muebles_cotizados` copia materiales/servicios/insumos de una unidad a `*_json` + `item_id` (trazabilidad) + `cantidad`. Editar una cotización nunca toca el catálogo compartido. Cálculo siempre por unidad × cantidad, nunca líneas repetidas.
+4. **Detección multi-ítem por IA**: `/api/cotizador/diagnostico` usa `responseSchema.enum` contra los nombres reales del catálogo — la IA solo ve, clasifica y cuenta, nunca calcula precio ni inventa un ítem inexistente.
 
-## PIVOT DPP — COMPLETO (V14.0 → V14.9)
-Pivot DPP completo. La Calculadora de Reúso ahora vende confianza, no solo cumplimiento. Motor CO₂ intacto, envuelto en pasaporte digital con métricas financieras (E-ROI, TCO), ingesta IA (Gemini→Qwen→Groq), verificación pública por QR y narrativa automática en voz activa para CFO.
+Antes de modificar: ¿agregas una noción de "mueble"/industria al schema o UI genérica? ¿mezclas `item_materiales` con servicios/insumos en un cálculo? ¿asumes profundidad fija? Si sí a cualquiera, está mal.
 
-| Bloque | Descripción | Estado |
-|---|---|---|
-| **DPP** | **Pasaporte Digital de Producto V1** | **✓ Completo** |
-| **Auditoría** | **22 bugs críticos/medios/bajos** | **✓ Completo** |
-| **PDF→TXT** | **Conversión universal en ingesta DPP** | **✓ Completo** |
+## COTIZADOR — notas vigentes
+El DPP (`/empresa/dpp/nuevo`) es siempre opcional y nunca automático: hoy solo se crea de cero, con cliente vinculado (opcional, el mueble es del cliente, nunca de la empresa que cotiza) o sin él. **No existe todavía** un botón "crear DPP" al ganar una cotización, aunque es el flujo previsto — no lo asumas construido sin verificar. Sube foto por archivo o pegado (Cmd+V). Keys requeridas en `.env.local` y Vercel: `GEMINI_KEY`, `OR_KEY`, `GROQ_KEY`, `CRON_SECRET`, `NEXT_PUBLIC_BASE_URL`.
 
-## MÓDULO COTIZADOR INTELIGENTE + CRM — COMPLETO (V6)
-Objetivo: CRM comercial con diagnóstico de muebles por IA visual. El cliente manda foto, la IA clasifica (viable, tipo, oficios), el motor determinista calcula precio + CO2, el comercial valida con toggles y envía propuesta web al cliente. Seguimiento de embudo y aprendizaje continuo.
-Regla de oro: la IA SOLO ve y clasifica (booleanos). NUNCA calcula precios. El código hace la matemática.
-Estado: Cotizador V6 2026-06-05 — Marca personalizable (logo, footer, WhatsApp, toggle Reúso). Migración 020: 4 columnas en empresas. API /api/cotizador/marca GET+PATCH. Página /empresa/configuracion/marca con canvas WebP y preview en vivo. Propuesta pública usa whatsapp_propuesta como destino del botón dudas; footer dinámico con nombre empresa. Modo noche auditado en todas las pantallas del módulo (1 fix en configuracion/modulos divisor). TypeScript limpio. Doc técnica: cotizador-crm-resumen.md. Sidebar dinámico pendiente: requiere clave 2680.
-Flujos: Cotizador IA (/empresa/cotizador) y DPP con IA (/empresa/dpp/nuevo) son independientes. La cotización migra a DPP solo si el comercial activa la casilla explícitamente.
-Tablas nuevas (migración 018 + 019 + 020): crm_cotizaciones, crm_clientes, crm_muebles_cotizados, crm_config_costos, cotizador_precios, cotizador_pipeline, modulos_usuarios + columnas marca en empresas.
-Keys requeridas: GEMINI_KEY, OR_KEY, GROQ_KEY, CRON_SECRET, NEXT_PUBLIC_BASE_URL (agregar a .env.local y variables de entorno en Vercel).
+## PDF → TXT
+Todo PDF subido se convierte a TXT estructurado antes de almacenarse (`POST /api/dpp/ingesta/subir`, utilidad `src/lib/pdf-to-txt.ts`, fallback automático si falla) — la IA procesa texto plano en vez de binario de visión para ahorrar tokens.
 
-## MÓDULO AUTH — COMPLETO (V15.0, 2026-06-16)
-
-Auditoría y refactor completo del primer módulo. Todos los flujos de autenticación quedan funcionales y testeables.
-
-| Ítem | Estado |
-|---|---|
-| OTPInput dividido (6 cajas, auto-avance, pegado) en confirmar-email, recuperar, settings | ✓ |
-| Dark mode + ThemeToggle en confirmar-email (completaba el set de páginas auth) | ✓ |
-| Patrón Bancolombia en registro paso 3 (tarjetas + modal + "Entendido, acepto") | ✓ |
-| Email rediseño completo — 6 templates Supabase + enviarInvitacion + enviarNotificacionTicket | ✓ |
-| Cabecera sólida `#00827C` (sin gradiente), cuerpo `#474747`, dark mode `@media (prefers-color-scheme: dark)` | ✓ |
-| aceptaLegal inicia en false (usuario debe marcar conscientemente) | ✓ |
-| Links internos /registro y /recuperar ya no abren en pestaña nueva | ✓ |
-| Apodo duplicado eliminado de registro; campo único con validación y contador | ✓ |
-| Tests QA set-03 y set-04 (cambiar correo + bloqueo por intentos) | ✓ |
-| **Supabase Dashboard — todos los ajustes manuales aplicados** | ✓ |
-
-**Supabase configurado (2026-06-16):** 6 templates de email con diseño gradiente y narrativa 3 pasos aplicados. OTP Expiry ≥ 600s. El flujo OTP de recuperación funciona end-to-end.
-
-## AUDITORÍA EXHAUSTIVA — MÓDULO AUTH + SISTEMA COMPLETO (2026-07-17)
-
-Revisión de 5 pasadas sobre auth y toda la app. 40 archivos corregidos, build y TypeScript limpios.
-
-| Ítem | Estado |
-|---|---|
-| OTP recovery de 8 dígitos: OTPInput con `length={8}` y validación `!== 8` en `/recuperar` | ✓ |
-| `suscrito_newsletter` faltaba en el schema Zod del API de registro, se descartaba en silencio | ✓ |
-| Errores de Supabase filtrados crudos en inglés al usuario, ahora mensajes genéricos en español | ✓ |
-| `legal_aceptado_en` con hack de zona horaria que desfasaba el timestamp 5h, ahora UTC directo | ✓ |
-| Directriz #5 (mayúsculas sostenidas): eliminado `uppercase`/`textTransform: 'uppercase'` de 27 archivos, incluida zona protegida (header, sidebar) con clave 2680 | ✓ |
-| `/admin/qa` tenía 3 blobs `animate-blob` como fondo de página en modo noche, prohibido por directriz #0, eliminados | ✓ |
-| `alt="Reúso"` en login y registro corregido a "Calculadora de Reúso" (regla de nombre) | ✓ |
-| DARK_FORCED en `preview-emails.mjs` sin `.ek a` en selector OTP noche, corregido | ✓ |
-| `userSelect: 'none'` en confirmar-email, corregido a `'auto'` | ✓ |
-| Verificado: tickets sanitizan con DOMPurify antes de INSERT, `getPublicUrl` solo en bucket público `logos` | ✓ |
+## IA — AHORRO DE TOKENS SIEMPRE
+Cualquier código que toque Gemini/OpenRouter/Groq minimiza tokens explícitamente: imágenes comprimidas/redimensionadas antes de enviar, prompts concisos, el modelo más barato que cumpla la tarea.
 
 ## PRINCIPIO FINAL
-No es proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.
+No es un proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.
+
+## REGLA DE OBJETIVIDAD Y CERO PROMESAS ABSOLUTAS (LEGAL)
+**PROHIBIDO** usar adjetivos calificativos absolutos o rimbombantes para describir la plataforma, especialmente la calculadora de CO₂.
+**NUNCA** uses palabras como: *exacto, preciso, 100%, perfecto, irrefutable, inquebrantable, certero, garantiza*.
+**SIEMPRE** usa lenguaje prudente y objetivo: *estimado, promediado, de referencia, estructurado, transparente, promueve, permite*.
+El sistema no es "mágico", es una herramienta estructurada. No exhaltes el sistema prometiendo cosas que no podemos cumplir.

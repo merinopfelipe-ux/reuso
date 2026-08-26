@@ -1,0 +1,139 @@
+name: Respaldo de base de datos
+
+# Fase 0, paso 6 del Plan de Acción: Escalabilidad de Reúso.
+# Dos bóvedas independientes, ambas en el plan gratuito:
+#   1. Artefacto de GitHub (retención 90 días).
+#   2. Cloudflare R2 (10 GB gratuitos perpetuos), como copia fuera de GitHub.
+# El volcado va cifrado con AES-256 antes de salir del runner: un respaldo de
+# la base entera es el archivo más sensible del proyecto, no puede quedar en
+# claro en ningún almacenamiento.
+
+on:
+  schedule:
+    # 08:00 UTC = 3:00 a.m. en Colombia (UTC-5), como define el plan.
+    - cron: '0 8 * * *'
+  workflow_dispatch:   # permite lanzarlo a mano desde la pestaña Actions
+
+jobs:
+  respaldo:
+    name: Volcado, cifrado y envío a las dos bóvedas
+    runs-on: ubuntu-latest
+    # Sin esto, un fallo silencioso pasaría desapercibido hasta el día que se
+    # necesite restaurar. 20 minutos es holgado para el tamaño actual.
+    timeout-minutes: 20
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar el cliente de PostgreSQL 17
+        # El pg_dump del runner suele ser más viejo que el servidor de
+        # Supabase, y un cliente viejo se niega a volcar un servidor nuevo.
+        # Por eso se instala explícitamente desde el repositorio oficial.
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          pg_dump --version
+
+      - name: Verificar que existe la cadena de conexión
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "::error::Falta el secreto SUPABASE_DB_URL. Sin él no se puede respaldar nada."
+            exit 1
+          fi
+          echo "Cadena de conexión presente."
+
+      - name: Generar el volcado lógico
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          FECHA=$(date -u +'%Y-%m-%d')
+          echo "ARCHIVO=reuso-backup-$FECHA.sql.gz" >> "$GITHUB_ENV"
+          # --no-owner/--no-acl: el volcado debe poder restaurarse en un
+          # proyecto Supabase distinto (el de recuperación), donde los roles
+          # y permisos no son los mismos que en producción.
+          pg_dump "$SUPABASE_DB_URL" \
+            --no-owner --no-acl --clean --if-exists \
+            | gzip -9 > "reuso-backup-$FECHA.sql.gz"
+          ls -lh "reuso-backup-$FECHA.sql.gz"
+
+      - name: Comprobar que el volcado no salió vacío
+        run: |
+          set -euo pipefail
+          TAM=$(stat -c%s "$ARCHIVO")
+          echo "Tamaño: $TAM bytes"
+          # Un volcado real de este proyecto pesa muy por encima de 10 KB.
+          # Por debajo de eso es casi seguro un error de conexión que pg_dump
+          # no reportó como código de salida, y guardarlo daría una falsa
+          # sensación de respaldo.
+          if [ "$TAM" -lt 10240 ]; then
+            echo "::error::El respaldo pesa $TAM bytes, demasiado poco. Se aborta para no guardar un respaldo inútil."
+            exit 1
+          fi
+          # Segunda comprobación: que el contenido sea SQL de verdad.
+          if ! gunzip -c "$ARCHIVO" | head -50 | grep -qi "PostgreSQL database dump"; then
+            echo "::error::El archivo no parece un volcado de PostgreSQL."
+            exit 1
+          fi
+          echo "Volcado verificado."
+
+      - name: Cifrar el respaldo (AES-256)
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::Falta el secreto BACKUP_PASSPHRASE. No se guarda un respaldo sin cifrar."
+            exit 1
+          fi
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase "$BACKUP_PASSPHRASE" \
+            --output "$ARCHIVO.gpg" "$ARCHIVO"
+          rm -f "$ARCHIVO"          # el archivo en claro nunca sigue viaje
+          ls -lh "$ARCHIVO.gpg"
+
+      - name: Bóveda 1 — artefacto de GitHub (90 días)
+        uses: actions/upload-artifact@v4
+        with:
+          name: respaldo-base-datos
+          path: ${{ env.ARCHIVO }}.gpg
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Bóveda 2 — Cloudflare R2
+        # Si todavía no se han configurado las llaves de R2, el respaldo NO
+        # falla: la bóveda 1 ya quedó guardada y este paso solo avisa.
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          if [ -z "$R2_ACCOUNT_ID" ] || [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$R2_BUCKET" ]; then
+            echo "::warning::Faltan las llaves de Cloudflare R2. El respaldo quedó guardado solo en la bóveda de GitHub."
+            exit 0
+          fi
+          aws s3 cp "$ARCHIVO.gpg" "s3://$R2_BUCKET/$ARCHIVO.gpg" \
+            --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
+            --checksum-algorithm CRC32
+          echo "Copia enviada a Cloudflare R2."
+
+      - name: Resumen
+        if: always()
+        run: |
+          {
+            echo "### Respaldo de base de datos"
+            echo ""
+            echo "- Archivo: \`$ARCHIVO.gpg\` (cifrado AES-256)"
+            echo "- Bóveda 1: artefacto de GitHub, 90 días de retención"
+            echo "- Bóveda 2: Cloudflare R2 (si las llaves están configuradas)"
+            echo ""
+            echo "Para restaurarlo: descargar el artefacto y correr"
+            echo '`gpg --decrypt archivo.gpg | gunzip | psql "$CADENA_DE_CONEXION"`'
+          } >> "$GITHUB_STEP_SUMMARY"

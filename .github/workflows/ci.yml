@@ -1,0 +1,152 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Lint, Typecheck & Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Secret Scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: false
+
+      - name: Typecheck (TypeScript)
+        run: npx tsc --noEmit
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Unit Tests (Vitest)
+        run: npm run test:unit
+
+      - name: Auditoría de dependencias (bloquea lo crítico)
+        # Bloquea solo ante vulnerabilidades CRÍTICAS. A propósito no se usa
+        # --audit-level=high: hoy hay 6 vulnerabilidades altas, 4 de ellas en
+        # herramientas de desarrollo (eslint, postcss, glob) que no llegan al
+        # navegador del usuario, y las 2 restantes (next, xlsx) exigen
+        # actualizaciones mayores. Con "high" el CI fallaría en rojo todos los
+        # días y se volvería ruido que nadie mira, que es peor que no tenerlo.
+        run: npm audit --audit-level=critical
+
+      - name: Auditoría de dependencias (informe de altas)
+        # No bloquea: deja el detalle visible en el registro para revisarlo
+        # cuando se decida actualizar Next.js o reemplazar xlsx.
+        run: npm audit --audit-level=high || true
+        continue-on-error: true
+
+  rls-security:
+    name: Multi-Tenant RLS Tests
+    runs-on: ubuntu-latest
+    # OJO: aquí NO se puede usar `if: secrets.X != ''`. GitHub Actions no
+    # expone el contexto `secrets` en el `if` de un job, así que esa condición
+    # se evaluaba siempre como falsa y este job se saltaba en silencio: las
+    # pruebas de aislamiento entre empresas parecían estar corriendo y no
+    # corrían nunca. La comprobación se hace ahora dentro de un paso, donde
+    # `secrets` sí está disponible.
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Comprobar que existen los secretos de Supabase
+        id: comprobar
+        env:
+          URL_SUPABASE: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          LLAVE_SERVICIO: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_SERVICIO" ]; then
+            echo "hay_secretos=no" >> "$GITHUB_OUTPUT"
+            echo "::warning::Faltan los secretos de Supabase en GitHub. Las pruebas de aislamiento entre empresas NO se ejecutaron."
+          else
+            echo "hay_secretos=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run RLS Isolation Tests
+        if: steps.comprobar.outputs.hay_secretos == 'si'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: npx vitest run tests/rls --reporter=verbose
+
+  e2e:
+    name: Pruebas de extremo a extremo (Playwright)
+    runs-on: ubuntu-latest
+    # Las E2E levantan la app y navegan de verdad: son las más lentas, por eso
+    # van en su propio job y no bloquean el resultado de lint/tipos.
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Comprobar que existen los secretos de Supabase
+        id: comprobar
+        env:
+          URL_SUPABASE: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          LLAVE_SERVICIO: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_SERVICIO" ]; then
+            echo "hay_secretos=no" >> "$GITHUB_OUTPUT"
+            echo "::warning::Faltan los secretos de Supabase en GitHub. Las pruebas E2E NO se ejecutaron."
+          else
+            echo "hay_secretos=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Instalar navegadores de Playwright
+        if: steps.comprobar.outputs.hay_secretos == 'si'
+        run: npx playwright install --with-deps chromium
+
+      - name: Ejecutar pruebas E2E
+        if: steps.comprobar.outputs.hay_secretos == 'si'
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+        run: npm run test
+
+      - name: Guardar el reporte si algo falla
+        if: failure() && steps.comprobar.outputs.hay_secretos == 'si'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-playwright
+          path: playwright-report/
+          retention-days: 7
