@@ -9,7 +9,6 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
 import { formatNumero, formatCOP } from '@/lib/format'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
-import { BASE_MATERIALES } from '@/lib/cotizador/plantillas-base'
 
 const cardBg = 'bg-[var(--bg-card)] border border-[var(--border)]'
 const inputSt: React.CSSProperties = {
@@ -218,16 +217,9 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
               <div>
                 <label className={labelSt}>Material</label>
                 <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                {descripcionesMaterial[m.nombre] !== undefined && (
-                  <div className="mt-1.5">
-                    <TooltipEditable
-                      nombre={m.nombre}
-                      texto={descripcionesMaterial[m.nombre]}
-                      conEmpresa={conEmpresa}
-                      onGuardado={(nombre, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nombre]: nuevoTexto }))}
-                    />
-                  </div>
-                )}
+                <div className="mt-2">
+                  <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                </div>
               </div>
               {mostrarPeso && (
                 <div>
@@ -283,6 +275,10 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
   servicios: ServicioRow[]; setServicios: React.Dispatch<React.SetStateAction<ServicioRow[]>>
   insumos: InsumoRow[]; setInsumos: React.Dispatch<React.SetStateAction<InsumoRow[]>>
 }) {
+  // El esquema base de la categoría es el molde del que heredan todos sus
+  // ítems: el nombre de cada servicio/insumo es editable acá y el cambio
+  // aplica a toda la categoría. El tooltip acompaña a ese nombre.
+  const [descripciones, setDescripciones] = useMaterialDescripcionesState((url: string) => url)
   const content = (
     <>
       {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)] mb-3"><CircleDollarSign size={16} /> {titulo}</p> : null}
@@ -290,8 +286,11 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <label className={labelSeccion}>Servicios</label>
       <div className="flex flex-col gap-2 mb-2">
         {servicios.map((s, i) => (
-          <div key={i} className="grid grid-cols-[2fr_auto] gap-2 items-center">
-            <input style={inputSt} placeholder="Servicio (ej: Pintor)" value={s.nombre} onChange={e => setServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+          <div key={i} className="grid grid-cols-[2fr_auto] gap-2 items-start pb-2">
+            <div className="flex flex-col gap-2">
+              <input style={inputSt} placeholder="Servicio (ej: Pintor)" value={s.nombre} onChange={e => setServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+              <CampoTooltip nombre={s.nombre} mapa={descripciones} setMapa={setDescripciones} />
+            </div>
             <button type="button" onClick={() => setServicios(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
           </div>
         ))}
@@ -301,11 +300,14 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <label className={`${labelSeccion} mt-4`}>Insumos</label>
       <div className="flex flex-col gap-2 mb-2">
         {insumos.map((ins, i) => (
-          <div key={i} className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
-            <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-            <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
-            <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-            <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+          <div key={i} className="flex flex-col gap-2 pb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
+              <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+              <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+              <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+              <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+            </div>
+            <CampoTooltip nombre={ins.nombre} mapa={descripciones} setMapa={setDescripciones} />
           </div>
         ))}
       </div>
@@ -687,6 +689,59 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
 
 // ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
 
+// Casilla del texto de ayuda de un concepto (material, servicio o insumo).
+// Vacía = ese concepto no muestra tooltip en ninguna otra pantalla, que es
+// justamente el comportamiento pedido: solo se ve donde hay contenido.
+//
+// Se guarda sola al salir del campo (onBlur), no espera al botón Guardar de
+// la pantalla: el texto vive en su propia tabla compartida por nombre, no en
+// la fila del material/servicio/insumo. `nombreOriginal` permite mudar el
+// texto cuando el super_admin renombró el concepto en la misma edición
+// (decisión del usuario: al renombrar, el texto se muda al nombre nuevo).
+function CampoTooltip({ nombre, nombreOriginal, mapa, setMapa }: {
+  nombre: string
+  nombreOriginal?: string
+  mapa: Record<string, string>
+  setMapa: React.Dispatch<React.SetStateAction<Record<string, string>>>
+}) {
+  const clave = nombre.trim()
+  const claveVieja = (nombreOriginal ?? '').trim()
+  // Mientras no se haya escrito nada bajo el nombre nuevo, se muestra el
+  // texto que traía el nombre viejo — así al renombrar no parece que la
+  // explicación se hubiera borrado.
+  const valor = mapa[clave] ?? (claveVieja && claveVieja !== clave ? mapa[claveVieja] ?? '' : '')
+  const sinNombre = !clave
+
+  async function guardar() {
+    if (sinNombre) return
+    await fetch('/api/cotizador/material-descripciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: clave,
+        descripcion: valor,
+        ...(claveVieja && claveVieja !== clave ? { nombre_anterior: claveVieja } : {}),
+      }),
+    }).catch(() => {})
+  }
+
+  return (
+    <div>
+      <label className={labelSt}>Tooltip (opcional)</label>
+      <textarea
+        value={valor}
+        onChange={e => setMapa(prev => ({ ...prev, [clave]: e.target.value }))}
+        onBlur={guardar}
+        disabled={sinNombre}
+        maxLength={500}
+        rows={2}
+        placeholder={sinNombre ? 'Escribe primero el nombre' : 'Explica qué es, para que quien cotiza no dude'}
+        style={{ ...inputSt, resize: 'vertical', minHeight: 60, opacity: sinNombre ? 0.5 : 1 }}
+      />
+    </div>
+  )
+}
+
 function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   item: ItemConDimensiones | null
   categoria: CategoriaConEsquemaBase
@@ -695,9 +750,10 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 }) {
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
-  // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
-  // es donde el super_admin realmente los edita, junto a cada material de
-  // la lista, no solo en el editor del esquema base de la categoría.
+  // Textos de ayuda (tooltips) de materiales, servicios e insumos — esta
+  // pantalla ("Editar ítem") es donde el super_admin realmente los escribe,
+  // junto a cada concepto. El texto es compartido por nombre en toda la
+  // plataforma, y solo se muestra en el resto del sistema si no está vacío.
   const [descripcionesMaterial, setDescripcionesMaterial] = useMaterialDescripcionesState((url: string) => url)
 
   const [pesos, setPesos] = useState<Record<string, string>>(() => {
@@ -733,92 +789,55 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     return inicial
   })
 
-  // Extras: dimensiones que solo aplican a ESTE ítem, no se guardan en el esquema base.
-  const nombresBase = useMemo(() => new Set(categoria.categoria_materiales_base.map(m => m.nombre)), [categoria])
-  const nombresServBase = useMemo(() => new Set(categoria.categoria_servicios_base.map(s => s.nombre)), [categoria])
-  const nombresInsBase = useMemo(() => new Set(categoria.categoria_insumos_base.map(i => i.nombre)), [categoria])
-  const [extraMateriales, setExtraMateriales] = useState<MaterialRow[]>(
-    materialesAFilas((item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre)))
-  )
-  const [extraServicios, setExtraServicios] = useState<ServicioRow[]>(
-    serviciosAFilas((item?.item_servicios ?? []).filter(s => !nombresServBase.has(s.nombre)))
-  )
-  const [extraInsumos, setExtraInsumos] = useState<InsumoRow[]>(
-    insumosAFilas((item?.item_insumos ?? []).filter(i => !nombresInsBase.has(i.nombre)))
-  )
-
-  const [serviciosEliminados, setServiciosEliminados] = useState<Set<string>>(new Set())
-  const [insumosEliminados, setInsumosEliminados] = useState<Set<string>>(new Set())
-  const [materialesEliminados, setMaterialesEliminados] = useState<Set<string>>(new Set())
-
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
 
-  const extraMaterialesValidos = useMemo(() => filasAMateriales(extraMateriales), [extraMateriales])
-  const extraServiciosValidos = useMemo(() => filasAServicios(extraServicios), [extraServicios])
-  const extraInsumosValidos = useMemo(() => filasAInsumos(extraInsumos), [extraInsumos])
-
-  const categoriaMaterialesBaseVisibles = useMemo(() => {
-    return categoria.categoria_materiales_base.filter(m => !materialesEliminados.has(m.nombre))
-  }, [categoria, materialesEliminados])
-
-  const categoriaServiciosBaseVisibles = useMemo(() => {
-    return categoria.categoria_servicios_base.filter(s => !serviciosEliminados.has(s.nombre))
-  }, [categoria, serviciosEliminados])
-
-  const categoriaInsumosBaseVisibles = useMemo(() => {
-    return categoria.categoria_insumos_base.filter(ins => !insumosEliminados.has(ins.nombre))
-  }, [categoria, insumosEliminados])
+  // La lista de materiales/servicios/insumos la manda SIEMPRE la categoría —
+  // desde el ítem no se agrega ni se elimina ninguno, solo se ajusta cuánto
+  // lleva este mueble de cada uno (dejarlo en 0 equivale a "no aplica aquí").
+  // Decisión explícita del usuario: si se agrega o se quita, es para toda la
+  // categoría, nunca para un solo ítem.
+  const categoriaMaterialesBaseVisibles = categoria.categoria_materiales_base
+  const categoriaServiciosBaseVisibles = categoria.categoria_servicios_base
+  const categoriaInsumosBaseVisibles = categoria.categoria_insumos_base
 
   const totalCo2 = useMemo(() => {
-    const base = categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * m.factor_co2_kg, 0)
-    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0)
-    return base + extra
-  }, [pesos, categoriaMaterialesBaseVisibles, extraMaterialesValidos])
+    return categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * m.factor_co2_kg, 0)
+  }, [pesos, categoriaMaterialesBaseVisibles])
 
   const totalAgua = useMemo(() => {
-    const base = categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (m.factor_agua_l_kg ?? 0), 0)
-    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * (m.factor_agua_l_kg ?? 0), 0)
-    return base + extra
-  }, [pesos, categoriaMaterialesBaseVisibles, extraMaterialesValidos])
+    return categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (m.factor_agua_l_kg ?? 0), 0)
+  }, [pesos, categoriaMaterialesBaseVisibles])
 
   const subtotal = useMemo(() => {
     const servBase = categoriaServiciosBaseVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
     const insBase = categoriaInsumosBaseVisibles.reduce((s, x) => s + (parseFloat(cantidades[x.nombre]) || 0) * (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
-    const servExtra = extraServiciosValidos.reduce((s, x) => s + x.precio, 0)
-    const insExtra = extraInsumosValidos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
-    return servBase + insBase + servExtra + insExtra
-  }, [precios, cantidades, preciosUnitarios, categoriaServiciosBaseVisibles, categoriaInsumosBaseVisibles, extraServiciosValidos, extraInsumosValidos])
+    return servBase + insBase
+  }, [precios, cantidades, preciosUnitarios, categoriaServiciosBaseVisibles, categoriaInsumosBaseVisibles])
 
   const factor = parseFloat(factorRentabilidad) || 1
   const totalPrecio = subtotal * factor
 
   async function guardar() {
-    const materiales = [
-      ...categoriaMaterialesBaseVisibles
-        .filter(m => parseFloat(pesos[m.nombre]) > 0)
-        .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: m.factor_co2_kg, origen_fuente: m.origen_fuente ?? undefined, detalle_fuente: m.detalle_fuente ?? undefined, nivel_confianza: 'baja' as const })),
-      ...extraMaterialesValidos,
-    ]
+    // Solo se guardan los conceptos de la categoría con un valor > 0 en este
+    // ítem — dejar uno en 0 es la forma de decir "este mueble no lo lleva",
+    // sin sacarlo de la categoría.
+    const materiales = categoriaMaterialesBaseVisibles
+      .filter(m => parseFloat(pesos[m.nombre]) > 0)
+      .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: m.factor_co2_kg, origen_fuente: m.origen_fuente ?? undefined, detalle_fuente: m.detalle_fuente ?? undefined, nivel_confianza: 'baja' as const }))
 
     if (materiales.length === 0) {
       setError('Coloca el peso de al menos un material — el impacto ambiental no puede quedar en cero.')
       return
     }
 
-    const servicios = [
-      ...categoriaServiciosBaseVisibles
-        .filter(s => (parseFloat(precios[s.nombre]) || 0) > 0)
-        .map(s => ({ nombre: s.nombre, precio: parseFloat(precios[s.nombre]) })),
-      ...extraServiciosValidos,
-    ]
+    const servicios = categoriaServiciosBaseVisibles
+      .filter(s => (parseFloat(precios[s.nombre]) || 0) > 0)
+      .map(s => ({ nombre: s.nombre, precio: parseFloat(precios[s.nombre]) }))
 
-    const insumos = [
-      ...categoriaInsumosBaseVisibles
-        .filter(i => (parseFloat(cantidades[i.nombre]) || 0) > 0)
-        .map(i => ({ nombre: i.nombre, cantidad: parseFloat(cantidades[i.nombre]), unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || i.precio_unitario })),
-      ...extraInsumosValidos,
-    ]
+    const insumos = categoriaInsumosBaseVisibles
+      .filter(i => (parseFloat(cantidades[i.nombre]) || 0) > 0)
+      .map(i => ({ nombre: i.nombre, cantidad: parseFloat(cantidades[i.nombre]), unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || i.precio_unitario }))
 
     setGuardando(true); setError('')
     const url = item ? `/api/admin/items/${item.id}` : '/api/admin/items'
@@ -853,7 +872,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             </div>
 
             <label className={labelSeccion}>Servicios</label>
-            {categoriaServiciosBaseVisibles.length === 0 && extraServicios.length === 0 && (
+            {categoriaServiciosBaseVisibles.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin servicios asignados.</p>
             )}
 
@@ -861,49 +880,38 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <div className="flex flex-col gap-2.5 mb-2">
                 {categoriaServiciosBaseVisibles.map(s => (
                   <div key={s.id} className="flex items-center gap-2">
-                    <p className="flex-1 text-sm text-[var(--text-primary)]">{s.nombre}</p>
+                    <p className="flex-1 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                      {s.nombre}
+                      <TooltipEditable
+                        nombre={s.nombre}
+                        texto={descripcionesMaterial[s.nombre] ?? ''}
+                        conEmpresa={(url: string) => url}
+                        onGuardado={(nom, txt) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: txt }))}
+                      />
+                    </p>
                     <div className="w-28 flex-shrink-0">
                       <InputPrecio value={precios[s.nombre] ?? ''} onChange={v => setPrecios(p => ({ ...p, [s.nombre]: v }))} />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setServiciosEliminados(prev => new Set(prev).add(s.nombre))
-                        setPrecios(p => ({ ...p, [s.nombre]: '' }))
-                      }}
-                      className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
-                      title="Eliminar servicio"
-                    >
-                      <Trash size={16} />
-                    </button>
                   </div>
                 ))}
               </div>
             )}
 
-            {extraServicios.length > 0 && (
-              <div className="flex flex-col gap-2 mb-2">
-                {extraServicios.map((s, i) => (
-                  <div key={i} className="grid grid-cols-[2fr_1fr_auto] gap-2 items-center mb-1">
-                    <input style={inputSt} placeholder="Servicio adicional" value={s.nombre} onChange={e => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                    <InputPrecio value={s.precio} onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))} />
-                    <button type="button" onClick={() => setExtraServicios(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button type="button" onClick={() => setExtraServicios(r => [...r, filaServicio()])} className={`${btnChico} mb-4`}><Plus size={12} /> Añadir servicio</button>
-
-            <label className={`${labelSeccion} mt-2`}>Insumos</label>
-            {categoriaInsumosBaseVisibles.length === 0 && extraInsumos.length === 0 && (
+            <label className={`${labelSeccion} mt-4`}>Insumos</label>
+            {categoriaInsumosBaseVisibles.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin insumos asignados.</p>
             )}
 
             {categoriaInsumosBaseVisibles.map(ins => (
               <div key={ins.id} className="flex items-center gap-2 mb-2">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 flex items-center gap-1">
                   <p className="text-sm text-[var(--text-primary)]">{ins.nombre}</p>
+                  <TooltipEditable
+                    nombre={ins.nombre}
+                    texto={descripcionesMaterial[ins.nombre] ?? ''}
+                    conEmpresa={(url: string) => url}
+                    onGuardado={(nom, txt) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: txt }))}
+                  />
                 </div>
                 <div className="w-24 flex-shrink-0">
                   <InputConUnidad value={cantidades[ins.nombre] ?? ''} onChange={v => setCantidades(c => ({ ...c, [ins.nombre]: v }))} unidad={ins.unidad} paso="0.01" />
@@ -911,34 +919,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                 <div className="w-28 flex-shrink-0">
                   <InputPrecio value={preciosUnitarios[ins.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [ins.nombre]: v }))} />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setInsumosEliminados(prev => new Set(prev).add(ins.nombre))
-                    setCantidades(c => ({ ...c, [ins.nombre]: '' }))
-                  }}
-                  className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
-                  title="Eliminar insumo"
-                >
-                  <Trash size={16} />
-                </button>
               </div>
             ))}
-
-            {extraInsumos.length > 0 && (
-              <div className="flex flex-col gap-2 mb-2">
-                {extraInsumos.map((ins, i) => (
-                  <div key={i} className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center mb-1">
-                    <input style={inputSt} placeholder="Insumo adicional" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                    <input style={inputSt} placeholder="Unidad (ej: m)" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
-                    <InputPrecio value={ins.precio_unitario} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-                    <button type="button" onClick={() => setExtraInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <button type="button" onClick={() => setExtraInsumos(r => [...r, { ...filaInsumo(), cantidad: '1' }])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir insumo</button>
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2.5" style={{ borderTop: '1px solid var(--border)' }}>
@@ -971,7 +953,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             </div>
 
             <label className={labelSeccion}>Materiales</label>
-            {categoriaMaterialesBaseVisibles.length === 0 && extraMateriales.length === 0 && (
+            {categoriaMaterialesBaseVisibles.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin materiales asignados.</p>
             )}
 
@@ -983,75 +965,26 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1">
                           <p className="text-sm font-medium text-[var(--text-primary)]">{m.nombre}</p>
-                          {/* Solo los 8 materiales base admiten texto de ayuda —
-                              el guardado los valida contra esa misma lista, así
-                              que mostrar el lápiz en otro material daría un error
-                              al guardar en vez de funcionar. */}
-                          {BASE_MATERIALES.includes(m.nombre) && (
-                            <TooltipEditable
-                              nombre={m.nombre}
-                              texto={descripcionesMaterial[m.nombre] ?? ''}
-                              conEmpresa={(url: string) => url}
-                              onGuardado={(nom, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: nuevoTexto }))}
-                            />
-                          )}
+                          <TooltipEditable
+                            nombre={m.nombre}
+                            texto={descripcionesMaterial[m.nombre] ?? ''}
+                            conEmpresa={(url: string) => url}
+                            onGuardado={(nom, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: nuevoTexto }))}
+                          />
                         </div>
                       </div>
                       <div className="w-28 flex-shrink-0">
                         <InputConUnidad value={pesos[m.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [m.nombre]: v }))} unidad="kg" paso="0.01" />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMaterialesEliminados(prev => new Set(prev).add(m.nombre))
-                          setPesos(p => ({ ...p, [m.nombre]: '' }))
-                        }}
-                        className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
-                        title="Eliminar material"
-                      >
-                        <Trash size={16} />
-                      </button>
                     </div>
                   )
                 })}
               </div>
             )}
 
-            {extraMateriales.length > 0 && (
-              <div className="flex flex-col gap-3 mb-3">
-                {extraMateriales.map((m, i) => {
-                  return (
-                    <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-                        <div>
-                          <label className={labelSt}>Material adicional</label>
-                          <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                        </div>
-                        <div>
-                          <label className={labelSt}>Peso</label>
-                          <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
-                        </div>
-                        <div>
-                          <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
-                          <InputConUnidad value={m.factor_co2_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_co2_kg: v } : x))} unidad="kg CO₂ eq/kg" paso="0.0001" />
-                        </div>
-                        <div>
-                          <label className={labelSt}>Agua (por 1 kg)</label>
-                          <InputConUnidad value={m.factor_agua_l_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_agua_l_kg: v } : x))} unidad="L agua/kg" paso="0.1" />
-                        </div>
-                      </div>
-                      <div className="flex justify-end items-center mt-1">
-                        <button type="button" onClick={() => setExtraMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
-                          <Trash size={14} /> Eliminar
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            <button type="button" onClick={() => setExtraMateriales(r => [...r, filaMaterial()])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir material</button>
+            <p className="text-xs text-[var(--text-secondary)] mt-2 mb-2">
+              Para agregar, quitar o renombrar materiales, edita la categoría — el cambio aplica a todos sus ítems. Aquí deja en 0 lo que este mueble no lleve.
+            </p>
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)' }}>
