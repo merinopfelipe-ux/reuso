@@ -198,6 +198,52 @@ function useMaterialDescripcionesState(conEmpresa: (url: string) => string) {
   return [mapa, setMapa] as const
 }
 
+// Casilla del texto de ayuda de un concepto (material, servicio o insumo),
+// para los formularios donde el nombre se escribe a mano. Vacía = ese
+// concepto no muestra tooltip en ninguna otra pantalla, que es justamente el
+// comportamiento pedido: solo se ve donde hay contenido.
+//
+// Se guarda sola al salir del campo (onBlur), no espera al botón Guardar de
+// la pantalla: el texto vive en su propia tabla compartida por nombre, no en
+// la fila del material/servicio/insumo.
+function CampoTooltip({ nombre, mapa, setMapa }: {
+  nombre: string
+  mapa: Record<string, string>
+  setMapa: React.Dispatch<React.SetStateAction<Record<string, string>>>
+}) {
+  const clave = nombre.trim()
+  const sinNombre = !clave
+  const valor = mapa[clave] ?? ''
+
+  async function guardar() {
+    if (sinNombre) return
+    await fetch('/api/cotizador/material-descripciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: clave, descripcion: valor }),
+    }).catch(() => {})
+  }
+
+  return (
+    <div>
+      <label className={labelSt}>Tooltip (opcional)</label>
+      <textarea
+        value={valor}
+        onChange={e => setMapa(prev => ({ ...prev, [clave]: e.target.value }))}
+        onBlur={guardar}
+        disabled={sinNombre}
+        maxLength={500}
+        rows={3}
+        placeholder={sinNombre ? 'Escribe primero el nombre' : 'Explica qué es, para que quien cotiza no dude'}
+        // `overflowY: auto` en vez del corte seco: los textos de referencia
+        // pasan de 3 líneas y sin esto la última quedaba cortada a la mitad,
+        // sin manera de verla salvo arrastrando la esquina del campo.
+        style={{ ...inputSt, resize: 'vertical', minHeight: 76, overflowY: 'auto', lineHeight: 1.45, opacity: sinNombre ? 0.5 : 1 }}
+      />
+    </div>
+  )
+}
+
 function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conEmpresa }: {
   titulo?: string
   materiales: MaterialRow[]
@@ -217,9 +263,16 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
               <div>
                 <label className={labelSt}>Material</label>
                 <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                <div className="mt-2">
-                  <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                </div>
+                {descripcionesMaterial[m.nombre] !== undefined && (
+                  <div className="mt-1.5">
+                    <TooltipEditable
+                      nombre={m.nombre}
+                      texto={descripcionesMaterial[m.nombre]}
+                      conEmpresa={conEmpresa}
+                      onGuardado={(nombre, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nombre]: nuevoTexto }))}
+                    />
+                  </div>
+                )}
               </div>
               {mostrarPeso && (
                 <div>
@@ -275,10 +328,6 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
   servicios: ServicioRow[]; setServicios: React.Dispatch<React.SetStateAction<ServicioRow[]>>
   insumos: InsumoRow[]; setInsumos: React.Dispatch<React.SetStateAction<InsumoRow[]>>
 }) {
-  // El esquema base de la categoría es el molde del que heredan todos sus
-  // ítems: el nombre de cada servicio/insumo es editable acá y el cambio
-  // aplica a toda la categoría. El tooltip acompaña a ese nombre.
-  const [descripciones, setDescripciones] = useMaterialDescripcionesState((url: string) => url)
   const content = (
     <>
       {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)] mb-3"><CircleDollarSign size={16} /> {titulo}</p> : null}
@@ -286,11 +335,8 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <label className={labelSeccion}>Servicios</label>
       <div className="flex flex-col gap-2 mb-2">
         {servicios.map((s, i) => (
-          <div key={i} className="grid grid-cols-[2fr_auto] gap-2 items-start pb-2">
-            <div className="flex flex-col gap-2">
-              <input style={inputSt} placeholder="Servicio (ej: Pintor)" value={s.nombre} onChange={e => setServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-              <CampoTooltip nombre={s.nombre} mapa={descripciones} setMapa={setDescripciones} />
-            </div>
+          <div key={i} className="grid grid-cols-[2fr_auto] gap-2 items-center">
+            <input style={inputSt} placeholder="Servicio (ej: Pintor)" value={s.nombre} onChange={e => setServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
             <button type="button" onClick={() => setServicios(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
           </div>
         ))}
@@ -300,14 +346,11 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <label className={`${labelSeccion} mt-4`}>Insumos</label>
       <div className="flex flex-col gap-2 mb-2">
         {insumos.map((ins, i) => (
-          <div key={i} className="flex flex-col gap-2 pb-2">
-            <div className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
-              <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-              <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
-              <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-              <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
-            </div>
-            <CampoTooltip nombre={ins.nombre} mapa={descripciones} setMapa={setDescripciones} />
+          <div key={i} className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
+            <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+            <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+            <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+            <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
           </div>
         ))}
       </div>
@@ -689,59 +732,6 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
 
 // ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
 
-// Casilla del texto de ayuda de un concepto (material, servicio o insumo).
-// Vacía = ese concepto no muestra tooltip en ninguna otra pantalla, que es
-// justamente el comportamiento pedido: solo se ve donde hay contenido.
-//
-// Se guarda sola al salir del campo (onBlur), no espera al botón Guardar de
-// la pantalla: el texto vive en su propia tabla compartida por nombre, no en
-// la fila del material/servicio/insumo. `nombreOriginal` permite mudar el
-// texto cuando el super_admin renombró el concepto en la misma edición
-// (decisión del usuario: al renombrar, el texto se muda al nombre nuevo).
-function CampoTooltip({ nombre, nombreOriginal, mapa, setMapa }: {
-  nombre: string
-  nombreOriginal?: string
-  mapa: Record<string, string>
-  setMapa: React.Dispatch<React.SetStateAction<Record<string, string>>>
-}) {
-  const clave = nombre.trim()
-  const claveVieja = (nombreOriginal ?? '').trim()
-  // Mientras no se haya escrito nada bajo el nombre nuevo, se muestra el
-  // texto que traía el nombre viejo — así al renombrar no parece que la
-  // explicación se hubiera borrado.
-  const valor = mapa[clave] ?? (claveVieja && claveVieja !== clave ? mapa[claveVieja] ?? '' : '')
-  const sinNombre = !clave
-
-  async function guardar() {
-    if (sinNombre) return
-    await fetch('/api/cotizador/material-descripciones', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nombre: clave,
-        descripcion: valor,
-        ...(claveVieja && claveVieja !== clave ? { nombre_anterior: claveVieja } : {}),
-      }),
-    }).catch(() => {})
-  }
-
-  return (
-    <div>
-      <label className={labelSt}>Tooltip (opcional)</label>
-      <textarea
-        value={valor}
-        onChange={e => setMapa(prev => ({ ...prev, [clave]: e.target.value }))}
-        onBlur={guardar}
-        disabled={sinNombre}
-        maxLength={500}
-        rows={2}
-        placeholder={sinNombre ? 'Escribe primero el nombre' : 'Explica qué es, para que quien cotiza no dude'}
-        style={{ ...inputSt, resize: 'vertical', minHeight: 60, opacity: sinNombre ? 0.5 : 1 }}
-      />
-    </div>
-  )
-}
-
 function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   item: ItemConDimensiones | null
   categoria: CategoriaConEsquemaBase
@@ -750,10 +740,9 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 }) {
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
-  // Textos de ayuda (tooltips) de materiales, servicios e insumos — esta
-  // pantalla ("Editar ítem") es donde el super_admin realmente los escribe,
-  // junto a cada concepto. El texto es compartido por nombre en toda la
-  // plataforma, y solo se muestra en el resto del sistema si no está vacío.
+  // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
+  // es donde el super_admin realmente los edita, junto a cada material de
+  // la lista, no solo en el editor del esquema base de la categoría.
   const [descripcionesMaterial, setDescripcionesMaterial] = useMaterialDescripcionesState((url: string) => url)
 
   const [pesos, setPesos] = useState<Record<string, string>>(() => {
@@ -789,57 +778,250 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     return inicial
   })
 
+  // Extras: dimensiones que solo aplican a ESTE ítem, no se guardan en el esquema base.
+  const nombresBase = useMemo(() => new Set(categoria.categoria_materiales_base.map(m => m.nombre)), [categoria])
+  const nombresServBase = useMemo(() => new Set(categoria.categoria_servicios_base.map(s => s.nombre)), [categoria])
+  const nombresInsBase = useMemo(() => new Set(categoria.categoria_insumos_base.map(i => i.nombre)), [categoria])
+  const [extraMateriales, setExtraMateriales] = useState<MaterialRow[]>(
+    materialesAFilas((item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre)))
+  )
+  const [extraServicios, setExtraServicios] = useState<ServicioRow[]>(
+    serviciosAFilas((item?.item_servicios ?? []).filter(s => !nombresServBase.has(s.nombre)))
+  )
+  const [extraInsumos, setExtraInsumos] = useState<InsumoRow[]>(
+    insumosAFilas((item?.item_insumos ?? []).filter(i => !nombresInsBase.has(i.nombre)))
+  )
+
+  const [serviciosEliminados, setServiciosEliminados] = useState<Set<string>>(new Set())
+  const [insumosEliminados, setInsumosEliminados] = useState<Set<string>>(new Set())
+  const [materialesEliminados, setMaterialesEliminados] = useState<Set<string>>(new Set())
+
+  // Copia editable del esquema ambiental de la CATEGORÍA (nombre y factores
+  // de cada material). El peso sí es de este ítem, pero el nombre, el factor
+  // de CO2 y el de agua pertenecen a la categoría: cambiarlos aquí los
+  // cambia para todos sus ítems, que es justamente lo pedido ("todos deben
+  // tener por categoría el mismo sistema de cálculo ambiental").
+  const [esquemaMat, setEsquemaMat] = useState(() => categoria.categoria_materiales_base.map(m => ({
+    id: m.id,
+    nombre: m.nombre,
+    peso_kg: String(m.peso_kg),
+    factor_co2_kg: String(m.factor_co2_kg),
+    factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '',
+    categoria_material: m.categoria_material ?? '',
+    origen_fuente: m.origen_fuente ?? '',
+    detalle_fuente: m.detalle_fuente ?? '',
+  })))
+
+  // Mismo criterio para el esquema financiero de la categoría: el nombre del
+  // servicio/insumo (y la unidad del insumo) son de la categoría; el precio y
+  // la cantidad son de este ítem.
+  const [esquemaServ, setEsquemaServ] = useState(() => categoria.categoria_servicios_base.map(s => ({
+    id: s.id, nombre: s.nombre, precio: String(s.precio ?? 0),
+  })))
+  const [esquemaIns, setEsquemaIns] = useState(() => categoria.categoria_insumos_base.map(i => ({
+    id: i.id, nombre: i.nombre, unidad: i.unidad, precio_unitario: String(i.precio_unitario),
+  })))
+
+  // Id de la fila cuyo detalle está desplegado. La lista se ve compacta
+  // (nombre + peso/precio + acciones) y solo la fila que se está editando
+  // muestra el formulario completo, para no convertir la pantalla en un
+  // muro de campos.
+  const [filaAbierta, setFilaAbierta] = useState<string | null>(null)
+  const alternarFila = (id: string) => setFilaAbierta(prev => (prev === id ? null : id))
+
+  function moverClave(setter: React.Dispatch<React.SetStateAction<Record<string, string>>>, viejo: string, nuevo: string) {
+    setter(p => {
+      const { [viejo]: valor, ...resto } = p
+      return { ...resto, [nuevo]: valor ?? '' }
+    })
+  }
+
+  function editarEsquemaServ(id: string, nombre: string) {
+    setEsquemaServ(prev => prev.map(x => {
+      if (x.id !== id) return x
+      if (nombre !== x.nombre) moverClave(setPrecios, x.nombre, nombre)
+      return { ...x, nombre }
+    }))
+  }
+
+  function editarEsquemaIns(id: string, patch: Partial<{ nombre: string; unidad: string }>) {
+    setEsquemaIns(prev => prev.map(x => {
+      if (x.id !== id) return x
+      if (patch.nombre !== undefined && patch.nombre !== x.nombre) {
+        moverClave(setCantidades, x.nombre, patch.nombre)
+        moverClave(setPreciosUnitarios, x.nombre, patch.nombre)
+      }
+      return { ...x, ...patch }
+    }))
+  }
+
+  function editarEsquemaMat(id: string, patch: Partial<{ nombre: string; factor_co2_kg: string; factor_agua_l_kg: string }>) {
+    setEsquemaMat(prev => prev.map(x => {
+      if (x.id !== id) return x
+      // Al renombrar, el peso que el vendedor ya escribió para este ítem se
+      // mueve a la clave nueva: `pesos` se indexa por nombre.
+      if (patch.nombre !== undefined && patch.nombre !== x.nombre) {
+        setPesos(p => {
+          const { [x.nombre]: valor, ...resto } = p
+          return { ...resto, [patch.nombre as string]: valor ?? '' }
+        })
+      }
+      return { ...x, ...patch }
+    }))
+  }
+
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
 
-  // La lista de materiales/servicios/insumos la manda SIEMPRE la categoría —
-  // desde el ítem no se agrega ni se elimina ninguno, solo se ajusta cuánto
-  // lleva este mueble de cada uno (dejarlo en 0 equivale a "no aplica aquí").
-  // Decisión explícita del usuario: si se agrega o se quita, es para toda la
-  // categoría, nunca para un solo ítem.
-  const categoriaMaterialesBaseVisibles = categoria.categoria_materiales_base
-  const categoriaServiciosBaseVisibles = categoria.categoria_servicios_base
-  const categoriaInsumosBaseVisibles = categoria.categoria_insumos_base
+  const extraMaterialesValidos = useMemo(() => filasAMateriales(extraMateriales), [extraMateriales])
+  const extraServiciosValidos = useMemo(() => filasAServicios(extraServicios), [extraServicios])
+  const extraInsumosValidos = useMemo(() => filasAInsumos(extraInsumos), [extraInsumos])
+
+  // Filas del esquema de la categoría que este ítem sigue mostrando (los
+  // eliminados se marcan por id, no por nombre, porque el nombre es editable).
+  const esquemaMatVisibles = useMemo(() => {
+    return esquemaMat.filter(m => !materialesEliminados.has(m.id))
+  }, [esquemaMat, materialesEliminados])
+
+  const esquemaServVisibles = useMemo(() => {
+    return esquemaServ.filter(s => !serviciosEliminados.has(s.id))
+  }, [esquemaServ, serviciosEliminados])
+
+  const esquemaInsVisibles = useMemo(() => {
+    return esquemaIns.filter(i => !insumosEliminados.has(i.id))
+  }, [esquemaIns, insumosEliminados])
 
   const totalCo2 = useMemo(() => {
-    return categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * m.factor_co2_kg, 0)
-  }, [pesos, categoriaMaterialesBaseVisibles])
+    const base = esquemaMatVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_co2_kg) || 0), 0)
+    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0)
+    return base + extra
+  }, [pesos, esquemaMatVisibles, extraMaterialesValidos])
 
   const totalAgua = useMemo(() => {
-    return categoriaMaterialesBaseVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (m.factor_agua_l_kg ?? 0), 0)
-  }, [pesos, categoriaMaterialesBaseVisibles])
+    const base = esquemaMatVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_agua_l_kg) || 0), 0)
+    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * (m.factor_agua_l_kg ?? 0), 0)
+    return base + extra
+  }, [pesos, esquemaMatVisibles, extraMaterialesValidos])
 
   const subtotal = useMemo(() => {
-    const servBase = categoriaServiciosBaseVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
-    const insBase = categoriaInsumosBaseVisibles.reduce((s, x) => s + (parseFloat(cantidades[x.nombre]) || 0) * (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
-    return servBase + insBase
-  }, [precios, cantidades, preciosUnitarios, categoriaServiciosBaseVisibles, categoriaInsumosBaseVisibles])
+    const servBase = esquemaServVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
+    const insBase = esquemaInsVisibles.reduce((s, x) => s + (parseFloat(cantidades[x.nombre]) || 0) * (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
+    const servExtra = extraServiciosValidos.reduce((s, x) => s + x.precio, 0)
+    const insExtra = extraInsumosValidos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
+    return servBase + insBase + servExtra + insExtra
+  }, [precios, cantidades, preciosUnitarios, esquemaServVisibles, esquemaInsVisibles, extraServiciosValidos, extraInsumosValidos])
 
   const factor = parseFloat(factorRentabilidad) || 1
   const totalPrecio = subtotal * factor
 
   async function guardar() {
-    // Solo se guardan los conceptos de la categoría con un valor > 0 en este
-    // ítem — dejar uno en 0 es la forma de decir "este mueble no lo lleva",
-    // sin sacarlo de la categoría.
-    const materiales = categoriaMaterialesBaseVisibles
-      .filter(m => parseFloat(pesos[m.nombre]) > 0)
-      .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: m.factor_co2_kg, origen_fuente: m.origen_fuente ?? undefined, detalle_fuente: m.detalle_fuente ?? undefined, nivel_confianza: 'baja' as const }))
+    const materiales = [
+      ...esquemaMatVisibles
+        .filter(m => parseFloat(pesos[m.nombre]) > 0)
+        .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: parseFloat(m.factor_co2_kg) || 0, factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const })),
+      ...extraMaterialesValidos,
+    ]
 
     if (materiales.length === 0) {
       setError('Coloca el peso de al menos un material — el impacto ambiental no puede quedar en cero.')
       return
     }
 
-    const servicios = categoriaServiciosBaseVisibles
-      .filter(s => (parseFloat(precios[s.nombre]) || 0) > 0)
-      .map(s => ({ nombre: s.nombre, precio: parseFloat(precios[s.nombre]) }))
+    const servicios = [
+      ...esquemaServVisibles
+        .filter(s => s.nombre.trim() && (parseFloat(precios[s.nombre]) || 0) > 0)
+        .map(s => ({ nombre: s.nombre.trim(), precio: parseFloat(precios[s.nombre]) })),
+      ...extraServiciosValidos,
+    ]
 
-    const insumos = categoriaInsumosBaseVisibles
-      .filter(i => (parseFloat(cantidades[i.nombre]) || 0) > 0)
-      .map(i => ({ nombre: i.nombre, cantidad: parseFloat(cantidades[i.nombre]), unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || i.precio_unitario }))
+    const insumos = [
+      ...esquemaInsVisibles
+        .filter(i => i.nombre.trim() && (parseFloat(cantidades[i.nombre]) || 0) > 0)
+        .map(i => ({ nombre: i.nombre.trim(), cantidad: parseFloat(cantidades[i.nombre]), unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0 })),
+      ...extraInsumosValidos,
+    ]
 
     setGuardando(true); setError('')
+
+    // El nombre y los factores de cada material pertenecen a la CATEGORÍA:
+    // si el super_admin los editó (o quitó un material) desde este ítem, el
+    // cambio se propaga al esquema base y por lo tanto a todos los ítems de
+    // esa categoría. El peso, en cambio, es solo de este ítem.
+    const esquemaCambio =
+      esquemaMatVisibles.length !== categoria.categoria_materiales_base.length ||
+      esquemaMatVisibles.some(f => {
+        const orig = categoria.categoria_materiales_base.find(o => o.id === f.id)
+        if (!orig) return true
+        return f.nombre !== orig.nombre
+          || (parseFloat(f.factor_co2_kg) || 0) !== orig.factor_co2_kg
+          || (f.factor_agua_l_kg ? parseFloat(f.factor_agua_l_kg) : null) !== orig.factor_agua_l_kg
+      })
+
+    if (esquemaCambio) {
+      const materialesBase = esquemaMatVisibles
+        .filter(f => f.nombre.trim())
+        .map(f => ({
+          nombre: f.nombre.trim(),
+          peso_kg: parseFloat(f.peso_kg) || 1,
+          factor_co2_kg: parseFloat(f.factor_co2_kg) || 0,
+          factor_agua_l_kg: f.factor_agua_l_kg ? parseFloat(f.factor_agua_l_kg) : undefined,
+          categoria_material: f.categoria_material || undefined,
+          origen_fuente: f.origen_fuente || undefined,
+          detalle_fuente: f.detalle_fuente || undefined,
+          nivel_confianza: 'baja' as const,
+        }))
+      const resCat = await fetch(`/api/admin/categorias/${categoria.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ materiales_base: materialesBase }),
+      })
+      if (!resCat.ok) {
+        const d = await resCat.json().catch(() => ({}))
+        setError(d.error ?? 'Error al actualizar el esquema de la categoría.')
+        setGuardando(false)
+        return
+      }
+    }
+
+    // Mismo criterio para los costos: si cambió el nombre de un servicio, o
+    // el nombre/unidad/precio de referencia de un insumo, o se quitó alguno,
+    // el esquema financiero de la categoría se actualiza para todos sus ítems.
+    const servCambio =
+      esquemaServVisibles.length !== categoria.categoria_servicios_base.length ||
+      esquemaServVisibles.some(f => f.nombre !== categoria.categoria_servicios_base.find(o => o.id === f.id)?.nombre)
+    const insCambio =
+      esquemaInsVisibles.length !== categoria.categoria_insumos_base.length ||
+      esquemaInsVisibles.some(f => {
+        const orig = categoria.categoria_insumos_base.find(o => o.id === f.id)
+        if (!orig) return true
+        return f.nombre !== orig.nombre || f.unidad !== orig.unidad
+      })
+
+    if (servCambio || insCambio) {
+      const cuerpo: Record<string, unknown> = {}
+      if (servCambio) {
+        cuerpo.servicios_base = esquemaServVisibles
+          .filter(f => f.nombre.trim())
+          .map(f => ({ nombre: f.nombre.trim(), precio: parseFloat(f.precio) || 0 }))
+      }
+      if (insCambio) {
+        cuerpo.insumos_base = esquemaInsVisibles
+          .filter(f => f.nombre.trim())
+          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: parseFloat(f.precio_unitario) || 0 }))
+      }
+      const resCat = await fetch(`/api/admin/categorias/${categoria.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cuerpo),
+      })
+      if (!resCat.ok) {
+        const d = await resCat.json().catch(() => ({}))
+        setError(d.error ?? 'Error al actualizar los costos de la categoría.')
+        setGuardando(false)
+        return
+      }
+    }
+
     const url = item ? `/api/admin/items/${item.id}` : '/api/admin/items'
     const method = item ? 'PATCH' : 'POST'
     const body = item
@@ -872,55 +1054,170 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             </div>
 
             <label className={labelSeccion}>Servicios</label>
-            {categoriaServiciosBaseVisibles.length === 0 && (
+            {esquemaServVisibles.length === 0 && extraServicios.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin servicios asignados.</p>
             )}
 
-            {categoriaServiciosBaseVisibles.length > 0 && (
+            {esquemaServVisibles.length > 0 && (
               <div className="flex flex-col gap-2.5 mb-2">
-                {categoriaServiciosBaseVisibles.map(s => (
-                  <div key={s.id} className="flex items-center gap-2">
-                    <p className="flex-1 flex items-center gap-1 text-sm text-[var(--text-primary)]">
-                      {s.nombre}
-                      <TooltipEditable
-                        nombre={s.nombre}
-                        texto={descripcionesMaterial[s.nombre] ?? ''}
-                        conEmpresa={(url: string) => url}
-                        onGuardado={(nom, txt) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: txt }))}
-                      />
-                    </p>
-                    <div className="w-28 flex-shrink-0">
-                      <InputPrecio value={precios[s.nombre] ?? ''} onChange={v => setPrecios(p => ({ ...p, [s.nombre]: v }))} />
+                {esquemaServVisibles.map(fila => (
+                  <div key={fila.id} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                        <span className="truncate">{fila.nombre}</span>
+                        <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
+                      </p>
+                      <div className="w-28 flex-shrink-0">
+                        <InputPrecio value={precios[fila.nombre] ?? ''} onChange={v => setPrecios(p => ({ ...p, [fila.nombre]: v }))} />
+                      </div>
+                      <button type="button" onClick={() => alternarFila(fila.id)}
+                        className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                        title="Editar servicio">
+                        <Pencil size={15} sinAnimacion />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setServiciosEliminados(prev => new Set(prev).add(fila.id))
+                          setPrecios(p => ({ ...p, [fila.nombre]: '' }))
+                        }}
+                        className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                        title="Eliminar servicio"
+                      >
+                        <Trash size={16} sinAnimacion />
+                      </button>
+                    </div>
+                    {filaAbierta === fila.id && (
+                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                        <div>
+                          <label className={labelSt}>Servicio</label>
+                          <input style={inputSt} placeholder="Ej: Pintor" value={fila.nombre}
+                            onChange={e => editarEsquemaServ(fila.id, e.target.value)} />
+                        </div>
+                        <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {extraServicios.length > 0 && (
+              <div className="flex flex-col gap-2 mb-2">
+                {extraServicios.map((s, i) => (
+                  <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className={labelSt}>Servicio</label>
+                        <input style={inputSt} placeholder="Ej: Pintor" value={s.nombre} onChange={e => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Precio</label>
+                        <InputPrecio value={s.precio} onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))} />
+                      </div>
+                    </div>
+                    <CampoTooltip nombre={s.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                    <div className="flex justify-end items-center mt-1">
+                      <button type="button" onClick={() => setExtraServicios(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+                        <Trash size={14} /> Eliminar
+                      </button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
 
-            <label className={`${labelSeccion} mt-4`}>Insumos</label>
-            {categoriaInsumosBaseVisibles.length === 0 && (
+            <button type="button" onClick={() => setExtraServicios(r => [...r, filaServicio()])} className={`${btnChico} mb-4`}><Plus size={12} /> Añadir servicio</button>
+
+            <label className={`${labelSeccion} mt-2`}>Insumos</label>
+            {esquemaInsVisibles.length === 0 && extraInsumos.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin insumos asignados.</p>
             )}
 
-            {categoriaInsumosBaseVisibles.map(ins => (
-              <div key={ins.id} className="flex items-center gap-2 mb-2">
-                <div className="flex-1 min-w-0 flex items-center gap-1">
-                  <p className="text-sm text-[var(--text-primary)]">{ins.nombre}</p>
-                  <TooltipEditable
-                    nombre={ins.nombre}
-                    texto={descripcionesMaterial[ins.nombre] ?? ''}
-                    conEmpresa={(url: string) => url}
-                    onGuardado={(nom, txt) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: txt }))}
-                  />
+            {esquemaInsVisibles.map(fila => (
+              <div key={fila.id} className="flex flex-col gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                    <span className="truncate">{fila.nombre}</span>
+                    <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
+                  </p>
+                  <div className="w-24 flex-shrink-0">
+                    <InputConUnidad value={cantidades[fila.nombre] ?? ''} onChange={v => setCantidades(c => ({ ...c, [fila.nombre]: v }))} unidad={fila.unidad || 'unidad'} paso="0.01" />
+                  </div>
+                  <div className="w-28 flex-shrink-0">
+                    <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
+                  </div>
+                  <button type="button" onClick={() => alternarFila(fila.id)}
+                    className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                    title="Editar insumo">
+                    <Pencil size={15} sinAnimacion />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInsumosEliminados(prev => new Set(prev).add(fila.id))
+                      setCantidades(c => ({ ...c, [fila.nombre]: '' }))
+                    }}
+                    className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                    title="Eliminar insumo"
+                  >
+                    <Trash size={16} sinAnimacion />
+                  </button>
                 </div>
-                <div className="w-24 flex-shrink-0">
-                  <InputConUnidad value={cantidades[ins.nombre] ?? ''} onChange={v => setCantidades(c => ({ ...c, [ins.nombre]: v }))} unidad={ins.unidad} paso="0.01" />
-                </div>
-                <div className="w-28 flex-shrink-0">
-                  <InputPrecio value={preciosUnitarios[ins.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [ins.nombre]: v }))} />
-                </div>
+                {filaAbierta === fila.id && (
+                  <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className={labelSt}>Insumo</label>
+                        <input style={inputSt} placeholder="Ej: Tela" value={fila.nombre}
+                          onChange={e => editarEsquemaIns(fila.id, { nombre: e.target.value })} />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Unidad</label>
+                        <input style={inputSt} placeholder="Ej: metros" value={fila.unidad}
+                          onChange={e => editarEsquemaIns(fila.id, { unidad: e.target.value })} />
+                      </div>
+                    </div>
+                    <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                  </div>
+                )}
               </div>
             ))}
+
+            {extraInsumos.length > 0 && (
+              <div className="flex flex-col gap-2 mb-2">
+                {extraInsumos.map((ins, i) => (
+                  <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className={labelSt}>Insumo</label>
+                        <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Unidad</label>
+                        <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Cantidad</label>
+                        <InputConUnidad value={ins.cantidad} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: v } : x))} unidad={ins.unidad || 'unidad'} paso="0.01" />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Precio unitario</label>
+                        <InputPrecio value={ins.precio_unitario} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+                      </div>
+                    </div>
+                    <CampoTooltip nombre={ins.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                    <div className="flex justify-end items-center mt-1">
+                      <button type="button" onClick={() => setExtraInsumos(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+                        <Trash size={14} /> Eliminar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <button type="button" onClick={() => setExtraInsumos(r => [...r, { ...filaInsumo(), cantidad: '1' }])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir insumo</button>
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2.5" style={{ borderTop: '1px solid var(--border)' }}>
@@ -953,28 +1250,92 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             </div>
 
             <label className={labelSeccion}>Materiales</label>
-            {categoriaMaterialesBaseVisibles.length === 0 && (
+            {esquemaMatVisibles.length === 0 && extraMateriales.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin materiales asignados.</p>
             )}
 
-            {categoriaMaterialesBaseVisibles.length > 0 && (
+            {esquemaMatVisibles.length > 0 && (
               <div className="flex flex-col gap-2.5 mb-3">
-                {categoriaMaterialesBaseVisibles.map(m => {
+                {esquemaMatVisibles.map(fila => (
+                  <div key={fila.id} className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <p className="flex-1 min-w-0 flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
+                        <span className="truncate">{fila.nombre}</span>
+                        <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
+                      </p>
+                      <div className="w-28 flex-shrink-0">
+                        <InputConUnidad value={pesos[fila.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.01" />
+                      </div>
+                      <button type="button" onClick={() => alternarFila(fila.id)}
+                        className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                        title="Editar material">
+                        <Pencil size={15} sinAnimacion />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMaterialesEliminados(prev => new Set(prev).add(fila.id))
+                          setPesos(p => ({ ...p, [fila.nombre]: '' }))
+                        }}
+                        className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                        title="Eliminar material"
+                      >
+                        <Trash size={16} sinAnimacion />
+                      </button>
+                    </div>
+                    {filaAbierta === fila.id && (
+                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div>
+                            <label className={labelSt}>Material</label>
+                            <input style={inputSt} placeholder="Ej: Madera dura" value={fila.nombre}
+                              onChange={e => editarEsquemaMat(fila.id, { nombre: e.target.value })} />
+                          </div>
+                          <div>
+                            <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
+                            <InputConUnidad value={fila.factor_co2_kg} onChange={v => editarEsquemaMat(fila.id, { factor_co2_kg: v })} unidad="kg CO₂ eq/kg" paso="0.0001" />
+                          </div>
+                          <div>
+                            <label className={labelSt}>Agua (por 1 kg)</label>
+                            <InputConUnidad value={fila.factor_agua_l_kg} onChange={v => editarEsquemaMat(fila.id, { factor_agua_l_kg: v })} unidad="L agua/kg" paso="0.1" />
+                          </div>
+                        </div>
+                        <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {extraMateriales.length > 0 && (
+              <div className="flex flex-col gap-3 mb-3">
+                {extraMateriales.map((m, i) => {
                   return (
-                    <div key={m.id} className="flex items-start gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1">
-                          <p className="text-sm font-medium text-[var(--text-primary)]">{m.nombre}</p>
-                          <TooltipEditable
-                            nombre={m.nombre}
-                            texto={descripcionesMaterial[m.nombre] ?? ''}
-                            conEmpresa={(url: string) => url}
-                            onGuardado={(nom, nuevoTexto) => setDescripcionesMaterial(prev => ({ ...prev, [nom]: nuevoTexto }))}
-                          />
+                    <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                        <div>
+                          <label className={labelSt}>Material adicional</label>
+                          <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Peso</label>
+                          <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
+                          <InputConUnidad value={m.factor_co2_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_co2_kg: v } : x))} unidad="kg CO₂ eq/kg" paso="0.0001" />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Agua (por 1 kg)</label>
+                          <InputConUnidad value={m.factor_agua_l_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_agua_l_kg: v } : x))} unidad="L agua/kg" paso="0.1" />
                         </div>
                       </div>
-                      <div className="w-28 flex-shrink-0">
-                        <InputConUnidad value={pesos[m.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [m.nombre]: v }))} unidad="kg" paso="0.01" />
+                      <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      <div className="flex justify-end items-center mt-1">
+                        <button type="button" onClick={() => setExtraMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+                          <Trash size={14} /> Eliminar
+                        </button>
                       </div>
                     </div>
                   )
@@ -982,9 +1343,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               </div>
             )}
 
-            <p className="text-xs text-[var(--text-secondary)] mt-2 mb-2">
-              Para agregar, quitar o renombrar materiales, edita la categoría. El cambio aplica a todos sus ítems. Aquí deja en 0 lo que este mueble no lleve.
-            </p>
+            <button type="button" onClick={() => setExtraMateriales(r => [...r, filaMaterial()])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir material</button>
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)' }}>
