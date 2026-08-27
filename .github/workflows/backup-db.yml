@@ -37,7 +37,7 @@ jobs:
           sudo apt-get install -y -qq postgresql-client-17
           pg_dump --version
 
-      - name: Verificar que existe la cadena de conexión
+      - name: Verificar la cadena de conexión y que el servidor sea alcanzable
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
         run: |
@@ -45,7 +45,26 @@ jobs:
             echo "::error::Falta el secreto SUPABASE_DB_URL. Sin él no se puede respaldar nada."
             exit 1
           fi
-          echo "Cadena de conexión presente."
+
+          # Extraer el servidor de la cadena, sin exponer la contraseña.
+          SERVIDOR=$(printf '%s' "$SUPABASE_DB_URL" | sed -E 's|.*@([^:/]+).*|\1|')
+          echo "Servidor: $SERVIDOR"
+
+          # Los runners de GitHub NO tienen IPv6. La conexión "Direct" de
+          # Supabase (db.<ref>.supabase.co) resuelve SOLO a IPv6 en los
+          # proyectos nuevos, así que pg_dump falla con un error de red poco
+          # descriptivo. Se detecta aquí para explicar exactamente qué hacer.
+          if ! getent ahostsv4 "$SERVIDOR" > /dev/null 2>&1; then
+            echo "::error::El servidor '$SERVIDOR' no tiene dirección IPv4, y GitHub Actions no soporta IPv6."
+            echo "::error::Solución: en Supabase usa la cadena del *Session pooler* (el servidor termina en 'pooler.supabase.com' y el puerto es 5432), no la de 'Direct'."
+            exit 1
+          fi
+          echo "El servidor tiene IPv4: alcanzable desde GitHub."
+
+          # Aviso si se usó el Transaction pooler, que no sirve para volcados.
+          case "$SUPABASE_DB_URL" in
+            *:6543/*) echo "::error::El puerto 6543 es el Transaction pooler y no permite hacer volcados. Usa el Session pooler (puerto 5432)."; exit 1 ;;
+          esac
 
       - name: Generar el volcado lógico
         env:
@@ -57,9 +76,19 @@ jobs:
           # --no-owner/--no-acl: el volcado debe poder restaurarse en un
           # proyecto Supabase distinto (el de recuperación), donde los roles
           # y permisos no son los mismos que en producción.
-          pg_dump "$SUPABASE_DB_URL" \
-            --no-owner --no-acl --clean --if-exists \
-            | gzip -9 > "reuso-backup-$FECHA.sql.gz"
+          if ! pg_dump "$SUPABASE_DB_URL" \
+                 --no-owner --no-acl --clean --if-exists \
+                 2> /tmp/pg_dump_error.txt \
+                 | gzip -9 > "reuso-backup-$FECHA.sql.gz"; then
+            echo "::error::pg_dump falló. Mensaje exacto de PostgreSQL:"
+            sed -E 's/(password=)[^ ]*/\1***/g' /tmp/pg_dump_error.txt
+            echo ""
+            echo "Causas habituales:"
+            echo "  · Contraseña incorrecta -> revisar el secreto SUPABASE_DB_URL."
+            echo "  · Cadena 'Direct' en vez de 'Session pooler' -> GitHub no tiene IPv6."
+            echo "  · La contraseña lleva caracteres especiales sin codificar (@ : / ? #)."
+            exit 1
+          fi
           ls -lh "reuso-backup-$FECHA.sql.gz"
 
       - name: Comprobar que el volcado no salió vacío
