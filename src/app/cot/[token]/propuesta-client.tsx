@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, Tag, Hammer, TrendDown } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { useTopLoader } from 'nextjs-toploader'
 import { VistaCot } from './vista-cot'
@@ -36,6 +36,8 @@ interface Mueble {
   imagen_url: string | null
   materiales_json?: Record<string, unknown> | null
   peso_estandar_kg?: number | null
+  precio_mercado_nuevo: number | null
+  precio_mercado_estado: 'pendiente' | 'sugerido' | 'confirmado' | 'sin_resultado'
 }
 
 interface Cotizacion {
@@ -248,6 +250,24 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   const agua = Number(cotizacion.agua_evitada_total_l)
   const arboles = Math.max(1, Math.round(co2 / (PARAM_EQUIV.CO2_arbol_anual_kg / 365)))
   const duchas = Math.round(agua / PARAM_EQUIV.litros_ducha_5min)
+
+  // Valor: cuánto costaría nuevo vs. lo que se paga por restaurar. Solo se
+  // cuentan los muebles con precio de mercado ya sugerido/confirmado —
+  // comparar contra un precio nuevo faltante daría un porcentaje engañoso.
+  // El "valor de la reparación" es precio_mueble (lo que el cliente paga,
+  // ya incluye la cantidad), NUNCA el costo interno de servicios+insumos:
+  // esta es una página pública, mostrar el costo interno revelaría el
+  // margen de ganancia a cualquiera con el enlace.
+  const mueblesConPrecioNuevo = muebles.filter(
+    (m): m is Mueble & { precio_mercado_nuevo: number } =>
+      m.precio_mercado_nuevo !== null && m.precio_mercado_nuevo > 0
+  )
+  const valorNuevoTotal = mueblesConPrecioNuevo.reduce((s, m) => s + m.precio_mercado_nuevo * m.cantidad, 0)
+  const valorReparacionTotal = mueblesConPrecioNuevo.reduce((s, m) => s + Number(m.precio_mueble), 0)
+  const porcentajeAhorro = valorNuevoTotal > 0
+    ? Math.round(((valorNuevoTotal - valorReparacionTotal) / valorNuevoTotal) * 100)
+    : 0
+  const mostrarValor = mueblesConPrecioNuevo.length > 0 && valorNuevoTotal > valorReparacionTotal
 
   // Formato para modal de impacto ambiental
   const totalCO2Str = formatNumero(co2)
@@ -589,10 +609,15 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
         {/* ── Muebles ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 lg:gap-14 mb-12">
-          {muebles.map((m) => {
+          {muebles.map((m, index) => {
             const tituloMueble = m.titulo || m.tipo_mueble
+            const isLastOdd = muebles.length % 2 !== 0 && index === muebles.length - 1
+            
             return (
-            <div key={m.id} className="flex gap-5 items-start">
+            <div 
+              key={m.id} 
+              className={`flex gap-5 items-start ${isLastOdd ? 'sm:col-span-2 sm:justify-self-center sm:w-[calc(50%-1rem)] md:w-[calc(50%-1.5rem)] lg:w-[calc(50%-1.75rem)]' : ''}`}
+            >
               {m.imagen_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -801,6 +826,52 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
         {/* ── A partir de aquí, mismos módulos en ambas vistas (propuesta y
             cotización): impacto ambiental, aprobación y por qué elegirnos. ── */}
+
+        {/* ── Valor: nuevo vs. restaurado — encima del impacto ambiental,
+            a pedido explícito del usuario (2026-08-27), sacado del plan de
+            Reportes V2 para construirlo ahora, suelto. Solo aparece si al
+            menos un mueble tiene precio de mercado nuevo confirmado o
+            sugerido; "valor de la reparación" es SIEMPRE precio_mueble (lo
+            que paga el cliente), nunca el costo interno de servicios+insumos
+            — esta es una página pública, mostrar el costo interno revelaría
+            el margen de ganancia a cualquiera con el enlace. */}
+        {mostrarValor && (
+          <div className="mb-10 print:hidden">
+            <div className="text-center mb-5">
+              <h2 className={`text-xl font-bold ${tp}`}>Tu ahorro frente a comprar nuevo</h2>
+              <p className={`text-sm mt-0.5 ${ts50}`}>Comparado con el precio de mercado de un producto nuevo equivalente</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-white/5' : 'bg-[#474747]/[0.03]'}`}>
+                <div className={`w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-[#474747]/08'}`}>
+                  <Tag size={26} className={tp} />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold ${tp}`}>Nuevo, en el mercado</p>
+                  <p className={`text-2xl font-bold leading-tight ${tp}`}>{formatCOPCompact(valorNuevoTotal)}</p>
+                </div>
+              </div>
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/[0.04]'}`}>
+                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#00827C]/12">
+                  <Hammer size={26} className="text-[#00827C]" />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold ${tp}`}>Restaurado, con nosotros</p>
+                  <p className={`text-2xl font-bold leading-tight ${tp}`}>{formatCOPCompact(valorReparacionTotal)}</p>
+                </div>
+              </div>
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-[#38B98E]/10' : 'bg-[#38B98E]/[0.06]'}`}>
+                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#38B98E]/15">
+                  <TrendDown size={26} className="text-[#38B98E]" />
+                </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold ${tp}`}>Ahorras</p>
+                  <p className="text-2xl font-bold leading-tight text-[#38B98E]">{porcentajeAhorro}%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Impacto ambiental — cada tarjeta cuenta UNA historia completa:
             "ahorras X" y a qué equivale, conectados por una flecha, en vez

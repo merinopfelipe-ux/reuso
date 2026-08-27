@@ -55,7 +55,7 @@ export default async function PropuestaPublicaPage({ params }: Props) {
   // Muebles de esta cotización
   const { data: muebles } = await adminClient
     .from('crm_muebles_cotizados')
-    .select('id, titulo, descripcion, tipo_mueble, categoria, oficios_json, servicios_json, insumos_json, cantidad, precio_mueble, co2_evitado_kg, agua_evitada_l, imagen_url, materiales_json, peso_estandar_kg')
+    .select('id, titulo, descripcion, tipo_mueble, categoria, oficios_json, servicios_json, insumos_json, cantidad, precio_mueble, co2_evitado_kg, agua_evitada_l, imagen_url, materiales_json, peso_estandar_kg, precio_mercado_nuevo, precio_mercado_estado')
     .eq('cotizacion_id', cot.id)
     .eq('oculto', false)
     .order('created_at')
