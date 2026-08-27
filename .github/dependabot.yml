@@ -1,0 +1,46 @@
+# Dependabot version updates — Calculadora de Reúso
+# Documentación: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#
+# Este archivo SOLO controla las actualizaciones RUTINARIAS (revisión
+# semanal de versiones nuevas). Las alertas de vulnerabilidades ya
+# reportadas (CVE) y sus Pull Requests automáticos son una función
+# SEPARADA ("Dependabot security updates"), que se activa en GitHub
+# (Settings → Code security → Dependabot) y no depende de este archivo:
+# esas PR se abren de inmediato al publicarse la vulnerabilidad, sin
+# esperar al schedule semanal de abajo.
+
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 10
+    # Protección contra ataques de cadena de suministro: espera N días desde
+    # que se publica una versión nueva antes de proponerla, dando tiempo a
+    # que la comunidad detecte un paquete comprometido/malicioso recién
+    # publicado (hallazgo real de Semgrep, regla dependabot-missing-cooldown).
+    cooldown:
+      default-days: 7
+      semver-major-days: 7
+      semver-minor-days: 3
+      semver-patch-days: 3
+    labels:
+      - "dependencies"
+      - "seguridad"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    # Agrupa parches/menores en una sola PR semanal por grupo — solo los
+    # cambios "major" (con riesgo real de romper algo) llegan como PR
+    # individual, para que revisar el correo semanal de Dependabot sea
+    # rápido en vez de una PR distinta por cada paquete.
+    groups:
+      dependencias-menores:
+        update-types:
+          - "minor"
+          - "patch"

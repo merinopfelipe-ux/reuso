@@ -971,8 +971,8 @@ export function SalesDashboard({
           className="grid grid-cols-2 grid-rows-[auto_1.1fr] xl:grid-rows-[auto_1.7fr] gap-2 xl:gap-4 transition-all duration-500"
           style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '180ms' }}
         >
-          <KpiCard icon={<Clock size={14} className="text-[#F6BF3E]" />} label={['Tiempo', 'de apertura']} value={labelTiempo} t={tTiempo} cardBg={cardBg} tp={tp} ts={ts} />
-          <KpiCard icon={<Sofa size={14} className="text-[#38B98E]" />} label={['Muebles', 'cotizados']} value={String(totalMuebles)} t={tMuebles} cardBg={cardBg} tp={tp} ts={ts} />
+          <KpiCard icon={<Clock size={14} color="#F6BF3E" />} label={['Tiempo', 'de apertura']} value={labelTiempo} t={tTiempo} cardBg={cardBg} tp={tp} ts={ts} />
+          <KpiCard icon={<Sofa size={14} color="#38B98E" />} label={['Muebles', 'cotizados']} value={String(totalMuebles)} t={tMuebles} cardBg={cardBg} tp={tp} ts={ts} />
           <CityChartCard cotizaciones={cotsKpi} ciudadesAgrupadas={ciudadesAgrupadas} agrupar={ciudadesAgruparActivo} onConfigClick={() => setModalCiudadesAbierto(true)} cardBg={cardBg} tp={tp} ts={ts} />
           <B2BChartCard cotizaciones={cotsKpi} cardBg={cardBg} tp={tp} ts={ts} />
         </div>

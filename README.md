@@ -1,6 +1,6 @@
 # Calculadora de Reúso — reuso.lurdes.co
 
-SaaS que mide, certifica y comunica el CO₂ evitado cuando personas y organizaciones reutilizan objetos. Genera certificados PDF e informes con QR verificable.
+SaaS que cuantifica y comunica el impacto ambiental y financiero cuando organizaciones y personas reutilizan y reacondicionan objetos. Emite informes ejecutivos de sostenibilidad y pasaportes digitales de producto (DPP) con código QR verificable.
 
 **Producto:** Grupo MLP S.A.S. · servicio@lurdes.co
 
@@ -52,7 +52,7 @@ Si eres un nuevo desarrollador integrándote al proyecto, sigue estos pasos:
 | Rol | Panel | Descripción |
 |-----|-------|-------------|
 | `super_admin` | `/admin` | Gestiona todo el sistema |
-| `empresa_admin` | `/empresa` | Su empresa, equipo, certificados |
+| `empresa_admin` | `/empresa` | Su empresa, equipo, cotizador, DPP, informes |
 | `empleado` | `/dashboard` | Calcula, ve impacto de empresa |
 | `usuario_libre` | `/dashboard` | Plan Explora, sin empresa |
 

@@ -29,14 +29,14 @@ const navItems: NavItem[] = NAV_ITEMS[rol]
 
 | Rol | Ítems |
 |---|---|
-| `super_admin` | Resumen, Empresas, Categorías, Usuarios, Alertas, Logs, Tickets, Config, Ayuda, Configuración |
-| `empresa_admin` | Mi empresa, Equipo, Cálculos, Metas, Certificados, Soporte, Configuración |
-| `empleado` | Inicio, Calcular, Mi historial, Soporte, Mi perfil |
-| `usuario_libre` | Inicio, Calcular, Mi historial, Subir de plan, Soporte, Mi perfil |
+| `super_admin` | Resumen, Empresas, Leads, Categorías, Catálogos, Módulos, Cálculos, Reportes, Usuarios, Auditoría, Alertas, Configuración, QA, Estado, Correos, Contenido, Plantillas, Tickets, Ayuda, Legales, Firmas, Cotizador |
+| `empresa_admin` | Mi empresa, Equipo, Cálculos, Metas, Informes, Pasaportes DPP, Reportes, Cotizador, Clientes, Soporte, Ajustes |
+| `empleado` | Inicio, Calcular, Historial, Cotizador, Clientes, Soporte, Ajustes |
+| `usuario_libre` | Inicio, Calcular, Historial, Planes, Soporte, Ajustes |
 
 ## Diferencia empleado vs usuario_libre
 
-`usuario_libre` tiene el ítem **"Subir de plan"** (`/empresa/nueva`) donde `empleado` no lo tiene. Esto es un recordatorio permanente de que puede crear una empresa para acceder a certificados y cálculos ilimitados.
+`usuario_libre` tiene el ítem **"Subir de plan"** (`/empresa/nueva`) donde `empleado` no lo tiene. Esto es un recordatorio permanente de que puede crear una empresa para acceder a cotizador B2B, catálogo privado y cálculos ilimitados.
 
 ## Cómo fluye el rol hasta el sidebar
 
@@ -59,6 +59,9 @@ Algunos ítems (historial, soporte) apuntan a rutas que aún no existen. Se usan
 
 ## Ver también
 
-- [[modo-empleado-cookie]] — cómo empresa_admin puede usar el sidebar de empleado
-- [[role-routing-nextjs]] — guards de ruta por rol en layouts
-- [[dashboard-bifurcacion-rol]] — cómo el contenido del dashboard también cambia por rol
+- [[conceptos/cotizador-crm-multiempresa|Cotizador B2B y CRM]]
+- [[conceptos/pasaporte-digital-dpp|Pasaporte Digital de Producto (DPP)]]
+- [[conceptos/plan-de-escalabilidad-anexos|Anexos y Checklist de Rutas]]
+- [[conceptos/modo-empleado-cookie|Modo Colaborador]]
+- [[conceptos/role-routing-nextjs|Protección de Rutas por Rol]]
+- [[conceptos/dashboard-bifurcacion-rol|Bifurcación de Vistas por Rol]]

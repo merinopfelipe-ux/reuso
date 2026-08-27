@@ -55,5 +55,6 @@ CREATE TABLE profiles (
 
 ## Ver también
 
-- [[supabase-rls]] — RLS y permisos de escritura
-- [[rollback-manual-supabase]] — sin transacciones en JS, rollback manual
+- [[conceptos/multi-tenant-rls-aislamiento|Multi-Tenant y Aislamiento RLS]]
+- [[conceptos/plan-de-escalabilidad-multiempresa|Plan de Escalabilidad y Estrategia de Rollback]]
+- [[conceptos/n-plus-one-supabase|Optimización N+1 en Supabase]]

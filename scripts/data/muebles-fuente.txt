@@ -1,0 +1,3905 @@
+[Muebles] - [Comedor] - [Mesa 4 puestos (Mesa con enchape de tapa)]
+Ítem: Mesa 4 puestos (Mesa con enchape de tapa)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 6.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 5.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 5.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 10.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 10.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 490,000.00
+- Carpintero: $ 180,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Mesa 6 puestos (Mesa con enchape de tapa)]
+Ítem: Mesa 6 puestos (Mesa con enchape de tapa)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 7.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 7.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.5 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.5 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 18.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 18.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 520,000.00
+- Carpintero: $ 240,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Mesa 8 puestos (Mesa con enchape de tapa)]
+Ítem: Mesa 8 puestos (Mesa con enchape de tapa)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 7.5 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 7.5 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 26.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 26.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 540,000.00
+- Carpintero: $ 280,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas con pintura (Silla tapizdo asiento tipo bastidor)]
+Ítem: Sillas con pintura (Silla tapizdo asiento tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.6 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.6 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.25 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.25 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.2 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.2 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 160,000.00
+- Tapicero: $ 45,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (0.3 metros a $80,000.00/m): $ [Cálculo: 0.3 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas con pintura (Silla tapizdo asiento y espaldar tipo bastidor)]
+Ítem: Sillas con pintura (Silla tapizdo asiento y espaldar tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.75 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.75 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Tapicero: $ 90,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (1.2 metros a $80,000.00/m): $ [Cálculo: 1.2 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas con pintura (Silla tapizdo asiento fijo)]
+Ítem: Sillas con pintura (Silla tapizdo asiento fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Tapicero: $ 90,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (0.3 metros a $80,000.00/m): $ [Cálculo: 0.3 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas con pintura (Silla tapizdo asiento y espaldar fijo)]
+Ítem: Sillas con pintura (Silla tapizdo asiento y espaldar fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Tapicero: $ 140,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (1.2 metros a $80,000.00/m): $ [Cálculo: 1.2 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo tapizado (Silla tapizdo asiento tipo bastidor)]
+Ítem: Sillas solo tapizado (Silla tapizdo asiento tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.6 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.6 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.25 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.25 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.2 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.2 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 45,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (0.3 metros a $80,000.00/m): $ [Cálculo: 0.3 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo tapizado (Silla tapizdo asiento y espaldar tipo bastidor)]
+Ítem: Sillas solo tapizado (Silla tapizdo asiento y espaldar tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.75 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.75 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 90,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (1.2 metros a $80,000.00/m): $ [Cálculo: 1.2 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo tapizado (Silla tapizdo asiento fijo)]
+Ítem: Sillas solo tapizado (Silla tapizdo asiento fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 90,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (0.3 metros a $80,000.00/m): $ [Cálculo: 0.3 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo tapizado (Silla tapizdo asiento y espaldar fijo)]
+Ítem: Sillas solo tapizado (Silla tapizdo asiento y espaldar fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 140,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (1.2 metros a $80,000.00/m): $ [Cálculo: 1.2 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo pintura (Silla toda de maderra (sin tapicería))]
+Ítem: Sillas solo pintura (Silla toda de maderra (sin tapicería))
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.5 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.5 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.8 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.8 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 170,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo pintura (Silla tapizdo asiento tipo bastidor)]
+Ítem: Sillas solo pintura (Silla tapizdo asiento tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.6 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.6 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.25 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.25 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.2 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.2 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 160,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo pintura (Silla tapizdo asiento y espaldar tipo bastidor)]
+Ítem: Sillas solo pintura (Silla tapizdo asiento y espaldar tipo bastidor)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 0.75 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.75 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 0.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 0.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo pintura (Silla tapizdo asiento fijo)]
+Ítem: Sillas solo pintura (Silla tapizdo asiento fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Sillas solo pintura (Silla tapizdo asiento y espaldar fijo)]
+Ítem: Sillas solo pintura (Silla tapizdo asiento y espaldar fijo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 150,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Bifé]
+Ítem: Bifé
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 590,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Comedor] - [Bifé (Bifé con aparador)]
+Ítem: Bifé (Bifé con aparador)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 980,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Poltrona (Poltrona tapizada con madera)]
+Ítem: Poltrona (Poltrona tapizada con madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 240,000.00
+- Tapicero: $ 290,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (3.5 metros a $80,000.00/m): $ [Cálculo: 3.5 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Poltrona (Poltrona tapizada sin madera)]
+Ítem: Poltrona (Poltrona tapizada sin madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 450,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (6.0 metros a $80,000.00/m): $ [Cálculo: 6.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de poltrona - Medellín)]
+Ítem: Cuero (Teñido de poltrona - Medellín)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 250,000.00
+- Teñido: $ 200,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de poltrona - Bogotá)]
+Ítem: Cuero (Teñido de poltrona - Bogotá)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 280,000.00
+- Teñido: $ 500,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de sofá 2 puestos - Medellín)]
+Ítem: Cuero (Teñido de sofá 2 puestos - Medellín)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 390,000.00
+- Teñido: $ 400,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de sofá 2 puestos - Bogotá)]
+Ítem: Cuero (Teñido de sofá 2 puestos - Bogotá)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 450,000.00
+- Teñido: $ 800,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de sofá 3 puestos - Medellín)]
+Ítem: Cuero (Teñido de sofá 3 puestos - Medellín)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 450,000.00
+- Teñido: $ 600,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Cuero (Teñido de sofá 3 puestos - Bogotá)]
+Ítem: Cuero (Teñido de sofá 3 puestos - Bogotá)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 650,000.00
+- Teñido: $ 1,200,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sillas Decorativas (Isabelina con pintura)]
+Ítem: Sillas Decorativas (Isabelina con pintura)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 330,000.00
+- Tapicero: $ 420,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (7.0 metros a $80,000.00/m): $ [Cálculo: 7.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sillas Decorativas (Isabelina solo tapizado)]
+Ítem: Sillas Decorativas (Isabelina solo tapizado)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 420,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (7.0 metros a $80,000.00/m): $ [Cálculo: 7.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sillas Decorativas (Inglés con pintura)]
+Ítem: Sillas Decorativas (Inglés con pintura)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 290,000.00
+- Tapicero: $ 420,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (5.0 metros a $80,000.00/m): $ [Cálculo: 5.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sillas Decorativas (Inglés sin pintura)]
+Ítem: Sillas Decorativas (Inglés sin pintura)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 420,000.00
+- Carpintero: $ 20,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (5.0 metros a $80,000.00/m): $ [Cálculo: 5.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá 2 puestos (Sofá de 2 puestos tapizada con madera)]
+Ítem: Sofá 2 puestos (Sofá de 2 puestos tapizada con madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 290,000.00
+- Tapicero: $ 450,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (7.0 metros a $80,000.00/m): $ [Cálculo: 7.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá 2 puestos (Sofá de 2 puestos tapizada sin madera)]
+Ítem: Sofá 2 puestos (Sofá de 2 puestos tapizada sin madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 650,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (9.0 metros a $80,000.00/m): $ [Cálculo: 9.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá 3 puestos (Sofá de 3 puestos tapizada con madera)]
+Ítem: Sofá 3 puestos (Sofá de 3 puestos tapizada con madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 320,000.00
+- Tapicero: $ 650,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (9.0 metros a $80,000.00/m): $ [Cálculo: 9.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá 3 puestos (Sofá de 3 puestos tapizada sin madera)]
+Ítem: Sofá 3 puestos (Sofá de 3 puestos tapizada sin madera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 850,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (11.0 metros a $80,000.00/m): $ [Cálculo: 11.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá modulares (Sofá modular en L)]
+Ítem: Sofá modulares (Sofá modular en L)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 1,300,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (15.0 metros a $80,000.00/m): $ [Cálculo: 15.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá modulares (Sofá modular 3 cuerpos)]
+Ítem: Sofá modulares (Sofá modular 3 cuerpos)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 1,800,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (22.0 metros a $80,000.00/m): $ [Cálculo: 22.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá modulares (Sofá modular 4 cuerpos)]
+Ítem: Sofá modulares (Sofá modular 4 cuerpos)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 2,300,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (29.0 metros a $80,000.00/m): $ [Cálculo: 29.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Sofá modulares (Sofá modular 5 cuerpos)]
+Ítem: Sofá modulares (Sofá modular 5 cuerpos)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Tapicero: $ 2,900,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Tela (37.0 metros a $80,000.00/m): $ [Cálculo: 37.0 * 80000]
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Mesa (Mesa de centro)]
+Ítem: Mesa (Mesa de centro)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 340,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Sala] - [Mesa (Mesa auxiliar)]
+Ítem: Mesa (Mesa auxiliar)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 260,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Alcoba] - [Varios (Mesa de noche)]
+Ítem: Varios (Mesa de noche)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 290,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Alcoba] - [Varios (Cajonera)]
+Ítem: Varios (Cajonera)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 460,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Alcoba] - [Cama (Cama de 1.40)]
+Ítem: Cama (Cama de 1.40)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 490,000.00
+- Carpintero: $ 40,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Alcoba] - [Cama (Cama de 1.60)]
+Ítem: Cama (Cama de 1.60)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 550,000.00
+- Carpintero: $ 40,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Decorativos] - [Varios (Consola)]
+Ítem: Varios (Consola)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 390,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Decorativos] - [Varios (Consola con talla)]
+Ítem: Varios (Consola con talla)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 450,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Decorativos] - [Varios (Espejo)]
+Ítem: Varios (Espejo)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 260,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Biblioteca] - [Varios (Biblioteca de 2m)]
+Ítem: Varios (Biblioteca de 2m)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 1,200,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]
+
+===========================================================
+
+[Muebles] - [Biblioteca] - [Varios (Biblioteca de 3m)]
+Ítem: Varios (Biblioteca de 3m)
+
+IMPACTO AMBIENTAL (CO2 EVITADO POR REUTILIZACIÓN)
+- Insumo rescatado: Hierro
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.45 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.45] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Acero
+  Peso continuado: 4.0 kg
+  Factor de conversión: 1.75 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 4.0 * 1.75] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Polipropileno
+  Peso continuado: 1.5 kg
+  Factor de conversión: 77 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 77] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas rígidas
+  Peso continuado: 2.0 kg
+  Factor de conversión: 3.8 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 3.8] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Espumas flexibles
+  Peso continuado: 1.5 kg
+  Factor de conversión: 4.4 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 1.5 * 4.4] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera dura
+  Peso continuado: 8.0 kg
+  Factor de conversión: 0.86 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 8.0 * 0.86] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Madera blanda
+  Peso continuado: 6.0 kg
+  Factor de conversión: 0.37 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 6.0 * 0.37] kg CO2eq
+  Fuente: 
+  URL: 
+
+- Insumo rescatado: Cuero
+  Peso continuado: 2.0 kg
+  Factor de conversión: 0.365 kg CO2 / kg insumo
+  CO2 Evitado: [Cálculo: 2.0 * 0.365] kg CO2eq
+  Fuente: 
+  URL: 
+
+TOTAL CO2 EVITADO: [Cálculo: Sumatoria de CO2 Evitado] kg CO2eq
+
+---------------------------------------
+DESGLOSE OPERATIVO
+Servicios:
+- Pintor: $ 1,900,000.00
+Subtotal Servicios: $ [Cálculo: Sumatoria de Servicios]
+
+Insumos Asociados:
+- Ninguno
+Subtotal Insumos: $ [Cálculo: Sumatoria de Insumos]
+
+COSTO INTERNO (Base): $ [Cálculo: Subtotal Servicios + Subtotal Insumos]
+FACTOR DE RENTABILIDAD: x2
+
+TOTAL DEL ÍTEM (PÚBLICO): $ [Cálculo: Costo Interno * Factor de Rentabilidad]

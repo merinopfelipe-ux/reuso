@@ -146,7 +146,7 @@ function plantilla({ subtituloHeader, preheader, saludo, cuerpo, contenidoCentra
           </tr>
 
           <tr>
-            <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
               <p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">
                 Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
               </p>

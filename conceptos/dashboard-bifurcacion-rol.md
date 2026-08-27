@@ -36,14 +36,14 @@ const empresa_id = perfil?.empresa_id ?? null
 2. **KPIs empresa:** CO₂ total empresa, agua empresa, registros empresa, mi aporte CO₂
 3. **Accesos rápidos:** Registrar reúso / Mi historial / Soporte (3 cards antes de la calculadora)
 4. Gráfica personal de evolución mensual
-5. Calculadora + historial + certificados
+5. Calculadora + historial + informes
 
 ### usuario_libre
 1. Saludo sin badge
 2. **KPIs personales:** CO₂, agua, objetos, árboles
 3. **Contador de cuota:** "X / 10 cálculos este mes" con barra de progreso (verde → rojo al llegar al límite)
-4. **Banner upgrade:** "Desbloquea certificados — Crea tu empresa desde $89.000 COP/mes" + botón
-5. Gráfica personal + calculadora + historial + certificados
+4. **Banner upgrade:** "Desbloquea funciones corporativas — Crea tu empresa desde $89.000 COP/mes" + botón
+5. Gráfica personal + calculadora + historial + informes
 
 ## Queries adicionales para la bifurcación
 
@@ -80,6 +80,8 @@ Son `<a>` tags (no `<Link>`) para no disparar prefetch a rutas que aún no exist
 
 ## Ver también
 
-- [[sidebar-items-por-rol]] — el sidebar también cambia según el rol
-- [[plan-limits-reuso]] — `checkLimiteCalculos` que valida la cuota en la API
-- [[modo-empleado-cookie]] — empresa_admin puede usar el dashboard como empleado
+- [[conceptos/finanzas-circulares|Finanzas Circulares & Valor del Producto]]
+- [[conceptos/cotizador-crm-multiempresa|Cotizador B2B y CRM]]
+- [[conceptos/pasaporte-digital-dpp|Pasaporte Digital de Producto (DPP)]]
+- [[conceptos/sidebar-items-por-rol|Navegación y Menús por Rol]]
+- [[conceptos/modo-empleado-cookie|Modo Colaborador para Empresa Admin]]

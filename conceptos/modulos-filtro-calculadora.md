@@ -42,5 +42,7 @@ query = query.in('modulo_id', moduloIdsActivos)
 - Las categorías sin `modulo_id = null` **nunca aparecen** para empresas. Es comportamiento diseñado: toda categoría productiva debe tener módulo.
 
 ## Relacionado
-- [[supabase-upsert-onconflict]]
-- [[n-plus-one-supabase]]
+- [[conceptos/multi-tenant-rls-aislamiento|Multi-Tenant y Aislamiento RLS]]
+- [[conceptos/plan-de-escalabilidad-multiempresa|Plan de Escalabilidad Multi-Empresa]]
+- [[conceptos/supabase-upsert-onconflict|Upsert y OnConflict en Supabase]]
+- [[conceptos/n-plus-one-supabase|Optimización N+1 en Supabase]]

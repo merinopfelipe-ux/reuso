@@ -5,6 +5,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -24,6 +25,7 @@ const config: Config = {
         menta: "var(--color-menta)",
         nogal: "var(--color-nogal)",
         rosa: "var(--color-rosa)",
+        violeta: "var(--color-violeta)",
       },
       backgroundColor: {
         primary: "var(--bg-primary)",

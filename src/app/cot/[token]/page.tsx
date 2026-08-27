@@ -47,7 +47,7 @@ export default async function PropuestaPublicaPage({ params }: Props) {
         por_que_elegirnos_json
       )
     `)
-    .eq('enlace_publico_token', params.token)
+    .or(`enlace_publico_token.eq.${params.token},codigo_cotizacion.eq.${params.token}`)
     .single()
 
   if (!cot) notFound()

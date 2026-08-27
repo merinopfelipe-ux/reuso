@@ -71,6 +71,8 @@ La descripción HTML viene de datos que el mismo usuario ingresó. No viene de o
 
 ## Ver también
 
-- [[modal-panel-lateral]] — patrón del panel lateral
-- [[calculo-por-kg]] — cómo se genera el detalle_json en el Bloque 3
-- [[contenteditable-paste-imagenes]] — cómo se genera `_descripcion_html`
+- [[conceptos/calculo-de-reuso|Cálculo de Reúso — Catálogo Maestro de Métricas]]
+- [[conceptos/multi-tenant-rls-aislamiento|Multi-Tenant y Aislamiento RLS]]
+- [[conceptos/pasaporte-digital-dpp|Pasaporte Digital de Producto (DPP)]]
+- [[conceptos/modal-panel-lateral|Modal Panel Lateral]]
+- [[conceptos/contenteditable-paste-imagenes|Editor y Copiado de Imágenes]]

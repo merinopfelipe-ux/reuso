@@ -42,9 +42,11 @@ Bloque inline al final de cada página legal (`reglamento`, `privacidad`, `medic
 ## Dónde aplicar
 
 - Páginas legales: reglamento, privacidad, medición.
-- Potencialmente: certificados PDF generados con jsPDF (nota al pie).
+- Potencialmente: informes PDF generados con jsPDF (nota al pie).
 - Potencialmente: página /ayuda (sección de metodología).
 
-## Wikilinks
+## Wikilinks Relacionados
 
-- Sin wikilinks relacionados existentes aún.
+- [[conceptos/calculo-de-reuso|Cálculo de Reúso — Catálogo Maestro de Métricas]]
+- [[conceptos/cotizador-crm-multiempresa|Cotizador B2B y Diagnóstico de Imágenes con IA]]
+- [[conceptos/pasaporte-digital-dpp|Pasaporte Digital de Producto e Ingesta de Documentos]]

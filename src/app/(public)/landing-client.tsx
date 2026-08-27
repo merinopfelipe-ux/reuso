@@ -936,13 +936,13 @@ export default function Landing2Page() {
 
                   <div className="relative z-10">
                     <div className="flex items-center justify-between mb-3.5 md:mb-4">
-                      {/* Contenedor del icono: sin activar con fondo al 70% de opacidad sin borde e icono traslúcido (50%); al pasar cursor, cara de color sólido e icono blanco al 100% */}
+                      {/* Contenedor del icono: ícono siempre al 100% de color; contenedor cambia de translúcido a sólido en hover */}
                       <div className={`w-9 h-9 sm:w-10 sm:h-10 md:w-9 md:h-9 lg:w-11 lg:h-11 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${
                         isDark
                           ? `${calc.bgDark} ${calc.textDark} ${calc.hoverIconBgDark} ${calc.hoverIconTextDark} group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.3)]`
                           : `${calc.bgLight} ${calc.textLight} ${calc.hoverIconBgLight} ${calc.hoverIconTextLight} group-hover:shadow-[0_4px_16px_rgba(0,0,0,0.12)]`
                       }`}>
-                        <IconComponent size={20} strokeWidth={2.2} className="opacity-30 group-hover:opacity-100 transition-opacity duration-300" />
+                        <IconComponent size={20} strokeWidth={2.2} />
                       </div>
                       
                       {/* Badge de tag unificado */}
@@ -1014,7 +1014,7 @@ export default function Landing2Page() {
                         : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20 hover:text-white' : 'border-[#00827C]/12 hover:border-[#00827C]/20 hover:text-[#00827C]'}`
                     }`}
                   >
-                    <Icon size={16} strokeWidth={activeCategory === c.id ? 2.5 : 2} className={`transition-all duration-200 group-hover:rotate-6 ${activeCategory === c.id ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
+                    <Icon size={16} strokeWidth={activeCategory === c.id ? 2.5 : 2} className="transition-all duration-200 group-hover:rotate-6" />
                     <span>{c.label}</span>
                   </button>
                 )
@@ -1072,7 +1072,7 @@ export default function Landing2Page() {
                 <div className="flex items-start justify-between mb-4 md:mb-4 lg:mb-6">
                   <span className={`text-3xl sm:text-4xl md:text-3xl lg:text-5xl font-black leading-none select-none transition-transform duration-300 group-hover:scale-110 ${isDark ? 'text-white/10 group-hover:text-[#D6F391]/25' : 'text-[#00827C]/15 group-hover:text-[#00827C]/30'}`}>{paso.n}</span>
                   <div className={`w-9 h-9 md:w-9 md:h-9 lg:w-12 lg:h-12 rounded-xl md:rounded-2xl flex items-center justify-center hover-icon-interactive transition-all duration-300 ${isDark ? 'bg-[#D6F391]/15 group-hover:bg-[#D6F391]/25' : 'bg-[#00827C]/12 group-hover:bg-[#00827C]/20'}`}>
-                    <paso.Icon size={18} className={`transition-all duration-300 ${isDark ? 'text-[#D6F391] opacity-75 group-hover:opacity-100' : 'text-[#00827C] opacity-75 group-hover:opacity-100'}`} />
+                    <paso.Icon size={18} className={`transition-all duration-300 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`} />
                   </div>
                 </div>
                 <h3 className={`text-base sm:text-lg md:text-base lg:text-xl font-black mb-2 md:mb-2 lg:mb-3 ${tp}`}>{paso.titulo}</h3>

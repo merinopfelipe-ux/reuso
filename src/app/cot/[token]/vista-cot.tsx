@@ -160,7 +160,7 @@ export function VistaCot({
 
       {/* Tabla de ítems: alineación numérica a la derecha para sincronizar perfectamente con los totales */}
       <div className="mb-4">
-        <div className={`grid grid-cols-[1fr_70px_130px_130px] sm:grid-cols-[1fr_90px_150px_150px] gap-3 sm:gap-4 pb-2 mb-1 border-b text-xs font-bold tracking-wide ${border} ${ts}`}>
+        <div className={`hidden sm:grid sm:grid-cols-[1fr_90px_150px_150px] print:grid print:grid-cols-[1fr_90px_150px_150px] gap-4 pb-2 mb-1 border-b text-xs font-bold tracking-wide ${border} ${ts}`}>
           <span className="text-left">Detalle</span>
           <span className="text-center">Cantidad</span>
           <span className="text-right">Valor Unitario</span>
@@ -171,30 +171,48 @@ export function VistaCot({
           const unitario = m.cantidad > 0 ? totalLinea / m.cantidad : totalLinea
           const tituloMueble = m.titulo || m.tipo_mueble
           return (
-            <div key={m.id} className={`grid grid-cols-[1fr_70px_130px_130px] sm:grid-cols-[1fr_90px_150px_150px] gap-3 sm:gap-4 items-center py-3 border-b ${borderLight}`}>
-              <div className="flex items-center gap-3 min-w-0">
+            <div key={m.id} className={`flex flex-col sm:grid sm:grid-cols-[1fr_90px_150px_150px] print:grid print:grid-cols-[1fr_90px_150px_150px] gap-3 sm:gap-4 sm:items-center print:items-center py-4 sm:py-3 print:py-3 border-b ${borderLight}`}>
+              
+              {/* 1. Detalle (Foto + Texto) */}
+              <div className="flex items-center gap-3 min-w-0 w-full print:w-auto">
                 {m.imagen_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     draggable={false}
                     src={m.imagen_url}
                     alt={tituloMueble}
                     onClick={() => onVerImagen && onVerImagen(m.imagen_url!, tituloMueble)}
-                    className="w-12 h-12 rounded-[8px] object-cover object-center flex-shrink-0 cursor-pointer hover:opacity-85 transition-opacity"
+                    className="w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-auto print:max-h-16 rounded-[8px] object-cover print:object-contain object-center flex-shrink-0 cursor-pointer hover:opacity-85 transition-opacity"
                   />
                 ) : (
-                  <div className={`w-12 h-12 rounded-[8px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-16 rounded-[8px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
                     <ArrowsCounterClockwise size={16} className="text-[#00827C]/30" />
                   </div>
                 )}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">{tituloMueble}</p>
-                  {m.descripcion && <p className={`text-xs mt-0.5 ${ts}`}>{m.descripcion}</p>}
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium leading-tight">{tituloMueble}</p>
+                  {m.descripcion && <p className={`text-xs mt-1 leading-snug ${ts}`}>{m.descripcion}</p>}
                 </div>
               </div>
-              <span className={`text-sm text-center ${ts}`}>{m.cantidad}</span>
-              <span className={`text-sm text-right ${ts}`}>{formatCOPCompact(unitario)}</span>
-              <span className="text-sm font-semibold text-right">{formatCOPCompact(totalLinea)}</span>
+
+              {/* 2. Valores en Mobile vs Desktop */}
+              <div className="flex sm:contents print:contents items-center justify-between mt-2 sm:mt-0 pl-[4.25rem] sm:pl-0">
+                {/* En desktop no mostramos "Cant:", por lo que usamos text-center y ocultamos el texto extra. En mobile usamos flex y text-sm. */}
+                <span className={`text-sm sm:text-center print:text-center ${ts}`}>
+                  <span className="sm:hidden print:hidden text-xs opacity-70 mr-1">Cant:</span>
+                  {m.cantidad}
+                </span>
+                
+                <span className={`text-sm sm:text-right print:text-right ${ts}`}>
+                  <span className="sm:hidden print:hidden text-xs opacity-70 mr-1">Unit:</span>
+                  {formatCOPCompact(unitario)}
+                </span>
+                
+                <span className="text-sm font-semibold sm:text-right print:text-right text-right">
+                  <span className="sm:hidden print:hidden text-xs font-normal opacity-70 mr-1">Total:</span>
+                  {formatCOPCompact(totalLinea)}
+                </span>
+              </div>
+
             </div>
           )
         })}

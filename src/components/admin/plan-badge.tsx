@@ -28,7 +28,7 @@ export function PlanBadge({ plan }: { plan: Plan }) {
         border: `1px solid ${cfg.color}40`,
       }}
     >
-      <IconComponent size={13} style={{ color: cfg.color }} />
+      <IconComponent size={13} color={cfg.color} />
       {cfg.label}
     </span>
   )

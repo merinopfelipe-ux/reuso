@@ -7,9 +7,9 @@ test.describe('super_admin', () => {
     await page.goto('/admin')
   })
 
-  test('adm-01 - login aterriza en /admin con badge Super Admin', async ({ page }) => {
+  test('adm-01 - login aterriza en /admin con badge Superadmin', async ({ page }) => {
     await expect(page).toHaveURL(/\/admin/)
-    await expect(page.getByText(/super admin/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(/superadmin/i).first()).toBeVisible({ timeout: 10_000 })
   })
 
   test('adm-02 - KPIs del dashboard muestran números reales mayores a cero', async ({ page }) => {

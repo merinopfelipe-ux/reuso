@@ -4,18 +4,18 @@ aliases: [busqueda-codigo-rco2]
 fecha: 2026-04-17
 ---
 
-# Búsqueda de código verificable RCO2-XXXX-YYYY con ilike
+# Búsqueda de código verificable de Pasaportes Digitales con ilike
 
 ## El problema
-El campo `codigo_verificacion` en la tabla `certificados` almacena el UUID completo (ej: `abcd1234ef56...`). El display que ve el usuario es `RCO2-ABCD-1234` (primeros 8 chars del UUID, divididos 4-4). Si el usuario ingresa ese formato en el buscador, `.eq('codigo_verificacion', 'RCO2-ABCD-1234')` nunca encuentra nada.
+El campo `codigo_verificacion` o `codigo_dpp` en la tabla de activos (`dpp_activos` / `informes`) almacena el identificador único. El display que ve el usuario es un código normalizado (ej. `DPP-ABCD-1234` o `RCO2-ABCD-1234`). Si el usuario ingresa ese formato en el buscador público, `.eq('codigo_verificacion', 'DPP-ABCD-1234')` debe normalizarse para buscar con precisión.
 
 ## La solución
-Detectar el formato y usar `.ilike()` con los 8 chars extraídos:
+Detectar el formato y usar `.ilike()` con los caracteres extraídos:
 
 ```typescript
 function normalizarCodigo(raw: string): { exact: string; prefix: string | null } {
   const upper = raw.trim().toUpperCase()
-  const match = upper.match(/^RCO2-([A-Z0-9]{4})-([A-Z0-9]{4})$/)
+  const match = upper.match(/^(?:DPP|RCO2)-([A-Z0-9]{4})-([A-Z0-9]{4})$/)
   if (match) {
     return { exact: raw.trim(), prefix: (match[1] + match[2]).toLowerCase() }
   }
@@ -29,10 +29,12 @@ const { data, error } = prefix
 ```
 
 ## Consideraciones
-- `.ilike` es case-insensitive, por eso `prefix` se convierte a minúsculas y funciona con UUIDs.
-- El riesgo de falso positivo es mínimo: los primeros 8 chars de un UUID son suficientemente únicos en un volumen de certificados esperado (<100k).
-- Si hubiera colisión, `.limit(1)` devuelve el primero; suficiente para el caso de uso.
+- `.ilike` es case-insensitive, por eso `prefix` se convierte a minúsculas y funciona de forma óptima.
+- El riesgo de falso positivo es mínimo al trabajar con prefijos de alta entropía.
+- Si hubiera colisión, `.limit(1)` devuelve el primero; garantizando respuesta ágil en la vista de `/verificar/[codigo]`.
 
 ## Relacionado
-- [[supabase-upsert-onconflict]]
-- [[jsonb-filter-supabase]]
+- [[conceptos/pasaporte-digital-dpp|Pasaporte Digital de Producto (DPP)]]
+- [[conceptos/multi-tenant-rls-aislamiento|Multi-Tenant y Aislamiento RLS]]
+- [[conceptos/supabase-upsert-onconflict|Upsert con OnConflict en Supabase]]
+- [[conceptos/jsonb-filter-supabase|Filtros JSONB en Supabase]]

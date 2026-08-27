@@ -130,7 +130,7 @@ Todo el texto del cuerpo va en **Negro Lurdes `#474747`** sin excepción.
 | Bloque OTP código | `#00827C`, 40px, peso 800, `letter-spacing:0.25em` |
 | Alerta fondo | `#FFF8E6` |
 | Alerta texto | `#474747` |
-| Footer fondo | `#F5F5F5` |
+| Footer fondo | `#F5FAFA` |
 | Footer texto | `#474747` |
 
 ---

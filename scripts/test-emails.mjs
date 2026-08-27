@@ -188,7 +188,7 @@ function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoC
             </td>
           </tr>
           <tr>
-            <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
               <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
                 <a href="https://reuso.lurdes.co" style="color:#474747;text-decoration:underline;">reuso.lurdes.co</a>

@@ -13,13 +13,15 @@ const ALLOWED_FILES = [
   'src/app/(auth)/login/page.tsx',
   'src/app/(public)/status/page.tsx',
   'src/app/(public)/landing2/page.tsx',
-  'src/app/propuesta/[token]/propuesta-client.tsx',
+  'src/app/cot/[token]/propuesta-client.tsx',
   'src/app/(admin)/admin/qa/page.tsx',
   'src/app/sistema-diseno/page.tsx',
   'src/app/sistema-diseno/demo-panel/page.tsx',
+  'src/app/(admin)/admin/empresas/[id]/components/marca-empresa-client.tsx', // Vista previa fija de logo en modo día Y noche a la vez, no sigue el tema de la página
   'src/components/design-system-header.tsx',
   'src/app/globals.css', // Defines variables
   'src/app/page.tsx',    // Public landing
+  'src/app/(public)/landing-client.tsx', // Public landing client
   'CLAUDE.md',
   'STATE.md',
 ];

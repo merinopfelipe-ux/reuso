@@ -40,7 +40,7 @@ React SSR codifica las comillas simples como `&#x27;` al renderizar en el servid
 - `src/app/page.tsx` — Google Fonts import + estilos landing
 - `src/components/header.tsx` — estilos dropdown
 - `src/components/sidebar.tsx` — hover sidebar items
-- `src/components/certificados/panel-certificados.tsx` — @keyframes spin
+- `src/components/informes/panel-informes.tsx` — @keyframes spin
 
 ## Alternativas
 

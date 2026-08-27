@@ -331,12 +331,10 @@ function DetalleCotizacionContent() {
         if (d.cotizacion) {
           setCot(d.cotizacion)
           sincronizarDetallesInputs(d.cotizacion)
+          const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin
+          setEnlace(`${base}/cot/${d.cotizacion.enlace_publico_token ?? d.cotizacion.codigo_cotizacion}`)
         }
         if (d.contactos_empresa) setContactosEmpresa(d.contactos_empresa)
-        if (d.cotizacion?.enlace_publico_token) {
-          const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin
-          setEnlace(`${base}/cot/${d.cotizacion.enlace_publico_token}`)
-        }
       } catch {
         setError('No se pudieron cargar los datos de la cotización. Intenta de nuevo.')
       } finally { setCargando(false) }
@@ -1010,22 +1008,18 @@ function DetalleCotizacionContent() {
               </div>
             )}
 
-            {/* Compartir — enlace, descarga y envío por correo, sin salir de /empresa.
-                El enlace se genera solo la primera vez que se descarga o se
-                envía por correo, sin necesidad de un paso previo aparte. */}
+            {/* Compartir — enlace directo, descarga y envío por correo, sin salir de /empresa. */}
             <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
               <p className={`text-xs font-semibold mb-3 ${ts}`}>Compartir</p>
               <div className="flex items-center gap-2 rounded-[8px] border px-3 py-2 border-[var(--border)] bg-[var(--bg-input)] mb-3">
-                <Link size={14} className={ts} />
-                <span className={`text-xs flex-1 truncate ${enlace ? tp : ts}`}>
-                  {enlace ?? 'El enlace se genera al descargar o enviar por correo'}
+                <Link size={14} className={tp} />
+                <span className={`text-xs flex-1 truncate ${tp}`}>
+                  {enlace ?? 'Generando enlace...'}
                 </span>
-                {enlace && (
-                  <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 flex-shrink-0 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
-                    <Copy size={14} />
-                    {copiado ? 'Copiado' : 'Copiar'}
-                  </button>
-                )}
+                <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 flex-shrink-0 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
+                  <Copy size={14} />
+                  {copiado ? 'Copiado' : 'Copiar'}
+                </button>
               </div>
               <div className="flex gap-2">
                 <Button

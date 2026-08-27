@@ -11,7 +11,13 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     .select(`
       id, codigo_cotizacion, subtotal, descuento_activo, descuento, descuento_tipo,
       transporte_activo, transporte_valor, iva_activo, iva_porcentaje,
-      validez_activa, validez_modo, validez_dias, validez_fecha,
+      validez_activa, validez_modo, validez_dias, validez_fecha, validez_mostrar_lista,
+      anticipo_activo, anticipo_porcentaje,
+      forma_pago_activo, forma_pago_tipo, forma_pago_dias, forma_pago_mostrar_lista,
+      tiempo_entrega_activo, tiempo_entrega, tiempo_entrega_mostrar_lista,
+      garantia_activo, garantia, garantia_mostrar_lista,
+      envio_gratis_activo, envio_gratis_texto, envio_gratis_mostrar_lista,
+      nota_mostrar_lista, destacados_json, legales_json,
       observaciones, created_at,
       crm_clientes (
         id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo, email, direccion, es_contacto_real,
@@ -26,7 +32,7 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
 
   const { data: muebles } = await adminClient
     .from('crm_muebles_cotizados')
-    .select('titulo, tipo_mueble, cantidad, precio_mueble')
+    .select('titulo, descripcion, tipo_mueble, cantidad, precio_mueble, imagen_url')
     .eq('cotizacion_id', cot.id)
     .eq('oculto', false)
     .order('created_at')
@@ -47,6 +53,44 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     ? new Date(`${cot.validez_fecha}T00:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
     : new Date(new Date(cot.created_at).getTime() + (cot.validez_dias ?? 30) * 86_400_000)
         .toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+
+  const pathsToSign: string[] = []
+  const mueblesArray = muebles ?? []
+  mueblesArray.forEach(m => {
+    if (m.imagen_url && !m.imagen_url.startsWith('http')) {
+      pathsToSign.push(m.imagen_url)
+    }
+  })
+
+  const signedUrlsMap: Record<string, string> = {}
+  if (pathsToSign.length > 0) {
+    const { data: signedData } = await adminClient.storage
+      .from('cotizador')
+      .createSignedUrls(pathsToSign, 3600)
+    if (signedData) {
+      signedData.forEach((item) => {
+        if (!item.error && item.signedUrl && item.path) {
+          signedUrlsMap[item.path] = item.signedUrl
+        }
+      })
+    }
+  }
+
+  // Fetch all furniture images in parallel
+  const mueblesConBase64 = await Promise.all(mueblesArray.map(async (m) => {
+    let finalUrl = m.imagen_url
+    if (m.imagen_url && !m.imagen_url.startsWith('http')) {
+      finalUrl = signedUrlsMap[m.imagen_url] ?? null
+    }
+    const base64 = finalUrl ? await fetchImageAsBase64(finalUrl).catch(() => null) : null
+    return {
+      titulo: m.titulo || m.tipo_mueble,
+      descripcion: m.descripcion,
+      cantidad: m.cantidad,
+      precio_mueble: Number(m.precio_mueble),
+      imagen_base64: base64
+    }
+  }))
 
   const empCliente = cliente?.crm_empresas_clientes
     ? (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
@@ -71,9 +115,26 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     observaciones: cot.observaciones,
     validez_activa: cot.validez_activa ?? true,
     fecha_validez: fechaValidez,
-    muebles: (muebles ?? []).map((m: { titulo: string | null; tipo_mueble: string; cantidad: number; precio_mueble: number }) => ({
-      titulo: m.titulo || m.tipo_mueble, cantidad: m.cantidad, precio_mueble: Number(m.precio_mueble),
-    })),
+    validez_mostrar_lista: cot.validez_mostrar_lista ?? true,
+    anticipo_activo: cot.anticipo_activo ?? true,
+    anticipo_porcentaje: cot.anticipo_porcentaje ?? 60,
+    forma_pago_activo: cot.forma_pago_activo ?? true,
+    forma_pago_tipo: cot.forma_pago_tipo ?? 'anticipo',
+    forma_pago_dias: cot.forma_pago_dias ?? 30,
+    forma_pago_mostrar_lista: cot.forma_pago_mostrar_lista ?? true,
+    tiempo_entrega_activo: cot.tiempo_entrega_activo ?? true,
+    tiempo_entrega: cot.tiempo_entrega ?? null,
+    tiempo_entrega_mostrar_lista: cot.tiempo_entrega_mostrar_lista ?? true,
+    garantia_activo: cot.garantia_activo ?? true,
+    garantia: cot.garantia ?? null,
+    garantia_mostrar_lista: cot.garantia_mostrar_lista ?? true,
+    envio_gratis_activo: cot.envio_gratis_activo ?? false,
+    envio_gratis_texto: cot.envio_gratis_texto ?? null,
+    envio_gratis_mostrar_lista: cot.envio_gratis_mostrar_lista ?? true,
+    nota_mostrar_lista: cot.nota_mostrar_lista ?? true,
+    destacados_json: cot.destacados_json ?? [],
+    legales_json: cot.legales_json ?? [],
+    muebles: mueblesConBase64,
     subtotal: Number(cot.subtotal) || 0,
     transporte_activo: cot.transporte_activo ?? false,
     transporte_valor: Number(cot.transporte_valor) || 0,

@@ -57,14 +57,14 @@ Fixes inmediatos que afectan toda la plataforma:
 - Notificaciones en campana + email
 - Dependencias: ninguna.
 
-### Bloque 6 — Metas + certificados empresa
+### Bloque 6 — Metas + informes empresa
 - Metas con progreso en tiempo real
-- Certificado empresa full color, reporte escala de grises con marca de agua
+- Informe consolidado ejecutivo full color, reporte ambiental con marca de agua
 - Tabla nueva: `metas`
 - Dependencias: Bloque 4.
 
 ### Bloque 7 — Verificación 4 estados + leads landing
-- `/verificar` con estado revocado, búsqueda sin código
+- `/verificar` con estado de validación, búsqueda por código
 - Formulario de lead en landing → tabla `leads`
 - Botón flotante WhatsApp en todas las páginas públicas
 - Dependencias: ninguna.
@@ -82,9 +82,8 @@ Fixes inmediatos que afectan toda la plataforma:
 
 ### Bloque 10 — Admin: contenido editable + plantillas
 - Editar textos, precios y FAQ de la landing sin tocar código
-- Plantillas de certificado con firma configurable
-- `/admin/certificados` con revocación
-- Dependencias: Bloque 6 (certs).
+- Plantillas de correo y notificaciones configurables
+- Dependencias: Bloque 6.
 
 ## Reglas transversales de todos los bloques
 
@@ -99,10 +98,16 @@ Fixes inmediatos que afectan toda la plataforma:
 9. `dangerouslySetInnerHTML` en todos los `<style>` inline
 10. © Grupo MLP S.A.S. en footers
 
+## Evolución y Futuro (V1, V2, V3)
+
+El trabajo completado en estos 10 bloques constituye la base sólida sobre la cual se construye el nuevo plan de crecimiento multi-empresa:
+- [[conceptos/plan-de-escalabilidad-multiempresa|Plan de Escalabilidad Multi-Empresa (V1, V2, V3)]]
+- [[conceptos/plan-de-escalabilidad-anexos|Anexos y Checklist Maestro de Rutas]]
+
 ## Ver también
 
-- [[role-routing-nextjs]] — guards por rol, base de los bloques 1-2
-- [[modo-empleado-cookie]] — Bloque 0, Fix 4
-- [[supabase-upsert-onconflict]] — patrón para inserts seguros
-- [[calculo-ambiental]] — skill con lógica de cálculo e inmutabilidad
-- [[margin-auto-flex-vs-block]] — layout del workspace
+- [[conceptos/role-routing-nextjs|Protección de Rutas por Rol]]
+- [[conceptos/modo-empleado-cookie|Modo Colaborador para Empresa Admin]]
+- [[conceptos/supabase-upsert-onconflict|Upsert con OnConflict en Supabase]]
+- [[conceptos/calculo-de-reuso|Cálculo de Reúso — Catálogo Maestro de Métricas]]
+- [[conceptos/margin-auto-flex-vs-block|Layout Flex vs Block]]

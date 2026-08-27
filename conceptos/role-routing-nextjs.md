@@ -80,6 +80,8 @@ if (rol !== 'empresa_admin') redirect('/dashboard')
 
 ## Ver también
 
-- [[landing-saas-nextjs]] — rutas públicas en middleware
-- [[seguridad-reuso]] — skill completa de autenticación y RBAC
-- [[useSearchParams-suspense-nextjs]] — otro patrón de layout en App Router
+- [[conceptos/multi-tenant-rls-aislamiento|Multi-Tenant y Aislamiento RLS]]
+- [[conceptos/sidebar-items-por-rol|Navegación y Menús por Rol]]
+- [[conceptos/dashboard-bifurcacion-rol|Bifurcación de Vistas por Rol]]
+- [[conceptos/cotizador-crm-multiempresa|Cotizador B2B y CRM]]
+- [[conceptos/plan-de-escalabilidad-multiempresa|Plan de Escalabilidad Multi-Empresa]]

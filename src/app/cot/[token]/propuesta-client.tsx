@@ -162,7 +162,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   const [descargandoPdf, setDescargandoPdf] = useState(false)
   const aceptada = cotizacion.estado === 'esperando_anticipo' || cotizacion.estado === 'cerrado_ganado'
   const [isDark, setIsDark] = useState(false)
-  const [vista, setVista] = useState<'galeria' | 'lista'>('galeria')
+  const esB2B = cotizacion.crm_clientes?.tipo === 'empresa' || !!cotizacion.crm_clientes?.crm_empresas_clientes
+  const [vista, setVista] = useState<'galeria' | 'lista'>(esB2B ? 'lista' : 'galeria')
   const [modalImpactoAbierto, setModalImpactoAbierto] = useState(false)
   const [limiteDescargasAbierto, setLimiteDescargasAbierto] = useState(false)
   const [menuCompartirAbierto, setMenuCompartirAbierto] = useState(false)
@@ -224,6 +225,13 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
   const clienteNombre = cotizacion.crm_clientes?.nombre ?? 'Cliente'
   const esContactoReal = cotizacion.crm_clientes?.es_contacto_real ?? true
+  let b2bNombre = null
+  if (cotizacion.crm_clientes?.crm_empresas_clientes) {
+    const emp = Array.isArray(cotizacion.crm_clientes.crm_empresas_clientes)
+      ? cotizacion.crm_clientes.crm_empresas_clientes[0]
+      : cotizacion.crm_clientes.crm_empresas_clientes
+    b2bNombre = emp.nombre_comercial || emp.razon_social
+  }
   const saludoNombre = esContactoReal ? clienteNombre : null
   // Nombre comercial en TODO lo visible (header, título, WhatsApp, alt de
   // imágenes) — la razón social es SOLO para el pie legal, ver más abajo.
@@ -332,12 +340,12 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
 
 
+  // Bloqueo de clic derecho/copiar/cortar/seleccionar texto: decisión de
+  // seguridad a propósito, no un error — evita que un tercero copie fácil
+  // el contenido de la cotización pública (precios, fotos). Confirmado
+  // explícitamente con el usuario el 2026-08-11, no quitar sin volver a
+  // preguntar.
   return (
-    // Bloqueo de clic derecho/copiar/cortar/seleccionar texto: decisión de
-    // seguridad a propósito, no un error — evita que un tercero copie fácil
-    // el contenido de la cotización pública (precios, fotos). Confirmado
-    // explícitamente con el usuario el 2026-08-11, no quitar sin volver a
-    // preguntar.
     <div
       className={`min-h-screen flex flex-col justify-between font-sans transition-colors duration-300 select-none ${isDark ? 'bg-[#474747]' : 'bg-white'}`}
       onCopy={(e) => e.preventDefault()}
@@ -574,17 +582,17 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           <>
 
         {/* ── Encabezado ── */}
-        <div className="text-center mb-10">
-          <h1 className={`text-3xl md:text-4xl font-bold mb-1 ${tp}`}>{saludoNombre ? `Hola ${saludoNombre},` : 'Hola,'}</h1>
+        <div className="text-center mb-10 print:hidden">
+          <h1 className={`text-3xl md:text-4xl font-bold mb-1 ${tp}`}>{b2bNombre || saludoNombre ? `Hola ${b2bNombre || saludoNombre},` : 'Hola,'}</h1>
           <p className={`text-base ${ts60}`}>Tenemos lista tu cotización:</p>
         </div>
 
         {/* ── Muebles ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 lg:gap-14 mb-12">
           {muebles.map((m) => {
             const tituloMueble = m.titulo || m.tipo_mueble
             return (
-            <div key={m.id} className="flex gap-3 items-start">
+            <div key={m.id} className="flex gap-5 items-start">
               {m.imagen_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -593,10 +601,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                   alt={tituloMueble}
                   loading="lazy"
                   onClick={() => setImagenZoom({ url: m.imagen_url!, titulo: tituloMueble })}
-                  className="w-36 sm:w-44 h-28 sm:h-32 object-cover object-center rounded-[10px] flex-shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
+                  className="w-28 sm:w-36 h-28 sm:h-36 object-cover object-center rounded-[10px] flex-shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
                 />
               ) : (
-                <div className={`w-36 sm:w-44 h-28 sm:h-32 rounded-[10px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-[#F5FAFA]'}`}>
+                <div className={`w-28 sm:w-36 h-28 sm:h-36 rounded-[10px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-[#F5FAFA]'}`}>
                   <ArrowsCounterClockwise size={22} className="text-[#00827C]/30" />
                 </div>
               )}
@@ -672,7 +680,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
         )}
 
         {/* ── Módulos exclusivos de la vista Galería ── */}
-        {vista === 'galeria' && (
+        <div className="print:hidden">
+          {vista === 'galeria' && (
           <>
             {/* 1. Forma de pago (diseño original obligatorio) */}
             {cotizacion.forma_pago_activo && cotizacion.forma_pago_mostrar_galeria !== false && (cotizacion.forma_pago_tipo === 'dias' ? (
@@ -787,7 +796,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               </button>
             </div>
           </>
-        )}
+          )}
+        </div>
 
         {/* ── A partir de aquí, mismos módulos en ambas vistas (propuesta y
             cotización): impacto ambiental, aprobación y por qué elegirnos. ── */}
@@ -795,7 +805,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
         {/* ── Impacto ambiental — cada tarjeta cuenta UNA historia completa:
             "ahorras X" y a qué equivale, conectados por una flecha, en vez
             de dos cifras sueltas una al lado de la otra. ── */}
-        <div className="mb-10">
+        <div className="mb-10 print:hidden">
           <div className="text-center mb-5">
             <h2 className={`text-xl font-bold ${tp}`}>Tu decisión le hace bien al planeta</h2>
             <p className={`text-sm mt-0.5 ${ts50}`}>Esto es lo que evitas al elegir restaurar en vez de comprar nuevo</p>
@@ -874,7 +884,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
         {/* ── Propuesta Aceptada badge (si aplica) ── */}
         {aceptada && (
-          <div className="text-center mb-10">
+          <div className="text-center mb-10 print:hidden">
             <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#38B98E]/10 text-[#38B98E] font-semibold">
               <CheckCircle size={20} />
               Propuesta aceptada - Te contactamos pronto
@@ -920,21 +930,20 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           </div>
         </div>
 
-        {/* ── Legales: párrafos libres, sin íconos, antes del pie de página —
-            se sale del ancho de main (max-w-3xl) para ocupar los 1024px
-            (max-w-5xl) de la página. ── */}
-        <div className="relative left-1/2 right-1/2 -mx-[50vw] w-screen">
-          <div className={`max-w-5xl mx-auto px-4 md:px-6 flex flex-col gap-1.5 text-sm text-center mb-6 ${ts50}`}>
-            {(cotizacion.legales_json?.length ? cotizacion.legales_json : [LEGAL_TEXTO_DEFECTO]).map((texto, i) => (
-              <p key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderLegalTexto(texto), LEGAL_SANITIZE_CONFIG) }} />
-            ))}
-          </div>
-        </div>
       </main>
+
+      {/* ── Legales: párrafos libres, sin íconos, antes del pie de página ── */}
+      <div className="w-full mb-6 mt-4">
+        <div className={`max-w-5xl mx-auto px-4 md:px-6 flex flex-col gap-1.5 text-sm text-center ${ts50}`}>
+          {(cotizacion.legales_json?.length ? cotizacion.legales_json : [LEGAL_TEXTO_DEFECTO]).map((texto, i) => (
+            <p key={i} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderLegalTexto(texto), LEGAL_SANITIZE_CONFIG) }} />
+          ))}
+        </div>
+      </div>
 
       {/* ── Pie de página ── */}
       <footer
-        className="text-xs px-4 md:px-8 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-300"
+        className="text-xs px-4 md:px-8 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-300 print:hidden"
         style={{
           background: isDark
             ? 'linear-gradient(0deg, rgba(214,243,145,0.06) 0%, transparent 100%)'

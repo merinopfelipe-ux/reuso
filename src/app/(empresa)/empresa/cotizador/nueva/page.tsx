@@ -845,7 +845,7 @@ function NuevaCotizacionContent() {
             {cliente && muebles.length > 0 && (
               <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
                 <p className={`text-xs font-semibold mb-3 ${ts}`}>
-                  {formatNumero(muebles.length)} línea{muebles.length === 1 ? '' : 's'} agregada{muebles.length === 1 ? '' : 's'}
+                  {formatNumero(muebles.length)} ítem{muebles.length === 1 ? '' : 's'} agregado{muebles.length === 1 ? '' : 's'}
                 </p>
                 <div className="space-y-2">
                   {muebles.map((m, i) => (

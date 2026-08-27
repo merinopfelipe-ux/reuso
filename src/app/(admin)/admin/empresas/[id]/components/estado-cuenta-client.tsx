@@ -64,7 +64,7 @@ function KpiCard({
     <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
         <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${color}18`, flexShrink: 0 }}>
-          <Icono size={16} style={{ color }} />
+          <Icono size={16} color={color} />
         </div>
         <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
           {titulo}
@@ -305,10 +305,10 @@ export function EstadoCuentaClient({
                           className="flex items-center justify-between w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
                         >
                           <div className="flex items-center gap-2">
-                            <Icono size={14} style={{ color: cfg.color }} />
+                            <Icono size={14} color={cfg.color} />
                             <span className="text-xs font-bold text-[var(--text-primary)]">{cfg.label}</span>
                           </div>
-                          {activo && <CheckCircle size={14} style={{ color: cfg.color }} />}
+                          {activo && <CheckCircle size={14} color={cfg.color} />}
                         </button>
                       )
                     })}

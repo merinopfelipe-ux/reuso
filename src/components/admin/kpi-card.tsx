@@ -34,7 +34,7 @@ export function KpiCard({ titulo, valor, subtitulo, icono: Icono, color = 'var(-
           flexShrink: 0,
         }}
       >
-        <Icono size={22} style={{ color }} />
+        <Icono size={22} color={color} />
       </div>
       <div style={{ minWidth: 0 }}>
         <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 400 }}>

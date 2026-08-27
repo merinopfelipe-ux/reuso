@@ -1,0 +1,6 @@
+# Previews HTML generados por scripts/supabase-templates.mjs y
+# scripts/preview-emails.mjs (ver skill email-design) — no es código fuente
+# a auditar. La regla var-in-href dispara sobre {{ .ConfirmationURL }},
+# variable de plantilla que Supabase Auth sustituye server-side, nunca
+# input del usuario.
+.email-previews/
