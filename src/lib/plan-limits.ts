@@ -1,11 +1,11 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Plan } from '@/types'
 
-const LIMITES: Record<Plan, { empleados: number; calculos_mes: number; certificados_mes: number; informes_mes: number }> = {
-  free:     { empleados: 1,        calculos_mes: 10,       certificados_mes: 0,        informes_mes: 0 },
-  lab:      { empleados: 5,        calculos_mes: 200,      certificados_mes: 2,        informes_mes: 5 },
-  impulso:  { empleados: 10,       calculos_mes: 200,      certificados_mes: 2,        informes_mes: 5 },
-  ilimitado: { empleados: Infinity, calculos_mes: Infinity, certificados_mes: Infinity, informes_mes: Infinity },
+const LIMITES: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number }> = {
+  free:     { empleados: 1,        calculos_mes: 10,       informes_mes: 0 },
+  lab:      { empleados: 5,        calculos_mes: 200,      informes_mes: 5 },
+  impulso:  { empleados: 10,       calculos_mes: 200,      informes_mes: 5 },
+  ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity },
 }
 
 export const NOMBRES_PLAN: Record<Plan, string> = {
@@ -57,29 +57,6 @@ export async function checkLimiteCalculos(empresaId: string, plan: Plan): Promis
   return null
 }
 
-export async function checkLimiteCertificados(empresaId: string, plan: Plan): Promise<string | null> {
-  const limite = LIMITES[plan].certificados_mes
-  if (limite === Infinity) return null
-  if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye generación de certificados. Contacta a reuso.lurdes.co para ampliar tu plan.`
-  }
-
-  const { inicioMes, finMes } = inicioYFinMesActual()
-  const adminClient = await createAdminClient()
-  const { count } = await adminClient
-    .from('certificados')
-    .select('*', { count: 'exact', head: true })
-    .eq('empresa_id', empresaId)
-    .eq('tipo', 'certificado')
-    .gte('created_at', inicioMes)
-    .lt('created_at', finMes)
-
-  if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} certificados por mes. Contacta a reuso.lurdes.co para ampliar tu plan.`
-  }
-  return null
-}
-
 export async function checkLimiteInformes(empresaId: string, plan: Plan): Promise<string | null> {
   const limite = LIMITES[plan].informes_mes
   if (limite === Infinity) return null
@@ -90,10 +67,9 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
   const { inicioMes, finMes } = inicioYFinMesActual()
   const adminClient = await createAdminClient()
   const { count } = await adminClient
-    .from('certificados')
+    .from('informes')
     .select('*', { count: 'exact', head: true })
     .eq('empresa_id', empresaId)
-    .eq('tipo', 'informe')
     .gte('created_at', inicioMes)
     .lt('created_at', finMes)
 

@@ -8,8 +8,15 @@ import { randomBytes } from 'crypto'
 
 const bodySchema = z.object({
   nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.').max(100),
-  sector: z.string().min(1).max(80).optional(),
-  logo_url: z.url('URL de logo inválida.').nullable().optional(),
+  sector: z.string().min(1).max(255).optional(),
+  logo_url: z.string().url('URL de logo inválida.').nullable().optional(),
+  nit: z.string().min(1, 'El NIT es obligatorio.').max(100),
+  telefono: z.string().min(1, 'El teléfono es obligatorio.').max(100),
+  pais: z.string().min(1, 'El país es obligatorio.').max(100),
+  region: z.string().min(1, 'La región es obligatoria.').max(100),
+  ciudad: z.string().min(1, 'La ciudad es obligatoria.').max(100),
+  direccion: z.string().min(1, 'La dirección es obligatoria.').max(500),
+  sitio_web: z.string().url('URL inválida').or(z.literal('')).nullable().optional(),
 })
 
 function generarSlug(nombre: string): string {
@@ -43,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
-  const { nombre, sector, logo_url } = parsed.data
+  const { nombre, sector, logo_url, nit, telefono, pais, region, ciudad, direccion, sitio_web } = parsed.data
   const adminClient = await createAdminClient()
   const ip = getIp(request)
 
@@ -66,6 +73,13 @@ export async function POST(request: NextRequest) {
       slug,
       sector: sector ?? null,
       logo_url: logo_url ?? null,
+      nit,
+      telefono,
+      pais,
+      region,
+      ciudad,
+      direccion,
+      sitio_web: sitio_web || null,
       plan: 'free',
       activa: true,
     })

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Bell, Info, Tag, TriangleAlert as Warning } from '@/components/ui/icons'
+import { useRouter } from 'next/navigation'
+import { Bell, Info, Tag, TriangleAlert as Warning, CheckCheck } from '@/components/ui/icons'
 import { useAlertas } from './alertas-context'
 import type { TipoAlerta } from '@/types'
 
@@ -20,9 +21,10 @@ const COLORES_TIPO: Record<TipoAlerta, string> = {
 }
 
 export function CampanaDropdown() {
-  const { alertas, noLeidasCount, marcarLeida } = useAlertas()
+  const { alertas, noLeidasCount, marcarLeida, marcarTodasLeidas } = useAlertas()
   const [abierto, setAbierto] = useState(false)
   const refContenedor = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -106,14 +108,40 @@ export function CampanaDropdown() {
         >
           <div
             style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
               padding: '12px 16px',
               borderBottom: '1px solid var(--border)',
-              fontSize: 13,
-              fontWeight: 700,
-              color: 'var(--text-primary)',
             }}
           >
-            Notificaciones {noLeidasCount > 0 && `(${noLeidasCount})`}
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+              Notificaciones {noLeidasCount > 0 && `(${noLeidasCount})`}
+            </span>
+            {noLeidasCount > 0 && (
+              <button
+                type="button"
+                onClick={() => marcarTodasLeidas()}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: 'var(--color-brand)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px 6px',
+                  borderRadius: 6,
+                }}
+                title="Marcar todas como leídas"
+              >
+                <CheckCheck size={13} />
+                Limpiar
+              </button>
+            )}
           </div>
 
           {noLeidas.length === 0 ? (
@@ -137,6 +165,7 @@ export function CampanaDropdown() {
                   onClick={() => {
                     marcarLeida(alerta.id)
                     setAbierto(false)
+                    if (alerta.enlace) router.push(alerta.enlace)
                   }}
                   style={{
                     display: 'flex',

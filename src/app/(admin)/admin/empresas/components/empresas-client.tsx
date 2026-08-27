@@ -2,14 +2,14 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight } from '@/components/ui/icons'
+import { ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronDown } from '@/components/ui/icons'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
+import { Pagination } from '@/components/ui/pagination'
+import { formatNumero } from '@/lib/format'
 import type { Plan } from '@/types'
-
-const PAGE_SIZES = [10, 20, 50, 100]
 
 interface EmpresaStat {
   id: string; nombre: string; slug: string; plan: Plan; activa: boolean
@@ -31,11 +31,8 @@ interface Props {
 export function EmpresasClient({ empresas, total, page, pageSize, search, planFiltro }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const [seleccionada, setSeleccionada] = useState<EmpresaStat | null>(null)
-  const [notas, setNotas] = useState('')
-  const [guardando, setGuardando] = useState(false)
-  const [notasGuardadas, setNotasGuardadas] = useState(false)
   const [busquedaLocal, setBusquedaLocal] = useState(search)
+  const [abiertoPlan, setAbiertoPlan] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
   const { sorted: empresasOrdenadas, sort, toggleSort } = useSortable(empresas as unknown as Record<string, unknown>[])
 
@@ -50,7 +47,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
     if (params.search) sp.set('search', params.search)
     if (params.plan) sp.set('plan', params.plan)
     if (params.page && params.page !== '1') sp.set('page', params.page)
-    if (params.pageSize && params.pageSize !== '20') sp.set('pageSize', params.pageSize)
+    if (params.pageSize && params.pageSize !== '25') sp.set('pageSize', params.pageSize)
     startTransition(() => router.push(`/admin/empresas?${sp.toString()}`))
   }
 
@@ -58,48 +55,8 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
     setBusquedaLocal(val)
     clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
-      navegar({ search: val, plan: planFiltro, page: '1' })
+      navegar({ search: val, plan: planFiltro, page: '1', pageSize: String(pageSize) })
     }, 300)
-  }
-
-  function abrirDetalle(emp: EmpresaStat) {
-    setSeleccionada(emp)
-    setNotas(emp.notas_admin ?? '')
-  }
-
-  async function cambiarPlan(id: string, plan: Plan) {
-    await fetch(`/api/admin/empresas/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan }),
-    })
-    startTransition(() => router.refresh())
-    if (seleccionada?.id === id) setSeleccionada(prev => prev ? { ...prev, plan } : null)
-  }
-
-  async function guardarNotas() {
-    if (!seleccionada) return
-    setGuardando(true)
-    setNotasGuardadas(false)
-    await fetch(`/api/admin/empresas/${seleccionada.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notas_admin: notas }),
-    })
-    setGuardando(false)
-    setNotasGuardadas(true)
-    startTransition(() => router.refresh())
-    setTimeout(() => setNotasGuardadas(false), 3000)
-  }
-
-  async function toggleActiva(id: string, activa: boolean) {
-    await fetch(`/api/admin/empresas/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ activa: !activa }),
-    })
-    startTransition(() => router.refresh())
-    if (seleccionada?.id === id) setSeleccionada(prev => prev ? { ...prev, activa: !activa } : null)
   }
 
   const queryParams = new URLSearchParams()
@@ -109,83 +66,105 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Toolbar */}
-      <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flex: '1 1 200px', maxWidth: 300 }}>
-          <MagnifyingGlass size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-placeholder)', pointerEvents: 'none' }} />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        {/* Buscador */}
+        <div className="relative flex-1 w-full sm:max-w-xs">
+          <MagnifyingGlass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] pointer-events-none" />
           <input
             type="text"
             placeholder="Buscar empresa..."
             value={busquedaLocal}
             onChange={e => onBusquedaChange(e.target.value)}
-            style={{
-              width: '100%', padding: '8px 12px 8px 32px', borderRadius: 8,
-              border: '1px solid var(--border)', background: 'var(--bg-input)',
-              color: 'var(--text-primary)', fontSize: 13, outline: 'none', boxSizing: 'border-box',
-            }}
+            className="w-full pl-9 pr-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] text-sm outline-none transition-colors focus:border-[var(--color-brand)]"
           />
         </div>
 
-        <select
-          value={planFiltro}
-          onChange={e => navegar({ search: busquedaLocal, plan: e.target.value, page: '1' })}
-          style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-        >
-          <option value="">Todos los planes</option>
-          {PLANES.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
-        </select>
+        {/* Filtros: En celular 2 columnas, en desktop en línea */}
+        <div className="grid grid-cols-2 sm:flex gap-3">
+          <div className="relative w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setAbiertoPlan(v => !v)}
+              className="flex items-center justify-between gap-2 w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-xs font-semibold text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
+            >
+              <span className="truncate">{planFiltro ? `Plan: ${planFiltro.charAt(0).toUpperCase() + planFiltro.slice(1)}` : 'Todos los planes'}</span>
+              <ChevronDown size={14} className="text-[var(--text-secondary)] flex-shrink-0" />
+            </button>
+            {abiertoPlan && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setAbiertoPlan(false)} />
+                <div className="absolute top-full left-0 mt-1.5 w-full sm:w-48 border border-[var(--border)] rounded-xl shadow-lg z-50 overflow-hidden" style={{ background: 'var(--bg-card)' }}>
+                  <div className="p-1 flex flex-col gap-0.5">
+                    <button
+                      type="button"
+                      onClick={() => { navegar({ search: busquedaLocal, plan: '', page: '1', pageSize: String(pageSize) }); setAbiertoPlan(false) }}
+                      className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--bg-hover)] text-[var(--text-primary)]"
+                    >
+                      Todos los planes
+                    </button>
+                    {PLANES.map(p => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => { navegar({ search: busquedaLocal, plan: p, page: '1', pageSize: String(pageSize) }); setAbiertoPlan(false) }}
+                        className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--bg-hover)] text-[var(--text-primary)]"
+                      >
+                        {p.charAt(0).toUpperCase() + p.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
 
-        <select
-          value={pageSize}
-          onChange={e => navegar({ search: busquedaLocal, plan: planFiltro, page: '1', pageSize: e.target.value })}
-          style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-          aria-label="Registros por página"
-        >
-          {PAGE_SIZES.map(s => <option key={s} value={s}>{s} por página</option>)}
-        </select>
+        </div>
 
-        <div style={{ marginLeft: 'auto' }}>
-          <BotonDescargar endpoint="/api/admin/empresas/exportar" queryParams={queryParams.toString()} label="Exportar" />
+        {/* Botón Exportar */}
+        <div className="w-full sm:w-auto sm:ml-auto flex">
+          <div className="w-full sm:w-auto">
+            <BotonDescargar endpoint="/api/admin/empresas/exportar" queryParams={queryParams.toString()} label="Exportar" />
+          </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {/* Tabla */}
-        <div style={{ flex: 1, minWidth: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Empresa</SortTh>
                   <SortTh col="plan" sort={sort} onToggle={toggleSort}>Plan</SortTh>
                   <SortTh col="sector" sort={sort} onToggle={toggleSort}>Sector</SortTh>
-                  <SortTh col="total_empleados" sort={sort} onToggle={toggleSort}>Empleados</SortTh>
-                  <SortTh col="total_co2" sort={sort} onToggle={toggleSort}>CO₂ (kg)</SortTh>
-                  <SortTh col="activa" sort={sort} onToggle={toggleSort}>Estado</SortTh>
-                  <th style={{ padding: '10px 16px' }} />
+                  <SortTh col="total_empleados" sort={sort} onToggle={toggleSort} align="right">Empleados</SortTh>
+                  <SortTh col="total_co2" sort={sort} onToggle={toggleSort} align="right">CO₂ (kg)</SortTh>
+                  <SortTh col="activa" sort={sort} onToggle={toggleSort} align="center">Estado</SortTh>
+                  <th className="px-4 py-2.5" />
                 </tr>
               </thead>
               <tbody>
                 {empresasOrdenadas.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>No hay empresas registradas.</td></tr>
+                  <tr><td colSpan={7} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-brand)' }}>No hay empresas registradas.</td></tr>
                 )}
-                {(empresasOrdenadas as unknown as EmpresaStat[]).map(emp => (
+                {(empresasOrdenadas as unknown as EmpresaStat[]).map((emp, idx) => (
                   <tr key={emp.id}
-                    onClick={() => abrirDetalle(emp)}
+                    onClick={() => router.push(`/admin/empresas/${emp.id}`)}
+                    className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
                     style={{
-                      borderBottom: '1px solid var(--border-light)',
-                      cursor: 'pointer',
-                      background: seleccionada?.id === emp.id ? 'var(--bg-active)' : 'transparent',
-                      transition: 'background 0.15s',
+                      borderTop: idx > 0 ? '1px solid var(--border)' : 'none',
+                      cursor: 'pointer'
                     }}
-                    onMouseEnter={e => { if (seleccionada?.id !== emp.id) (e.currentTarget as HTMLElement).style.background = 'var(--bg-hover)' }}
-                    onMouseLeave={e => { if (seleccionada?.id !== emp.id) (e.currentTarget as HTMLElement).style.background = 'transparent' }}
                   >
-                    <td style={{ padding: '12px 16px', fontWeight: 600, color: 'var(--text-primary)' }}>{emp.nombre}</td>
-                    <td style={{ padding: '12px 16px' }}><PlanBadge plan={emp.plan} /></td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.sector ?? '-'}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{emp.total_empleados}</td>
-                    <td style={{ padding: '12px 16px', color: 'var(--color-brand)', fontWeight: 600 }}>{emp.total_co2.toFixed(2)}</td>
-                    <td style={{ padding: '12px 16px' }}>
+                    <td className="px-4 py-3 text-[var(--text-primary)]">{emp.nombre}</td>
+                    <td className="px-4 py-3"><PlanBadge plan={emp.plan} /></td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)]">{emp.sector ?? '-'}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(emp.total_empleados)}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(emp.total_co2, { unidad: 'kg' })}</td>
+                    <td className="px-4 py-3 text-center">
                       <span style={{ 
                         padding: '2px 10px', 
                         borderRadius: 100, 
@@ -199,9 +178,9 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                         {emp.activa ? 'Activa' : 'Inactiva'}
                       </span>
                     </td>
-                    <td style={{ padding: '12px 16px' }} onClick={e => e.stopPropagation()}>
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
                       <a href={`/admin/empresas/${emp.id}`} title="Ver estado de cuenta" style={{ color: 'var(--color-brand)', display: 'inline-flex', alignItems: 'center' }}>
-                        <ArrowSquareOut size={14} />
+                        <ArrowSquareOut size={14} sinAnimacion />
                       </a>
                     </td>
                   </tr>
@@ -210,99 +189,27 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
             </table>
           </div>
 
-          {/* Paginación */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border-light)', flexWrap: 'wrap', gap: 8 }}>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+          {/* Paginación — componente único de la plataforma. Siempre después
+              de la última fila (nunca antes de la tabla). El texto de conteo
+              se acorta primero (min-width:0 + ellipsis) para que el
+              paginador — con el selector "N por página" — nunca se
+              comprima ni quede oculto detrás de un scroll (bug real
+              reportado: había que scrollear para verlo). */}
+          <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
+            <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
               {total} empresas · Página {page} de {Math.max(1, totalPages)}
             </span>
-            {totalPages > 1 && (
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  disabled={page <= 1}
-                  onClick={() => navegar({ search: busquedaLocal, plan: planFiltro, page: String(page - 1) })}
-                  className="hover-pop hover-press"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
-                >
-                  <CaretLeft size={14} /> Anterior
-                </button>
-                <button
-                  disabled={page >= totalPages}
-                  onClick={() => navegar({ search: busquedaLocal, plan: planFiltro, page: String(page + 1) })}
-                  className="hover-slide-r hover-press"
-                  style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
-                >
-                  Siguiente <CaretRight size={14} />
-                </button>
-              </div>
-            )}
+            <div className="min-w-0 max-w-full overflow-x-auto">
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(p) => navegar({ search: busquedaLocal, plan: planFiltro, page: String(p), pageSize: String(pageSize) })}
+                porPagina={pageSize}
+                onPorPaginaChange={(n) => navegar({ search: busquedaLocal, plan: planFiltro, page: '1', pageSize: String(n) })}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Panel detalle */}
-        {seleccionada && (
-          <div style={{ width: 320, flexShrink: 0, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, boxShadow: 'var(--shadow)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: 15, color: 'var(--text-primary)' }}>{seleccionada.nombre}</p>
-              <button onClick={() => setSeleccionada(null)}
-                className="hover-rotate-90 hover-press"
-                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}>
-                <X size={16} />
-              </button>
-            </div>
-
-            {/* Plan */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Plan</label>
-              <select
-                value={seleccionada.plan}
-                onChange={e => cambiarPlan(seleccionada.id, e.target.value as Plan)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13 }}
-              >
-                {PLANES.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
-              </select>
-            </div>
-
-            {/* Toggle activa */}
-            <div style={{ marginBottom: 16 }}>
-              <button
-                onClick={() => toggleActiva(seleccionada.id, seleccionada.activa)}
-                className="hover-pop hover-press"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', border: '1px solid var(--border)', background: seleccionada.activa ? 'rgba(255,94,75,0.08)' : 'rgba(56,185,142,0.10)', color: seleccionada.activa ? '#CC3C2A' : '#1F8C65', width: '100%', justifyContent: 'center' }}>
-                {seleccionada.activa ? 'Desactivar empresa' : 'Activar empresa'}
-              </button>
-            </div>
-
-            {/* Link a estado de cuenta */}
-            <div style={{ marginBottom: 16 }}>
-              <a
-                href={`/admin/empresas/${seleccionada.id}`}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid var(--color-brand)', color: 'var(--color-brand)', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}
-              >
-                <ArrowSquareOut size={13} /> Ver estado de cuenta
-              </a>
-            </div>
-
-            {/* Notas */}
-            <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Notas de pago / admin</label>
-              <textarea
-                value={notas}
-                onChange={e => setNotas(e.target.value)}
-                rows={5}
-                placeholder="Anota pagos, acuerdos, etc."
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, resize: 'vertical', fontFamily: 'inherit', boxSizing: 'border-box' }}
-              />
-              <button onClick={guardarNotas} disabled={guardando}
-                className={guardando ? '' : 'hover-download hover-press'}
-                style={{ marginTop: 8, padding: '7px 16px', borderRadius: 8, background: 'var(--color-brand)', color: '#fff', border: 'none', fontWeight: 600, fontSize: 13, cursor: 'pointer', width: '100%' }}>
-                {guardando ? 'Guardando...' : 'Guardar notas'}
-              </button>
-              {notasGuardadas && (
-                <p style={{ fontSize: 12, color: '#1F8C65', marginTop: 6, textAlign: 'center' }}>Notas guardadas correctamente.</p>
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

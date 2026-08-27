@@ -1,4 +1,4 @@
-import { Calculator, FloppyDisk, Medal } from '@/components/ui/icons'
+import { Calculator, FloppyDisk, History as ClockCounterClockwise } from '@/components/ui/icons'
 
 const PASOS = [
   {
@@ -11,13 +11,13 @@ const PASOS = [
     icono: FloppyDisk,
     numero: '02',
     titulo: 'Guarda tu cálculo',
-    descripcion: 'Guarda tu registro para acumular tu huella de CO₂ evitado.',
+    descripcion: 'Guarda tu registro para acumular tu huella de CO₂ eq evitado.',
   },
   {
-    icono: Medal,
+    icono: ClockCounterClockwise,
     numero: '03',
-    titulo: 'Obtén tu certificado',
-    descripcion: 'Genera y descarga tu certificado PDF verificable.',
+    titulo: 'Sigue tu progreso',
+    descripcion: 'Consulta tu historial y descarga tus informes de impacto.',
   },
 ]
 

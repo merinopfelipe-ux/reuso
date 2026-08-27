@@ -11,7 +11,7 @@ export async function GET(): Promise<NextResponse> {
   // Alertas activas y no expiradas - RLS filtra por destinatario automáticamente
   const { data: alertas, error: alertasError } = await supabase
     .from('alertas')
-    .select('id, titulo, mensaje, tipo, destinatario_tipo, destinatario_id, activa, created_at, expires_at')
+    .select('id, titulo, mensaje, tipo, destinatario_tipo, destinatario_id, activa, created_at, expires_at, enlace')
     .eq('activa', true)
     .or(`expires_at.is.null,expires_at.gt.${ahora}`)
     .order('created_at', { ascending: false })

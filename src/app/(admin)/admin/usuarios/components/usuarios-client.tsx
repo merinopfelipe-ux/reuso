@@ -2,15 +2,15 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search as MagnifyingGlass, ChevronLeft as CaretLeft, ChevronRight as CaretRight, PlusCircle, KeyRound } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, PlusCircle, KeyRound, Trash } from '@/components/ui/icons'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
+import { Pagination } from '@/components/ui/pagination'
+import { formatFecha } from '@/lib/format'
 import type { Rol } from '@/types'
-
-const PAGE_SIZES = [10, 20, 50, 100]
 
 interface PerfilRow {
   id: string
@@ -56,6 +56,9 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   const [errorModal, setErrorModal] = useState('')
   const [restableciendo, setRestableciendo] = useState<string | null>(null)
   const [restablecido, setRestablecido] = useState<string | null>(null)
+  const [usuarioAEliminar, setUsuarioAEliminar] = useState<PerfilRow | null>(null)
+  const [eliminando, setEliminando] = useState(false)
+  const [errorEliminar, setErrorEliminar] = useState('')
   const { sorted: usuariosOrdenados, sort, toggleSort } = useSortable(usuarios as unknown as Record<string, unknown>[])
 
   const totalPages = Math.ceil(total / pageSize)
@@ -69,7 +72,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
     if (params.search) sp.set('search', params.search)
     if (params.rol) sp.set('rol', params.rol)
     if (params.page && params.page !== '1') sp.set('page', params.page)
-    if (params.pageSize && params.pageSize !== '20') sp.set('pageSize', params.pageSize)
+    if (params.pageSize && params.pageSize !== '25') sp.set('pageSize', params.pageSize)
     startTransition(() => router.push(`/admin/usuarios?${sp.toString()}`))
   }
 
@@ -102,6 +105,21 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
     }
   }
 
+  async function eliminarUsuario() {
+    if (!usuarioAEliminar) return
+    setEliminando(true)
+    setErrorEliminar('')
+    const res = await fetch(`/api/admin/usuarios/${usuarioAEliminar.user_id}`, { method: 'DELETE' })
+    const data = await res.json().catch(() => ({}))
+    setEliminando(false)
+    if (!res.ok) {
+      setErrorEliminar(data.error ?? 'Error al eliminar el usuario.')
+      return
+    }
+    setUsuarioAEliminar(null)
+    startTransition(() => router.refresh())
+  }
+
   async function crearUsuario(e?: React.FormEvent) {
     e?.preventDefault()
     setCreando(true)
@@ -126,9 +144,6 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
     startTransition(() => router.refresh())
   }
 
-  function formatFecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
-  }
 
   function getNombreEmpresa(empresas: PerfilRow['empresas']): string {
     if (!empresas) return '-'
@@ -170,15 +185,6 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
           {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
         </select>
 
-        {/* Registros por página */}
-        <select
-          value={pageSize}
-          onChange={e => navegar({ search: busquedaLocal, rol: rolFiltro, page: '1', pageSize: e.target.value })}
-          style={{ padding: '8px 10px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-          aria-label="Registros por página"
-        >
-          {PAGE_SIZES.map(s => <option key={s} value={s}>{s} por página</option>)}
-        </select>
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
           <BotonDescargar endpoint="/api/admin/usuarios/exportar" queryParams={queryParams.toString()} label="Exportar" />
@@ -267,21 +273,22 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
 
       {/* Tabla */}
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--bg-table-header)', borderBottom: '1px solid var(--border)' }}>
+              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: 'var(--color-brand)', fontSize: 11, whiteSpace: 'nowrap' }}>Empresa</th>
+                <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
                 <SortTh col="rol" sort={sort} onToggle={toggleSort}>Rol</SortTh>
-                <SortTh col="created_at" sort={sort} onToggle={toggleSort}>Registro</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 700, color: 'var(--color-brand)', fontSize: 11, whiteSpace: 'nowrap' }}>Acceso</th>
+                <SortTh col="created_at" sort={sort} onToggle={toggleSort} align="center">Registro</SortTh>
+                <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Acceso</th>
+                <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Eliminar</th>
               </tr>
             </thead>
             <tbody>
               {usuariosOrdenados.length === 0 && (
-                <tr><td colSpan={6} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                <tr><td colSpan={7} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                   {search ? 'Sin resultados para esa búsqueda.' : 'No hay usuarios registrados.'}
                 </td></tr>
               )}
@@ -294,14 +301,14 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                   >
-                    <td style={{ padding: '10px 16px', color: 'var(--text-primary)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <td className="px-4 py-3 text-[var(--text-primary)]">
+                      <div className="flex items-center gap-2">
                         <span>{u.nombre || '-'}</span>
                       </div>
                     </td>
-                    <td style={{ padding: '10px 16px' }}>{u.email}</td>
-                    <td style={{ padding: '10px 16px' }}>{getNombreEmpresa(u.empresas)}</td>
-                    <td style={{ padding: '10px 16px' }}>
+                    <td className="px-4 py-3">{u.email}</td>
+                    <td className="px-4 py-3">{getNombreEmpresa(u.empresas)}</td>
+                    <td className="px-4 py-3">
                       <select
                         value={u.rol}
                         disabled={cambiando === u.user_id || u.user_id === currentUserId}
@@ -316,8 +323,8 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                         {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
                       </select>
                     </td>
-                    <td style={{ padding: '10px 16px', color: 'var(--text-secondary)' }}>{formatFecha(u.created_at)}</td>
-                    <td style={{ padding: '10px 16px' }}>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-center">{formatFecha(u.created_at)}</td>
+                    <td className="px-4 py-3 text-center">
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); restablecerPassword(u.user_id) }}
@@ -331,8 +338,20 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                           opacity: restableciendo === u.user_id ? 0.5 : 1,
                         }}
                       >
-                        <KeyRound size={12} />
+                        <KeyRound size={12} sinAnimacion />
                         {restablecido === u.user_id ? 'Correo enviado' : 'Restablecer'}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setUsuarioAEliminar(u); setErrorEliminar('') }}
+                        disabled={u.user_id === currentUserId}
+                        title={u.user_id === currentUserId ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
+                        className={`inline-flex items-center gap-1.5 text-sm font-semibold px-2 py-1 bg-transparent transition-opacity duration-200 ${u.user_id === currentUserId ? 'text-[var(--text-secondary)] opacity-50 cursor-not-allowed' : 'text-[var(--color-error)] hover:opacity-50'}`}
+                      >
+                        <Trash size={15} sinAnimacion />
+                        Eliminar
                       </button>
                     </td>
                   </tr>
@@ -342,33 +361,44 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
           </table>
         </div>
 
-        {/* Paginación */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border-light)', flexWrap: 'wrap', gap: 8 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+        {/* Paginación — componente único de la plataforma (src/components/ui/pagination.tsx) */}
+        {/* Siempre después de la última fila. El conteo se acorta primero
+            (min-width:0 + ellipsis) para que el paginador nunca se comprima
+            ni quede oculto detrás de un scroll. */}
+        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
+          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
             {total} usuarios · Página {page} de {Math.max(1, totalPages)}
           </span>
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => navegar({ search: busquedaLocal, rol: rolFiltro, page: String(page - 1) })}
-                className="hover-pop hover-press"
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
-              >
-                <CaretLeft size={14} /> Anterior
-              </button>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => navegar({ search: busquedaLocal, rol: rolFiltro, page: String(page + 1) })}
-                className="hover-slide-r hover-press"
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
-              >
-                Siguiente <CaretRight size={14} />
-              </button>
-            </div>
-          )}
+          <div className="min-w-0 max-w-full overflow-x-auto">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(p) => navegar({ search: busquedaLocal, rol: rolFiltro, page: String(p) })}
+              porPagina={pageSize}
+              onPorPaginaChange={(n) => navegar({ search: busquedaLocal, rol: rolFiltro, page: '1', pageSize: String(n) })}
+            />
+          </div>
         </div>
       </div>
+
+      <Modal
+        abierto={!!usuarioAEliminar}
+        onClose={() => { setUsuarioAEliminar(null); setErrorEliminar('') }}
+        titulo="Eliminar usuario"
+        icono={<Trash size={22} />}
+        colorIcono="var(--color-error)"
+        textoConfirmar={eliminando ? 'Eliminando...' : 'Eliminar de verdad'}
+        textoCancelar="Cancelar"
+        varianteConfirmar="error"
+        onConfirmar={eliminarUsuario}
+      >
+        <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: '0 0 8px' }}>
+          Vas a eliminar por completo a <strong>{usuarioAEliminar?.nombre || usuarioAEliminar?.email}</strong>. Esta acción no se puede deshacer.
+        </p>
+        {errorEliminar && (
+          <p style={{ fontSize: 13, color: '#FF5E4B', margin: '8px 0 0' }}>{errorEliminar}</p>
+        )}
+      </Modal>
     </div>
   )
 }

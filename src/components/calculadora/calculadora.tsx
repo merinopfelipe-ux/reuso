@@ -1,8 +1,8 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import { Leaf, Droplet as Drop, TreeDeciduous as Tree, Car, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Medal, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
-import { factorCo2PorKg } from '@/lib/calculos/co2'
+import { Leaf, Droplet as Drop, TreeDeciduous as Tree, Car, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { factorCo2PorKg, factorAguaPorKg, PARAM_EQUIV } from '@/lib/calculos/co2'
 import type { Categoria, Item, Rol } from '@/types'
 
 interface CategoriaConItems extends Categoria {
@@ -29,22 +29,22 @@ function calcularTotalesKg(
   allItems: Item[]
 ): { co2: number; agua: number; equivalencias: { arboles: number; coches: number; duchas: number; litros: number } } {
   let co2 = 0
+  let agua = 0
   for (const item of allItems) {
     const pesoInput = pesos[item.id] ?? 0
     if (pesoInput > 0) {
       co2 += pesoInput * factorCo2PorKg(item.co2_por_unidad, item.peso_kg)
+      agua += pesoInput * factorAguaPorKg(item.agua_por_unidad, item.peso_kg)
     }
   }
-  const duchas = co2 / 2.0
-  const litros = duchas * 90
   return {
     co2,
-    agua: litros,
+    agua,
     equivalencias: {
-      arboles: Math.round(co2 / 8.0),
+      arboles: Math.round(co2 / (PARAM_EQUIV.CO2_arbol_anual_kg / 365)),
       coches: parseFloat((co2 / 4600).toFixed(3)),
-      duchas: Math.round(duchas),
-      litros: Math.round(litros),
+      duchas: Math.round(agua / PARAM_EQUIV.litros_ducha_5min),
+      litros: Math.round(agua),
     },
   }
 }
@@ -254,11 +254,11 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
                   {item.nombre}
                 </p>
                 <span style={{
-                  fontSize: 10, fontWeight: 700, color: BRAND,
+                  fontSize: 12, fontWeight: 700, color: BRAND,
                   background: BG_LIGHT, borderRadius: 100,
                   padding: '2px 8px', display: 'inline-block',
                 }}>
-                  {factorKg.toFixed(3)} kg CO₂/kg
+                  {factorKg.toFixed(3)} kg CO₂ eq/kg
                 </span>
               </div>
 
@@ -294,7 +294,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
               {/* Subtotal si tiene peso */}
               {seleccionado && (
                 <p style={{ textAlign: 'center', fontSize: 11, color: BRAND, fontWeight: 600, margin: '8px 0 0' }}>
-                  = {subtotalCo2.toFixed(3)} kg CO₂ evitados
+                  = {subtotalCo2.toFixed(3)} kg CO₂ eq evitados
                 </p>
               )}
             </div>
@@ -310,7 +310,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
           </label>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <ImageIcon size={11} color={TEXT_MED} />
-            <span style={{ fontSize: 10, color: TEXT_MED }}>Puedes pegar imágenes</span>
+            <span style={{ fontSize: 12, color: TEXT_MED }}>Puedes pegar imágenes</span>
           </div>
         </div>
         <div
@@ -354,9 +354,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
         )}
 
         {/* Totales en tiempo real */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+        <div className="grid grid-cols-2 sm:grid-cols-4" style={{
           gap: 8,
           marginBottom: 14,
           textAlign: 'center',
@@ -364,7 +362,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
           <TotalCol
             icono={<Leaf size={14} color={BRAND} />}
             valor={co2Anim.toFixed(2)}
-            label="kg CO₂"
+            label="kg CO₂ eq"
             activo={hayItems}
           />
           <TotalCol
@@ -440,7 +438,7 @@ function TotalCol({ icono, valor, label, activo }: {
       }}>
         {valor}
       </p>
-      <p style={{ fontSize: 10, color: TEXT_MED, margin: 0 }}>{label}</p>
+      <p style={{ fontSize: 12, color: TEXT_MED, margin: 0 }}>{label}</p>
     </div>
   )
 }
@@ -450,8 +448,6 @@ function ResultadoPanel({ resultado, onReset }: {
   rol: Rol
   onReset: () => void
 }) {
-  const [generandoCert, setGenerandoCert] = useState(false)
-  const [certError, setCertError] = useState<string | null>(null)
   const [showModalDpp, setShowModalDpp] = useState(false)
   const [activosDpp, setActivosDpp] = useState<{ id: string; nombre: string; codigo_dpp: string }[]>([])
   const [loadingDpp, setLoadingDpp] = useState(false)
@@ -477,7 +473,7 @@ function ResultadoPanel({ resultado, onReset }: {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          operacion_realizada: 'Cálculo CO₂ registrado en Calculadora de Reúso',
+          operacion_realizada: 'Cálculo CO₂ eq registrado en Calculadora de Reúso',
           fecha_inicio: new Date().toISOString().slice(0, 10),
           distancia_transporte_km: 0,
         }),
@@ -486,25 +482,6 @@ function ResultadoPanel({ resultado, onReset }: {
     setAsociando(false)
     setShowModalDpp(false)
     setActivoSeleccionado(null)
-  }
-
-  const handleCertificado = async () => {
-    setGenerandoCert(true)
-    setCertError(null)
-    try {
-      const res = await fetch('/api/certificados/generar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo: 'certificado' }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Error al generar.')
-      if (data.pdf_url) window.open(data.pdf_url, '_blank')
-    } catch (e) {
-      setCertError(e instanceof Error ? e.message : 'Error inesperado.')
-    } finally {
-      setGenerandoCert(false)
-    }
   }
 
   const eqs = resultado.equivalencias
@@ -535,7 +512,7 @@ function ResultadoPanel({ resultado, onReset }: {
         textAlign: 'center', marginBottom: 16,
       }}>
         <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.75)', margin: '0 0 4px' }}>
-          CO₂ evitado
+          CO₂ eq evitado
         </p>
         <p style={{ fontSize: 36, fontWeight: 700, color: '#fff', margin: '0 0 2px' }}>
           {resultado.co2_total.toFixed(2)} kg
@@ -548,9 +525,9 @@ function ResultadoPanel({ resultado, onReset }: {
       {/* Equivalencias */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
         {[
-          { icono: <Tree size={20} color={BRAND} />, valor: eqs.arboles, label: 'árboles plantados' },
+          { icono: <Tree size={20} color={BRAND} />, valor: eqs.arboles, label: 'árboles absorbiendo CO2 en 1 día' },
           { icono: <Car size={20} color="#AD7C43" />, valor: eqs.coches, label: 'vehículos retirados' },
-          { icono: <Shower size={20} color="#59A6E4" />, valor: eqs.duchas, label: 'duchas de 10 min' },
+          { icono: <Shower size={20} color="#59A6E4" />, valor: eqs.duchas, label: 'duchas de 5 min' },
           { icono: <Drop size={20} color="#38B98E" />, valor: eqs.litros.toLocaleString('es-CO'), label: 'litros de agua' },
         ].map((eq, i) => (
           <div key={i} style={{ background: BG_LIGHT, borderRadius: 12, padding: '14px 12px', textAlign: 'center' }}>
@@ -563,29 +540,12 @@ function ResultadoPanel({ resultado, onReset }: {
         ))}
       </div>
 
-      {certError && (
-        <p style={{ fontSize: 12, color: '#FF5E4B', textAlign: 'center', marginBottom: 12 }}>{certError}</p>
-      )}
+      <p style={{ fontSize: 12, color: TEXT_MED, textAlign: 'center', margin: '0 0 20px', lineHeight: 1.5 }}>
+        Esto equivale a {eqs.arboles.toLocaleString('es-CO')} árboles absorbiendo CO2 en 1 día y el equivalente a tomar {eqs.duchas.toLocaleString('es-CO')} duchas de 5 min.
+      </p>
 
       {/* Acciones */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <button
-          onClick={handleCertificado}
-          disabled={generandoCert}
-          style={{
-            padding: '12px 20px', borderRadius: 10, border: 'none',
-            background: BRAND, color: '#fff', fontSize: 14, fontWeight: 700,
-            cursor: generandoCert ? 'not-allowed' : 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            opacity: generandoCert ? 0.7 : 1,
-          }}
-          className={generandoCert ? '' : 'hover-medal hover-press'}
-        >
-          {generandoCert
-            ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> Generando...</>
-            : <><Medal size={16} /> Generar certificado</>}
-        </button>
-
         <button
           onClick={abrirModalDpp}
           style={{

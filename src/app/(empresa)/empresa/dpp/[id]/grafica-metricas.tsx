@@ -52,8 +52,8 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,130,124,0.08)" />
-            <XAxis dataKey="nombre" tick={{ fontSize: 11, fill: '#7FA8A5' }} axisLine={false} tickLine={false} />
-            <YAxis tick={{ fontSize: 10, fill: '#7FA8A5' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${moneda} ${formatK(v)}`} />
+            <XAxis dataKey="nombre" tick={{ fontSize: 11, fill: 'var(--text-placeholder)' }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: 'var(--text-placeholder)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${moneda} ${formatK(v)}`} />
             <Tooltip
               contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
               formatter={(value) => [`${moneda} ${Math.round(Number(value ?? 0)).toLocaleString('es-CO')}`, '']}
@@ -74,11 +74,11 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
         <ResponsiveContainer width="100%" height={180}>
           <LineChart data={datosCirc} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,130,124,0.08)" />
-            <XAxis dataKey="nombre" tick={{ fontSize: 11, fill: '#7FA8A5' }} axisLine={false} tickLine={false} />
-            <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: '#7FA8A5' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
+            <XAxis dataKey="nombre" tick={{ fontSize: 11, fill: 'var(--text-placeholder)' }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: 'var(--text-placeholder)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v} %`} />
             <Tooltip
               contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
-              formatter={(value) => [`${Number(value ?? 0).toFixed(1)}%`, '']}
+              formatter={(value) => [`${Number(value ?? 0).toFixed(1)} %`, '']}
             />
             <Line type="monotone" dataKey="valor" stroke="#38B98E" strokeWidth={2.5} dot={{ r: 4, fill: '#38B98E' }} activeDot={{ r: 6 }} />
           </LineChart>

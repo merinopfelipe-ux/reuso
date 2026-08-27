@@ -1,19 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, CheckCircle } from '@/components/ui/icons'
 
 export function LeadsForm() {
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
+
   const [formData, setFormData] = useState({
     nombre: '',
     email: '',
     empresa: '',
     mensaje: '',
-    interes: ''
+    interes: '',
+    // Honeypot anti-bots: campo invisible para una persona real, pero los
+    // bots que autocompletan todos los inputs sí lo llenan. Si llega con
+    // valor, el backend descarta el envío en silencio (ver /api/leads).
+    sitio_web: '',
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -30,7 +37,7 @@ export function LeadsForm() {
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstile_token: turnstileToken || 'skip' }),
       })
 
       const data = await res.json()
@@ -39,6 +46,8 @@ export function LeadsForm() {
       setEnviado(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al enviar')
+      turnstileRef.current?.reset()
+      setTurnstileToken('')
     } finally {
       setLoading(false)
     }
@@ -71,7 +80,34 @@ export function LeadsForm() {
       border: '1px solid rgba(0,130,124,0.08)'
     }}>
       <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        {/* Honeypot: invisible para una persona (no display:none, para que
+            un bot poco cuidadoso igual lo detecte y lo llene), oculto del
+            lector de pantalla y fuera del tab order. */}
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+          <label htmlFor="sitio_web">Sitio web</label>
+          <input
+            type="text"
+            id="sitio_web"
+            name="sitio_web"
+            tabIndex={-1}
+            autoComplete="off"
+            value={formData.sitio_web}
+            onChange={handleChange}
+          />
+        </div>
+
+        {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+            options={{ size: 'invisible' }}
+            onSuccess={(token) => setTurnstileToken(token)}
+            onExpire={() => setTurnstileToken('')}
+            onError={() => setTurnstileToken('')}
+          />
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 16 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Nombre completo</label>
             <input

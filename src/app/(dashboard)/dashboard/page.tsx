@@ -4,7 +4,7 @@ export const metadata: Metadata = { title: 'Mi impacto' }
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { PanelCertificados } from '@/components/certificados/panel-certificados'
+import { PanelInformes } from '@/components/informes/panel-informes'
 import { CalculadoraConHistorial } from '@/components/calculadora/calculadora-con-historial'
 import { KpiCardAnimado, type IndicadorSemanal } from '@/components/dashboard/kpi-card-animado'
 import dynamic from 'next/dynamic'
@@ -16,7 +16,7 @@ const GraficaLineaPersonal = dynamic(() => import('@/components/dashboard/grafic
 const DonutCategorias = dynamic(() => import('@/components/empresa/donut-categorias'), {
   ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: 'var(--border)' }} />, })
 import { Buildings, Package, ClockCounterClockwise, Lifebuoy, ArrowRight, Star } from '@/components/ui/icons'
-import type { Certificado, Rol } from '@/types'
+import type { Informe, Rol } from '@/types'
 import { displayName } from '@/lib/display-name'
 
 // ─── Pure functions de agregación ──────────────────────────────────────────
@@ -192,7 +192,7 @@ export default async function DashboardPage() {
   const [
     { count: totalObjetos },
     { data: co2Data },
-    { data: certData },
+    { data: informesData },
     { data: categoriasData },
     historialRes,
     { data: calculosGrafica },
@@ -203,7 +203,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     adminClient.from('calculos').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
     adminClient.from('calculos').select('total_co2, total_agua').eq('user_id', user.id),
-    adminClient.from('certificados').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
+    adminClient.from('informes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
     (() => {
       // usuario_libre (sin empresa) → todas las categorías
       // empresa con módulos asignados → filtrar; empresa sin módulos → vacío
@@ -212,7 +212,7 @@ export default async function DashboardPage() {
       }
       let q = adminClient
         .from('categorias')
-        .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
+        .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, parent_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, agua_por_unidad, factor_rentabilidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
         .eq('activa', true)
         .eq('items.activo', true)
         .order('orden', { ascending: true })
@@ -268,7 +268,7 @@ export default async function DashboardPage() {
   const co2Total = (co2Data ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
   const aguaTotal = (co2Data ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
   const arboles = Math.round(co2Total / 8.0)
-  const certificados = (certData ?? []) as Certificado[]
+  const informes = (informesData ?? []) as Informe[]
 
   // KPIs empresa para empleado
   const co2Empresa_ = (co2Empresa ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
@@ -386,12 +386,12 @@ export default async function DashboardPage() {
         {rol === 'empleado' && empresa_id ? (
           <>
             <KpiCardAnimado
-              titulo="CO₂ evitado por la empresa"
+              titulo="CO₂ eq evitado por la empresa"
               valorFinal={co2Empresa_}
               formato="decimal2"
               unidad="kg"
               icono="leaf"
-              color="#00827C"
+              color="var(--color-brand)"
               indicador={indicadorCO2}
             />
             <KpiCardAnimado
@@ -412,7 +412,7 @@ export default async function DashboardPage() {
               indicador={indicadorObjetos}
             />
             <KpiCardAnimado
-              titulo="Mi aporte CO₂"
+              titulo="Mi aporte CO₂ eq"
               valorFinal={co2Total}
               formato="decimal2"
               unidad="kg"
@@ -424,12 +424,12 @@ export default async function DashboardPage() {
         ) : (
           <>
             <KpiCardAnimado
-              titulo="CO₂ evitado"
+              titulo="CO₂ eq evitado"
               valorFinal={co2Total}
               formato="decimal2"
               unidad="kg"
               icono="leaf"
-              color="#00827C"
+              color="var(--color-brand)"
               indicador={indicadorCO2}
             />
             <KpiCardAnimado
@@ -469,8 +469,8 @@ export default async function DashboardPage() {
             padding: '16px 20px',
             background: calculosMes >= CUOTA_FREE
               ? 'rgba(255,94,75,0.06)'
-              : 'rgba(0,130,124,0.06)',
-            border: `1px solid ${calculosMes >= CUOTA_FREE ? 'rgba(255,94,75,0.25)' : 'rgba(0,130,124,0.20)'}`,
+              : 'color-mix(in srgb, var(--color-brand) 6%, transparent)',
+            border: `1px solid ${calculosMes >= CUOTA_FREE ? 'rgba(255,94,75,0.25)' : 'color-mix(in srgb, var(--color-brand) 20%, transparent)'}`,
             borderRadius: 14,
             userSelect: 'none',
           }}
@@ -512,8 +512,8 @@ export default async function DashboardPage() {
           style={{
             marginBottom: 28,
             padding: '18px 20px',
-            background: 'linear-gradient(135deg, rgba(0,130,124,0.08) 0%, rgba(0,130,124,0.03) 100%)',
-            border: '1px solid rgba(0,130,124,0.25)',
+            background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-brand) 8%, transparent) 0%, color-mix(in srgb, var(--color-brand) 3%, transparent) 100%)',
+            border: '1px solid color-mix(in srgb, var(--color-brand) 25%, transparent)',
             borderRadius: 14,
             display: 'flex',
             alignItems: 'center',
@@ -526,14 +526,14 @@ export default async function DashboardPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{
               width: 40, height: 40, borderRadius: 10,
-              background: 'rgba(0,130,124,0.12)',
+              background: 'color-mix(in srgb, var(--color-brand) 12%, transparent)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
               <Star size={20} color="var(--color-brand)" />
             </div>
             <div>
               <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Desbloquea certificados y cálculos ilimitados
+                Desbloquea informes y cálculos ilimitados
               </p>
               <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
                 Crea tu empresa desde $89.000 COP/mes
@@ -547,7 +547,7 @@ export default async function DashboardPage() {
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '9px 18px',
               background: 'var(--color-brand)',
-              color: '#fff',
+              color: 'var(--text-on-brand)',
               borderRadius: 10,
               fontSize: 13, fontWeight: 700,
               textDecoration: 'none',
@@ -569,7 +569,7 @@ export default async function DashboardPage() {
             marginBottom: 24,
           }}
         >
-          <SectionCard titulo="Evolución mensual - CO₂ evitado">
+          <SectionCard titulo="Evolución mensual - CO₂ eq evitado">
             <GraficaLineaPersonal data={serieMensual12} />
           </SectionCard>
           {donutPersonal.length > 0 && (
@@ -652,9 +652,9 @@ export default async function DashboardPage() {
         />
       )}
 
-      {/* Panel certificados */}
-      <PanelCertificados
-        certificados={certificados}
+      {/* Panel informes */}
+      <PanelInformes
+        informes={informes}
         empresaId={empresa_id}
         modo="personal"
       />

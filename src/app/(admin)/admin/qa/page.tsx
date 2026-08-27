@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { LogoSpinner } from '@/components/ui/logo-spinner'
 import { CheckCircle, XCircle, Circle, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, Moon, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -26,7 +27,7 @@ interface Tarea {
 }
 
 const ROL_LABELS: Record<RolPrueba, string> = {
-  super_admin: 'Super Admin',
+  super_admin: 'Superadmin',
   empresa_admin: 'Empresa Admin',
   empleado: 'Empleado',
   usuario_libre: 'Usuario Libre',
@@ -325,18 +326,6 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'Cada filtro refina y actualiza la lista de forma acumulativa e instantánea sin desencadenar errores en consola ni pantallas de error.',
   },
   {
-    id: 'adm-07', categoria: 'Panel Admin', ruta: '/admin/certificados', critica: false,
-    titulo: 'Certificados emitidos - búsqueda y verificación',
-    descripcion: 'Localiza un certificado emitido y verifica su hash RCO2 único a través del portal de validación pública.',
-    pasos: [
-      'Ve a la ruta /admin/certificados.',
-      'Utiliza el buscador para localizar un certificado mediante el nombre de la empresa asociada.',
-      'Identifica el código único de verificación RCO2 (ej. RCO2-1234-5678) y cópialo al portapapeles.',
-      'Abre una ventana en modo incógnito e ingresa a /verificar/RCO2-1234-5678 (reemplazando por el código real).',
-    ],
-    esperado: 'El buscador encuentra el certificado de forma rápida. La página pública de verificación del certificado carga correctamente toda la información del impacto real acumulado.',
-  },
-  {
     id: 'adm-08', categoria: 'Panel Admin', ruta: '/admin/tickets', critica: true,
     titulo: 'Tickets de soporte - ver y responder',
     descripcion: 'Abre el buzón de soporte técnico, lee un ticket pendiente, publica una respuesta y actualiza su estado de atención.',
@@ -475,16 +464,16 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'Los filtros de búsqueda y paginación funcionan de manera integrada y rápida. El archivo CSV contiene exactamente la misma información que se ve en la pantalla filtrada.',
   },
   {
-    id: 'emp-03', categoria: 'Panel Empresa', ruta: '/empresa/certificados', critica: true,
-    titulo: 'Generar certificado de impacto acumulado',
-    descripcion: 'Genera el documento oficial de impacto ecológico y valida la consistencia del código QR impreso en él.',
+    id: 'emp-03', categoria: 'Panel Empresa', ruta: '/empresa/informes', critica: true,
+    titulo: 'Generar informe de impacto por rango de fechas',
+    descripcion: 'Genera el documento oficial de impacto ecológico por período y valida la consistencia del código QR impreso en él.',
     pasos: [
-      'Navega a /empresa/certificados.',
-      'Haz clic en "Generar Certificado Oficial de Impacto".',
+      'Navega a /empresa/informes.',
+      'Haz clic en "Generar informe" y elige un rango de fechas.',
       'Espera a que se genere el archivo y se abra en el visor de PDF integrado del navegador.',
       'Copia el código alfanumérico RCO2 y escanea el código QR que viene impreso en el PDF con tu dispositivo móvil o verifica el enlace.',
     ],
-    esperado: 'El PDF se genera en menos de 3 segundos, contiene los datos acumulados oficiales correctos de la empresa y el QR conduce a la página pública de validación /verificar/[codigo].',
+    esperado: 'El PDF se genera en menos de 3 segundos, contiene los datos acumulados oficiales correctos de la empresa para el período elegido y el QR conduce a la página pública de validación /verificar/[codigo].',
   },
   {
     id: 'emp-04', categoria: 'Panel Empresa', ruta: '/empresa/reportes', critica: false,
@@ -540,7 +529,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Ve a /empresa/soporte.',
       'Haz clic en "Crear Ticket", selecciona la categoría "Fallo técnico", prioridad "Alta", escribe una descripción detallada del error y envíalo.',
-      'Entra al panel de super admin en /admin/tickets y busca el nuevo ticket registrado.',
+      'Entra al panel de superadmin en /admin/tickets y busca el nuevo ticket registrado.',
     ],
     esperado: 'El ticket se crea de forma inmediato y se visualiza en la bandeja de entrada del administrador con todos sus campos y archivos adjuntos si corresponde.',
   },
@@ -633,12 +622,12 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'La tabla de historial se actualiza de forma reactiva reflejando solo las operaciones del usuario que correspondan a los filtros aplicados.',
   },
   {
-    id: 'dash-04', categoria: 'Dashboard', ruta: '/dashboard/certificados', critica: false,
-    titulo: 'Certificados del empleado',
-    descripcion: 'Comprueba el acceso y descarga de los certificados personales de reducción de emisiones.',
+    id: 'dash-04', categoria: 'Dashboard', ruta: '/dashboard/informes', critica: false,
+    titulo: 'Informes del empleado',
+    descripcion: 'Comprueba el acceso y descarga de los informes personales de reducción de emisiones.',
     pasos: [
-      'Ve a la sección de certificados personales en /dashboard/certificados.',
-      'Comprueba que aparezcan los certificados donde el empleado ha participado o acumulado impacto.',
+      'Ve a la sección de informes personales en /dashboard/informes.',
+      'Comprueba que aparezcan los informes donde el empleado ha participado o acumulado impacto.',
       'Presiona "Descargar" en uno de ellos.',
     ],
     esperado: 'Se abre o descarga el PDF oficial que avala la participación y el total de CO₂ evitado por el empleado.',
@@ -783,7 +772,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Haz clic en el botón "Copiar mensaje corto de WhatsApp".',
       'Pega el contenido copiado en cualquier editor de texto o chat.',
     ],
-    esperado: 'El texto copiado incluye un saludo amigable personalizado para el cliente, la mención del mueble cotizado, el precio final y el enlace corto de la propuesta comercial /propuesta/[token].',
+    esperado: 'El texto copiado incluye un saludo amigable personalizado para el cliente, la mención del mueble cotizado, el precio final y el enlace corto de la propuesta comercial /cot/[token].',
   },
   {
     id: 'cot-10', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
@@ -923,22 +912,22 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'pub-05', categoria: 'Páginas Públicas', ruta: '/verificar/[codigo]', critica: true,
-    titulo: 'Verificación de certificado/informe',
-    descripcion: 'Valida un certificado emitido introduciendo su identificador en el portal público de verificación.',
+    titulo: 'Verificación de informe',
+    descripcion: 'Valida un informe emitido introduciendo su identificador en el portal público de verificación.',
     pasos: [
-      'Genera un certificado de impacto acumulado desde /empresa/certificados y copia su código RCO2.',
+      'Genera un informe de impacto por rango de fechas desde /empresa/informes y copia su código RCO2.',
       'Navega a /verificar/[codigo] en incógnito (ej. /verificar/RCO2-9876-5432).',
-      'Valida que la información de emisiones del certificado coincida con los datos reales presentados.',
+      'Valida que la información de emisiones del informe coincida con los datos reales presentados.',
     ],
     esperado: 'La página pública de validación renderiza el estado "VÁLIDO", detallando el nombre de la empresa emisora, la huella de CO₂ evitada y la fecha original de expedición.',
   },
   {
-    id: 'pub-06', categoria: 'Páginas Públicas', ruta: '/propuesta/[token]', critica: true,
+    id: 'pub-06', categoria: 'Páginas Públicas', ruta: '/cot/[token]', critica: true,
     titulo: 'Propuesta pública de cotización',
     descripcion: 'Verifica la visualización de propuestas de restauración y accesos a WhatsApp.',
     pasos: [
       'Genera un enlace de propuesta comercial para un cliente desde el CRM del cotizador de una empresa.',
-      'Abre la URL /propuesta/[token] en modo incógnito en tu navegador.',
+      'Abre la URL /cot/[token] en modo incógnito en tu navegador.',
       'Revisa que toda la cotización de los oficios, descripción del mueble y precio sugerido sea correcta.',
     ],
     esperado: 'La propuesta comercial carga de forma impecable sin pedir autenticación y el botón de contacto dirige directamente al WhatsApp de la empresa emisora.',
@@ -1098,11 +1087,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'El tamaño del archivo transmitido en el POST es menor a 4MB, confirmando que el frontend aplica compresión en el cliente (client-side compression) antes de la subida.',
   },
   {
-    id: 'perf-04', categoria: 'Rendimiento', ruta: '/empresa/certificados', critica: false,
+    id: 'perf-04', categoria: 'Rendimiento', ruta: '/empresa/informes', critica: false,
     titulo: 'Generación de PDF < 3 segundos',
     descripcion: 'Verifica que el servicio de compilación PDF resuelva rápido e impida timeouts.',
     pasos: [
-      'Dirígete a la sección de certificados /empresa/certificados o reportes.',
+      'Dirígete a la sección de informes /empresa/informes.',
       'Haz clic en generar el PDF del documento de impacto.',
       'Cronometra el tiempo hasta que se abre el visor con el PDF generado en el navegador.',
     ],
@@ -1304,9 +1293,9 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Navega a /ayuda.',
       'Verifica que se visualice la lista de categorías del centro de soporte.',
-      'En la barra de búsqueda del centro de ayuda, escribe "certificado" y presiona enter.',
+      'En la barra de búsqueda del centro de ayuda, escribe "informe" y presiona enter.',
     ],
-    esperado: 'El sistema realiza la búsqueda sobre los artículos del manual de usuario y filtra la lista mostrando los contenidos que resuelven dudas sobre certificados.',
+    esperado: 'El sistema realiza la búsqueda sobre los artículos del manual de usuario y filtra la lista mostrando los contenidos que resuelven dudas sobre informes.',
   },
   {
     id: 'api-01', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
@@ -1443,12 +1432,12 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'El frontend muestra un banner descriptivo indicando problemas de conectividad o internet, preserva intactos todos los datos ingresados en el formulario de pasaporte (no limpia los campos ni devuelve a error) y permite enviar el formulario correctamente en cuanto se restablece la red.',
   },
   {
-    id: 'perf-08', categoria: 'Rendimiento', ruta: '/empresa/certificados', critica: false,
+    id: 'perf-08', categoria: 'Rendimiento', ruta: '/empresa/informes', critica: false,
     titulo: 'Estrés de Memoria - Generación concurrente de múltiples PDFs',
     descripcion: 'Evalúa el impacto en la CPU y RAM del hilo principal del navegador al ejecutar peticiones repetidas de renderizado de PDFs.',
     pasos: [
-      'Navega a /empresa/certificados donde esté la opción para generar PDFs oficiales.',
-      'Presiona de forma repetida e ininterrumpida el botón "Generar Certificado Oficial de Impacto" 6 veces seguidas en un lapso de 3 segundos.',
+      'Navega a /empresa/informes donde esté la opción para generar PDFs oficiales.',
+      'Presiona de forma repetida e ininterrumpida el botón "Generar informe" 6 veces seguidas en un lapso de 3 segundos.',
       'Monitorea el comportamiento del navegador y revisa si se congela la pestaña, o si se abren múltiples descargas simultáneas correctas.',
     ],
     esperado: 'La aplicación deshabilita temporalmente el botón durante el renderizado (o maneja un debounce de peticiones) para prevenir una sobrecarga de memoria del hilo principal. Se generan y descargan los PDFs correspondientes sin fugas de memoria ni crasheos del navegador.',
@@ -1515,13 +1504,13 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'El frontend y el backend aplican validación estricta de rangos (por ejemplo, impidiendo pesos menores o iguales a cero y limitando el peso a un rango racional). No se generan cálculos con NaN, números infinitos o valores negativos en el historial.',
   },
   {
-    id: 'dpl-09', categoria: 'APIs & Validaciones', ruta: '/legal/confidencialidad-firma', critica: false,
+    id: 'dpl-09', categoria: 'APIs & Validaciones', ruta: '/legal/firma/[token]', critica: false,
     titulo: 'Firma Digital - Inyección de Base64 corrupto o de gran tamaño',
-    descripcion: 'Verifica que la API de procesamiento de firmas y el compilador jsPDF del servidor controlen excepciones ante strings de dibujo corruptos o excesivamente pesados.',
+    descripcion: 'Verifica que la API de procesamiento de firmas y el compilador jsPDF del servidor controlen excepciones ante strings de dibujo corruptos o excesivamente pesados. Requiere generar antes una invitación desde /admin/firmas.',
     pasos: [
-      'Ve a la página pública del Acuerdo de Confidencialidad en /legal/confidencialidad-firma.',
-      'Abre la consola de desarrollo de DevTools, ve a la pestaña Network y localiza la petición POST a la API /api/legal/firma al firmar.',
-      'Simula el envío de la petición interceptando o re-ejecutando el fetch en consola, reemplazando el parámetro de la firma "firmaBase64" con una cadena corrupta gigante (por ejemplo, un payload de texto de 5MB con caracteres aleatorios que no sea un base64 de imagen válido).',
+      'Genera una invitación de firma desde /admin/firmas → Nueva solicitud, y abre el enlace recibido en /legal/firma/[token].',
+      'Abre la consola de desarrollo de DevTools, ve a la pestaña Network y localiza la petición POST a la API /api/legal/firma/[token] al firmar.',
+      'Simula el envío de la petición interceptando o re-ejecutando el fetch en consola, reemplazando el parámetro "firma" con una cadena corrupta gigante (por ejemplo, un payload de texto de 5MB con caracteres aleatorios que no sea un base64 de imagen válido).',
       'Observa la respuesta de la llamada y revisa si el backend Next.js cae en un error de desbordamiento de memoria (out of memory) o responde con un error controlado.',
     ],
     esperado: 'La API de firma detecta el formato base64 inválido o el tamaño desproporcionado, responde con un código de estado 400 Bad Request y evita crashear el servidor Next.js o la generación de PDFs.',
@@ -1549,7 +1538,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Navega a /empresa/configuracion/marca.',
       'Intenta subir como logo de la empresa una imagen de dimensiones desproporcionadas (ej. 15000x200 px, muy ancha y baja, o 10000x10000 px, cuadrada gigante).',
       'Comprueba que el procesamiento de compresión en cliente no congele la pestaña del navegador por falta de memoria de canvas.',
-      'Abre en incógnito una propuesta comercial pública /propuesta/[token] vinculada a esta empresa y verifica que el logo renderice centrado y escalado de forma proporcional sin romper el diseño del cabecero.',
+      'Abre en incógnito una propuesta comercial pública /cot/[token] vinculada a esta empresa y verifica que el logo renderice centrado y escalado de forma proporcional sin romper el diseño del cabecero.',
     ],
     esperado: 'La imagen es escalada y comprimida correctamente en el cliente sin consumir excesiva RAM. El diseño del cabecero de la propuesta pública se adapta, conteniendo el logo dentro de los límites visuales seguros sin desbordamientos tipográficos.',
   },
@@ -1595,7 +1584,7 @@ const CATEGORIAS = [
   { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B' },
   { key: 'Seguridad',           icono: ShieldCheck,  color: '#FF5E4B' },
   { key: 'Alertas',             icono: Bell,         color: '#F6BF3E' },
-  { key: 'Settings',            icono: Gear,         color: '#7FA8A5' },
+  { key: 'Settings',            icono: Gear,         color: 'var(--text-placeholder)' },
   { key: 'Ayuda',               icono: BookOpen,     color: '#59A6E4' },
   { key: 'APIs & Validaciones', icono: FileText,     color: '#8AD0B2' },
 ]
@@ -1814,7 +1803,7 @@ export default function QAPage() {
       `Fecha: ${ahora}`,
       `${'─'.repeat(60)}`,
       `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${parciales} parciales · ${no_claras} instrucciones poco claras · ${criticas} críticas fallidas`,
-      `Cobertura: ${progreso}% (${revisadas}/${total} revisadas)`,
+      `Cobertura: ${progreso} % (${revisadas}/${total} revisadas)`,
       `${'─'.repeat(60)}`,
     ]
     for (const cat of CATEGORIAS) {
@@ -1851,8 +1840,8 @@ export default function QAPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#474747] text-white flex items-center justify-center font-sans">
-        <div className="text-sm text-[#D6F391]">Cargando QA...</div>
+      <div className="h-full min-h-[60vh] bg-[#474747] text-white flex items-center justify-center font-sans">
+        <LogoSpinner size={96} />
       </div>
     )
   }
@@ -1880,7 +1869,7 @@ export default function QAPage() {
   const catActual = CATEGORIAS.find(c => c.key === categoriaActiva)!
 
   return (
-    <div className={`min-h-screen ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
+    <div className={`h-full ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
 
       <div className="relative z-10 max-w-7xl mx-auto">
 
@@ -1924,7 +1913,7 @@ export default function QAPage() {
                       strokeDashoffset={175.9 - (175.9 * progreso) / 100}
                       strokeLinecap="round" />
                   </svg>
-                  <span className={`absolute text-sm font-bold ${theme.textTitle}`}>{progreso}%</span>
+                  <span className={`absolute text-sm font-bold ${theme.textTitle}`}>{progreso} %</span>
                 </div>
                 <div>
                   <div className={`text-xs ${theme.textSecondary} opacity-75`}>Progreso General</div>
@@ -1963,7 +1952,7 @@ export default function QAPage() {
             </div>
 
             {/* Botones */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               {/* Búsqueda */}
               <div className="relative w-64">
                 <MagnifyingGlass size={14} className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.textSecondary} opacity-60`} />
@@ -2020,7 +2009,7 @@ export default function QAPage() {
             >
               <h2 className={`text-sm font-semiboldr ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
                 <span>Módulos del sistema</span>
-                <span className={`text-[10px] lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
+                <span className={`text-xs lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
               </h2>
               <div className="flex flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1">
                 {CATEGORIAS.map((cat, catIdx) => {
@@ -2164,7 +2153,7 @@ export default function QAPage() {
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
                           <span className={`text-sm font-semibold ${theme.textTitle}`}>{tarea.titulo}</span>
                           {tarea.critica && (
-                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wide bg-[#FF5E4B]/12 text-[#FF5E4B]">
+                            <span className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide bg-[#FF5E4B]/12 text-[#FF5E4B]">
                               CRÍTICA
                             </span>
                           )}
@@ -2178,12 +2167,12 @@ export default function QAPage() {
                               return (
                                 <span
                                   key={rol}
-                                  className={`text-[9px] px-1.5 py-0.2 rounded font-semiboldr ${
+                                  className={`text-xs px-1.5 py-0.2 rounded font-semiboldr ${
                                     checked
                                       ? 'bg-[#38B98E]/15 border border-[#38B98E]/30 text-[#38B98E]'
                                       : isDark
                                       ? 'bg-white/5 border border-white/10 text-white/50'
-                                      : 'bg-black/[0.03] border border-black/10 text-black/50'
+                                      : 'bg-[#474747]/[0.03] border border-[#474747]/10 text-[#474747]/50'
                                   }`}
                                 >
                                   {rol === 'sin_sesion' ? 'público' : rol.replace('_', ' ')}
@@ -2199,7 +2188,7 @@ export default function QAPage() {
                               return (
                                 <span
                                   key={campo}
-                                  className="text-[9px] px-1.5 rounded font-semiboldr flex items-center gap-0.5"
+                                  className="text-xs px-1.5 rounded font-semiboldr flex items-center gap-0.5"
                                   style={{
                                     background: color ? `${color}18` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                                     border: `1px solid ${color ? `${color}40` : isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'}`,
@@ -2219,7 +2208,7 @@ export default function QAPage() {
                       </div>
 
                       {/* Botones de estado rápido */}
-                      <div className="flex gap-1.5" onClick={e => e.stopPropagation()}>
+                      <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                         {(['ok', 'falla', 'parcial', 'no_clara', 'pendiente'] as Estado[]).map(est => {
                           const Ic = ESTADO_CFG[est].icono
                           const activo = tarea.estado === est
@@ -2228,7 +2217,7 @@ export default function QAPage() {
                               key={est}
                               onClick={() => actualizar(tarea.id, 'estado', est)}
                               title={ESTADO_CFG[est].label}
-                              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+                              className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95"
                               style={{
                                 border: `1px solid ${activo ? ESTADO_CFG[est].color : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
                                 background: activo ? `${ESTADO_CFG[est].color}18` : 'transparent',
@@ -2258,7 +2247,7 @@ export default function QAPage() {
                         {/* Pasos */}
                         {tarea.pasos.length > 0 && (
                           <div className="mb-4">
-                            <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-2`}>Pasos</p>
+                            <p className={`text-xs font-boldr ${theme.textSecondary} mb-2`}>Pasos</p>
                             <div
                               className="rounded-xl p-4"
                               style={{ background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,130,124,0.03)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.08)'}` }}
@@ -2277,13 +2266,13 @@ export default function QAPage() {
                           className="rounded-xl px-4 py-3 mb-4"
                           style={{ background: isDark ? 'rgba(214,243,145,0.04)' : 'rgba(0,130,124,0.04)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.10)'}` }}
                         >
-                          <span className={`text-[10px] font-boldr ${theme.textSecondary}`}>Resultado esperado: </span>
+                          <span className={`text-xs font-boldr ${theme.textSecondary}`}>Resultado esperado: </span>
                           <span className={`text-xs ${theme.textPrimary}`}>{tarea.esperado}</span>
                         </div>
 
                         {/* Checklist de Perfiles de Prueba */}
                         <div className="mb-4">
-                          <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-2`}>
+                          <p className={`text-xs font-boldr ${theme.textSecondary} mb-2`}>
                             Checklist de Perfiles (Marca los probados)
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -2319,7 +2308,7 @@ export default function QAPage() {
                           const valorActual = tarea[campo] ?? 'pendiente'
                           return (
                             <div key={campo} className="mb-3">
-                              <p className={`text-[10px] font-boldr ${theme.textSecondary} mb-1.5`}>
+                              <p className={`text-xs font-boldr ${theme.textSecondary} mb-1.5`}>
                                 {esDia ? '☀ Resultado Modo Día' : '☾ Resultado Modo Noche'}
                               </p>
                               <div className="flex gap-1.5 flex-wrap">
@@ -2330,7 +2319,7 @@ export default function QAPage() {
                                     <button
                                       key={est}
                                       onClick={() => actualizarModo(tarea.id, campo, est)}
-                                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all hover:scale-105 active:scale-95"
+                                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 active:scale-95"
                                       style={{
                                         background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}15`,
                                         color: activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color,
@@ -2348,7 +2337,7 @@ export default function QAPage() {
                         })}
 
                         {/* Notas */}
-                        <label className={`block text-[10px] font-boldr ${theme.textSecondary} mb-2`}>
+                        <label className={`block text-xs font-boldr ${theme.textSecondary} mb-2`}>
                           Tus apuntes
                         </label>
                         <textarea
@@ -2366,7 +2355,7 @@ export default function QAPage() {
                         />
 
                         {/* Veredicto general */}
-                        <p className={`text-[10px] font-boldr ${theme.textSecondary} mt-4 mb-2`}>
+                        <p className={`text-xs font-boldr ${theme.textSecondary} mt-4 mb-2`}>
                           Veredicto general de la prueba
                         </p>
                         <div className="flex gap-2 flex-wrap">
@@ -2432,12 +2421,12 @@ export default function QAPage() {
       {/* ── Modal de informe ─────────────────────────────────────────────────── */}
       {mostrarInforme && (
         <div
-          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[2500] p-4"
           onClick={() => setMostrarInforme(false)}
         >
           <div
             onClick={e => e.stopPropagation()}
-            className={`rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col border overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
+            className="rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)]"
             style={{ animation: 'modalIn 0.2s ease-out' }}
           >
             {/* Header del modal */}
@@ -2480,13 +2469,13 @@ export default function QAPage() {
               ].map(m => (
                 <div key={m.l} className="flex-1 text-center py-3 px-2 rounded-xl" style={{ background: `${m.c}12`, border: `1px solid ${m.c}25` }}>
                   <p className="m-0 text-2xl font-bold" style={{ color: m.c }}>{m.v}</p>
-                  <p className="m-0 text-[9px] font-bold" style={{ color: m.c }}>{m.l}</p>
+                  <p className="m-0 text-xs font-bold" style={{ color: m.c }}>{m.l}</p>
                 </div>
               ))}
             </div>
 
             <pre
-              className={`flex-1 overflow-y-auto rounded-xl p-4 text-[10px] leading-relaxed whitespace-pre-wrap break-words font-mono border ${theme.textPrimary}`}
+              className={`flex-1 overflow-y-auto rounded-xl p-4 text-xs leading-relaxed whitespace-pre-wrap break-words font-mono border ${theme.textPrimary}`}
               style={{ background: 'var(--bg-input)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)'}` }}
             >
               {generarInforme()}
@@ -2517,12 +2506,12 @@ export default function QAPage() {
       {/* ── Modal de historial ───────────────────────────────────────────────────── */}
       {mostrarHistorial && (
         <div
-          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-md flex items-center justify-center z-[2500] p-4"
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[2500] p-4"
           onClick={() => setMostrarHistorial(null)}
         >
           <div
             onClick={e => e.stopPropagation()}
-            className={`rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border overflow-hidden ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[rgba(0,130,124,0.12)]'}`}
+            className="rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)]"
             style={{ animation: 'modalIn 0.2s ease-out' }}
           >
             <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
@@ -2556,7 +2545,7 @@ export default function QAPage() {
                   `INTENTO QA - ${intento.etiqueta}`,
                   `Alcance: ${intento.alcance}`,
                   `Fecha: ${fecha}`,
-                  `Resultado: ${okCount} ok · ${failCount} fallas · ${pct}%`,
+                  `Resultado: ${okCount} ok · ${failCount} fallas · ${pct} %`,
                   '─'.repeat(50),
                   ...intento.tareas.map(t => {
                     const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'parcial' ? '△' : t.estado === 'no_clara' ? '?' : '○'
@@ -2576,7 +2565,7 @@ export default function QAPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${pct === 100 ? 'bg-[#38B98E]/15 text-[#38B98E]' : failCount > 0 ? 'bg-[#FF5E4B]/15 text-[#FF5E4B]' : 'bg-[#F6BF3E]/15 text-[#F6BF3E]'}`}>
-                          {okCount}/{intento.tareas.length} ok · {pct}%
+                          {okCount}/{intento.tareas.length} ok · {pct} %
                         </span>
                         <button
                           onClick={() => {

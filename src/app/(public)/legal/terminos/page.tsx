@@ -33,7 +33,7 @@ const T = {
     definiciones: [
       {
         term: 'Servicio:',
-        desc: 'la calculadora estima y certifica el CO₂ evitado al mantener objetos en uso en lugar de descartarlos.',
+        desc: 'la calculadora estima y mide el CO₂ evitado al mantener objetos en uso en lugar de descartarlos.',
       },
       {
         term: 'Usuario:',
@@ -54,7 +54,7 @@ const T = {
     aceptacionLinkLabel: 'política de privacidad y tratamiento de datos',
     servicioTitle: 'Servicio y funcionamiento',
     servicio1:
-      'La Calculadora de Reúso es una plataforma en línea que permite registrar objetos reutilizados y obtener una estimación certificada del CO₂ equivalente evitado. Puedes generar certificados individuales e informes por rango de fecha, cada uno con código de verificación único y QR verificable en reuso.lurdes.co/verificar.',
+      'La Calculadora de Reúso es una plataforma en línea que permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en reuso.lurdes.co/verificar.',
     servicio2:
       'Las estimaciones se basan en factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Constituyen una herramienta de comunicación ambiental y difieren de una auditoría ambiental oficial.',
     servicio3:
@@ -103,7 +103,7 @@ const T = {
     ley2: 'Ante cualquier duda, comunícate con nosotros en',
     ley3: '. Respondemos en un plazo máximo de 15 días hábiles.',
     transparenciaTexto:
-      'Grupo MLP S.A.S. construyó la Calculadora de Reúso mediante modelos de Inteligencia Artificial. Utilizamos herramientas de IA para optimizar el código y procesar los factores de emisión. Dado que estos sistemas pueden generar imprecisiones técnicas, monitoreamos constantemente la plataforma para garantizar la exactitud de los cálculos ambientales.',
+      'Grupo MLP S.A.S. construyó la Calculadora de Reúso mediante modelos de Inteligencia Artificial. Utilizamos herramientas de IA para optimizar el código y procesar los factores de emisión. Dado que estos sistemas pueden generar imprecisiones técnicas, monitoreamos constantemente la plataforma para mejorar la calidad de los cálculos ambientales.',
     transparenciaLink: 'Lee nuestra política de uso de IA →',
   },
   ENG: {
@@ -155,7 +155,7 @@ const T = {
     aceptacionLinkLabel: 'privacy and data processing policy',
     servicioTitle: 'Service and operation',
     servicio1:
-      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a certified estimate of the CO₂ equivalent avoided. You can generate individual certificates and date-range reports, each with a unique verification code and a QR verifiable at reuso.lurdes.co/verificar.',
+      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the CO₂ equivalent avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable at reuso.lurdes.co/verificar.',
     servicio2:
       'Estimates are based on internationally recognized emission factors and are expressed in kilograms of CO₂ equivalent (kg CO₂e). They are an environmental communication tool and differ from an official environmental audit.',
     servicio3:

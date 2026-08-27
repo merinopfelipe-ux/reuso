@@ -5,7 +5,7 @@ import { Target, Plus, Activity as Pulse, Trash2 as Trash, Calendar, Loader2 as 
 
 // Metricas support
 const METRICAS = {
-  co2_kg: { label: 'Emisiones CO₂ (kg)', postfix: 'kg CO₂' },
+  co2_kg: { label: 'Emisiones CO₂ eq (kg)', postfix: 'kg CO₂ eq' },
   peso_kg: { label: 'Residuos Desviados (kg)', postfix: 'kg' },
   agua_l: { label: 'Agua Ahorrada (Litros)', postfix: 'Litros' },
   num_calculos: { label: 'Impactos medidos (Cantidad)', postfix: 'Cálculos' }
@@ -106,7 +106,7 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
 
       {forma && (
         <form onSubmit={handleCreate} style={{ background: '#FFF', padding: 20, borderRadius: 12, border: '1px solid var(--border)', marginBottom: 24, display: 'grid', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Título de la meta</label>
               <input required style={inputSt} value={formData.titulo} onChange={e=>setFormData({...formData, titulo: e.target.value})} placeholder="Ej: Reducción 2026" />
@@ -122,7 +122,7 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Objetivo numeral</label>
             <input required type="number" step="0.1" style={inputSt} value={formData.valor_objetivo} onChange={e=>setFormData({...formData, valor_objetivo: e.target.value})} placeholder="Ej: 500" />
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Fecha de inicio</label>
               <input required type="date" style={inputSt} value={formData.fecha_inicio} onChange={e=>setFormData({...formData, fecha_inicio: e.target.value})} />
@@ -168,7 +168,7 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
                     </div>
                   </div>
                   {esAdmin && (
-                    <button onClick={() => handleDelete(meta.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#FF5E4B' }} className="hover-trash hover-press">
+                    <button onClick={() => handleDelete(meta.id)} style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer', color: '#FF5E4B', flexShrink: 0 }} className="hover-trash hover-press">
                       <Trash size={16} />
                     </button>
                   )}

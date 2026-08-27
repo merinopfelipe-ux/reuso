@@ -7,6 +7,8 @@ const updateSchema = z.object({
   severidad: z.enum(['menor', 'mayor', 'critico']).optional(),
   titulo: z.string().min(1).max(100).optional(),
   descripcion: z.string().max(1000).optional(),
+  componente: z.enum(['gemini', 'groq', 'openrouter', 'qwen', 'supabase', 'calculadora']).optional(),
+  tipo: z.enum(['incidente', 'mantenimiento']).optional(),
 })
 
 export async function PATCH(

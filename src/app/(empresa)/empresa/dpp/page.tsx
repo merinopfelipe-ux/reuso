@@ -10,16 +10,17 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { EmptyState } from '@/components/empty-state'
 import { Package, Leaf, ArrowCounterClockwise, Stack, Scroll, Plus } from '@/components/ui/icons'
 import { FiltrosDpp } from './filtros-dpp'
+import { formatFecha as formatFechaBase, formatNumero } from '@/lib/format'
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
   activo: { label: 'Activo', color: '#38B98E' },
   en_reuso: { label: 'En reúso', color: '#00827C' },
   disposicion_final: { label: 'Disposición final', color: '#FF5E4B' },
-  archivado: { label: 'Archivado', color: '#7FA8A5' },
+  archivado: { label: 'Archivado', color: '#8AD0B2' },
 }
 
 function formatFecha(iso: string) {
-  return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+  return formatFechaBase(iso)
 }
 
 export default async function DppPage({
@@ -104,7 +105,7 @@ export default async function DppPage({
       >
         <style>{`@media(min-width:768px){.dpp-kpi-grid{grid-template-columns:repeat(4,1fr)!important}}`}</style>
         <KpiCard titulo="Activos registrados" valor={total} icono={Package} color="#00827C" />
-        <KpiCard titulo="CO₂ evitado total" valor={`${co2Evitado.toFixed(1)} kg`} icono={Leaf} color="#38B98E" />
+        <KpiCard titulo="CO₂ eq evitado total" valor={`${co2Evitado.toFixed(1)} kg`} icono={Leaf} color="#38B98E" />
         <KpiCard titulo="Ciclos completados" valor={totalCiclos} icono={ArrowCounterClockwise} color="#59A6E4" />
         <KpiCard titulo="En reúso activo" valor={enReuso} icono={Stack} color="#F6BF3E" />
       </div>
@@ -121,42 +122,44 @@ export default async function DppPage({
           cta={{ label: 'Registra el primer activo', href: '/empresa/dpp/nuevo' }}
         />
       ) : (
-        <div style={{ overflowX: 'auto', borderRadius: 12, border: '1px solid var(--border)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-            <thead>
-              <tr style={{ background: 'var(--bg-secondary)' }}>
-                {['Código DPP', 'Nombre', 'Estado', 'Ciclos', 'CO₂ evitado', 'Actualizado'].map((h) => (
-                  <th key={h} style={{
-                    padding: '10px 14px', textAlign: 'left', fontSize: 11,
-                    fontWeight: 700,
-                    color: 'var(--color-brand)', borderBottom: '1px solid var(--border)',
-                    whiteSpace: 'nowrap',
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
+        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Código DPP</th>
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Nombre</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
+                  <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Ciclos</th>
+                  <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ eq evitado</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Actualizado</th>
+                </tr>
+              </thead>
             <tbody>
-              {activos?.map((a, i) => {
+              {activos?.map((a, idx) => {
                 const est = ESTADO_CONFIG[a.estado ?? 'activo'] ?? ESTADO_CONFIG['activo']
                 const co2 = co2PorActivo.get(a.id) ?? 0
                 return (
-                  <tr key={a.id} style={{
-                    background: i % 2 === 0 ? 'var(--bg-primary)' : 'rgba(0,130,124,0.02)',
-                  }}>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
-                      <Link href={`/empresa/dpp/${a.id}`} style={{
-                        fontFamily: 'monospace', fontSize: 12, fontWeight: 600,
-                        color: '#00827C', textDecoration: 'none',
-                      }}>
-                        {a.codigo_dpp}
-                      </Link>
+                  <tr
+                    key={a.id}
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Link href={`/empresa/dpp/${a.id}`} className="font-mono text-xs font-semibold text-[var(--color-brand)] no-underline">
+                          {a.codigo_dpp}
+                        </Link>
+                      </div>
                     </td>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', fontWeight: 600, color: 'var(--text-primary)' }}>
-                      <Link href={`/empresa/dpp/${a.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                    <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                      <Link href={`/empresa/dpp/${a.id}`} className="text-inherit no-underline">
                         {a.nombre}
                       </Link>
                     </td>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)' }}>
+                    <td className="px-4 py-3 text-center">
                       <span style={{
                         background: `${est.color}1A`, color: est.color,
                         padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700,
@@ -164,20 +167,21 @@ export default async function DppPage({
                         {est.label}
                       </span>
                     </td>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', textAlign: 'center' }}>
+                    <td className="px-4 py-3 text-[var(--color-brand)] text-right">
                       {a.n_ciclos ?? 0}
                     </td>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: co2 > 0 ? '#38B98E' : 'var(--text-secondary)', fontWeight: co2 > 0 ? 700 : 400 }}>
-                      {co2 > 0 ? `${co2.toFixed(2)} kg` : '-'}
+                    <td className="px-4 py-3 text-right" style={{ color: co2 > 0 ? 'var(--color-brand)' : 'var(--text-secondary)', fontWeight: co2 > 0 ? 700 : 400 }}>
+                      {co2 > 0 ? formatNumero(co2, { unidad: 'kg' }) : '-'}
                     </td>
-                    <td style={{ padding: '12px 14px', borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)', fontSize: 13 }}>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-center">
                       {formatFecha(a.updated_at ?? a.created_at)}
                     </td>
                   </tr>
                 )
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
+import { Selector } from '@/components/ui/selector'
 
 const inputStyle: React.CSSProperties = {
   width: '100%',
@@ -88,10 +90,14 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
     email: '',
     tipo: '',
     mensaje: '',
+    // Honeypot anti-bots: invisible para una persona real (ver JSX).
+    sitio_web: '',
   })
   const [enviando, setEnviando] = useState(false)
   const [exito, setExito] = useState(false)
   const [error, setError] = useState('')
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
 
   const [isDark, setIsDark] = useState(false)
 
@@ -127,12 +133,14 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
       const res = await fetch('/api/legal/dudas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, turnstile_token: turnstileToken || 'skip' }),
       })
       if (!res.ok) throw new Error()
       setExito(true)
     } catch {
       setError(tf.error_envio)
+      turnstileRef.current?.reset()
+      setTurnstileToken('')
     } finally {
       setEnviando(false)
     }
@@ -161,6 +169,30 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
+        <label htmlFor="dudas_sitio_web">Sitio web</label>
+        <input
+          type="text"
+          id="dudas_sitio_web"
+          name="sitio_web"
+          tabIndex={-1}
+          autoComplete="off"
+          value={form.sitio_web}
+          onChange={set('sitio_web')}
+        />
+      </div>
+
+      {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+        <Turnstile
+          ref={turnstileRef}
+          siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+          options={{ size: 'invisible' }}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken('')}
+          onError={() => setTurnstileToken('')}
+        />
+      )}
+
       <div>
         <label style={labelStyle}>{tf.nombre_label}</label>
         <input
@@ -185,14 +217,12 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
 
       <div>
         <label style={labelStyle}>{tf.tipo_label}</label>
-        <select value={form.tipo} onChange={set('tipo')} style={inputStyle}>
-          <option value="">{tf.tipo_placeholder}</option>
-          {tipos.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
+        <Selector
+          value={form.tipo}
+          onChange={(val) => setForm((prev) => ({ ...prev, tipo: val }))}
+          placeholder={tf.tipo_placeholder}
+          opciones={tipos.map((t) => ({ value: t, label: t }))}
+        />
       </div>
 
       <div>

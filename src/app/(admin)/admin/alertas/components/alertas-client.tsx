@@ -2,12 +2,17 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Power } from '@/components/ui/icons'
+import { Plus, Power, Trash2, Trash } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { Selector } from '@/components/ui/selector'
+import { SelectorEmpresa } from '@/components/ui/selector-empresa'
 import type { Alerta, TipoAlerta, TipoDestinatario } from '@/types'
+import { formatFecha } from '@/lib/format'
 
 const TIPO_CONFIG: Record<TipoAlerta, { label: string; bg: string; color: string }> = {
   info:    { label: 'Info',     bg: 'rgba(89,166,228,0.12)',  color: '#2B7FBF' },
-  promo:   { label: 'Promo',   bg: 'rgba(0,130,124,0.12)',   color: '#00827C' },
+  promo:   { label: 'Promo',   bg: 'rgba(0,130,124,0.12)',   color: 'var(--color-brand)' },
   estado:  { label: 'Estado',  bg: 'rgba(246,191,62,0.15)',  color: '#B88000' },
   urgente: { label: 'Urgente', bg: 'rgba(255,94,75,0.12)',   color: '#CC3C2A' },
 }
@@ -25,6 +30,8 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
   })
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [aEliminar, setAEliminar] = useState<Alerta | null>(null)
+  const [eliminando, setEliminando] = useState(false)
 
   async function toggleAlerta(id: string, activa: boolean) {
     await fetch(`/api/admin/alertas/${id}`, {
@@ -32,6 +39,15 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ activa: !activa }),
     })
+    startTransition(() => router.refresh())
+  }
+
+  async function eliminarAlerta() {
+    if (!aEliminar) return
+    setEliminando(true)
+    await fetch(`/api/admin/alertas/${aEliminar.id}`, { method: 'DELETE' })
+    setEliminando(false)
+    setAEliminar(null)
     startTransition(() => router.refresh())
   }
 
@@ -59,30 +75,18 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
     setGuardando(false)
   }
 
-  function formatFecha(iso: string) {
-    return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
-  }
-
   const inputSt: React.CSSProperties = {
     width: '100%', padding: '8px 12px', borderRadius: 7,
     border: '1px solid var(--border)', background: 'var(--bg-input)',
     color: 'var(--text-primary)', fontSize: 13, outline: 'none', boxSizing: 'border-box',
   }
 
-  const btnBase: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', gap: 6,
-    padding: '7px 14px', borderRadius: 8, fontSize: 13, fontWeight: 600,
-    cursor: 'pointer', border: '1px solid var(--border)', transition: 'background 0.2s',
-  }
-
   return (
     <div>
       <div style={{ marginBottom: 16 }}>
-        <button onClick={() => setMostrarForm(!mostrarForm)}
-          className="hover-pop hover-press"
-          style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
-          <Plus size={15} /> Nueva alerta
-        </button>
+        <Button variant="primary" size="md" icon={<Plus size={15} />} onClick={() => setMostrarForm(!mostrarForm)}>
+          Nueva alerta
+        </Button>
       </div>
 
       {mostrarForm && (
@@ -95,31 +99,36 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
               onChange={e => setForm(p => ({ ...p, titulo: e.target.value }))} required />
             <textarea style={{ ...inputSt, resize: 'vertical' }} placeholder="Mensaje *" rows={3} value={form.mensaje}
               onChange={e => setForm(p => ({ ...p, mensaje: e.target.value }))} required />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="grid grid-cols-1 sm:grid-cols-2" style={{ display: 'grid', gap: 12 }}>
               <div>
                 <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>Tipo</label>
-                <select style={inputSt} value={form.tipo} onChange={e => setForm(p => ({ ...p, tipo: e.target.value as TipoAlerta }))}>
-                  <option value="info">Info</option>
-                  <option value="promo">Promo</option>
-                  <option value="estado">Estado</option>
-                  <option value="urgente">Urgente</option>
-                </select>
+                <Selector
+                  value={form.tipo}
+                  onChange={val => setForm(p => ({ ...p, tipo: val as TipoAlerta }))}
+                  opciones={[
+                    { value: 'info', label: 'Info' },
+                    { value: 'promo', label: 'Promo' },
+                    { value: 'estado', label: 'Estado' },
+                    { value: 'urgente', label: 'Urgente' },
+                  ]}
+                />
               </div>
               <div>
                 <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>Destinatario</label>
-                <select style={inputSt} value={form.destinatario_tipo} onChange={e => setForm(p => ({ ...p, destinatario_tipo: e.target.value as TipoDestinatario, destinatario_id: '' }))}>
-                  <option value="todos">Todos los usuarios</option>
-                  <option value="empresa">Empresa específica</option>
-                </select>
+                <Selector
+                  value={form.destinatario_tipo}
+                  onChange={val => setForm(p => ({ ...p, destinatario_tipo: val as TipoDestinatario, destinatario_id: '' }))}
+                  opciones={[
+                    { value: 'todos', label: 'Todos los usuarios' },
+                    { value: 'empresa', label: 'Empresa específica' },
+                  ]}
+                />
               </div>
             </div>
             {form.destinatario_tipo === 'empresa' && (
               <div>
                 <label style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'block', marginBottom: 4 }}>Empresa</label>
-                <select style={inputSt} value={form.destinatario_id} onChange={e => setForm(p => ({ ...p, destinatario_id: e.target.value }))}>
-                  <option value="">- Selecciona empresa -</option>
-                  {empresas.map(emp => <option key={emp.id} value={emp.id}>{emp.nombre}</option>)}
-                </select>
+                <SelectorEmpresa empresas={empresas} value={form.destinatario_id} onChange={val => setForm(p => ({ ...p, destinatario_id: val }))} placeholder="- Selecciona empresa -" />
               </div>
             )}
             <div>
@@ -129,14 +138,12 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-            <button type="submit" disabled={guardando}
-              className={guardando ? '' : 'hover-download hover-press'}
-              style={{ ...btnBase, background: 'var(--color-brand)', color: '#fff', border: 'none' }}>
+            <Button type="submit" variant="primary" size="md" loading={guardando}>
               {guardando ? 'Publicando...' : 'Publicar alerta'}
-            </button>
-            <button type="button" onClick={() => setMostrarForm(false)}
-              className="hover-pop hover-press"
-              style={{ ...btnBase, background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>Cancelar</button>
+            </Button>
+            <Button type="button" variant="secondary" size="md" onClick={() => setMostrarForm(false)}>
+              Cancelar
+            </Button>
           </div>
         </form>
       )}
@@ -146,8 +153,7 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
         {alertas.map(a => {
           const cfg = TIPO_CONFIG[a.tipo]
           return (
-            <div key={a.id}
-              style={{ display: 'flex', alignItems: 'flex-start', gap: 14, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 10, padding: '14px 18px', boxShadow: 'var(--shadow)' }}>
+            <div key={a.id} className="flex items-start gap-3.5 rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
               <span style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, whiteSpace: 'nowrap', flexShrink: 0 }}>{cfg.label}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>{a.titulo}</p>
@@ -157,15 +163,34 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
                   {a.expires_at ? ` · Expira: ${formatFecha(a.expires_at)}` : ''}
                 </p>
               </div>
-              <button onClick={() => toggleAlerta(a.id, a.activa)} title={a.activa ? 'Desactivar' : 'Activar'}
-                className="hover-pop hover-press"
-                style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none', background: a.activa ? 'rgba(56,185,142,0.10)' : 'rgba(255,94,75,0.08)', color: a.activa ? '#1F8C65' : '#CC3C2A', flexShrink: 0 }}>
-                <Power size={13} /> {a.activa ? 'Activa' : 'Inactiva'}
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                <button onClick={() => toggleAlerta(a.id, a.activa)} title={a.activa ? 'Desactivar' : 'Activar'}
+                  className="hover-pop hover-press"
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none', background: a.activa ? 'rgba(56,185,142,0.10)' : 'rgba(255,94,75,0.08)', color: a.activa ? '#1F8C65' : '#CC3C2A' }}>
+                  <Power size={13} /> {a.activa ? 'Activa' : 'Inactiva'}
+                </button>
+                <button onClick={() => setAEliminar(a)} title="Eliminar"
+                  className="hover-pop hover-press"
+                  style={{ display: 'flex', alignItems: 'center', padding: 6, borderRadius: 8, cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-secondary)' }}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
             </div>
           )
         })}
       </div>
+
+      <Modal
+        abierto={!!aEliminar}
+        onClose={() => setAEliminar(null)}
+        titulo="¿Eliminar esta alerta?"
+        descripcion="Se borra para siempre, no se puede deshacer."
+        icono={<Trash size={22} />}
+        colorIcono="var(--color-error)"
+        textoConfirmar={eliminando ? 'Eliminando...' : 'Sí, eliminar'}
+        varianteConfirmar="error"
+        onConfirmar={eliminarAlerta}
+      />
     </div>
   )
 }

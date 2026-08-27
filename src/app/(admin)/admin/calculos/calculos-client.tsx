@@ -2,7 +2,10 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calculator, TriangleAlert as Warning, X, Check } from '@/components/ui/icons'
+import { Calculator, TriangleAlert as Warning } from '@/components/ui/icons'
+import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
+import { formatFecha, formatNumero } from '@/lib/format'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -59,8 +62,6 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
     setGuardando(false)
   }
 
-  function formatCo2(v: number) { return v >= 1000 ? `${(v / 1000).toFixed(1)} t` : `${v.toFixed(1)} kg` }
-
   return (
     <div style={{ paddingBottom: 40 }}>
 
@@ -85,89 +86,87 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
           <p style={{ fontSize: 15, fontWeight: 600, color: C.dark }}>Sin resultados</p>
         </div>
       ) : (
-        <div style={{ background: 'var(--bg-card)', borderRadius: 12, border: `1px solid ${C.border}`, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: C.light }}>
-                {['Fecha', 'Usuario', 'Empresa', 'CO₂eq', 'Agua', 'Estado', 'Acción'].map(h => (
-                  <th key={h} style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtrados.map((c, i) => {
-                const activo = (c.estado ?? 'activo') === 'activo'
+        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Usuario</th>
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
+                  <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂eq</th>
+                  <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Agua</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+              {filtrados.map((c, idx) => {
+                const activo = (c.estado ?? 'activo') === 'activo';
                 return (
-                  <tr key={c.id} style={{ borderTop: `1px solid ${C.border}`, opacity: activo ? 1 : 0.55, background: i % 2 === 0 ? 'var(--bg-primary)' : 'var(--bg-hover)' }}>
-                    <td style={{ padding: '10px 14px', color: C.dark, whiteSpace: 'nowrap' }}>
-                      {new Date(c.fecha).toLocaleDateString('es-CO')}
+                  <tr
+                    key={c.id}
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none', opacity: activo ? 1 : 0.55 }}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-[var(--text-secondary)] text-center">
+                      {formatFecha(c.fecha)}
                     </td>
-                    <td style={{ padding: '10px 14px', color: C.dark }}>
+                    <td className="px-4 py-3 text-[var(--text-primary)]">
                       {c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '-'}
                     </td>
-                    <td style={{ padding: '10px 14px', color: C.mid }}>{c.empresas?.nombre ?? '-'}</td>
-                    <td style={{ padding: '10px 14px', color: C.brand, fontWeight: 600 }}>{formatCo2(c.total_co2)}</td>
-                    <td style={{ padding: '10px 14px', color: C.mid }}>{(c.total_agua / 1000).toFixed(1)} m³</td>
-                    <td style={{ padding: '10px 14px' }}>
+                    <td className="px-4 py-3 text-[var(--color-brand)]">{c.empresas?.nombre ?? '-'}</td>
+                    <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right">{formatNumero(c.total_co2, { unidad: 'kg CO₂' })}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(c.total_agua / 1000, { unidad: 'm³' })}</td>
+                    <td className="px-4 py-3 text-center">
                       {activo ? (
                         <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(56,185,142,0.12)', color: '#1F8C65' }}>Activo</span>
                       ) : (
                         <span title={c.motivo_anulacion ?? ''} style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(255,94,75,0.10)', color: '#CC3C2A', cursor: 'help' }}>Anulado</span>
                       )}
                     </td>
-                    <td style={{ padding: '10px 14px' }}>
+                    <td className="px-4 py-3 text-center">
                       {activo && (
-                        <button onClick={() => { setAnulando(c.id); setMotivo(''); setError('') }}
-                          className="hover-trash hover-press"
-                          style={{ padding: '4px 10px', borderRadius: 7, border: `1px solid rgba(255,94,75,0.3)`, background: 'rgba(255,94,75,0.06)', color: C.error, fontSize: 11, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Warning size={11} /> Anular
-                        </button>
+                        <Button variant="danger" size="sm" icon={<Warning size={11} />}
+                          onClick={() => { setAnulando(c.id); setMotivo(''); setError('') }}>
+                          Anular
+                        </Button>
                       )}
                     </td>
                   </tr>
                 )
               })}
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Modal anulación */}
-      {anulando && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.55)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2500, padding: 20 }}>
-          <div style={{ background: 'var(--bg-card)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 440, boxShadow: 'var(--shadow)', border: `1px solid ${C.border}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <p style={{ fontSize: 16, fontWeight: 700, color: C.dark, margin: 0 }}>Anular cálculo</p>
-              <button onClick={() => setAnulando(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
-                <X size={18} color={C.mid} />
-              </button>
-            </div>
-            <p style={{ fontSize: 13, color: C.mid, marginBottom: 14 }}>
-              Esta acción excluye el cálculo de los totales. No se puede deshacer.
-            </p>
-            <textarea
-              value={motivo}
-              onChange={e => setMotivo(e.target.value)}
-              placeholder="Describe el motivo de anulación..."
-              rows={3}
-              style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', background: 'var(--bg-input)' }}
-            />
-            {error && <p style={{ fontSize: 12, color: C.error, marginTop: 6 }}>{error}</p>}
-            <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
-              <button onClick={confirmarAnulacion} disabled={guardando}
-                className={guardando ? '' : 'hover-pop hover-press'}
-                style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: C.error, color: '#fff', fontWeight: 700, fontSize: 13, cursor: guardando ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-                <Check size={14} /> {guardando ? 'Anulando...' : 'Confirmar anulación'}
-              </button>
-              <button onClick={() => setAnulando(null)}
-                className="hover-pop hover-press"
-                style={{ padding: '10px 16px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.mid, fontSize: 13, cursor: 'pointer' }}>
-                Cancelar
-              </button>
-            </div>
-          </div>
+      <Modal
+        abierto={!!anulando}
+        onClose={() => setAnulando(null)}
+        titulo="Anular cálculo"
+        descripcion="Esta acción excluye el cálculo de los totales. No se puede deshacer."
+        textoCancelar="Cancelar"
+        textoConfirmar={guardando ? 'Anulando...' : 'Confirmar anulación'}
+        varianteConfirmar="error"
+        onCancelar={() => setAnulando(null)}
+        onConfirmar={confirmarAnulacion}
+      >
+        <div>
+          <textarea
+            value={motivo}
+            onChange={e => setMotivo(e.target.value)}
+            placeholder="Describe el motivo de anulación..."
+            rows={3}
+            style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', resize: 'vertical', boxSizing: 'border-box', fontFamily: 'inherit', background: 'var(--bg-input)' }}
+          />
+          {error && <p style={{ fontSize: 12, color: C.error, marginTop: 6 }}>{error}</p>}
         </div>
-      )}
+      </Modal>
     </div>
   )
 }

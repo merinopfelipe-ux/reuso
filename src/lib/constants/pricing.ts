@@ -13,8 +13,8 @@ export const PLANS = [
     id: 'free',
     name: 'Explora',
     tagline: 'Empieza a medir sin costo',
-    color: '#4D7C79',
-    bgColor: 'rgba(77,124,121,0.08)',
+    color: '#8AD0B2',
+    bgColor: 'rgba(138,208,178,0.10)',
     borderColor: 'rgba(0,130,124,0.12)',
     cta: 'Empezar gratis',
     popular: false,
@@ -28,13 +28,13 @@ export const PLANS = [
     limits: {
       empleados: '1 persona',
       calculos: '10 cálculos/mes',
-      certificados: 'Sin certificados ni informes',
+      informes: 'Sin informes',
     }
   },
   {
     id: 'lab',
     name: 'Circular Lab',
-    tagline: 'Certifica tu impacto con rigor científico',
+    tagline: 'Mide tu impacto con rigor científico',
     color: '#00827C',
     bgColor: 'rgba(0,130,124,0.08)',
     borderColor: 'rgba(0,130,124,0.3)',
@@ -43,15 +43,14 @@ export const PLANS = [
     priceMonthlyCOP: 49000,
     features: [
       'Todo lo del plan Explora',
-      'Certificados verificables con QR (2/mes)',
-      'Informes descargables (5/mes)',
+      'Informes verificables con QR (5/mes)',
       'Logo de tu empresa en documentos',
       'Soporte prioritario',
     ],
     limits: {
       empleados: 'Hasta 5 miembros',
       calculos: '200 cálculos/mes',
-      certificados: '2 certificados · 5 informes/mes',
+      informes: '5 informes/mes',
     }
   },
   {
@@ -75,22 +74,22 @@ export const PLANS = [
     limits: {
       empleados: 'Hasta 10 miembros',
       calculos: '200 cálculos/mes',
-      certificados: '2 certificados · 5 informes/mes',
+      informes: '5 informes/mes',
     }
   },
   {
     id: 'ilimitado',
     name: 'Impacto Ilimitado',
     tagline: 'Gestión masiva para grandes organizaciones',
-    color: '#1A3A38',
-    bgColor: 'rgba(26,58,56,0.08)',
-    borderColor: 'rgba(26,58,56,0.5)',
+    color: '#AD7C43',
+    bgColor: 'rgba(173,124,67,0.08)',
+    borderColor: 'rgba(173,124,67,0.5)',
     cta: 'Contactar ventas',
     popular: false,
     priceMonthlyCOP: 349000,
     features: [
       'Todo lo del plan Impulso Sostenible',
-      'Cálculos, certificados e informes ilimitados',
+      'Cálculos e informes ilimitados',
       'Exportación avanzada (CSV/Excel)',
       'Soporte dedicado con SLA',
       'Integración con sistemas propios',
@@ -98,7 +97,7 @@ export const PLANS = [
     limits: {
       empleados: 'Ilimitados',
       calculos: 'Ilimitados',
-      certificados: 'Ilimitados',
+      informes: 'Ilimitados',
     }
   },
 ]

@@ -5,12 +5,13 @@ import { ArrowLeft } from '@/components/ui/icons'
 
 interface AdminPageHeaderProps {
   titulo: string
-  subtitulo?: string
+  subtitulo?: React.ReactNode
   accion?: React.ReactNode
   showBack?: boolean
+  onBack?: () => void
 }
 
-export function AdminPageHeader({ titulo, subtitulo, accion, showBack = false }: AdminPageHeaderProps) {
+export function AdminPageHeader({ titulo, subtitulo, accion, showBack = false, onBack }: AdminPageHeaderProps) {
   const router = useRouter()
 
   return (
@@ -27,7 +28,7 @@ export function AdminPageHeader({ titulo, subtitulo, accion, showBack = false }:
       <div>
         {showBack ? (
           <h1
-            onClick={() => router.back()}
+            onClick={() => (onBack ? onBack() : router.back())}
             style={{
               margin: 0,
               fontSize: 22,

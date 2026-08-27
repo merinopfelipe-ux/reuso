@@ -11,7 +11,10 @@ export default async function AlertasPage() {
 
   const adminClient = await createAdminClient()
   const [{ data: alertas }, { data: empresas }] = await Promise.all([
-    adminClient.from('alertas').select('*').order('created_at', { ascending: false }),
+    // Solo las que el super_admin creó a mano — las que genera el sistema
+    // solo (cotización abierta, ticket respondido, cotización fría) no son
+    // "sus" alertas, son eventos del sistema, ver sql/089_alertas_origen_y_delete.sql.
+    adminClient.from('alertas').select('*').eq('origen', 'admin').order('created_at', { ascending: false }),
     adminClient.from('empresas').select('id, nombre').eq('activa', true).order('nombre'),
   ])
 

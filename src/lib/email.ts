@@ -539,14 +539,22 @@ export async function enviarCorreoAdmin({
   saludo,
   cuerpoHtml,
   tipo = 'comunicado',
+  incluirDesuscripcion = true,
 }: {
-  destinatarios: { email: string; nombre?: string | null; empresaNombre?: string | null; unsubscribeToken?: string | null }[]
+  destinatarios: {
+    email: string
+    nombre?: string | null
+    empresaNombre?: string | null
+    unsubscribeToken?: string | null
+    trackToken?: string | null
+  }[]
   asunto: string
   preheader?: string
   subtituloHeader?: string
   saludo?: string
   cuerpoHtml: string
   tipo?: 'comunicado' | 'plataforma' | 'individual'
+  incluirDesuscripcion?: boolean
 }): Promise<{ exitosos: number; fallidos: number; errores: string[] }> {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY no configurada')
@@ -554,6 +562,7 @@ export async function enviarCorreoAdmin({
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
 
   let exitosos = 0
   let fallidos = 0
@@ -571,33 +580,51 @@ export async function enviarCorreoAdmin({
         .replace(/{empresa}/gi, empresaFinal)
         .replace(/{email}/gi, emailFinal)
 
-      const cuerpoParseado = cuerpoHtml
+      let cuerpoParseado = cuerpoHtml
         .replace(/{nombre}/gi, nombreFinal)
         .replace(/{empresa}/gi, empresaFinal)
         .replace(/{email}/gi, emailFinal)
 
-      const preheaderFinal = preheader ? preheader.replace(/{nombre}/gi, nombreFinal).replace(/{empresa}/gi, empresaFinal) : asunto
-
-      let html: string
-      if (tipo === 'comunicado') {
-        html = emailMarketing({
-          preheader: preheaderFinal,
-          subtituloHeader: subtituloHeader || 'Comunicado oficial',
-          saludo: saludoParseado,
-          cuerpo: '',
-          contenidoCentral: `<div style="font-size:15px;color:#474747;line-height:1.75;">${cuerpoParseado}</div>`,
-          unsubscribeToken: d.unsubscribeToken || 'general',
-        })
-      } else {
-        html = emailPlantilla({
-          preheader: preheaderFinal,
-          subtituloHeader: subtituloHeader || 'Aviso de plataforma',
-          saludo: saludoParseado,
-          cuerpo: '',
-          contenidoCentral: `<div style="font-size:15px;color:#474747;line-height:1.75;">${cuerpoParseado}</div>`,
-          mostrarAlerta: false,
-        })
+      // Si tiene trackToken, envolver enlaces para medición de clics (excepto unsubscribe y mailto)
+      if (d.trackToken) {
+        cuerpoParseado = cuerpoParseado.replace(
+          /href=["'](https?:\/\/[^"']+)["']/gi,
+          (match, originalUrl) => {
+            if (originalUrl.includes('/unsubscribe') || originalUrl.includes('/api/track')) return match
+            const trackedUrl = `${APP_URL}/api/track/email/click?t=${encodeURIComponent(d.trackToken!)}&url=${encodeURIComponent(originalUrl)}`
+            return `href="${trackedUrl}"`
+          }
+        )
       }
+
+      const preheaderFinal = preheader ? preheader.replace(/{nombre}/gi, nombreFinal).replace(/{empresa}/gi, empresaFinal) : asunto
+      const tokenBaja = d.unsubscribeToken || d.trackToken || 'general'
+      const url = urlBaja(tokenBaja)
+
+      const avisoPie = incluirDesuscripcion
+        ? `<p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
+            Para dejar de recibir estos correos,
+            <a href="${url}" style="color:#474747;text-decoration:underline;">cancela tu suscripción</a>.
+          </p>`
+        : undefined
+
+      // Pixel de seguimiento de apertura invisible
+      const pixelApertura = d.trackToken
+        ? `<img src="${APP_URL}/api/track/email/open?t=${encodeURIComponent(d.trackToken)}" width="1" height="1" alt="" style="display:none!important;width:1px!important;height:1px!important;max-height:1px!important;max-width:1px!important;opacity:0!important;border:none!important;overflow:hidden!important;" />`
+        : ''
+
+      const contenidoCentral = `<div style="font-size:15px;color:#474747;line-height:1.75;">${cuerpoParseado}</div>${pixelApertura}`
+
+      const html = emailPlantilla({
+        preheader: preheaderFinal,
+        subtituloHeader: subtituloHeader || (tipo === 'comunicado' ? 'Comunicado oficial' : 'Aviso institucional'),
+        saludo: saludoParseado,
+        cuerpo: '',
+        contenidoCentral,
+        mostrarAlerta: false,
+        mostrarFirma: true,
+        avisoPie,
+      })
 
       await resend.emails.send({
         from: FROM,

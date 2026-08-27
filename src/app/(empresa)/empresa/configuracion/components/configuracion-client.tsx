@@ -3,11 +3,13 @@
 import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Upload, Save as FloppyDisk, CheckCircle } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
+import { Selector } from '@/components/ui/selector'
 
-const BRAND = '#00827C'
-const BORDER = 'rgba(0,130,124,0.12)'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
+const BRAND = 'var(--color-brand)'
+const BORDER = 'var(--border)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
 
 const SECTORES = [
   'Tecnología', 'Manufactura', 'Servicios', 'Retail / Comercio',
@@ -121,8 +123,8 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
             onClick={() => fileRef.current?.click()}
             style={{
               width: 72, height: 72, borderRadius: 14, flexShrink: 0,
-              background: logoPreview ? 'transparent' : `${BRAND}12`,
-              border: `2px dashed ${BRAND}50`,
+              background: logoPreview ? 'transparent' : 'var(--color-brand-light)',
+              border: '2px dashed var(--border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', overflow: 'hidden',
             }}
@@ -167,40 +169,31 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
           Sector
         </label>
-        <select name="sector" value={form.sector} onChange={handleChange} style={{ ...inputStyle, cursor: 'pointer' }}>
-          <option value="">Sin sector especificado</option>
-          {SECTORES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <Selector
+          value={form.sector}
+          onChange={val => setForm(prev => ({ ...prev, sector: val }))}
+          opciones={[
+            { value: '', label: 'Sin sector especificado' },
+            ...SECTORES.map((s) => ({ value: s, label: s })),
+          ]}
+        />
       </div>
 
       {error && (
-        <p style={{ color: '#e53e3e', fontSize: 13, margin: 0, padding: '8px 12px', background: '#fff5f5', borderRadius: 6 }}>
+        <p style={{ color: 'var(--color-error)', fontSize: 13, margin: 0, padding: '8px 12px', background: 'rgba(255,94,75,0.08)', borderRadius: 6 }}>
           {error}
         </p>
       )}
 
       <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 20 }}>
-        <button
+        <Button
           type="submit"
-          disabled={guardando}
-          className={guardando ? '' : 'hover-download hover-press'}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '11px 24px', borderRadius: 8, border: 'none',
-            background: guardado ? '#38B98E' : guardando ? `${BRAND}80` : BRAND,
-            color: '#fff', fontSize: 15, fontWeight: 600,
-            cursor: guardando ? 'not-allowed' : 'pointer',
-            transition: 'background 0.3s',
-          }}
+          loading={guardando}
+          icon={guardado ? <CheckCircle size={17} /> : <FloppyDisk size={17} />}
+          style={guardado ? { background: 'var(--color-success)', color: '#fff' } : undefined}
         >
-          {guardado ? (
-            <><CheckCircle size={17} /> Guardado</>
-          ) : guardando ? (
-            'Guardando…'
-          ) : (
-            <><FloppyDisk size={17} /> Guardar cambios</>
-          )}
-        </button>
+          {guardado ? 'Guardado' : 'Guardar cambios'}
+        </Button>
       </div>
 
       <p style={{ fontSize: 12, color: TEXT_MED, margin: 0 }}>

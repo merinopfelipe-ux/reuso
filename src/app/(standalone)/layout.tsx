@@ -1,3 +1,5 @@
+import { ProteccionPublica } from '@/components/proteccion-publica'
+
 export default function StandaloneLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return <ProteccionPublica>{children}</ProteccionPublica>
 }

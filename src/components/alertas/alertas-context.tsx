@@ -11,6 +11,7 @@ export interface AlertasContextValue {
   alertas: AlertaConLeida[]
   noLeidasCount: number
   marcarLeida: (alertaId: string) => Promise<void>
+  marcarTodasLeidas: () => Promise<void>
   cargando: boolean
 }
 

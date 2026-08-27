@@ -91,6 +91,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       titulo: 'Nueva respuesta en tu ticket',
       mensaje: `El equipo ha respondido a tu incidencia: "${ticket.titulo}"`,
       tipo: 'info',
+      origen: 'sistema',
       destinatario_tipo: 'usuario',
       destinatario_id: ticket.user_id,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()

@@ -28,7 +28,7 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: { name
     }}>
       <p style={{ margin: '0 0 2px', fontWeight: 600, color: 'var(--text)' }}>{item.categoria}</p>
       <p style={{ margin: 0, color: 'var(--text-muted)' }}>
-        {item.co2.toFixed(2)} kg · {item.porcentaje}%
+        {item.co2.toFixed(2)} kg · {item.porcentaje} %
       </p>
     </div>
   )

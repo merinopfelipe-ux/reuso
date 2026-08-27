@@ -2,12 +2,12 @@
 
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Filter as Funnel, ChevronLeft as CaretLeft, ChevronRight as CaretRight } from '@/components/ui/icons'
+import { Filter as Funnel } from '@/components/ui/icons'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
+import { Pagination } from '@/components/ui/pagination'
+import { formatFecha as formatFechaBase } from '@/lib/format'
 import type { LogAuditoria } from '@/types'
-
-const PAGE_SIZES = [10, 20, 50, 100]
 
 interface Props {
   logs: LogAuditoria[]
@@ -38,7 +38,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
     if (d) sp.set('desde', d)
     if (h) sp.set('hasta', h)
     if (p !== '1') sp.set('page', p)
-    if (ps !== '20') sp.set('pageSize', ps)
+    if (ps !== '25') sp.set('pageSize', ps)
     startTransition(() => router.push(`/admin/logs?${sp.toString()}`))
   }
 
@@ -47,10 +47,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
   }
 
   function formatFecha(iso: string) {
-    return new Date(iso).toLocaleString('es-CO', {
-      day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    })
+    return formatFechaBase(iso, { conHora: true })
   }
 
   const inputSt: React.CSSProperties = {
@@ -64,7 +61,7 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
     <div>
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
-        <Funnel size={15} style={{ color: 'var(--text-secondary)' }} />
+        <Funnel size={15} style={{ color: 'var(--color-brand)' }} />
         <select style={inputSt} value={accionFiltro} onChange={e => navegar({ accion: e.target.value, page: '1' })}>
           <option value="">Todas las acciones</option>
           {accionesDisponibles.map(a => <option key={a} value={a}>{a}</option>)}
@@ -73,17 +70,8 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
           onChange={e => navegar({ desde: e.target.value, page: '1' })} title="Desde" />
         <input type="date" style={inputSt} value={hasta}
           onChange={e => navegar({ hasta: e.target.value, page: '1' })} title="Hasta" />
-        <select
-          value={pageSize}
-          onChange={e => navegar({ page: '1', pageSize: e.target.value })}
-          style={inputSt}
-          aria-label="Registros por página"
-        >
-          {PAGE_SIZES.map(s => <option key={s} value={s}>{s} por página</option>)}
-        </select>
         {hayFiltros && (
           <button onClick={limpiar}
-            className="hover-pop hover-press"
             style={{ padding: '7px 12px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text-secondary)', fontSize: 13, cursor: 'pointer' }}>
             Limpiar
           </button>
@@ -93,16 +81,16 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
         </span>
       </div>
 
-      <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow)' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--bg-hover)' }}>
-                <SortTh col="created_at" sort={sort} onToggle={toggleSort}>Fecha</SortTh>
+              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <SortTh col="created_at" sort={sort} onToggle={toggleSort} align="center">Fecha</SortTh>
                 <SortTh col="accion" sort={sort} onToggle={toggleSort}>Acción</SortTh>
                 <SortTh col="user_id" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
-                <SortTh col="ip" sort={sort} onToggle={toggleSort}>IP</SortTh>
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Detalle</th>
+                <SortTh col="ip" sort={sort} onToggle={toggleSort} align="center">IP</SortTh>
+                <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Detalle</th>
               </tr>
             </thead>
             <tbody>
@@ -111,56 +99,56 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
                   No hay logs que coincidan con los filtros.
                 </td></tr>
               )}
-              {(logsOrdenados as unknown as LogAuditoria[]).map(log => (
-                <tr key={log.id} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
-                    {formatFecha(log.created_at)}
-                  </td>
-                  <td style={{ padding: '10px 16px' }}>
-                    <code style={{ fontSize: 11, background: 'var(--bg-hover)', padding: '2px 6px', borderRadius: 4, color: 'var(--color-brand)' }}>
-                      {log.accion}
-                    </code>
-                  </td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', fontFamily: 'monospace', fontSize: 11 }}>
-                    {log.user_id?.slice(0, 8) ?? '-'}...
-                  </td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-placeholder)', fontSize: 12 }}>
-                    {log.ip ?? '-'}
-                  </td>
-                  <td style={{ padding: '10px 16px', color: 'var(--text-secondary)', maxWidth: 260, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {JSON.stringify(log.detalle_json)}
-                  </td>
-                </tr>
-              ))}
+              {(logsOrdenados as unknown as LogAuditoria[]).map((log, idx) => {
+                return (
+                  <tr
+                    key={log.id}
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    }`}
+                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap text-center text-[var(--text-secondary)]">
+                      {formatFecha(log.created_at)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <code className="text-[11px] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded-[4px] text-[var(--text-primary)]">
+                        {log.accion}
+                      </code>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-[11px]">
+                      {log.user_id?.slice(0, 8) ?? '-'}...
+                    </td>
+                    <td className="px-4 py-3 text-xs text-center text-[var(--text-secondary)]">
+                      {log.ip ?? '-'}
+                    </td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
+                      {JSON.stringify(log.detalle_json)}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
 
-        {/* Paginación */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border-light)', flexWrap: 'wrap', gap: 8 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+        {/* Paginación — componente único de la plataforma. Siempre después
+            de la última fila. El conteo se acorta primero (min-width:0 +
+            ellipsis) para que el paginador nunca se comprima ni quede
+            oculto detrás de un scroll. */}
+        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
+          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
             {total} registros · Página {page} de {Math.max(1, totalPages)}
           </span>
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => navegar({ page: String(page - 1) })}
-                className="hover-pop hover-press"
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page <= 1 ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page <= 1 ? 'not-allowed' : 'pointer', fontSize: 13 }}
-              >
-                <CaretLeft size={14} /> Anterior
-              </button>
-              <button
-                disabled={page >= totalPages}
-                onClick={() => navegar({ page: String(page + 1) })}
-                className="hover-slide-r hover-press"
-                style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '6px 10px', borderRadius: 7, border: '1px solid var(--border)', background: 'transparent', color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--text-primary)', cursor: page >= totalPages ? 'not-allowed' : 'pointer', fontSize: 13 }}
-              >
-                Siguiente <CaretRight size={14} />
-              </button>
-            </div>
-          )}
+          <div className="min-w-0 max-w-full overflow-x-auto">
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(p) => navegar({ page: String(p) })}
+              porPagina={pageSize}
+              onPorPaginaChange={(n) => navegar({ page: '1', pageSize: String(n) })}
+            />
+          </div>
         </div>
       </div>
     </div>

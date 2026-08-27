@@ -56,7 +56,7 @@ const bodySchema = z
     turnstile_token: z.string().optional(),
     acepta_terminos: z.literal(true),
     // Campos de perfil (paso 2)
-    sector: z.string().max(50).optional(),
+    sector: z.string().max(255).optional(),
     frecuencia_reuso: z.string().max(20).optional(),
     motivacion: z.string().max(80).optional(),
     quiere_asesoria: z.boolean().optional(),

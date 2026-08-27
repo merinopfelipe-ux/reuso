@@ -8,7 +8,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { EmpresasClient } from './components/empresas-client'
 import type { Plan } from '@/types'
 
-const DEFAULT_PAGE_SIZE = 20
+const DEFAULT_PAGE_SIZE = 25
 
 export default async function EmpresasPage({
   searchParams,

@@ -20,8 +20,8 @@ const COLORES_FONDO: Record<TipoAlerta, string> = {
 
 const COLORES_TEXTO: Record<TipoAlerta, string> = {
   info: '#FFFFFF',
-  promo: '#1A3A38',
-  estado: '#1A3A38',
+  promo: '#474747',
+  estado: '#474747',
   urgente: '#FFFFFF',
 }
 

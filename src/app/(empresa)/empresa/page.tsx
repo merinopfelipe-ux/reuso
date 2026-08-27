@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Calculadora } from '@/components/calculadora/calculadora'
 import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
-import { PanelCertificados } from '@/components/certificados/panel-certificados'
+import { PanelInformes } from '@/components/informes/panel-informes'
 import dynamic from 'next/dynamic'
 import RankingEmpleados from '@/components/empresa/ranking-empleados'
 
@@ -156,7 +156,7 @@ export default async function EmpresaPage() {
   const [
     { count: totalEmpleados },
     { data: co2Data },
-    { data: certData },
+    { data: informesData },
     { data: categoriasData },
     historialRes,
     { data: empresaData },
@@ -165,12 +165,12 @@ export default async function EmpresaPage() {
   ] = await Promise.all([
     adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', empresaId),
     adminClient.from('calculos').select('total_co2, total_agua').eq('empresa_id', empresaId),
-    adminClient.from('certificados').select('id, tipo, user_id, empresa_id, fecha_inicio, fecha_fin, co2_total, agua_total, pdf_url, codigo_verificacion, metadata_json, created_at').eq('empresa_id', empresaId).order('created_at', { ascending: false }).limit(20),
+    adminClient.from('informes').select('id, tipo, user_id, empresa_id, fecha_inicio, fecha_fin, co2_total, agua_total, pdf_url, codigo_verificacion, metadata_json, created_at').eq('empresa_id', empresaId).order('created_at', { ascending: false }).limit(20),
     (() => {
       if (moduloIdsActivos.length === 0) return Promise.resolve({ data: null, error: null })
       return adminClient
         .from('categorias')
-        .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
+        .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, parent_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, agua_por_unidad, factor_rentabilidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
         .eq('activa', true)
         .eq('items.activo', true)
         .in('modulo_id', moduloIdsActivos)
@@ -218,8 +218,8 @@ export default async function EmpresaPage() {
   const ranking = calcularRanking(todosCalculos, nombresMap)
   const donut = calcularDonut(todosCalculos)
 
-  const certDataConUrls = await Promise.all(
-    (certData ?? []).map(async (c) => {
+  const informesDataConUrls = await Promise.all(
+    (informesData ?? []).map(async (c) => {
       if (c.pdf_url && !c.pdf_url.startsWith('http')) {
         const { data } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
         return { ...c, pdf_url: data?.signedUrl ?? null }
@@ -229,7 +229,8 @@ export default async function EmpresaPage() {
   )
 
   return (
-    <div style={{ width: '100%' }}>
+    <div className="pb-6 bg-[var(--bg-primary)]">
+      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div style={{ marginBottom: 24 }}>
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)', margin: '0 0 4px' }}>
           Hola, {saludo}
@@ -241,14 +242,14 @@ export default async function EmpresaPage() {
 
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 28 }}>
-        <KpiCard titulo="CO₂ evitado" valor={co2Total.toFixed(2)} unidad="kg" icono={Leaf} color="#00827C" />
+        <KpiCard titulo="CO₂ eq evitado" valor={co2Total.toFixed(2)} unidad="kg" icono={Leaf} color="#00827C" />
         <KpiCard titulo="Agua ahorrada" valor={aguaTotal.toLocaleString('es-CO')} unidad="L" icono={Drop} color="#59A6E4" />
         <KpiCard titulo="Miembros del equipo" valor={String(totalEmpleados ?? 0)} icono={Users} color="#38B98E" />
-        <KpiCard titulo="Certificados generados" valor={String(certData?.length ?? 0)} icono={Medal} color="#AD7C43" />
+        <KpiCard titulo="Informes generados" valor={String(informesData?.length ?? 0)} icono={Medal} color="#AD7C43" />
       </div>
 
       {/* Gráfica mensual */}
-      <SectionCard titulo="CO₂ evitado - últimos 6 meses">
+      <SectionCard titulo="CO₂ eq evitado - últimos 6 meses">
         <GraficaCO2Mensual data={serieMensual} />
       </SectionCard>
 
@@ -285,8 +286,8 @@ export default async function EmpresaPage() {
       />
 
       {/* Documentos */}
-      <PanelCertificados
-        certificados={certDataConUrls as Parameters<typeof PanelCertificados>[0]['certificados']}
+      <PanelInformes
+        informes={informesDataConUrls as Parameters<typeof PanelInformes>[0]['informes']}
         empresaId={empresaId}
         modo="empresa"
       />
@@ -294,6 +295,7 @@ export default async function EmpresaPage() {
       {/* Exportar CSV */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12, marginBottom: 32 }}>
         <BotonExportarCSV plan={plan} />
+      </div>
       </div>
     </div>
   )

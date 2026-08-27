@@ -17,14 +17,14 @@ type Props = { contenido: ContenidoRow[] }
 const DEFAULTS: Record<string, Record<string, unknown>> = {
   whatsapp: { numero: WA_NUMBER },
   hero: {
-    linea1: 'Certifica el impacto',
+    linea1: 'Mide el impacto',
     linea2: 'de lo que tu empresa',
     linea3: 'no tira.',
-    subtitulo: 'La primera plataforma que certifica el CO₂ evitado al reutilizar.',
+    subtitulo: 'La primera plataforma que mide el CO₂ evitado al reutilizar.',
   },
   stats: {
     stat1_valor: '2.400', stat1_unidad: 'kg', stat1_label: 'CO₂ evitados en total',
-    stat2_valor: '180', stat2_unidad: 'ton', stat2_label: 'reutilizadas y certificadas',
+    stat2_valor: '180', stat2_unidad: 'ton', stat2_label: 'reutilizadas y verificadas',
     stat3_valor: '+100', stat3_unidad: '', stat3_label: 'organizaciones activas',
   },
 }
@@ -158,7 +158,7 @@ export function ContenidoClient({ contenido }: Props) {
           {[1, 2, 3].map(n => (
             <div key={n} style={{ marginBottom: 24, paddingBottom: 24, borderBottom: n < 3 ? `1px solid ${C.border}` : 'none' }}>
               <p style={{ fontSize: 13, fontWeight: 700, color: C.dark, marginBottom: 12 }}>Estadística {n}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 2fr', gap: 12 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 12 }}>
                 {(['valor', 'unidad', 'label'] as const).map(campo => (
                   <div key={campo}>
                     <label style={labelStyle}>{campo === 'valor' ? 'Número' : campo === 'unidad' ? 'Unidad' : 'Descripción'}</label>

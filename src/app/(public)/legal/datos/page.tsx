@@ -33,7 +33,7 @@ const T = {
       'Grupo MLP S.A.S. establece los criterios para el tratamiento de datos personales, que comprende toda operación sobre datos: recolección, almacenamiento, uso, circulación y supresión. La empresa puede actuar como responsable o encargado del tratamiento según el caso.',
     alcanceTitle: 'Alcance',
     alcance:
-      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de certificación de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso.',
+      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de medición de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso.',
     destinatariosTitle: 'Destinatarios',
     destinatariosIntro: 'Esta política aplica a quienes mantienen cualquier relación con Grupo MLP S.A.S.:',
     destinatarios: [
@@ -171,7 +171,7 @@ const T = {
       'Grupo MLP S.A.S. establishes the criteria for personal data processing, which covers all data operations: collection, storage, use, circulation and deletion. The company may act as data controller or data processor depending on the case.',
     alcanceTitle: 'Scope',
     alcance:
-      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact certification services for object reuse through the Reuse Calculator platform.',
+      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact measurement services for object reuse through the Reuse Calculator platform.',
     destinatariosTitle: 'Recipients',
     destinatariosIntro: 'This policy applies to anyone who has any relationship with Grupo MLP S.A.S.:',
     destinatarios: [

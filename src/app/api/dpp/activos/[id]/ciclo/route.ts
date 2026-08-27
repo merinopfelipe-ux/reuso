@@ -3,8 +3,7 @@ import { z } from 'zod'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
-
-const FACTOR_TRANSPORTE_KG_CO2_KM = 0.21
+import { calcularCo2Logistica, type TipoVehiculoTransporte } from '@/lib/reportes/logistica'
 
 const schema = z.object({
   operacion_realizada: z.string().min(1, 'Describe la operación realizada.').max(500),
@@ -12,7 +11,14 @@ const schema = z.object({
   fecha_fin: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   descripcion: z.string().max(2000).optional(),
   distancia_transporte_km: z.number().min(0, 'La distancia no puede ser negativa.').default(0),
+  tipo_vehiculo_transporte: z.enum(['liviano_diesel', 'mediano_diesel', 'pesado_diesel']).optional(),
+  peso_residuo_taller_kg: z.number().min(0, 'El residuo no puede ser negativo.').default(0),
+  peso_residuo_reciclado_kg: z.number().min(0, 'El residuo reciclado no puede ser negativo.').default(0),
+  destino_residuo: z.string().max(200).optional(),
   evidencia_json: z.record(z.string(), z.unknown()).optional(),
+}).refine((d) => d.peso_residuo_reciclado_kg <= d.peso_residuo_taller_kg, {
+  message: 'El residuo reciclado no puede superar el residuo total de taller.',
+  path: ['peso_residuo_reciclado_kg'],
 })
 
 export async function POST(
@@ -51,10 +57,21 @@ export async function POST(
       { status: 400 }
     )
   }
-  const { operacion_realizada, fecha_inicio, fecha_fin, descripcion, distancia_transporte_km, evidencia_json } = parsed.data
+  const {
+    operacion_realizada, fecha_inicio, fecha_fin, descripcion, distancia_transporte_km,
+    tipo_vehiculo_transporte, peso_residuo_taller_kg, peso_residuo_reciclado_kg, destino_residuo,
+    evidencia_json,
+  } = parsed.data
 
-  // CO2 generado en este ciclo (solo transporte por ahora)
-  const co2_ciclo_kg = Math.round(distancia_transporte_km * FACTOR_TRANSPORTE_KG_CO2_KM * 10000) / 10000
+  // CO2 de transporte de este ciclo — Reporte 3 (Logística), dominio (C).
+  // Factor congelado en la fila (factor_emision_aplicado) para que si el
+  // factor de referencia cambia después, este ciclo no se recalcule solo.
+  const { co2_logistica_kg, factor_emision_aplicado } = calcularCo2Logistica(
+    distancia_transporte_km,
+    activo.peso_total_kg ?? 0,
+    (tipo_vehiculo_transporte as TipoVehiculoTransporte | undefined) ?? null
+  )
+  const co2_ciclo_kg = co2_logistica_kg
 
   // CO2 evitado = lo que se habría emitido fabricando el activo desde cero
   const composicion = Array.isArray(activo.composicion_json) ? activo.composicion_json as { peso_kg: number; factor_co2_kg: number }[] : []
@@ -97,6 +114,11 @@ export async function POST(
       descripcion: descripcion ?? null,
       operacion_realizada,
       distancia_transporte_km,
+      tipo_vehiculo_transporte: tipo_vehiculo_transporte ?? null,
+      factor_emision_transporte_kg_km: factor_emision_aplicado,
+      peso_residuo_taller_kg,
+      peso_residuo_reciclado_kg,
+      destino_residuo: destino_residuo ?? null,
       co2_ciclo_kg,
       co2_evitado_kg,
       evidencia_json: evidencia_json ?? null,

@@ -121,6 +121,7 @@ export function SalesDashboard({
   // es falso (ver más abajo), así nunca se ve el flash de datos por defecto.
   const [configListo, setConfigListo] = useState(false)
   const [entradaAnimada, setEntradaAnimada] = useState(false)
+  const [metricasAbiertas, setMetricasAbiertas] = useState(false)
 
 
   // Las barras del embudo solo existen en el DOM desde que "configListo" es
@@ -534,7 +535,13 @@ export function SalesDashboard({
     const valorVentasPeriodo = cotsParaTpv.reduce((sum, c) => sum + totalSinIva(c), 0)
     const tpv = cotsParaTpv.length > 0 ? valorVentasPeriodo / cotsParaTpv.length : null
 
-    return { tasaCierre, enviadas, horasPromedio, totalMuebles, tpv }
+    // UPT/AUR ("Ver más" bajo Ticket promedio) usan el mismo grupo de
+    // cotizaciones que el TPV, para quedar siempre consistentes entre sí.
+    const unidadesPeriodo = cotsParaTpv.reduce((sum, c) => sum + c.total_muebles, 0)
+    const upt = cotsParaTpv.length > 0 ? unidadesPeriodo / cotsParaTpv.length : null
+    const aur = unidadesPeriodo > 0 ? valorVentasPeriodo / unidadesPeriodo : null
+
+    return { tasaCierre, enviadas, horasPromedio, totalMuebles, tpv, upt, aur }
   }
 
   // KPIs y Cards reaccionan al estado del embudo
@@ -913,9 +920,42 @@ export function SalesDashboard({
                 <span className={`text-base xl:text-xl font-bold ${tp}`}>{labelTicket}</span>
                 <TendenciaBadge t={tTicket} />
               </div>
+              <button
+                type="button"
+                onClick={() => setMetricasAbiertas(true)}
+                className={`mt-2 text-[11px] font-normal hover-pop hover:underline self-start ${tp}`}
+              >
+                Ver más →
+              </button>
             </div>
           )}
         </div>
+
+        <Modal
+          abierto={metricasAbiertas}
+          onClose={() => setMetricasAbiertas(false)}
+          titulo="Métricas de venta"
+          descripcion={tabEstado === 'todos' ? 'Sobre las cotizaciones cerradas ganadas en el periodo.' : 'Sobre las cotizaciones en esta etapa.'}
+          icono={<Receipt size={24} />}
+          colorIcono="var(--color-success)"
+          textoConfirmar="Entendido"
+          onConfirmar={() => setMetricasAbiertas(false)}
+        >
+          <div className="flex flex-col divide-y divide-[var(--divider)]">
+            {[
+              { sigla: 'UPT', descripcion: 'Unidades por ticket. Cuántos ítems lleva en promedio cada cotización.', valor: actual.upt !== null ? `${actual.upt.toFixed(1)} unidades` : 'Sin datos' },
+              { sigla: 'AUR', descripcion: 'Precio promedio por unidad. Valor promedio de cada ítem vendido.', valor: actual.aur !== null ? formatCOP(actual.aur) : 'Sin datos' },
+            ].map((m) => (
+              <div key={m.sigla} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <div className="min-w-0">
+                  <p className={`text-sm font-bold ${tp}`}>{m.sigla}</p>
+                  <p className={`text-xs ${ts}`}>{m.descripcion}</p>
+                </div>
+                <span className={`text-sm font-bold flex-shrink-0 ${tp}`}>{m.valor}</span>
+              </div>
+            ))}
+          </div>
+        </Modal>
 
         {/* 3. KPIs (2 de 6 columnas = 33.3%): 2 números chicos arriba (fila
             baja) y las 2 cards de gráfico abajo (fila alta) — las de abajo

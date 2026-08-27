@@ -8,6 +8,11 @@ const incidentSchema = z.object({
   componente: z.enum(['gemini', 'groq', 'openrouter', 'qwen', 'supabase', 'calculadora']),
   estado: z.enum(['investigando', 'identificado', 'monitoreando', 'resuelto']),
   severidad: z.enum(['menor', 'mayor', 'critico']),
+  // 'mantenimiento' = aviso programado nuestro (no es una falla) — cuando
+  // está activo reemplaza el banner "Sistemas Operativos" de /status.
+  // origen nunca lo manda el cliente: el default de la columna ('admin') ya
+  // es correcto para todo lo creado desde este panel.
+  tipo: z.enum(['incidente', 'mantenimiento']).default('incidente'),
 })
 
 export async function GET() {
@@ -53,7 +58,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { titulo, descripcion, componente, estado, severidad } = parsed.data
+    const { titulo, descripcion, componente, estado, severidad, tipo } = parsed.data
     const resolved_at = estado === 'resuelto' ? new Date().toISOString() : null
 
     const { data: incidente, error } = await adminClient
@@ -64,6 +69,7 @@ export async function POST(request: NextRequest) {
         componente,
         estado,
         severidad,
+        tipo,
         resolved_at,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
@@ -71,7 +77,18 @@ export async function POST(request: NextRequest) {
       .select('*')
       .single()
 
-    if (error) throw error
+    if (error) {
+      // 23505 = ya hay una incidencia/mantenimiento activo para este mismo
+      // componente (índice único de sql/091) — mensaje claro en vez del
+      // genérico "Error al registrar incidencia."
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { error: 'Ya existe un aviso activo (sin resolver) para este componente. Resuélvelo primero o edítalo en vez de crear uno nuevo.' },
+          { status: 409 }
+        )
+      }
+      throw error
+    }
 
     return NextResponse.json({ data: incidente }, { status: 201 })
   } catch (err) {

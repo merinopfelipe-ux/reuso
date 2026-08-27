@@ -24,18 +24,18 @@ function generarNarrativa(
 
   if (res.e_roi > 0) {
     if (res.e_roi >= 100) {
-      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)}%. Cada peso que inviertes genera más de uno de retorno.`)
+      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)} %. Cada peso que inviertes genera más de uno de retorno.`)
     } else {
-      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)}%.`)
+      partes.push(`Tu inversión en circularidad rinde ${r2(res.e_roi)} %.`)
     }
   }
 
   if (res.inflow_circular_pct >= 50) {
-    partes.push(`Reutilizaste ${r2(res.inflow_circular_pct)}% de materiales circulares en este activo.`)
+    partes.push(`Reutilizaste ${r2(res.inflow_circular_pct)} % de materiales circulares en este activo.`)
   }
 
   if (res.ice_porcentaje < 0) {
-    partes.push(`Tu huella ambiental bajó ${r2(Math.abs(res.ice_porcentaje))}% frente al modelo lineal.`)
+    partes.push(`Tu huella ambiental bajó ${r2(Math.abs(res.ice_porcentaje))} % frente al modelo lineal.`)
   }
 
   if (res.tco_unitario > 0 && inputs.n_ciclos > 1) {

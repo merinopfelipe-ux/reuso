@@ -17,19 +17,19 @@ export default async function AdminPlantillasPage() {
   if (perfil?.rol !== 'super_admin') redirect('/dashboard')
 
   const adminClient = await createAdminClient()
-  const { data: plantillas } = await adminClient
-    .from('plantillas_documentos')
-    .select('*')
-    .order('tipo')
+  const [{ data: plantillas }, { data: config }] = await Promise.all([
+    adminClient.from('plantillas_documentos').select('*').order('tipo'),
+    adminClient.from('config_sistema').select('email_notificaciones').eq('id', 'default').single(),
+  ])
 
   return (
     <div>
       <AdminPageHeader
-        titulo="Plantillas de Documentos"
-        subtitulo="Configura la firma, el firmante y el pie legal que aparecen en certificados e informes"
+        titulo="Plantilla de Informes de CO2"
+        subtitulo="Configura la firma, el firmante y el pie legal del PDF de Informe de huella de carbono. No tiene relación con el Pasaporte Digital de Producto (DPP), que es un documento aparte."
         showBack
       />
-      <PlantillasClient plantillas={plantillas ?? []} />
+      <PlantillasClient plantillas={plantillas ?? []} emailNotificacionesInicial={config?.email_notificaciones ?? ''} />
     </div>
   )
 }

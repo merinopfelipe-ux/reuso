@@ -2,13 +2,15 @@ import { ShieldCheck, ShieldWarning, Leaf, Drop, Car, Tree, FileX, MagnifyingGla
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { PARAM_EQUIV } from '@/lib/calculos/co2'
+import { ProteccionPublica } from '@/components/proteccion-publica'
 
 export const revalidate = 3600
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const adminClient = await createAdminClient()
   const { exact, prefix } = normalizarCodigo(params.codigo)
-  const metaQuery = adminClient.from('certificados').select('co2_total, metadata_json')
+  const metaQuery = adminClient.from('informes').select('co2_total, metadata_json')
   const { data: cert } = prefix
     ? await metaQuery
         .gte('codigo_verificacion', `${prefix}-0000-0000-0000-000000000000`)
@@ -18,19 +20,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : await metaQuery.eq('codigo_verificacion', exact).single()
 
   if (!cert) {
-    return { title: 'Certificado verificado' }
+    return { title: 'Informe verificado' }
   }
 
   const titular = (cert.metadata_json as Record<string, unknown>)?.titular_nombre as string | undefined
-  const co2 = cert.co2_total ? `${parseFloat(String(cert.co2_total)).toFixed(1)} kg CO₂e evitados` : ''
+  const co2 = cert.co2_total ? `${parseFloat(String(cert.co2_total)).toFixed(1)} kg CO₂ eq evitados` : ''
   const desc = [titular, co2].filter(Boolean).join(' · ')
 
   return {
-    title: 'Certificado verificado',
-    description: desc || 'Certificado de impacto ambiental verificado en reuso.lurdes.co',
+    title: 'Informe verificado',
+    description: desc || 'Informe de impacto ambiental verificado en reuso.lurdes.co',
     openGraph: {
-      title: titular ? `Certificado de ${titular} - reuso.lurdes.co` : 'Certificado verificado - reuso.lurdes.co',
-      description: desc || 'Certificado de impacto ambiental por reúso de objetos',
+      title: titular ? `Informe de ${titular} - reuso.lurdes.co` : 'Informe verificado - reuso.lurdes.co',
+      description: desc || 'Informe de impacto ambiental por reúso de objetos',
       images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     },
   }
@@ -46,12 +48,11 @@ function formatFecha(iso: string) {
   })
 }
 
-function calcularEquivalencias(co2_kg: number) {
-  const arboles = Math.round(co2_kg / 8.0)
-  const duchas = Math.round(co2_kg / 2.0)
-  const litros = duchas * 90
+function calcularEquivalencias(co2_kg: number, agua_l: number) {
+  const arboles = Math.round(co2_kg / (PARAM_EQUIV.CO2_arbol_anual_kg / 365))
+  const duchas = Math.round(agua_l / PARAM_EQUIV.litros_ducha_5min)
   const coches = parseFloat((co2_kg / 4600).toFixed(2))
-  return { arboles, duchas, litros, coches }
+  return { arboles, duchas, coches }
 }
 
 // Normaliza el código ingresado para buscar en la BD.
@@ -71,7 +72,7 @@ export default async function VerificarPage({ params }: PageProps) {
   const { exact, prefix } = normalizarCodigo(params.codigo)
 
   const query = adminClient
-    .from('certificados')
+    .from('informes')
     .select(`
       id, tipo, co2_total, agua_total, fecha_inicio, fecha_fin,
       codigo_verificacion, hash_integridad, pdf_url, metadata_json, created_at,
@@ -151,15 +152,12 @@ export default async function VerificarPage({ params }: PageProps) {
   const revocado = cert.revocado ?? false
   const motivoRevocacion = cert.motivo_revocacion ?? 'Decisión administrativa'
 
-  const eq = calcularEquivalencias(cert.co2_total)
+  const eq = calcularEquivalencias(cert.co2_total, cert.agua_total)
   const meta = cert.metadata_json as { desglose?: Array<{ categoria: string; cantidad: number; co2_kg: number }> } | null
   const desglose = meta?.desglose ?? []
 
   const codigoFormateado = `RCO2-${cert.codigo_verificacion.slice(0, 4).toUpperCase()}-${cert.codigo_verificacion.slice(4, 8).toUpperCase()}`
-  const esTipo = cert.tipo === 'certificado' ? 'Certificado' : 'Informe'
-  const titulo = cert.tipo === 'certificado'
-    ? 'Certificado de Impacto Ambiental por Reúso'
-    : 'Informe de Impacto Ambiental por Reúso'
+  const titulo = 'Informe de Impacto Ambiental por Reúso'
 
   return (
     <main style={{
@@ -168,6 +166,7 @@ export default async function VerificarPage({ params }: PageProps) {
       fontFamily: "'Open Sans', sans-serif",
       color: 'var(--text-primary)',
     }}>
+      <ProteccionPublica>
       {/* Header */}
       <header style={{
         background: 'var(--bg-primary)',
@@ -192,7 +191,7 @@ export default async function VerificarPage({ params }: PageProps) {
         }}>
           {revocado ? <FileX size={15} color="#EF4444" /> : <ShieldCheck size={15} color="var(--color-success-content)" />}
           <span style={{ fontSize: 12, fontWeight: 700, color: revocado ? '#B91C1C' : 'var(--color-success-content)' }}>
-            {revocado ? 'Certificado revocado' : `${esTipo} verificado`}
+            {revocado ? 'Informe revocado' : 'Informe verificado'}
           </span>
         </div>
       </header>
@@ -212,7 +211,7 @@ export default async function VerificarPage({ params }: PageProps) {
             </span>
           </div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: revocado ? '#B91C1C' : 'var(--text-primary)', margin: '0 0 8px', lineHeight: 1.25 }}>
-            {revocado ? 'Certificado Revocado' : titulo}
+            {revocado ? 'Informe Revocado' : titulo}
           </h1>
           {revocado ? (
             <p style={{ fontSize: 15, color: '#EF4444', fontWeight: 600, margin: 0 }}>
@@ -273,7 +272,7 @@ export default async function VerificarPage({ params }: PageProps) {
               <div style={{ width: 3, height: 32, background: 'var(--color-brand)', borderRadius: 2, flexShrink: 0 }} />
               <div>
                 <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: '0 0 2px', fontWeight: 600 }}>
-                  {cert.tipo === 'certificado' ? 'Período de impacto verificado' : 'Período del informe'}
+                  Período del informe
                 </p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                   {formatFecha(cert.fecha_inicio ?? cert.created_at)} - {formatFecha(cert.fecha_fin ?? cert.created_at)}
@@ -285,12 +284,12 @@ export default async function VerificarPage({ params }: PageProps) {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
               <div style={{ background: 'var(--color-brand)', borderRadius: 12, padding: '20px' }}>
                 <p style={{ fontSize: 10, color: 'color-mix(in srgb, var(--text-on-brand) 75%, transparent)', margin: '0 0 6px', fontWeight: 600 }}>
-                  CO₂ evitado
+                  CO₂ eq evitado
                 </p>
                 <p style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-on-brand)', margin: '0 0 2px', lineHeight: 1 }}>
                   {cert.co2_total.toFixed(2)}
                 </p>
-                <p style={{ fontSize: 12, color: 'color-mix(in srgb, var(--text-on-brand) 75%, transparent)', margin: 0 }}>kilogramos CO₂-eq</p>
+                <p style={{ fontSize: 12, color: 'color-mix(in srgb, var(--text-on-brand) 75%, transparent)', margin: 0 }}>kilogramos de CO₂ eq</p>
               </div>
               <div style={{ background: 'var(--color-brand-light)', borderRadius: 12, padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
@@ -313,10 +312,10 @@ export default async function VerificarPage({ params }: PageProps) {
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
                 {[
-                  { icon: <Tree size={18} color="var(--color-brand)" />, value: String(eq.arboles), label: 'árboles plantados' },
+                  { icon: <Tree size={18} color="var(--color-brand)" />, value: String(eq.arboles), label: 'árboles absorbiendo CO2 en 1 día' },
                   { icon: <Car size={18} color="var(--text-secondary)" />, value: String(eq.coches), label: 'vehículos fuera de circulación' },
-                  { icon: <Drop size={18} color="var(--color-info-content)" />, value: eq.litros.toLocaleString('es-CO'), label: 'litros de agua equivalentes' },
-                  { icon: <Leaf size={18} color="var(--color-success-content)" />, value: String(eq.duchas), label: 'duchas de 10 minutos' },
+                  { icon: <Drop size={18} color="var(--color-info-content)" />, value: cert.agua_total.toLocaleString('es-CO'), label: 'litros de agua equivalentes' },
+                  { icon: <Leaf size={18} color="var(--color-success-content)" />, value: String(eq.duchas), label: 'duchas de 5 minutos' },
                 ].map((item, i) => (
                   <div key={i} style={{
                     background: 'var(--bg-active)', borderRadius: 10,
@@ -513,6 +512,7 @@ export default async function VerificarPage({ params }: PageProps) {
           </form>
         </div>
       </div>
+      </ProteccionPublica>
     </main>
   )
 }

@@ -3,7 +3,7 @@
 import React from 'react'
 import * as Phosphor from '@phosphor-icons/react'
 
-export interface PhosphorIconProps extends Omit<React.ComponentPropsWithoutRef<any>, 'weight'> {
+export interface PhosphorIconProps extends Omit<React.ComponentPropsWithoutRef<'svg'>, 'weight'> {
   size?: number | string
   strokeWidth?: number
   duotone?: boolean
@@ -11,10 +11,11 @@ export interface PhosphorIconProps extends Omit<React.ComponentPropsWithoutRef<a
 }
 
 // Wrapper HOC to match Phosphor weight prop to Lucide strokeWidth and duotone props
-export function wrapPhosphorIcon(PhosphorIcon: React.ComponentType<any>, defaultColor?: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function wrapPhosphorIcon(PhosphorIcon: any, defaultColor?: string) {
   const Component = React.forwardRef<SVGSVGElement, PhosphorIconProps>(
     ({ strokeWidth, duotone, weight, color, ...props }, ref) => {
-      let resolvedWeight: any = weight || 'regular'
+      let resolvedWeight: PhosphorIconProps['weight'] = weight || 'regular'
 
       if (duotone) {
         resolvedWeight = 'duotone'

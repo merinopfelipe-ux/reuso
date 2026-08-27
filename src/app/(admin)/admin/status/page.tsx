@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Plus, Trash2 as Trash, Check, TriangleAlert as Warning, Clock, ShieldCheck, Activity as Pulse } from '@/components/ui/icons'
+import { Plus, Trash2 as Trash, Check, TriangleAlert as Warning, Clock, ShieldCheck, Activity as Pulse, Pencil } from '@/components/ui/icons'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { SkeletonCard } from '@/components/ui/skeleton'
 
 interface Incidente {
   id: string
@@ -11,6 +14,8 @@ interface Incidente {
   componente: 'gemini' | 'groq' | 'openrouter' | 'qwen' | 'supabase' | 'calculadora'
   estado: 'investigando' | 'identificado' | 'monitoreando' | 'resuelto'
   severidad: 'menor' | 'mayor' | 'critico'
+  origen: 'admin' | 'sistema'
+  tipo: 'incidente' | 'mantenimiento'
   created_at: string
   updated_at: string
   resolved_at: string | null
@@ -38,6 +43,11 @@ const SEVERIDAD_OPTS = [
   { value: 'critico', label: 'Crítico (Fuera de Servicio)' },
 ] as const
 
+const TIPO_OPTS = [
+  { value: 'incidente', label: 'Incidente (algo falló)' },
+  { value: 'mantenimiento', label: 'Mantenimiento programado' },
+] as const
+
 export default function AdminStatusPage() {
   
   // Lista de incidencias
@@ -52,18 +62,22 @@ export default function AdminStatusPage() {
     componente: 'supabase' as Incidente['componente'],
     estado: 'investigando' as Incidente['estado'],
     severidad: 'menor' as Incidente['severidad'],
+    tipo: 'incidente' as Incidente['tipo'],
   })
   
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
+  const [editingIncidente, setEditingIncidente] = useState<Incidente | null>(null)
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
   // Tema
   const [isDark, setIsDark] = useState(false)
   useEffect(() => {
-    const check = () => setIsDark(document.documentElement.classList.contains('dark'))
+    const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
     check()
     const obs = new MutationObserver(check)
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
     return () => obs.disconnect()
   }, [])
 
@@ -115,6 +129,7 @@ export default function AdminStatusPage() {
           componente: 'supabase',
           estado: 'investigando',
           severidad: 'menor',
+          tipo: 'incidente',
         })
         setIncidentes(prev => [data.data, ...prev])
       } else {
@@ -122,6 +137,45 @@ export default function AdminStatusPage() {
       }
     } catch {
       setError('Error al conectar con el servidor.')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  async function handleEditarIncidente() {
+    if (!editingIncidente) return
+    if (!editingIncidente.titulo.trim()) {
+      setError('Escribe un título válido para la incidencia.')
+      return
+    }
+    
+    setError(null)
+    setSuccess(null)
+    setActionLoading('edit')
+
+    try {
+      const res = await fetch(`/api/admin/status/incidentes/${editingIncidente.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: editingIncidente.titulo,
+          descripcion: editingIncidente.descripcion,
+          componente: editingIncidente.componente,
+          severidad: editingIncidente.severidad,
+          estado: editingIncidente.estado,
+          tipo: editingIncidente.tipo,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setSuccess('Incidencia actualizada correctamente.')
+        setIncidentes(prev => prev.map(i => i.id === editingIncidente.id ? data.data : i))
+        setEditingIncidente(null)
+      } else {
+        setError(data.error || 'Error al actualizar.')
+      }
+    } catch {
+      setError('Error de conexión al guardar cambios.')
     } finally {
       setActionLoading(null)
     }
@@ -193,7 +247,7 @@ export default function AdminStatusPage() {
             href="/status"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border border-[#00827C]/30 text-[#00827C] hover:bg-[#00827C]/05 transition-colors hover-pop"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border border-[var(--color-brand)]/30 text-[var(--color-brand)] hover:bg-[var(--color-brand)]/05 transition-colors hover-pop"
           >
             <Pulse size={16} />
             Ver página pública ↗
@@ -241,6 +295,22 @@ export default function AdminStatusPage() {
 
             <div>
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Tipo de Aviso
+              </label>
+              <select
+                value={form.tipo}
+                onChange={e => setForm(p => ({ ...p, tipo: e.target.value as Incidente['tipo'] }))}
+                className={inputStyle}
+                disabled={actionLoading === 'create'}
+              >
+                {TIPO_OPTS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Componente Afectado
               </label>
               <select
@@ -255,21 +325,25 @@ export default function AdminStatusPage() {
               </select>
             </div>
 
-            <div>
-              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
-                Severidad
-              </label>
-              <select
-                value={form.severidad}
-                onChange={e => setForm(p => ({ ...p, severidad: e.target.value as Incidente['severidad'] }))}
-                className={inputStyle}
-                disabled={actionLoading === 'create'}
-              >
-                {SEVERIDAD_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
-            </div>
+            {/* Severidad no aplica a un mantenimiento programado — no es una
+                falla, no tiene sentido "crítico/mayor/menor". */}
+            {form.tipo === 'incidente' && (
+              <div>
+                <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                  Severidad
+                </label>
+                <select
+                  value={form.severidad}
+                  onChange={e => setForm(p => ({ ...p, severidad: e.target.value as Incidente['severidad'] }))}
+                  className={inputStyle}
+                  disabled={actionLoading === 'create'}
+                >
+                  {SEVERIDAD_OPTS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
@@ -301,13 +375,14 @@ export default function AdminStatusPage() {
               />
             </div>
 
-            <button
+            <Button
               type="submit"
-              disabled={actionLoading === 'create'}
-              className="w-full py-2.5 rounded-full bg-[#00827C] hover:bg-[#006B66] text-white text-sm font-semibold transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              variant="primary"
+              loading={actionLoading === 'create'}
+              className="w-full"
             >
-              {actionLoading === 'create' ? 'Publicando...' : 'Publicar Incidencia'}
-            </button>
+              Publicar Incidencia
+            </Button>
           </form>
         </div>
 
@@ -322,25 +397,34 @@ export default function AdminStatusPage() {
             </h3>
 
             {loading ? (
-              <p className={`text-sm ${ts}`}>Cargando incidencias...</p>
+              <SkeletonCard lineas={2} />
             ) : activos.length === 0 ? (
               <p className={`text-sm italic ${ts}`}>No hay incidencias activas. Todos los sistemas operan al 100%.</p>
             ) : (
               <div className="space-y-4">
                 {activos.map(i => (
-                  <div key={i.id} className={`p-4 rounded-[8px] border ${isDark ? 'bg-white/05 border-white/10' : 'bg-[#F2F9F8] border-[#00827C]/12'}`}>
+                  <div key={i.id} className={`p-4 rounded-[8px] border ${isDark ? 'bg-white/05 border-white/10' : 'bg-[#474747]/05 border-[#474747]/10'}`}>
                     <div className="flex justify-between items-start flex-wrap gap-2">
                       <div>
                         <h4 className={`text-sm font-bold ${tp}`}>{i.titulo}</h4>
                         <span className={`text-xs ${ts}`}>
                           Afecta a: <strong className="font-semibold">{COMPONENTE_OPTS.find(o => o.value === i.componente)?.label ?? i.componente}</strong>
+                          {i.origen === 'sistema' && ' · Detectado automáticamente'}
                         </span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded font-bold ${
-                        i.severidad === 'critico' ? 'bg-[#FF5E4B]/15 text-[#FF5E4B]' : 'bg-[#F6BF3E]/15 text-[#F6BF3E]'
-                      }`}>
-                        {i.severidad} · {i.estado}
-                      </span>
+                      {/* Un mantenimiento no es una falla — "menor · investigando"
+                          no tiene sentido ahí, se muestra aparte. */}
+                      {i.tipo === 'mantenimiento' ? (
+                        <span className="text-xs px-2 py-0.5 rounded font-bold bg-[#59A6E4]/15 text-[#59A6E4]">
+                          Mantenimiento programado
+                        </span>
+                      ) : (
+                        <span className={`text-xs px-2 py-0.5 rounded font-bold ${
+                          i.severidad === 'critico' ? 'bg-[#FF5E4B]/15 text-[#FF5E4B]' : 'bg-[#F6BF3E]/15 text-[#F6BF3E]'
+                        }`}>
+                          {capitalize(i.severidad)} · {capitalize(i.estado)}
+                        </span>
+                      )}
                     </div>
 
                     {i.descripcion && (
@@ -366,14 +450,24 @@ export default function AdminStatusPage() {
                           Marcar Resuelto
                         </button>
                       </div>
-                      <button
-                        onClick={() => handleEliminarIncidente(i.id)}
-                        disabled={actionLoading != null}
-                        className="p-1 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50 hover-trash hover-press"
-                        title="Eliminar incidencia"
-                      >
-                        <Trash size={16} />
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setEditingIncidente(i)}
+                          disabled={actionLoading != null}
+                          className="p-1 rounded text-[#59A6E4] hover:bg-[#59A6E4]/10 transition-colors disabled:opacity-50 hover-press"
+                          title="Editar incidencia"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleEliminarIncidente(i.id)}
+                          disabled={actionLoading != null}
+                          className="p-1 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50 hover-trash hover-press"
+                          title="Eliminar incidencia"
+                        >
+                          <Trash size={16} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -400,6 +494,7 @@ export default function AdminStatusPage() {
                       <h4 className={`text-sm font-semibold ${tp}`}>{i.titulo}</h4>
                       <p className={`text-xs ${ts}`}>
                         {COMPONENTE_OPTS.find(o => o.value === i.componente)?.label} · Resuelto el {new Date(i.resolved_at!).toLocaleDateString('es-CO')}
+                        {i.origen === 'sistema' && ' · Automático'}
                       </p>
                     </div>
                     <button
@@ -419,6 +514,114 @@ export default function AdminStatusPage() {
         </div>
 
       </div>
+
+      {/* MODAL DE EDICIÓN */}
+      {editingIncidente && (
+        <Modal
+          abierto={!!editingIncidente}
+          titulo="Editar Incidencia"
+          icono={<Pencil size={20} />}
+          onClose={() => setEditingIncidente(null)}
+          onCancelar={() => setEditingIncidente(null)}
+          onConfirmar={handleEditarIncidente}
+          textoConfirmar={actionLoading === 'edit' ? 'Guardando...' : 'Guardar Cambios'}
+          textoCancelar="Cancelar"
+        >
+          <div className="space-y-4 pt-2">
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Título del Incidente
+              </label>
+              <input
+                type="text"
+                value={editingIncidente.titulo}
+                onChange={e => setEditingIncidente(p => p ? { ...p, titulo: e.target.value } : p)}
+                className={inputStyle}
+                disabled={actionLoading === 'edit'}
+              />
+            </div>
+            
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Tipo de Aviso
+              </label>
+              <select
+                value={editingIncidente.tipo}
+                onChange={e => setEditingIncidente(p => p ? { ...p, tipo: e.target.value as Incidente['tipo'] } : p)}
+                className={inputStyle}
+                disabled={actionLoading === 'edit'}
+              >
+                {TIPO_OPTS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Componente Afectado
+              </label>
+              <select
+                value={editingIncidente.componente}
+                onChange={e => setEditingIncidente(p => p ? { ...p, componente: e.target.value as Incidente['componente'] } : p)}
+                className={inputStyle}
+                disabled={actionLoading === 'edit'}
+              >
+                {COMPONENTE_OPTS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {editingIncidente.tipo === 'incidente' && (
+              <div>
+                <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                  Severidad
+                </label>
+                <select
+                  value={editingIncidente.severidad}
+                  onChange={e => setEditingIncidente(p => p ? { ...p, severidad: e.target.value as Incidente['severidad'] } : p)}
+                  className={inputStyle}
+                  disabled={actionLoading === 'edit'}
+                >
+                  {SEVERIDAD_OPTS.map(o => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Estado
+              </label>
+              <select
+                value={editingIncidente.estado}
+                onChange={e => setEditingIncidente(p => p ? { ...p, estado: e.target.value as Incidente['estado'] } : p)}
+                className={inputStyle}
+                disabled={actionLoading === 'edit'}
+              >
+                {ESTADO_OPTS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-xs font-semibold mb-1 ${ts}`}>
+                Descripción / Detalles
+              </label>
+              <textarea
+                value={editingIncidente.descripcion || ''}
+                onChange={e => setEditingIncidente(p => p ? { ...p, descripcion: e.target.value } : p)}
+                rows={3}
+                className={`${inputStyle} resize-none`}
+                disabled={actionLoading === 'edit'}
+              />
+            </div>
+          </div>
+        </Modal>
+      )}
 
     </div>
   )

@@ -71,9 +71,9 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
       : Minus
 
   const indicadorColor = indicador?.direccion === 'sube'
-    ? '#2E8B6E'
+    ? 'var(--color-success-content)'
     : indicador?.direccion === 'baja'
-      ? '#CC3C2A'
+      ? 'var(--color-error-content)'
       : 'var(--text-secondary)'
 
   return (
@@ -96,7 +96,7 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
           height: 42,
           borderRadius: 10,
           flexShrink: 0,
-          background: `${color}14`,
+          background: `color-mix(in srgb, ${color} 14%, transparent)`,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -107,7 +107,7 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
       <div style={{ flex: 1, minWidth: 0 }}>
         <p
           style={{
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: 600,
             color: 'var(--text-secondary)',
             margin: '0 0 4px',
@@ -134,12 +134,12 @@ export function KpiCardAnimado({ titulo, valorFinal, formato, unidad, icono, col
             }}
           >
             <IndicadorIcono size={12} />
-            <span style={{ fontSize: 11, fontWeight: 600 }}>
+            <span style={{ fontSize: 12, fontWeight: 600 }}>
               {indicador.direccion === 'igual'
                 ? 'Sin cambio'
-                : `${indicador.direccion === 'sube' ? '+' : '-'}${indicador.porcentaje}%`}
+                : `${indicador.direccion === 'sube' ? '+' : '-'}${indicador.porcentaje} %`}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginLeft: 2 }}>
+            <span style={{ fontSize: 12, color: 'var(--text-secondary)', marginLeft: 2 }}>
               vs semana anterior
             </span>
           </div>

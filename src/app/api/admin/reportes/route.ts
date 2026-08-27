@@ -49,10 +49,10 @@ export async function GET(request: NextRequest) {
         break
       }
       case 'metricas_globales': {
-        const [empresas, calculos, certificados, usuarios] = await Promise.all([
+        const [empresas, calculos, informes, usuarios] = await Promise.all([
           c.from('empresas').select('*', { count: 'exact', head: true }),
           c.from('calculos').select('total_co2, total_agua'),
-          c.from('certificados').select('*', { count: 'exact', head: true }),
+          c.from('informes').select('*', { count: 'exact', head: true }),
           c.from('profiles').select('*', { count: 'exact', head: true }),
         ])
         const allCalcData = calculos.data ?? []
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
           total_calculos: allCalcData.length,
           total_co2: allCalcData.reduce((s: number, r: { total_co2: number }) => s + (r.total_co2 ?? 0), 0),
           total_agua: allCalcData.reduce((s: number, r: { total_agua: number }) => s + (r.total_agua ?? 0), 0),
-          total_certificados: certificados.count ?? 0,
+          total_informes: informes.count ?? 0,
           total_usuarios: usuarios.count ?? 0,
         }
         break

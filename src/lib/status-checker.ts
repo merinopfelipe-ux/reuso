@@ -5,6 +5,22 @@ export interface ServiceCheck {
   latency: number
   details?: string
   uptime?: number
+  // 'externo' = proveedor de terceros (Supabase, Groq, OpenRouter, Vercel,
+  // Resend); no se marca 'nuestro' aquí porque este objeto solo describe
+  // chequeos a servicios de terceros — lo "nuestro" vive como incidencia
+  // manual con componente 'calculadora' en dpp_incidencias, no como un
+  // ServiceCheck (no hay una página de estado externa que consultar de
+  // nuestro propio código).
+  origen?: 'externo'
+  // Texto tal cual lo publica el proveedor sobre un mantenimiento programado
+  // o en curso de SU LADO — informativo, nunca se guarda en base de datos,
+  // solo vive mientras dura este chequeo en vivo.
+  mantenimientoProgramado?: string
+}
+
+function extraerMantenimiento(data: { scheduled_maintenances?: { name?: string; status?: string }[] }): string | undefined {
+  const activo = data.scheduled_maintenances?.find(m => m.status && m.status !== 'completed')
+  return activo?.name
 }
 
 export interface ChecksResult {
@@ -41,10 +57,18 @@ export async function runChecks() {
   const dbStart = Date.now()
   let dbStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let dbDetails = 'Conexión establecida.'
+  let dbMantenimiento: string | undefined
+  // Separado de dbStatus a propósito: dbStatus puede terminar en 'degradado'
+  // solo porque el PROVEEDOR se autoreporta así en su propia página, aunque
+  // nuestra conexión local sí funcionó — en ese caso sí se puede seguir
+  // escribiendo en la base de datos (y por lo tanto sí se puede autoreportar
+  // el incidente). Solo se bloquea si la conexión local en sí falló.
+  let dbConexionLocalOk = true
   try {
     const { error } = await adminClient.from('profiles').select('id').limit(1)
     if (error) {
       dbStatus = 'error'
+      dbConexionLocalOk = false
       dbDetails = error.message.replace(/supabase/gi, 'proveedor de base de datos')
     } else {
       // Si la conexión local está bien, consultamos el estado del proveedor en segundo plano
@@ -54,6 +78,7 @@ export async function runChecks() {
           const spData = await spRes.json()
           const indicator = spData.status?.indicator // 'none', 'minor', 'major', 'critical'
           const description = (spData.status?.description || '').replace(/supabase/gi, 'proveedor de base de datos')
+          dbMantenimiento = extraerMantenimiento(spData)?.replace(/supabase/gi, 'proveedor de base de datos')
           if (indicator === 'minor' || indicator === 'major') {
             dbStatus = 'degradado'
             dbDetails = `Problema de infraestructura: ${description || 'Degradación parcial en el proveedor de base de datos.'}`
@@ -68,6 +93,7 @@ export async function runChecks() {
     }
   } catch (err) {
     dbStatus = 'error'
+    dbConexionLocalOk = false
     const errMsg = err instanceof Error ? err.message : 'Error de red.'
     dbDetails = errMsg.replace(/supabase/gi, 'proveedor de base de datos')
   }
@@ -92,11 +118,13 @@ export async function runChecks() {
   const groqStart = Date.now()
   let groqStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let groqDetails = 'API operacional.'
+  let groqMantenimiento: string | undefined
   try {
     const res = await fetchWithTimeout('https://groqstatus.com/api/v2/summary.json', {}, 4000)
     if (res.ok) {
       const data = await res.json()
       const indicator = data.status?.indicator // 'none', 'minor', 'major', 'critical'
+      groqMantenimiento = extraerMantenimiento(data)
       if (indicator === 'minor' || indicator === 'major') {
         groqStatus = 'degradado'
         groqDetails = data.status.description || 'Degradación parcial en Groq.'
@@ -163,12 +191,14 @@ export async function runChecks() {
   // 5. Verificar Resend (Servicio de Correo) de forma silenciosa
   let resendStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let resendDetails = 'Servicio operacional.'
+  let resendMantenimiento: string | undefined
   try {
     const res = await fetchWithTimeout('https://status.resend.com/api/v2/summary.json', {}, 4000)
     if (res.ok) {
       const data = await res.json()
       const indicator = data.status?.indicator // 'none', 'minor', 'major', 'critical'
       const description = (data.status?.description || '').replace(/resend/gi, 'proveedor de correo')
+      resendMantenimiento = extraerMantenimiento(data)?.replace(/resend/gi, 'proveedor de correo')
       if (indicator === 'minor' || indicator === 'major') {
         resendStatus = 'degradado'
         resendDetails = `Degradación en proveedor: ${description}`
@@ -184,12 +214,14 @@ export async function runChecks() {
   // 6. Verificar Vercel (Servidor Web) de forma silenciosa
   let vercelStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let vercelDetails = 'Servicio operacional.'
+  let vercelMantenimiento: string | undefined
   try {
     const res = await fetchWithTimeout('https://www.vercel-status.com/api/v2/summary.json', {}, 4000)
     if (res.ok) {
       const data = await res.json()
       const indicator = data.status?.indicator // 'none', 'minor', 'major', 'critical'
       const description = (data.status?.description || '').replace(/vercel/gi, 'proveedor de hosting')
+      vercelMantenimiento = extraerMantenimiento(data)?.replace(/vercel/gi, 'proveedor de hosting')
       if (indicator === 'minor' || indicator === 'major') {
         vercelStatus = 'degradado'
         vercelDetails = `Degradación en proveedor: ${description}`
@@ -203,19 +235,24 @@ export async function runChecks() {
   }
 
   const results = {
-    supabase: { status: dbStatus, latency: dbLatency, details: dbDetails },
-    gemini: { status: geminiStatus, latency: geminiLatency, details: geminiDetails },
-    groq: { status: groqStatus, latency: groqLatency, details: groqDetails },
-    openrouter: { status: orStatus, latency: orLatency, details: orDetails },
-    qwen: { status: qwenStatus, latency: orLatency, details: qwenDetails, uptime: qwenUptime },
-    correo: { status: resendStatus, latency: 0, details: resendDetails },
-    hosting: { status: vercelStatus, latency: 0, details: vercelDetails }
+    supabase: { status: dbStatus, latency: dbLatency, details: dbDetails, origen: 'externo' as const, mantenimientoProgramado: dbMantenimiento },
+    gemini: { status: geminiStatus, latency: geminiLatency, details: geminiDetails, origen: 'externo' as const },
+    groq: { status: groqStatus, latency: groqLatency, details: groqDetails, origen: 'externo' as const, mantenimientoProgramado: groqMantenimiento },
+    openrouter: { status: orStatus, latency: orLatency, details: orDetails, origen: 'externo' as const },
+    qwen: { status: qwenStatus, latency: orLatency, details: qwenDetails, uptime: qwenUptime, origen: 'externo' as const },
+    correo: { status: resendStatus, latency: 0, details: resendDetails, origen: 'externo' as const, mantenimientoProgramado: resendMantenimiento },
+    hosting: { status: vercelStatus, latency: 0, details: vercelDetails, origen: 'externo' as const, mantenimientoProgramado: vercelMantenimiento }
   }
 
-  // Auto-reportar fallos graves en servicios e IAs si la base de datos está disponible
-  if (dbStatus === 'ok') {
+  // Auto-reportar fallos y auto-resolver recuperaciones, siempre que la
+  // conexión local a la base de datos funcione (si no funciona, ni intentar
+  // escribir). "supabase" ya está incluido aquí — antes se excluía por error,
+  // que era la causa real de que un incidente en la propia base de datos
+  // nunca quedara registrado (bug real reportado).
+  if (dbConexionLocalOk) {
     try {
       const reportables = [
+        { key: 'supabase', label: 'Base de Datos y Servidores', status: dbStatus, details: dbDetails, sev: 'critico' as const },
         { key: 'gemini', label: 'Google Gemini API', status: geminiStatus, details: geminiDetails, sev: 'mayor' as const },
         { key: 'groq', label: 'Groq Cloud (LLaMA 3.3)', status: groqStatus, details: groqDetails, sev: 'mayor' as const },
         { key: 'openrouter', label: 'OpenRouter Gateway', status: orStatus, details: orDetails, sev: 'mayor' as const },
@@ -231,24 +268,44 @@ export async function runChecks() {
             .from('dpp_incidencias')
             .select('id')
             .eq('componente', item.key)
+            .eq('tipo', 'incidente')
             .neq('estado', 'resuelto')
             .limit(1)
 
           if (!existente || existente.length === 0) {
-            await adminClient.from('dpp_incidencias').insert({
+            const { error: insertError } = await adminClient.from('dpp_incidencias').insert({
               titulo: item.status === 'error'
                 ? `Interrupción detectada en ${item.label}`
                 : `Rendimiento degradado en ${item.label}`,
               descripcion: `El sistema ha detectado de forma automática un problema de conexión o fallo en el proveedor de servicio. Detalle: ${item.details || 'Timeout o fallo de red.'}`,
               componente: item.key,
               estado: item.status === 'error' ? 'investigando' : 'monitoreando',
-              severidad: item.status === 'error' ? item.sev : 'menor'
+              severidad: item.status === 'error' ? item.sev : 'menor',
+              origen: 'sistema',
             })
+            // 23505 = choque contra el índice único de "una sola activa por
+            // componente" (sql/091) — significa que otra visita casi
+            // simultánea ya la insertó un instante antes. Es el resultado
+            // correcto, no un error real, por eso no se loguea como falla.
+            if (insertError && insertError.code !== '23505') {
+              console.error('[status-checker] error al insertar incidencia automática:', insertError)
+            }
           }
+        } else {
+          // Se recuperó — cierra sola cualquier incidencia que el propio
+          // sistema haya creado para este componente (nunca una creada a
+          // mano por un super_admin, esa la cierra él).
+          await adminClient
+            .from('dpp_incidencias')
+            .update({ estado: 'resuelto', resolved_at: new Date().toISOString() })
+            .eq('componente', item.key)
+            .eq('tipo', 'incidente')
+            .eq('origen', 'sistema')
+            .neq('estado', 'resuelto')
         }
       }
     } catch (autoErr) {
-      console.error('Error al intentar auto-reportar fallos en servicios:', autoErr)
+      console.error('Error al intentar auto-reportar/resolver fallos en servicios:', autoErr)
     }
   }
 

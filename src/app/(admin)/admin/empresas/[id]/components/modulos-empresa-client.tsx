@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Layers as Stack, TriangleAlert as Warning } from '@/components/ui/icons'
+import { TriangleAlert as Warning, Lock, Check } from '@/components/ui/icons'
+import { DynamicIcon } from '@/components/ui/dynamic-icon'
+import { Modal } from '@/components/ui/modal'
 import type { ModuloConActivo } from '@/types'
 
 const C = {
@@ -12,6 +14,14 @@ const C = {
   border: 'var(--border)',
   light: 'var(--bg-hover)',
   warning: 'var(--color-warning)',
+}
+
+// Qué rutas protege cada módulo en la práctica — para que quede claro qué se
+// bloquea de verdad al apagarlo, no solo un nombre abstracto.
+const RUTAS_PROTEGIDAS: Record<string, string> = {
+  cotizador_crm: 'Bloquea /empresa/cotizador completo.',
+  dpp: 'Bloquea /empresa/dpp completo (crear y ver activos DPP).',
+  calculo_ambiental: 'Bloquea registrar y ver cálculos: /empresa/calculos, /empresa/objetos, /dashboard/objetos y /dashboard/historial.',
 }
 
 export function ModulosEmpresaClient({
@@ -84,89 +94,87 @@ export function ModulosEmpresaClient({
   return (
     <>
       {/* Modal de confirmación */}
-      {pendiente && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.4)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999,
-        }}>
-          <div style={{
-            background: 'var(--bg-card)', borderRadius: 14, padding: 24, maxWidth: 380, width: '90%',
-            boxShadow: 'var(--shadow)', border: `1px solid ${C.border}`,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-              <Warning size={22} color={C.warning} />
-              <span style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>
-                ¿Apagar {pendiente.nombre}?
-              </span>
-            </div>
-            {pendiente.usuarios > 0 ? (
-              <p style={{ fontSize: 13, color: C.mid, marginBottom: 20, lineHeight: 1.5 }}>
-                Si apagas el {pendiente.nombre}, sus <strong>{pendiente.usuarios}</strong>{' '}
-                {pendiente.usuarios === 1 ? 'usuario perderá' : 'usuarios perderán'} acceso inmediatamente.
-              </p>
-            ) : (
-              <p style={{ fontSize: 13, color: C.mid, marginBottom: 20, lineHeight: 1.5 }}>
-                El módulo quedará inactivo para esta empresa.
-              </p>
-            )}
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button
-                onClick={() => setPendiente(null)}
-                className="hover-pop hover-press"
-                style={{
-                  flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                  border: `1px solid ${C.border}`, background: 'var(--bg-primary)', color: C.dark, cursor: 'pointer',
-                }}
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={confirmarDesactivar}
-                className="hover-trash hover-press"
-                style={{
-                  flex: 1, padding: '8px 0', borderRadius: 8, fontSize: 13, fontWeight: 600,
-                  border: 'none', background: '#FF5E4B', color: '#fff', cursor: 'pointer',
-                }}
-              >
-                Apagar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Modal
+        abierto={!!pendiente}
+        onClose={() => setPendiente(null)}
+        titulo={`¿Apagar ${pendiente?.nombre ?? 'este módulo'}?`}
+        icono={<Warning size={22} className="text-[var(--color-warning)]" />}
+        descripcion={
+          pendiente && pendiente.usuarios > 0 ? (
+            <>Si apagas el {pendiente.nombre}, sus <strong>{pendiente.usuarios}</strong>{' '}
+            {pendiente.usuarios === 1 ? 'usuario perderá' : 'usuarios perderán'} acceso inmediatamente.</>
+          ) : (
+            'El módulo quedará inactivo para esta empresa.'
+          )
+        }
+        textoCancelar="Cancelar"
+        textoConfirmar="Apagar"
+        varianteConfirmar="error"
+        onCancelar={() => setPendiente(null)}
+        onConfirmar={confirmarDesactivar}
+      />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {modulos.map((m) => (
-          <div key={m.id} style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '10px 14px', borderRadius: 10,
-            border: `1px solid ${m.activo_en_empresa ? 'rgba(0,130,124,0.25)' : C.border}`,
-            background: m.activo_en_empresa ? C.light : 'var(--bg-card)',
-            transition: 'all 0.2s',
-          }}>
-            <Stack size={16} color={m.activo_en_empresa ? C.brand : C.mid} />
-            <span style={{ flex: 1, fontSize: 13, fontWeight: 600, color: C.dark }}>{m.nombre}</span>
-            {m.descripcion && (
-              <span style={{ fontSize: 12, color: C.mid, flex: 2 }}>{m.descripcion}</span>
-            )}
-            <button
-              disabled={toggling === m.id}
-              onClick={() => toggle(m.id, m.activo_en_empresa, m.nombre)}
-              className={toggling === m.id ? '' : 'hover-pop hover-press'}
-              style={{
-                padding: '5px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-                cursor: toggling === m.id ? 'wait' : 'pointer',
-                border: 'none',
-                background: m.activo_en_empresa ? C.brand : 'rgba(0,130,124,0.10)',
-                color: m.activo_en_empresa ? 'var(--text-on-brand)' : C.brand,
-                transition: 'all 0.2s',
-                opacity: toggling === m.id ? 0.6 : 1,
-              }}
-            >
-              {toggling === m.id ? '...' : m.activo_en_empresa ? 'Activo' : 'Inactivo'}
-            </button>
-          </div>
-        ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {modulos.map((m) => {
+          const activo = m.activo_en_empresa
+          const rutas = m.clave ? RUTAS_PROTEGIDAS[m.clave] : null
+          return (
+            <div key={m.id} style={{
+              display: 'flex', alignItems: 'flex-start', gap: 12,
+              padding: '14px 16px', borderRadius: 12,
+              border: `1px solid ${activo ? 'rgba(0,130,124,0.25)' : C.border}`,
+              background: activo ? C.light : 'var(--bg-card)',
+              transition: 'all 0.2s',
+            }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 9, flexShrink: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: activo ? 'rgba(0,130,124,0.12)' : C.light,
+              }}>
+                <DynamicIcon nombre={m.icono_lucide} size={17} className={activo ? '' : ''} />
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 700, color: C.dark }}>{m.nombre}</span>
+                  {activo
+                    ? <Check size={13} style={{ color: C.brand }} />
+                    : <Lock size={13} style={{ color: C.mid }} />
+                  }
+                </div>
+                {m.descripcion && (
+                  <p style={{ fontSize: 12, color: C.mid, margin: '0 0 3px', lineHeight: 1.4 }}>{m.descripcion}</p>
+                )}
+                {rutas && (
+                  <p style={{ fontSize: 11, color: C.mid, margin: 0, fontStyle: 'italic' }}>{rutas}</p>
+                )}
+                {!m.clave && (
+                  <p style={{ fontSize: 11, color: C.warning, margin: 0 }}>
+                    Sin clave asignada: este toggle no bloquea ninguna ruta todavía.
+                  </p>
+                )}
+              </div>
+
+              <button
+                disabled={toggling === m.id}
+                onClick={() => toggle(m.id, activo, m.nombre)}
+                className={toggling === m.id ? '' : 'hover-pop hover-press'}
+                style={{
+                  flexShrink: 0,
+                  padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+                  cursor: toggling === m.id ? 'wait' : 'pointer',
+                  border: 'none',
+                  background: activo ? C.brand : 'rgba(0,130,124,0.10)',
+                  color: activo ? 'var(--text-on-brand)' : C.brand,
+                  transition: 'all 0.2s',
+                  opacity: toggling === m.id ? 0.6 : 1,
+                }}
+              >
+                {toggling === m.id ? '...' : activo ? 'Activo' : 'Inactivo'}
+              </button>
+            </div>
+          )
+        })}
       </div>
     </>
   )

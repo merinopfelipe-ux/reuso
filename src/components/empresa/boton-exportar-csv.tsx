@@ -7,7 +7,7 @@ interface Props {
   plan: Plan
 }
 
-const BRAND = '#00827C'
+const BRAND = 'var(--color-brand)'
 
 export default function BotonExportarCSV({ plan }: Props) {
   const habilitado = plan === 'ilimitado'

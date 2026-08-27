@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { AlertCircle as WarningCircle, RotateCcw as ArrowCounterClockwise } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
 
 export default function EmpresaError({
   error,
@@ -25,26 +26,16 @@ export default function EmpresaError({
       textAlign: 'center',
       gap: 16,
     }}>
-      <WarningCircle size={48} style={{ color: '#FF5E4B' }} />
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1A3A38', margin: 0 }}>
+      <WarningCircle size={48} style={{ color: 'var(--color-error)' }} />
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
         Algo salió mal
       </h2>
-      <p style={{ fontSize: 14, color: '#4D7C79', maxWidth: 360, margin: 0 }}>
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 360, margin: 0 }}>
         Ocurrió un error inesperado. Si el problema persiste, contacta soporte.
       </p>
-      <button
-        onClick={reset}
-        className="hover-pop hover-press"
-        style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '10px 20px', background: '#00827C', color: '#fff',
-          borderRadius: 10, border: 'none', cursor: 'pointer',
-          fontSize: 14, fontWeight: 600,
-        }}
-      >
-        <ArrowCounterClockwise size={16} strokeWidth={2.5} />
+      <Button onClick={reset} icon={<ArrowCounterClockwise size={16} strokeWidth={2.5} />}>
         Reintentar
-      </button>
+      </Button>
     </div>
   )
 }

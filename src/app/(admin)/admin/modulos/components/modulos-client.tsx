@@ -16,6 +16,7 @@ const C = {
 }
 
 function LucidePreview({ name }: { name: string }) {
+  if (!name || name === 'Icon' || name === 'DynamicIcon' || name === 'IconNode') return <Stack size={20} color={C.mid} />
   const Icon = (LucideIcons as Record<string, unknown>)[name] as React.ComponentType<{ size?: number; color?: string }> | undefined
   if (!Icon) return <Stack size={20} color={C.mid} />
   return <Icon size={20} color={C.brand} />
@@ -112,7 +113,7 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
           borderRadius: 12, padding: 20, marginBottom: 24,
         }}>
           <p style={{ fontSize: 14, fontWeight: 700, color: C.dark, marginBottom: 16 }}>Nuevo módulo</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ display: 'grid', gap: 12, marginBottom: 12 }}>
             <div>
               <label style={{ fontSize: 12, color: C.mid, display: 'block', marginBottom: 4 }}>Nombre *</label>
               <input
@@ -167,16 +168,11 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {modulos.map((m) => (
-          <div key={m.id} style={{
-            background: 'var(--bg-card)', border: `1px solid ${C.border}`,
-            borderRadius: 12, padding: 20,
-            opacity: m.activo ? 1 : 0.55,
-            boxShadow: 'var(--shadow)',
-          }}>
+          <div key={m.id} className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]" style={{ opacity: m.activo ? 1 : 0.55 }}>
             {editandoId === m.id ? (
               /* Modo edición */
               <div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+                <div className="grid grid-cols-1 sm:grid-cols-2" style={{ display: 'grid', gap: 8, marginBottom: 8 }}>
                   <input
                     value={editForm.nombre}
                     onChange={e => setEditForm({ ...editForm, nombre: e.target.value })}

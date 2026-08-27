@@ -9,7 +9,7 @@ const T = {
     titulo: 'Reglamento de Uso',
     breadcrumbLabel: 'Reglamento de Uso',
     resumen:
-      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y certificar el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
+      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y medir el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
     secciones: [
       { id: 'definiciones', label: 'Definiciones' },
       { id: 'aceptacion', label: 'Aceptación' },
@@ -33,7 +33,7 @@ const T = {
     h_definiciones: 'Definiciones',
     def_servicio_label: 'Servicio:',
     def_servicio:
-      'la calculadora estima y certifica el CO₂ evitado al mantener objetos en uso en lugar de descartarlos.',
+      'la calculadora estima y mide el CO₂ evitado al mantener objetos en uso en lugar de descartarlos.',
     def_usuario_label: 'Usuario:',
     def_usuario: 'toda persona natural o jurídica que accede o usa la plataforma.',
     def_plataforma_label: 'Plataforma:',
@@ -53,7 +53,7 @@ const T = {
       '. Si decides no aceptarlos, debes cesar de inmediato el uso de la plataforma.',
     h_servicio: 'Servicio y funcionamiento',
     servicio_p1:
-      'La Calculadora de Reúso es una plataforma en línea que te permite registrar objetos reutilizados y obtener una estimación certificada del CO₂ equivalente evitado. Puedes generar certificados individuales e informes por rango de fecha, cada uno con código de verificación único y QR verificable en la plataforma.',
+      'La Calculadora de Reúso es una plataforma en línea que te permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en la plataforma.',
     servicio_p2:
       'Las estimaciones se basan en factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Constituyen una herramienta de comunicación ambiental y difieren de una auditoría ambiental oficial.',
     h_cuenta: 'Creación de cuenta',
@@ -108,7 +108,7 @@ const T = {
     seguridad_p2:
       'Para los planes Impulso Sostenible e Impacto Ilimitado, la plataforma ofrece un respaldo adicional en redes de registro públicas externas (Blockchain). Este proceso funciona como un sello notarial externo que demuestra la existencia de los ahorros ambientales de forma independiente y permanente, incluso por fuera de la plataforma.',
     transparencia: {
-      texto: 'La plataforma usa inteligencia artificial como asistente en la construcción del código, la estructuración de los factores de cálculo y la generación de certificados. La IA no toma decisiones autónomas, no entrena con tus datos y todo output pasa por revisión humana antes de producción.',
+      texto: 'La plataforma usa inteligencia artificial como asistente en la construcción del código, la estructuración de los factores de cálculo y la generación de informes. La IA no toma decisiones autónomas, no entrena con tus datos y todo output pasa por revisión humana antes de producción.',
       link: 'Lee nuestra política de uso de IA →',
     },
   },
@@ -160,7 +160,7 @@ const T = {
       '. If you choose not to accept them, you must immediately stop using the platform.',
     h_servicio: 'Service and operation',
     servicio_p1:
-      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a certified estimate of the equivalent CO₂ avoided. You can generate individual certificates and date-range reports, each with a unique verification code and a QR verifiable on the platform.',
+      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the equivalent CO₂ avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable on the platform.',
     servicio_p2:
       'Estimates are based on internationally recognised emission factors and expressed in kilograms of CO₂ equivalent (kg CO₂e). They serve as an environmental communication tool and differ from an official environmental audit.',
     h_cuenta: 'Account creation',
@@ -214,7 +214,7 @@ const T = {
     seguridad_p2:
       'For the Impulso Sostenible and Impacto Ilimitado plans, the platform offers additional backup on external public ledger networks (Blockchain). This process acts as an external notarial seal that proves the existence of environmental savings independently and permanently, even outside the platform.',
     transparencia: {
-      texto: 'The platform uses artificial intelligence as an assistant in code development, structuring calculation factors and generating certificates. AI makes no autonomous decisions, does not train on your data, and all output goes through human review before production.',
+      texto: 'The platform uses artificial intelligence as an assistant in code development, structuring calculation factors and generating reports. AI makes no autonomous decisions, does not train on your data, and all output goes through human review before production.',
       link: 'Read our AI usage policy →',
     },
   },

@@ -32,14 +32,14 @@ const T = {
     s3Title: 'Cómo usamos la IA en los cálculos de CO₂',
     s3: [
       'El núcleo de Reúso es la estimación del CO₂ evitado al reutilizar objetos. En este proceso, la IA se usa para:',
-      '- Validar y estructurar los factores de emisión tomados de bases de datos científicas internacionales (IPCC, Ecoinvent, DEFRA y equivalentes). Los factores se almacenan como datos inmutables (factor_snapshot_json) para garantizar la trazabilidad de cada cálculo.',
-      '- Asistir en la generación de los certificados e informes: el contenido textual y el diseño del PDF se produjeron con apoyo de IA y fueron revisados por el equipo.',
+      '- Validar y estructurar los factores de emisión tomados de bases de datos científicas internacionales (IPCC, Ecoinvent, DEFRA y equivalentes). Los factores se almacenan como datos inmutables (factor_snapshot_json) para permitir la trazabilidad de cada cálculo.',
+      '- Asistir en la generación de los informes: el contenido textual y el diseño del PDF se produjeron con apoyo de IA y fueron revisados por el equipo.',
       '- Los cálculos finales de CO₂e son deterministas: aplican una fórmula fija a los datos introducidos por el usuario. La IA no interviene en el resultado numérico en tiempo real.',
     ],
     s4Title: 'Lo que la IA no hace en Reúso',
     s4: [
       'Para ser transparentes, detallamos lo que nuestros sistemas de IA no hacen:',
-      '- No se entrenan con tus datos personales. Los registros de usuarios, cálculos y certificados no se usan como datos de entrenamiento para ningún modelo.',
+      '- No se entrenan con tus datos personales. Los registros de usuarios, cálculos e informes no se usan como datos de entrenamiento para ningún modelo.',
       '- No comparten datos con terceros no autorizados. La información que procesa la IA opera dentro de los mismos límites de confidencialidad que el resto del sistema.',
       '- No toman decisiones autónomas sobre usuarios. La IA no determina acceso, precios, planes ni sanciones. Esas decisiones son siempre humanas.',
       '- No generan perfiles de comportamiento. No usamos IA para crear perfiles publicitarios ni para inferir características sensibles de los usuarios.',
@@ -95,13 +95,13 @@ const T = {
     s3: [
       'The core of Reúso is estimating the CO₂ avoided by reusing objects. In this process, AI is used to:',
       '- Validate and structure emission factors drawn from international scientific databases (IPCC, Ecoinvent, DEFRA, and equivalents). Factors are stored as immutable data (factor_snapshot_json) to guarantee the traceability of each calculation.',
-      '- Assist in generating certificates and reports: the textual content and PDF design were produced with AI assistance and reviewed by the team.',
+      '- Assist in generating reports: the textual content and PDF design were produced with AI assistance and reviewed by the team.',
       '- The final CO₂e calculations are deterministic: they apply a fixed formula to the data entered by the user. AI does not intervene in the numerical result in real time.',
     ],
     s4Title: 'What AI does not do at Reúso',
     s4: [
       'To be transparent, we detail what our AI systems do not do:',
-      '- They are not trained on your personal data. User records, calculations, and certificates are not used as training data for any model.',
+      '- They are not trained on your personal data. User records, calculations, and reports are not used as training data for any model.',
       '- They do not share data with unauthorized third parties. Information processed by AI operates within the same confidentiality boundaries as the rest of the system.',
       '- They do not make autonomous decisions about users. AI does not determine access, pricing, plans, or penalties. Those decisions are always made by humans.',
       '- They do not create behavioral profiles. We do not use AI to create advertising profiles or to infer sensitive characteristics about users.',

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Save as FloppyDisk, Upload, FileText, Medal } from '@/components/ui/icons'
+import { Save as FloppyDisk, Upload } from '@/components/ui/icons'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -10,7 +10,7 @@ const C = {
 
 type Plantilla = {
   id: string
-  tipo: 'certificado' | 'informe'
+  tipo: 'informe'
   activa: boolean
   encabezado_html: string | null
   pie_legal: string | null
@@ -20,42 +20,55 @@ type Plantilla = {
   updated_at: string
 }
 
-type Props = { plantillas: Plantilla[] }
+type Props = { plantillas: Plantilla[]; emailNotificacionesInicial: string }
 
-const TIPOS: { id: 'certificado' | 'informe'; label: string; icon: typeof FileText }[] = [
-  { id: 'certificado', label: 'Certificado', icon: Medal },
-  { id: 'informe', label: 'Informe', icon: FileText },
-]
-
-export function PlantillasClient({ plantillas: inicial }: Props) {
+export function PlantillasClient({ plantillas: inicial, emailNotificacionesInicial }: Props) {
   const [plantillas, setPlantillas] = useState(inicial)
-  const [tab, setTab] = useState<'certificado' | 'informe'>('certificado')
   const [, startTransition] = useTransition()
   const [toast, setToast] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [email, setEmail] = useState(emailNotificacionesInicial)
+  const [guardandoEmail, setGuardandoEmail] = useState(false)
+
+  async function guardarEmail() {
+    setGuardandoEmail(true)
+    try {
+      const res = await fetch('/api/admin/config', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email_notificaciones: email }),
+      })
+      if (!res.ok) throw new Error()
+      showToast('Correo de notificaciones guardado.')
+    } catch {
+      showToast('No se pudo guardar el correo. Intenta de nuevo.')
+    } finally {
+      setGuardandoEmail(false)
+    }
+  }
 
   function showToast(msg: string) {
     setToast(msg)
     setTimeout(() => setToast(null), 3500)
   }
 
-  const plantilla = plantillas.find(p => p.tipo === tab)
+  const plantilla = plantillas.find(p => p.tipo === 'informe')
 
   const [form, setForm] = useState<Record<string, string>>({})
 
   function getField(campo: keyof Plantilla): string {
-    if (form[`${tab}_${campo}`] !== undefined) return form[`${tab}_${campo}`]
+    if (form[campo] !== undefined) return form[campo]
     return (plantilla?.[campo] as string) ?? ''
   }
 
   function setField(campo: string, val: string) {
-    setForm(prev => ({ ...prev, [`${tab}_${campo}`]: val }))
+    setForm(prev => ({ ...prev, [campo]: val }))
   }
 
   async function guardar() {
     const payload = {
       id: plantilla?.id,
-      tipo: tab,
+      tipo: 'informe' as const,
       firmante_nombre: getField('firmante_nombre'),
       firmante_cargo: getField('firmante_cargo'),
       encabezado_html: getField('encabezado_html'),
@@ -82,7 +95,7 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
     const res = await fetch('/api/admin/plantillas', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: plantilla.id, tipo: tab, activa: !plantilla.activa }),
+      body: JSON.stringify({ id: plantilla.id, tipo: 'informe', activa: !plantilla.activa }),
     })
     if (!res.ok) { showToast('Error al cambiar estado.'); return }
     const { data } = await res.json() as { data: Plantilla }
@@ -122,30 +135,29 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
         </div>
       )}
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 4, marginBottom: 28, borderBottom: `1px solid ${C.border}` }}>
-        {TIPOS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} className="hover-pop" style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '10px 18px', border: 'none', background: 'none', cursor: 'pointer',
-            fontSize: 13, fontWeight: 700,
-            color: tab === t.id ? C.brand : C.mid,
-            borderBottom: tab === t.id ? `2px solid ${C.brand}` : '2px solid transparent',
-            transition: 'all 0.2s',
-          }}>
-            <t.icon size={15} />
-            {t.label}
-          </button>
-        ))}
-      </div>
-
       <div style={{ maxWidth: 680 }}>
+        <div style={{ ...cardStyle, marginBottom: 20 }}>
+          <p style={{ fontSize: 15, fontWeight: 800, color: C.dark, margin: '0 0 16px' }}>
+            Notificaciones
+          </p>
+          <label style={labelStyle}>Correo de notificaciones de tickets</label>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} style={{ ...inputStyle, flex: 1 }} />
+            <button onClick={guardarEmail} disabled={guardandoEmail} className="hover-pop hover-press" style={{ ...btnStyle, opacity: guardandoEmail ? 0.6 : 1 }}>
+              {guardandoEmail ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+          <p style={{ fontSize: 12, color: C.mid, marginTop: 8 }}>
+            Además de este correo, los tickets también se envían a todos los super_admin activos.
+          </p>
+        </div>
+
         <div style={{ ...cardStyle, marginBottom: 20 }}>
           {/* Estado activa */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
             <div>
               <p style={{ fontSize: 15, fontWeight: 800, color: C.dark, margin: 0 }}>
-                Plantilla de {tab === 'certificado' ? 'Certificado' : 'Informe'}
+                Plantilla de Informe
               </p>
               <p style={{ fontSize: 12, color: C.mid, margin: '4px 0 0' }}>
                 {plantilla ? `Última actualización: ${new Date(plantilla.updated_at).toLocaleDateString('es-CO')}` : 'Aún no configurada'}
@@ -164,7 +176,7 @@ export function PlantillasClient({ plantillas: inicial }: Props) {
           </div>
 
           {/* Firmante */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ display: 'grid', gap: 16, marginBottom: 20 }}>
             <div>
               <label style={labelStyle}>Nombre del firmante</label>
               <input value={getField('firmante_nombre')} onChange={e => setField('firmante_nombre', e.target.value)} style={inputStyle} placeholder="Ej: María López" />

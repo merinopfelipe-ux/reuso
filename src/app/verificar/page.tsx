@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Search as MagnifyingGlass, ShieldCheck } from '@/components/ui/icons'
+import { ProteccionPublica } from '@/components/proteccion-publica'
 
 function VerificarForm() {
   const [codigo, setCodigo] = useState('')
@@ -31,14 +32,15 @@ function VerificarForm() {
       padding: 20, fontFamily: "'Open Sans', sans-serif",
       color: 'var(--text-primary)',
     }}>
+      <ProteccionPublica>
       <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
         <div style={{ marginBottom: 32 }}>
           <Image src="/logo-icono.svg" alt="Reuso" width={48} height={48} style={{ margin: '0 auto 16px' }} className="logo-dark-invert" />
           <h1 style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
-            Verificación de Certificados
+            Verificación de Informes
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.6 }}>
-            Ingresa el código único del certificado para validar su autenticidad.
+            Ingresa el código único del informe para validar su autenticidad.
           </p>
         </div>
 
@@ -83,10 +85,11 @@ function VerificarForm() {
         </div>
 
         <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-placeholder)', lineHeight: 1.6 }}>
-          Si el certificado es válido, verás el impacto ambiental detallado y el sello de seguridad digital.
+          Si el informe es válido, verás el impacto ambiental detallado y el sello de seguridad digital.
           Si fue revocado, el sistema te alertará de inmediato.
         </p>
       </div>
+      </ProteccionPublica>
     </main>
   )
 }

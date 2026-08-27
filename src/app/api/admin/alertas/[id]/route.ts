@@ -36,3 +36,29 @@ export async function PATCH(
 
   return NextResponse.json(data)
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const guard = await requireSuperAdmin(request)
+  if (guard.error) return guard.error
+
+  const { error } = await guard.supabase
+    .from('alertas')
+    .delete()
+    .eq('id', params.id)
+
+  if (error) {
+    return NextResponse.json({ error: 'Error al eliminar la alerta.' }, { status: 500 })
+  }
+
+  await logAuditoria(guard.adminClient, {
+    user_id: guard.user.id,
+    accion: 'eliminar_alerta',
+    detalle: { id: params.id },
+    ip: getIp(request),
+  })
+
+  return NextResponse.json({ success: true })
+}

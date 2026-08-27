@@ -14,14 +14,14 @@ const PLAN_LABELS: Record<string, string> = {
 }
 
 const PLAN_COLORS: Record<string, string> = {
-  free: '#4D7C79',
+  free: '#8AD0B2',
   lab: '#00827C',
   impulso: '#59A6E4',
-  ilimitado: '#1A3A38',
+  ilimitado: '#AD7C43',
 }
 
-const BORDER = 'rgba(0,130,124,0.12)'
-const TEXT_MED = '#4D7C79'
+const BORDER = 'var(--border)'
+const TEXT_MED = 'var(--text-secondary)'
 
 export default async function EmpresaConfiguracionPage() {
   const supabase = createClient()
@@ -52,7 +52,7 @@ export default async function EmpresaConfiguracionPage() {
     )
   }
 
-  const planColor = PLAN_COLORS[empresa.plan] ?? '#4D7C79'
+  const planColor = PLAN_COLORS[empresa.plan] ?? 'var(--text-secondary)'
   const planLabel = PLAN_LABELS[empresa.plan] ?? empresa.plan
   const esAdmin = perfil.rol === 'empresa_admin' || perfil.rol === 'super_admin'
 

@@ -1,11 +1,13 @@
 'use client'
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
-import { Calendar, Filter as Funnel, X, ChevronLeft as CaretLeft, ChevronRight as CaretRight, Search as MagnifyingGlass, Loader2 as CircleNotch, Leaf, Droplet as Drop, ShieldCheck, Link as LinkIcon } from '@/components/ui/icons'
+import { Calendar, Filter as Funnel, X, Search as MagnifyingGlass, Loader2 as CircleNotch, Leaf, Droplet as Drop, ShieldCheck, Link as LinkIcon } from '@/components/ui/icons'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
+import { Pagination } from '@/components/ui/pagination'
+import { formatFecha, formatNumero } from '@/lib/format'
 import type { Rol } from '@/types'
 
 interface DetalleItem {
@@ -44,13 +46,7 @@ const BG_LIGHT = 'var(--bg-integrated)'
 const TEXT_DARK = 'var(--text-primary)'
 const TEXT_MED = 'var(--text-secondary)'
 const BORDER = 'var(--border)'
-const PAGE_SIZES = [10, 20, 50, 100]
 
-function formatFecha(iso: string) {
-  return new Date(iso).toLocaleDateString('es-CO', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  })
-}
 
 function itemsDeDetalle(detalle: Record<string, DetalleItem | string> | null): DetalleItem[] {
   if (!detalle) return []
@@ -82,7 +78,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
   const [data, setData] = useState<CalculoFila[]>(inicial)
   const [total, setTotal] = useState(totalInicial)
-  const [pageSize, setPageSize] = useState(() => parseInt(searchParams.get('limit') ?? '20'))
+  const [pageSize, setPageSize] = useState(() => parseInt(searchParams.get('limit') ?? '25'))
   const [page, setPage] = useState(() => parseInt(searchParams.get('page') ?? '1'))
   const { sorted: sortedData, sort, toggleSort } = useSortable(data as unknown as Record<string, unknown>[])
   const [desde, setDesde] = useState(() => searchParams.get('desde') ?? '')
@@ -201,6 +197,14 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
     [desde, hasta, categoria, busqueda, empresaFiltro, fetchHistorial] // eslint-disable-line react-hooks/exhaustive-deps
   )
 
+  function cambiarPageSize(nuevo: number) {
+    setPageSize(nuevo)
+    setPage(1)
+    startTransition(() => {
+      fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro)
+    })
+  }
+
   return (
     <div id="historial-calculos" style={{
       background: 'var(--bg-card)', borderRadius: 16, border: `1px solid ${BORDER}`,
@@ -219,21 +223,6 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
             </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <select
-              value={pageSize}
-              onChange={e => {
-                const ps = parseInt(e.target.value)
-                setPageSize(ps)
-                setPage(1)
-                startTransition(() => {
-                  fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro)
-                })
-              }}
-              style={{ padding: '7px 10px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'var(--bg-input)', color: TEXT_DARK, fontSize: 13, outline: 'none' }}
-              aria-label="Registros por página"
-            >
-              {PAGE_SIZES.map(s => <option key={s} value={s}>{s} por página</option>)}
-            </select>
             <BotonDescargar
               endpoint="/api/calculos/exportar"
               queryParams={new URLSearchParams({
@@ -280,7 +269,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
           display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-end',
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 130 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
               Desde
             </label>
             <div style={{ position: 'relative' }}>
@@ -301,7 +290,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 130 }}>
-            <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
               Hasta
             </label>
             <div style={{ position: 'relative' }}>
@@ -323,7 +312,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
           {categorias.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 150 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
                 Categoría
               </label>
               <select
@@ -344,7 +333,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
           {empresas && empresas.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 160 }}>
-              <label style={{ fontSize: 11, fontWeight: 600, color: TEXT_MED }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
                 Empresa
               </label>
               <select
@@ -373,9 +362,8 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                 cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 opacity: isPending ? 0.7 : 1,
               }}
-              className={isPending ? '' : 'hover-filter hover-press'}
             >
-              <Funnel size={13} /> Filtrar
+              <Funnel size={13} sinAnimacion /> Filtrar
             </button>
 
             {hayFiltros && (
@@ -387,9 +375,8 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                   background: 'transparent', color: TEXT_MED, fontSize: 13,
                   cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
                 }}
-                className="hover-rotate-90 hover-press"
               >
-                <X size={13} /> Limpiar
+                <X size={13} sinAnimacion /> Limpiar
               </button>
             )}
           </div>
@@ -397,7 +384,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
       )}
 
       {/* Tabla */}
-      <div style={{ overflowX: 'auto' }}>
+      <div className="overflow-x-auto border-t border-[var(--border)]">
         {data.length === 0 ? (
           <div style={{ padding: '40px 20px', textAlign: 'center', color: TEXT_MED }}>
             <p style={{ fontSize: 14, margin: 0 }}>
@@ -405,90 +392,72 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
             </p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-            <thead>
-              <tr style={{ background: BG_LIGHT }}>
-                <SortTh col="fecha" sort={sort} onToggle={toggleSort}>Fecha</SortTh>
-                {mostrarUsuario && (
-                  <SortTh col="usuario_nombre" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
-                )}
-                <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: 600, color: TEXT_MED }}>Objetos</th>
-                <SortTh col="total_co2" sort={sort} onToggle={toggleSort} style={{ textAlign: 'right' }}>CO₂ evitado</SortTh>
-              </tr>
-            </thead>
-            <tbody>
-              {(sortedData as unknown as CalculoFila[]).map((c: CalculoFila, idx: number) => (
-                <tr
-                  key={c.id}
-                  onClick={() => setDetalleAbierto(c)}
-                  style={{
-                    background: idx % 2 === 0 ? 'transparent' : `rgba(0,130,124,0.02)`,
-                    borderBottom: `1px solid ${BORDER}`,
-                    cursor: 'pointer',
-                    transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = `rgba(0,130,124,0.05)` }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLTableRowElement).style.background = idx % 2 === 0 ? 'transparent' : `rgba(0,130,124,0.02)` }}
-                >
-                  <td style={{ padding: '10px 16px', color: TEXT_DARK, whiteSpace: 'nowrap' }}>
-                    {formatFecha(c.fecha)}
-                  </td>
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <SortTh col="fecha" sort={sort} onToggle={toggleSort} align="center">Fecha</SortTh>
                   {mostrarUsuario && (
-                    <td style={{ padding: '10px 16px', color: TEXT_MED }}>
-                      {c.usuario_nombre ?? '-'}
-                    </td>
+                    <SortTh col="usuario_nombre" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
                   )}
-                  <td style={{ padding: '10px 16px', color: TEXT_MED, maxWidth: 280 }}>
-                    <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {resumenItems(c.detalle_json)}
-                    </span>
-                  </td>
-                  <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 700, color: BRAND, whiteSpace: 'nowrap' }}>
-                    {c.total_co2.toFixed(3)} kg
-                  </td>
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Objetos</th>
+                  <SortTh col="total_co2" sort={sort} onToggle={toggleSort} align="right">CO₂ eq evitado</SortTh>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {(sortedData as unknown as CalculoFila[]).map((c: CalculoFila, idx: number) => {
+                  return (
+                    <tr
+                      key={c.id}
+                      onClick={() => setDetalleAbierto(c)}
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap text-[var(--text-secondary)] text-center">
+                        {formatFecha(c.fecha)}
+                      </td>
+                      {mostrarUsuario && (
+                        <td className="px-4 py-3 text-[var(--color-brand)]">
+                          {c.usuario_nombre ?? '-'}
+                        </td>
+                      )}
+                      <td className="px-4 py-3 text-[var(--text-secondary)]" style={{ maxWidth: 280 }}>
+                        <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
+                          {resumenItems(c.detalle_json)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">
+                        {formatNumero(c.total_co2, { unidad: 'kg' })}
+                      </td>
+                    </tr>
+                  )
+                })}
             </tbody>
           </table>
         )}
       </div>
 
-      {/* Paginación */}
-      {!esUsuarioLibre && totalPages > 1 && (
+      {/* Paginación — componente único de la plataforma. Siempre después de
+          la última fila. El conteo se acorta primero (min-width:0 +
+          ellipsis) para que el paginador nunca se comprima ni quede oculto
+          detrás de un scroll. */}
+      {!esUsuarioLibre && (totalPages > 1 || total > 0) && (
         <div style={{
           padding: '12px 20px', borderTop: `1px solid ${BORDER}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8,
         }}>
-          <p style={{ fontSize: 13, color: TEXT_MED, margin: 0 }}>
-            Página {page} de {totalPages}
+          <p style={{ fontSize: 13, color: TEXT_MED, margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flexShrink: 1 }}>
+            Página {page} de {Math.max(1, totalPages)}
           </p>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => cambiarPagina(page - 1)}
-              disabled={page === 1 || isPending}
-              style={{
-                width: 32, height: 32, borderRadius: 8, border: `1px solid ${BORDER}`,
-                background: 'var(--bg-card)', color: page === 1 ? TEXT_MED : TEXT_DARK,
-                cursor: page === 1 ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-              className={page === 1 || isPending ? '' : 'hover-pop hover-press'}
-            >
-              <CaretLeft size={16} />
-            </button>
-            <button
-              onClick={() => cambiarPagina(page + 1)}
-              disabled={page === totalPages || isPending}
-              style={{
-                width: 32, height: 32, borderRadius: 8, border: `1px solid ${BORDER}`,
-                background: 'var(--bg-card)', color: page === totalPages ? TEXT_MED : TEXT_DARK,
-                cursor: page === totalPages ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}
-              className={page === totalPages || isPending ? '' : 'hover-slide-r hover-press'}
-            >
-              <CaretRight size={16} />
-            </button>
+          <div style={{ flexShrink: 0 }}>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={cambiarPagina}
+              porPagina={pageSize}
+              onPorPaginaChange={cambiarPageSize}
+            />
           </div>
         </div>
       )}
@@ -546,7 +515,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
           flexShrink: 0,
         }}>
           <div>
-            <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: TEXT_MED }}>
+            <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
               Detalle del cálculo
             </p>
             <p style={{ margin: '2px 0 0', fontSize: 16, fontWeight: 700, color: TEXT_DARK }}>
@@ -591,7 +560,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
               <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#fff' }}>
                 {calculo.total_co2.toFixed(3)}
               </p>
-              <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>kg CO₂ evitados</p>
+              <p style={{ margin: 0, fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>kg CO₂ eq evitados</p>
             </div>
             <div style={{
               background: BG_LIGHT, borderRadius: 12, padding: '14px 16px', textAlign: 'center',
@@ -602,7 +571,7 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
               <p style={{ margin: 0, fontSize: 22, fontWeight: 700, color: TEXT_DARK }}>
                 {calculo.total_agua.toFixed(0)}
               </p>
-              <p style={{ margin: 0, fontSize: 11, color: TEXT_MED }}>litros de agua</p>
+              <p style={{ margin: 0, fontSize: 12, color: TEXT_MED }}>litros de agua</p>
             </div>
           </div>
 
@@ -612,34 +581,48 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
               <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_MED, margin: '0 0 10px' }}>
                 Materiales reutilizados
               </p>
-              <div style={{ border: `1px solid ${BORDER}`, borderRadius: 10, overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ background: BG_LIGHT }}>
-                      <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600, color: TEXT_MED }}>Material</th>
-                      <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: TEXT_MED }}>Peso / Cant.</th>
-                      <th style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 600, color: TEXT_MED }}>CO₂</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((item, i) => (
-                      <tr key={i} style={{ borderTop: `1px solid ${BORDER}` }}>
-                        <td style={{ padding: '8px 12px', color: TEXT_DARK }}>
-                          <span style={{ fontWeight: 600 }}>{item.nombre}</span>
-                          <span style={{ display: 'block', fontSize: 11, color: TEXT_MED }}>{item.categoria}</span>
-                        </td>
-                        <td style={{ padding: '8px 12px', textAlign: 'right', color: TEXT_MED, whiteSpace: 'nowrap' }}>
-                          {item.peso_kg != null
-                            ? `${item.peso_kg} kg`
-                            : `${item.cantidad ?? 1} u.`}
-                        </td>
-                        <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 700, color: BRAND, whiteSpace: 'nowrap' }}>
-                          {item.co2.toFixed(3)} kg
-                        </td>
+              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                        <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Material</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Peso / Cant.</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ eq</th>
                       </tr>
-                    ))}
+                    </thead>
+                  <tbody>
+                    {items.map((item, i) => {
+                      return (
+                        <tr
+                          key={i}
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                            i % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                          style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
+                        >
+                          <td className="px-4 py-3 text-[var(--text-primary)]">
+                            <div className="flex items-start gap-2">
+                              <div>
+                                <span className="block font-semibold">{item.nombre}</span>
+                                <span className="block text-xs text-[var(--text-secondary)]">{item.categoria}</span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">
+                            {item.peso_kg != null
+                              ? formatNumero(item.peso_kg, { unidad: 'kg' })
+                              : `${item.cantidad ?? 1} u.`}
+                          </td>
+                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">
+                            {formatNumero(item.co2, { unidad: 'kg' })}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           )}
@@ -648,23 +631,23 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
           <div style={{ marginTop: 24, padding: '16px', borderRadius: 12, background: 'rgba(0,130,124,0.03)', border: '1px dashed rgba(0,130,124,0.2)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <ShieldCheck size={14} color={BRAND} />
-              <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: TEXT_DARK }}>
+              <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: TEXT_DARK }}>
                 Protección de Seguridad Permanente
               </p>
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               <div>
-                <p style={{ margin: '0 0 4px', fontSize: 10, color: TEXT_MED }}>SELLO DE SEGURIDAD (HUELLA ÚNICA)</p>
-                <code style={{ fontSize: 10, color: TEXT_DARK, wordBreak: 'break-all', display: 'block', background: 'rgba(255,255,255,0.5)', padding: '4px 6px', borderRadius: 4 }}>
+                <p style={{ margin: '0 0 4px', fontSize: 12, color: TEXT_MED }}>SELLO DE SEGURIDAD (HUELLA ÚNICA)</p>
+                <code style={{ fontSize: 12, color: TEXT_DARK, wordBreak: 'break-all', display: 'block', background: 'rgba(255,255,255,0.5)', padding: '4px 6px', borderRadius: 4 }}>
                   {calculo.hash_interno || 'FIRMA_INICIAL'}
                 </code>
               </div>
               <div>
-                <p style={{ margin: '0 0 4px', fontSize: 10, color: TEXT_MED }}>CONEXIÓN DE SEGURIDAD ANTERIOR</p>
+                <p style={{ margin: '0 0 4px', fontSize: 12, color: TEXT_MED }}>CONEXIÓN DE SEGURIDAD ANTERIOR</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <LinkIcon size={10} color={TEXT_MED} />
-                  <code style={{ fontSize: 10, color: TEXT_MED, wordBreak: 'break-all', fontStyle: 'italic' }}>
+                  <code style={{ fontSize: 12, color: TEXT_MED, wordBreak: 'break-all', fontStyle: 'italic' }}>
                     {calculo.hash_previo || 'ORIGEN_REGISTRO'}
                   </code>
                 </div>

@@ -53,7 +53,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       }}
     >
       <Icon size={18} color={colorIcon} style={{ flexShrink: 0, marginTop: 1 }} />
-      <span style={{ fontSize: 14, color: '#1A3A38', flex: 1, lineHeight: 1.4 }}>
+      <span style={{ fontSize: 14, color: 'var(--text-primary)', flex: 1, lineHeight: 1.4 }}>
         {toast.mensaje}
       </span>
       <button
@@ -64,7 +64,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
           border: 'none',
           cursor: 'pointer',
           padding: 0,
-          color: '#4D7C79',
+          color: 'var(--text-secondary)',
           flexShrink: 0,
           display: 'flex',
           alignItems: 'center',

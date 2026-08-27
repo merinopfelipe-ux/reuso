@@ -26,10 +26,10 @@ export default function AdminError({
       gap: 16,
     }}>
       <WarningCircle size={48} style={{ color: '#FF5E4B' }} />
-      <h2 style={{ fontSize: 20, fontWeight: 700, color: '#1A3A38', margin: 0 }}>
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
         Error en el panel admin
       </h2>
-      <p style={{ fontSize: 14, color: '#4D7C79', maxWidth: 360, margin: 0 }}>
+      <p style={{ fontSize: 14, color: 'var(--text-secondary)', maxWidth: 360, margin: 0 }}>
         Ocurrió un error inesperado. El incidente se ha registrado automáticamente.
       </p>
       <button

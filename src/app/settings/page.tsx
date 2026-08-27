@@ -6,6 +6,7 @@ import { Sun, Moon, Monitor, ArrowLeft, Check, Bell, CircleHelp as Question, Sav
 import { useToast } from '@/components/toast-provider'
 import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'
+import { Selector } from '@/components/ui/selector'
 
 type Tema = 'light' | 'dark' | 'system'
 
@@ -40,7 +41,7 @@ export default function SettingsPage() {
   const [avatarText, setAvatarText] = useState('')
   const [notificaciones, setNotificaciones] = useState({
     impacto_critico: true,
-    nuevos_certificados: true,
+    nuevos_documentos: true,
     resumen_mensual: true,
     canal_preferido: 'todos',
     soporte_respuestas: true,
@@ -86,6 +87,8 @@ export default function SettingsPage() {
         setEmailMasked(data.emailMasked ?? data.email ?? '')
         setTelefonoMasked(data.telefonoMasked ?? null)
         setRol(data.rol ?? '')
+        setAvatarColor(data.avatar_color || '#D6F391')
+        setAvatarText(data.avatar_text || '')
 
         // Inicializar el selector basándose en tema_preferido del perfil antes de recurrir a localStorage
         if (data.tema_preferido) {
@@ -662,7 +665,7 @@ export default function SettingsPage() {
                   </h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                     <NotificationSwitch label="Alertas críticas" info="Eventos que impactan tus ahorros de CO₂ y la sostenibilidad de tu operación." active={notificaciones.impacto_critico} onToggle={() => toggleNotificacion('impacto_critico')} />
-                    <NotificationSwitch label="Diagnósticos listos" info="Aviso cuando tus diagnósticos circulares y PDFs de impacto estén disponibles." active={notificaciones.nuevos_certificados} onToggle={() => toggleNotificacion('nuevos_certificados')} />
+                    <NotificationSwitch label="Diagnósticos listos" info="Aviso cuando tus diagnósticos circulares y PDFs de impacto estén disponibles." active={notificaciones.nuevos_documentos} onToggle={() => toggleNotificacion('nuevos_documentos')} />
                     <NotificationSwitch label="Resumen mensual" info="Informe consolidado con métricas de economía circular y ahorro acumulado." active={notificaciones.resumen_mensual} onToggle={() => toggleNotificacion('resumen_mensual')} />
                     <NotificationSwitch label="Respuestas de soporte" info="Notificaciones en tiempo real cuando el equipo responda tus consultas." active={notificaciones.soporte_respuestas} onToggle={() => toggleNotificacion('soporte_respuestas')} />
                     <NotificationSwitch label="Modo Eco-Noche" info="Cambia automáticamente al tema oscuro entre 7:00 PM y 7:00 AM." active={notificaciones.eco_night_mode} onToggle={() => toggleNotificacion('eco_night_mode')} />
@@ -671,15 +674,15 @@ export default function SettingsPage() {
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>
                         Canal preferido
                       </label>
-                      <select
+                      <Selector
                         value={notificaciones.canal_preferido}
-                        onChange={(e) => setNotificaciones(prev => ({ ...prev, canal_preferido: e.target.value }))}
-                        style={{ ...inputStyle, padding: '8px 12px' }}
-                      >
-                        <option value="todos">Email + App</option>
-                        <option value="solo_app">Solo App</option>
-                        <option value="silencio">Silencio</option>
-                      </select>
+                        onChange={(val) => setNotificaciones(prev => ({ ...prev, canal_preferido: val }))}
+                        opciones={[
+                          { value: 'todos', label: 'Email + App' },
+                          { value: 'solo_app', label: 'Solo App' },
+                          { value: 'silencio', label: 'Silencio' },
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>

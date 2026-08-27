@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { CheckCircle, AlertCircle as WarningCircle, XCircle, Cpu, Database, ShieldCheck, ArrowLeft, Clock, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning, Hammer } from '@/components/ui/icons'
+import { CheckCircle, AlertCircle as WarningCircle, XCircle, Cpu, Database, ShieldCheck, ArrowLeft, Clock, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning, Hammer, Info, Calendar } from '@/components/ui/icons'
 import type { ChecksResult } from '@/lib/status-checker'
 
 interface StatusComponent {
@@ -52,6 +52,8 @@ interface Incidente {
   componente: string
   estado: 'investigando' | 'identificado' | 'monitoreando' | 'resuelto'
   severidad: 'menor' | 'mayor' | 'critico'
+  origen: 'admin' | 'sistema'
+  tipo: 'incidente' | 'mantenimiento'
   created_at: string
   updated_at: string
   resolved_at: string | null
@@ -177,33 +179,47 @@ export default function StatusPage() {
     glassBg: isDark ? 'rgba(71, 71, 71, 0.5)' : 'rgba(255, 255, 255, 0.35)',
   }
 
-  // Filtrar incidentes activos (no resueltos)
-  const activos = incidencias.filter(i => i.estado !== 'resuelto')
+  // Filtrar incidentes/mantenimientos activos (no resueltos) — separados,
+  // un mantenimiento programado nunca cuenta como "algo está mal".
+  const todosActivos = incidencias.filter(i => i.estado !== 'resuelto')
+  const activos = todosActivos.filter(i => i.tipo !== 'mantenimiento')
+  const mantenimientosActivos = todosActivos.filter(i => i.tipo === 'mantenimiento')
 
-  // Determinar estado general
-  let globalStatus: 'ok' | 'degradado' | 'error' = 'ok'
+  // Determinar estado general — prioridad: incidente real > mantenimiento
+  // programado > todo operativo (un mantenimiento nunca tapa una falla real).
+  let globalStatus: 'ok' | 'degradado' | 'error' | 'mantenimiento' = 'ok'
   let globalMessage = 'Todos los sistemas están operando normalmente.'
   let bannerBg = isDark ? 'rgba(56,185,142,0.18)' : 'rgba(56,185,142,0.12)'
   let bannerBorder = 'rgba(56,185,142,0.25)'
   let bannerColor = '#38B98E'
+  let bannerTitulo = 'Sistemas Operativos'
 
   if (activos.length > 0) {
     const tieneCritico = activos.some(i => i.severidad === 'critico' || i.severidad === 'mayor')
     globalStatus = tieneCritico ? 'error' : 'degradado'
-    globalMessage = tieneCritico 
+    globalMessage = tieneCritico
       ? 'Incidencia crítica: Estamos experimentando fallas en algunos servicios.'
       : 'Incidencia menor: Algunos servicios operan con degradación.'
-    bannerBg = tieneCritico 
-      ? (isDark ? 'rgba(255,94,75,0.18)' : 'rgba(255,94,75,0.12)') 
+    bannerBg = tieneCritico
+      ? (isDark ? 'rgba(255,94,75,0.18)' : 'rgba(255,94,75,0.12)')
       : (isDark ? 'rgba(246,191,62,0.18)' : 'rgba(246,191,62,0.12)')
     bannerBorder = tieneCritico ? 'rgba(255,94,75,0.25)' : 'rgba(246,191,62,0.25)'
     bannerColor = tieneCritico ? '#FF5E4B' : '#F6BF3E'
+    bannerTitulo = tieneCritico ? 'Falla del Servicio' : 'Degradación del Servicio'
+  } else if (mantenimientosActivos.length > 0) {
+    globalStatus = 'mantenimiento'
+    globalMessage = mantenimientosActivos[0].descripcion || mantenimientosActivos[0].titulo
+    bannerBg = isDark ? 'rgba(89,166,228,0.18)' : 'rgba(89,166,228,0.12)'
+    bannerBorder = 'rgba(89,166,228,0.25)'
+    bannerColor = '#59A6E4'
+    bannerTitulo = mantenimientosActivos[0].titulo
   } else if (!checks && !loading) {
     globalStatus = 'degradado'
     globalMessage = 'No se pudo comprobar el estado automático. Algunos servicios podrían no responder.'
     bannerBg = isDark ? 'rgba(246,191,62,0.18)' : 'rgba(246,191,62,0.12)'
     bannerBorder = 'rgba(246,191,62,0.25)'
     bannerColor = '#F6BF3E'
+    bannerTitulo = 'Degradación del Servicio'
   }
 
   // Generar historial de barras de los últimos 60 días
@@ -311,7 +327,9 @@ export default function StatusPage() {
       icon: Database,
       status: checks?.supabase?.status ?? 'ok',
       latency: checks?.supabase?.latency,
-      details: checks?.supabase?.details
+      details: checks?.supabase?.details,
+      origen: 'externo' as const,
+      mantenimientoProgramado: checks?.supabase?.mantenimientoProgramado
     },
     {
       key: 'calculadora',
@@ -320,7 +338,9 @@ export default function StatusPage() {
       icon: ShieldCheck,
       status: 'ok',
       latency: 0,
-      details: 'Operacional'
+      details: 'Operacional',
+      origen: 'nuestro' as const,
+      mantenimientoProgramado: undefined as string | undefined
     }
   ]
 
@@ -338,7 +358,9 @@ export default function StatusPage() {
           icon: Cpu,
           status: checks?.gemini?.status ?? 'ok',
           latency: checks?.gemini?.latency,
-          details: checks?.gemini?.details
+          details: checks?.gemini?.details,
+          origen: 'externo' as const,
+          mantenimientoProgramado: checks?.gemini?.mantenimientoProgramado
         },
         {
           key: 'groq',
@@ -347,7 +369,9 @@ export default function StatusPage() {
           icon: Cpu,
           status: checks?.groq?.status ?? 'ok',
           latency: checks?.groq?.latency,
-          details: checks?.groq?.details
+          details: checks?.groq?.details,
+          origen: 'externo' as const,
+          mantenimientoProgramado: checks?.groq?.mantenimientoProgramado
         },
         {
           key: 'openrouter',
@@ -356,7 +380,9 @@ export default function StatusPage() {
           icon: Cpu,
           status: checks?.openrouter?.status ?? 'ok',
           latency: checks?.openrouter?.latency,
-          details: checks?.openrouter?.details
+          details: checks?.openrouter?.details,
+          origen: 'externo' as const,
+          mantenimientoProgramado: checks?.openrouter?.mantenimientoProgramado
         },
         {
           key: 'qwen',
@@ -365,7 +391,9 @@ export default function StatusPage() {
           icon: Cpu,
           status: checks?.qwen?.status ?? 'ok',
           latency: checks?.qwen?.latency,
-          details: checks?.qwen?.details
+          details: checks?.qwen?.details,
+          origen: 'externo' as const,
+          mantenimientoProgramado: checks?.qwen?.mantenimientoProgramado
         }
       ]
     }
@@ -924,6 +952,8 @@ export default function StatusPage() {
         }}>
           {globalStatus === 'ok' ? (
             <CheckCircle size={36} color={bannerColor} style={{ flexShrink: 0 }} />
+          ) : globalStatus === 'mantenimiento' ? (
+            <Hammer size={36} color={bannerColor} style={{ flexShrink: 0 }} />
           ) : globalStatus === 'degradado' ? (
             <WarningCircle size={36} color={bannerColor} style={{ flexShrink: 0 }} />
           ) : (
@@ -931,7 +961,7 @@ export default function StatusPage() {
           )}
           <div>
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: t.textPrimary }}>
-              {globalStatus === 'ok' ? 'Sistemas Operativos' : globalStatus === 'degradado' ? 'Degradación del Servicio' : 'Falla del Servicio'}
+              {bannerTitulo}
             </h2>
             <p style={{ margin: '4px 0 0', fontSize: 14, color: t.textSecondary, lineHeight: 1.5 }}>
               {globalMessage}
@@ -966,7 +996,7 @@ export default function StatusPage() {
                       padding: '2px 8px',
                       borderRadius: 4
                     }}>
-                      {i.estado}
+                      {i.estado.charAt(0).toUpperCase() + i.estado.slice(1)}
                     </span>
                   </div>
                   <p style={{ margin: '8px 0 0', fontSize: 13, color: t.textSecondary, lineHeight: 1.6 }}>
@@ -1050,7 +1080,7 @@ export default function StatusPage() {
                         </div>
                       </div>
                       <span style={{ fontSize: 12, fontWeight: 600, color: t.textSecondary, flexShrink: 0 }}>
-                        {compUptime.toFixed(2)}% uptime
+                        {compUptime.toFixed(2)} % uptime
                       </span>
                     </div>
 
@@ -1082,6 +1112,30 @@ export default function StatusPage() {
                       </span>
                       <span>Hoy</span>
                     </div>
+
+                    {/* Contexto completo — de dónde sale el problema (nosotros
+                        o el proveedor) y si hay mantenimiento programado del
+                        proveedor. Pedido explícito: "no dice que lo reportó
+                        Supabase y en qué estado está". */}
+                    {comp.status !== 'ok' && (
+                      <p style={{ display: 'flex', alignItems: 'flex-start', gap: 5, margin: '4px 0 0', fontSize: 11, color: t.textSecondary, lineHeight: 1.5 }}>
+                        {comp.origen === 'nuestro'
+                          ? <Warning size={12} color="#F6BF3E" style={{ flexShrink: 0, marginTop: 2 }} />
+                          : <Info size={12} color="#59A6E4" style={{ flexShrink: 0, marginTop: 2 }} />}
+                        <span>
+                          {comp.origen === 'nuestro'
+                            ? 'Problema en nuestro propio sistema, no de un proveedor externo.'
+                            : `Reportado por el proveedor externo (${comp.label}), no es una falla de nuestro código.`}
+                          {comp.details ? ` ${comp.details}` : ''}
+                        </span>
+                      </p>
+                    )}
+                    {comp.mantenimientoProgramado && (
+                      <p style={{ display: 'flex', alignItems: 'flex-start', gap: 5, margin: '4px 0 0', fontSize: 11, color: '#59A6E4', lineHeight: 1.5 }}>
+                        <Calendar size={12} color="#59A6E4" style={{ flexShrink: 0, marginTop: 2 }} />
+                        <span>Mantenimiento programado del proveedor: {comp.mantenimientoProgramado}</span>
+                      </p>
+                    )}
                   </div>
                 )
               })}
@@ -1159,7 +1213,7 @@ export default function StatusPage() {
                         </div>
                       </div>
                       <span style={{ fontSize: 12, fontWeight: 600, color: t.textSecondary, flexShrink: 0 }}>
-                        {groupUptime.toFixed(2)}% uptime
+                        {groupUptime.toFixed(2)} % uptime
                       </span>
                     </div>
 
@@ -1230,7 +1284,7 @@ export default function StatusPage() {
                                   </div>
                                 </div>
                                 <span style={{ fontSize: 11, color: t.textSecondary }}>
-                                  {compUptime.toFixed(2)}%
+                                  {compUptime.toFixed(2)} %
                                 </span>
                               </div>
 
@@ -1262,6 +1316,26 @@ export default function StatusPage() {
                                 </span>
                                 <span>Hoy</span>
                               </div>
+
+                              {comp.status !== 'ok' && (
+                                // Los 4 modelos de IA siempre son externos (no
+                                // hay motor de IA propio que reporte estos
+                                // checks), así que aquí no hace falta la rama
+                                // "nuestro" que sí existe en Sistema Core.
+                                <p style={{ display: 'flex', alignItems: 'flex-start', gap: 5, margin: '4px 0 0', fontSize: 10, color: t.textSecondary, lineHeight: 1.5 }}>
+                                  <Info size={11} color="#59A6E4" style={{ flexShrink: 0, marginTop: 2 }} />
+                                  <span>
+                                    Reportado por el proveedor externo ({comp.label}), no es una falla de nuestro código.
+                                    {comp.details ? ` ${comp.details}` : ''}
+                                  </span>
+                                </p>
+                              )}
+                              {comp.mantenimientoProgramado && (
+                                <p style={{ display: 'flex', alignItems: 'flex-start', gap: 5, margin: '4px 0 0', fontSize: 10, color: '#59A6E4', lineHeight: 1.5 }}>
+                                  <Calendar size={11} color="#59A6E4" style={{ flexShrink: 0, marginTop: 2 }} />
+                                  <span>Mantenimiento programado del proveedor: {comp.mantenimientoProgramado}</span>
+                                </p>
+                              )}
                             </div>
                           )
                         })}

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 
 // Ejecutado por Vercel Cron diariamente a las 8:00 AM Colombia (UTC-5 → 13:00 UTC)
 // Configurado en vercel.json: { "crons": [{ "path": "/api/cron/cotizaciones-frias", "schedule": "0 13 * * *" }] }
@@ -54,8 +55,12 @@ export async function GET(request: NextRequest) {
     // Crear notificación en campana del asesor
     const { error: alertaError } = await adminClient.from('alertas').insert({
       titulo: 'Cotización sin respuesta',
-      mensaje: `La propuesta de ${clienteNombre} (${cot.codigo_cotizacion}) lleva ${diasSinRespuesta} días sin actividad. Haz seguimiento.`,
-      tipo: 'warning',
+      mensaje: `La propuesta de ${clienteNombre} (${formatCodigoCotizacion(cot.codigo_cotizacion)}) lleva ${diasSinRespuesta} días sin actividad. Haz seguimiento.`,
+      // 'warning' no es un tipo válido (CHECK real: info/promo/estado/urgente,
+      // ver sql/001_schema_inicial.sql) — este insert fallaba en silencio,
+      // bug real encontrado de paso al tocar este mismo archivo.
+      tipo: 'urgente',
+      origen: 'sistema',
       destinatario_tipo: 'usuario',
       destinatario_id: cot.asesor_id,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),

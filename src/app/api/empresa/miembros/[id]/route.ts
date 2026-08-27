@@ -37,7 +37,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Acceso denegado.' }, { status: 403 })
   }
   if (miembro.rol === 'super_admin') {
-    return NextResponse.json({ error: 'No puedes remover a un super administrador.' }, { status: 403 })
+    return NextResponse.json({ error: 'No puedes remover a un superadministrador.' }, { status: 403 })
   }
 
   const { error } = await adminClient

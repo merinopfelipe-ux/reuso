@@ -19,7 +19,7 @@ interface Props {
   data: PuntoMensualPersonal[]
 }
 
-const BRAND = '#00827C'
+const BRAND = 'var(--color-brand)'
 
 function TooltipCustom({ active, payload, label }: {
   active?: boolean
@@ -39,7 +39,7 @@ function TooltipCustom({ active, payload, label }: {
     >
       <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</p>
       <p style={{ margin: '4px 0 0', fontSize: 14, color: BRAND, fontWeight: 700 }}>
-        {payload[0].value.toFixed(2)} kg CO₂
+        {payload[0].value.toFixed(2)} kg CO₂ eq
       </p>
     </div>
   )

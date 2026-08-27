@@ -3,8 +3,10 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Inbox as Tray, Mail as Envelope, Building2 as Buildings, Calendar, ChevronDown as CaretDown, ChevronUp as CaretUp, Phone } from '@/components/ui/icons'
+import { formatTelefonoVista } from '@/lib/telefono'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
+import { Selector } from '@/components/ui/selector'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -82,7 +84,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
     <div style={{ paddingBottom: 40 }}>
 
       {/* KPIs rápidos */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div className="leads-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         {ESTADOS.map(e => {
           const cfg = ESTADO_CONFIG[e]
           return (
@@ -112,12 +114,9 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
           {filtrados.map(lead => {
             const abierto = expandido === lead.id
             return (
-              <div key={lead.id} style={{
-                background: 'var(--bg-card)', borderRadius: 12, border: `1px solid ${C.border}`,
-                boxShadow: 'var(--shadow)', overflow: 'hidden',
-              }}>
+              <div key={lead.id} className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
                 {/* Fila principal */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', alignItems: 'center', gap: 16, padding: '14px 18px' }}>
+                <div className="lead-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', alignItems: 'center', gap: 16, padding: '14px 18px' }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
                       <span style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>{lead.nombre ?? '(sin nombre)'}</span>
@@ -141,7 +140,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
                       )}
                       {lead.telefono && (
                         <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Phone size={11} />{lead.telefono}
+                          <Phone size={11} />{formatTelefonoVista(lead.telefono, '+57')}
                         </span>
                       )}
                       <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -151,14 +150,14 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
                   </div>
 
                   {/* Cambiar estado */}
-                  <select
-                    value={lead.estado}
-                    disabled={cambiando === lead.id}
-                    onChange={e => cambiarEstado(lead.id, e.target.value as EstadoLead)}
-                    style={{ padding: '5px 8px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 12, color: C.dark, cursor: 'pointer', outline: 'none' }}
-                  >
-                    {ESTADOS.map(e => <option key={e} value={e}>{ESTADO_CONFIG[e].label}</option>)}
-                  </select>
+                  <div style={{ minWidth: 140 }}>
+                    <Selector
+                      value={lead.estado}
+                      disabled={cambiando === lead.id}
+                      onChange={val => cambiarEstado(lead.id, val as EstadoLead)}
+                      opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
+                    />
+                  </div>
 
                   {/* WhatsApp */}
                   <button onClick={() => abrirWhatsApp(lead)}
@@ -191,6 +190,9 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
       <style dangerouslySetInnerHTML={{ __html: `
         @media (max-width: 768px) {
           .leads-grid { grid-template-columns: 1fr 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .lead-row { grid-template-columns: 1fr; }
         }
       ` }} />
     </div>

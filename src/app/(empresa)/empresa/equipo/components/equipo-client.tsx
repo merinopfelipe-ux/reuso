@@ -3,6 +3,8 @@
 import { useState, useCallback } from 'react'
 import { UserPlus, Mail as Envelope, Clock, CheckCircle, XCircle, Users, Loader2 as CircleNotch, Copy, Check, Link, Trash2 as Trash, Pencil as PencilSimple, X, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import type { Rol } from '@/types'
+import { Selector } from '@/components/ui/selector'
+import { formatFecha as formatFechaBase } from '@/lib/format'
 
 interface Miembro {
   id: string
@@ -30,17 +32,17 @@ interface Props {
   codigoRegistro?: string | null
 }
 
-const BRAND = '#00827C'
-const BG_LIGHT = '#EBF5F4'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BRAND = 'var(--color-brand)'
+const BG_LIGHT = 'var(--bg-integrated)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 
 const ROL_LABELS: Record<string, string> = {
   empresa_admin: 'Administrador',
   empleado: 'Empleado',
   usuario_libre: 'Usuario libre',
-  super_admin: 'Super admin',
+  super_admin: 'Superadmin',
 }
 
 const ROL_COLORS: Record<string, string> = {
@@ -57,7 +59,7 @@ const ESTADO_CONFIG: Record<string, { color: string; label: string; icono: React
 }
 
 function formatFecha(iso: string) {
-  return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+  return formatFechaBase(iso)
 }
 
 export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invitacionesIniciales, empresaId, codigoRegistro }: Props) {
@@ -238,7 +240,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
           <button
             onClick={() => setModalOpen(true)}
             className="hover-pop hover-press"
-            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 8, border: 'none', background: BRAND, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '8px 14px', borderRadius: 8, border: 'none', background: BRAND, color: 'var(--text-on-brand)', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
           >
             <UserPlus size={15} /> Invitar
           </button>
@@ -275,7 +277,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                             style={{ padding: '4px 8px', borderRadius: 6, border: `1.5px solid ${BRAND}`, fontSize: 13, outline: 'none', flex: 1 }}
                           />
                           <button onClick={() => handleGuardarMiembro(m.id)} disabled={guardandoMiembro}
-                            style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                            style={{ background: BRAND, color: 'var(--text-on-brand)', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                             {guardandoMiembro ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={13} />}
                           </button>
                           <button onClick={() => setEditandoMiembro(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
@@ -292,7 +294,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, borderRadius: 100, padding: '3px 10px', background: `${ROL_COLORS[m.rol] ?? '#4D7C79'}18`, color: ROL_COLORS[m.rol] ?? TEXT_MED }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, borderRadius: 100, padding: '3px 10px', background: `${ROL_COLORS[m.rol] ?? '#59A6E4'}18`, color: ROL_COLORS[m.rol] ?? TEXT_MED }}>
                       {ROL_LABELS[m.rol] ?? m.rol}
                     </span>
 
@@ -302,18 +304,18 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                           onClick={() => { setEditandoMiembro(m.id); setEditNombreMiembro(m.nombre) }}
                           title="Editar nombre"
                           className="hover-pencil hover-press"
-                          style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '5px', cursor: 'pointer', color: TEXT_MED, display: 'flex', alignItems: 'center' }}
+                          style={{ width: 36, height: 36, background: 'none', border: `1px solid ${BORDER}`, borderRadius: 8, cursor: 'pointer', color: TEXT_MED, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                         >
-                          <PencilSimple size={13} />
+                          <PencilSimple size={14} />
                         </button>
 
                         <button
                           onClick={() => { setMiembroAEliminar(m); setTextoConfirmacionEliminar('') }}
                           title="Remover del equipo"
                           className="hover-trash hover-press"
-                          style={{ background: 'rgba(255,94,75,0.06)', border: '1px solid rgba(255,94,75,0.20)', borderRadius: 6, padding: '5px', cursor: 'pointer', color: '#FF5E4B', display: 'flex', alignItems: 'center' }}
+                          style={{ width: 36, height: 36, background: 'rgba(255,94,75,0.06)', border: '1px solid rgba(255,94,75,0.20)', borderRadius: 8, cursor: 'pointer', color: '#FF5E4B', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
                         >
-                          <Trash size={13} />
+                          <Trash size={14} />
                         </button>
                       </>
                     )}
@@ -368,7 +370,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                               style={{ padding: '4px 8px', borderRadius: 6, border: `1.5px solid ${BRAND}`, fontSize: 13, outline: 'none', flex: 1 }}
                             />
                             <button onClick={() => handleGuardarInv(inv.id)} disabled={guardandoInv}
-                              style={{ background: BRAND, color: '#fff', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                              style={{ background: BRAND, color: 'var(--text-on-brand)', border: 'none', borderRadius: 6, padding: '4px 8px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                               {guardandoInv ? <CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Check size={13} />}
                             </button>
                             <button onClick={() => setEditandoInv(null)} className="hover-rotate-90 hover-press" style={{ background: 'none', border: `1px solid ${BORDER}`, borderRadius: 6, padding: '4px 8px', cursor: 'pointer', color: TEXT_MED }}>
@@ -433,6 +435,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
           />
           <div style={{
             position: 'relative', width: '100%', maxWidth: 420,
+            maxHeight: '90vh', overflowY: 'auto',
             background: 'var(--bg-card)', borderRadius: 16,
             border: `1px solid ${BORDER}`, padding: 24,
             boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
@@ -465,7 +468,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                       setCodigoCopiado(true)
                       setTimeout(() => setCodigoCopiado(false), 2000)
                     }}
-                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, border: `1px solid ${BRAND}`, background: codigoCopiado ? BRAND : 'transparent', color: codigoCopiado ? '#fff' : BRAND, fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', borderRadius: 6, border: `1px solid ${BRAND}`, background: codigoCopiado ? BRAND : 'transparent', color: codigoCopiado ? 'var(--text-on-brand)' : BRAND, fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                   >
                     {codigoCopiado ? '✓ Copiado' : 'Copiar código'}
                   </button>
@@ -495,14 +498,14 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
               <label style={{ fontSize: 13, fontWeight: 600, color: TEXT_DARK, display: 'block', marginBottom: 6 }}>
                 Rol asignado
               </label>
-              <select
+              <Selector
                 value={rolInvitado}
-                onChange={e => setRolInvitado(e.target.value as 'empleado' | 'empresa_admin')}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'var(--bg-input)', color: TEXT_DARK, fontSize: 14, outline: 'none' }}
-              >
-                <option value="empleado">Empleado</option>
-                <option value="empresa_admin">Administrador</option>
-              </select>
+                onChange={val => setRolInvitado(val as 'empleado' | 'empresa_admin')}
+                opciones={[
+                  { value: 'empleado', label: 'Empleado' },
+                  { value: 'empresa_admin', label: 'Administrador' },
+                ]}
+              />
             </div>
 
             {/* Link copiable tras generar invitación */}
@@ -519,7 +522,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                   <button
                     onClick={copiarLink}
                     className="hover-copy hover-press"
-                    style={{ flexShrink: 0, padding: '6px 12px', borderRadius: 6, border: `1.5px solid ${BRAND}`, background: copiado ? BRAND : 'transparent', color: copiado ? '#fff' : BRAND, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.2s' }}
+                    style={{ flexShrink: 0, padding: '6px 12px', borderRadius: 6, border: `1.5px solid ${BRAND}`, background: copiado ? BRAND : 'transparent', color: copiado ? 'var(--text-on-brand)' : BRAND, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, transition: 'all 0.2s' }}
                   >
                     {copiado ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
                   </button>
@@ -556,7 +559,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
             ) : (
               <button
                 onClick={() => { setModalOpen(false); setLinkInvitacion(null); setError(null); setEmailInvitar('') }}
-                style={{ width: '100%', padding: '11px', borderRadius: 8, border: 'none', background: BRAND, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+                style={{ width: '100%', padding: '11px', borderRadius: 8, border: 'none', background: BRAND, color: 'var(--text-on-brand)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
               >
                 Listo
               </button>
@@ -579,6 +582,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
           />
           <div style={{
             position: 'relative', width: '100%', maxWidth: 420,
+            maxHeight: '90vh', overflowY: 'auto',
             background: 'var(--bg-card)', borderRadius: 16,
             border: `1px solid ${BORDER}`, padding: 24,
             boxShadow: '0 20px 40px rgba(0,0,0,0.15)',

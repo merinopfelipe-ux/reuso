@@ -42,9 +42,9 @@ const T = {
     mostrarPass:'Mostrar contraseña',
     ocultarPass:'Ocultar contraseña',
     testimonios: [
-      { titulo: "Certificamos nuestro impacto ambiental con total transparencia.", texto: "Con Calculadora de Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.", cargo: "Directora de Sostenibilidad" },
-      { titulo: "Medimos y reportamos el ahorro de CO₂ con precisión.", texto: "Antes nuestros reportes de sostenibilidad eran estimaciones. Hoy generamos certificados con datos verificables y compartimos el impacto real de cada objeto reutilizado con un solo clic.", cargo: "Gerente de Operaciones" },
-      { titulo: "Integramos a todo el equipo en nuestra economía circular.", texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.", cargo: "Especialista en Economía Circular" },
+      { titulo: "Medimos nuestro impacto ambiental con total transparencia.", texto: "Con Calculadora de Reúso ingresamos el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos un estimado de CO₂ evitado con códigos QR verificables que conectan con nuestros clientes.", cargo: "Directora de Sostenibilidad" },
+      { titulo: "Estructuramos el reporte ambiental corporativo.", texto: "El cálculo en cada cotización nos ayuda a justificar el impacto de reparar en lugar de desechar. Compartimos el reporte con un solo clic.", cargo: "Gerente de Operaciones" },
+      { titulo: "Integramos a todo el equipo en nuestra economía circular.", texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y verificado.", cargo: "Especialista en Economía Circular" },
     ],
   },
   ENG: {
@@ -71,31 +71,31 @@ const T = {
     mostrarPass:'Show password',
     ocultarPass:'Hide password',
     testimonios: [
-      { titulo: "We certified our environmental impact with full transparency.", texto: "With Reúso we certified all recovered furniture from our offices in record time. We now communicate avoided CO₂ with verifiable QR codes that build real trust with our clients.", cargo: "Sustainability Director" },
-      { titulo: "We measure and report CO₂ savings with precision.", texto: "Our sustainability reports used to be estimates. Today we generate verifiable certificates and share the real impact of every reused object with a single click.", cargo: "Operations Manager" },
-      { titulo: "We brought our entire team into our circular economy.", texto: "The control panel gives us full visibility into avoided emissions. Every employee logs their reuses and together we build a culture of measurable, certified environmental impact.", cargo: "Circular Economy Specialist" },
+      { titulo: "We measured our environmental impact with full transparency.", texto: "With Reúso we measured all recovered furniture from our offices in record time. We now communicate avoided CO₂ with verifiable QR codes that build real trust with our clients.", cargo: "Sustainability Director" },
+      { titulo: "We measure and report CO₂ savings with precision.", texto: "Our sustainability reports used to be estimates. Today we generate verifiable reports and share the real impact of every reused object with a single click.", cargo: "Operations Manager" },
+      { titulo: "We brought our entire team into our circular economy.", texto: "The control panel gives us full visibility into avoided emissions. Every employee logs their reuses and together we build a culture of measurable, verified environmental impact.", cargo: "Circular Economy Specialist" },
     ],
   },
 }
 
 const TESTIMONIOS = [
   {
-    titulo: "Certificamos nuestro impacto ambiental con total transparencia.",
-    texto: "Con Calculadora de Reúso certificamos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.",
+    titulo: "Medimos nuestro impacto ambiental con total transparencia.",
+    texto: "Con Calculadora de Reúso medimos todo el mobiliario recuperado de nuestras oficinas en tiempo récord. Ahora comunicamos el CO₂ evitado con códigos QR verificables que generan confianza real en nuestros clientes.",
     autor: "Laura Méndez",
     cargo: "Directora de Sostenibilidad",
     initials: "LM", color: "#8AD0B2"
   },
   {
-    titulo: "Medimos y reportamos el ahorro de CO₂ con precisión.",
-    texto: "Antes nuestros reportes de sostenibilidad eran estimaciones. Hoy generamos certificados con datos verificables y compartimos el impacto real de cada objeto reutilizado con un solo clic.",
+    titulo: "Estructuramos el reporte ambiental corporativo.",
+    texto: "El cálculo en cada cotización nos ayuda a justificar el impacto de reparar en lugar de desechar. Compartimos el reporte con un solo clic.",
     autor: "Carlos Ruiz",
     cargo: "Gerente de Operaciones",
     initials: "CR", color: "#00827C"
   },
   {
     titulo: "Integramos a todo el equipo en nuestra economía circular.",
-    texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y certificado.",
+    texto: "El tablero de control nos da visibilidad total sobre las emisiones evitadas. Cada empleado registra sus reusos y juntos construimos una cultura de impacto ambiental medible y verificado.",
     autor: "Ana Gómez",
     cargo: "Especialista en Economía Circular",
     initials: "AG", color: "#D6F391"
@@ -558,7 +558,7 @@ export default function LoginPage() {
       </section>
 
       {/* ── PANEL DERECHO - CARRUSEL (60%) ──────────────────────────── */}
-      <section className="anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-gradient-to-br from-[#004945] to-brand shadow-inner">
+      <section className={`anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-gradient-to-br shadow-inner ${isDark ? 'from-[#474747] to-brand' : 'from-[#004945] to-brand'}`}>
 
         {/* Semicírculo decorativo */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-10 pointer-events-none">

@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useTransition } from 'react'
+import { Selector } from '@/components/ui/selector'
 
 export function FiltrosDpp({ estadoActual, q }: { estadoActual?: string; q?: string }) {
   const router = useRouter()
@@ -33,21 +34,19 @@ export function FiltrosDpp({ estadoActual, q }: { estadoActual?: string; q?: str
           color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif", outline: 'none',
         }}
       />
-      <select
-        value={estadoActual ?? ''}
-        onChange={(e) => aplicarFiltros(e.target.value || undefined, undefined)}
-        style={{
-          padding: '9px 12px', borderRadius: 8, fontSize: 14,
-          border: '1px solid var(--border)', background: 'var(--bg-secondary)',
-          color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif", cursor: 'pointer',
-        }}
-      >
-        <option value="">Todos los estados</option>
-        <option value="activo">Activo</option>
-        <option value="en_reuso">En reúso</option>
-        <option value="disposicion_final">Disposición final</option>
-        <option value="archivado">Archivado</option>
-      </select>
+      <div style={{ minWidth: 200 }}>
+        <Selector
+          value={estadoActual ?? ''}
+          onChange={(val) => aplicarFiltros(val || undefined, undefined)}
+          opciones={[
+            { value: '', label: 'Todos los estados' },
+            { value: 'activo', label: 'Activo' },
+            { value: 'en_reuso', label: 'En reúso' },
+            { value: 'disposicion_final', label: 'Disposición final' },
+            { value: 'archivado', label: 'Archivado' },
+          ]}
+        />
+      </div>
       {(estadoActual || q) && (
         <button
           onClick={() => { setBusqueda(''); aplicarFiltros('', '') }}

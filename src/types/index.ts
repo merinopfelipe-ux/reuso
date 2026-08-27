@@ -4,7 +4,6 @@ export type NivelConfianza = 'alta' | 'media' | 'baja'
 export type TipoAlerta = 'info' | 'promo' | 'estado' | 'urgente'
 export type TipoDestinatario = 'todos' | 'empresa' | 'usuario'
 export type EstadoInvitacion = 'pendiente' | 'aceptada' | 'expirada'
-export type TipoCertificado = 'certificado' | 'informe'
 export type TemaPreferido = 'light' | 'dark' | 'system'
 
 export interface Profile {
@@ -21,6 +20,13 @@ export interface Profile {
   created_at: string
 }
 
+export interface PorQueElegirnos {
+  parrafo: string
+  bullets: string[]
+  imagen_url: string | null
+  imagen_posicion?: 'center' | 'top' | 'bottom' | null
+}
+
 export interface Empresa {
   id: string
   nombre: string
@@ -31,10 +37,28 @@ export interface Empresa {
   sector: string | null
   notas_admin: string | null
   created_at: string
+  // Razón social (opcional, pie legal de la cotización pública, cae a `nombre` si es null).
+  nombre_footer_propuesta: string | null
+  // Logo vectorial (header cotización pública, día/noche). El raster para PDF
+  // sigue en logo_propuesta_url, se deriva automáticamente al subir el SVG.
+  logo_svg_url: string | null
+  logo_propuesta_url: string | null
+  logo_alto_minimo_px: number
+  por_que_elegirnos_json: PorQueElegirnos | null
+  // Nuevos campos de datos básicos operacionales
+  nit?: string | null
+  telefono?: string | null
+  pais?: string | null
+  region?: string | null
+  ciudad?: string | null
+  direccion?: string | null
+  sitio_web?: string | null
+  tamano_empresa: string | null
 }
 
 export interface Modulo {
   id: string
+  clave: string | null
   nombre: string
   icono_lucide: string
   descripcion: string | null
@@ -57,6 +81,30 @@ export interface ModuloConCategorias extends Modulo {
   total_empresas: number
 }
 
+export interface LineaNegocio {
+  id: string
+  clave: string
+  nombre: string
+  icono_lucide: string
+  descripcion: string | null
+  activa: boolean
+  orden: number
+  created_at: string
+  updated_at: string
+}
+
+export interface LineaNegocioEmpresa {
+  id: string
+  linea_negocio_id: string
+  empresa_id: string
+  activa: boolean
+  created_at: string
+}
+
+export interface LineaNegocioConActivo extends LineaNegocio {
+  activa_en_empresa: boolean
+}
+
 export interface Categoria {
   id: string
   nombre: string
@@ -65,6 +113,44 @@ export interface Categoria {
   activa: boolean
   orden: number
   modulo_id: string | null
+  parent_id: string | null
+  created_at: string
+}
+
+// Dimensión ambiental (huella de carbono / reuso). Nunca se mezcla con la financiera.
+export interface ItemMaterial {
+  id: string
+  item_id: string
+  nombre: string
+  peso_kg: number
+  factor_co2_kg: number
+  factor_agua_l_kg: number | null
+  categoria_material: string | null
+  origen_fuente: string | null
+  detalle_fuente: string | null
+  nivel_confianza: NivelConfianza
+  orden: number
+  created_at: string
+}
+
+// Dimensión financiera (Cotizador). Nunca se mezcla con la ambiental.
+export interface ItemServicio {
+  id: string
+  item_id: string
+  nombre: string
+  precio: number
+  orden: number
+  created_at: string
+}
+
+export interface ItemInsumo {
+  id: string
+  item_id: string
+  nombre: string
+  cantidad: number
+  unidad: string
+  precio_unitario: number
+  orden: number
   created_at: string
 }
 
@@ -75,13 +161,66 @@ export interface Item {
   descripcion: string | null
   peso_kg: number
   co2_por_unidad: number
+  agua_por_unidad: number
+  factor_rentabilidad: number
   icono_lucide: string | null
   activo: boolean
   orden: number
   origen_fuente: string | null
   detalle_fuente: string | null
   nivel_confianza: NivelConfianza
+  visibilidad?: 'global' | 'restringido'
   created_at: string
+}
+
+export interface ItemConDimensiones extends Item {
+  item_materiales: ItemMaterial[]
+  item_servicios: ItemServicio[]
+  item_insumos: ItemInsumo[]
+}
+
+// Esquema base (molde) de una categoría — nunca participa en cálculos reales,
+// solo pre-llena la creación de subcategorías/ítems. Misma separación de
+// dimensiones que ItemMaterial/ItemServicio/ItemInsumo.
+export interface CategoriaMaterialBase {
+  id: string
+  categoria_id: string
+  nombre: string
+  peso_kg: number
+  factor_co2_kg: number
+  factor_agua_l_kg: number | null
+  categoria_material: string | null
+  origen_fuente: string | null
+  detalle_fuente: string | null
+  nivel_confianza: NivelConfianza
+  orden: number
+  created_at: string
+}
+
+export interface CategoriaServicioBase {
+  id: string
+  categoria_id: string
+  nombre: string
+  precio: number
+  orden: number
+  created_at: string
+}
+
+export interface CategoriaInsumoBase {
+  id: string
+  categoria_id: string
+  nombre: string
+  cantidad: number
+  unidad: string
+  precio_unitario: number
+  orden: number
+  created_at: string
+}
+
+export interface CategoriaConEsquemaBase extends Categoria {
+  categoria_materiales_base: CategoriaMaterialBase[]
+  categoria_servicios_base: CategoriaServicioBase[]
+  categoria_insumos_base: CategoriaInsumoBase[]
 }
 
 export interface Calculo {
@@ -96,9 +235,9 @@ export interface Calculo {
   created_at: string
 }
 
-export interface Certificado {
+export interface Informe {
   id: string
-  tipo: TipoCertificado
+  tipo: 'informe'
   user_id: string | null
   empresa_id: string | null
   fecha_inicio: string | null
@@ -127,11 +266,13 @@ export interface Alerta {
   titulo: string
   mensaje: string
   tipo: TipoAlerta
+  origen: 'admin' | 'sistema'
   destinatario_tipo: TipoDestinatario
   destinatario_id: string | null
   activa: boolean
   created_at: string
   expires_at: string | null
+  enlace: string | null
 }
 
 export interface LogAuditoria {
@@ -152,6 +293,13 @@ export interface CategoriaConItems extends Categoria {
   items: Item[]
 }
 
+// Nodo del árbol de categorías, profundidad libre. children se arma en el
+// cliente/servidor agrupando por parent_id, no existe una tabla de niveles fija.
+export interface NodoCategoria extends Categoria {
+  items: ItemConDimensiones[]
+  children: NodoCategoria[]
+}
+
 export interface EmpresaConStats extends Empresa {
   total_empleados: number
   total_co2: number
@@ -164,7 +312,7 @@ export interface ModuloConActivo extends Modulo {
 // ── DPP - Pasaporte Digital de Producto ──────────────────────────────────────
 
 export type EstadoDPP = 'activo' | 'en_reuso' | 'disposicion_final' | 'archivado'
-export type TipoDocumentoIngesta = 'factura_compra' | 'recibo_energia' | 'certificado_origen' | 'foto_objeto' | 'otro'
+export type TipoDocumentoIngesta = 'factura_compra' | 'recibo_energia' | 'declaracion_origen' | 'foto_objeto' | 'otro'
 export type EstadoOCR = 'pendiente' | 'procesando' | 'completado' | 'error'
 export type CategoriaDPP = 'mobiliario' | 'electronico' | 'textil' | 'embalaje' | 'maquinaria' | 'otro'
 

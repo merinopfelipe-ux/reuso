@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { ChevronDown as CaretDown } from '@/components/ui/icons'
+import { Bandera } from '@/components/ui/bandera'
 
 interface FooterProps {
   ip?: string
@@ -72,7 +73,7 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
   return (
     <footer
       style={{
-        padding: isMobile ? '32px 24px' : '40px 60px',
+        padding: isMobile ? '32px 24px 110px 24px' : '40px 60px',
         background: `linear-gradient(0deg, rgba(214, 243, 145, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`, 
         color: 'var(--text-secondary)',
         fontSize: isMobile ? 11 : 12,
@@ -157,11 +158,21 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
               <span title={ip} style={{ opacity: 0.6 }}>{ipLabel} {ip || '-'}</span>
               <span style={{ opacity: 0.3 }}>|</span>
               {lastVisitHref ? (
-                <a href={lastVisitHref} className="footer-link" style={{ color: 'inherit', textDecoration: 'underline', pointerEvents: 'auto' }}>{lastVisitLabel} {lastVisit || '-'}</a>
+                <span>
+                  <span style={{ opacity: 0.6 }}>{lastVisitLabel} </span>
+                  <a 
+                    href={lastVisitHref} 
+                    className="footer-email-link" 
+                    style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}
+                  >
+                    {lastVisit || '-'}
+                  </a>
+                </span>
               ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '-'}</span>}
             </div>
 
-            {/* Selector de idioma - dropdown */}
+            {/* TODO (v2): Activar cuando estén listas las traducciones */
+             false && (
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setIdiomaOpen(o => !o)}
@@ -173,18 +184,7 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
                   color: 'var(--text-secondary)', transition: 'all 0.2s',
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${idioma === 'ES' ? 'es' : 'gb'}.svg`}
-                  alt=""
-                  style={{
-                    width: 16,
-                    height: 11,
-                    borderRadius: '2px',
-                    objectFit: 'cover',
-                    border: '1px solid rgba(0,0,0,0.15)',
-                  }}
-                />
+                <Bandera codigo={idioma === 'ES' ? 'CO' : 'GB'} />
                 {idioma}
                 <CaretDown size={11} style={{ transform: idiomaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </button>
@@ -208,31 +208,33 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
                         cursor: 'pointer', textAlign: 'left',
                       }}
                     >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${lang === 'ES' ? 'es' : 'gb'}.svg`}
-                        alt=""
-                        style={{
-                          width: 16,
-                          height: 11,
-                          borderRadius: '2px',
-                          objectFit: 'cover',
-                          border: `1px solid ${idioma === lang ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.15)'}`,
-                        }}
-                      />
+                      <Bandera codigo={lang === 'ES' ? 'CO' : 'GB'} />
                       <span>{lang === 'ES' ? 'Español' : 'English'}</span>
                     </button>
                   ))}
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
       </div>
 
       <style>{`
+        .footer-link {
+          text-decoration: none;
+        }
         .footer-link:hover {
           color: var(--color-brand);
+          text-decoration: none;
+        }
+        .footer-email-link {
+          text-decoration: none;
+          transition: color 0.2s, text-decoration 0.2s;
+        }
+        .footer-email-link:hover {
+          color: var(--color-brand);
+          text-decoration: underline;
         }
       `}</style>
     </footer>

@@ -8,18 +8,23 @@ import { CookieBanner } from '@/components/legal/cookie-banner'
 export const metadata: Metadata = {
   metadataBase: new URL('https://reuso.lurdes.co'),
   title: {
-    default: 'reuso.lurdes.co - Certificación de Impacto Ambiental',
+    default: 'reuso.lurdes.co - Medición de Impacto Ambiental',
     template: '%s - reuso.lurdes.co',
   },
-  description: 'Mide, certifica y comunica el CO₂ evitado cuando reutilizas objetos.',
+  description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
   robots: { index: false, follow: false },
+  // Apaga el ícono de "descargar imagen" que Edge superpone al pasar el
+  // mouse sobre cualquier <img> — no es algo que agreguemos nosotros, es un
+  // comportamiento nativo del navegador, y aquí no aplica (fotos de
+  // cotización dentro de la app autenticada, no contenido para descargar).
+  other: { edge: 'no-image-actions' },
   icons: {
     icon: '/logo-icono.svg',
     apple: '/logo-icono.svg',
   },
   openGraph: {
-    title: 'reuso.lurdes.co - Certificación de Impacto Ambiental',
-    description: 'Mide, certifica y comunica el CO₂ evitado cuando reutilizas objetos.',
+    title: 'reuso.lurdes.co - Medición de Impacto Ambiental',
+    description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
     url: 'https://reuso.lurdes.co',
     siteName: 'reuso.lurdes.co',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
@@ -52,7 +57,7 @@ export default function RootLayout({
           showSpinner={false} 
           height={3} 
           shadow="none" 
-          zIndex={1600}
+          zIndex={49}
         />
         <ToastProvider>
           <AlertasProvider>{children}</AlertasProvider>

@@ -25,12 +25,31 @@ const T = {
       { id: 'vigencia', label: 'Vigencia' },
     ],
     transparencia: {
-      texto: 'En la Calculadora de Reúso protegemos tu información con el mayor rigor. Los modelos de Inteligencia Artificial que asisten en el procesamiento de datos NO utilizan tus datos personales para entrenarse ni los comparten con terceros ajenos a la operación del sistema. Empleamos tus registros exclusivamente para calcular y certificar el impacto ambiental generado.',
+      texto: 'En la Calculadora de Reúso protegemos tu información con el mayor rigor. Los modelos de Inteligencia Artificial que asisten en el procesamiento de datos NO utilizan tus datos personales para entrenarse ni los comparten con terceros ajenos a la operación del sistema. Empleamos tus registros exclusivamente para calcular y medir el impacto ambiental generado.',
       link: 'Lee nuestra política de uso de IA →',
     },
     resumen: 'Solo recopilamos los datos necesarios para prestarte el servicio. No los vendemos. Puedes solicitar en cualquier momento que los actualicemos, rectifiquemos o eliminemos. Si eres de Europa, aplica el RGPD y tienes derechos adicionales como la portabilidad y el derecho al olvido. Si eres de EE. UU. (California), aplica la CCPA. En Colombia aplica la Ley 1581.',
     intro: 'Respetamos tu privacidad y nos comprometemos a proteger la información que registras en la plataforma. Esta política explica cómo recopilamos, almacenamos, usamos y divulgamos tus datos. Para un detalle completo del marco legal, consulta la',
     introLink: 'política de tratamiento de datos personales',
+    pilaresTitulo: 'Principios de Privacidad de Reúso',
+    pilaresIntro: 'Tus datos desempeñan un papel clave para impulsar soluciones circulares y transparentes. Estamos comprometidos con la claridad, la protección rigurosa y la soberanía de tu información en cada cálculo y reporte que generas.',
+    pilares: [
+      {
+        num: '01',
+        titulo: 'Transparencia',
+        descripcion: 'Te decimos con total claridad qué datos recopilamos, cómo estimamos el impacto ambiental y cómo utilizamos la información para prestarte el servicio sin letra pequeña.',
+      },
+      {
+        num: '02',
+        titulo: 'Seguridad',
+        descripcion: 'Toda nuestra infraestructura cuenta con cifrado integral en tránsito y reposo, control de acceso por roles y registros auditables para mantener tus datos siempre protegidos.',
+      },
+      {
+        num: '03',
+        titulo: 'Control y Opción',
+        descripcion: 'Tus datos son tuyos. Cuentas con herramientas directas para acceder, rectificar, exportar o eliminar de forma permanente tu información cuando lo decidas.',
+      },
+    ],
     privacyFirst: {
       titulo: 'Tus datos son tuyos.',
       cards: [
@@ -46,16 +65,16 @@ const T = {
         { fuerte: 'Datos de identificación:', texto: ' nombre, apellido, apodo opcional, documento de identidad (solo cuando aplica para organizaciones).' },
         { fuerte: 'Datos de contacto:', texto: ' correo electrónico, teléfono (opcional).' },
         { fuerte: 'Datos de organización:', texto: ' razón social, NIT, nombre del representante legal (solo para cuentas de empresa).' },
-        { fuerte: 'Datos de uso:', texto: ' registros de objetos reutilizados, cálculos de CO₂, certificados e informes generados.' },
+        { fuerte: 'Datos de uso:', texto: ' registros de objetos reutilizados, cálculos de CO₂, informes generados.' },
         { fuerte: 'Datos técnicos:', texto: ' dirección IP, tipo de navegador, sistema operativo, páginas visitadas, fecha y hora de acceso.' },
       ],
     },
     comoUsamos: {
       titulo: 'Cómo usamos tus datos',
       items: [
-        'Prestar el servicio de estimación y certificación de CO₂ evitado.',
+        'Prestar el servicio de estimación y medición de CO₂ evitado.',
         'Gestionar tu cuenta y tus accesos a la plataforma.',
-        'Generar certificados e informes con código de verificación único.',
+        'Generar informes con código de verificación único.',
         'Enviarte notificaciones relacionadas con el servicio contratado.',
         'Cumplir con las obligaciones legales y regulatorias aplicables.',
         'Mejorar la plataforma mediante análisis de uso agregado y anónimo.',
@@ -122,6 +141,25 @@ const T = {
     resumen: 'We only collect the data necessary to provide you with the service. We do not sell it. You can request at any time that we update, correct or delete it. If you are in Europe, the GDPR applies and you have additional rights such as portability and the right to be forgotten. If you are in the US (California), the CCPA applies. In Colombia, Law 1581 applies.',
     intro: 'We respect your privacy and are committed to protecting the information you register on the platform. This policy explains how we collect, store, use and disclose your data. For full details on the legal framework, see the',
     introLink: 'personal data processing policy',
+    pilaresTitulo: 'Reúso Privacy Principles',
+    pilaresIntro: 'Your data plays a key role in driving circular and transparent solutions. We are committed to clarity, rigorous protection, and data sovereignty across every calculation and report you generate.',
+    pilares: [
+      {
+        num: '01',
+        titulo: 'Transparency',
+        descripcion: 'We clearly inform you what data we collect, how we estimate environmental impact, and how information is processed without fine print.',
+      },
+      {
+        num: '02',
+        titulo: 'Security',
+        descripcion: 'Our entire infrastructure features end-to-end encryption in transit and at rest, role-based access control, and auditable logs to keep your data secure.',
+      },
+      {
+        num: '03',
+        titulo: 'Control & Choice',
+        descripcion: 'Your data is yours. You have direct tools to access, rectify, export, or permanently delete your information whenever you choose.',
+      },
+    ],
     privacyFirst: {
       titulo: 'Your data belongs to you.',
       cards: [
@@ -137,16 +175,16 @@ const T = {
         { fuerte: 'Identification data:', texto: ' first name, last name, optional nickname, identity document (only when applicable for organizations).' },
         { fuerte: 'Contact data:', texto: ' email address, phone number (optional).' },
         { fuerte: 'Organization data:', texto: ' legal name, tax ID, legal representative name (for company accounts only).' },
-        { fuerte: 'Usage data:', texto: ' records of reused objects, CO₂ calculations, certificates and reports generated.' },
+        { fuerte: 'Usage data:', texto: ' records of reused objects, CO₂ calculations, reports generated.' },
         { fuerte: 'Technical data:', texto: ' IP address, browser type, operating system, pages visited, date and time of access.' },
       ],
     },
     comoUsamos: {
       titulo: 'How we use your data',
       items: [
-        'Provide the CO₂ avoided estimation and certification service.',
+        'Provide the CO₂ avoided estimation and measurement service.',
         'Manage your account and your access to the platform.',
-        'Generate certificates and reports with a unique verification code.',
+        'Generate reports with a unique verification code.',
         'Send you notifications related to the contracted service.',
         'Comply with applicable legal and regulatory obligations.',
         'Improve the platform through aggregated and anonymous usage analysis.',
@@ -238,14 +276,43 @@ export default function PrivacidadPage() {
       resumen={t.resumen}
       leeTabien={t.leeTabien}
     >
+      {/* ── 3 Pilares Fundamentales de Privacidad (Inspirado en la estructura de Principios) ── */}
+      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-[var(--bg-card)] border border-[var(--border)] text-left">
+        <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mb-3">
+          {t.pilaresTitulo}
+        </h2>
+        <p className="text-sm sm:text-[15px] leading-relaxed text-[var(--text-secondary)] mb-8">
+          {t.pilaresIntro}
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {t.pilares.map((pilar) => (
+            <div
+              key={pilar.num}
+              className="flex flex-col rounded-[12px] border border-[var(--border)] bg-[var(--bg-primary)] p-5 transition-all hover:border-[var(--color-brand)]/40"
+            >
+              <span className="text-2xl sm:text-3xl font-black text-[var(--color-brand)] tracking-tight mb-2">
+                {pilar.num}
+              </span>
+              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">
+                {pilar.titulo}
+              </h3>
+              <p className="text-xs sm:text-[13px] leading-relaxed text-[var(--text-secondary)]">
+                {pilar.descripcion}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Bloque Privacy First */}
       <div style={{ marginBottom: 40 }}>
-        <p style={{ ...p, fontWeight: 700, fontSize: 20, marginBottom: 20 }}>{t.privacyFirst.titulo}</p>
+        <p style={{ ...p, fontWeight: 700, fontSize: 18, marginBottom: 16 }}>{t.privacyFirst.titulo}</p>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 16,
-          marginBottom: 20,
+          marginBottom: 16,
         }}>
           {t.privacyFirst.cards.map((card) => (
             <div

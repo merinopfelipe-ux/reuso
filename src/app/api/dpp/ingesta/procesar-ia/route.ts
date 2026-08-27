@@ -40,7 +40,7 @@ function construirPrompt(tipoDoc: string): { system: string; user: string } {
       destinos: 'c_operacion | c_mantenimiento',
       foco: 'costo total de la factura de energía o servicio',
     },
-    certificado_origen: {
+    declaracion_origen: {
       destinos: 'm_secundario_kg | m_renovable_kg | m_total_input_kg | peso_total_kg',
       foco: 'pesos en kg de materiales, porcentaje reciclado o renovable si aparece',
     },
@@ -137,6 +137,10 @@ async function llamarGeminiTexto(textoDoc: string, system: string, user: string)
         contents: [{ role: 'user', parts: [{ text: `${user}\n\nDocumento:\n${textoDoc}` }] }],
         generationConfig: {
           maxOutputTokens: 512, temperature: 0,
+          // gemini-3.6-flash piensa por defecto: sin este límite, el
+          // razonamiento interno consume todo el maxOutputTokens y no deja
+          // espacio para el JSON de salida.
+          thinkingConfig: { thinkingBudget: 100 },
           responseMimeType: 'application/json',
           responseSchema: GEMINI_RESPONSE_SCHEMA,
         },
@@ -199,6 +203,7 @@ async function llamarGemini(base64Data: string, mimeType: string, system: string
         generationConfig: {
           maxOutputTokens: 512,
           temperature: 0,
+          thinkingConfig: { thinkingBudget: 150 },
           responseMimeType: 'application/json',
           responseSchema: GEMINI_RESPONSE_SCHEMA,
         },

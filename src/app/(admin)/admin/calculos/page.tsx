@@ -33,7 +33,7 @@ export default async function AdminCalculosPage() {
     <div>
       <AdminPageHeader
         titulo="Cálculos Globales"
-        subtitulo="Todos los cálculos del sistema - anula registros con errores"
+        subtitulo="Auditoría de todos los cálculos de CO2 de la plataforma, de todas las empresas. Anula un cálculo con error sin borrar su rastro."
         showBack
       />
       <CalculosAdminClient calculos={(data ?? []) as unknown as Parameters<typeof CalculosAdminClient>[0]['calculos']} total={count ?? 0} />

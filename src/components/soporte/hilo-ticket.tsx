@@ -29,11 +29,11 @@ interface Props {
   onClose: () => void
 }
 
-const BRAND = '#00827C'
-const BG_LIGHT = '#EBF5F4'
-const TEXT_DARK = '#1A3A38'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BRAND = 'var(--color-brand)'
+const BG_LIGHT = 'var(--bg-integrated)'
+const TEXT_DARK = 'var(--text-primary)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 
 export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
   const [ticket, setTicket] = useState<TicketDetalle | null>(null)
@@ -133,15 +133,15 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                 return (
                   <div key={m.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, flexDirection: isMe ? 'row-reverse' : 'row' }}>
-                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: BRAND, color: '#fff', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                       <div style={{ width: 24, height: 24, borderRadius: '50%', background: BRAND, color: 'var(--text-on-brand)', fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
                           {m.profiles?.nombre?.charAt(0) ?? 'A'}
                        </div>
                        <span style={{ fontSize: 11, color: TEXT_MED }}>{isMe ? 'Tú' : m.profiles?.rol === 'super_admin' ? 'Soporte Técnico' : m.profiles?.nombre}</span>
                     </div>
                     <div
                       style={{
-                        background: isMe ? BRAND : '#fff',
-                        color: isMe ? '#fff' : TEXT_DARK,
+                        background: isMe ? BRAND : 'var(--bg-card)',
+                        color: isMe ? 'var(--text-on-brand)' : TEXT_DARK,
                         padding: '12px 16px', borderRadius: 12,
                         maxWidth: '85%', fontSize: 14,
                         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
@@ -182,7 +182,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                   />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                      {!esAdmin ? (
-                        <button onClick={() => cambiarEstado('cerrado')} disabled={resolviendo} style={{ background: 'transparent', border: 'none', color: TEXT_MED, fontSize: 13, fontWeight: 600, cursor: resolviendo ? 'not-allowed' : 'pointer' }}>
+                        <button onClick={() => cambiarEstado('cerrado')} disabled={resolviendo} style={{ background: 'transparent', border: 'none', color: TEXT_MED, fontSize: 13, fontWeight: 600, cursor: resolviendo ? 'not-allowed' : 'pointer', padding: '10px 4px', minHeight: 40 }}>
                           Marcar como Solucionado
                         </button>
                       ) : (
@@ -200,7 +200,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                      <button
                         onClick={handleEnviar}
                         disabled={enviando}
-                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: BRAND, color: '#fff', border: 'none', borderRadius: 10, fontWeight: 700, cursor: enviando ? 'not-allowed' : 'pointer' }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: BRAND, color: 'var(--text-on-brand)', border: 'none', borderRadius: 10, fontWeight: 700, cursor: enviando ? 'not-allowed' : 'pointer' }}
                         className={enviando ? '' : 'hover-send hover-press'}
                      >
                        {enviando ? <CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <><PaperPlaneRight size={16} /> Enviar</>}

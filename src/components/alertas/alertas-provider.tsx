@@ -49,10 +49,25 @@ export function AlertasProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const marcarTodasLeidas = useCallback(async () => {
+    const idsAntes = alertas.filter((a) => !a.leida).map((a) => a.id)
+    // Actualización optimista
+    setAlertas((prev) => prev.map((a) => ({ ...a, leida: true })))
+    try {
+      const res = await fetch('/api/alertas/marcar-todas-leidas', { method: 'POST' })
+      if (!res.ok) throw new Error('Error al marcar todas')
+    } catch {
+      // Rollback optimista
+      setAlertas((prev) =>
+        prev.map((a) => (idsAntes.includes(a.id) ? { ...a, leida: false } : a))
+      )
+    }
+  }, [alertas])
+
   const noLeidasCount = alertas.filter((a) => !a.leida).length
 
   return (
-    <AlertasContext.Provider value={{ alertas, noLeidasCount, marcarLeida, cargando }}>
+    <AlertasContext.Provider value={{ alertas, noLeidasCount, marcarLeida, marcarTodasLeidas, cargando }}>
       {children}
     </AlertasContext.Provider>
   )

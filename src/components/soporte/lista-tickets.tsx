@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch, ArrowRight } from '@/components/ui/icons'
+import { Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch } from '@/components/ui/icons'
 import { HiloTicket } from './hilo-ticket'
+import { formatFecha } from '@/lib/format'
 
 export type TipoTicket = 'bug' | 'duda' | 'solicitud' | 'queja'
 export type PrioridadTicket = 'baja' | 'media' | 'alta' | 'urgente'
@@ -83,55 +84,61 @@ export function ListaTickets({ esAdmin }: Props) {
           )}
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
+        <div className="overflow-x-auto border-t border-[var(--border)]">
           {loading ? (
             <div style={{ padding: '60px 0', textAlign: 'center' }}>
               <CircleNotch size={24} className="pulse-logo" style={{ color: 'var(--color-brand)', margin: '0 auto' }} />
             </div>
           ) : tickets.length === 0 ? (
-            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+            <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--color-brand)' }}>
               <Lifebuoy size={36} style={{ color: 'var(--border)', margin: '0 auto 12px' }} />
               <p style={{ fontSize: 14, margin: '0 0 6px' }}>No hay tickets que mostrar.</p>
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr style={{ background: 'var(--bg-integrated)', textAlign: 'left', color: 'var(--text-secondary)', fontSize: 11, borderBottom: '1px solid var(--border)' }}>
-                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Asunto</th>
-                  <th style={{ padding: '12px 20px', fontWeight: 700 }}>Estado</th>
-                  <th style={{ padding: '12px 20px', fontWeight: 700, textAlign: 'right' }}>Actualizado</th>
+                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Asunto</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
+                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Actualizado</th>
                 </tr>
               </thead>
               <tbody>
-                {tickets.map(ticket => (
-                  <tr
-                    key={ticket.id}
-                    onClick={() => setTicketAbierto(ticket)}
-                    style={{ borderTop: `1px solid var(--border)`, cursor: 'pointer', transition: 'background 0.2s' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-                  >
-                    <td style={{ padding: '16px 20px', color: 'var(--text-primary)' }}>
-                      <p style={{ fontWeight: 600, margin: '0 0 4px' }}>{ticket.titulo}</p>
-                      <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{TIPO_LABELS[ticket.tipo]}</span>
-                    </td>
-                    <td style={{ padding: '16px 20px' }}>
-                      <span style={{
-                        background: LABEL_COLORS[ticket.estado].bg,
-                        color: LABEL_COLORS[ticket.estado].text,
-                        padding: '3px 10px', borderRadius: 20, fontSize: 10, fontWeight: 800,
-                        border: '1px solid currentColor',
-                        opacity: 0.9
-                      }}>
-                        {ticket.estado.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 20px', textAlign: 'right', color: 'var(--text-secondary)', fontSize: 13 }}>
-                      {new Date(ticket.updated_at).toLocaleDateString()}
-                      <ArrowRight size={14} style={{ verticalAlign: 'middle', marginLeft: 8 }} />
-                    </td>
-                  </tr>
-                ))}
+                {tickets.map((ticket, idx) => {
+                  return (
+                    <tr
+                      key={ticket.id}
+                      onClick={() => setTicketAbierto(ticket)}
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 text-[var(--text-primary)]">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div>
+                            <p style={{ fontWeight: 600, margin: '0 0 4px' }} >{ticket.titulo}</p>
+                            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{TIPO_LABELS[ticket.tipo]}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span style={{
+                          background: LABEL_COLORS[ticket.estado].bg,
+                          color: LABEL_COLORS[ticket.estado].text,
+                          padding: '3px 10px', borderRadius: 20, fontSize: 10, fontWeight: 800,
+                          border: '1px solid currentColor',
+                          opacity: 0.9
+                        }}>
+                          {ticket.estado.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-[var(--text-secondary)] text-xs">
+                        {formatFecha(ticket.updated_at)}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           )}
@@ -195,7 +202,7 @@ function ModalCrearTicket({ onClose, onCreado }: { onClose: () => void, onCreado
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(71,71,71,0.3)', backdropFilter: 'blur(8px)', zIndex: 2500 }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 500, padding: 24, zIndex: 2501, boxShadow: 'var(--shadow)' }}>
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 500, maxHeight: '90vh', overflowY: 'auto', padding: 24, zIndex: 2501, boxShadow: 'var(--shadow)', boxSizing: 'border-box' }}>
         <h3 style={{ margin: '0 0 16px', fontSize: 18, color: 'var(--text-primary)', fontWeight: 700 }}>Nuevo Ticket</h3>
         
         {error && <div style={{ background: 'rgba(255,94,75,0.1)', color: 'var(--color-error-content)', border: '1px solid var(--color-error)', fontSize: 13, padding: 12, borderRadius: 8, marginBottom: 16 }}>{error}</div>}

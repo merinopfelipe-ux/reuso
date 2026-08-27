@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Download, Loader2 as CircleNotch, Building2 as Buildings, TrendingUp as TrendUp, BarChart2 as ChartBar, Clock, Users, Headphones, Layers as Stack } from '@/components/ui/icons'
+import { FileText, Building2 as Buildings, TrendingUp as TrendUp, BarChart2 as ChartBar, Clock, Users, Headphones, Layers as Stack } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -10,7 +11,7 @@ const C = {
 
 const REPORTES = [
   { tipo: 'empresas_activas',  label: 'Empresas activas',            desc: 'Lista de todas las empresas con plan activo en el sistema.',     icon: Buildings },
-  { tipo: 'top_co2',           label: 'Top 10 empresas por CO₂eq',   desc: 'Ranking de empresas con mayor impacto ambiental certificado.',    icon: TrendUp },
+  { tipo: 'top_co2',           label: 'Top 10 empresas por CO₂eq',   desc: 'Ranking de empresas con mayor impacto ambiental medido.',    icon: TrendUp },
   { tipo: 'metricas_globales', label: 'Métricas globales',           desc: 'Totales del sistema: cálculos, CO₂, agua, usuarios y empresas.',  icon: ChartBar },
   { tipo: 'empresas_inactivas',label: 'Empresas inactivas (30 días)',desc: 'Empresas que no han registrado cálculos en los últimos 30 días.', icon: Clock },
   { tipo: 'leads_periodo',     label: 'Leads por período',           desc: 'Prospectos capturados con tasa de conversión.',                   icon: Users },
@@ -20,48 +21,22 @@ const REPORTES = [
 
 type TipoReporte = typeof REPORTES[number]['tipo']
 
-function descargarCSV(data: unknown[], nombre: string) {
-  if (!data.length) return
-  const keys = Object.keys(data[0] as object)
-  const rows = [keys.join(','), ...data.map(r =>
-    keys.map(k => {
-      const v = (r as Record<string, unknown>)[k]
-      if (v === null || v === undefined) return ''
-      const s = String(v)
-      return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s
-    }).join(',')
-  )].join('\n')
-  const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a'); a.href = url; a.download = `${nombre}.csv`; a.click()
-  URL.revokeObjectURL(url)
-}
-
 export function ReportesClient() {
-  const [cargando, setCargando] = useState<TipoReporte | null>(null)
+
   const [error, setError] = useState('')
   const [desde, setDesde] = useState('')
   const [hasta, setHasta] = useState('')
 
-  async function generar(tipo: TipoReporte) {
-    setCargando(tipo); setError('')
-    try {
-      const params = new URLSearchParams({ tipo })
-      if (desde) params.set('desde', desde)
-      if (hasta) params.set('hasta', hasta)
-      const res = await fetch(`/api/admin/reportes?${params}`)
-      if (!res.ok) { setError('Ocurrió un error al generar el reporte.'); return }
-      const json = await res.json()
-      const raw = json.data
-
-      // Para métricas_globales: convertir objeto a array de una fila
-      const rows: unknown[] = Array.isArray(raw) ? raw : [raw]
-      descargarCSV(rows, `reporte_${tipo}_${new Date().toISOString().slice(0, 10)}`)
-    } catch {
-      setError('Ocurrió un error inesperado.')
-    } finally {
-      setCargando(null)
-    }
+  async function generarData(tipo: TipoReporte) {
+    const params = new URLSearchParams({ tipo })
+    if (desde) params.set('desde', desde)
+    if (hasta) params.set('hasta', hasta)
+    const res = await fetch(`/api/admin/reportes?${params}`)
+    if (!res.ok) throw new Error('Ocurrió un error al generar el reporte.')
+    const json = await res.json()
+    const raw = json.data
+    const rows: unknown[] = Array.isArray(raw) ? raw : (raw && typeof raw === 'object' && 'leads' in raw) ? (raw as { leads: unknown[] }).leads : [raw]
+    return rows
   }
 
   return (
@@ -90,13 +65,8 @@ export function ReportesClient() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 14 }}>
         {REPORTES.map(r => {
           const Icon = r.icon
-          const cargandoEste = cargando === r.tipo
           return (
-            <div key={r.tipo} style={{
-              background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 12,
-              padding: 20, display: 'flex', flexDirection: 'column', gap: 12,
-              boxShadow: 'var(--shadow)',
-            }}>
+            <div key={r.tipo} className="flex flex-col gap-3 rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: C.light, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icon size={18} color={C.brand} />
@@ -106,23 +76,21 @@ export function ReportesClient() {
                   <p style={{ fontSize: 12, color: C.mid, margin: 0, lineHeight: 1.5 }}>{r.desc}</p>
                 </div>
               </div>
-              <button
-                onClick={() => generar(r.tipo)}
-                disabled={cargando !== null}
-                className={cargandoEste ? '' : 'hover-download hover-press'}
-                style={{
-                  padding: '8px 14px', borderRadius: 8, border: 'none',
-                  background: cargandoEste ? C.light : C.brand,
-                  color: cargandoEste ? C.brand : 'var(--text-on-brand)',
-                  fontSize: 12, fontWeight: 700, cursor: cargando ? 'wait' : 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  transition: 'all 0.2s',
-                }}>
-                {cargandoEste
-                  ? <><CircleNotch size={13} style={{ animation: 'spin 1s linear infinite' }} /> Generando...</>
-                  : <><Download size={13} /> Descargar CSV</>
-                }
-              </button>
+                <BotonDescargarCliente
+                  data={[]}
+                  nombre={`reporte_${r.tipo}_${new Date().toISOString().slice(0, 10)}`}
+                  tituloPdf={r.label}
+                  disabled={false}
+                  onGenerarData={async () => {
+                    setError('')
+                    try {
+                      return await generarData(r.tipo)
+                    } catch {
+                      setError('Ocurrió un error inesperado al generar el reporte.')
+                      throw new Error('Failed')
+                    }
+                  }}
+                />
             </div>
           )
         })}
@@ -131,7 +99,7 @@ export function ReportesClient() {
       <div style={{ marginTop: 20, padding: '12px 16px', borderRadius: 10, background: C.light, border: `1px solid ${C.border}` }}>
         <p style={{ fontSize: 12, color: C.mid, margin: 0, display: 'flex', gap: 8, alignItems: 'center' }}>
           <FileText size={13} />
-          Los reportes se descargan en formato CSV. Para abrirlos en Excel, importa el archivo y selecciona codificación UTF-8.
+          Cada reporte se puede descargar en CSV, Excel o PDF, con los mismos datos en los tres formatos.
         </p>
       </div>
 

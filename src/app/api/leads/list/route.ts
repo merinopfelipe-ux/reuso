@@ -16,7 +16,7 @@ export async function GET() {
   const adminClient = await createAdminClient()
 
   if (perfil?.rol !== 'super_admin') {
-    return NextResponse.json({ error: 'Solo para Super Admins' }, { status: 403 })
+    return NextResponse.json({ error: 'Solo para Superadmins' }, { status: 403 })
   }
 
   // Obtener leads

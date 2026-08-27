@@ -45,3 +45,7 @@ scratch/
 
 # worktrees aislados para desarrollo con subagentes
 .worktrees/
+
+# Artefactos de Playwright, no son código
+test-results/
+playwright-report/

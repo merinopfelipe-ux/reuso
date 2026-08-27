@@ -63,6 +63,7 @@ const DESIGN_TOKENS = [
       { name: 'menta',        value: '#8AD0B2', preview: 'color:#8AD0B2',   desc: 'Texto secundario en modo noche' },
       { name: 'nogal',        value: '#AD7C43', preview: 'color:#AD7C43',   desc: 'Acento cálido orgánico' },
       { name: 'rosa',         value: '#F3BBD3', preview: 'color:#F3BBD3',   desc: 'Acento rosa suave' },
+      { name: 'violeta',      value: '#985fa1', preview: 'color:#985fa1',   desc: 'Violeta Trazabilidad y pasaporte digital' },
       { name: 'azulInfo',     value: '#59A6E4', preview: 'color:#59A6E4',   desc: 'Color de información' },
       { name: 'successVerde', value: '#38B98E', preview: 'color:#38B98E',   desc: 'Estado de éxito' },
       { name: 'errorRojo',    value: '#FF5E4B', preview: 'color:#FF5E4B',   desc: 'Estado de error' },
@@ -77,6 +78,7 @@ const DESIGN_TOKENS = [
       { name: 'blobAzul',         value: 'bg-[#59A6E4]/40 blur-[100px] rounded-full',   preview: 'color:#59A6E4',   desc: 'Reflejo azul de los banners' },
       { name: 'blobMenta',        value: 'bg-[#8AD0B2]/35 blur-[90px] rounded-full',    preview: 'color:#8AD0B2',   desc: 'Reflejo menta central' },
       { name: 'blobRosa',         value: 'bg-[#F3BBD3]/40 blur-[100px] rounded-full',   preview: 'color:#F3BBD3',   desc: 'Reflejo rosa de los banners' },
+      { name: 'blobVioleta',      value: 'bg-[#985fa1]/35 blur-[90px] rounded-full',    preview: 'color:#985fa1',   desc: 'Reflejo violeta trazabilidad' },
       { name: 'blobPistacho',     value: 'bg-[#D6F391]/30 blur-[80px] rounded-full',    preview: 'color:#D6F391',   desc: 'Reflejo pistacho del hero' },
     ]
   },
@@ -447,12 +449,13 @@ export default function ManualDisenoPage() {
 
             <div className="mb-12">
               <h3 className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6`}>B. Familias Secundarias (Acentos)</h3>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8">
                 {[
                   { name: 'Nogal Hogar', hex: '#AD7C43' },
                   { name: 'Celeste Horizonte', hex: '#59A6E4' },
                   { name: 'Aroma de Menta', hex: '#8AD0B2' },
                   { name: 'Rosa Ciclo', hex: '#F3BBD3' },
+                  { name: 'Violeta Trazabilidad', hex: '#985fa1' },
                   { name: 'Sueños de Pistacho', hex: '#D6F391' },
                 ].map(color => (
                   <div key={color.name} className="flex flex-col gap-4">
@@ -861,49 +864,54 @@ export default function ManualDisenoPage() {
             La legibilidad en scroll es un mandato institucional. Las tablas deben ser sólidas para evitar el ruido visual.
           </p>
           
-          <div className={`rounded-2xl border border-[#00827C]/10 overflow-x-auto custom-scrollbar ${liquidGlassClass}`}>
-            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
-              <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
-                  <th className="px-6 py-3.5 text-left font-bold text-xs">Categoría</th>
-                  <th className="px-6 py-3.5 text-left font-bold text-xs">Estado</th>
-                  <th className="px-6 py-3.5 text-right font-bold text-xs">Cifra de impacto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  { id: 1, cat: 'Textiles Reutilizados', estado: 'Activo', co2: '-42,8 kg CO₂' },
-                  { id: 2, cat: 'Madera de Roble Recuperada', estado: 'Activo', co2: '-125,4 kg CO₂' },
-                  { id: 3, cat: 'Estructuras Metálicas', estado: 'Inactivo', co2: '-310,0 kg CO₂' },
-                ].map((item, idx) => (
-                  <tr
-                    key={item.id}
-                    className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
-                    }`}
-                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
-                  >
-                    <td className="px-6 py-4 font-medium flex items-center gap-2">
-                      <span className="text-[var(--text-primary)]">
-                        {item.cat}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold border ${
-                        item.estado === 'Activo'
-                          ? (isDark ? 'bg-[#D6F391]/10 text-[#D6F391] border-[#D6F391]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/20')
-                          : 'bg-red-500/10 text-red-500 border-red-500/20'
-                      }`}>
-                        {item.estado}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right font-bold text-[var(--text-secondary)]">
-                      {item.co2}
-                    </td>
+          <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)] border-b border-[var(--border)]">
+                    <th className="px-4 py-3.5 text-left font-bold text-xs tracking-wide">Categoría</th>
+                    <th className="px-4 py-3.5 text-center font-bold text-xs tracking-wide">Estado</th>
+                    <th className="px-4 py-3.5 text-right font-bold text-xs tracking-wide">Cifra de impacto</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {[
+                    { id: 1, cat: 'Textiles Reutilizados', estado: 'Activo', co2: '-42,8 kg CO₂' },
+                    { id: 2, cat: 'Madera de Roble Recuperada', estado: 'Activo', co2: '-125,4 kg CO₂' },
+                    { id: 3, cat: 'Estructuras Metálicas', estado: 'Inactivo', co2: '-310,0 kg CO₂' },
+                  ].map((item, idx) => (
+                    <tr
+                      key={item.id}
+                      className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
+                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 text-[var(--text-primary)]">
+                        {item.cat}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span style={{ 
+                          padding: '2px 10px', 
+                          borderRadius: 100, 
+                          fontSize: 10, 
+                          fontWeight: 800, 
+                          background: item.estado === 'Activo' ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)', 
+                          color: item.estado === 'Activo' ? 'var(--color-success-content)' : 'var(--color-error-content)',
+                          border: '1px solid currentColor',
+                          opacity: 0.9,
+                        }}>
+                          {item.estado}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-secondary)] text-right">
+                        {item.co2}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
@@ -1091,6 +1099,20 @@ export default function ManualDisenoPage() {
                 <div>• duotone=true     → weight=&quot;duotone&quot;</div>
               </div>
             </div>
+            
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos Contenidos</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
+                Para íconos informativos que llevan fondo (squircle), aplica la <strong>Regla del Color Coincidente</strong>:
+                <br /><br />
+                <strong>1. Prohibido usar negro o grises puros</strong> para el ícono. Debe heredar el color semántico (ej. <code>text-brand</code>, <code>text-success</code>).
+                <br />
+                <strong>2. Fondo Translúcido:</strong> El contenedor debe usar el fondo translúcido correspondiente al color (ej. <code>bg-brand-light</code> para marca, <code>bg-success/10</code> para éxito). Nunca usar bg-gray-* o similares.
+                <br />
+                <strong>3. Forma y Espaciado:</strong> Debe ser un cuadrado redondeado (<code>rounded-xl</code> o <code>rounded-2xl</code>) con padding uniforme, por ejemplo: <code>flex items-center justify-center w-10 h-10 bg-brand-light rounded-xl text-brand</code>.
+              </p>
+            </div>
+
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos de Eliminación</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
@@ -1101,6 +1123,24 @@ export default function ManualDisenoPage() {
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Color Sostenible</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 <strong>Cálculo Ambiental y Énfasis:</strong> Todo lo referente a &quot;Cálculo ambiental&quot;, totales de CO₂, o elementos principales de la marca, debe usar ESTRICTAMENTE el verde sostenible mediante la variable global <code>var(--color-brand)</code>. Se prohíbe usar verdes &quot;raros&quot; o genéricos (como <code>text-green-500</code> o <code>color-success</code>) para el branding principal.
+              </p>
+            </div>
+            <div className={`p-8 rounded-[2rem] border border-[#FF5E4B]/20 ${isDark ? 'bg-[#FF5E4B]/5' : 'bg-[#FF5E4B]/[0.02]'}`}>
+              <h4 className="text-sm font-black mb-3 text-[#FF5E4B]">Ícono Prohibido: Target (Círculos Concéntricos)</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/70' : 'text-[#474747]/85'} mb-3`}>
+                <strong>Queda terminantemente prohibido el uso del ícono <code>Target</code> (diana o círculos concéntricos)</strong> en toda la plataforma, landings y flujos de DDP. Es un ícono ambiguo que genera confusión semántica y no comunica con claridad los conceptos de cálculo, algoritmos o sectores.
+              </p>
+              <div className={`p-3.5 rounded-xl text-[11px] leading-relaxed ${isDark ? 'bg-white/5 text-white/80' : 'bg-white text-[#474747]'}`}>
+                <div className="font-bold mb-1.5 text-[#FF5E4B]">Reemplazos oficiales obligatorios:</div>
+                <div>• <strong>Algoritmos, cómputo y cálculo inteligente:</strong> <code>&lt;Cpu /&gt;</code>, <code>&lt;Sparkles /&gt;</code> o <code>&lt;Calculator /&gt;</code>.</div>
+                <div>• <strong>Textil, retales y fibras:</strong> <code>&lt;Scissors /&gt;</code>, <code>&lt;Layers /&gt;</code> o <code>&lt;Package /&gt;</code>.</div>
+                <div>• <strong>Trazabilidad y DDP:</strong> <code>&lt;ShieldCheck /&gt;</code> o <code>&lt;ArrowsClockwise /&gt;</code>.</div>
+              </div>
+            </div>
+            <div className={`p-8 rounded-[2rem] border md:col-span-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Diferenciación: Botones vs. Etiquetas (Lo que no es botón, no parece botón)</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                <strong>Asequibilidad Visual Estricta:</strong> Los subtítulos, encabezados de sección, kickers y etiquetas meramente informativas <strong>NUNCA deben presentarse con forma de cápsula/pastilla (<code>rounded-full</code>) con bordes cerrados y fondos rellenos</strong> que imiten la anatomía de un botón interactivo. Para kickers y etiquetas estáticas se debe emplear tipografía en mayúsculas sutiles (<code>text-xs font-bold uppercase tracking-wider</code>) con un ícono auxiliar plano sin fondo ni borde de botón, reservando las cápsulas con borde y fondo interactivo exclusivamente para elementos accionables (<code>&lt;button&gt;</code> y <code>&lt;Link&gt;</code>).
               </p>
             </div>
           </div>
@@ -1372,11 +1412,12 @@ export default function ManualDisenoPage() {
             })}
           </div>
 
-          <div className={`rounded-2xl border overflow-x-auto custom-scrollbar ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
-            <table className="w-full text-sm min-w-[800px]" style={{ borderCollapse: 'collapse' }}>
-              <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
-                  <th className="px-6 py-5 text-left font-bold text-xs">Característica</th>
+          <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[800px]" style={{ borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)] border-b border-[var(--border)]">
+                    <th className="px-6 py-5 text-left font-bold text-xs tracking-wide">Característica</th>
                   {PRICING_PLANS.map((p: typeof PLANS[0]) => (
                     <th key={p.id} className="px-4 py-5 text-center">
                       <div className="font-bold text-xs">{p.name}</div>
@@ -1420,7 +1461,8 @@ export default function ManualDisenoPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         </section>
 

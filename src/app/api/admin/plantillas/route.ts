@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const patchSchema = z.object({
   id: z.uuid().optional(),
-  tipo: z.enum(['certificado', 'informe']),
+  tipo: z.literal('informe'),
   activa: z.boolean().optional(),
   encabezado_html: z.string().max(200).optional(),
   pie_legal: z.string().max(500).optional(),

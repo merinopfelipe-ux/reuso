@@ -96,24 +96,33 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
   const inactiveColor = isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)'
   const liquidGlassStyle: React.CSSProperties = {
     position: 'fixed',
-    bottom: 0,
-    left: 0,
-    right: 0,
+    bottom: 16,
+    left: 16,
+    right: 16,
     height: 72,
+    borderRadius: '2.5rem',
     backdropFilter: isOpen ? 'none' : 'blur(8px) saturate(180%)',
     WebkitBackdropFilter: isOpen ? 'none' : 'blur(8px) saturate(180%)',
     background: isOpen 
       ? (isDark ? 'var(--bg-card)' : '#FFFFFF') 
-      : (isDark ? 'rgba(71, 71, 71, 0.5)' : 'rgba(255, 255, 255, 0.5)'),
-    borderTop: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.1)',
-    boxShadow: isDark ? '0 -8px 32px rgba(0,0,0,0.3)' : '0 -8px 32px rgba(0,130,124,0.06)',
+      : (isDark ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)' : 'rgba(255, 255, 255, 0.5)'),
+    border: isOpen
+      ? (isDark ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 130, 124, 0.15)')
+      : (isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.1)'),
+    borderTop: !isOpen && isDark ? '1px solid rgba(255, 255, 255, 0.08)' : !isOpen && !isDark ? '1px solid rgba(255, 255, 255, 0.6)' : undefined,
+    boxShadow: isOpen 
+      ? (isDark ? '0 -10px 40px rgba(0,0,0,0.2)' : '0 -8px 32px rgba(0,130,124,0.06)')
+      : (isDark 
+          ? '0 4px 24px rgba(214,243,145,0.12), inset 0 1px 0 rgba(214,243,145,0.15), inset 0 -1px 0 rgba(214,243,145,0.10)' 
+          : '0 4px 24px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,130,124,0.04)'),
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
-    zIndex: 10000, // Superior a todo
+    zIndex: 10000,
     padding: '0 10px',
     userSelect: 'none',
     boxSizing: 'border-box',
+    transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
   }
 
   return (

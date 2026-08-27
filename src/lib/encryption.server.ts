@@ -2,6 +2,10 @@ import 'server-only'
 import crypto from 'crypto'
 
 const ALGORITHM = 'aes-256-gcm'
+// GCM ya produce un tag de 16 bytes por defecto — se declara explícito para
+// que Node lo exija y rechace un tag más corto de lo esperado en vez de
+// aceptarlo implícitamente (hallazgo Semgrep gcm-no-tag-length).
+const AUTH_TAG_LENGTH = 16
 
 let ENCRYPTION_KEY: Buffer | null = null
 
@@ -25,7 +29,7 @@ export async function encryptSensitive(text: string | null | undefined): Promise
   const keyBuffer = getEncryptionBuffer()
   const iv = crypto.randomBytes(12)
 
-  const cipher = crypto.createCipheriv(ALGORITHM, keyBuffer, iv)
+  const cipher = crypto.createCipheriv(ALGORITHM, keyBuffer, iv, { authTagLength: AUTH_TAG_LENGTH })
 
   let encrypted = cipher.update(text, 'utf8', 'hex')
   encrypted += cipher.final('hex')
@@ -48,7 +52,7 @@ export async function decryptSensitive(encryptedPayload: string | null | undefin
     const iv = Buffer.from(ivHex, 'hex')
     const authTag = Buffer.from(authTagHex, 'hex')
 
-    const decipher = crypto.createDecipheriv(ALGORITHM, keyBuffer, iv)
+    const decipher = crypto.createDecipheriv(ALGORITHM, keyBuffer, iv, { authTagLength: AUTH_TAG_LENGTH })
     decipher.setAuthTag(authTag)
 
     let decrypted = decipher.update(encryptedHex, 'hex', 'utf8')

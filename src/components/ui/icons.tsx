@@ -373,10 +373,231 @@ const ZapIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimatio
 )
 ZapIconReal.displayName = 'ZapIconReal'
 
+// ─── ANIMATED CALCULATION & SYSTEM ICONS ──────────────────────────────────────
+const LEAF_VARIANTS: Variants = { normal: { rotate: 0, scale: 1 }, animate: { rotate: [0, -15, 12, -8, 0], scale: [1, 1.15, 1], transition: { duration: 0.7, ease: 'easeInOut' } } }
+const LeafIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <motion.svg animate={controls} variants={LEAF_VARIANTS} style={{ originX: '20%', originY: '90%' }} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+      </motion.svg>
+    )
+  }
+)
+LeafIconReal.displayName = 'LeafIconReal'
+
+const SHOWER_DROP_1: Variants = { normal: { opacity: 0.4, y: 0 }, animate: { opacity: [0.2, 1, 0.2], y: [0, 4, 0], transition: { duration: 0.5, repeat: 1 } } }
+const SHOWER_DROP_2: Variants = { normal: { opacity: 0.4, y: 0 }, animate: { opacity: [0.2, 1, 0.2], y: [0, 5, 0], transition: { duration: 0.5, delay: 0.15, repeat: 1 } } }
+const SHOWER_DROP_3: Variants = { normal: { opacity: 0.4, y: 0 }, animate: { opacity: [0.2, 1, 0.2], y: [0, 4, 0], transition: { duration: 0.5, delay: 0.3, repeat: 1 } } }
+const ShowerHeadIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="m4 4 2.5 2.5" />
+        <path d="M13.5 6.5a4.95 4.95 0 0 0-7 7L11 18l7-7-4.5-4.5Z" />
+        <path d="M15 5 11 9" />
+        <motion.path animate={controls} variants={SHOWER_DROP_1} d="M10 21v.01" />
+        <motion.path animate={controls} variants={SHOWER_DROP_2} d="M17 19v.01" />
+        <motion.path animate={controls} variants={SHOWER_DROP_3} d="M14 22v.01" />
+      </svg>
+    )
+  }
+)
+ShowerHeadIconReal.displayName = 'ShowerHeadIconReal'
+
+const DROPLET_VARIANTS: Variants = { normal: { scale: 1, y: 0 }, animate: { scale: [1, 1.2, 0.95, 1], y: [0, -3, 2, 0], transition: { duration: 0.6, ease: 'easeInOut' } } }
+const DropletIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <motion.svg animate={controls} variants={DROPLET_VARIANTS} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+      </motion.svg>
+    )
+  }
+)
+DropletIconReal.displayName = 'DropletIconReal'
+
+const TRASH_LID_VARIANTS: Variants = { normal: { rotate: 0, y: 0 }, animate: { rotate: [0, -28, -28, 0], y: [0, -3, -3, 0], transition: { duration: 0.65, ease: [0.34, 1.56, 0.64, 1] } } }
+const Trash2IconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <motion.g animate={controls} variants={TRASH_LID_VARIANTS} style={{ originX: '20%', originY: '25%' }}>
+          <path d="M3 6h18" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+        </motion.g>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+        <line x1="10" x2="10" y1="11" y2="17" />
+        <line x1="14" x2="14" y1="11" y2="17" />
+      </svg>
+    )
+  }
+)
+Trash2IconReal.displayName = 'Trash2IconReal'
+
+const CALC_VARIANTS: Variants = { normal: { scale: 1 }, animate: { scale: [1, 0.92, 1.08, 0.96, 1], transition: { duration: 0.55, ease: 'easeOut' } } }
+const CalculatorIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <motion.svg animate={controls} variants={CALC_VARIANTS} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <rect width="16" height="20" x="4" y="2" rx="2" />
+        <line x1="8" x2="16" y1="6" y2="6" />
+        <line x1="16" x2="16" y1="14" y2="18" />
+        <path d="M16 10h.01" />
+        <path d="M12 10h.01" />
+        <path d="M8 10h.01" />
+        <path d="M12 14h.01" />
+        <path d="M8 14h.01" />
+        <path d="M12 18h.01" />
+        <path d="M8 18h.01" />
+      </motion.svg>
+    )
+  }
+)
+CalculatorIconReal.displayName = 'CalculatorIconReal'
+
+const SHIELD_CHECK_VARIANTS: Variants = { normal: { pathLength: 1, opacity: 1 }, animate: { pathLength: [0, 1], opacity: [0, 1], transition: { duration: 0.45, ease: 'easeOut' } } }
+const ShieldCheckIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+        <motion.path animate={controls} variants={SHIELD_CHECK_VARIANTS} d="m9 12 2 2 4-4" />
+      </svg>
+    )
+  }
+)
+ShieldCheckIconReal.displayName = 'ShieldCheckIconReal'
+
+const TREE_VARIANTS: Variants = { normal: { rotate: 0 }, animate: { rotate: [0, -10, 10, -6, 0], transition: { duration: 0.7, ease: 'easeInOut' } } }
+const TreeDeciduousIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 19v3" />
+        <path d="M16 19v3" />
+        <path d="M12 19v3" />
+        <motion.path animate={controls} variants={TREE_VARIANTS} style={{ originX: '50%', originY: '80%' }} d="M12 3a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z" />
+      </svg>
+    )
+  }
+)
+TreeDeciduousIconReal.displayName = 'TreeDeciduousIconReal'
+
+const BAR1_VARIANTS: Variants = { normal: { scaleY: 1 }, animate: { scaleY: [1, 0.4, 1.2, 1], transition: { duration: 0.5, ease: 'easeInOut' } } }
+const BAR2_VARIANTS: Variants = { normal: { scaleY: 1 }, animate: { scaleY: [1, 0.2, 1.3, 1], transition: { duration: 0.5, delay: 0.1, ease: 'easeInOut' } } }
+const BAR3_VARIANTS: Variants = { normal: { scaleY: 1 }, animate: { scaleY: [1, 0.5, 1.15, 1], transition: { duration: 0.5, delay: 0.2, ease: 'easeInOut' } } }
+const BarChart2IconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <motion.line animate={controls} variants={BAR1_VARIANTS} style={{ originY: '100%' }} x1="6" x2="6" y1="20" y2="14" />
+        <motion.line animate={controls} variants={BAR2_VARIANTS} style={{ originY: '100%' }} x1="12" x2="12" y1="20" y2="4" />
+        <motion.line animate={controls} variants={BAR3_VARIANTS} style={{ originY: '100%' }} x1="18" x2="18" y1="20" y2="10" />
+      </svg>
+    )
+  }
+)
+BarChart2IconReal.displayName = 'BarChart2IconReal'
+
+const CPU_CORE_VARIANTS: Variants = { normal: { scale: 1, opacity: 1 }, animate: { scale: [1, 1.25, 0.95, 1], opacity: [1, 0.7, 1], transition: { duration: 0.5, ease: 'easeInOut' } } }
+const CpuIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <rect width="16" height="16" x="4" y="4" rx="2" />
+        <motion.rect animate={controls} variants={CPU_CORE_VARIANTS} style={{ originX: '50%', originY: '50%' }} width="6" height="6" x="9" y="9" rx="1" />
+        <path d="M15 2v2" />
+        <path d="M15 20v2" />
+        <path d="M2 15h2" />
+        <path d="M2 9h2" />
+        <path d="M20 15h2" />
+        <path d="M20 9h2" />
+        <path d="M9 2v2" />
+        <path d="M9 20v2" />
+      </svg>
+    )
+  }
+)
+CpuIconReal.displayName = 'CpuIconReal'
+
+const SCISSORS_VARIANTS: Variants = { normal: { rotate: 0 }, animate: { rotate: [0, -18, 12, -8, 0], transition: { duration: 0.6, ease: 'easeInOut' } } }
+const ScissorsIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <motion.svg animate={controls} variants={SCISSORS_VARIANTS} style={{ originX: '50%', originY: '50%' }} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <circle cx="6" cy="6" r="3" />
+        <path d="M8.12 8.12 12 12" />
+        <path d="M20 4 8.12 15.88" />
+        <circle cx="6" cy="18" r="3" />
+        <path d="M14.8 14.8 20 20" />
+      </motion.svg>
+    )
+  }
+)
+ScissorsIconReal.displayName = 'ScissorsIconReal'
+
+const FLASK_VARIANTS: Variants = { normal: { rotate: 0 }, animate: { rotate: [0, -12, 14, -6, 0], transition: { duration: 0.65, ease: 'easeInOut' } } }
+const FlaskConicalIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <motion.svg animate={controls} variants={FLASK_VARIANTS} style={{ originX: '50%', originY: '80%' }} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2v7.31" />
+        <path d="M14 9.3V2" />
+        <path d="M8.5 2h7" />
+        <path d="M14 9.3 19.66 18.5a2 2 0 0 1-1.72 3H6.06a2 2 0 0 1-1.72-3L10 9.3" />
+        <line x1="5.52" x2="18.48" y1="16" y2="16" />
+      </motion.svg>
+    )
+  }
+)
+FlaskConicalIconReal.displayName = 'FlaskConicalIconReal'
+
+const SCALES_VARIANTS: Variants = { normal: { rotate: 0 }, animate: { rotate: [0, -8, 7, -4, 0], transition: { duration: 0.7, ease: 'easeInOut' } } }
+const ScalesIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
+  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
+    const controls = useAnimation()
+    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3v18" />
+        <path d="M7 21h10" />
+        <motion.g animate={controls} variants={SCALES_VARIANTS} style={{ originX: '50%', originY: '20%' }}>
+          <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+          <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+          <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+        </motion.g>
+      </svg>
+    )
+  }
+)
+ScalesIconReal.displayName = 'ScalesIconReal'
+
 // Cast necesario: estos forwardRef exponen {startAnimation, stopAnimation}
-// vía ref (un objeto imperativo), no un SVGSVGElement — a propósito, ver
-// cómo wrapIcon los consume más abajo (mismo patrón que ya usaba el código
-// original con LucideAnimated antes de este cambio).
+// vía ref (un objeto imperativo), no un SVGSVGElement
 const LUCIDE_ANIMATED_REAL: Partial<Record<string, React.ComponentType<IconProps>>> = {
   User: UserIconReal,
   Clock: ClockIconReal,
@@ -395,11 +616,31 @@ const LUCIDE_ANIMATED_REAL: Partial<Record<string, React.ComponentType<IconProps
   Plus: PlusIconReal,
   Heart: HeartIconReal,
   Zap: ZapIconReal,
+  Lightning: ZapIconReal,
+  Leaf: LeafIconReal,
+  Shower: ShowerHeadIconReal,
+  ShowerHead: ShowerHeadIconReal,
+  Drop: DropletIconReal,
+  Droplet: DropletIconReal,
+  Trash: Trash2IconReal,
+  Trash2: Trash2IconReal,
+  Calculator: CalculatorIconReal,
+  ShieldCheck: ShieldCheckIconReal,
+  Tree: TreeDeciduousIconReal,
+  TreeDeciduous: TreeDeciduousIconReal,
+  ChartBar: BarChart2IconReal,
+  BarChart2: BarChart2IconReal,
+  Cpu: CpuIconReal,
+  Scissors: ScissorsIconReal,
+  Flask: FlaskConicalIconReal,
+  FlaskConical: FlaskConicalIconReal,
+  Scale: ScalesIconReal,
+  Scales: ScalesIconReal,
 } as unknown as Partial<Record<string, React.ComponentType<IconProps>>>
 
 // Wrapper HOC to add duotone (20% fill) support, auto-inject animations, and handle group hovers
 function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>): Icon {
-  const name = LucideIcon.displayName
+  const name = LucideIcon.displayName || (LucideIcon as unknown as { name?: string }).name || ''
   const AnimatedIcon: React.ComponentType<IconProps> | null = (name && LUCIDE_ANIMATED_REAL[name]) || null
 
   const Component = React.forwardRef<SVGSVGElement, IconProps>(
@@ -414,17 +655,17 @@ function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>
         if (!span) return
 
         const groupParent = span.closest('.group')
-        if (groupParent) {
-          const handleEnter = () => internalAnimatedRef.current?.startAnimation?.()
-          const handleLeave = () => internalAnimatedRef.current?.stopAnimation?.()
+        const targetElement = groupParent || span
 
-          groupParent.addEventListener('mouseenter', handleEnter)
-          groupParent.addEventListener('mouseleave', handleLeave)
+        const handleEnter = () => internalAnimatedRef.current?.startAnimation?.()
+        const handleLeave = () => internalAnimatedRef.current?.stopAnimation?.()
 
-          return () => {
-            groupParent.removeEventListener('mouseenter', handleEnter)
-            groupParent.removeEventListener('mouseleave', handleLeave)
-          }
+        targetElement.addEventListener('mouseenter', handleEnter)
+        targetElement.addEventListener('mouseleave', handleLeave)
+
+        return () => {
+          targetElement.removeEventListener('mouseenter', handleEnter)
+          targetElement.removeEventListener('mouseleave', handleLeave)
         }
       }, [usarAnimado])
 
@@ -596,7 +837,12 @@ export const ArrowSquareOut = wrapIcon(Lucide.ExternalLink)
 export const Funnel = wrapIcon(Lucide.Filter)
 export const Tag = wrapIcon(Lucide.Tag)
 export const PencilSimple = wrapIcon(Lucide.Pencil)
+// PROHIBIDO POR SISTEMA DE DISEÑO (2026-08-25):
+// El ícono `Target` (círculos concéntricos / diana) queda PROHIBIDO en toda la aplicación
+// porque carece de claridad semántica y confunde al usuario. Usar `Scissors`, `Layers`, `Sparkles`, `Cpu` o `Calculator`.
 export const Target = wrapIcon(Lucide.Target)
+export const Scissors = wrapIcon(Lucide.Scissors)
+export const Shirt = wrapIcon(Lucide.Shirt)
 export const Pulse = wrapIcon(Lucide.Activity)
 export const Trash = wrapIcon(Lucide.Trash2)
 export const Heart = wrapIcon(Lucide.Heart)

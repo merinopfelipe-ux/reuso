@@ -5,7 +5,7 @@ import { pdfATexto } from '@/lib/pdf-to-txt'
 
 const TIPOS_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'] as const
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
-const TIPOS_DOCUMENTO = ['factura_compra', 'recibo_energia', 'certificado_origen', 'foto_objeto', 'otro'] as const
+const TIPOS_DOCUMENTO = ['factura_compra', 'recibo_energia', 'declaracion_origen', 'foto_objeto', 'otro'] as const
 
 const metaSchema = z.object({
   activo_id: z.uuid('El ID del activo es inválido.'),

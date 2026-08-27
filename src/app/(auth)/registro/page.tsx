@@ -5,12 +5,10 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { ShieldCheck, Eye, EyeOff as EyeSlash, Square, SquareCheck as CheckSquare, Building2 as Buildings, Mail as EnvelopeSimple, Phone, User, ChevronDown as CaretDown, ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle, Loader2 as CircleNotch, FileText, ChevronRight as CaretRight } from '@/components/ui/icons'
+import { ShieldCheck, Eye, EyeOff as EyeSlash, Square, SquareCheck as CheckSquare, Building2 as Buildings, Mail as EnvelopeSimple, User, ArrowRight, ArrowLeft, X, Check, Headset, Circle, CheckCircle, Loader2 as CircleNotch, FileText, ChevronRight as CaretRight } from '@/components/ui/icons'
 import { ThemeToggle } from '@/components/theme-toggle'
-
-function normalizeStr(str: string): string {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-}
+import { SelectorCiiu } from '@/components/ui/selector-ciiu'
+import { InputTelefono } from '@/components/ui/input-telefono'
 
 // ── Países para selector de indicativo ────────────────────────────────────────
 const PAISES = [
@@ -91,10 +89,8 @@ export default function RegistroPage() {
   const [nombre, setNombre] = useState('')
   const [apellido, setApellido] = useState('')
   const [email, setEmail] = useState('')
-  const [indicativo, setIndicativo] = useState(PAISES[0])
+  const [indicativo, setIndicativo] = useState(PAISES[0].dial)
   const [telefono, setTelefono] = useState('')
-  const [mostrarPaises, setMostrarPaises] = useState(false)
-  const [busquedaPais, setBusquedaPais] = useState('')
   const [codigoEmpresa, setCodigoEmpresa] = useState('')
   const [codigoStatus, setCodigoStatus] = useState<'idle' | 'validando' | 'ok' | 'error'>('idle')
   const [codigoNombreEmpresa, setCodigoNombreEmpresa] = useState('')
@@ -236,7 +232,7 @@ export default function RegistroPage() {
         apellido,
         apodo: apodo || undefined,
         email,
-        telefono: telefono ? `${indicativo.dial} ${telefono}` : undefined,
+        telefono: telefono ? `${indicativo} ${telefono}` : undefined,
         password,
         password_confirm: passwordConfirm,
         acepta_terminos: true,
@@ -277,7 +273,7 @@ export default function RegistroPage() {
           email: email.trim().toLowerCase(),
           empresa: codigoNombreEmpresa || undefined,
           interes: 'Asesoría Personalizada - Registro',
-          mensaje: `Registro con solicitud de asesoría personalizada. Teléfono: ${indicativo.dial} ${telefono}. Sector: ${sector}. Frecuencia: ${frecuencia}. Motivaciones: ${motivaciones.join(', ')}. Código de Empresa: ${codigoEmpresa || 'Ninguno'}.`,
+          mensaje: `Registro con solicitud de asesoría personalizada. Teléfono: ${indicativo} ${telefono}. Sector: ${sector}. Frecuencia: ${frecuencia}. Motivaciones: ${motivaciones.join(', ')}. Código de Empresa: ${codigoEmpresa || 'Ninguno'}.`,
         }),
       })
       const data = await res.json()
@@ -532,115 +528,13 @@ export default function RegistroPage() {
                 <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
                   Teléfono <span className="text-[#FF5E4B]">*</span>
                 </label>
-                <div className="flex gap-2">
-                  {/* Selector de país */}
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => { setMostrarPaises(v => !v); setBusquedaPais('') }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        padding: '14px 12px',
-                        borderRadius: 16,
-                        border: '1px solid var(--border)',
-                        background: 'var(--bg-input)',
-                        color: 'var(--text-primary)',
-                        minWidth: 90,
-                      }}
-                      className="transition-all hover-pop"
-                    >
-                      <img
-                        src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${indicativo.code}.svg`}
-                        alt={indicativo.name}
-                        width={20}
-                        height={15}
-                        style={{ borderRadius: 3, objectFit: 'cover' }}
-                      />
-                      <span className="text-xs font-semibold">{indicativo.dial}</span>
-                      <CaretDown size={12} style={{ color: 'var(--text-placeholder)' }} />
-                    </button>
-                    {mostrarPaises && (
-                      <div
-                        style={{
-                          maxHeight: 260,
-                          display: 'flex',
-                          flexDirection: 'column',
-                          background: 'var(--bg-card)',
-                          border: '1px solid var(--border)',
-                          borderRadius: 16,
-                          boxShadow: 'var(--shadow)',
-                        }}
-                        className="absolute top-full left-0 mt-1 z-50 min-w-[200px]"
-                      >
-                        <div style={{ padding: '8px 8px 4px', borderBottom: '1px solid var(--border)' }}>
-                          <input
-                            autoFocus
-                            type="text"
-                            value={busquedaPais}
-                            onChange={e => setBusquedaPais(e.target.value)}
-                            placeholder="Buscar país..."
-                            style={{
-                              width: '100%',
-                              padding: '6px 12px',
-                              borderRadius: 12,
-                              border: '1px solid var(--border)',
-                              background: 'var(--bg-input)',
-                              color: 'var(--text-primary)',
-                              fontSize: 12,
-                              outline: 'none',
-                            }}
-                            onClick={e => e.stopPropagation()}
-                          />
-                        </div>
-                        <div style={{ overflowY: 'auto', flex: 1 }}>
-                          {PAISES.filter(p => normalizeStr(p.name).includes(normalizeStr(busquedaPais))).map(p => (
-                            <button
-                              key={p.code}
-                              type="button"
-                              onClick={() => { setIndicativo(p); setMostrarPaises(false); setBusquedaPais('') }}
-                              style={{
-                                width: '100%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 10,
-                                padding: '8px 12px',
-                                background: 'transparent',
-                                border: 'none',
-                                textAlign: 'left',
-                                cursor: 'pointer',
-                                color: 'var(--text-primary)',
-                              }}
-                              className="hover:bg-[var(--bg-hover)] transition-colors"
-                            >
-                              <img
-                                src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${p.code}.svg`}
-                                alt={p.name}
-                                width={18}
-                                height={13}
-                                style={{ borderRadius: 3, objectFit: 'cover', flexShrink: 0 }}
-                              />
-                              <span className="text-xs font-medium">{p.name}</span>
-                              <span className="ml-auto text-xs text-[var(--text-secondary)]/50">{p.dial}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="relative flex-1">
-                    <Phone size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
-                    <input
-                      type="tel"
-                      value={telefono}
-                      onChange={e => setTelefono(e.target.value.replace(/[^\d\s]/g, ''))}
-                      placeholder="300 000 0000"
-                      autoComplete="tel-national"
-                      className={`${inputBase} pl-10`}
-                    />
-                  </div>
-                </div>
+                <InputTelefono
+                  indicativo={indicativo}
+                  onChangeIndicativo={setIndicativo}
+                  telefono={telefono}
+                  onChangeTelefono={setTelefono}
+                  required
+                />
               </div>
 
               {/* Código de empresa */}
@@ -733,13 +627,10 @@ export default function RegistroPage() {
 
               {/* Sector */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas? <span className="text-[#FF5E4B]">*</span></label>
-                <input
-                  type="text"
+                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas (CIIU)? <span className="text-[#FF5E4B]">*</span></label>
+                <SelectorCiiu
                   value={sector}
-                  onChange={e => setSector(e.target.value)}
-                  placeholder="Ej. Mobiliario de oficina"
-                  className={inputBase}
+                  onChange={(val) => setSector(val)}
                 />
               </div>
 
@@ -1047,6 +938,7 @@ export default function RegistroPage() {
                   <Turnstile
                     ref={turnstileRef}
                     siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+                    options={{ size: 'invisible' }}
                     onSuccess={token => setTurnstileToken(token)}
                     onExpire={() => setTurnstileToken('')}
                     onError={() => setTurnstileToken('')}

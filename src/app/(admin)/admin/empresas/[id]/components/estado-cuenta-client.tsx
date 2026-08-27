@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Users, Calculator, Medal, FileText } from '@/components/ui/icons'
-import { PlanBadge } from '@/components/admin/plan-badge'
-import type { Empresa } from '@/types'
+import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power, RefreshCw, Save } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
+import { PlanBadge, PLAN_CONFIG } from '@/components/admin/plan-badge'
+import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
+import type { Empresa, Plan } from '@/types'
 
 interface HistorialPlanEntry {
   created_at: string
   admin: string
+  adminRol: string
   cambios: Record<string, unknown>
 }
 
@@ -19,6 +22,7 @@ interface Props {
   calculosMes: number
   limiteCalculosMes: number
   historialPlan: HistorialPlanEntry[]
+  adminNombre?: string
 }
 
 function BarraProgreso({ actual, limite, color }: { actual: number; limite: number; color: string }) {
@@ -37,7 +41,7 @@ function BarraProgreso({ actual, limite, color }: { actual: number; limite: numb
       <div style={{ height: 6, borderRadius: 100, background: 'var(--border)', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: barColor, borderRadius: 100, transition: 'width 0.4s ease' }} />
       </div>
-      <p style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>{pct}% del límite</p>
+      <p style={{ margin: '4px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>{pct} % del límite</p>
     </div>
   )
 }
@@ -57,17 +61,9 @@ function KpiCard({
 }) {
   const limiteStr = isFinite(limite) ? String(limite) : '∞'
   return (
-    <div
-      style={{
-        background: 'var(--bg-card)',
-        border: '1px solid var(--border)',
-        borderRadius: 12,
-        padding: '16px 20px',
-        boxShadow: 'var(--shadow)',
-      }}
-    >
+    <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-        <div style={{ padding: 8, borderRadius: 8, background: `${color}18` }}>
+        <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${color}18`, flexShrink: 0 }}>
           <Icono size={16} style={{ color }} />
         </div>
         <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
@@ -90,20 +86,98 @@ export function EstadoCuentaClient({
   calculosMes,
   limiteCalculosMes,
   historialPlan,
+  adminNombre = 'Equipo Interno',
 }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const [notas, setNotas] = useState(empresa.notas_admin ?? '')
+  const editorRef = useRef<RichTextEditorHandle>(null)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
+  const [mostrarTodasActividades, setMostrarTodasActividades] = useState(false)
+  const [plan, setPlan] = useState<Plan>((empresa.plan as Plan) || 'free')
+  const [guardandoPlan, setGuardandoPlan] = useState(false)
+  const [menuPlanAbierto, setMenuPlanAbierto] = useState(false)
+  const [activa, setActiva] = useState(empresa.activa)
+  const [cambiandoActiva, setCambiandoActiva] = useState(false)
+
+  async function toggleActiva() {
+    if (cambiandoActiva) return
+    setCambiandoActiva(true)
+    try {
+      const res = await fetch(`/api/admin/empresas/${empresa.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activa: !activa }),
+      })
+      if (res.ok) {
+        setActiva(v => !v)
+        startTransition(() => router.refresh())
+      }
+    } finally {
+      setCambiandoActiva(false)
+    }
+  }
+
+  async function cambiarPlan(nuevoPlan: Plan) {
+    if (nuevoPlan === plan) return
+    setGuardandoPlan(true)
+    const res = await fetch(`/api/admin/empresas/${empresa.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: nuevoPlan }),
+    })
+    setGuardandoPlan(false)
+    if (res.ok) {
+      setPlan(nuevoPlan)
+      setMenuPlanAbierto(false)
+      startTransition(() => router.refresh())
+    }
+  }
+
+  interface NotaFeedEntry { id: string; nota: string; autor: string; fecha: string }
+  const [notasFeed, setNotasFeed] = useState<NotaFeedEntry[]>([])
+
+  useEffect(() => {
+    if (empresa.notas_admin) {
+      try {
+        const parsed = JSON.parse(empresa.notas_admin)
+        if (Array.isArray(parsed)) {
+          setNotasFeed(parsed)
+        } else {
+          throw new Error('Not array')
+        }
+      } catch {
+        setNotasFeed([{ id: 'legacy', nota: empresa.notas_admin, autor: 'Equipo Interno', fecha: empresa.created_at }])
+      }
+    }
+  }, [empresa.notas_admin, empresa.created_at])
+
   async function guardarNotas() {
+    const htmlNotas = editorRef.current?.getHTML() ?? ''
+    if (!htmlNotas || htmlNotas === '<p></p>') return
+    
     setGuardando(true)
+    
+    const fechaActual = new Date()
+    
+    const nuevaNota = {
+      id: crypto.randomUUID(),
+      nota: htmlNotas,
+      autor: adminNombre,
+      fecha: fechaActual.toISOString()
+    }
+    const nuevoFeed = [...notasFeed, nuevaNota]
+    
     await fetch(`/api/admin/empresas/${empresa.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ notas_admin: notas }),
+      body: JSON.stringify({ notas_admin: JSON.stringify(nuevoFeed) }),
     })
+    
+    setNotasFeed(nuevoFeed)
+    editorRef.current?.clear()
+    
     setGuardando(false)
     setGuardado(true)
     setTimeout(() => setGuardado(false), 2000)
@@ -117,119 +191,271 @@ export function EstadoCuentaClient({
   })
 
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto' }}>
+    <div className="w-full">
       {/* Header con ← integrado en el título */}
       <div style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-          <h1
-            onClick={() => router.back()}
-            style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-          >
-            <ArrowLeft size={20} />
-            {empresa.nombre}
-          </h1>
-          <PlanBadge plan={empresa.plan} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 4, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <h1
+              onClick={() => router.back()}
+              style={{ margin: 0, fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+            >
+              <ArrowLeft size={20} />
+              {empresa.nombre}
+            </h1>
+            <PlanBadge plan={empresa.plan} />
+            {!activa && (
+              <span style={{ padding: '2px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(255,94,75,0.10)', color: '#CC3C2A' }}>
+                Desactivada
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<RefreshCw size={13} />}
+              onClick={() => router.refresh()}
+            >
+              Actualizar
+            </Button>
+            <Button
+              variant={activa ? 'danger' : 'primary'}
+              size="sm"
+              icon={<Power size={13} />}
+              loading={cambiandoActiva}
+              onClick={toggleActiva}
+            >
+              {activa ? 'Desactivar' : 'Activar'}
+            </Button>
+          </div>
         </div>
         <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', paddingLeft: 28 }}>
-          Activa desde {fechaActivacion} · {empresa.sector ?? 'Sin sector'}
+          Activa desde {fechaActivacion}
         </p>
       </div>
+
+      {/* Alerta de datos operativos faltantes */}
+      {(!empresa.nit || !empresa.telefono || !empresa.pais || !empresa.ciudad || !empresa.direccion) && (
+        <div 
+          className="flex items-start gap-3 p-4 mb-5 rounded-2xl border"
+          style={{
+            background: 'rgba(246, 191, 62, 0.08)',
+            borderColor: 'rgba(246, 191, 62, 0.25)',
+            color: 'var(--text-primary)'
+          }}
+        >
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <div className="flex-1">
+            <p className="text-xs font-bold text-[var(--text-primary)] m-0">Datos operativos incompletos</p>
+            <p className="text-[11px] text-[var(--text-secondary)] m-0.5">
+              Esta empresa fue registrada previamente y no cuenta con todos los datos obligatorios. Completa el NIT, teléfono y ubicación en la sección &quot;Información general&quot; para normalizar su estado.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* KPIs de uso */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
         <KpiCard titulo="Empleados" valor={totalEmpleados} limite={limiteEmpleados} icono={Users} color="#00827C" />
         <KpiCard titulo="Cálculos este mes" valor={calculosMes} limite={limiteCalculosMes} icono={Calculator} color="#59A6E4" />
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '16px 20px', boxShadow: 'var(--shadow)' }}>
+        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] relative">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-            <div style={{ padding: 8, borderRadius: 8, background: 'rgba(160,130,200,0.12)' }}>
-              <Medal size={16} style={{ color: '#9B6DD6' }} />
+            <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: PLAN_CONFIG[plan]?.bg ?? 'rgba(160,130,200,0.12)', transition: 'background 0.3s', flexShrink: 0 }}>
+              <Sparkles size={16} style={{ color: PLAN_CONFIG[plan]?.color ?? '#9B6DD6', transition: 'color 0.3s' }} />
             </div>
             <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Plan actual</p>
           </div>
-          <p style={{ margin: 0, fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{empresa.plan}</p>
+          <div className="relative mt-2 inline-block">
+            <button
+              type="button"
+              onClick={() => setMenuPlanAbierto(v => !v)}
+              disabled={guardandoPlan}
+              className="flex items-center gap-2 p-1.5 rounded-full border transition-all cursor-pointer text-left hover:bg-[var(--bg-hover)]"
+              style={{
+                background: 'var(--bg-card)',
+                borderColor: 'var(--border)',
+                paddingRight: '12px'
+              }}
+            >
+              <PlanBadge plan={plan} />
+              <ChevronDown size={14} className="text-[var(--text-secondary)]" />
+            </button>
+
+            {menuPlanAbierto && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setMenuPlanAbierto(false)} />
+                <div
+                  className="absolute top-full left-0 mt-1.5 w-56 border rounded-xl shadow-lg z-50 overflow-hidden"
+                  style={{
+                    background: 'var(--bg-card)',
+                    borderColor: 'var(--border)'
+                  }}
+                >
+                  <div className="p-1 flex flex-col gap-0.5">
+                    {(Object.keys(PLAN_CONFIG) as Plan[]).map(p => {
+                      const cfg = PLAN_CONFIG[p]
+                      const Icono = cfg.icon
+                      const activo = p === plan
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => cambiarPlan(p)}
+                          className="flex items-center justify-between w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icono size={14} style={{ color: cfg.color }} />
+                            <span className="text-xs font-bold text-[var(--text-primary)]">{cfg.label}</span>
+                          </div>
+                          {activo && <CheckCircle size={14} style={{ color: cfg.color }} />}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+          {guardandoPlan && <p className="text-xs mt-2 text-[var(--text-secondary)] font-semibold animate-pulse">Guardando cambio...</p>}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-stretch">
         {/* Notas admin */}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, boxShadow: 'var(--shadow)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <FileText size={15} style={{ color: 'var(--color-brand)' }} />
-            <h2 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Notas de pago / admin</h2>
-          </div>
-          <textarea
-            value={notas}
-            onChange={(e) => setNotas(e.target.value)}
-            rows={6}
-            placeholder={'Pagó $29 USD el 15 de abril\nPlan ampliado por solicitud...'}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: 8,
-              border: '1px solid var(--border)',
-              background: 'var(--bg-input)',
-              color: 'var(--text-primary)',
-              fontSize: 13,
-              resize: 'vertical',
-              fontFamily: 'inherit',
-              lineHeight: 1.5,
-              boxSizing: 'border-box',
-            }}
-          />
-          <button
-            onClick={guardarNotas}
-            disabled={guardando}
-            className={guardando ? '' : 'hover-download hover-press'}
-            style={{
-              marginTop: 10,
-              width: '100%',
-              padding: '9px 0',
-              borderRadius: 8,
-              background: guardado ? '#1F8C65' : 'var(--color-brand)',
-              color: '#fff',
-              border: 'none',
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: 'pointer',
-              transition: 'background 0.2s',
-            }}
-          >
-            {guardando ? 'Guardando...' : guardado ? '✓ Guardado' : 'Guardar notas'}
-          </button>
-        </div>
-
-        {/* Historial de plan */}
-        <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, boxShadow: 'var(--shadow)' }}>
-          <h2 style={{ margin: '0 0 12px', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>Historial de cambios de plan</h2>
-          {historialPlan.length === 0 ? (
-            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>Sin cambios de plan registrados.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {historialPlan.map((entry, i) => (
-                <div
-                  key={i}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: 8,
-                    background: 'var(--bg-hover)',
-                    fontSize: 13,
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--color-brand)', textTransform: 'capitalize' }}>
-                      → {String(entry.cambios.plan ?? '')}
-                    </span>
-                    <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>
-                      {new Date(entry.created_at).toLocaleDateString('es-CO')}
-                    </span>
-                  </div>
-                  <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-                    por {entry.admin}
+        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] flex flex-col h-full">
+          <p className="text-xs font-semibold mb-3 text-[var(--text-secondary)]">Notas privadas</p>
+          <div className="flex flex-col gap-2 mb-3 max-h-[300px] overflow-y-auto">
+            {notasFeed.map(n => {
+              const autorLimpio = n.autor ? n.autor.split('·')[0].trim() : 'Equipo Interno'
+              const fechaValida = n.fecha && !isNaN(new Date(n.fecha).getTime())
+              const fechaTexto = fechaValida
+                ? new Date(n.fecha).toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : ''
+              return (
+                <div key={n.id} className="rounded-xl p-2.5 bg-[var(--bg-input)]">
+                  <div
+                    className="text-[13px] font-normal break-words whitespace-pre-wrap text-[var(--text-primary)]"
+                    dangerouslySetInnerHTML={{ __html: n.nota }}
+                  />
+                  <p className="text-[10px] mt-1 text-[var(--text-secondary)]">
+                    {autorLimpio}{fechaTexto ? ` · ${fechaTexto}` : ''}
                   </p>
                 </div>
-              ))}
-            </div>
-          )}
+              )
+            })}
+          </div>
+          <RichTextEditor
+            ref={editorRef}
+            initialHTML=""
+            minHeightPx={60}
+            placeholder="Escribe una nota interna…"
+            onEnviar={guardarNotas}
+            className="mb-3"
+            footer={
+              <div className="flex justify-end px-2 pb-2">
+                <Button
+                  onClick={guardarNotas}
+                  loading={guardando}
+                  variant="primary"
+                  size="sm"
+                  icon={guardado ? <CheckCircle size={14} /> : <Save size={14} />}
+                >
+                  {guardado ? 'Guardado' : 'Guardar'}
+                </Button>
+              </div>
+            }
+          />
+        </div>
+
+        {/* Actividad / Historial de cambios */}
+        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] flex flex-col h-full">
+          <p className="text-xs font-semibold mb-3 text-[var(--text-secondary)]">Actividad</p>
+
+          {(() => {
+            const actividadesFiltradas = historialPlan.filter((entry) => {
+              const keys = Object.keys(entry.cambios).filter(k => k !== 'notas_admin')
+              return keys.length > 0
+            })
+
+            if (actividadesFiltradas.length === 0) {
+              return <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>Sin actividad registrada.</p>
+            }
+
+            const MAX_COLLAPSED = 4
+            const itemsAMostrar = mostrarTodasActividades ? actividadesFiltradas : actividadesFiltradas.slice(0, MAX_COLLAPSED)
+
+            return (
+              <div className="flex flex-col justify-between flex-1 min-h-0">
+                <div className={`flex flex-col gap-2.5 min-h-0 transition-all duration-300 ${mostrarTodasActividades ? 'max-h-[280px] overflow-y-auto pr-1' : 'max-h-[200px] overflow-hidden'}`}>
+                  {itemsAMostrar.map((entry, i) => {
+                    const cambiosLimpios = { ...entry.cambios }
+                    delete cambiosLimpios.notas_admin
+
+                    const keys = Object.keys(cambiosLimpios)
+                    const tienePlan = keys.includes('plan')
+                    const tienePorQueElegirnos = keys.some(k => k.includes('por_que_elegirnos'))
+                    const tieneInfoGeneral = keys.some(k => k !== 'plan' && !k.includes('por_que_elegirnos'))
+
+                    const partes: string[] = []
+
+                    if (tieneInfoGeneral) {
+                      partes.push('Actualizó información general')
+                    }
+
+                    if (tienePorQueElegirnos) {
+                      partes.push('Actualizó sección "¿Por qué elegirnos?"')
+                    }
+
+                    if (tienePlan) {
+                      const nombresPlanes: Record<string, string> = {
+                        free: 'Explora',
+                        lab: 'Circular Lab',
+                        impulso: 'Impulso Sostenible',
+                        ilimitado: 'Impacto Ilimitado'
+                      }
+                      const planVal = String(cambiosLimpios.plan)
+                      const planNombre = nombresPlanes[planVal] || planVal
+                      partes.push(`Cambió plan a "${planNombre}"`)
+                    }
+
+                    const label = partes.join(' · ') || 'Actualizó información general'
+
+                    const rolFormatted = entry.adminRol ? (entry.adminRol.charAt(0).toUpperCase() + entry.adminRol.slice(1).toLowerCase()) : ''
+                    const fechaHora = new Date(entry.created_at).toLocaleString('es-CO', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                    const metaText = [entry.admin, rolFormatted, fechaHora].filter(Boolean).join(' · ')
+
+                    return (
+                      <div key={i} className="py-0.5">
+                        <p className="text-[13px] font-normal text-[var(--text-primary)] whitespace-normal break-words">{label}</p>
+                        <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">
+                          {metaText}
+                        </p>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {actividadesFiltradas.length > MAX_COLLAPSED && (
+                  <button
+                    type="button"
+                    onClick={() => setMostrarTodasActividades(v => !v)}
+                    className="mt-3 text-xs font-medium text-[var(--text-primary)] hover:underline text-left cursor-pointer pt-1"
+                  >
+                    {mostrarTodasActividades 
+                      ? 'Ver menos' 
+                      : `+${actividadesFiltradas.length - MAX_COLLAPSED} más`}
+                  </button>
+                )}
+              </div>
+            )
+          })()}
         </div>
       </div>
     </div>

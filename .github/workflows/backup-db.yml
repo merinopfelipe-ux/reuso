@@ -1,142 +1,92 @@
 name: Respaldo de base de datos
 
 # Fase 0, paso 6 del Plan de Acción: Escalabilidad de Reúso.
-# Dos bóvedas independientes, ambas en el plan gratuito:
-#   1. Artefacto de GitHub (retención 90 días).
-#   2. Cloudflare R2 (10 GB gratuitos perpetuos), como copia fuera de GitHub.
-# El volcado va cifrado con AES-256 antes de salir del runner: un respaldo de
-# la base entera es el archivo más sensible del proyecto, no puede quedar en
-# claro en ningún almacenamiento.
+#
+# Respalda los DATOS mediante la API de Supabase, no con pg_dump. Motivo: la
+# conexión directa de Supabase resuelve solo a IPv6 y los runners de GitHub
+# no lo soportan, mientras que el pooler impone restricciones que hacen
+# fallar el volcado. La API usa la misma llave de servicio que ya usa la
+# aplicación, así que no depende de la red de Postgres ni de la versión del
+# cliente.
+#
+# El ESQUEMA no se incluye a propósito: vive versionado en `sql/` dentro de
+# este mismo repositorio. Entre las dos piezas, la base se puede reconstruir
+# por completo.
+#
+# Dos bóvedas, ambas en el plan gratuito:
+#   1. Artefacto de GitHub (90 días).
+#   2. Cloudflare R2 (opcional; si faltan las llaves, no falla).
 
 on:
   schedule:
-    # 08:00 UTC = 3:00 a.m. en Colombia (UTC-5), como define el plan.
+    # 08:00 UTC = 3:00 a.m. en Colombia (UTC-5).
     - cron: '0 8 * * *'
-  workflow_dispatch:   # permite lanzarlo a mano desde la pestaña Actions
+  workflow_dispatch:
 
 jobs:
   respaldo:
     name: Volcado, cifrado y envío a las dos bóvedas
     runs-on: ubuntu-latest
-    # Sin esto, un fallo silencioso pasaría desapercibido hasta el día que se
-    # necesite restaurar. 20 minutos es holgado para el tamaño actual.
     timeout-minutes: 20
 
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
 
-      - name: Instalar el cliente de PostgreSQL 17
-        # El pg_dump del runner suele ser más viejo que el servidor de
-        # Supabase, y un cliente viejo se niega a volcar un servidor nuevo.
-        # Por eso se instala explícitamente desde el repositorio oficial.
-        run: |
-          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17
-          pg_dump --version
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-      - name: Verificar la cadena de conexión y que el servidor sea alcanzable
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Comprobar que existen las llaves de Supabase
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ -z "$SUPABASE_DB_URL" ]; then
-            echo "::error::Falta el secreto SUPABASE_DB_URL. Sin él no se puede respaldar nada."
+          FALTA=0
+          if [ -z "$NEXT_PUBLIC_SUPABASE_URL" ]; then
+            echo "::error::Falta el secreto NEXT_PUBLIC_SUPABASE_URL."
+            FALTA=1
+          fi
+          if [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Falta el secreto SUPABASE_SERVICE_ROLE_KEY."
+            FALTA=1
+          fi
+          if [ "$FALTA" -eq 1 ]; then
+            echo "Ambos salen de Supabase -> Settings -> API (Project URL y la llave service_role)."
             exit 1
           fi
+          echo "Llaves presentes."
 
-          # Extraer el servidor de la cadena, sin exponer la contraseña.
-          SERVIDOR=$(printf '%s' "$SUPABASE_DB_URL" | sed -E 's|.*@([^:/]+).*|\1|')
-          echo "Servidor: $SERVIDOR"
-
-          # Los runners de GitHub NO tienen IPv6. La conexión "Direct" de
-          # Supabase (db.<ref>.supabase.co) resuelve SOLO a IPv6 en los
-          # proyectos nuevos, así que pg_dump falla con un error de red poco
-          # descriptivo. Se detecta aquí para explicar exactamente qué hacer.
-          if ! getent ahostsv4 "$SERVIDOR" > /dev/null 2>&1; then
-            echo "::error::El servidor '$SERVIDOR' no tiene dirección IPv4, y GitHub Actions no soporta IPv6."
-            echo "::error::Solución: en Supabase usa la cadena del *Session pooler* (el servidor termina en 'pooler.supabase.com' y el puerto es 5432), no la de 'Direct'."
-            exit 1
-          fi
-          echo "El servidor tiene IPv4: alcanzable desde GitHub."
-
-          # Aviso si se usó el Transaction pooler, que no sirve para volcados.
-          case "$SUPABASE_DB_URL" in
-            *:6543/*) echo "::error::El puerto 6543 es el Transaction pooler y no permite hacer volcados. Usa el Session pooler (puerto 5432)."; exit 1 ;;
-          esac
-
-      - name: Probar la conexión a la base
-        # Un `psql` simple da mensajes de error mucho más claros que pg_dump
-        # (contraseña incorrecta, base inexistente, versión incompatible),
-        # así que se prueba aquí primero para no depender del volcado.
+      - name: Exportar los datos
         env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-        run: |
-          if psql "$SUPABASE_DB_URL" -Atc "select 'conexion_ok', version()" > /tmp/conexion.txt 2> /tmp/conexion_error.txt; then
-            echo "Conexión correcta:"
-            cat /tmp/conexion.txt
-          else
-            echo "::error::No se pudo conectar a la base. Mensaje de PostgreSQL:"
-            cat /tmp/conexion_error.txt || true
-            echo ""
-            echo "Qué revisar, en orden:"
-            echo "  1. La contraseña dentro de SUPABASE_DB_URL (es la de la BASE DE DATOS, no la de tu cuenta Supabase)."
-            echo "  2. Si la contraseña tiene @ : / ? # o %, hay que codificarla o generar una nueva solo con letras y números."
-            echo "  3. El usuario debe ser 'postgres.<codigo-del-proyecto>', no solo 'postgres'."
-            exit 1
-          fi
-
-      - name: Generar el volcado lógico
-        env:
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           FECHA=$(date -u +'%Y-%m-%d')
-          echo "ARCHIVO=reuso-backup-$FECHA.sql.gz" >> "$GITHUB_ENV"
-          # --no-owner/--no-acl: el volcado debe poder restaurarse en un
-          # proyecto Supabase distinto (el de recuperación), donde los roles
-          # y permisos no son los mismos que en producción.
-          # A archivo plano primero, sin tubería: si pg_dump falla dentro de un
-          # pipeline su mensaje se pierde con facilidad, que es justo lo que
-          # pasó en el intento anterior (el error salió en blanco).
-          set +e
-          pg_dump "$SUPABASE_DB_URL" --no-owner --no-acl --clean --if-exists > /tmp/volcado.sql 2> /tmp/pg_dump_error.txt
-          CODIGO=$?
-          set -e
-          if [ $CODIGO -ne 0 ]; then
-            echo "::error::pg_dump falló con código $CODIGO. Mensaje de PostgreSQL:"
-            cat /tmp/pg_dump_error.txt || echo "(pg_dump no dejó mensaje)"
-            exit 1
-          fi
-          # Aviso no fatal: pg_dump escribe advertencias en stderr aunque todo salga bien.
-          if [ -s /tmp/pg_dump_error.txt ]; then
-            echo "Avisos de pg_dump (no impiden el respaldo):"
-            cat /tmp/pg_dump_error.txt
-          fi
-          gzip -9 -c /tmp/volcado.sql > "reuso-backup-$FECHA.sql.gz"
-          rm -f /tmp/volcado.sql
-          ls -lh "reuso-backup-$FECHA.sql.gz"
+          node scripts/respaldo-datos.mjs .
+          gzip -9 "reuso-datos-$FECHA.json"
+          echo "ARCHIVO=reuso-datos-$FECHA.json.gz" >> "$GITHUB_ENV"
+          ls -lh "reuso-datos-$FECHA.json.gz"
 
-      - name: Comprobar que el volcado no salió vacío
+      - name: Comprobar que el respaldo no salió vacío
         run: |
           set -euo pipefail
           TAM=$(stat -c%s "$ARCHIVO")
           echo "Tamaño: $TAM bytes"
-          # Un volcado real de este proyecto pesa muy por encima de 10 KB.
-          # Por debajo de eso es casi seguro un error de conexión que pg_dump
-          # no reportó como código de salida, y guardarlo daría una falsa
-          # sensación de respaldo.
-          if [ "$TAM" -lt 10240 ]; then
-            echo "::error::El respaldo pesa $TAM bytes, demasiado poco. Se aborta para no guardar un respaldo inútil."
+          # Un respaldo real de este proyecto pesa muy por encima de 1 KB.
+          # Guardar uno vacío en silencio sería peor que no tener respaldo,
+          # porque da falsa sensación de seguridad hasta el día de restaurar.
+          if [ "$TAM" -lt 1024 ]; then
+            echo "::error::El respaldo pesa $TAM bytes, demasiado poco. Se aborta."
             exit 1
           fi
-          # Segunda comprobación: que el contenido sea SQL de verdad.
-          if ! gunzip -c "$ARCHIVO" | head -50 | grep -qi "PostgreSQL database dump"; then
-            echo "::error::El archivo no parece un volcado de PostgreSQL."
-            exit 1
-          fi
-          echo "Volcado verificado."
+          echo "Respaldo verificado."
 
       - name: Cifrar el respaldo (AES-256)
         env:
@@ -162,8 +112,8 @@ jobs:
           if-no-files-found: error
 
       - name: Bóveda 2 — Cloudflare R2
-        # Si todavía no se han configurado las llaves de R2, el respaldo NO
-        # falla: la bóveda 1 ya quedó guardada y este paso solo avisa.
+        # Si aún no se configuran las llaves de R2, el respaldo NO falla: la
+        # bóveda 1 ya quedó guardada y este paso solo avisa.
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
@@ -187,9 +137,11 @@ jobs:
             echo "### Respaldo de base de datos"
             echo ""
             echo "- Archivo: \`$ARCHIVO.gpg\` (cifrado AES-256)"
-            echo "- Bóveda 1: artefacto de GitHub, 90 días de retención"
+            echo "- Contiene: los datos de todas las tablas"
+            echo "- El esquema vive en \`sql/\` dentro de este repositorio"
+            echo "- Bóveda 1: artefacto de GitHub, 90 días"
             echo "- Bóveda 2: Cloudflare R2 (si las llaves están configuradas)"
             echo ""
-            echo "Para restaurarlo: descargar el artefacto y correr"
-            echo '`gpg --decrypt archivo.gpg | gunzip | psql "$CADENA_DE_CONEXION"`'
+            echo "Para restaurarlo:"
+            echo '`gpg --decrypt archivo.gpg | gunzip > datos.json`'
           } >> "$GITHUB_STEP_SUMMARY"

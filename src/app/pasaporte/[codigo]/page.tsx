@@ -4,6 +4,8 @@ import { IdCard as IdentificationCard, Leaf, Droplet as Drop, Car, TreeDeciduous
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'
+import { ProteccionPublica } from '@/components/proteccion-publica'
+import { formatNumero } from '@/lib/format'
 
 export const revalidate = 3600
 
@@ -25,7 +27,7 @@ const ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
   activo: { label: 'Activo', color: '#38B98E' },
   en_reuso: { label: 'En reúso', color: '#00827C' },
   disposicion_final: { label: 'Disposición final', color: '#FF5E4B' },
-  archivado: { label: 'Archivado', color: '#7FA8A5' },
+  archivado: { label: 'Archivado', color: '#8AD0B2' },
 }
 
 const CONFIANZA_COLOR: Record<string, string> = {
@@ -123,6 +125,7 @@ export default async function PasaportePage({ params }: PageProps) {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg-primary)', fontFamily: "'Open Sans', sans-serif", color: 'var(--text-primary)' }}>
+      <ProteccionPublica>
 
       {/* ── 1. HEADER STICKY ── */}
       <header style={{
@@ -140,7 +143,7 @@ export default async function PasaportePage({ params }: PageProps) {
         <div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
             <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-brand)' }}>reuso</span>
-            <span style={{ fontSize: 18, color: 'var(--text-secondary)' }}>.lurdes.co</span>
+            <span style={{ fontSize: 18, color: 'var(--color-brand)' }}>.lurdes.co</span>
           </div>
           <p style={{ margin: 0, fontSize: 10, color: 'var(--text-placeholder)', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
             {activo.codigo_dpp}
@@ -190,7 +193,7 @@ export default async function PasaportePage({ params }: PageProps) {
             {activo.peso_total_kg && (
               <span style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                background: 'rgba(0,130,124,0.08)', color: '#4D7C79',
+                background: 'rgba(0,130,124,0.08)', color: '#00827C',
                 padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600,
               }}>
                 <Barbell size={12} />
@@ -224,35 +227,49 @@ export default async function PasaportePage({ params }: PageProps) {
             </p>
           ) : (
             <>
-              <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid rgba(0,130,124,0.14)' }}>
+              <div style={{ overflowX: 'auto', borderRadius: 8, border: '1px solid var(--border)' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                   <thead>
-                    <tr style={{ background: 'rgba(0,130,124,0.06)' }}>
-                      {['Material', 'Peso kg', 'CO₂/kg', 'Fuente', 'Confianza'].map((h) => (
-                        <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: '#00827C', borderBottom: '1px solid rgba(0,130,124,0.14)' }}>{h}</th>
-                      ))}
+                    <tr style={{ background: 'var(--bg-table-header)', borderBottom: '1px solid var(--border)' }}>
+                      <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--color-brand)' }}>Material</th>
+                      <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: 11, fontWeight: 700, color: 'var(--color-brand)' }}>Peso</th>
+                      <th style={{ padding: '8px 10px', textAlign: 'right', fontSize: 11, fontWeight: 700, color: 'var(--color-brand)' }}>CO₂/kg</th>
+                      <th style={{ padding: '8px 10px', textAlign: 'left', fontSize: 11, fontWeight: 700, color: 'var(--color-brand)' }}>Fuente</th>
+                      <th style={{ padding: '8px 10px', textAlign: 'center', fontSize: 11, fontWeight: 700, color: 'var(--color-brand)' }}>Confianza</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {composicion.map((m, i) => (
-                      <tr key={i} style={{ background: i % 2 === 0 ? 'var(--bg-card)' : 'var(--bg-secondary)' }}>
-                        <td style={{ padding: '9px 10px', fontWeight: 600, color: 'var(--text-primary)' }}>{m.material}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.peso_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)' }}>{m.factor_co2_kg}</td>
-                        <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '-'}</td>
-                        <td style={{ padding: '9px 10px' }}>
-                          {m.nivel_confianza ? (
-                            <span style={{
-                              background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5'}1A`,
-                              color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#7FA8A5',
-                              padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
-                            }}>
-                              {m.nivel_confianza}
-                            </span>
-                          ) : '-'}
-                        </td>
-                      </tr>
-                    ))}
+                    {composicion.map((m, idx) => {
+                      return (
+                        <tr
+                          key={idx}
+                          className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                          style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                        >
+                          <td style={{ padding: '9px 10px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span>{m.material}</span>
+                            </div>
+                          </td>
+                          <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', textAlign: 'right' }}>{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
+                          <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', textAlign: 'right' }}>{formatNumero(m.factor_co2_kg)}</td>
+                          <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', fontSize: 12 }}>{m.origen_fuente ?? '-'}</td>
+                          <td style={{ padding: '9px 10px', textAlign: 'center' }}>
+                            {m.nivel_confianza ? (
+                              <span style={{
+                                background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2'}1A`,
+                                color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2',
+                                padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700,
+                              }}>
+                                {m.nivel_confianza}
+                              </span>
+                            ) : '-'}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -389,6 +406,7 @@ export default async function PasaportePage({ params }: PageProps) {
         </div>
 
       </div>
+      </ProteccionPublica>
     </main>
   )
 }

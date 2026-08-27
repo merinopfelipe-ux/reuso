@@ -336,7 +336,7 @@ export default function CookiesPreferenciasPage() {
                 borderRadius: 10,
                 background: 'rgba(56,185,142,0.12)',
                 border: '1px solid rgba(56,185,142,0.30)',
-                color: '#1A3A38',
+                color: 'var(--text-primary)',
                 fontSize: 13,
                 fontWeight: 600,
                 animation: 'fadeIn 0.2s ease',

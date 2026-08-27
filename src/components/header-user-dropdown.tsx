@@ -6,7 +6,7 @@ import { User, Settings as Gear, LogOut as SignOut, UserCheck, Building2 as Buil
 import type { Rol } from '@/types'
 
 const ROL_LABELS: Record<string, string> = {
-  super_admin: 'Super Admin',
+  super_admin: 'Superadmin',
   empresa_admin: 'Administrador',
   empleado: 'Colaborador',
   usuario_libre: 'Usuario',
@@ -98,7 +98,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
         </div>
         <div style={{
           width: 40, height: 40, borderRadius: '50%',
-          background: avatarColor, color: '#1A3A38',
+          background: avatarColor, color: '#474747',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 16, fontWeight: 800,
           boxShadow: `0 4px 10px ${avatarColor}40`,
@@ -158,7 +158,7 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
             style={{ ...itemStyle, color: 'var(--color-error)' }}
             className="dropdown-item hover-slide-r"
           >
-            <SignOut size={15} /> Cerrar sesión
+            <SignOut size={15} /> CERRAR SESIÓN
           </button>
         </div>
       )}

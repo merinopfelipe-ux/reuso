@@ -57,7 +57,7 @@ export default function LayoutDemoPage() {
             style={{ color: '#FFFFFF' }}
           >
             <List size={22} strokeWidth={2.5} />
-            <span className="text-[11px] font-black tracking-widest opacity-90">Menú</span>
+            <span className="text-[11px] font-black tracking-widest opacity-90">MENÚ</span>
           </button>
           
           <div className="flex items-center gap-3 select-none">
@@ -196,7 +196,7 @@ export default function LayoutDemoPage() {
              <button className="w-full h-11 flex items-center justify-center gap-3 rounded-full border border-pistacho text-pistacho transition-all hover:bg-white/10">
                <SignOut size={18} strokeWidth={2.5} />
                <span className={`text-sm font-bold transition-all ${isSidebarExpanded ? 'opacity-100' : 'opacity-0 scale-0 w-0'}`}>
-                 Cerrar sesión
+                 CERRAR SESIÓN
                </span>
              </button>
           </div>

@@ -315,7 +315,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
         <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
           open
             ? isDark ? 'bg-[#D6F391] text-[#474747] rotate-180 shadow-sm' : 'bg-[#00827C] text-white rotate-180 shadow-sm'
-            : isDark ? 'bg-white/5 text-white/60 group-hover:bg-[#D6F391]/20 group-hover:text-[#D6F391]' : 'bg-[#00827C]/5 text-[#474747]/60 group-hover:bg-[#00827C]/15 group-hover:text-[#00827C]'
+            : isDark ? 'bg-white/5 text-white/60 group-hover:bg-[#D6F391]/20 group-hover:text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C] group-hover:bg-[#00827C]/15 group-hover:text-[#00827C]'
         }`}>
           <CaretDown size={16} strokeWidth={2.5} />
         </div>

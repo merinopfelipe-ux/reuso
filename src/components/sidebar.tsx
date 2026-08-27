@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutGrid as SquaresFour, Building2 as Buildings, Layers as Stack, Package, Settings as Gear, Home as House, Medal, LogOut as SignOut, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, TrendingUp as TrendUp, Target, Calculator, Scale as Scales, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { LayoutGrid as SquaresFour, Building2 as Buildings, Layers as Stack, Package, Settings as Gear, Home as House, FileText, LogOut as SignOut, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, TrendingUp as TrendUp, Target, Calculator, Scale as Scales, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface SubItem {
@@ -22,13 +22,15 @@ interface NavItem {
 const NAV_ITEMS: Record<Rol, NavItem[]> = {
   super_admin: [
     { href: '/admin', label: 'Resumen', icon: SquaresFour },
-    { 
-      label: 'Gestión', 
+    {
+      label: 'Gestión',
       icon: Buildings,
       subItems: [
         { href: '/admin/empresas', label: 'Empresas' },
         { href: '/admin/leads', label: 'Leads' },
         { href: '/admin/categorias', label: 'Categorías' },
+        { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
+        { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
         { href: '/admin/modulos', label: 'Módulos' },
       ]
     },
@@ -38,7 +40,6 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       subItems: [
         { href: '/admin/calculos', label: 'Cálculos' },
         { href: '/admin/reportes', label: 'Reportes' },
-        { href: '/admin/certificados', label: 'Certificados' },
       ]
     },
     { 
@@ -57,35 +58,58 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       label: 'Recursos', 
       icon: Stack,
       subItems: [
+        { href: '/admin/correos', label: 'Correos' },
         { href: '/admin/contenido', label: 'Contenido' },
         { href: '/admin/plantillas', label: 'Plantillas' },
         { href: '/admin/tickets', label: 'Soporte' },
         { href: '/ayuda', label: 'Ayuda' },
       ]
     },
-    { href: '/admin/legal', label: 'Legales', icon: Scales },
-    { href: '/empresa/cotizador', label: 'Cotizador', icon: Calculator },
+    {
+      label: 'Legales',
+      icon: Scales,
+      subItems: [
+        { href: '/admin/legal', label: 'Documentos' },
+        { href: '/admin/firmas', label: 'Firmas' },
+      ]
+    },
+    {
+      label: 'Cotizador',
+      icon: Calculator,
+      subItems: [
+        { href: '/empresa/cotizador', label: 'Cotizaciones' },
+        { href: '/empresa/clientes', label: 'Clientes' },
+      ]
+    },
   ],
   empresa_admin: [
-    { 
-      label: 'Empresa', 
+    {
+      label: 'Empresa',
       icon: Buildings,
       subItems: [
         { href: '/empresa', label: 'Perfil' },
         { href: '/empresa/equipo', label: 'Equipo' },
       ]
     },
-    { 
-      label: 'Operaciones', 
+    {
+      label: 'Operaciones',
       icon: Target,
       subItems: [
         { href: '/empresa/calculos', label: 'Cálculos' },
         { href: '/empresa/metas', label: 'Metas' },
       ]
     },
-    { href: '/empresa/certificados', label: 'Certificados', icon: Medal },
+    { href: '/empresa/informes', label: 'Informes', icon: FileText },
     { href: '/empresa/dpp', label: 'Pasaportes DPP', icon: IdentificationCard },
-    { href: '/empresa/cotizador', label: 'Cotizador', icon: Calculator },
+    { href: '/empresa/reportes', label: 'Reportes', icon: TrendUp },
+    {
+      label: 'Cotizador',
+      icon: Calculator,
+      subItems: [
+        { href: '/empresa/cotizador', label: 'Cotizaciones' },
+        { href: '/empresa/clientes', label: 'Clientes' },
+      ]
+    },
     { href: '/empresa/soporte', label: 'Soporte', icon: Lifebuoy },
     { href: '/settings', label: 'Ajustes', icon: Gear },
   ],
@@ -93,7 +117,14 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
     { href: '/dashboard', label: 'Inicio', icon: House },
     { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
     { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
-    { href: '/empresa/cotizador', label: 'Cotizador', icon: Calculator },
+    {
+      label: 'Cotizador',
+      icon: Calculator,
+      subItems: [
+        { href: '/empresa/cotizador', label: 'Cotizaciones' },
+        { href: '/empresa/clientes', label: 'Clientes' },
+      ]
+    },
     { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy },
     { href: '/settings', label: 'Ajustes', icon: Gear },
   ],
@@ -433,7 +464,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             maxWidth: isExpanded ? 200 : 0,
             transition: 'opacity 0.4s ease 0.1s, max-width 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
             overflow: 'hidden',
-          }}>Cerrar sesión</span>
+          }}>CERRAR SESIÓN</span>
         </button>
       </div>
     </aside>
@@ -452,7 +483,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             height: '100%',
             zIndex: 900,
             display: 'flex', flexDirection: 'column', gap: 4,
-            padding: '100px 12px 40px 12px',
+            padding: '120px 12px 40px 12px',
             animation: 'slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             pointerEvents: 'auto',
             // LIQUID GLASS V13.30 - blur sutil
@@ -467,18 +498,6 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
               : '4px 0 20px rgba(0,130,124,0.06), inset 1px 0 0 rgba(255,255,255,0.6)'
           }}
         >
-          <div style={{ 
-            padding: '0 24px', 
-            fontSize: '12px', 
-            fontWeight: 900, 
-            letterSpacing: '0.05em',
-            color: isDark ? '#D6F391' : '#006B66',
-            marginBottom: '32px',
-            background: 'transparent',
-            display: 'block'
-          }}>
-            {activeSubmenu}
-          </div>
           {navItems.find(i => i.label === activeSubmenu)?.subItems?.map((sub, sidx) => {
             const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/')
             return (

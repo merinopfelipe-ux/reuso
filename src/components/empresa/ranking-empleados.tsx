@@ -13,7 +13,7 @@ interface Props {
   data: ItemRanking[]
 }
 
-const BRAND = '#00827C'
+const BRAND = 'var(--color-brand)'
 const MEDALLAS = ['#F6BF3E', '#8B9DC3', '#AD7C43']
 
 export default function RankingEmpleados({ data }: Props) {
@@ -73,7 +73,7 @@ export default function RankingEmpleados({ data }: Props) {
               height: 32,
               borderRadius: '50%',
               flexShrink: 0,
-              background: `${BRAND}18`,
+              background: 'var(--color-brand-light)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -111,7 +111,7 @@ export default function RankingEmpleados({ data }: Props) {
                   transition: 'width 0.5s ease',
                 }} />
               </div>
-              <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
                 {item.count} cálculo{item.count !== 1 ? 's' : ''}
               </span>
             </div>

@@ -1,6 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 
-export type ClaveMódulo = 'cotizador_crm'
+export type ClaveMódulo = 'cotizador_crm' | 'dpp' | 'calculo_ambiental'
 
 /**
  * Verifica si un usuario puede acceder a un módulo específico.

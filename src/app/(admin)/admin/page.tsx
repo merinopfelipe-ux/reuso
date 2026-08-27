@@ -10,12 +10,7 @@ import dynamic from 'next/dynamic'
 import { KpiCard } from '@/components/admin/kpi-card'
 
 import { displayName } from '@/lib/display-name'
-
-function formatFecha(iso: string): string {
-  return new Date(iso).toLocaleDateString('es-CO', {
-    day: '2-digit', month: 'short', year: 'numeric',
-  })
-}
+import { formatFecha, formatNumero } from '@/lib/format'
 
 export default async function AdminPage() {
   const supabase = createClient()
@@ -69,7 +64,7 @@ export default async function AdminPage() {
   () => import('@/components/admin/activity-chart').then(m => ({ default: m.ActivityChart })),
   {
     ssr: false,
-    loading: () => <div style={{ height: 300, borderRadius: 16, background: 'var(--bg-integrated)' }} />,
+    loading: () => <div style={{ height: 300, borderRadius: 16, background: 'var(--color-brand)' }} />,
   }
 )
   const actividadChart = Array.from(actividadMap.entries())
@@ -86,24 +81,11 @@ export default async function AdminPage() {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
             Hola, {saludo}
           </h1>
-          <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
+          <p className="mt-1 text-sm text-[var(--color-brand)]">
             ¡Juntos recuperamos el planeta!
           </p>
         </div>
-        <Link href="/admin/status" style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 20,
-          padding: '8px 16px',
-          fontSize: 13,
-          fontWeight: 600,
-          color: 'var(--color-brand)',
-          textDecoration: 'none',
-          boxShadow: 'var(--shadow)'
-        }}>
+        <Link href="/admin/sistema" className="flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-[13px] font-semibold text-[var(--color-brand)] bg-[var(--bg-card)] no-underline">
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#38B98E', display: 'inline-block' }}></span>
           Estado de sistemas
         </Link>
@@ -136,9 +118,9 @@ export default async function AdminPage() {
           color="var(--color-warning)"
         />
         <KpiCard
-          titulo="CO₂ total evitado"
+          titulo="CO₂ eq total evitado"
           valor={`${co2Ton} t`}
-          subtitulo="toneladas de CO₂-eq"
+          subtitulo="toneladas de CO₂ eq"
           icono={Leaf}
           color="var(--color-success)"
         />
@@ -150,39 +132,20 @@ export default async function AdminPage() {
       </div>
 
       {/* Últimos cálculos */}
-      <div
-        style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 12,
-          overflow: 'hidden',
-          boxShadow: 'var(--shadow)',
-        }}
-      >
+      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
         <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
             Últimos 10 cálculos
           </p>
         </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr style={{ background: 'var(--bg-integrated)', borderBottom: '1px solid var(--border)' }}>
-                {['Fecha', 'Usuario', 'Empresa', 'CO₂ (kg)'].map((h) => (
-                  <th
-                    key={h}
-                    style={{
-                      padding: '10px 16px',
-                      textAlign: 'left',
-                      fontWeight: 600,
-                      color: 'var(--text-secondary)',
-                      whiteSpace: 'nowrap',
-                      fontSize: 11,
-                    }}
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
+                <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Usuario</th>
+                <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
+                <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ (kg)</th>
               </tr>
             </thead>
             <tbody>
@@ -195,32 +158,36 @@ export default async function AdminPage() {
                         No se han registrado cálculos aún
                       </p>
                       <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', opacity: 0.7 }}>
-                        Cuando los usuarios comiencen a certificar objetos, aparecerán en esta lista.
+                        Cuando los usuarios comiencen a calcular objetos, aparecerán en esta lista.
                       </p>
                     </div>
                   </td>
                 </tr>
               ) : (
-                ultimosCalculos.map((c) => (
-                  <tr
-                    key={c.id}
-                    style={{ borderBottom: '1px solid var(--border-light)' }}
-                    className="hover-row"
-                  >
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                      {c.fecha ? formatFecha(c.fecha) : '-'}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-primary)', fontWeight: 500 }}>
-                      {(c.profiles as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
-                    </td>
-                    <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>
-                      {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
-                    </td>
-                    <td style={{ padding: '12px 16px', fontWeight: 700, color: 'var(--color-brand)' }}>
-                      {Number(c.total_co2).toFixed(3)} kg
-                    </td>
-                  </tr>
-                ))
+                ultimosCalculos.map((c, idx) => {
+                  return (
+                    <tr
+                      key={c.id}
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      <td className="px-4 py-3 text-[var(--text-secondary)] text-center">
+                        {c.fecha ? formatFecha(c.fecha) : '-'}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-primary)] font-medium">
+                        {(c.profiles as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                        {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-[var(--color-brand)] text-right">
+                        {formatNumero(c.total_co2, { unidad: 'kg' })}
+                      </td>
+                    </tr>
+                  )
+                })
               )}
             </tbody>
           </table>

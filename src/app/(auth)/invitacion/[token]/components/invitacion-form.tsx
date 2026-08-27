@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { Eye, EyeOff as EyeSlash, CheckCircle, Loader2 as CircleNotch, Leaf } from '@/components/ui/icons'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   token: string
@@ -12,7 +13,7 @@ interface Props {
   rolAsignado: string
 }
 
-const BRAND = '#00827C'
+const BRAND = 'var(--color-brand)'
 
 export default function InvitacionForm({ token, email, empresaNombre, rolAsignado }: Props) {
   const router = useRouter()
@@ -57,8 +58,8 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
     padding: '10px 14px',
     borderRadius: 8,
     border: '1.5px solid var(--border)',
-    background: 'var(--surface)',
-    color: 'var(--text)',
+    background: 'var(--bg-input)',
+    color: 'var(--text-primary)',
     fontSize: 15,
     outline: 'none',
     userSelect: 'none',
@@ -71,10 +72,10 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         <h2 style={{ color: BRAND, fontWeight: 700, fontSize: 22, margin: '0 0 8px' }}>
           ¡Cuenta creada!
         </h2>
-        <p style={{ color: 'var(--text-muted)', marginBottom: 8, fontSize: 15 }}>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: 8, fontSize: 15 }}>
           Ya puedes ingresar como parte de <strong>{empresaNombre}</strong>.
         </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: 13, marginBottom: 20 }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 20 }}>
           Redirigiendo al inicio de sesión...
         </p>
         <CircleNotch size={20} color={BRAND} style={{ animation: 'spin 1s linear infinite', margin: '0 auto' }} />
@@ -87,8 +88,8 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Contexto */}
       <div style={{
-        background: `${BRAND}15`,
-        border: `1.5px solid ${BRAND}40`,
+        background: 'var(--color-brand-light)',
+        border: '1.5px solid var(--border)',
         borderRadius: 10,
         padding: '12px 16px',
         marginBottom: 4,
@@ -96,7 +97,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         <p style={{ margin: 0, fontSize: 14, color: BRAND, fontWeight: 600 }}>
           Invitado a: <span style={{ fontWeight: 700 }}>{empresaNombre}</span>
         </p>
-        <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--text-muted)' }}>
+        <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>
           {email} · {rolAsignado === 'empresa_admin' ? 'Administrador' : 'Empleado'}
         </p>
       </div>
@@ -144,7 +145,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
             type="button"
             onClick={() => setShowPass(!showPass)}
             className="hover-pop hover-press"
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
           >
             {showPass ? <EyeSlash size={18} /> : <Eye size={18} />}
           </button>
@@ -182,7 +183,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
             type="button"
             onClick={() => setShowConfirm(!showConfirm)}
             className="hover-pop hover-press"
-            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+            style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
           >
             {showConfirm ? <EyeSlash size={18} /> : <Eye size={18} />}
           </button>
@@ -203,7 +204,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
           required
           style={{ marginTop: 2, accentColor: BRAND }}
         />
-        <span style={{ color: 'var(--text-muted)' }}>
+        <span style={{ color: 'var(--text-secondary)' }}>
           Acepto los{' '}
           <span style={{ color: BRAND, fontWeight: 600 }}>términos y condiciones</span>
           {' '}de Calculadora de Reúso
@@ -222,30 +223,16 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
       />
 
       {error && (
-        <p style={{ color: '#e53e3e', fontSize: 14, margin: 0, padding: '8px 12px', background: '#fff5f5', borderRadius: 6 }}>
+        <p style={{ color: 'var(--color-error)', fontSize: 14, margin: 0, padding: '8px 12px', background: 'rgba(255,94,75,0.08)', borderRadius: 6 }}>
           {error}
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        style={{
-          background: loading ? `${BRAND}80` : BRAND,
-          color: '#fff',
-          border: 'none',
-          borderRadius: 8,
-          padding: '12px',
-          fontSize: 16,
-          fontWeight: 600,
-          cursor: loading ? 'not-allowed' : 'pointer',
-          transition: 'background 0.2s',
-        }}
-      >
-        {loading ? 'Creando cuenta…' : 'Crear mi cuenta'}
-      </button>
+      <Button type="submit" loading={loading} className="w-full" style={{ padding: '12px', fontSize: 16 }}>
+        Crear mi cuenta
+      </Button>
 
-      <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-muted)', margin: 0 }}>
+      <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
         <Leaf size={13} style={{ verticalAlign: 'middle', marginRight: 4, color: BRAND }} />
         © Grupo MLP S.A.S.
       </p>

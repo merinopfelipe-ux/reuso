@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { LogsClient } from './components/logs-client'
 
-const DEFAULT_PAGE_SIZE = 20
+const DEFAULT_PAGE_SIZE = 25
 
 export default async function LogsPage({
   searchParams,

@@ -174,7 +174,6 @@ const thStyle: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 700,
   color: 'var(--color-brand)',
-  background: 'rgba(0,130,124,0.06)',
   borderBottom: '1px solid rgba(0,130,124,0.14)',
 }
 
@@ -191,22 +190,29 @@ function CookieTable({ rows, thNombre, thDominio, thDuracion, thFinalidad }: {
   thNombre: string; thDominio: string; thDuracion: string; thFinalidad: string
 }) {
   return (
-    <div style={{ overflowX: 'auto', marginBottom: 24, borderRadius: 10, border: '1px solid rgba(0,130,124,0.14)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+    <div style={{ overflowX: 'auto', marginBottom: 24, borderRadius: 12, border: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
         <thead>
-          <tr>
-            <th style={{ ...thStyle, borderRadius: '10px 0 0 0' }}>{thNombre}</th>
-            <th style={thStyle}>{thDominio}</th>
-            <th style={thStyle}>{thDuracion}</th>
-            <th style={{ ...thStyle, borderRadius: '0 10px 0 0' }}>{thFinalidad}</th>
+          <tr style={{ background: 'var(--bg-table-header)', borderBottom: '1px solid var(--border)' }}>
+            {[thNombre, thDominio, thDuracion, thFinalidad].map(h => (
+              <th key={h} style={thStyle}>{h}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} style={{ background: i % 2 === 0 ? 'var(--bg-primary)' : 'rgba(0,130,124,0.02)' }}>
-              <td style={{ ...tdStyle, fontWeight: 600, fontFamily: 'monospace', fontSize: 12, color: 'var(--color-brand)' }}>{row.nombre}</td>
-              <td style={{ ...tdStyle, fontSize: 12 }}>{row.dominio}</td>
-              <td style={{ ...tdStyle, fontSize: 12, whiteSpace: 'nowrap' }}>{row.duracion}</td>
+          {rows.map((row, idx) => (
+            <tr
+              key={idx}
+              className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
+                idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+              }`}
+              style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+            >
+              <td style={{ ...tdStyle, fontWeight: 600, fontFamily: 'monospace', fontSize: 13, color: 'var(--color-brand)' }}>
+                {row.nombre}
+              </td>
+              <td style={{ ...tdStyle, color: 'var(--color-brand)' }}>{row.dominio}</td>
+              <td style={{ ...tdStyle, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{row.duracion}</td>
               <td style={tdStyle}>{row.finalidad}</td>
             </tr>
           ))}

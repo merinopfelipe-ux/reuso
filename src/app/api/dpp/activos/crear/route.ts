@@ -17,6 +17,11 @@ const schema = z.object({
     origen_fuente: z.string().optional(),
     nivel_confianza: z.enum(['alta', 'media', 'baja']).optional(),
   })).optional(),
+  // El item nunca es de la empresa que cotiza, es del cliente dueño del
+  // mueble — vínculo siempre opcional (el DPP puede crearse de cero, sin
+  // cliente todavía, o al ganar una cotización ya con cliente conocido).
+  cliente_id: z.uuid('Cliente inválido.').optional(),
+  imagen_url: z.string().max(500).optional(),
   empresa_id: z.uuid('ID de empresa inválido.').optional(),
 })
 
@@ -46,7 +51,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     )
   }
-  const { nombre, descripcion, categoria_id, peso_total_kg, composicion_json, empresa_id: bodyEmpresaId } = parsed.data
+  const { nombre, descripcion, categoria_id, peso_total_kg, composicion_json, cliente_id, imagen_url, empresa_id: bodyEmpresaId } = parsed.data
 
   let targetEmpresaId = empresa_id
   if (rol === 'super_admin') {
@@ -59,6 +64,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Empresa no encontrada.' }, { status: 404 })
     }
     targetEmpresaId = bodyEmpresaId
+  }
+
+  // El cliente, si llega, debe pertenecer a la misma empresa (nunca confiar
+  // en un ID del body sin verificar contra la empresa real del usuario).
+  if (cliente_id) {
+    const { data: clienteExiste } = await adminClient
+      .from('crm_clientes')
+      .select('id')
+      .eq('id', cliente_id)
+      .eq('empresa_id', targetEmpresaId)
+      .maybeSingle()
+    if (!clienteExiste) {
+      return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
+    }
   }
 
   // Generar código único (máx 3 intentos)
@@ -103,6 +122,8 @@ export async function POST(request: NextRequest) {
       categoria_id: categoria_id ?? null,
       peso_total_kg: peso_total_kg ?? null,
       composicion_json: composicion_json ?? null,
+      cliente_id: cliente_id ?? null,
+      imagen_url: imagen_url ?? null,
       hash_integridad,
       hash_previo,
     })

@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { Copy, Check, RefreshCw as ArrowsClockwise, Loader2 as CircleNotch, Trash2 as Trash, QrCode } from '@/components/ui/icons'
 
-const BRAND = '#00827C'
-const TEXT_MED = '#4D7C79'
-const BORDER = 'rgba(0,130,124,0.12)'
+const BRAND = 'var(--color-brand)'
+const TEXT_MED = 'var(--text-secondary)'
+const BORDER = 'var(--border)'
 
 interface Props {
   codigoInicial: string | null
@@ -99,7 +99,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
           </div>
 
           {/* Acciones */}
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', width: '100%' }}>
             <button
               onClick={copiar}
               title="Copiar código"
@@ -163,7 +163,7 @@ export function CodigoRegistroClient({ codigoInicial }: Props) {
             className={cargando ? '' : 'hover-pop hover-press'}
             style={{
               padding: '10px 18px', borderRadius: 8, border: 'none',
-              background: BRAND, color: '#fff',
+              background: BRAND, color: 'var(--text-on-brand)',
               fontSize: 13, fontWeight: 600,
               cursor: cargando ? 'not-allowed' : 'pointer',
               display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0,

@@ -7,7 +7,7 @@ interface Props {
   params: { token: string }
 }
 
-const BRAND = '#00827C'
+const BRAND = 'var(--color-brand)'
 
 export default async function InvitacionPage({ params }: Props) {
   const { token } = params
@@ -39,10 +39,10 @@ export default async function InvitacionPage({ params }: Props) {
         alignItems: 'center',
         justifyContent: 'center',
         padding: 24,
-        background: 'var(--background)',
+        background: 'var(--bg-primary)',
       }}>
         <div style={{
-          background: 'var(--surface)',
+          background: 'var(--bg-card)',
           borderRadius: 16,
           padding: '40px 32px',
           maxWidth: 400,
@@ -51,10 +51,10 @@ export default async function InvitacionPage({ params }: Props) {
           boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
         }}>
           <ShieldWarning size={56} color="#e53e3e" style={{ margin: '0 auto 16px' }} />
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', margin: '0 0 8px' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 8px' }}>
             Enlace inválido
           </h1>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 24, fontSize: 15 }}>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 15 }}>
             {mensaje}
           </p>
           <a
@@ -69,7 +69,7 @@ export default async function InvitacionPage({ params }: Props) {
           >
             Volver al inicio
           </a>
-          <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-muted)' }}>
+          <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)' }}>
             <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: BRAND }} />
             © Grupo MLP S.A.S.
           </p>
@@ -94,10 +94,10 @@ export default async function InvitacionPage({ params }: Props) {
       alignItems: 'center',
       justifyContent: 'center',
       padding: 24,
-      background: 'var(--background)',
+      background: 'var(--bg-primary)',
     }}>
       <div style={{
-        background: 'var(--surface)',
+        background: 'var(--bg-card)',
         borderRadius: 16,
         padding: '40px 32px',
         maxWidth: 440,
@@ -109,7 +109,7 @@ export default async function InvitacionPage({ params }: Props) {
             width: 56,
             height: 56,
             borderRadius: '50%',
-            background: `${BRAND}20`,
+            background: 'var(--color-brand-light)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -117,10 +117,10 @@ export default async function InvitacionPage({ params }: Props) {
           }}>
             <Leaf size={28} color={BRAND} />
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', margin: '0 0 6px' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px' }}>
             Únete a {empresaNombre}
           </h1>
-          <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: 14 }}>
+          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 14 }}>
             Crea tu cuenta para empezar a medir tu impacto ambiental
           </p>
         </div>

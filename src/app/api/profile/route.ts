@@ -21,7 +21,7 @@ export async function GET() {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nombre, apellido, apodo, email, rol, tema_preferido, telefono')
+    .select('nombre, apellido, apodo, email, rol, tema_preferido, telefono, avatar_color, avatar_text')
     .eq('user_id', user.id)
     .single()
 
@@ -46,6 +46,8 @@ export async function GET() {
       email: emailFinal,
       emailMasked: maskEmail(emailFinal),
       telefonoMasked: telefonoDecrypted ? maskPhone(telefonoDecrypted) : null,
+      avatar_color: perfil.avatar_color ?? null,
+      avatar_text: perfil.avatar_text ?? null,
     })
   }
 
@@ -58,6 +60,8 @@ export async function GET() {
     email: user.email ?? '',
     emailMasked: maskEmail(user.email ?? ''),
     telefonoMasked: null,
+    avatar_color: null,
+    avatar_text: null,
   })
 }
 

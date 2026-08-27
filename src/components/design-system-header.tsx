@@ -311,7 +311,7 @@ export function DesignSystemHeader({
           >
             <div className="flex justify-between items-center mb-6">
                <div className={`text-[10px] font-black tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Menú de Navegación</div>
-               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center hover-rotate-90 hover-press ${isDark ? 'bg-white/10 text-white' : 'bg-[#474747]/5 text-[#474747]'}`}><X size={16} strokeWidth={2.5} /></button>
+               <button onClick={() => setIsMobileNavOpen(false)} className={`w-8 h-8 rounded-full flex items-center justify-center hover-rotate-90 hover-press ${isDark ? 'bg-white/10 text-white' : 'bg-[#00827C]/5 text-[#00827C]'}`}><X size={16} strokeWidth={2.5} /></button>
             </div>
             
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">

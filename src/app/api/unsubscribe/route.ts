@@ -5,14 +5,14 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 
 const Schema = z.object({
-  token: z.string().uuid(),
-  motivo: z.string().max(200).optional(),
+  token: z.string().min(1),
+  motivo: z.string().max(500).optional(),
 })
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 
-  const allowed = await rateLimit(`unsubscribe:${ip}`, 5, 60_000)
+  const allowed = await rateLimit(`unsubscribe:${ip}`, 5, 5 * 60_000)
   if (!allowed) {
     return NextResponse.json({ ok: false, error: 'Demasiados intentos. Espera un momento.' }, { status: 429 })
   }

@@ -70,9 +70,18 @@ export async function POST(request: NextRequest) {
   const itemIds = itemsInput.map((i) => i.id)
   const { data: itemsDB, error: itemsError } = await adminClient
     .from('items')
-    .select('id, nombre, co2_por_unidad, peso_kg, nivel_confianza, origen_fuente, categoria_id')
+    .select('id, nombre, co2_por_unidad, agua_por_unidad, peso_kg, nivel_confianza, origen_fuente, categoria_id')
     .in('id', itemIds)
     .eq('activo', true)
+
+  // Desglose de materiales por ítem — solo para enriquecer el snapshot con
+  // vista al Reporte 2 (GRI/ESG, dominio B). Nunca alimenta calcularImpacto:
+  // el total de CO2/agua sigue siendo el rollup de `items`, esto es
+  // trazabilidad adicional hacia adelante (calculos ya guardados no cambian).
+  const { data: materialesDB } = await adminClient
+    .from('item_materiales')
+    .select('item_id, nombre, categoria_material, peso_kg, factor_co2_kg, factor_agua_l_kg, nivel_confianza')
+    .in('item_id', itemIds)
 
   if (itemsError || !itemsDB || itemsDB.length !== itemsInput.length) {
     return NextResponse.json({ error: 'Algunos de los objetos seleccionados no están disponibles o no se encontraron.' }, { status: 400 })
@@ -98,13 +107,14 @@ export async function POST(request: NextRequest) {
       categoria: categoriaMap.get(db.categoria_id) ?? 'Sin categoría',
       peso_kg_input: inp.peso_kg,
       co2_por_unidad: db.co2_por_unidad,
+      agua_por_unidad: db.agua_por_unidad,
       peso_kg_unidad: db.peso_kg,
     }
   })
 
   const resultado = calcularImpacto(itemsParaCalculo)
 
-  // Construir detalle_json (compatible con /api/certificados/generar)
+  // Construir detalle_json (compatible con /api/informes/generar)
   const detalle_json: Record<string, { categoria: string; nombre: string; peso_kg: number; co2: number }> & { _descripcion_html?: string } = {}
   for (const item of itemsParaCalculo) {
     detalle_json[item.id] = {
@@ -121,17 +131,37 @@ export async function POST(request: NextRequest) {
   // Construir factor_snapshot_json (inmutabilidad histórica)
   const factor_snapshot_json = {
     items: Object.fromEntries(
-      itemsDB.map((db) => [
-        db.id,
-        {
-          nombre: db.nombre,
-          co2_por_unidad: db.co2_por_unidad,
-          peso_kg_unidad: db.peso_kg,
-          co2_por_kg: db.peso_kg > 0 ? parseFloat((db.co2_por_unidad / db.peso_kg).toFixed(6)) : 0,
-          nivel_confianza: db.nivel_confianza,
-          origen_fuente: db.origen_fuente ?? null,
-        },
-      ])
+      itemsDB.map((db) => {
+        const itemInput = itemsInput.find((i) => i.id === db.id)
+        // Escala cada material del catálogo (por unidad de referencia) al
+        // peso REAL que el usuario ingresó, mismo criterio que co2_por_item.
+        const factorEscala = itemInput && db.peso_kg > 0 ? itemInput.peso_kg / db.peso_kg : 0
+        const materiales = (materialesDB ?? [])
+          .filter((m) => m.item_id === db.id)
+          .map((m) => ({
+            nombre: m.nombre,
+            categoria_material: m.categoria_material ?? 'otros',
+            peso_kg: parseFloat((m.peso_kg * factorEscala).toFixed(4)),
+            factor_co2_kg: m.factor_co2_kg,
+            factor_agua_l_kg: m.factor_agua_l_kg ?? 0,
+            nivel_confianza: m.nivel_confianza,
+          }))
+
+        return [
+          db.id,
+          {
+            nombre: db.nombre,
+            co2_por_unidad: db.co2_por_unidad,
+            agua_por_unidad: db.agua_por_unidad,
+            peso_kg_unidad: db.peso_kg,
+            co2_por_kg: db.peso_kg > 0 ? parseFloat((db.co2_por_unidad / db.peso_kg).toFixed(6)) : 0,
+            agua_por_kg: db.peso_kg > 0 ? parseFloat((db.agua_por_unidad / db.peso_kg).toFixed(6)) : 0,
+            nivel_confianza: db.nivel_confianza,
+            origen_fuente: db.origen_fuente ?? null,
+            materiales,
+          },
+        ]
+      })
     ),
     param_equiv: PARAM_EQUIV,
     version_factores: new Date().toISOString().slice(0, 10),
