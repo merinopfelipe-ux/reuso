@@ -45,10 +45,21 @@ export default async function AdminPage() {
       .order('fecha', { ascending: true }),
     adminClient
       .from('calculos')
-      .select('id, fecha, total_co2, user_id, empresa_id, profiles(nombre), empresas(nombre)')
+      .select('id, fecha, total_co2, user_id, empresa_id, empresas(nombre)')
       .order('created_at', { ascending: false })
       .limit(10),
   ])
+
+  // El autor se resuelve aparte, nunca con el embed `profiles(nombre)`:
+  // calculos.user_id referencia auth.users(id), no profiles(id), así que
+  // PostgREST no encuentra la relación y rechaza la consulta COMPLETA con un
+  // 400 — la tabla de últimos cálculos quedaba siempre vacía. Mismo criterio
+  // que ya se aplica en las bitácoras de cliente y de cotización.
+  const autoresIds = Array.from(new Set((ultimosCalculos ?? []).map(c => c.user_id).filter(Boolean))) as string[]
+  const { data: autoresData } = autoresIds.length
+    ? await adminClient.from('profiles').select('user_id, nombre').in('user_id', autoresIds)
+    : { data: [] as { user_id: string; nombre: string | null }[] }
+  const autores = new Map((autoresData ?? []).map(a => [a.user_id, a.nombre]))
 
   const co2Total = (co2Data ?? []).reduce((sum, r) => sum + (r.total_co2 ?? 0), 0)
   const co2Ton = (co2Total / 1000).toFixed(2)
@@ -177,7 +188,7 @@ export default async function AdminPage() {
                         {c.fecha ? formatFecha(c.fecha) : '-'}
                       </td>
                       <td className="px-4 py-3 text-[var(--text-primary)] font-medium">
-                        {(c.profiles as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
+                        {autores.get(c.user_id) ?? '-'}
                       </td>
                       <td className="px-4 py-3 text-[var(--text-secondary)]">
                         {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}

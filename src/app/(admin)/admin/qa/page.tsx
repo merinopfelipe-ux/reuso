@@ -1636,6 +1636,15 @@ export default function QAPage() {
   // pantallas, que es lo que obliga a hacer el recorrido por tema.
   const [modo, setModo] = useState<'modulo' | 'pagina'>('modulo')
   const [rutaActiva, setRutaActiva] = useState<string | null>(null)
+  // Diagnóstico automático: lo que una persona no puede revisar a ojo
+  // (columnas que faltan por una migración sin correr, buckets que quedaron
+  // públicos, consultas que la base rechaza). Corre contra la base real.
+  const [diagnostico, setDiagnostico] = useState<{
+    resumen: { total: number; ok: number; avisos: number; fallas: number }
+    comprobaciones: { grupo: string; nombre: string; estado: 'ok' | 'aviso' | 'falla'; detalle: string }[]
+  } | null>(null)
+  const [diagnosticando, setDiagnosticando] = useState(false)
+  const [errorDiagnostico, setErrorDiagnostico] = useState<string | null>(null)
   const [busqueda, setBusqueda] = useState('')
   const [ultimoGuardado, setUltimoGuardado] = useState<Date | null>(null)
   const [guardadoReciente, setGuardadoReciente] = useState(false)
@@ -1850,6 +1859,27 @@ export default function QAPage() {
     else if (revisadas < total) lineas.push(`○  INCOMPLETO: ${total - revisadas} prueba(s) pendientes.`)
     else lineas.push(`✓  APROBADO: Todas las pruebas superadas. Sistema listo para producción.`)
     return lineas.join('\n')
+  }
+
+  const correrDiagnostico = async () => {
+    setDiagnosticando(true)
+    setErrorDiagnostico(null)
+    try {
+      const res = await fetch('/api/admin/qa/diagnostico')
+      if (!res.ok) throw new Error(`El servidor respondió ${res.status}`)
+      setDiagnostico(await res.json())
+    } catch (e) {
+      setErrorDiagnostico(e instanceof Error ? e.message : 'No se pudo completar el diagnóstico.')
+      setDiagnostico(null)
+    } finally {
+      setDiagnosticando(false)
+    }
+  }
+
+  const descargarDiagnostico = () => {
+    // El .txt lo arma el servidor, para que el archivo diga exactamente lo
+    // mismo que se comprobó y no una copia reconstruida en el navegador.
+    window.location.href = '/api/admin/qa/diagnostico?formato=txt'
   }
 
   const descargar = () => {
@@ -2165,6 +2195,86 @@ export default function QAPage() {
 
           {/* Panel de tareas */}
           <div className="lg:col-span-8 flex flex-col gap-4">
+            {/* Diagnóstico automático — la mitad que no se prueba a mano */}
+            <div
+              className={`border ${theme.headerBg} rounded-2xl px-5 py-4 transition-all`}
+              style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
+            >
+              <div className="flex items-start justify-between gap-3 flex-wrap">
+                <div className="min-w-0">
+                  <h3 className={`text-sm font-semiboldr ${theme.textPrimary} mb-0.5`}>
+                    Diagnóstico automático
+                  </h3>
+                  <p className={`text-xs ${theme.textSecondary}`}>
+                    Revisa contra la base real lo que no se ve a simple vista: columnas que falten, archivos mal configurados y consultas que la base rechaza.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={correrDiagnostico}
+                    disabled={diagnosticando}
+                    className={`text-xs px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 ${
+                      isDark ? 'bg-[#D6F391] text-[#474747] font-semibold'
+                             : 'bg-[#00827C] text-white font-semibold'
+                    }`}
+                  >
+                    {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
+                  </button>
+                  {diagnostico && (
+                    <button
+                      onClick={descargarDiagnostico}
+                      className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80`}
+                    >
+                      Descargar informe
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {errorDiagnostico && (
+                <p className="text-xs mt-3 text-[#FF5E4B]">{errorDiagnostico}</p>
+              )}
+
+              {diagnostico && (
+                <div className="mt-4 flex flex-col gap-3">
+                  <div className="flex items-center gap-4 text-xs flex-wrap">
+                    <span className={theme.textSecondary}>{diagnostico.resumen.total} comprobaciones</span>
+                    <span className="text-[#38B98E] font-semibold">{diagnostico.resumen.ok} correctas</span>
+                    {diagnostico.resumen.avisos > 0 && (
+                      <span className="text-[#F6BF3E] font-semibold">{diagnostico.resumen.avisos} avisos</span>
+                    )}
+                    <span className={diagnostico.resumen.fallas > 0 ? 'text-[#FF5E4B] font-semibold' : theme.textSecondary}>
+                      {diagnostico.resumen.fallas} fallas
+                    </span>
+                  </div>
+
+                  {/* Solo se listan fallas y avisos: lo que está bien no
+                      necesita leerse, y va completo en el .txt descargable. */}
+                  {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').length === 0 ? (
+                    <p className="text-xs text-[#38B98E]">
+                      Sin fallas. El sistema respondió a todas las comprobaciones.
+                    </p>
+                  ) : (
+                    <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
+                      {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').map((x, i) => (
+                        <div
+                          key={`${x.grupo}-${x.nombre}-${i}`}
+                          className={`text-xs px-3 py-2 rounded-lg border ${theme.cardBg}`}
+                        >
+                          <span className={x.estado === 'falla' ? 'text-[#FF5E4B] font-semibold' : 'text-[#F6BF3E] font-semibold'}>
+                            {x.estado === 'falla' ? 'Falla' : 'Aviso'}
+                          </span>
+                          <span className={`${theme.textSecondary} opacity-60`}> · {x.grupo} · </span>
+                          <span className={theme.textPrimary}>{x.nombre}</span>
+                          <p className={`${theme.textSecondary} mt-0.5`}>{x.detalle}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Cabecera del módulo activo */}
             <div
               className={`border ${theme.headerBg} rounded-2xl px-5 py-4 transition-all`}

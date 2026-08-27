@@ -10,6 +10,7 @@
     "lint": "next lint",
     "check-backgrounds": "node scripts/check-backgrounds.js",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed-ecosistema.mjs",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:unit": "vitest run src/lib/calculos/ src/lib/reportes/",
@@ -17,7 +18,8 @@
     "pruebas": "bash scripts/run-pruebas.sh",
     "security:secrets": "gitleaks git --no-banner -c .gitleaks.toml",
     "security:sast": "semgrep scan --config=p/security-audit --config=p/owasp-top-ten --config=p/react --config=p/nextjs --config=p/typescript --config=p/javascript --metrics=off",
-    "prepare": "node .husky/install.mjs"
+    "prepare": "node .husky/install.mjs",
+    "qa:auto": "node scripts/qa-automatico.mjs"
   },
   "dependencies": {
     "@lucide/lab": "^0.1.2",

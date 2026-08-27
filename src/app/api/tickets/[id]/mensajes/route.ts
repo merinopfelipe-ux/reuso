@@ -29,13 +29,28 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   const { data, error } = await supabase
     .from('tickets_mensajes')
-    .select('*, profiles:user_id (nombre, avatar_url, rol)')
+    .select('*')
     .eq('ticket_id', params.id)
     .order('created_at', { ascending: true })
 
   if (error) return NextResponse.json({ error: 'Error cargando hilo' }, { status: 500 })
 
-  return NextResponse.json({ data })
+  // El autor se adjunta con una consulta aparte, nunca con el embed
+  // `profiles:user_id(...)`: tickets_mensajes.user_id referencia
+  // auth.users(id), no profiles(id), así que PostgREST no encuentra la
+  // relación y rechaza la consulta COMPLETA con un 400 — el hilo respondía
+  // siempre 500 y no se podía leer ningún ticket. Mismo criterio que ya se
+  // aplica en las bitácoras de cliente y de cotización.
+  const autoresIds = Array.from(new Set((data ?? []).map(m => m.user_id).filter(Boolean))) as string[]
+  const { data: perfiles } = autoresIds.length
+    ? await supabase.from('profiles').select('user_id, nombre, avatar_url, rol').in('user_id', autoresIds)
+    : { data: [] as { user_id: string; nombre: string | null; avatar_url: string | null; rol: string | null }[] }
+  const porUsuario = new Map((perfiles ?? []).map(p => [p.user_id, p]))
+
+  // Se conserva la forma `profiles` que ya espera el frontend del hilo.
+  const conAutor = (data ?? []).map(m => ({ ...m, profiles: porUsuario.get(m.user_id) ?? null }))
+
+  return NextResponse.json({ data: conAutor })
 }
 
 const msgSchema = z.object({
