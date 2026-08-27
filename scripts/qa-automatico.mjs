@@ -40,12 +40,25 @@ function archivosDe(dir) {
 // Los buckets de almacenamiento también se escriben `.from('x')`, pero van
 // precedidos de `.storage`. Sin esa distinción se reportan como tablas que no
 // existen, que fue el primer falso positivo de este barrido.
+// Dos formas de escribir un .select() en el proyecto: comillas simples en una
+// línea, o comillas invertidas multilínea para consultas largas con embeds.
+// Cubrir solo la primera dejó 16 archivos completos fuera del barrido —
+// entre ellos el que rompía /admin/calculos — y ninguno lo notó porque el
+// barrido reportaba "0 rechazadas" con total confianza sobre una porción
+// incompleta del código.
+const PATRON_SELECT = /(\.storage)?\s*\.from\(\s*'([a-z_]+)'\s*\)\s*\.select\(\s*['`]([^'`]+)['`]/g
+
 const consultas = new Set()
 for (const f of archivosDe('src')) {
   const txt = readFileSync(f, 'utf8')
-  for (const m of txt.matchAll(/(\.storage)?\s*\.from\(\s*'([a-z_]+)'\s*\)\s*\.select\(\s*'([^']+)'/g)) {
+  for (const m of txt.matchAll(PATRON_SELECT)) {
     if (m[1]) continue
-    consultas.add(JSON.stringify({ tabla: m[2], select: m[3].replace(/\s+/g, ' ').trim(), archivo: f }))
+    // El cliente real de supabase-js elimina TODO el espacio en blanco del select
+// antes de mandarlo (verificado leyendo `query.url` que arma la librería) —
+// probarlo con espacios de más rompe consultas con 2+ niveles de anidamiento
+// en el parser de PostgREST que, en la aplicación real, nunca ven ese espacio
+// y funcionan bien. Se replica ese mismo comportamiento aquí.
+consultas.add(JSON.stringify({ tabla: m[2], select: m[3].replace(/\s+/g, ''), archivo: f }))
   }
 }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { resolverAutores } from '@/lib/resolver-autores'
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -11,18 +12,24 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   const adminClient = await createAdminClient()
   
-  // Detalle del ticket con datos del creador
-  const { data: ticket, error } = await adminClient
+  // Detalle del ticket con datos del creador. profiles_user se resuelve
+  // aparte, nunca con el embed `profiles_user:user_id(...)`: tickets.user_id
+  // referencia auth.users(id), no profiles(id) — el embed rechazaba la
+  // consulta ENTERA (PGRST200) y todo ticket respondía "no encontrado" 404,
+  // aunque sí existiera.
+  const { data: ticketRaw, error } = await adminClient
     .from('tickets')
     .select(`
       *,
-      profiles_user:user_id (nombre, email),
       empresas_emp:empresa_id (nombre)
     `)
     .eq('id', params.id)
     .single()
 
-  if (error || !ticket) return NextResponse.json({ error: 'Ticket no encontrado' }, { status: 404 })
+  if (error || !ticketRaw) return NextResponse.json({ error: 'Ticket no encontrado' }, { status: 404 })
+
+  const autores = await resolverAutores(adminClient, [ticketRaw.user_id], 'user_id, nombre, apellido, apodo, email')
+  const ticket = { ...ticketRaw, profiles_user: autores.get(ticketRaw.user_id) ?? null }
 
   // Validar RLS manual: si no es admin, debe poseerlo o ser admin de la empresa
   const { data: profile } = await supabase.from('profiles').select('rol, empresa_id').eq('user_id', user.id).single()

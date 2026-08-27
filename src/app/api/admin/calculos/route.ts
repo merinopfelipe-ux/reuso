@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { z } from 'zod'
+import { resolverAutores } from '@/lib/resolver-autores'
 
 const anularSchema = z.object({
   motivo_anulacion: z.string().min(5, 'El motivo debe tener al menos 5 caracteres.').max(500),
@@ -25,7 +26,6 @@ export async function GET(request: NextRequest) {
     .select(`
       id, user_id, empresa_id, fecha, total_co2, total_agua, estado,
       motivo_anulacion, anulado_en, created_at,
-      profiles!calculos_user_id_fkey(nombre, apellido),
       empresas!calculos_empresa_id_fkey(nombre)
     `, { count: 'exact' })
     .order('fecha', { ascending: false })
@@ -40,7 +40,12 @@ export async function GET(request: NextRequest) {
   const { data, error, count } = await query
   if (error) return NextResponse.json({ error: 'Error al obtener cálculos.' }, { status: 500 })
 
-  return NextResponse.json({ data: data ?? [], total: count ?? 0 })
+  // profiles se resuelve aparte, nunca con el embed `profiles!fk(...)`: ver
+  // el comentario de resolverAutores.
+  const autores = await resolverAutores(guard.adminClient, (data ?? []).map(c => c.user_id))
+  const conAutor = (data ?? []).map(c => ({ ...c, profiles: autores.get(c.user_id) ?? null }))
+
+  return NextResponse.json({ data: conAutor, total: count ?? 0 })
 }
 
 export async function PATCH(request: NextRequest) {
