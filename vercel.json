@@ -28,5 +28,10 @@
       "path": "/api/cron/cotizador-purga-borradores-8h",
       "schedule": "0 18 * * *"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "main": false
+    }
+  }
 }
