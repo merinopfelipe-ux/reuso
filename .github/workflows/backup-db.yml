@@ -22,6 +22,15 @@ on:
     # 08:00 UTC = 3:00 a.m. en Colombia (UTC-5).
     - cron: '0 8 * * *'
   workflow_dispatch:
+  # Al cambiar el respaldo, se prueba solo. Sin esto, la única forma de estrenar
+  # una corrección es el botón "Run workflow": el de "Re-run jobs" repite el
+  # commit viejo en vez del nuevo, así que una corrección ya subida parece
+  # seguir fallando (confusión real que costó cuatro intentos).
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backup-db.yml'
+      - 'scripts/respaldo-datos.mjs'
 
 jobs:
   respaldo:
