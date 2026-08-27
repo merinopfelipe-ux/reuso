@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, Tag, Hammer, TrendDown } from '@/components/ui/icons'
+import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, Tag, Hammer, TrendDown, Sparkles, ZoomIn } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
+import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useTopLoader } from 'nextjs-toploader'
 import { VistaCot } from './vista-cot'
 import { PARAM_EQUIV } from '@/lib/calculos/co2'
@@ -115,6 +116,7 @@ interface Props {
   muebles: Mueble[]
   token: string
   aperturaId: string | null
+  descripcionesMateriales: Record<string, string>
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -127,7 +129,7 @@ function formatCOPCompact(n: number): string {
 // Imagen de "¿Por qué elegirnos?" con placeholder estético — nunca deja el
 // espacio en blanco, ni cuando no hay imagen configurada ni cuando la URL
 // guardada falla al cargar (ej. se borró de Storage).
-function ImagenPorQueElegirnos({ url, alt, isDark, posicion }: { url: string | null; alt: string; isDark: boolean; posicion?: string | null }) {
+function ImagenPorQueElegirnos({ url, alt, isDark, posicion, onAmpliar }: { url: string | null; alt: string; isDark: boolean; posicion?: string | null; onAmpliar: () => void }) {
   const [rota, setRota] = useState(false)
   const mostrarPlaceholder = !url || rota
   const objectPosition = posicion === 'top' ? 'center top' : posicion === 'bottom' ? 'center bottom' : 'center center'
@@ -142,15 +144,27 @@ function ImagenPorQueElegirnos({ url, alt, isDark, posicion }: { url: string | n
           <Leaf size={64} strokeWidth={1.5} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
         </div>
       ) : (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          draggable={false}
-          src={url}
-          alt={alt}
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition }}
-          onError={() => setRota(true)}
-        />
+        <button
+          type="button"
+          onClick={onAmpliar}
+          aria-label={`Ampliar imagen: ${alt}`}
+          className="group absolute inset-0 w-full h-full cursor-zoom-in"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            draggable={false}
+            src={url}
+            alt={alt}
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ objectPosition }}
+            onError={() => setRota(true)}
+          />
+          <span className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150">
+            <span className="w-9 h-9 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
+              <ZoomIn size={18} className="text-[#474747]" sinAnimacion />
+            </span>
+          </span>
+        </button>
       )}
     </div>
   )
@@ -159,7 +173,7 @@ function ImagenPorQueElegirnos({ url, alt, isDark, posicion }: { url: string | n
 
 // ── Componente ─────────────────────────────────────────────────────────────────
 
-export default function PropuestaClient({ cotizacion, muebles, token, aperturaId }: Props) {
+export default function PropuestaClient({ cotizacion, muebles, token, aperturaId, descripcionesMateriales }: Props) {
   const topLoader = useTopLoader()
   const [descargandoPdf, setDescargandoPdf] = useState(false)
   const aceptada = cotizacion.estado === 'esperando_anticipo' || cotizacion.estado === 'cerrado_ganado'
@@ -167,6 +181,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   const esB2B = cotizacion.crm_clientes?.tipo === 'empresa' || !!cotizacion.crm_clientes?.crm_empresas_clientes
   const [vista, setVista] = useState<'galeria' | 'lista'>(esB2B ? 'lista' : 'galeria')
   const [modalImpactoAbierto, setModalImpactoAbierto] = useState(false)
+  const [modalValorAbierto, setModalValorAbierto] = useState(false)
   const [limiteDescargasAbierto, setLimiteDescargasAbierto] = useState(false)
   const [menuCompartirAbierto, setMenuCompartirAbierto] = useState(false)
   const [imagenZoom, setImagenZoom] = useState<{ url: string; titulo: string } | null>(null)
@@ -289,6 +304,15 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
       materialMap.set(nombre, (materialMap.get(nombre) ?? 0) + Number(m.peso_estandar_kg) * qty)
     }
   })
+
+  // Búsqueda insensible a mayúsculas: el nombre guardado en materiales_json
+  // (snapshot al confirmar el ítem) no siempre conserva la misma capitalización
+  // que el catálogo (varias rutas históricas de armado: mat.nombre/material/
+  // nombre_material), y comparar tal cual dejaría tooltips reales sin
+  // encontrar su descripción por una diferencia de mayúsculas.
+  const descripcionesLookup = new Map(
+    Object.entries(descripcionesMateriales).map(([k, v]) => [k.toLowerCase(), v])
+  )
 
   let totalPeso = 0
   materialMap.forEach((peso) => { totalPeso += peso })
@@ -619,15 +643,26 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               className={`flex gap-5 items-start ${isLastOdd ? 'sm:col-span-2 sm:justify-self-center sm:w-[calc(50%-1rem)] md:w-[calc(50%-1.5rem)] lg:w-[calc(50%-1.75rem)]' : ''}`}
             >
               {m.imagen_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  draggable={false}
-                  src={m.imagen_url}
-                  alt={tituloMueble}
-                  loading="lazy"
+                <button
+                  type="button"
                   onClick={() => setImagenZoom({ url: m.imagen_url!, titulo: tituloMueble })}
-                  className="w-28 sm:w-36 h-28 sm:h-36 object-cover object-center rounded-[10px] flex-shrink-0 cursor-pointer hover:opacity-90 transition-opacity"
-                />
+                  aria-label={`Ampliar imagen: ${tituloMueble}`}
+                  className="group relative w-28 sm:w-36 h-28 sm:h-36 rounded-[10px] flex-shrink-0 overflow-hidden cursor-zoom-in"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    draggable={false}
+                    src={m.imagen_url}
+                    alt={tituloMueble}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover object-center"
+                  />
+                  <span className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150">
+                    <span className="w-9 h-9 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
+                      <ZoomIn size={18} className="text-[#474747]" sinAnimacion />
+                    </span>
+                  </span>
+                </button>
               ) : (
                 <div className={`w-28 sm:w-36 h-28 sm:h-36 rounded-[10px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-[#F5FAFA]'}`}>
                   <ArrowsCounterClockwise size={22} className="text-[#00827C]/30" />
@@ -870,6 +905,15 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 </div>
               </div>
             </div>
+            <div className="text-right mt-2">
+              <button
+                type="button"
+                onClick={() => setModalValorAbierto(true)}
+                className={`text-xs ${ts50} hover:underline inline-flex items-center gap-1 cursor-pointer transition-colors`}
+              >
+                <Question size={13} /> ¿Cómo calculamos este valor?
+              </button>
+            </div>
           </div>
         )}
 
@@ -982,7 +1026,13 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                   ))}
                 </ul>
               </div>
-              <ImagenPorQueElegirnos url={config.imagen_url} alt={empresaNombre} isDark={isDark} posicion={config.imagen_posicion} />
+              <ImagenPorQueElegirnos
+                url={config.imagen_url}
+                alt={empresaNombre}
+                isDark={isDark}
+                posicion={config.imagen_posicion}
+                onAmpliar={() => config.imagen_url && setImagenZoom({ url: config.imagen_url, titulo: empresaNombre })}
+              />
             </div>
           )
         })()}
@@ -1106,8 +1156,15 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                           idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
                         }`}
                       >
-                        <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium capitalize">
-                          {nombre}
+                        <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium">
+                          {/* capitalize solo en el nombre — puesto alrededor del
+                              TooltipInfo también, el texto del tooltip flotante
+                              heredaba la transformación y salía Con Cada
+                              Palabra En Mayúscula, que no es como se guardó. */}
+                          <span className="inline-flex items-center gap-1">
+                            <span className="capitalize">{nombre}</span>
+                            <TooltipInfo texto={descripcionesLookup.get(nombre.toLowerCase()) ?? ''} />
+                          </span>
                         </td>
                         <td className="py-1.5 px-3 text-[var(--text-primary)] font-bold text-right">
                           {formatNumero(peso)} kg
@@ -1198,6 +1255,28 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             </p>
           </div>
         </div>
+      </Modal>
+
+      {/* ── Modal ¿Cómo calculamos este valor? — transparencia sobre el uso
+          de IA en el precio de mercado nuevo. Corto a propósito. ── */}
+      <Modal
+        abierto={modalValorAbierto}
+        onClose={() => setModalValorAbierto(false)}
+        icono={<Sparkles size={24} />}
+        titulo="¿Cómo calculamos este valor?"
+        tituloCentrado
+        ancho="sm"
+        textoCancelar="Cerrar"
+        textoConfirmar="Entendido"
+        onCancelar={() => setModalValorAbierto(false)}
+        onConfirmar={() => setModalValorAbierto(false)}
+      >
+        <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+          Buscamos con inteligencia artificial un producto nuevo similar al tuyo en tiendas y páginas de venta reales, y tomamos su precio como referencia para calcular tu ahorro.
+        </p>
+        <p className="text-sm leading-relaxed text-[var(--text-secondary)] mt-3">
+          Es un valor estimado, no una cotización exacta — puede variar según el momento y el lugar donde se busque. Ante cualquier duda, escríbenos.
+        </p>
       </Modal>
 
       {/* ── Modal límite de descargas ── */}

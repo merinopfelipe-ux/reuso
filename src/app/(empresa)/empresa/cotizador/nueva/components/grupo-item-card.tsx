@@ -2,10 +2,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Trash2 as Trash, Leaf, CircleDollarSign, Plus, Copy } from '@/components/ui/icons'
+import { Trash2 as Trash, Leaf, CircleDollarSign, Plus, Copy, ZoomIn } from '@/components/ui/icons'
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
 import { mergeServicios, mergeInsumos, mergeMateriales } from '@/lib/cotizador/plantillas-base'
 import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/route'
+import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
@@ -63,7 +64,7 @@ const rowInputSt = 'bg-transparent border-none p-0 outline-none focus:ring-0 tex
 export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, onDuplicar, fotosGrupo, onElegir }: Props) {
   const [categoriaSel, setCategoriaSel] = useState('')
   const [cargandoMatch, setCargandoMatch] = useState(false)
-  const [zoomAbierto, setZoomAbierto] = useState(false)
+  const [zoomMiniaturaUrl, setZoomMiniaturaUrl] = useState<string | null>(null)
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
 
   const ts = 'text-[var(--text-secondary)]'
@@ -180,35 +181,46 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
           // Alto fijo, ancho natural — nunca se fuerza a cuadrado ni se
           // vuelve a recortar aquí. El recuadro que ya devolvió la IA es el
           // que decide qué parte de la foto es relevante, no el CSS.
-          <button
-            type="button"
-            onClick={() => setZoomAbierto(true)}
-            className="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)] overflow-hidden cursor-zoom-in"
-            title="Ampliar imagen"
-          >
-            <img src={item.imagenPreview} alt="" className="h-48 w-auto max-w-full object-contain" />
-          </button>
+          <ImagenAmpliable
+            src={item.imagenPreview}
+            alt={item.titulo || 'Ítem detectado'}
+            wrapperClassName="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)]"
+            imgClassName="h-48 w-auto max-w-full object-contain"
+          />
         )}
-        <ModalImagenZoom imagenUrl={zoomAbierto ? item.imagenPreview : null} onClose={() => setZoomAbierto(false)} />
 
         {fotosGrupo && fotosGrupo.length > 1 && (
           <div>
             <label className={`text-xs font-bold tracking-wide mb-1.5 block ${ts}`}>Foto principal</label>
             <div className="flex gap-2 overflow-x-auto">
               {fotosGrupo.map((f, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => onChange({ ...item, imagenPreview: f.preview, imagenBase64: f.base64 })}
-                  className={`flex-shrink-0 rounded-[8px] overflow-hidden border-2 transition-colors ${
-                    item.imagenPreview === f.preview ? 'border-[#00827C]' : 'border-transparent'
-                  }`}
-                  title="Usar esta foto como principal"
-                >
-                  <img src={f.preview} alt="" className="h-14 w-14 object-cover" />
-                </button>
+                // El clic en la miniatura elige la foto principal — un clic
+                // aparte, chico, en la esquina, es lo que amplía. Nunca se
+                // fusionan los dos gestos: cambiar el comportamiento del
+                // clic principal rompería la selección que ya funcionaba.
+                <div key={idx} className="relative flex-shrink-0 group">
+                  <button
+                    type="button"
+                    onClick={() => onChange({ ...item, imagenPreview: f.preview, imagenBase64: f.base64 })}
+                    className={`block rounded-[8px] overflow-hidden border-2 transition-colors ${
+                      item.imagenPreview === f.preview ? 'border-[#00827C]' : 'border-transparent'
+                    }`}
+                    title="Usar esta foto como principal"
+                  >
+                    <img src={f.preview} alt="" className="h-14 w-14 object-cover" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setZoomMiniaturaUrl(f.preview) }}
+                    aria-label="Ampliar imagen"
+                    className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-[#474747]/75 hover:bg-[#474747]/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-zoom-in"
+                  >
+                    <ZoomIn size={11} className="text-white" sinAnimacion />
+                  </button>
+                </div>
               ))}
             </div>
+            <ModalImagenZoom imagenUrl={zoomMiniaturaUrl} onClose={() => setZoomMiniaturaUrl(null)} />
           </div>
         )}
 
@@ -255,7 +267,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
             value={item.titulo}
             onChange={e => onChange({ ...item, titulo: e.target.value })}
             placeholder={item.item_nombre}
-            maxLength={40}
+            maxLength={55}
             className={inputSt}
           />
         </div>

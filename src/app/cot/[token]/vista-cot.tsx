@@ -3,7 +3,7 @@
 import DOMPurify from 'dompurify'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { calcularDesglose, transportePorItem } from '@/lib/cotizador/precio'
-import { Download, ChatCircle, CreditCard, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, RefreshCcw as ArrowsCounterClockwise } from '@/components/ui/icons'
+import { Download, ChatCircle, CreditCard, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, RefreshCcw as ArrowsCounterClockwise, ZoomIn } from '@/components/ui/icons'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 import { renderTextoSimple, conPuntoFinal } from '@/lib/cotizador/texto-simple'
 import { formatEnteroMillones } from '@/lib/format'
@@ -176,13 +176,25 @@ export function VistaCot({
               {/* 1. Detalle (Foto + Texto) */}
               <div className="flex items-center gap-3 min-w-0 w-full print:w-auto">
                 {m.imagen_url ? (
-                  <img
-                    draggable={false}
-                    src={m.imagen_url}
-                    alt={tituloMueble}
-                    onClick={() => onVerImagen && onVerImagen(m.imagen_url!, tituloMueble)}
-                    className="w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-auto print:max-h-16 rounded-[8px] object-cover print:object-contain object-center flex-shrink-0 cursor-pointer hover:opacity-85 transition-opacity"
-                  />
+                  // El <img> conserva EXACTAMENTE su tamaño/comportamiento
+                  // original (incluido print:h-auto para el PDF) — la lupa
+                  // es un overlay puramente visual con pointer-events-none,
+                  // el clic lo sigue recibiendo la imagen de siempre.
+                  <div className="relative group flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      draggable={false}
+                      src={m.imagen_url}
+                      alt={tituloMueble}
+                      onClick={() => onVerImagen && onVerImagen(m.imagen_url!, tituloMueble)}
+                      className="w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-auto print:max-h-16 rounded-[8px] object-cover print:object-contain object-center cursor-zoom-in hover:opacity-90 transition-opacity print:cursor-auto"
+                    />
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 print:hidden">
+                      <span className="w-7 h-7 rounded-full bg-white/95 flex items-center justify-center shadow-lg">
+                        <ZoomIn size={14} className="text-[#474747]" sinAnimacion />
+                      </span>
+                    </span>
+                  </div>
                 ) : (
                   <div className={`w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-16 rounded-[8px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
                     <ArrowsCounterClockwise size={16} className="text-[#00827C]/30" />

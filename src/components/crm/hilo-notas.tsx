@@ -5,6 +5,7 @@ import DOMPurify from 'isomorphic-dompurify'
 import { Save as FloppyDisk } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { displayName } from '@/lib/display-name'
 import { formatFecha } from '@/lib/format'
@@ -37,6 +38,7 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
   const [notas, setNotas] = useState<Nota[]>([])
   const [enviando, setEnviando] = useState(false)
   const [cargando, setCargando] = useState(true)
+  const [zoomUrl, setZoomUrl] = useState<string | null>(null)
   const editorRef = useRef<RichTextEditorHandle>(null)
 
   useEffect(() => {
@@ -77,8 +79,17 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
           const autor = perfilAutor ? displayName(perfilAutor) : null
           return (
             <div key={n.id} className="rounded-xl p-2.5 bg-[var(--bg-input)]">
+              {/* Fotos pegadas dentro de la nota (ver
+                  conceptos/contenteditable-paste-imagenes.md) vienen como
+                  <img> crudo dentro de HTML ya guardado, fuera del control
+                  de React — delegación de clic: cualquier <img> aquí abre
+                  el mismo visor de zoom que el resto del sistema. */}
               <div
-                className={`text-[13px] font-normal break-words whitespace-pre-wrap ${tp}`}
+                className={`text-[13px] font-normal break-words whitespace-pre-wrap nota-con-fotos-ampliables ${tp}`}
+                onClick={(e) => {
+                  const target = e.target as HTMLElement
+                  if (target.tagName === 'IMG') setZoomUrl((target as HTMLImageElement).src)
+                }}
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(n.nota, NOTA_SANITIZE_CONFIG) }}
               />
               <p className={`text-[10px] mt-1 ${ts}`}>{autor ?? 'Usuario'} · {formatFechaHora(n.created_at)}</p>
@@ -99,6 +110,8 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
           </div>
         }
       />
+      <style dangerouslySetInnerHTML={{ __html: '.nota-con-fotos-ampliables img { cursor: zoom-in; }' }} />
+      <ModalImagenZoom imagenUrl={zoomUrl} onClose={() => setZoomUrl(null)} />
     </div>
   )
 }

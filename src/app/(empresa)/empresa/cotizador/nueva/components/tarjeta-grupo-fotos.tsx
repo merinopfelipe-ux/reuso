@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useRef, useState } from 'react'
-import { Camera, Sparkles, Pencil, ClipboardPaste as Clipboard, X, TriangleAlert as Warning, Trash2 as Trash } from '@/components/ui/icons'
+import { Camera, Sparkles, Pencil, ClipboardPaste as Clipboard, X, TriangleAlert as Warning, Trash2 as Trash, ZoomIn } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 
@@ -110,10 +110,15 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
               <button
                 type="button"
                 onClick={() => setZoomUrl(f.preview)}
-                className="block cursor-zoom-in"
+                className="group relative block overflow-hidden rounded-[10px] cursor-zoom-in"
                 title="Ampliar imagen"
               >
                 <img src={f.preview} alt="" className="h-24 rounded-[10px] object-cover bg-[var(--bg-input)]" />
+                <span className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150">
+                  <span className="w-7 h-7 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
+                    <ZoomIn size={14} className="text-[#474747]" sinAnimacion />
+                  </span>
+                </span>
               </button>
               <button
                 type="button"

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { X, SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, Info } from '@/components/ui/icons'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import type { EstadoTicket, PrioridadTicket } from './lista-tickets'
 
 interface Mensaje {
@@ -41,6 +42,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
   const [loading, setLoading] = useState(true)
   const [enviando, setEnviando] = useState(false)
   const [resolviendo, setResolviendo] = useState(false)
+  const [zoomUrl, setZoomUrl] = useState<string | null>(null)
   const boxRef = useRef<HTMLDivElement>(null)
 
   const fetchHilo = useCallback(async () => {
@@ -148,6 +150,17 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                         lineHeight: 1.5,
                         wordWrap: 'break-word',
                       }}
+                      // Las fotos pegadas dentro del mensaje (ver
+                      // conceptos/contenteditable-paste-imagenes.md) vienen
+                      // como <img> crudo dentro de HTML ya guardado, fuera
+                      // del control de React — no se pueden envolver con
+                      // ImagenAmpliable. Delegación de clic: cualquier <img>
+                      // dentro de este bloque abre el mismo visor de zoom.
+                      className="mensaje-con-fotos-ampliables"
+                      onClick={(e) => {
+                        const target = e.target as HTMLElement
+                        if (target.tagName === 'IMG') setZoomUrl((target as HTMLImageElement).src)
+                      }}
                       dangerouslySetInnerHTML={{ __html: m.mensaje_html }}
                     />
                     <span style={{ fontSize: 10, color: 'rgba(0,130,124,0.5)', marginTop: 4 }}>
@@ -212,6 +225,8 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
           </>
         ) : null}
       </div>
+      <style dangerouslySetInnerHTML={{ __html: '.mensaje-con-fotos-ampliables img { cursor: zoom-in; }' }} />
+      <ModalImagenZoom imagenUrl={zoomUrl} onClose={() => setZoomUrl(null)} />
     </>
   )
 }

@@ -46,9 +46,12 @@ const boundingBoxSchema = z.object({
 // línea y el vendedor lo puede reescribir en cualquier momento.
 const itemDetectadoSchema = z.object({
   item_nombre: z.string(),
-  // Tope real, directriz explícita del usuario: 40 caracteres, directo, sin
-  // adornos ni viñetas.
-  titulo: z.string().max(40),
+  // Tope real, directriz explícita del usuario: 55 caracteres (subido desde
+  // 40 el 2026-08-27 para que la frase completa quepa sin tener que
+  // separarla por comas — "Comedor, madera, vintage" nunca fue el objetivo,
+  // era el síntoma del límite viejo demasiado corto), directo, sin adornos
+  // ni viñetas.
+  titulo: z.string().max(55),
   // Qué trabajo concreto se le va a hacer a la pieza (no lo que se ve) —
   // tope real 190 caracteres, directo, sin adornos ni viñetas. Editable por
   // el vendedor, visible para el cliente.
@@ -130,9 +133,9 @@ Vas a recibir ${nImagenes} foto${nImagenes > 1 ? 's' : ''} en un solo análisis,
 Para cada mueble que identifiques, indica en "imagen_index" de cuál de las fotos (0 a ${nImagenes - 1}) salió, y encuádralo en uno de estos ítems EXACTOS del catálogo (usa el nombre tal cual, sin inventar variantes):
 ${nombresCatalogo.map(n => `- ${n}`).join('\n')}
 
-Además, para cada mueble escribe un "titulo" con esta estructura fija: elemento, material, estilo — nunca incluyas color ni acabados. Sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 40 caracteres, directo y sin adornos.
+Además, para cada mueble escribe un "titulo": algo llamativo y humano, como si un amigo te describiera la pieza para que te imagines teniéndola en tu casa — nunca una etiqueta técnica ni una lista separada por comas. Ejemplo de lo que NO quiero: "Comedor, madera, vintage". Ejemplo de lo que sí: "Comedor de madera vintage" o "Silla tapizada estilo colonial". Suele incluir el material y el estilo cuando aportan (nunca color ni acabados), pero no es una fórmula rígida — prioriza que suene natural y atractivo sobre seguir una estructura fija. Sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 55 caracteres.
 
-También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla — ej. cambiar tapizado, reforzar estructura, pulir y barnizar, reemplazar espuma. Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar. Máximo 190 caracteres. Es lo que el cliente final lee en su propuesta: directo, al grano, sin adornos, sin viñetas y sin punto y coma (solo punto o coma), sin inventar datos que no puedas ver en la foto.
+También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla, en una frase natural — ej. "Cambiar tapizado y reforzar la estructura", "Pulir, barnizar y reemplazar la espuma del asiento". Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar, como si se lo contaras a un colega. Máximo 190 caracteres. Es lo que el cliente final lee en su propuesta: directo, al grano, sin adornos, sin viñetas y sin punto y coma (solo punto o coma), sin inventar datos que no puedas ver en la foto.
 
 Cuando en una misma foto haya más de un mueble distinto (ej. un sofá y una mesa juntos), o varias unidades del mismo mueble que quieras distinguir, devuelve también "bounding_box": el recuadro que encierra SOLO esa pieza en la foto original, como { "y_min", "x_min", "y_max", "x_max" } en una escala de 0 a 1000 (0,0 es la esquina superior izquierda). Si la foto ya muestra un único mueble ocupando casi todo el encuadre, puedes omitir "bounding_box" — se usará la foto completa.
 
@@ -184,8 +187,8 @@ async function llamarGemini(
                   type: 'OBJECT',
                   properties: {
                     item_nombre: { type: 'STRING', enum: enumNombres, description: 'Nombre exacto del catálogo, o NINGUNO si no hay match.' },
-                    titulo: { type: 'STRING', description: 'Título con estructura fija elemento, material, estilo — nunca color ni acabados. Distinto del nombre del catálogo. Máximo 40 caracteres, directo, sin adornos.' },
-                    descripcion: { type: 'STRING', description: 'Trabajo concreto a realizar en la pieza, nunca de lo que se ve ahora ni "se observa"/sinónimos. Máximo 190 caracteres, directo, sin adornos, sin viñetas, sin punto y coma.' },
+                    titulo: { type: 'STRING', description: 'Algo llamativo y humano, como si describieras la pieza a un amigo, nunca una etiqueta técnica ni una lista separada por comas. "Comedor de madera vintage", no "Comedor, madera, vintage". Nunca color ni acabados. Distinto del nombre del catálogo. Máximo 55 caracteres.' },
+                    descripcion: { type: 'STRING', description: 'Trabajo concreto a realizar en la pieza, en frase natural, nunca de lo que se ve ahora ni "se observa"/sinónimos. Máximo 190 caracteres, directo, sin adornos, sin viñetas, sin punto y coma.' },
                     cantidad: { type: 'INTEGER', description: 'Cuántas unidades de este mueble hay.' },
                     confianza: { type: 'NUMBER', description: 'Confianza del match entre 0.0 y 1.0.' },
                     imagen_index: { type: 'INTEGER', description: 'De cuál foto salió este ítem (0 es la primera).' },

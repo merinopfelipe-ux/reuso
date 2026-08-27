@@ -12,6 +12,7 @@ import { formatCOP, formatNumero } from '@/lib/format'
 import { IdentificacionCliente, type ClienteIdentificado } from './components/identificacion-cliente'
 import { formatTelefonoVista } from '@/lib/telefono'
 import { GrupoItemCard, type ItemConImagen } from './components/grupo-item-card'
+import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import type { ItemDetectadoConSnapshot, SinMatchDetalle } from '@/app/api/cotizador/diagnostico/route'
 import { comprimirImagenBase64, recortarImagenBase64, boundingBoxEsUtil, type BoundingBox } from '@/lib/image-compress'
 import { SkeletonCard } from '@/components/ui/skeleton'
@@ -851,7 +852,7 @@ function NuevaCotizacionContent() {
                   {muebles.map((m, i) => (
                     <div key={i} className="flex items-center gap-3">
                       {m.imagen_preview && (
-                        <img src={m.imagen_preview} alt="" className="w-10 h-10 rounded-[8px] object-cover object-center flex-shrink-0" />
+                        <ImagenAmpliable src={m.imagen_preview} alt={m.titulo} wrapperClassName="w-10 h-10 rounded-[8px] flex-shrink-0" />
                       )}
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-semibold truncate ${tp}`}>{m.titulo}{m.cantidad > 1 ? ` × ${m.cantidad}` : ''}</p>
@@ -975,7 +976,7 @@ function NuevaCotizacionContent() {
                     <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>Se detectó algo más en las fotos</p>
                     <div className="flex items-center gap-3 mb-3">
                       {pieza.imagenPreview && (
-                        <img src={pieza.imagenPreview} alt="" className="w-16 h-16 rounded-[8px] object-cover flex-shrink-0" />
+                        <ImagenAmpliable src={pieza.imagenPreview} alt="Pieza sin identificar" wrapperClassName="w-16 h-16 rounded-[8px] flex-shrink-0" />
                       )}
                       <div className="flex-1 min-w-0 text-left">
                         <p className={`text-sm font-semibold ${tp}`}>{pieza.titulo}</p>

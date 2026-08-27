@@ -482,22 +482,7 @@ const ShieldCheckIconReal = React.forwardRef<{ startAnimation?: () => void, stop
 )
 ShieldCheckIconReal.displayName = 'ShieldCheckIconReal'
 
-const TREE_VARIANTS: Variants = { normal: { rotate: 0 }, animate: { rotate: [0, -10, 10, -6, 0], transition: { duration: 0.7, ease: 'easeInOut' } } }
-const TreeDeciduousIconReal = React.forwardRef<{ startAnimation?: () => void, stopAnimation?: () => void }, IconProps>(
-  ({ size = 24, className, color = 'currentColor', strokeWidth = 2 }, ref) => {
-    const controls = useAnimation()
-    React.useImperativeHandle(ref, () => ({ startAnimation: () => controls.start('animate'), stopAnimation: () => controls.start('normal') }))
-    return (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className} xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 19v3" />
-        <path d="M16 19v3" />
-        <path d="M12 19v3" />
-        <motion.path animate={controls} variants={TREE_VARIANTS} style={{ originX: '50%', originY: '80%' }} d="M12 3a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z" />
-      </svg>
-    )
-  }
-)
-TreeDeciduousIconReal.displayName = 'TreeDeciduousIconReal'
+
 
 const BAR1_VARIANTS: Variants = { normal: { scaleY: 1 }, animate: { scaleY: [1, 0.4, 1.2, 1], transition: { duration: 0.5, ease: 'easeInOut' } } }
 const BAR2_VARIANTS: Variants = { normal: { scaleY: 1 }, animate: { scaleY: [1, 0.2, 1.3, 1], transition: { duration: 0.5, delay: 0.1, ease: 'easeInOut' } } }
@@ -626,8 +611,6 @@ const LUCIDE_ANIMATED_REAL: Partial<Record<string, React.ComponentType<IconProps
   Trash2: Trash2IconReal,
   Calculator: CalculatorIconReal,
   ShieldCheck: ShieldCheckIconReal,
-  Tree: TreeDeciduousIconReal,
-  TreeDeciduous: TreeDeciduousIconReal,
   ChartBar: BarChart2IconReal,
   BarChart2: BarChart2IconReal,
   Cpu: CpuIconReal,
@@ -787,7 +770,10 @@ export const Link = wrapIcon(Lucide.Link)
 export const Leaf = wrapIcon(Lucide.Leaf)
 export const Drop = wrapIcon(Lucide.Droplet)
 export const Globe = wrapIcon(Lucide.Globe)
-export const Tree = wrapIcon(Lucide.TreeDeciduous)
+export const Tree = wrapIcon(Lucide.Trees)
+export const Trees = wrapIcon(Lucide.Trees)
+export const TreePine = wrapIcon(Lucide.TreePine)
+export const Sprout = wrapIcon(Lucide.Sprout)
 export const Car = wrapIcon(Lucide.Car)
 export const Upload = wrapIcon(Lucide.Upload)
 export const FloppyDisk = wrapIcon(Lucide.Save)
@@ -863,6 +849,7 @@ export const SquaresFour = wrapIcon(Lucide.LayoutGrid)
 export const Scroll = wrapIcon(Lucide.Scroll)
 export const House = wrapIcon(Lucide.Home)
 export const Scales = wrapIcon(Lucide.Scale)
+export const Lightbulb = wrapIcon(Lucide.Lightbulb)
 export const Minus = wrapIcon(Lucide.Minus)
 export const CaretUpDown = wrapIcon(Lucide.ChevronsUpDown)
 export const Flask = wrapIcon(Lucide.FlaskConical)
@@ -946,11 +933,12 @@ export const Square = wrapIcon(Lucide.Square)
 export const SquareCheck = wrapIcon(Lucide.SquareCheck)
 export const Store = wrapIcon(Lucide.Store)
 export const Trash2 = wrapIcon(Lucide.Trash2)
-export const TreeDeciduous = wrapIcon(Lucide.TreeDeciduous)
+export const TreeDeciduous = wrapIcon(Lucide.Trees)
 export const TrendingDown = wrapIcon(Lucide.TrendingDown)
 export const TrendingUp = wrapIcon(Lucide.TrendingUp)
 export const TriangleAlert = wrapIcon(Lucide.TriangleAlert)
 export const Zap = wrapIcon(Lucide.Zap)
+export const ZoomIn = wrapIcon(Lucide.ZoomIn)
 export const Sparkles = wrapIcon(Lucide.Sparkles)
 export const Highlighter = wrapIcon(Lucide.Highlighter)
 export const CaseUpper = wrapIcon(Lucide.CaseUpper)

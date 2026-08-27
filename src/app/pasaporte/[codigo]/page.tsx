@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { IdCard as IdentificationCard, Leaf, Droplet as Drop, Car, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
+import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { formatNumero } from '@/lib/format'
@@ -171,12 +172,12 @@ export default async function PasaportePage({ params }: PageProps) {
           marginBottom: 12,
         }}>
           {activo.imagen_url && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <ImagenAmpliable
               src={activo.imagen_url}
               alt={activo.nombre}
               loading="lazy"
-              style={{ borderRadius: 12, maxWidth: '100%', maxHeight: 260, objectFit: 'cover', marginBottom: 16, display: 'block' }}
+              wrapperClassName="block rounded-xl max-w-full max-h-[260px] mb-4"
+              imgClassName="max-w-full max-h-[260px] object-cover block"
             />
           )}
           <h1 style={{ margin: '0 0 8px', fontSize: 26, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>

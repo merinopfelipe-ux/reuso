@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Pencil as PencilSimple, Plus, Trash2 as Trash, RefreshCcw as ArrowsCounterClockwise, Eye, EyeSlash } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
+import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { formatCOP, formatNumero } from '@/lib/format'
 import { EditarMuebleModal, type MuebleEditable } from './editar-mueble-modal'
 
@@ -95,8 +96,11 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
         {muebles.map(m => (
           <div key={m.id} className={`flex items-center gap-3 ${m.oculto ? 'opacity-45' : ''}`}>
             {m.imagen_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={m.imagen_url} alt={m.tipo_mueble || 'Ítem'} className="w-16 h-16 rounded-[8px] object-cover object-center flex-shrink-0" />
+              <ImagenAmpliable
+                src={m.imagen_url}
+                alt={m.tipo_mueble || 'Ítem'}
+                wrapperClassName="w-16 h-16 rounded-[8px] flex-shrink-0"
+              />
             ) : (
               <div className="w-16 h-16 rounded-[8px] bg-[var(--bg-input)] flex-shrink-0 flex items-center justify-center">
                 <ArrowsCounterClockwise size={18} className="text-[#00827C]/30" />

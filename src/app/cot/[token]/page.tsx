@@ -93,6 +93,19 @@ export default async function PropuestaPublicaPage({ params }: Props) {
     return m
   })
 
+  // Descripciones/tooltips de materiales para el modal "¿Cómo calculamos tu
+  // impacto?". Se traen aquí (server, adminClient) y no con el hook
+  // useMaterialDescripciones que usan las pantallas internas: esta es una
+  // página PÚBLICA sin sesión, y ese hook llama a un endpoint que exige
+  // login (dppAuthCheck) — un visitante sin cuenta recibiría 401.
+  const { data: descripcionesData } = await adminClient
+    .from('cotizador_descripciones')
+    .select('nombre, descripcion')
+  const descripcionesMateriales: Record<string, string> = {}
+  for (const fila of descripcionesData ?? []) {
+    descripcionesMateriales[fila.nombre] = fila.descripcion
+  }
+
 
   interface EmpresaClienteData {
     id: string
@@ -265,6 +278,7 @@ export default async function PropuestaPublicaPage({ params }: Props) {
       muebles={mueblesConUrls as Parameters<typeof PropuestaClient>[0]['muebles']}
       token={params.token}
       aperturaId={null}
+      descripcionesMateriales={descripcionesMateriales}
     />
   )
 }

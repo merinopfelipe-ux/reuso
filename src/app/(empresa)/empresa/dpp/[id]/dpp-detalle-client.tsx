@@ -10,8 +10,9 @@ import { EmptyState } from '@/components/empty-state'
 import { Selector } from '@/components/ui/selector'
 import {
   CreditCard, Leaf, TrendUp, Target, FileText, CaretDown,
-  ArrowCounterClockwise, CheckCircle,
+  ArrowCounterClockwise, CheckCircle, ZoomIn,
 } from '@/components/ui/icons'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import type { ResultadosFinancieros } from '@/types'
 
 const GraficaMetricas = dynamic(() => import('./grafica-metricas').then(m => ({ default: m.GraficaMetricas })), { ssr: false })
@@ -304,6 +305,7 @@ interface Props {
 export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props) {
   const router = useRouter()
   const [tabActivo, setTabActivo] = useState<'pasaporte' | 'ciclos' | 'metricas' | 'documentos'>('pasaporte')
+  const [zoomAbierto, setZoomAbierto] = useState(false)
 
   // - Modal ciclo -
   const [showModalCiclo, setShowModalCiclo] = useState(false)
@@ -561,10 +563,25 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
         <div>
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 20, marginBottom: 16 }}>
             {activo.imagen_url && (
-              <div style={{ position: 'relative', width: '100%', height: 240, marginBottom: 16 }}>
+              <button
+                type="button"
+                onClick={() => setZoomAbierto(true)}
+                aria-label={`Ampliar imagen: ${activo.nombre}`}
+                className="group"
+                style={{ position: 'relative', width: '100%', height: 240, marginBottom: 16, display: 'block', padding: 0, border: 'none', background: 'transparent', cursor: 'zoom-in' }}
+              >
                 <Image src={activo.imagen_url} alt={activo.nombre} fill style={{ borderRadius: 10, objectFit: 'cover' }} />
-              </div>
+                <span
+                  className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150"
+                  style={{ borderRadius: 10 }}
+                >
+                  <span className="w-9 h-9 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
+                    <ZoomIn size={18} className="text-[#474747]" sinAnimacion />
+                  </span>
+                </span>
+              </button>
             )}
+            <ModalImagenZoom imagenUrl={zoomAbierto && activo.imagen_url ? activo.imagen_url : null} onClose={() => setZoomAbierto(false)} />
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 10 }}>
               <span style={{ background: `${estadoConf.color}1A`, color: estadoConf.color, padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
                 {estadoConf.label}
