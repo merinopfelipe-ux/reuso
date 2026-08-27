@@ -1629,6 +1629,13 @@ export default function QAPage() {
   const [mostrarHistorial, setMostrarHistorial] = useState<string | null>(null) // null | 'completo' | nombreCategoria
   const [intentos, setIntentos] = useState<QAIntento[]>([])
   const [categoriaActiva, setCategoriaActiva] = useState(CATEGORIAS[0].key)
+  // Dos formas de recorrer las mismas 117 pruebas. 'modulo' agrupa por tema
+  // (Autenticación, Panel Admin…), que sirve para revisar un área completa.
+  // 'pagina' agrupa por la pantalla real que hay que abrir, para dejar una
+  // URL terminada antes de pasar a la siguiente en vez de ir saltando entre
+  // pantallas, que es lo que obliga a hacer el recorrido por tema.
+  const [modo, setModo] = useState<'modulo' | 'pagina'>('modulo')
+  const [rutaActiva, setRutaActiva] = useState<string | null>(null)
   const [busqueda, setBusqueda] = useState('')
   const [ultimoGuardado, setUltimoGuardado] = useState<Date | null>(null)
   const [guardadoReciente, setGuardadoReciente] = useState(false)
@@ -1787,9 +1794,26 @@ export default function QAPage() {
   const revisadas = oks + fallas + parciales + no_claras
   const progreso  = Math.round((revisadas / total) * 100)
 
-  // Tareas de la categoría activa, filtradas por búsqueda
+  // Pantallas del recorrido: una por ruta única, en el orden en que aparecen
+  // las pruebas. El Map conserva ese orden de inserción.
+  const paginas = (() => {
+    const mapa = new Map<string, Tarea[]>()
+    for (const t of tareas) {
+      if (!mapa.has(t.ruta)) mapa.set(t.ruta, [])
+      mapa.get(t.ruta)!.push(t)
+    }
+    return Array.from(mapa.entries()).map(([ruta, pruebas]) => ({ ruta, pruebas }))
+  })()
+
+  const rutaVigente = rutaActiva ?? paginas[0]?.ruta ?? ''
+  const indicePagina = Math.max(0, paginas.findIndex(p => p.ruta === rutaVigente))
+  const paginaActual = paginas[indicePagina]
+
+  // Tareas visibles según el modo activo, filtradas por búsqueda
   const tareasCategoria = tareas.filter(t => {
-    if (t.categoria !== categoriaActiva) return false
+    if (modo === 'pagina') {
+      if (t.ruta !== rutaVigente) return false
+    } else if (t.categoria !== categoriaActiva) return false
     if (!busqueda) return true
     const b = busqueda.toLowerCase()
     return t.titulo.toLowerCase().includes(b) || t.ruta.includes(b) || t.descripcion.toLowerCase().includes(b)
@@ -2008,10 +2032,67 @@ export default function QAPage() {
               style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
             >
               <h2 className={`text-sm font-semiboldr ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
-                <span>Módulos del sistema</span>
+                <span>{modo === 'pagina' ? 'Pantallas del sistema' : 'Módulos del sistema'}</span>
                 <span className={`text-xs lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
               </h2>
-              <div className="flex flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1">
+
+              {/* Selector de recorrido. Por tema sirve para revisar un área
+                  completa; por pantalla, para dejar una URL terminada antes de
+                  pasar a la siguiente sin ir saltando de una a otra. */}
+              <div className={`flex gap-1 p-1 mb-3 rounded-xl border ${theme.inputBg}`}>
+                {([
+                  { key: 'modulo', label: 'Por tema' },
+                  { key: 'pagina', label: 'Pantalla a pantalla' },
+                ] as const).map(op => (
+                  <button
+                    key={op.key}
+                    onClick={() => { setModo(op.key); setExpandida(null) }}
+                    className={`flex-1 text-xs py-1.5 px-2 rounded-lg transition-all ${
+                      modo === op.key
+                        ? isDark
+                          ? 'bg-[#D6F391] text-[#474747] font-semibold'
+                          : 'bg-[#00827C] text-white font-semibold'
+                        : `${theme.textSecondary} hover:opacity-80`
+                    }`}
+                  >
+                    {op.label}
+                  </button>
+                ))}
+              </div>
+
+              {modo === 'pagina' && (
+                <div className="flex flex-col gap-1.5 max-h-[600px] overflow-y-auto pr-1">
+                  {paginas.map((pag, idx) => {
+                    const activa = pag.ruta === rutaVigente
+                    const pOk = pag.pruebas.filter(t => t.estado === 'ok').length
+                    const pFail = pag.pruebas.filter(t => t.estado === 'falla').length
+                    const lista = pOk === pag.pruebas.length
+                    return (
+                      <button
+                        key={pag.ruta}
+                        onClick={() => { setRutaActiva(pag.ruta); setExpandida(null) }}
+                        className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-all flex items-center justify-between gap-2 ${
+                          activa ? theme.sidebarActiveBg : theme.sidebarInactiveBg
+                        }`}
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          <span className={`${theme.textSecondary} opacity-50 tabular-nums shrink-0`}>{idx + 1}</span>
+                          <span className={`truncate font-mono ${theme.textPrimary}`}>{pag.ruta}</span>
+                        </span>
+                        <span className="flex items-center gap-1 shrink-0">
+                          <span className={pFail > 0 ? 'text-[#FF5E4B] font-semibold' : lista ? 'text-[#38B98E] font-semibold' : theme.textSecondary}>
+                            {pOk}/{pag.pruebas.length}
+                          </span>
+                          {lista && <CheckCircle size={11} className="text-[#38B98E]" />}
+                          {pFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              <div className={`flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1 ${modo === 'modulo' ? 'flex' : 'hidden'}`}>
                 {CATEGORIAS.map((cat, catIdx) => {
                   const isActive = categoriaActiva === cat.key
                   const ct = tareas.filter(t => t.categoria === cat.key)
@@ -2019,23 +2100,24 @@ export default function QAPage() {
                   const cFail = ct.filter(t => t.estado === 'falla').length
                   const isDone = ct.length > 0 && ct.every(t => t.estado === 'ok')
                   const Icon = cat.icono
-                  // Locking: categoría 0 siempre disponible; N solo si N-1 está completada con todas en OK
+                  // Los módulos anteriores se marcan como pendientes, pero ya NO
+                  // bloquean el acceso: con el candado duro, una sola prueba en
+                  // falla dejaba el resto del sistema imposible de revisar ese
+                  // día, que es justo lo contrario de lo que necesita una ronda
+                  // de QA. El orden sigue sugerido, no impuesto.
                   const prevDone = catIdx === 0 || CATEGORIAS.slice(0, catIdx).every(prevCat => {
                     const prevTareas = tareas.filter(t => t.categoria === prevCat.key)
                     return prevTareas.length > 0 && prevTareas.every(t => t.estado === 'ok')
                   })
-                  const isLocked = !prevDone
+                  const fueraDeOrden = !prevDone
 
                   return (
                     <button
                       key={cat.key}
-                      onClick={() => { if (!isLocked) { setCategoriaActiva(cat.key); setExpandida(null) } }}
-                      disabled={isLocked}
+                      onClick={() => { setCategoriaActiva(cat.key); setExpandida(null) }}
                       className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 relative group flex flex-col gap-1.5 ${
-                        isLocked
-                          ? `${isDark ? 'bg-transparent border-white/5 opacity-40' : 'bg-[#f9f9f9] border-[rgba(0,130,124,0.04)] opacity-50'} cursor-not-allowed`
-                          : isActive ? theme.sidebarActiveBg : theme.sidebarInactiveBg
-                      }`}
+                        isActive ? theme.sidebarActiveBg : theme.sidebarInactiveBg
+                      } ${fueraDeOrden && !isActive ? 'opacity-70' : ''}`}
                     >
                       {/* Barra lateral de color */}
                       <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl transition-all"
@@ -2050,17 +2132,11 @@ export default function QAPage() {
                           {cat.key.split(' ')[0]}
                         </span>
                         <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-80`}>
-                          {isLocked ? (
-                            <Lock size={12} className="opacity-60" />
-                          ) : (
-                            <>
-                              <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
-                                {cOk}/{ct.length}
-                              </span>
-                              {isDone && <CheckCircle size={11} className="text-[#38B98E]" />}
-                              {cFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
-                            </>
-                          )}
+                          <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
+                            {cOk}/{ct.length}
+                          </span>
+                          {isDone && <CheckCircle size={11} className="text-[#38B98E]" />}
+                          {cFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
                         </div>
                       </div>
 
@@ -2094,20 +2170,87 @@ export default function QAPage() {
               className={`border ${theme.headerBg} rounded-2xl px-5 py-4 transition-all`}
               style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <catActual.icono size={16} style={{ color: catActual.color }} />
-                    <span className="text-xs font-boldr" style={{ color: catActual.color }}>
-                      {catActual.key}
-                    </span>
+              {modo === 'pagina' && paginaActual ? (
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-1.5 h-10 rounded-full shrink-0" style={{ backgroundColor: '#00827C' }} />
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                          <span className={`text-sm font-mono font-semibold ${theme.textPrimary} break-all`}>
+                            {paginaActual.ruta}
+                          </span>
+                          {/* Una ruta con [token] o [id] no se puede abrir tal cual:
+                              hay que reemplazar el tramo por uno real primero. */}
+                          {!paginaActual.ruta.includes('[') && paginaActual.ruta.startsWith('/') && (
+                            <a
+                              href={paginaActual.ruta}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className={`text-xs px-2 py-1 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80`}
+                            >
+                              Abrir en otra pestaña
+                            </a>
+                          )}
+                        </div>
+                        <p className={`text-xs ${theme.textSecondary}`}>
+                          Pantalla {indicePagina + 1} de {paginas.length} · {paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'} aquí
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => { const i = Math.max(0, indicePagina - 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
+                        disabled={indicePagina === 0}
+                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} disabled:opacity-30`}
+                      >
+                        Anterior
+                      </button>
+                      <button
+                        onClick={() => { const i = Math.min(paginas.length - 1, indicePagina + 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
+                        disabled={indicePagina >= paginas.length - 1}
+                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all disabled:opacity-30 ${
+                          isDark ? 'bg-[#D6F391] text-[#474747] border-transparent font-semibold'
+                                 : 'bg-[#00827C] text-white border-transparent font-semibold'
+                        }`}
+                      >
+                        Siguiente pantalla
+                      </button>
+                    </div>
                   </div>
-                  <p className={`text-xs ${theme.textSecondary}`}>
-                    {tareasCategoria.length === 0 ? 'Sin resultados con ese filtro.' : `${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
-                  </p>
+
+                  {/* Salto directo a la primera pantalla que aún tiene pruebas
+                      sin revisar, para no recorrer a mano las ya terminadas. */}
+                  {(() => {
+                    const siguiente = paginas.findIndex(pg => pg.pruebas.some(t => t.estado === 'pendiente'))
+                    if (siguiente === -1 || siguiente === indicePagina) return null
+                    return (
+                      <button
+                        onClick={() => { setRutaActiva(paginas[siguiente].ruta); setExpandida(null) }}
+                        className={`self-start text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80`}
+                      >
+                        Ir a la primera pantalla sin revisar ({paginas[siguiente].ruta})
+                      </button>
+                    )
+                  })()}
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
+                  <div>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <catActual.icono size={16} style={{ color: catActual.color }} />
+                      <span className="text-xs font-boldr" style={{ color: catActual.color }}>
+                        {catActual.key}
+                      </span>
+                    </div>
+                    <p className={`text-xs ${theme.textSecondary}`}>
+                      {tareasCategoria.length === 0 ? 'Sin resultados con ese filtro.' : `${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Lista de tareas */}
