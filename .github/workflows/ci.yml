@@ -133,10 +133,15 @@ jobs:
           # comprobar la llave anónima, que la app SÍ necesita para arrancar.
           LLAVE_ANONIMA: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           LLAVE_SERVICIO: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          # Estos dos también son obligatorios para los specs de e2e/ (ver el
+          # comentario del paso "Ejecutar pruebas E2E") — sin ellos, mejor
+          # saltarse limpio aquí que estrellarse más abajo.
+          PASS_SEGURIDAD: ${{ secrets.TEST_SECURITY_PASSWORD }}
+          PASS_SUPER_ADMIN: ${{ secrets.TEST_SUPER_ADMIN_PASSWORD }}
         run: |
-          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_ANONIMA" ] || [ -z "$LLAVE_SERVICIO" ]; then
+          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_ANONIMA" ] || [ -z "$LLAVE_SERVICIO" ] || [ -z "$PASS_SEGURIDAD" ] || [ -z "$PASS_SUPER_ADMIN" ]; then
             echo "hay_secretos=no" >> "$GITHUB_OUTPUT"
-            echo "::warning::Faltan los secretos de Supabase en GitHub. Las pruebas E2E NO se ejecutaron."
+            echo "::warning::Faltan secretos en GitHub (Supabase o credenciales de prueba). Las pruebas E2E NO se ejecutaron."
           else
             echo "hay_secretos=si" >> "$GITHUB_OUTPUT"
           fi
@@ -152,6 +157,17 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          # e2e/06-aislamiento-usuarios.spec.ts exige TEST_SECURITY_PASSWORD y
+          # e2e/auth.setup.ts exige TEST_SUPER_ADMIN_PASSWORD (la contraseña
+          # real de merinop@me.com, para iniciar sesión como super_admin
+          # durante la corrida) — ninguna de las dos se pasaba, y el job se
+          # estrellaba con la excepción del propio test en vez de saltarse
+          # limpio (mismo defecto que con la llave anónima, encontrado
+          # 2026-08-27 en la re-corrida siguiente).
+          TEST_SECURITY_PASSWORD: ${{ secrets.TEST_SECURITY_PASSWORD }}
+          TEST_SUPER_ADMIN_EMAIL: ${{ secrets.TEST_SUPER_ADMIN_EMAIL }}
+          TEST_SUPER_ADMIN_PASSWORD: ${{ secrets.TEST_SUPER_ADMIN_PASSWORD }}
+          SKIP_RATE_LIMIT: 'true'
         run: npm run test
 
       - name: Guardar el reporte si algo falla
