@@ -14,6 +14,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import pg from 'pg'
+import { resolve6 } from 'node:dns/promises'
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..')
 
@@ -64,9 +65,30 @@ const archivos = readdirSync(join(raiz, 'sql'))
 
 console.log(`\nProyecto de pruebas detectado. Migraciones a aplicar: ${archivos.length}\n`)
 
+// La conexión directa de Supabase publica solo un registro AAAA. macOS
+// descarta las direcciones IPv6 en getaddrinfo cuando no ve una IPv6 global
+// en la interfaz, y Node muere con ENOTFOUND antes de intentar conectar. Se
+// resuelve el AAAA a mano y se le pasa la dirección literal, que ya no
+// dispara ninguna resolución. El nombre original viaja como `servername`
+// para que el saludo TLS siga siendo válido.
+const url = new URL(cadena)
+let host = url.hostname
+
+try {
+  const [direccion] = await resolve6(url.hostname)
+  if (direccion) host = direccion
+} catch {
+  // Sin AAAA se deja el nombre tal cual: si el proyecto sí tiene IPv4, la
+  // resolución normal de Node lo encuentra.
+}
+
 const cliente = new pg.Client({
-  connectionString: cadena,
-  ssl: { rejectUnauthorized: false },
+  host,
+  port: Number(url.port || 5432),
+  user: decodeURIComponent(url.username),
+  password: decodeURIComponent(url.password),
+  database: url.pathname.replace(/^\//, '') || 'postgres',
+  ssl: { rejectUnauthorized: false, servername: url.hostname },
   statement_timeout: 120_000,
 })
 
