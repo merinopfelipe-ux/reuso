@@ -81,9 +81,17 @@ jobs:
         id: comprobar
         env:
           URL_SUPABASE: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          # El propio test (tests/rls/multi-tenant-isolation.test.ts) exige las
+          # 3 variables y lanza una excepción si falta cualquiera. Esta
+          # comprobación se había quedado corta revisando solo 2 de las 3: el
+          # job pasaba el filtro, corría, y se estrellaba con el error de la
+          # excepción en vez de saltarse con un aviso limpio (bug real,
+          # 2026-08-27, encontrado porque el CI seguía fallando tras subir el
+          # trabajo pendiente).
+          LLAVE_ANONIMA: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           LLAVE_SERVICIO: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_SERVICIO" ]; then
+          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_ANONIMA" ] || [ -z "$LLAVE_SERVICIO" ]; then
             echo "hay_secretos=no" >> "$GITHUB_OUTPUT"
             echo "::warning::Faltan los secretos de Supabase en GitHub. Las pruebas de aislamiento entre empresas NO se ejecutaron."
           else
@@ -121,9 +129,12 @@ jobs:
         id: comprobar
         env:
           URL_SUPABASE: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          # Mismo defecto que en el job de RLS (ver su comentario): faltaba
+          # comprobar la llave anónima, que la app SÍ necesita para arrancar.
+          LLAVE_ANONIMA: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           LLAVE_SERVICIO: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_SERVICIO" ]; then
+          if [ -z "$URL_SUPABASE" ] || [ -z "$LLAVE_ANONIMA" ] || [ -z "$LLAVE_SERVICIO" ]; then
             echo "hay_secretos=no" >> "$GITHUB_OUTPUT"
             echo "::warning::Faltan los secretos de Supabase en GitHub. Las pruebas E2E NO se ejecutaron."
           else
