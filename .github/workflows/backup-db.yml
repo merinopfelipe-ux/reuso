@@ -66,6 +66,27 @@ jobs:
             *:6543/*) echo "::error::El puerto 6543 es el Transaction pooler y no permite hacer volcados. Usa el Session pooler (puerto 5432)."; exit 1 ;;
           esac
 
+      - name: Probar la conexión a la base
+        # Un `psql` simple da mensajes de error mucho más claros que pg_dump
+        # (contraseña incorrecta, base inexistente, versión incompatible),
+        # así que se prueba aquí primero para no depender del volcado.
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if psql "$SUPABASE_DB_URL" -Atc "select 'conexion_ok', version()" > /tmp/conexion.txt 2> /tmp/conexion_error.txt; then
+            echo "Conexión correcta:"
+            cat /tmp/conexion.txt
+          else
+            echo "::error::No se pudo conectar a la base. Mensaje de PostgreSQL:"
+            cat /tmp/conexion_error.txt || true
+            echo ""
+            echo "Qué revisar, en orden:"
+            echo "  1. La contraseña dentro de SUPABASE_DB_URL (es la de la BASE DE DATOS, no la de tu cuenta Supabase)."
+            echo "  2. Si la contraseña tiene @ : / ? # o %, hay que codificarla o generar una nueva solo con letras y números."
+            echo "  3. El usuario debe ser 'postgres.<codigo-del-proyecto>', no solo 'postgres'."
+            exit 1
+          fi
+
       - name: Generar el volcado lógico
         env:
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -76,19 +97,25 @@ jobs:
           # --no-owner/--no-acl: el volcado debe poder restaurarse en un
           # proyecto Supabase distinto (el de recuperación), donde los roles
           # y permisos no son los mismos que en producción.
-          if ! pg_dump "$SUPABASE_DB_URL" \
-                 --no-owner --no-acl --clean --if-exists \
-                 2> /tmp/pg_dump_error.txt \
-                 | gzip -9 > "reuso-backup-$FECHA.sql.gz"; then
-            echo "::error::pg_dump falló. Mensaje exacto de PostgreSQL:"
-            sed -E 's/(password=)[^ ]*/\1***/g' /tmp/pg_dump_error.txt
-            echo ""
-            echo "Causas habituales:"
-            echo "  · Contraseña incorrecta -> revisar el secreto SUPABASE_DB_URL."
-            echo "  · Cadena 'Direct' en vez de 'Session pooler' -> GitHub no tiene IPv6."
-            echo "  · La contraseña lleva caracteres especiales sin codificar (@ : / ? #)."
+          # A archivo plano primero, sin tubería: si pg_dump falla dentro de un
+          # pipeline su mensaje se pierde con facilidad, que es justo lo que
+          # pasó en el intento anterior (el error salió en blanco).
+          set +e
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-acl --clean --if-exists > /tmp/volcado.sql 2> /tmp/pg_dump_error.txt
+          CODIGO=$?
+          set -e
+          if [ $CODIGO -ne 0 ]; then
+            echo "::error::pg_dump falló con código $CODIGO. Mensaje de PostgreSQL:"
+            cat /tmp/pg_dump_error.txt || echo "(pg_dump no dejó mensaje)"
             exit 1
           fi
+          # Aviso no fatal: pg_dump escribe advertencias en stderr aunque todo salga bien.
+          if [ -s /tmp/pg_dump_error.txt ]; then
+            echo "Avisos de pg_dump (no impiden el respaldo):"
+            cat /tmp/pg_dump_error.txt
+          fi
+          gzip -9 -c /tmp/volcado.sql > "reuso-backup-$FECHA.sql.gz"
+          rm -f /tmp/volcado.sql
           ls -lh "reuso-backup-$FECHA.sql.gz"
 
       - name: Comprobar que el volcado no salió vacío
