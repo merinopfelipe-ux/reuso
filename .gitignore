@@ -49,3 +49,6 @@ scratch/
 # Artefactos de Playwright, no son código
 test-results/
 playwright-report/
+
+# Credenciales del proyecto de pruebas (staging). Nunca se suben.
+.env.staging
