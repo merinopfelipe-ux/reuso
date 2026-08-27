@@ -71,6 +71,54 @@ function vercel(argumentos, entrada) {
   })
 }
 
+// Lección aprendida a la mala (2026-08-26): `vercel env rm <nombre> preview`
+// NO borra solo el valor de Preview. Cuando un mismo registro está aplicado a
+// varios entornos a la vez —que es justo el caso que este script existe para
+// deshacer— Vercel elimina el registro COMPLETO, y con él el valor de
+// Production. Aquí eso dejó a producción sin NEXT_PUBLIC_SUPABASE_URL.
+//
+// Por eso ya no se borra a ciegas: primero se mira en qué entornos vive cada
+// variable, y si comparte registro con Production el script se detiene y
+// explica qué hacer, en vez de romper la configuración real.
+function entornosDe(nombre) {
+  const salida = vercel(['env', 'ls'])
+  const fila = salida
+    .split('\n')
+    .find((l) => new RegExp(`^\\s*${nombre}\\s`).test(l))
+  if (!fila) return []
+  const entornos = []
+  for (const e of ['Development', 'Preview', 'Production']) {
+    if (fila.includes(e)) entornos.push(e)
+  }
+  return entornos
+}
+
+const compartidas = variables
+  .map(([nombre]) => ({ nombre, entornos: entornosDe(nombre) }))
+  .filter(({ entornos }) => entornos.includes('Production') && entornos.includes('Preview'))
+
+if (compartidas.length) {
+  console.error('\n⛔ ALTO. Estas variables comparten un solo registro entre Preview y Production:\n')
+  for (const { nombre, entornos } of compartidas) {
+    console.error(`  · ${nombre}  (${entornos.join(', ')})`)
+  }
+  console.error(`
+Quitarlas de Preview desde la línea de comandos borraría TAMBIÉN el valor de
+Production. Ya pasó una vez y dejó producción sin NEXT_PUBLIC_SUPABASE_URL.
+
+Sepáralas desde el panel de Vercel, que sí permite editar un entorno sin tocar
+el otro:
+
+  https://vercel.com/reuso-projects/reuso/settings/environment-variables
+
+Para cada una: abrir el lápiz, desmarcar Preview, guardar. Después crear una
+entrada nueva solo para Preview con el valor del staging.
+
+No se modificó nada.
+`)
+  process.exit(1)
+}
+
 console.log('Reasignando las variables del entorno Preview...\n')
 
 for (const [nombre, valor] of variables) {
