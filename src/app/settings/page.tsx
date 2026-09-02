@@ -128,18 +128,18 @@ export default function SettingsPage() {
   function seleccionarTema(t: Tema) {
     setTema(t)
     applyTheme(t)
-    // Sincronizar la base de datos de Supabase en segundo plano al cambiar el tema
+    // Sincronizar la base de datos en segundo plano al cambiar el tema — solo
+    // ese campo. Antes mandaba todo el perfil (nombre/apellido/apodo/avatar)
+    // desde el estado local de React; si ese estado no había cargado aún o
+    // quedaba desactualizado, el PATCH terminaba grabando valores viejos o
+    // vacíos sobre el perfil real (bug real, ver src/app/api/profile/route.ts).
     if (nombre.trim()) {
       fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           nombre: nombre.trim(),
-          apellido: apellido.trim() || '',
-          apodo: usarPrimerNombre ? nombre.trim().split(' ')[0] : (apodo.trim() || nombre.trim().split(' ')[0]),
           tema_preferido: t,
-          avatar_color: avatarColor,
-          avatar_text: avatarText,
         }),
       }).catch((err) => console.error('Error syncing theme preference:', err))
     }
