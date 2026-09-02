@@ -1,0 +1,48 @@
+#!/usr/bin/env sh
+# Proteccion real de header/sidebar/footer (Regla de Oro #2 del CLAUDE.md),
+# a nivel de tu computador, no de GitHub. Reemplaza la proteccion de rama
+# de GitHub (que era todo-o-nada, exigia PR hasta para cambios que no
+# tocaban nada protegido) por un candado que solo se activa cuando el push
+# de verdad toca uno de esos 3 archivos.
+#
+# Uso normal: nada cambia, el push sale directo.
+# Si el push toca header.tsx/sidebar.tsx/footer.tsx: se bloquea, y solo tu
+# (nunca un script ni un agente) puedes desbloquearlo escribiendo la
+# variable en tu propia terminal:
+#   DESBLOQUEAR_PROTEGIDOS=1 git push
+
+# husky corre este script con "sh -e" (aborta ante cualquier comando que
+# devuelva error) via .husky/_/h. grep devuelve 1 cuando NO encuentra nada,
+# que es el caso normal (push sin protegidos) - por eso todo grep de este
+# archivo lleva "|| true", si no, cualquier push sin protegidos se aborta
+# por error aunque no haya nada que bloquear.
+
+RAMA_ACTUAL=$(git rev-parse --abbrev-ref HEAD)
+if [ "$RAMA_ACTUAL" = "main" ]; then
+  # Push directo a main (caso raro): compara contra lo que origin/main ya
+  # tiene, es decir contra lo que de verdad se está a punto de enviar.
+  BASE="origin/main"
+else
+  BASE="main"
+fi
+
+ARCHIVOS=$(git diff --name-only "$BASE"...HEAD 2>/dev/null || true)
+PROTEGIDOS=$(echo "$ARCHIVOS" | grep -E "^src/components/(header|sidebar|footer)\.tsx$" || true)
+
+if [ -n "$PROTEGIDOS" ]; then
+  if [ "$DESBLOQUEAR_PROTEGIDOS" != "1" ]; then
+    echo ""
+    echo "Este push toca un archivo protegido:"
+    echo "$PROTEGIDOS"
+    echo ""
+    echo "header.tsx, sidebar.tsx y footer.tsx requieren tu autorizacion explicita."
+    echo "Para continuar, corre en tu propia terminal:"
+    echo "  DESBLOQUEAR_PROTEGIDOS=1 git push"
+    echo ""
+    exit 1
+  else
+    echo "Push autorizado a archivos protegidos (DESBLOQUEAR_PROTEGIDOS=1)."
+  fi
+fi
+
+exit 0
