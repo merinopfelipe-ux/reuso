@@ -289,7 +289,7 @@ export default function LoginPage() {
               width={140}
               height={44}
               className="object-contain"
-              style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+              style={{ width: 140, height: 44, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
             />
           </Link>
           <p className="text-sm text-secondary font-medium hidden sm:block">
