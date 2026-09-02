@@ -285,8 +285,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           )
           const hasActiveSub = item.subItems?.some(s => pathname === s.href || pathname.startsWith(s.href + '/'))
           const isInteracting = activeSubmenu === item.label
-          // Blanco Inmaculado V12.5
-          const fixedColor = '#FFFFFF' 
+          const fixedColor = 'inherit'
 
           return (
             <div key={idx} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
@@ -526,14 +525,14 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
               className={`flyout-item-sustainable ${isSubActive ? 'reuso-nav-active' : ''}`}
               style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '12px 20px', borderRadius: '12px', fontSize: '14px', color: '#FFFFFF', textDecoration: 'none', transition: 'background 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.2s ease',
+                padding: '12px 20px', borderRadius: '12px', fontSize: '14px', color: 'inherit', textDecoration: 'none', transition: 'background 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.2s ease',
                 background: isSubActive ? 'var(--color-active-nav)' : 'transparent',
                 boxShadow: isSubActive ? '0 4px 15px rgba(0, 0, 0, 0.1)' : 'none',
                 fontWeight: isSubActive ? 800 : 600,
                 margin: '0 8px'
               }}
             >
-              <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : '#FFFFFF' }}>{sub.label}</span>
+              <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : 'inherit' }}>{sub.label}</span>
               {isSubActive && <div style={{ width: 6, height: 6, background: 'var(--color-text-nav-active)', borderRadius: '50%' }} />}
             </Link>
           )
@@ -541,7 +540,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
 
         const tituloEstilo: React.CSSProperties = {
           padding: '10px 20px 4px', fontSize: '11px', fontWeight: 700,
-          letterSpacing: '0.04em', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
+          letterSpacing: '0.04em', color: 'var(--text-secondary)',
         }
 
         return (
