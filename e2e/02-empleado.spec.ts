@@ -14,10 +14,14 @@ test.describe('empleado', () => {
   })
 
   test('02 - cálculo persiste en historial tras recargar', async ({ page }) => {
-    const boton = page.locator('button').filter({ hasText: /Ropa y Textiles|Muebles/i }).first()
-    await expect(boton).toBeVisible({ timeout: 10_000 })
+    // "Muebles" ya viene activo por defecto — hay que elegir una
+    // subcategoría real (ej. "Comedor") para que aparezca el listado de
+    // ítems con peso (bug real corregido 2026-09-02).
+    const boton = page.locator('button').filter({ hasText: 'Comedor' }).first()
+    await expect(boton).toBeVisible({ timeout: 15_000 })
     await boton.click()
     const input = page.locator('input[type="number"]').first()
+    await expect(input).toBeVisible({ timeout: 15_000 })
     await input.click({ clickCount: 3 })
     await page.keyboard.type('3')
     await page.locator('button:has-text("Guardar cálculo")').click()
@@ -76,10 +80,12 @@ test.describe('empleado', () => {
     await expect(page.getByText(tituloUnico)).toBeVisible({ timeout: 10_000 })
   })
 
-  test('08 - panel certificados carga con ambos botones visibles', async ({ page }) => {
-    await page.goto('/dashboard/certificados')
+  // El módulo "certificados" ya no existe (renombrado a "Informes"), la
+  // ruta real es /dashboard/informes con un solo botón "Generar informe"
+  // (bug real corregido 2026-09-02, ver también e2e/10-dashboard.spec.ts).
+  test('08 - panel de informes carga con el botón de generar visible', async ({ page }) => {
+    await page.goto('/dashboard/informes')
     await page.waitForLoadState('load')
-    await expect(page.locator('button:has-text("Generar certificado")')).toBeVisible({ timeout: 10_000 })
-    await expect(page.locator('button:has-text("Generar informe")')).toBeVisible()
+    await expect(page.locator('button:has-text("Generar informe")').first()).toBeVisible({ timeout: 10_000 })
   })
 })

@@ -1,4 +1,4 @@
-import { test as setup } from '@playwright/test'
+import { test as setup, type Page } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import path from 'path'
@@ -6,7 +6,7 @@ import path from 'path'
 const AUTH_DIR = 'playwright/.auth'
 const EFIMEROS_PATH = path.join(AUTH_DIR, 'efimeros.json')
 
-async function aceptarCookies(page: any) {
+async function aceptarCookies(page: Page) {
   await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
 }
 
@@ -47,7 +47,31 @@ async function crearCuentaEfimera(rol: 'usuario_libre' | 'empleado' | 'empresa_a
   return { email, password, userId: nuevo.user.id }
 }
 
-interface CuentaEfimera { userId: string; email: string; password: string }
+// Bug real corregido 2026-09-02: la cuenta efímera de empresa_admin solo
+// tenía profiles.rol = 'empresa_admin', sin ninguna fila real en empresas ni
+// empresa_id — la página real de /empresa (línea 141) hace
+// `if (!perfil?.empresa_id) redirect('/dashboard')`, así que el setup se
+// quedaba esperando para siempre una URL con "/empresa" que nunca llegaba.
+// Esto bloqueaba TODA la suite (24 pruebas "did not run" tras el timeout).
+async function crearEmpresaParaAdmin(userId: string): Promise<string> {
+  const slug = `e2e-empresa-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+  const { data: empresa, error } = await supabaseAdmin
+    .from('empresas')
+    .insert({ nombre: 'E2E Empresa de Prueba', slug, plan: 'free', activa: true })
+    .select('id')
+    .single()
+  if (error || !empresa) throw new Error(`No se pudo crear la empresa efímera: ${error?.message}`)
+
+  const { error: errorPerfil } = await supabaseAdmin
+    .from('profiles')
+    .update({ empresa_id: empresa.id })
+    .eq('user_id', userId)
+  if (errorPerfil) throw new Error(`No se pudo vincular empresa_id al perfil: ${errorPerfil.message}`)
+
+  return empresa.id
+}
+
+interface CuentaEfimera { userId: string; email: string; password: string; empresaId?: string }
 
 // Guarda email+password (no solo el id) para que otros archivos de e2e que
 // inician sesión por su cuenta (ej. 07-auth.spec.ts) puedan leer las mismas
@@ -95,7 +119,8 @@ setup('auth: empleado', async ({ page }) => {
 
 setup('auth: empresa_admin', async ({ page }) => {
   const cuenta = await crearCuentaEfimera('empresa_admin', 'E2E Empresa Admin')
-  registrarEfimero('empresa_admin', cuenta)
+  const empresaId = await crearEmpresaParaAdmin(cuenta.userId)
+  registrarEfimero('empresa_admin', { ...cuenta, empresaId })
 
   await page.goto('/login')
   await aceptarCookies(page)

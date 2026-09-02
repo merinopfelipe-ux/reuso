@@ -13,10 +13,14 @@ test.describe('empresa_admin', () => {
   })
 
   test('emp-02 - cálculo persiste en /empresa/calculos tras recargar', async ({ page }) => {
-    const boton = page.locator('button').filter({ hasText: /Ropa y Textiles|Muebles/i }).first()
-    await expect(boton).toBeVisible({ timeout: 10_000 })
+    // "Muebles" ya viene activo por defecto — hay que elegir una
+    // subcategoría real (ej. "Comedor") para que aparezca el listado de
+    // ítems con peso (bug real corregido 2026-09-02).
+    const boton = page.locator('button').filter({ hasText: 'Comedor' }).first()
+    await expect(boton).toBeVisible({ timeout: 15_000 })
     await boton.click()
     const input = page.locator('input[type="number"]').first()
+    await expect(input).toBeVisible({ timeout: 15_000 })
     await input.click({ clickCount: 3 })
     await page.keyboard.type('5')
     await page.locator('button:has-text("Guardar cálculo")').click()
@@ -27,25 +31,14 @@ test.describe('empresa_admin', () => {
     await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('emp-03 - certificado generado es verificable en /verificar', async ({ page }) => {
-    const botonCert = page.locator('button:has-text("Generar certificado")').first()
-    await expect(botonCert).toBeVisible({ timeout: 10_000 })
-
-    const responsePromise = page.waitForResponse('/api/certificados/generar', { timeout: 50_000 })
-    await botonCert.click()
-    const response = await responsePromise
-    const data = await response.json() as { codigo_verificacion?: string }
-    expect(data.codigo_verificacion).toBeTruthy()
-    const uuid = data.codigo_verificacion!
-    const codigo = `RCO2-${uuid.slice(0, 4).toUpperCase()}-${uuid.slice(4, 8).toUpperCase()}`
-
-    await page.goto(`/verificar/${codigo}`)
+  // El módulo "certificados" ya no existe (renombrado por completo a
+  // "Informes") y el endpoint real es /api/informes/generar, no
+  // /api/certificados/generar — bug real corregido 2026-09-02, la prueba
+  // vieja apuntaba a una ruta muerta y nunca podía pasar. La ruta real de
+  // /admin/qa (emp-03) es /empresa/informes, no /empresa.
+  test('emp-03 - informe generado con fechas es verificable en /verificar', async ({ page }) => {
+    await page.goto('/empresa/informes')
     await page.waitForLoadState('load')
-    await expect(page.getByText(codigo)).toBeVisible({ timeout: 15_000 })
-    await expect(page.getByText(/kilogramos CO₂-eq/i).first()).toBeVisible({ timeout: 5_000 })
-  })
-
-  test('emp-04 - informe generado con fechas es verificable en /verificar', async ({ page }) => {
     const botonInforme = page.locator('button:has-text("Generar informe")').first()
     await expect(botonInforme).toBeVisible({ timeout: 10_000 })
     await botonInforme.click()
@@ -54,7 +47,7 @@ test.describe('empresa_admin', () => {
     await modal.locator('input[type="date"]').first().fill('2024-01-01')
     await modal.locator('input[type="date"]').last().fill('2024-12-31')
 
-    const responsePromise = page.waitForResponse('/api/certificados/generar', { timeout: 50_000 })
+    const responsePromise = page.waitForResponse('/api/informes/generar', { timeout: 50_000 })
     await page.locator('button:has-text("Generar informe")').last().click()
     const response = await responsePromise
     const data = await response.json() as { codigo_verificacion?: string }
@@ -64,16 +57,36 @@ test.describe('empresa_admin', () => {
 
     await page.goto(`/verificar/${codigo}`)
     await page.waitForLoadState('load')
-    await expect(page.getByText(/Informe de Impacto/i).first()).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByText(codigo)).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/kilogramos CO₂-eq|Informe de Impacto/i).first()).toBeVisible({ timeout: 5_000 })
+  })
+
+  // La ruta real de /admin/qa (emp-04) es /empresa/reportes, no /empresa —
+  // ahí el botón de descarga ofrece Excel/CSV/PDF (BotonDescargarCliente),
+  // sin texto visible, solo el ícono de descarga (bug real corregido
+  // 2026-09-02: la prueba vieja repetía la misma ruta/flujo que emp-03).
+  test('emp-04 - descarga de reporte en PDF responde 200', async ({ page }) => {
+    await page.goto('/empresa/reportes')
+    await page.waitForLoadState('load')
+    // BotonDescargarCliente no tiene texto ni aria-label visible (solo un
+    // ícono) — se ubica por su wrapper con estilo inline distintivo
+    // (position: relative; display: inline-block), único en la página.
+    await page.locator('div[style*="position: relative"][style*="inline-block"]').locator('button').first().click()
+    const responsePromise = page.waitForResponse(/\/api\/reportes\/.+\/pdf/, { timeout: 20_000 })
+    await page.getByText('PDF (.pdf)').click()
+    const response = await responsePromise
+    expect(response.status()).toBe(200)
   })
 
   test('emp-05 - invitación persiste en lista de equipo', async ({ page }) => {
+    // "Rol asignado" es el Selector custom del sistema de diseño (nunca un
+    // <select> nativo, bug real corregido 2026-09-02) y ya viene en
+    // "Empleado" por defecto (rolInvitado inicial), no hace falta tocarlo.
     await page.goto('/empresa/equipo')
     await page.waitForLoadState('load')
     await page.locator('button:has-text("Invitar")').click()
     const emailInvitado = `e2e-invitado-${Date.now()}@ejemplo.com`
     await page.locator('input[type="email"]').fill(emailInvitado)
-    await page.locator('select').selectOption('empleado')
     await page.locator('button:has-text("Generar invitación")').click()
     await expect(page.getByText(/copiar|copiado/i)).toBeVisible({ timeout: 15_000 })
 

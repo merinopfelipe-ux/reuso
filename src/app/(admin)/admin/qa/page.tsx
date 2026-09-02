@@ -45,7 +45,14 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
   }
   
   // Dashboard
-  if (categoria === 'Dashboard' || id.startsWith('dash-')) return ['empleado']
+  if (categoria === 'Dashboard' || id.startsWith('dash-')) {
+    // dash-02: límite del plan Explora. Un empleado nunca tiene ese plan
+    // (lo hereda de su empresa) — el camino real y probable es usuario_libre
+    // (bug real corregido 2026-09-02, encontrado al construir la versión
+    // automatizada equivalente en e2e/10-dashboard.spec.ts).
+    if (id === 'dash-02') return ['usuario_libre']
+    return ['empleado']
+  }
   
   // Cotizador IA
   if (categoria === 'Cotizador IA' || id.startsWith('cot-')) {
@@ -1235,35 +1242,35 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'alerta-01', categoria: 'Alertas', ruta: '/admin/alertas', critica: false,
-    titulo: 'Crear alerta global de tipo advertencia',
-    descripcion: 'Publica un banner global de tipo warning e inspecciona su correcta renderización.',
+    titulo: 'Crear alerta global de tipo Urgente',
+    descripcion: 'Publica un banner global (los 4 tipos reales son Info, Promo, Estado y Urgente — no existen "warning"/"critical", corregido 2026-09-02 tras encontrar la descripción desalineada con el Selector real).',
     pasos: [
       'Inicia sesión como administrador y ve a /admin/alertas.',
-      'Presiona "Crear Alerta", selecciona severidad "Advertencia" (warning), escribe el mensaje "Corte programado el sábado a las 22:00" y presiona "Guardar".',
+      'Haz clic en el botón "+" para abrir el formulario, escribe un título, el mensaje "Corte programado el sábado a las 22:00", selecciona tipo "Urgente" y destinatario "Todos los usuarios", y haz clic en "Publicar alerta".',
       'Inicia sesión con la cuenta de un empleado y ve a /dashboard.',
     ],
-    esperado: 'La alerta de advertencia se muestra en el dashboard de los empleados con el color de advertencia correcto (amarillo/naranja) y el texto redactado por el administrador.',
+    esperado: 'La alerta se muestra como un banner en el dashboard del empleado, con el fondo rojo de "Urgente" (#CC3C2A) y el texto redactado por el administrador.',
   },
   {
     id: 'alerta-02', categoria: 'Alertas', ruta: '/dashboard', critica: false,
     titulo: 'Marcar alerta como leída',
-    descripcion: 'Valida que el cierre de una alerta por el usuario persista en el almacenamiento local.',
+    descripcion: 'Valida que cerrar una alerta persista en el servidor (tabla real vía POST /api/alertas/marcar-leida, NO en localStorage — corregido 2026-09-02, la descripción anterior decía "almacenamiento local" sin serlo).',
     pasos: [
-      'Estando en el dashboard con una alerta activa en pantalla, presiona el botón "x" de cerrar o "Marcar como leída".',
+      'Estando en el dashboard con una alerta activa en pantalla, presiona el botón "x" ("Cerrar alerta") del banner.',
       'Recarga la página.',
     ],
-    esperado: 'El banner de alerta se cierra y se retira visualmente al instante. La preferencia se guarda de manera local y la alerta no vuelve a aparecer tras refrescar.',
+    esperado: 'El banner se retira visualmente al instante. Tras recargar, la alerta sigue sin aparecer (el servidor recuerda que ya se marcó como leída, no depende del navegador ni del dispositivo).',
   },
   {
     id: 'alerta-03', categoria: 'Alertas', ruta: '/dashboard', critica: false,
-    titulo: 'Concurrencia de alertas con expiración automática',
-    descripcion: 'Comprueba el comportamiento visual al desplegar simultáneamente múltiples alertas de diversa severidad.',
+    titulo: 'Prioridad entre varias alertas activas a la vez',
+    descripcion: 'El banner NUNCA apila varias alertas a la vez — muestra solo UNA, la de mayor prioridad entre las no leídas (orden real: Urgente > Estado > Promo > Info). Corregido 2026-09-02, la descripción anterior decía que se apilaban varias, y el sistema real no tiene tipo "critical".',
     pasos: [
-      'Simula la inserción de 5 alertas de forma paralela en la base de datos (2 info, 2 warning, 1 critical).',
-      'Navega al dashboard /dashboard del empleado.',
-      'Observa cómo se apilan y el orden en que se visualizan.',
+      'Como super_admin, crea 2 alertas dirigidas a "Todos los usuarios": una de tipo "Info" y otra de tipo "Urgente" (crea primero la Info, luego la Urgente).',
+      'Inicia sesión como empleado y ve a /dashboard.',
+      'Observa cuál de las 2 alertas se muestra.',
     ],
-    esperado: 'Las alertas se agrupan o apilan de forma ordenada según su nivel de criticidad (primero críticas en rojo). La interfaz de usuario se mantiene limpia y no se superpone de forma errónea con los otros elementos del dashboard.',
+    esperado: 'Se muestra solo el banner de la alerta "Urgente" (mayor prioridad), nunca las dos a la vez ni la de menor prioridad primero. Al marcarla como leída, debe aparecer entonces la de tipo "Info".',
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1271,11 +1278,11 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'set-01', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Editar perfil - nombre, apodo y teléfono',
-    descripcion: 'Modifica datos de perfil y valida la reactividad del saludo del dashboard.',
+    titulo: 'Editar perfil - nombre y apodo',
+    descripcion: 'Modifica datos de perfil y valida la reactividad del saludo del dashboard. El teléfono NO vive aquí — es un campo sensible con su propio flujo, ver set-03 (corregido 2026-09-02, la descripción anterior los mezclaba en un solo guardado).',
     pasos: [
       'Ve a /settings.',
-      'En el formulario de datos personales, modifica tu nombre completo, escribe "TesterQA" en apodo, e ingresa tu número de contacto.',
+      'En el formulario de datos personales, modifica tu nombre completo y escribe "TesterQA" en apodo.',
       'Haz clic en "Guardar cambios".',
       'Dirígete al dashboard /dashboard y valida el saludo inicial de la cabecera.',
     ],
@@ -1283,15 +1290,27 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'set-02', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Cambiar contraseña',
-    descripcion: 'Comprueba la validación de contraseñas seguras y la posterior autenticación.',
+    titulo: 'Cambiar contraseña (con código de verificación por correo)',
+    descripcion: 'El cambio real es en 2 pasos con un código de 6 dígitos enviado al correo — no un solo botón "Actualizar contraseña" (corregido 2026-09-02, la descripción anterior no mencionaba el código).',
     pasos: [
-      'En /settings, desplázate hasta el formulario para cambio de clave.',
-      'Introduce tu contraseña actual, escribe la nueva clave (debe cumplir los requisitos de seguridad obligatorios: 8 caracteres, 1 mayúscula, 1 número) y confírmala.',
-      'Haz clic en "Actualizar contraseña".',
+      'En /settings, desplázate hasta "Cambiar contraseña".',
+      'Introduce tu contraseña actual y la nueva clave (mínimo 8 caracteres), haz clic en "Enviar código de verificación".',
+      'Revisa tu correo, ingresa el código de 6 dígitos recibido y haz clic en "Confirmar cambio".',
       'Cierra sesión e intenta acceder de nuevo al sistema utilizando la clave anterior, y luego inténtalo con la nueva contraseña.',
     ],
-    esperado: 'La contraseña se cambia de forma segura. El intento de login con la clave antigua falla de forma controlada y el login con la nueva contraseña se completa con éxito.',
+    esperado: 'El botón de enviar solo se habilita con contraseña actual + nueva de al menos 8 caracteres. Sin el código correcto no se confirma el cambio. El intento de login con la clave antigua falla de forma controlada y el login con la nueva contraseña se completa con éxito.',
+  },
+  {
+    id: 'set-03', categoria: 'Settings', ruta: '/settings', critica: false,
+    titulo: 'Cambiar teléfono (campo sensible, requiere contraseña)',
+    descripcion: 'El teléfono (y el correo) son "campos sensibles": cambiarlos exige reingresar tu contraseña antes de aceptar el valor nuevo, a diferencia de nombre/apodo que se guardan directo (set-01).',
+    pasos: [
+      'El campo "Teléfono" solo aparece en /settings si tu perfil ya tiene uno guardado — usa una cuenta que ya tenga teléfono, o pide que te asignen uno de prueba primero.',
+      'En /settings, busca el campo de teléfono (se muestra enmascarado) y haz clic en el ícono de candado para editar.',
+      'Ingresa tu contraseña actual para desbloquear el campo.',
+      'Escribe el nuevo número de teléfono y haz clic en "Verificar y cambiar".',
+    ],
+    esperado: 'Sin la contraseña correcta, el campo no se desbloquea. Con la contraseña correcta, el teléfono se actualiza y vuelve a mostrarse enmascarado.',
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1299,14 +1318,14 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'ayuda-01', categoria: 'Ayuda', ruta: '/ayuda', critica: false,
-    titulo: 'Centro de ayuda - carga y búsqueda',
-    descripcion: 'Valida las búsquedas inteligentes sobre la base de conocimientos.',
+    titulo: 'Centro de ayuda - enviar ticket y ver FAQ',
+    descripcion: '/ayuda NO tiene buscador ni base de conocimientos con categorías navegables — es un formulario de "Enviar ticket" (4 categorías fijas: Error técnico, Pregunta de uso, Facturación, Otro) más un acordeón de FAQ estático (corregido 2026-09-02, la descripción anterior describía una función de búsqueda que no existe).',
     pasos: [
       'Navega a /ayuda.',
-      'Verifica que se visualice la lista de categorías del centro de soporte.',
-      'En la barra de búsqueda del centro de ayuda, escribe "informe" y presiona enter.',
+      'Selecciona la categoría "Pregunta de uso", escribe una descripción y haz clic en "Enviar ticket".',
+      'Baja hasta la sección "Preguntas frecuentes" y haz clic en una pregunta para expandirla.',
     ],
-    esperado: 'El sistema realiza la búsqueda sobre los artículos del manual de usuario y filtra la lista mostrando los contenidos que resuelven dudas sobre informes.',
+    esperado: 'El ticket se envía sin error. Al hacer clic en una pregunta del FAQ, se expande mostrando la respuesta (acordeón, no un buscador).',
   },
   {
     id: 'api-01', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
