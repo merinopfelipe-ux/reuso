@@ -293,6 +293,13 @@ export async function enviarNotificacionTicket(
   destinatarios: string[],
   datos: { nombre?: string | null; email?: string | null; categoria: string; mensaje: string }
 ): Promise<void> {
+  // Bug real 2026-09-02: las pruebas e2e crean tickets de soporte reales
+  // (varias veces, en cada corrida) y este correo se le manda de verdad al
+  // super_admin real (tu propia cuenta) y a servicio@lurdes.co cada vez —
+  // el usuario reportó "muchos mensajes de soporte" y la causa era esta.
+  // SKIP_TEST_EMAILS=true (puesto por Playwright, ver playwright.config.ts)
+  // apaga el envío sin tocar el resto del flujo de creación del ticket.
+  if (process.env.SKIP_TEST_EMAILS === 'true') return
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)

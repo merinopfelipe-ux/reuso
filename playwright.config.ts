@@ -26,7 +26,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'SKIP_RATE_LIMIT=true npm run dev',
+    command: 'SKIP_RATE_LIMIT=true SKIP_TEST_EMAILS=true npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: true,
     timeout: 120_000,
