@@ -201,12 +201,14 @@ import { SkeletonLista, SkeletonCard, Skeleton } from '@/components/ui/skeleton'
 
 ## Estructura UI de la Calculadora de Reúso
 
-### Sidebar (zona protegida, clave 2680 para cambios visuales/estructurales)
+### Sidebar (zona protegida, PR + aprobación del dueño del repo — ver `CLAUDE.md` Regla de Oro #2 y `conceptos/proteccion-codeowners` del Vault, ya no una clave hablada)
 - Colapsado (default): 60px, solo íconos. Expandido (hover): 220px, ícono + texto, transición 0.3s ease.
 - Mobile: oculto, hamburguesa en header, abre como drawer overlay.
 - Item activo: fondo `var(--bg-active)`, color `var(--color-brand)`, indicador lateral 3-4px `var(--color-brand)`.
+- **Máximo 4 ítems de primer nivel por rol** (directriz explícita del usuario 2026-09-01, mobile-first: es lo que se ve estético en 375px) — el resto se agrupa dentro de esos 4, nunca se agregan más ítems sueltos al nivel raíz.
+- **Agrupación interna con subtítulo por grupo**: dentro del flyout de un ítem con `subItems`, un campo opcional `grupo` en cada `SubItem` (`src/components/sidebar.tsx`) pinta un encabezado (11px, bold, `letterSpacing: 0.04em`, blanco a 50-65% de opacidad) antes del primer ítem de ese grupo — solo cuando el grupo cambia respecto al anterior, nunca repetido en cada ítem. Referencia de patrón: mega-menú de barra lateral con categorías (ej. banca), no se inventa un componente nuevo, es una extensión del mismo flyout ya existente.
 
-### Header (zona protegida, clave 2680 para cambios visuales/estructurales)
+### Header (zona protegida, PR + aprobación del dueño del repo — ver `CLAUDE.md` Regla de Oro #2, ya no una clave hablada)
 - Fondo `var(--bg-primary)`, borde inferior 1px `var(--border)`.
 - Izquierda: saludo cálido ("Hola, [nombre]" + "¡Juntos recuperamos el planeta!", ver `feedback_voz_activa` — nunca reemplazar, solo añadir encima).
 - Derecha: notificaciones, ayuda, badge de empresa, avatar de usuario.

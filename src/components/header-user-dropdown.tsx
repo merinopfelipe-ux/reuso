@@ -61,7 +61,10 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
 
   async function cerrarSesion() {
     setOpen(false)
-    await fetch('/api/auth/logout', { method: 'POST' })
+    // El navegador puede fallar esta solicitud por razones ajenas al código
+    // (extensión, cookie corrupta de una sesión anterior) — nunca debe
+    // bloquear que el usuario salga de la pantalla actual.
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     router.push('/login')
     router.refresh()
   }
@@ -155,10 +158,10 @@ export function HeaderUserDropdown({ nombre, rol, avatarColor = '#D6F391', avata
           <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
           <button
             onClick={cerrarSesion}
-            style={{ ...itemStyle, color: 'var(--color-error)' }}
+            style={itemStyle}
             className="dropdown-item hover-slide-r"
           >
-            <SignOut size={15} /> CERRAR SESIÓN
+            <SignOut size={15} /> Cerrar sesión
           </button>
         </div>
       )}

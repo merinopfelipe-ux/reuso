@@ -3,6 +3,7 @@ import { headers, cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
+import { ModuloBloqueadoBanner } from '@/components/modulo-bloqueado-banner'
 import { displayName } from '@/lib/display-name'
 import type { Rol } from '@/types'
 
@@ -70,6 +71,7 @@ export default async function DashboardLayout({
       lastVisit={lastVisitFormatted}
     >
       {children}
+      <ModuloBloqueadoBanner />
     </LayoutShell>
   )
 }

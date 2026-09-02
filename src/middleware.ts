@@ -149,21 +149,25 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL(REDIRECT_BY_ROL[rol], request.url))
     }
 
-    // Control de acceso al Cotizador CRM
+    // Control de acceso al Cotizador CRM. Destino según rol: usuario_libre y
+    // empleado nunca llegan a /empresa (el layout los rebota a /dashboard
+    // perdiendo el query param), así que el banner debe abrirse ahí mismo.
     if (pathname.startsWith('/empresa/cotizador')) {
       const tiene = await verificarAccesoModulo(supabase, user.id, empresaId, rol, 'cotizador_crm')
       if (!tiene) {
-        const url = new URL('/empresa', request.url)
+        const destino = rol === 'usuario_libre' || rol === 'empleado' ? '/dashboard' : '/empresa'
+        const url = new URL(destino, request.url)
         url.searchParams.set('modulo_bloqueado', 'cotizador')
         return NextResponse.redirect(url)
       }
     }
 
-    // Control de acceso al Pasaporte Digital (DPP)
+    // Control de acceso al Pasaporte Digital (DPP) — mismo criterio de arriba.
     if (pathname.startsWith('/empresa/dpp')) {
       const tiene = await verificarAccesoModulo(supabase, user.id, empresaId, rol, 'dpp')
       if (!tiene) {
-        const url = new URL('/empresa', request.url)
+        const destino = rol === 'usuario_libre' || rol === 'empleado' ? '/dashboard' : '/empresa'
+        const url = new URL(destino, request.url)
         url.searchParams.set('modulo_bloqueado', 'dpp')
         return NextResponse.redirect(url)
       }
