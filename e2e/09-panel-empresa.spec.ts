@@ -94,7 +94,7 @@ test.describe('empresa_admin', () => {
     // shape real que exige route.ts).
     const { data: usuario } = await supabaseAdmin.auth.admin.listUsers()
     const cuentaAdmin = usuario.users.find(u => u.email?.startsWith('e2e_empresa_admin_'))
-    await supabaseAdmin.from('calculos').insert({
+    const { error: errorSiembra } = await supabaseAdmin.from('calculos').insert({
       user_id: cuentaAdmin!.id,
       empresa_id: empresaIdEfimera(),
       total_co2: 42.5,
@@ -110,6 +110,7 @@ test.describe('empresa_admin', () => {
         },
       },
     })
+    if (errorSiembra) throw new Error(`No se pudo sembrar el cálculo de prueba: ${errorSiembra.message}`)
 
     // /empresa/reportes es una página pesada (4 pestañas de reportes) —
     // en next dev, la primera compilación en caliente de esta ruta puede
@@ -117,12 +118,20 @@ test.describe('empresa_admin', () => {
     // otras pruebas en la misma corrida (flakiness ambiental confirmada:
     // esta misma prueba pasa siempre sola, solo falla intermitente dentro
     // del archivo completo). Timeout de navegación explícito más generoso.
+    // Bug real corregido 2026-09-02: 'load' solo espera el documento, no el
+    // fetch de /api/reportes/mitigacion que corre en un useEffect del
+    // cliente y es lo que realmente habilita el botón — sin esperarlo, el
+    // clic llega mientras csvData todavía está vacío y el botón deshabilitado.
+    const respuestaMitigacion = page.waitForResponse(/\/api\/reportes\/mitigacion/, { timeout: 30_000 })
     await page.goto('/empresa/reportes', { timeout: 90_000 })
     await page.waitForLoadState('load')
+    await respuestaMitigacion
     // BotonDescargarCliente no tiene texto ni aria-label visible (solo un
     // ícono) — se ubica por su wrapper con estilo inline distintivo
     // (position: relative; display: inline-block), único en la página.
-    await page.locator('div[style*="position: relative"][style*="inline-block"]').locator('button').first().click()
+    const botonDescargar = page.locator('div[style*="position: relative"][style*="inline-block"]').locator('button').first()
+    await expect(botonDescargar).toBeEnabled({ timeout: 10_000 })
+    await botonDescargar.click()
     const responsePromise = page.waitForResponse(/\/api\/reportes\/.+\/pdf/, { timeout: 20_000 })
     await page.getByText('PDF (.pdf)').click()
     const response = await responsePromise
