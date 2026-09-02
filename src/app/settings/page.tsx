@@ -68,6 +68,7 @@ export default function SettingsPage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
+    const temaAlEmpezar = localStorage.getItem('theme')
     fetch('/api/profile')
       .then((r) => r.json())
       .then((data) => {
@@ -90,8 +91,13 @@ export default function SettingsPage() {
         setAvatarColor(data.avatar_color || '#D6F391')
         setAvatarText(data.avatar_text || '')
 
-        // Inicializar el selector basándose en tema_preferido del perfil antes de recurrir a localStorage
-        if (data.tema_preferido) {
+        // Inicializar el selector basándose en tema_preferido del perfil antes de recurrir a localStorage.
+        // Bug real corregido 2026-09-02: si el usuario cambia el tema con el
+        // toggle del header MIENTRAS esta petición sigue en curso, aplicar
+        // el valor del perfil aquí pisaba en silencio ese clic reciente con
+        // el valor viejo guardado en la base de datos. Solo se aplica si
+        // nadie tocó el tema desde que arrancó esta petición.
+        if (data.tema_preferido && localStorage.getItem('theme') === temaAlEmpezar) {
           setTema(data.tema_preferido as Tema)
           applyTheme(data.tema_preferido as Tema)
         }

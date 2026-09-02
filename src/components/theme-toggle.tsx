@@ -9,7 +9,11 @@ export function ThemeToggle() {
   useEffect(() => {
     const saved = localStorage.getItem('theme')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    const dark = saved ? saved === 'dark' : prefersDark
+    // 'system' es un valor válido guardado desde /settings — ahí se resuelve
+    // a la preferencia del sistema operativo, igual que cuando no hay nada
+    // guardado (bug real corregido 2026-09-02, antes 'system' se leía como
+    // "no es dark" y forzaba modo claro sin importar el sistema operativo).
+    const dark = (saved === 'dark' || saved === 'light') ? saved === 'dark' : prefersDark
     setIsDark(dark)
     document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light')
   }, [])

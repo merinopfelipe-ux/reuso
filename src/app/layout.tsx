@@ -46,7 +46,7 @@ export default function RootLayout({
           (function() {
             var saved = localStorage.getItem('theme');
             var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            var theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+            var theme = (saved === 'dark' || saved === 'light') ? saved : (prefersDark ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
           })();
         ` }} />
