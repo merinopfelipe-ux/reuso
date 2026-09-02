@@ -371,6 +371,11 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
 
     animId = requestAnimationFrame(step)
     return () => cancelAnimationFrame(animId)
+    // co2/water/margin/circRate y sus target* se leen a propósito solo como
+    // valor de arranque de la animación (startCo2 = co2, etc.) — incluirlos
+    // en las dependencias reiniciaría el conteo en cada frame (los propios
+    // setCo2/setWater/... los cambian), rompiendo la animación por completo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHovered, hoveredIndex])
 
   return (
@@ -526,6 +531,10 @@ function CategoryMetricsDisplay({
 
     animId = requestAnimationFrame(step)
     return () => cancelAnimationFrame(animId)
+    // planetaVal/bolsilloVal y sus target* se leen a propósito solo como
+    // valor de arranque de la animación — mismo criterio que la otra
+    // animación de contador de esta página, ver el comentario de arriba.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cat.id, hoveredCard])
 
   return (

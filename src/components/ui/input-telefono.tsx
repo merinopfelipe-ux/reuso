@@ -49,7 +49,11 @@ export function InputTelefono({
   return (
     <div className={`w-full ${className}`} style={style}>
       <div className="flex gap-2 w-full">
-        <div style={{ width: 140 }} className="flex-shrink-0">
+        {/* 110px en mobile (cabe bandera + código de hasta 4 dígitos + la
+            flecha, ej. "🇭🇳 +504"), 140px desde sm: — con 140px fijo siempre,
+            en 375px (el ancho mínimo obligatorio) el número quedaba con solo
+            129px reales, demasiado angosto para "(300) 123 4567". */}
+        <div className="flex-shrink-0 w-[110px] sm:w-[140px]">
           <SelectorPais
             modo="indicativo"
             value={PAISES.find(p => p.dial === indicativo) || indicativo}
