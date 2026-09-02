@@ -1,15 +1,22 @@
-// 🔒 ARCHIVO PROTEGIDO - NO MODIFICAR CSS/DISEÑO SIN CLAVE SECRETA DEL USUARIO
+// 🔒 ARCHIVO PROTEGIDO - cualquier cambio pasa por PR + aprobación del dueño
+// del repo (.github/CODEOWNERS + branch protection en main), nunca un push
+// directo. Ver Regla de Oro #2 del CLAUDE.md.
 'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutGrid as SquaresFour, Building2 as Buildings, Layers as Stack, Package, Settings as Gear, Home as House, FileText, LogOut as SignOut, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, TrendingUp as TrendUp, Target, Calculator, Scale as Scales, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Calculator, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface SubItem {
   href: string
   label: string
+  // Encabezado visual dentro del flyout (ej. "CRM", "Sistema") que agrupa
+  // varios subItems consecutivos bajo un mismo título, igual al patrón de
+  // categorías de un mega-menú. Solo se pinta cuando cambia respecto al
+  // subItem anterior, así que items seguidos del mismo grupo no lo repiten.
+  grupo?: string
 }
 
 interface NavItem {
@@ -19,7 +26,11 @@ interface NavItem {
   subItems?: SubItem[]
 }
 
+// Máximo 4 ítems de primer nivel por rol (mobile-first: es lo que se ve
+// estético en 375px), agrupando el resto adentro con subtítulos por grupo —
+// decidido con el usuario 2026-09-01, opciones elegidas por rol abajo.
 const NAV_ITEMS: Record<Rol, NavItem[]> = {
+  // Opción B: Inicio · Gestión · CRM · Sistema y Recursos
   super_admin: [
     { href: '/admin', label: 'Resumen', icon: SquaresFour },
     {
@@ -34,54 +45,37 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/modulos', label: 'Módulos' },
       ]
     },
-    { 
-      label: 'Impacto', 
-      icon: TrendUp,
+    {
+      label: 'CRM',
+      icon: Calculator,
       subItems: [
-        { href: '/admin/calculos', label: 'Cálculos' },
+        { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
+        { href: '/empresa/clientes', label: 'Clientes' },
+        { href: '/admin/calculos', label: 'Cálculos', grupo: 'Auditoría de plataforma' },
         { href: '/admin/reportes', label: 'Reportes' },
       ]
     },
-    { 
-      label: 'Sistema', 
+    {
+      label: 'Sistema y Recursos',
       icon: Gear,
       subItems: [
-        { href: '/admin/usuarios', label: 'Usuarios' },
+        { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Sistema' },
         { href: '/admin/logs', label: 'Auditoría' },
         { href: '/admin/alertas', label: 'Alertas' },
         { href: '/admin/configuracion', label: 'Configuración' },
         { href: '/admin/qa', label: 'QA' },
         { href: '/admin/status', label: 'Estado' },
-      ]
-    },
-    { 
-      label: 'Recursos', 
-      icon: Stack,
-      subItems: [
-        { href: '/admin/correos', label: 'Correos' },
+        { href: '/admin/correos', label: 'Correos', grupo: 'Recursos' },
         { href: '/admin/contenido', label: 'Contenido' },
         { href: '/admin/plantillas', label: 'Plantillas' },
         { href: '/admin/tickets', label: 'Soporte' },
         { href: '/ayuda', label: 'Ayuda' },
-      ]
-    },
-    {
-      label: 'Legales',
-      icon: Scales,
-      subItems: [
         { href: '/admin/legal', label: 'Documentos' },
         { href: '/admin/firmas', label: 'Firmas' },
       ]
     },
-    {
-      label: 'Cotizador',
-      icon: Calculator,
-      subItems: [
-        { href: '/empresa/cotizador', label: 'Cotizaciones' },
-        { href: '/empresa/clientes', label: 'Clientes' },
-      ]
-    },
   ],
+  // Opción C: Empresa · Medir · DPP · CRM
   empresa_admin: [
     {
       label: 'Empresa',
@@ -89,53 +83,82 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       subItems: [
         { href: '/empresa', label: 'Perfil' },
         { href: '/empresa/equipo', label: 'Equipo' },
+        { href: '/settings', label: 'Ajustes', grupo: 'Cuenta' },
+        { href: '/empresa/soporte', label: 'Soporte' },
       ]
     },
     {
-      label: 'Operaciones',
+      label: 'Medir',
       icon: Target,
       subItems: [
         { href: '/empresa/calculos', label: 'Cálculos' },
         { href: '/empresa/metas', label: 'Metas' },
+        { href: '/empresa/informes', label: 'Informes' },
+        { href: '/empresa/reportes', label: 'Reportes' },
       ]
     },
-    { href: '/empresa/informes', label: 'Informes', icon: FileText },
-    { href: '/empresa/dpp', label: 'Pasaportes DPP', icon: IdentificationCard },
-    { href: '/empresa/reportes', label: 'Reportes', icon: TrendUp },
+    { href: '/empresa/dpp', label: 'DPP', icon: IdentificationCard },
     {
-      label: 'Cotizador',
+      label: 'CRM',
       icon: Calculator,
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones' },
         { href: '/empresa/clientes', label: 'Clientes' },
       ]
     },
-    { href: '/empresa/soporte', label: 'Soporte', icon: Lifebuoy },
-    { href: '/settings', label: 'Ajustes', icon: Gear },
   ],
+  // Opción B: Calcular (con Inicio adentro) · CRM · Ajustes
   empleado: [
-    { href: '/dashboard', label: 'Inicio', icon: House },
-    { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
-    { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
     {
-      label: 'Cotizador',
+      label: 'Calcular',
+      icon: Package,
+      subItems: [
+        { href: '/dashboard', label: 'Inicio' },
+        { href: '/dashboard/objetos', label: 'Calcular' },
+        { href: '/dashboard/historial', label: 'Historial' },
+      ]
+    },
+    {
+      label: 'CRM',
       icon: Calculator,
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones' },
         { href: '/empresa/clientes', label: 'Clientes' },
       ]
     },
-    { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy },
-    { href: '/settings', label: 'Ajustes', icon: Gear },
+    {
+      label: 'Ajustes',
+      icon: Gear,
+      subItems: [
+        { href: '/settings', label: 'Ajustes' },
+        { href: '/dashboard/soporte', label: 'Soporte' },
+      ]
+    },
   ],
+  // Opción B: Inicio · Calcular · CRM (upsell real, no link muerto) · Ajustes
   usuario_libre: [
     { href: '/dashboard', label: 'Inicio', icon: House },
-    { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
-    { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
-    { href: '/empresa/nueva', label: 'Planes', icon: TrendUp },
-    { href: '#', label: 'Cotizador', icon: Calculator },
-    { href: '/dashboard/soporte', label: 'Soporte', icon: Lifebuoy },
-    { href: '/settings', label: 'Ajustes', icon: Gear },
+    {
+      label: 'Calcular',
+      icon: Package,
+      subItems: [
+        { href: '/dashboard/objetos', label: 'Calcular' },
+        { href: '/dashboard/historial', label: 'Historial' },
+      ]
+    },
+    // No es un link muerto: usuario_libre no tiene el módulo, así que abre el
+    // banner de "no está en tu plan" (ModuloBloqueadoBanner) en vez de un
+    // href="#" que no llevaba a ningún lado.
+    { href: '/dashboard?modulo_bloqueado=cotizador', label: 'CRM', icon: Calculator },
+    {
+      label: 'Ajustes',
+      icon: Gear,
+      subItems: [
+        { href: '/settings', label: 'Ajustes' },
+        { href: '/dashboard/soporte', label: 'Soporte' },
+        { href: '/empresa/nueva', label: 'Planes' },
+      ]
+    },
   ],
 }
 
@@ -155,7 +178,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
   const navItems: NavItem[] = NAV_ITEMS[rol] || []
 
   async function handleLogout() {
-    await fetch('/api/auth/logout', { method: 'POST' })
+    // El navegador puede fallar esta solicitud por razones ajenas al código
+    // (extensión, cookie corrupta de una sesión anterior) — nunca debe
+    // bloquear que el usuario salga de la pantalla actual.
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
     router.push('/login')
     router.refresh()
   }
@@ -458,13 +484,12 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           <SignOut size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} className="transition-transform duration-200" />
           <span style={{ 
             fontSize: '13px', 
-            fontWeight: 900,
-            letterSpacing: '0.1em',
+            fontWeight: 700,
             opacity: isExpanded ? 1 : 0,
             maxWidth: isExpanded ? 200 : 0,
             transition: 'opacity 0.4s ease 0.1s, max-width 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
             overflow: 'hidden',
-          }}>CERRAR SESIÓN</span>
+          }}>Cerrar sesión</span>
         </button>
       </div>
     </aside>
@@ -498,10 +523,20 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
               : '4px 0 20px rgba(0,130,124,0.06), inset 1px 0 0 rgba(255,255,255,0.6)'
           }}
         >
-          {navItems.find(i => i.label === activeSubmenu)?.subItems?.map((sub, sidx) => {
+          {navItems.find(i => i.label === activeSubmenu)?.subItems?.map((sub, sidx, arr) => {
             const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/')
+            const grupoCambio = sub.grupo && sub.grupo !== arr[sidx - 1]?.grupo
             return (
-              <Link key={sidx} href={sub.href} onClick={(e) => { e.stopPropagation(); setActiveSubmenu(null); setIsExpanded(false); }}
+              <div key={sidx}>
+                {grupoCambio && (
+                  <div style={{
+                    padding: '10px 20px 4px', fontSize: '11px', fontWeight: 700,
+                    letterSpacing: '0.04em', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
+                  }}>
+                    {sub.grupo}
+                  </div>
+                )}
+              <Link href={sub.href} onClick={(e) => { e.stopPropagation(); setActiveSubmenu(null); setIsExpanded(false); }}
                 className={`flyout-item-sustainable ${isSubActive ? 'reuso-nav-active' : ''}`}
                 style={{ 
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -515,6 +550,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                 <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : '#FFFFFF' }}>{sub.label}</span>
                 {isSubActive && <div style={{ width: 6, height: 6, background: 'var(--color-text-nav-active)', borderRadius: '50%' }} />}
               </Link>
+              </div>
             )
           })}
         </div>

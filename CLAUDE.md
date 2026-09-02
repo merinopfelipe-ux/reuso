@@ -53,7 +53,7 @@ Empresas o personas con negocio en **restauración**, **diseño interior** o **p
 
 ## REGLAS DE ORO
 1. **Prohibido modificar lo que el usuario no pida específicamente.** Sin cambios colaterales.
-2. **Zona protegida (clave 2680 para tocar visual/estructuralmente)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx`, y cualquier CSS/layout que los afecte visualmente. Sin la clave en el mensaje del usuario, no se tocan.
+2. **Zona protegida (protección real por GitHub, no una clave hablada)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx` requieren PR + aprobación del dueño del repo (`.github/CODEOWNERS`, branch protection en `main`) — nunca un push directo ni una edición en el working tree sin pasar por ese PR.
 3. **Obsidian Vault** (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`): al iniciar, lee `STATE.md` + diarios recientes. Al terminar, registra `diario/YYYY-MM-DD.md`, actualiza `STATE.md` y conceptos nuevos. **Aquí va la historia/changelog, no en este archivo.**
 
 ## STACK, COMANDOS Y ARQUITECTURA
