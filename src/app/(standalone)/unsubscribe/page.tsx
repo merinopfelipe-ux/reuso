@@ -63,6 +63,7 @@ function UnsubscribeContent() {
             width={160}
             height={45}
             priority
+            style={{ width: 160, height: 45 }}
             className="dark:brightness-0 dark:invert"
           />
         </Link>

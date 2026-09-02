@@ -275,7 +275,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             width={isMobile ? 100 : 120}
             height={28}
             className="logo-dark-invert"
-            style={{ objectFit: 'contain' }}
+            style={{ width: isMobile ? 100 : 120, height: 28, objectFit: 'contain' }}
           />
         </div>
       </div>

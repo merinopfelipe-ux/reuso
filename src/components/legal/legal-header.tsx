@@ -63,7 +63,9 @@ export function LegalHeader() {
           width={140}
           height={40}
           priority
-          style={{ 
+          style={{
+            width: 140,
+            height: 40,
             objectFit: 'contain',
             filter: mounted && isDark ? 'brightness(0) invert(1)' : 'none'
           }}

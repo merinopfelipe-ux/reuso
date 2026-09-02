@@ -332,7 +332,7 @@ export default function RegistroPage() {
           width={140}
           height={44}
           priority
-          style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+          style={{ width: 140, height: 44, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
         />
       </div>
 
