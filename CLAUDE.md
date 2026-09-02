@@ -53,7 +53,7 @@ Empresas o personas con negocio en **restauración**, **diseño interior** o **p
 
 ## REGLAS DE ORO
 1. **Prohibido modificar lo que el usuario no pida específicamente.** Sin cambios colaterales.
-2. **Zona protegida (protección real por GitHub, no una clave hablada)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx` requieren PR + aprobación del dueño del repo (`.github/CODEOWNERS`, branch protection en `main`) — nunca un push directo ni una edición en el working tree sin pasar por ese PR.
+2. **Zona protegida (hook local, no una clave hablada)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx` están protegidos por `.husky/pre-push` — bloquea cualquier push cuyo diff toque uno de esos 3 archivos, salvo que el usuario mismo escriba `DESBLOQUEAR_PROTEGIDOS=1 git push` en su propia terminal. El resto del repo NO requiere PR ni revisión ajena, se trabaja directo entre el usuario y Claude.
 3. **Obsidian Vault** (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`): al iniciar, lee `STATE.md` + diarios recientes. Al terminar, registra `diario/YYYY-MM-DD.md`, actualiza `STATE.md` y conceptos nuevos. **Aquí va la historia/changelog, no en este archivo.**
 
 ## STACK, COMANDOS Y ARQUITECTURA

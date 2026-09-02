@@ -9,6 +9,16 @@ export function AlertasProvider({ children }: { children: React.ReactNode }) {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
+    // AlertasProvider vive en el layout raíz (envuelve también las páginas
+    // públicas: landing, /legal/*). Sin sesión, /api/alertas siempre
+    // responde 401 — pedirlo igual genera un error de red en la consola en
+    // cada visita anónima, sin ningún beneficio. Se salta el fetch si no
+    // hay ninguna cookie de sesión de Supabase (sb-<project-ref>-auth-token).
+    const haySesion = /(?:^|;\s*)sb-[^=;]+-auth-token=/.test(document.cookie)
+    if (!haySesion) {
+      setCargando(false)
+      return
+    }
     const cargar = async () => {
       try {
         const res = await fetch('/api/alertas')

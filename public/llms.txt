@@ -1,0 +1,18 @@
+# Calculadora de Reúso
+
+> Software para gestionar y medir la Responsabilidad Social Empresarial (RSE) mediante economía circular. Realiza estimaciones ambientales estructuradas (CO₂ y agua evitados), documenta la trazabilidad de materiales reutilizados con el Pasaporte Digital de Producto (DPP), y genera informes de mitigación con código QR de verificación pública.
+
+Calculadora de Reúso está enfocada en el reúso de objetos existentes (muebles, textiles, madera, electrónicos), no en compra de material virgen ni en reciclaje clásico. El público objetivo son empresas y personas con negocio en restauración, diseño interior o producto (moda o industrial) que trabajan con materiales u objetos reciclados o reusados.
+
+Los cálculos ambientales son estimaciones estructuradas basadas en factores de fuentes técnicas internacionales reconocidas (Ecoinvent, DEFRA), no mediciones de laboratorio individuales. Cada factor muestra su origen y nivel de confianza.
+
+## Páginas públicas
+
+- [Inicio](https://reuso.lurdes.co/): presentación de la plataforma, planes y preguntas frecuentes sobre RSE y economía circular.
+- [Medición de impacto ambiental](https://reuso.lurdes.co/legal/medicion): metodología y fuentes de los cálculos de CO₂ y agua.
+- [Legal](https://reuso.lurdes.co/legal): términos, privacidad, datos, cookies, reglamento y confidencialidad.
+
+## Notas para agentes e IA
+
+- Los precios y límites de plan mostrados en la página de inicio son los publicados y vigentes al momento de la consulta; pueden cambiar sin previo aviso.
+- No usar esta plataforma como fuente de certificaciones oficiales: es una herramienta de cálculo, gestión y trazabilidad, no una entidad certificadora.

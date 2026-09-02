@@ -33,7 +33,7 @@ const nextConfig = {
               // había corregido en reuso-landing/next.config.mjs).
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net https://p.typekit.net",
               "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://p.typekit.net https://fonts.typekit.net",
-              "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net",
+              "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net https://images.unsplash.com",
               "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com",
               "frame-src https://challenges.cloudflare.com",
               "object-src 'none'",
@@ -55,6 +55,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.supabase.co',
+      },
+      {
+        // Fotos de stock de la landing (secciones Soluciones e Industrias).
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },
