@@ -26,8 +26,13 @@ const nextConfig = {
               process.env.NODE_ENV === 'development'
               ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com"
               : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net",
-              "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://fonts.typekit.net",
+              // p.typekit.net es de donde Typekit sirve el CSS real, no
+              // use.typekit.net (esa es solo el link inicial que lo pide) —
+              // sin esto, el navegador bloquea la hoja de estilos real y la
+              // tipografía Seravek nunca carga (bug real, mismo que ya se
+              // había corregido en reuso-landing/next.config.mjs).
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net https://p.typekit.net",
+              "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://p.typekit.net https://fonts.typekit.net",
               "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net",
               "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com",
               "frame-src https://challenges.cloudflare.com",
