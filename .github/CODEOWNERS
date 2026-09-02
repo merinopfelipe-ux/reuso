@@ -1,0 +1,8 @@
+# Zona protegida (Regla de Oro #2 del CLAUDE.md): estos 3 archivos definen la
+# identidad visual del sistema (header, sidebar, footer). Cualquier Pull
+# Request que los toque necesita la aprobación de @merinopfelipe-ux antes de
+# poder mezclarse a main - configurado en Settings -> Branches junto con
+# "Require a pull request before merging" y "Require review from Code Owners".
+/src/components/header.tsx  @merinopfelipe-ux
+/src/components/sidebar.tsx @merinopfelipe-ux
+/src/components/footer.tsx  @merinopfelipe-ux
