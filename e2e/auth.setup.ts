@@ -55,9 +55,14 @@ async function crearCuentaEfimera(rol: 'usuario_libre' | 'empleado' | 'empresa_a
 // Esto bloqueaba TODA la suite (24 pruebas "did not run" tras el timeout).
 async function crearEmpresaParaAdmin(userId: string): Promise<string> {
   const slug = `e2e-empresa-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+  // Bug real corregido 2026-09-02: con plan='free' (Explora, 0 informes
+  // permitidos por config_planes), toda prueba que genera un informe real
+  // (emp-03) recibia 429 "no incluye generación de informes" en vez del
+  // flujo feliz que describe el checklist — usar 'lab' para que la empresa
+  // de prueba sí tenga cuota real de informes/cálculos.
   const { data: empresa, error } = await supabaseAdmin
     .from('empresas')
-    .insert({ nombre: 'E2E Empresa de Prueba', slug, plan: 'free', activa: true })
+    .insert({ nombre: 'E2E Empresa de Prueba', slug, plan: 'lab', activa: true })
     .select('id')
     .single()
   if (error || !empresa) throw new Error(`No se pudo crear la empresa efímera: ${error?.message}`)
@@ -67,6 +72,21 @@ async function crearEmpresaParaAdmin(userId: string): Promise<string> {
     .update({ empresa_id: empresa.id })
     .eq('user_id', userId)
   if (errorPerfil) throw new Error(`No se pudo vincular empresa_id al perfil: ${errorPerfil.message}`)
+
+  // Bug real corregido 2026-09-02: tener un plan pago no basta — el sistema
+  // real tiene una capa aparte de módulos (modulos_empresas, 3 capas según
+  // CLAUDE.md: software/línea de negocio/insumos). Sin esto, CUALQUIER
+  // pantalla de cálculo/cotizador/DPP muestra el modal "no está en tu
+  // plan" aunque el plan sí lo incluya — bloqueaba emp-02/03/04 y hubiera
+  // bloqueado también las pruebas de Cotizador y DPP. modulos_usuarios no
+  // hace falta: sin una fila ahí, el usuario hereda el acceso de la
+  // empresa (ver middleware.ts).
+  const { data: modulos } = await supabaseAdmin.from('modulos').select('id')
+  if (modulos && modulos.length > 0) {
+    await supabaseAdmin.from('modulos_empresas').insert(
+      modulos.map(m => ({ modulo_id: m.id, empresa_id: empresa.id, activo: true }))
+    )
+  }
 
   return empresa.id
 }

@@ -1,4 +1,16 @@
 import { test, expect } from '@playwright/test'
+import { createClient } from '@supabase/supabase-js'
+import fs from 'fs'
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
+
+function empresaIdEfimera(): string {
+  const datos = JSON.parse(fs.readFileSync('playwright/.auth/efimeros.json', 'utf-8'))
+  return datos.empresa_admin.empresaId
+}
 
 test.describe('empresa_admin', () => {
   test.use({ storageState: 'playwright/.auth/empresa-admin.json' })
@@ -12,23 +24,30 @@ test.describe('empresa_admin', () => {
     await expect(page.locator('text=/CO₂|impacto|equipo/i').first()).toBeVisible({ timeout: 10_000 })
   })
 
-  test('emp-02 - cálculo persiste en /empresa/calculos tras recargar', async ({ page }) => {
-    // "Muebles" ya viene activo por defecto — hay que elegir una
-    // subcategoría real (ej. "Comedor") para que aparezca el listado de
-    // ítems con peso (bug real corregido 2026-09-02).
-    const boton = page.locator('button').filter({ hasText: 'Comedor' }).first()
-    await expect(boton).toBeVisible({ timeout: 15_000 })
-    await boton.click()
-    const input = page.locator('input[type="number"]').first()
-    await expect(input).toBeVisible({ timeout: 15_000 })
-    await input.click({ clickCount: 3 })
-    await page.keyboard.type('5')
-    await page.locator('button:has-text("Guardar cálculo")').click()
-    await expect(page.getByText('¡Cálculo guardado!')).toBeVisible({ timeout: 15_000 })
-
+  // QA real (emp-02): /empresa (y /empresa/calculos) NO tienen formulario
+  // para registrar un cálculo — solo HistorialCalculos (vista). Tampoco
+  // existe un "filtro de empleados", los filtros reales son fecha y
+  // categoría. Bug real corregido 2026-09-02, la prueba vieja asumía un
+  // flujo de "calcular" que no existe en este rol/ruta.
+  test('emp-02 - filtro de fechas y descarga CSV del historial de la empresa', async ({ page }) => {
     await page.goto('/empresa/calculos')
     await page.waitForLoadState('load')
-    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
+
+    // Los campos de fecha no tienen <label for> asociado (solo texto suelto)
+    // — se ubican por el hermano inmediato del label, mismo patrón que el
+    // Selector de alertas.
+    const hoy = new Date().toISOString().slice(0, 10)
+    const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10)
+    await page.locator('label', { hasText: 'Desde' }).locator('xpath=following-sibling::div[1]//input').fill(inicioMes)
+    await page.locator('label', { hasText: 'Hasta' }).locator('xpath=following-sibling::div[1]//input').fill(hoy)
+    await page.getByRole('button', { name: 'Filtrar' }).click()
+    await page.waitForLoadState('load')
+
+    await page.getByRole('button', { name: 'Descargar' }).click()
+    const responsePromise = page.waitForResponse(/\/api\/calculos\/exportar/, { timeout: 15_000 })
+    await page.getByText('CSV (.csv)').click()
+    const response = await responsePromise
+    expect(response.status()).toBe(200)
   })
 
   // El módulo "certificados" ya no existe (renombrado por completo a
@@ -66,7 +85,39 @@ test.describe('empresa_admin', () => {
   // sin texto visible, solo el ícono de descarga (bug real corregido
   // 2026-09-02: la prueba vieja repetía la misma ruta/flujo que emp-03).
   test('emp-04 - descarga de reporte en PDF responde 200', async ({ page }) => {
-    await page.goto('/empresa/reportes')
+    test.setTimeout(120_000)
+    // El botón de descarga queda deshabilitado si csvData.length === 0 — una
+    // empresa efímera recién creada no tiene ningún cálculo real todavía.
+    // /api/reportes/mitigacion (la pestaña por defecto) lee
+    // factor_snapshot_json.items[x].materiales[], no basta un detalle_json
+    // cualquiera (bug real corregido 2026-09-02, confirmado leyendo el
+    // shape real que exige route.ts).
+    const { data: usuario } = await supabaseAdmin.auth.admin.listUsers()
+    const cuentaAdmin = usuario.users.find(u => u.email?.startsWith('e2e_empresa_admin_'))
+    await supabaseAdmin.from('calculos').insert({
+      user_id: cuentaAdmin!.id,
+      empresa_id: empresaIdEfimera(),
+      total_co2: 42.5,
+      total_agua: 120,
+      detalle_json: { origen: 'e2e' },
+      factor_snapshot_json: {
+        items: {
+          e2e_item: {
+            materiales: [
+              { categoria_material: 'madera', peso_kg: 12, factor_co2_kg: 3.5, factor_agua_l_kg: 8, nivel_confianza: 'media' },
+            ],
+          },
+        },
+      },
+    })
+
+    // /empresa/reportes es una página pesada (4 pestañas de reportes) —
+    // en next dev, la primera compilación en caliente de esta ruta puede
+    // tardar más que el timeout global cuando corre después de muchas
+    // otras pruebas en la misma corrida (flakiness ambiental confirmada:
+    // esta misma prueba pasa siempre sola, solo falla intermitente dentro
+    // del archivo completo). Timeout de navegación explícito más generoso.
+    await page.goto('/empresa/reportes', { timeout: 90_000 })
     await page.waitForLoadState('load')
     // BotonDescargarCliente no tiene texto ni aria-label visible (solo un
     // ícono) — se ubica por su wrapper con estilo inline distintivo

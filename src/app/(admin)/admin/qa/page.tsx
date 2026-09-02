@@ -471,15 +471,15 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   {
     id: 'emp-02', categoria: 'Panel Empresa', ruta: '/empresa/calculos', critica: false,
     titulo: 'Historial de cálculos de la empresa',
-    descripcion: 'Verifica los filtros, paginación y exportación de cálculos históricos generados por la organización.',
+    descripcion: 'No existe un filtro por empleado individual (corregido 2026-09-02) — los filtros reales son rango de fechas y categoría (el de "Empresa" solo aparece para super_admin, con varias empresas para elegir).',
     pasos: [
       'Ve a /empresa/calculos.',
-      'Usa el filtro de empleados y selecciona a un empleado específico para reducir el historial.',
-      'Establece un rango de fechas para el mes en curso.',
-      'Haz clic en "Exportar a CSV".',
-      'Abre el archivo exportado y valida que solo contenga los cálculos que cumplen con el filtro aplicado de empleado y fechas.',
+      'Establece un rango de fechas (Desde/Hasta) para el mes en curso y, si hay categorías disponibles, elige una.',
+      'Haz clic en "Filtrar".',
+      'Haz clic en "Descargar" y elige el formato CSV.',
+      'Abre el archivo exportado y valida que solo contenga los cálculos que cumplen con el filtro de fechas/categoría aplicado.',
     ],
-    esperado: 'Los filtros de búsqueda y paginación funcionan de manera integrada y rápida. El archivo CSV contiene exactamente la misma información que se ve en la pantalla filtrada.',
+    esperado: 'Los filtros de fecha y categoría funcionan de manera integrada y rápida. El archivo descargado contiene exactamente la misma información que se ve en la pantalla filtrada.',
   },
   {
     id: 'emp-03', categoria: 'Panel Empresa', ruta: '/empresa/informes', critica: true,
