@@ -494,67 +494,106 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
       </div>
     </aside>
 
-      {/* FLYOUT - FUERA del aside para que backdrop-filter funcione V13.29 */}
-      {activeSubmenu && navItems.find(i => i.label === activeSubmenu)?.subItems && (
-        <div 
+      {/* FLYOUT - FUERA del aside para que backdrop-filter funcione V13.29.
+          Modo grilla (2-3 columnas, "todo desplegado"): cuando el ítem activo
+          tiene 2 o más grupos internos distintos, cada grupo se pinta como su
+          propia columna lado a lado (referencia: mega-menú tipo banca, 2026-
+          09-01) en vez de la lista angosta de una sola columna. Con 0 o 1
+          grupo, se queda exactamente en la lista angosta de siempre — mismo
+          Liquid Glass, mismo blur, mismos colores en los dos modos. */}
+      {activeSubmenu && navItems.find(i => i.label === activeSubmenu)?.subItems && (() => {
+        const subItems = navItems.find(i => i.label === activeSubmenu)!.subItems!
+        // "Rellena hacia adelante": un subItem sin `grupo` propio hereda el
+        // último grupo con nombre visto antes (mismo criterio ya usado para
+        // decidir cuándo pintar el encabezado de grupo).
+        let ultimoGrupo: string | undefined
+        const columnas: { titulo?: string; items: SubItem[] }[] = []
+        for (const sub of subItems) {
+          const grupoEfectivo = sub.grupo ?? ultimoGrupo
+          if (sub.grupo) ultimoGrupo = sub.grupo
+          let columna = columnas.find(c => c.titulo === grupoEfectivo)
+          if (!columna) { columna = { titulo: grupoEfectivo, items: [] }; columnas.push(columna) }
+          columna.items.push(sub)
+        }
+        const modoGrilla = columnas.length >= 2
+        const anchoColumna = 190
+        const ancho = modoGrilla ? columnas.length * anchoColumna : 180
+
+        const renderItem = (sub: SubItem, key: string) => {
+          const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/')
+          return (
+            <Link key={key} href={sub.href} onClick={(e) => { e.stopPropagation(); setActiveSubmenu(null); setIsExpanded(false); }}
+              className={`flyout-item-sustainable ${isSubActive ? 'reuso-nav-active' : ''}`}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 20px', borderRadius: '12px', fontSize: '14px', color: '#FFFFFF', textDecoration: 'none', transition: 'background 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.2s ease',
+                background: isSubActive ? 'var(--color-active-nav)' : 'transparent',
+                boxShadow: isSubActive ? '0 4px 15px rgba(0, 0, 0, 0.1)' : 'none',
+                fontWeight: isSubActive ? 800 : 600,
+                margin: '0 8px'
+              }}
+            >
+              <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : '#FFFFFF' }}>{sub.label}</span>
+              {isSubActive && <div style={{ width: 6, height: 6, background: 'var(--color-text-nav-active)', borderRadius: '50%' }} />}
+            </Link>
+          )
+        }
+
+        const tituloEstilo: React.CSSProperties = {
+          padding: '10px 20px 4px', fontSize: '11px', fontWeight: 700,
+          letterSpacing: '0.04em', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
+        }
+
+        return (
+        <div
           className="master-flyout-ref"
           onMouseEnter={handleMouseEnterFlyout}
           onMouseLeave={handleMouseLeaveFlyout}
-          style={{ 
+          style={{
             position: 'fixed',
             left: isExpanded ? 210 : 60, // Solapa 10px el sidebar V13.32
             top: 0,
-            width: 180, 
+            width: ancho,
             height: '100%',
             zIndex: 900,
-            display: 'flex', flexDirection: 'column', gap: 4,
+            display: modoGrilla ? 'grid' : 'flex',
+            gridTemplateColumns: modoGrilla ? `repeat(${columnas.length}, 1fr)` : undefined,
+            flexDirection: modoGrilla ? undefined : 'column',
+            gap: 4,
             padding: '120px 12px 40px 12px',
             animation: 'slideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards',
             pointerEvents: 'auto',
-            // LIQUID GLASS V13.30 - blur sutil
+            // LIQUID GLASS V13.30 - blur sutil, igual en los 2 modos
             backdropFilter: 'blur(8px) saturate(180%)',
             WebkitBackdropFilter: 'blur(8px) saturate(180%)',
             background: isDark ? 'rgba(71, 71, 71, 0.45)' : 'rgba(255, 255, 255, 0.45)',
-            borderLeft: isDark 
-              ? '1px solid rgba(255, 255, 255, 0.15)' 
+            borderLeft: isDark
+              ? '1px solid rgba(255, 255, 255, 0.15)'
               : '1px solid rgba(0, 130, 124, 0.1)',
             boxShadow: isDark
               ? '4px 0 20px rgba(0,0,0,0.3), inset 1px 0 0 rgba(255,255,255,0.08)'
               : '4px 0 20px rgba(0,130,124,0.06), inset 1px 0 0 rgba(255,255,255,0.6)'
           }}
         >
-          {navItems.find(i => i.label === activeSubmenu)?.subItems?.map((sub, sidx, arr) => {
-            const isSubActive = pathname === sub.href || pathname.startsWith(sub.href + '/')
-            const grupoCambio = sub.grupo && sub.grupo !== arr[sidx - 1]?.grupo
-            return (
-              <div key={sidx}>
-                {grupoCambio && (
-                  <div style={{
-                    padding: '10px 20px 4px', fontSize: '11px', fontWeight: 700,
-                    letterSpacing: '0.04em', color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.65)',
-                  }}>
-                    {sub.grupo}
+          {modoGrilla
+            ? columnas.map((col, cidx) => (
+                <div key={cidx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {col.titulo && <div style={tituloEstilo}>{col.titulo}</div>}
+                  {col.items.map((sub, sidx) => renderItem(sub, `${cidx}-${sidx}`))}
+                </div>
+              ))
+            : subItems.map((sub, sidx, arr) => {
+                const grupoCambio = sub.grupo && sub.grupo !== arr[sidx - 1]?.grupo
+                return (
+                  <div key={sidx}>
+                    {grupoCambio && <div style={tituloEstilo}>{sub.grupo}</div>}
+                    {renderItem(sub, `item-${sidx}`)}
                   </div>
-                )}
-              <Link href={sub.href} onClick={(e) => { e.stopPropagation(); setActiveSubmenu(null); setIsExpanded(false); }}
-                className={`flyout-item-sustainable ${isSubActive ? 'reuso-nav-active' : ''}`}
-                style={{ 
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '12px 20px', borderRadius: '12px', fontSize: '14px', color: '#FFFFFF', textDecoration: 'none', transition: 'background 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, transform 0.2s ease', 
-                  background: isSubActive ? 'var(--color-active-nav)' : 'transparent', 
-                  boxShadow: isSubActive ? '0 4px 15px rgba(0, 0, 0, 0.1)' : 'none',
-                  fontWeight: isSubActive ? 800 : 600,
-                  margin: '0 8px'
-                }}
-              >
-                <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : '#FFFFFF' }}>{sub.label}</span>
-                {isSubActive && <div style={{ width: 6, height: 6, background: 'var(--color-text-nav-active)', borderRadius: '50%' }} />}
-              </Link>
-              </div>
-            )
-          })}
+                )
+              })}
         </div>
-      )}
+        )
+      })()}
       {/* Overlay para cerrar submenú en móvil/tablet */}
       {isMobile && activeSubmenu && (
         <div 
