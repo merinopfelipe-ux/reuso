@@ -104,19 +104,30 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
   // Ayuda
   if (categoria === 'Ayuda' || id.startsWith('ayuda-')) return ['empleado']
   
-  // APIs & Validaciones
-  if (categoria === 'APIs & Validaciones' || id.startsWith('api-') || id.startsWith('auth-') || id.startsWith('emp-') || id.startsWith('dpl-')) {
-    if (id === 'api-01' || id === 'api-07' || id === 'auth-12') return ['empleado']
-    if (id === 'api-02' || id === 'api-04' || id === 'api-06' || id === 'emp-13') return ['empresa_admin']
+  // APIs & Validaciones. Los IDs con prefijo emp-/auth- ya se resuelven en
+  // bloques anteriores de esta misma función (Panel Empresa arriba,
+  // Autenticación justo abajo) — esta condición solo necesita cubrir
+  // api-/dpl- de verdad. Antes incluía también emp-/auth- por error: como
+  // esos bloques anteriores devuelven primero, esa parte nunca se
+  // ejecutaba, y dejaba a 'auth-12' cayendo en el valor por defecto
+  // equivocado del bloque de Autenticación (bug real corregido 2026-09-02).
+  if (categoria === 'APIs & Validaciones' || id.startsWith('api-') || id.startsWith('dpl-')) {
+    if (id === 'api-01' || id === 'api-07') return ['empleado']
+    if (id === 'api-02' || id === 'api-04' || id === 'api-06') return ['empresa_admin']
     if (id === 'api-03') return ['super_admin']
-    if (id === 'api-05' || id === 'dpl-09' || id === 'auth-11') return ['sin_sesion']
+    if (id === 'api-05' || id === 'dpl-09') return ['sin_sesion']
   }
-  
+
   // Autenticación
   if (categoria === 'Autenticación' || id.startsWith('auth-')) {
     if (id === 'auth-01') return ['empresa_admin']
     if (id === 'auth-07') return ['sin_sesion', 'empleado']
     if (id === 'auth-10') return ['usuario_libre']
+    // auth-12: concurrencia de sesión multi-pestaña, se prueba con una
+    // sesión de empleado activa (bug real corregido 2026-09-02 — esta
+    // rama nunca se alcanzaba porque el bloque de APIs de arriba
+    // interceptaba 'auth-*' primero y devolvía sin_sesion por defecto).
+    if (id === 'auth-12') return ['empleado']
     return ['sin_sesion']
   }
   
@@ -1655,6 +1666,47 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'La página muestra una entrada clara para pegar o escribir el código RCO2, sin exponer ningún dato de informes ajenos.',
   },
   {
+    id: 'pub-17', categoria: 'Páginas Públicas', ruta: '/legal/terminos', critica: false,
+    titulo: 'Términos y condiciones - documento público',
+    descripcion: 'Verifica la carga del documento de términos y condiciones (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    pasos: [
+      'Navega a /legal/terminos en incógnito.',
+      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+    ],
+    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+  },
+  {
+    id: 'pub-18', categoria: 'Páginas Públicas', ruta: '/legal/privacidad', critica: false,
+    titulo: 'Política de privacidad - documento público',
+    descripcion: 'Verifica la carga del documento de privacidad (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    pasos: [
+      'Navega a /legal/privacidad en incógnito.',
+      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+    ],
+    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+  },
+  {
+    id: 'pub-19', categoria: 'Páginas Públicas', ruta: '/legal/datos', critica: false,
+    titulo: 'Tratamiento de datos - documento público',
+    descripcion: 'Verifica la carga del documento de tratamiento de datos (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    pasos: [
+      'Navega a /legal/datos en incógnito.',
+      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+    ],
+    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+  },
+  {
+    id: 'pub-20', categoria: 'Páginas Públicas', ruta: '/legal/cookies', critica: false,
+    titulo: 'Política de cookies - documento público',
+    descripcion: 'Verifica la carga del documento de política de cookies (uno de los 6 editables desde /admin/legal, ver adm-22) — distinto de /legal/cookies/preferencias (pub-14), que es el panel para cambiar el consentimiento, no el texto de la política.',
+    pasos: [
+      'Navega a /legal/cookies en incógnito.',
+      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+      'Confirma que el enlace hacia /legal/cookies/preferencias (el panel de consentimiento) funciona desde aquí.',
+    ],
+    esperado: 'La página carga sin error, con navegación consistente, y el enlace a preferencias de cookies funciona.',
+  },
+  {
     id: 'adm-17', categoria: 'Panel Admin', ruta: '/admin/catalogo-pendientes', critica: false,
     titulo: 'Catálogo pendientes - ítems detectados sin match',
     descripcion: 'Revisa los ítems que la IA del Cotizador no pudo encuadrar en ningún nombre del catálogo (sin_match), a la espera de que el super_admin decida si se agregan.',
@@ -1731,6 +1783,31 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Márcala como resuelta y confirma que desaparece de la lista de activas.',
     ],
     esperado: 'Crear y resolver una incidencia funciona. El fondo de "Incidencias Activas" usa el token correcto, no un gris inventado.',
+  },
+  {
+    id: 'adm-24', categoria: 'Panel Admin', ruta: '/admin/planes', critica: true,
+    titulo: 'Planes editables - flujo borrador → publicar',
+    descripcion: 'config_planes es la fuente real de precios y límites (reemplaza los valores fijos que antes vivían en pricing.ts/plan-limits.ts). Nada cambia para nadie hasta hacer clic en Publicar.',
+    pasos: [
+      'Entra a /admin/planes como super_admin y cambia el precio COP de un plan (ej. Circular Lab). Haz clic en "Guardar borrador".',
+      'Abre la landing pública en otra pestaña/incógnito y confirma que el precio publicado NO cambió todavía.',
+      'Vuelve a /admin/planes y haz clic en "Publicar" (debe estar deshabilitado si no hay borrador sin publicar).',
+      'Recarga la landing pública y confirma que el precio nuevo sí aparece.',
+      'Revisa /admin/logs y confirma que quedó un registro de auditoría "plan_publicado" con los valores antes/después.',
+    ],
+    esperado: 'El borrador nunca se ve fuera de /admin/planes. Publicar aplica el cambio de inmediato en la landing y en los límites reales aplicados (plan-limits.ts), y queda registrado en auditoría.',
+  },
+  {
+    id: 'adm-25', categoria: 'Panel Admin', ruta: '/admin/planes', critica: false,
+    titulo: 'Planes editables - negociación por empresa',
+    descripcion: 'Una empresa con negociación propia (empresas_negociaciones) reemplaza POR COMPLETO los 6 valores del plan global para ella, nunca se mezcla campo por campo.',
+    pasos: [
+      'En /admin/planes, busca una empresa real con el selector de la sección de negociaciones.',
+      'Crea una negociación con precio y límites distintos a los del plan publicado de esa empresa.',
+      'Confirma en /admin/empresas/[id] o en el comportamiento real de límites de esa empresa que los valores de la negociación son los que aplican, no los del plan global.',
+      'Elimina la negociación y confirma que la empresa vuelve a los valores del plan publicado.',
+    ],
+    esperado: 'Mientras existe la negociación, gana siempre sobre el plan global. Al eliminarla, la empresa vuelve limpio a los valores publicados del plan.',
   },
   {
     id: 'emp-14', categoria: 'Panel Empresa', ruta: '/empresa/clientes', critica: true,
