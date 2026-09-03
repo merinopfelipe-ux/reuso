@@ -105,11 +105,20 @@ function registrarEfimero(rol: string, cuenta: CuentaEfimera) {
   fs.writeFileSync(EFIMEROS_PATH, JSON.stringify(actuales, null, 2))
 }
 
-// Reinicia la lista de efímeros al arrancar la suite, para no arrastrar ids
-// de una corrida anterior que ya se hayan borrado.
-if (fs.existsSync(EFIMEROS_PATH)) fs.unlinkSync(EFIMEROS_PATH)
-
 setup('auth: usuario_libre', async ({ page }) => {
+  // Reinicia la lista de efímeros al arrancar la suite, para no arrastrar ids
+  // de una corrida anterior que ya se hayan borrado.
+  //
+  // BUG REAL CORREGIDO 2026-09-02: este borrado estaba en el cuerpo del
+  // módulo, o sea que corría cada vez que Playwright IMPORTABA el archivo.
+  // Cuando un paso posterior fallaba y se reintentaba (por ejemplo
+  // super_admin), el archivo se volvía a importar y borraba las cuentas ya
+  // registradas de usuario_libre, empleado y empresa_admin: todas las
+  // pruebas que leen efimeros.json morían después con ENOENT sin ninguna
+  // relación aparente con el fallo original. Aquí adentro solo corre una vez
+  // y en el primer paso, que se registra a sí mismo justo después.
+  if (fs.existsSync(EFIMEROS_PATH)) fs.unlinkSync(EFIMEROS_PATH)
+
   const cuenta = await crearCuentaEfimera('usuario_libre', 'E2E Usuario Libre')
   registrarEfimero('usuario_libre', cuenta)
 
