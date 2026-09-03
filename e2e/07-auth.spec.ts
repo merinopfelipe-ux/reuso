@@ -2,6 +2,12 @@ import { test, expect } from '@playwright/test'
 import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 // usuario_libre y empleado son cuentas efímeras que auth.setup.ts crea con
 // contraseña aleatoria en cada corrida (ver e2e/auth.setup.ts) — sus
@@ -164,7 +170,7 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await ctx.close()
   })
 
-  test('auth-09 - Rate limiter protección', async ({ page }) => {
+  test('auth-09 - Rate limiter protección', async () => {
     // Puesto que SKIP_RATE_LIMIT=true en E2E, probar 429 requeriría un test separado o saltarlo.
     // Solo simulamos intentos fallidos (que deberían funcionar porque no hay límite en E2E)
     // Para que este test de QA cumpla 100%, validamos que si se llama la api podemos captar el rate limit (fuera de E2E).
@@ -218,14 +224,29 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
 
   test('auth-12 - Concurrencia de sesión multi-pestaña', async ({ browser }) => {
     test.setTimeout(90_000)
+    // Bug real corregido 2026-09-03: esta prueba cierra sesión al final
+    // (línea de "Cerrar sesión" más abajo). Antes usaba la cuenta compartida
+    // 'empleado', cuya sesión (playwright/.auth/empleado.json) reutilizan
+    // 20+ pruebas más adelante en la misma corrida — cerrar sesión aquí
+    // invalidaba esa sesión compartida para TODAS las pruebas siguientes,
+    // que entonces caían al login sin ninguna relación aparente con esta
+    // prueba (causa real de las ~24-30 rojas en cada corrida completa de
+    // hoy, confirmado leyendo el snapshot de una falla). Se usa una cuenta
+    // desechable propia, creada y borrada solo para esta prueba.
+    const email = `e2e_auth12_${Date.now()}@reuso.lurdes.co`
+    const password = 'Auth12Prueba!Aa1'
+    const { data: cuenta, error } = await supabaseAdmin.auth.admin.createUser({
+      email, password, email_confirm: true,
+    })
+    if (error || !cuenta.user) throw new Error(`No se pudo crear la cuenta desechable de auth-12: ${error?.message}`)
+
     const ctx = await browser.newContext()
     const page1 = await ctx.newPage()
 
     await page1.goto('/login')
     await page1.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
-    const _cred2 = credencialesEfimeras('empleado')
-    await page1.locator('#email').fill(_cred2.email)
-    await page1.locator('#password').fill(_cred2.password)
+    await page1.locator('#email').fill(email)
+    await page1.locator('#password').fill(password)
     await page1.getByRole('button', { name: /aceptar términos legales/i }).click()
     await page1.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page1.waitForURL(/.*\/dashboard.*/, { timeout: 60_000 })
@@ -239,8 +260,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page1.waitForURL(/.*\/login.*/, { timeout: 15_000 })
     await page2.reload()
     await expect(page2).toHaveURL(/.*\/login.*/)
-    
+
     await ctx.close()
+    await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)
   })
 
 })
