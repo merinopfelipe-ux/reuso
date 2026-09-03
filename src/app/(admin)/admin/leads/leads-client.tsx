@@ -7,6 +7,8 @@ import { formatTelefonoVista } from '@/lib/telefono'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { Selector } from '@/components/ui/selector'
+import { Button } from '@/components/ui/button'
+import { Download } from '@/components/ui/icons'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -82,6 +84,17 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
 
   return (
     <div style={{ paddingBottom: 40 }}>
+
+      {/* Paso D (adm-09 en /admin/qa) — el botón que el QA manual daba por
+          hecho y no existía. Descarga todos los leads, no solo la página
+          visible, mismo criterio que /api/admin/usuarios/exportar. */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+        <a href="/api/admin/leads/exportar" download>
+          <Button variant="secondary" size="sm" icon={<Download size={15} />}>
+            Exportar a CSV
+          </Button>
+        </a>
+      </div>
 
       {/* KPIs rápidos */}
       <div className="leads-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>

@@ -339,7 +339,15 @@ function NuevaCotizacionContent() {
       setError(`Ese ítem ya tiene el máximo de ${MAX_FOTOS_POR_TANDA} fotos.`)
       return
     }
-    const aProcesar = files.slice(0, disponibles)
+    // Tope de tamaño antes de comprimir (Paso D, adm/qa cot-04) — mismo
+    // criterio que el formulario de DPP, que valida 5 MB antes de subir.
+    // Aquí el tope es 10 MB porque las fotos de mueble suelen incluir varios
+    // ángulos y detalles, y el navegador igual comprime a WebP después.
+    const dentroDeLimite = files.filter(f => f.size <= 10 * 1024 * 1024)
+    if (dentroDeLimite.length < files.length) {
+      setError('La imagen no puede superar 10 MB.')
+    }
+    const aProcesar = dentroDeLimite.slice(0, disponibles)
     const resultados = await Promise.allSettled(aProcesar.map(f => comprimirImagenBase64(f)))
     const comprimidas: FotoCola[] = []
     let fallidas = 0
