@@ -1,8 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { encryptSensitive } from '@/lib/encryption.server'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+/**
+ * Comprueba la contraseña actual SIN tocar la sesión de quien está pidiendo
+ * el cambio.
+ *
+ * BUG REAL CORREGIDO 2026-09-02: antes esta verificación se hacía con
+ * `supabase.auth.signInWithPassword()` sobre el cliente atado a las cookies
+ * del usuario. Ese cliente escribe la sesión al iniciar sesión bien, y la
+ * deja inservible cuando el inicio falla — o sea que **equivocarse al
+ * escribir la contraseña actual mientras cambiabas tu teléfono o tu correo
+ * te sacaba de la sesión, sin ningún aviso**. Se detectó con las pruebas
+ * automáticas: tras varios intentos con contraseña incorrecta, todo lo que
+ * venía después con esa misma sesión respondía 401.
+ *
+ * Un cliente aparte, sin persistencia, verifica lo mismo y no tiene ningún
+ * efecto sobre la sesión viva.
+ */
+async function contrasenaEsCorrecta(email: string, password: string): Promise<boolean> {
+  const verificador = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+  )
+  const { error } = await verificador.auth.signInWithPassword({ email, password })
+  // La sesión que acabe de crearse aquí se descarta de inmediato: este
+  // cliente vive solo dentro de esta función.
+  if (!error) await verificador.auth.signOut().catch(() => {})
+  return !error
+}
 
 function maskEmail(e: string) {
   const [local, domain] = e.split('@')
@@ -90,8 +120,8 @@ export async function POST(request: NextRequest) {
   const { field } = parsed.data
 
   if (field === 'email') {
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: user.email ?? '', password: parsed.data.password })
-    if (authError) {
+    const claveOk = await contrasenaEsCorrecta(user.email ?? '', parsed.data.password)
+    if (!claveOk) {
       await recordSensitiveAttempt(user.id, ip, 'email_change', false)
       return NextResponse.json({ error: 'Contraseña incorrecta.' }, { status: 401 })
     }
@@ -105,8 +135,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (field === 'phone') {
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: user.email ?? '', password: parsed.data.password })
-    if (authError) {
+    const claveOk = await contrasenaEsCorrecta(user.email ?? '', parsed.data.password)
+    if (!claveOk) {
       await recordSensitiveAttempt(user.id, ip, 'phone_change', false)
       return NextResponse.json({ error: 'Contraseña incorrecta.' }, { status: 401 })
     }
@@ -121,8 +151,8 @@ export async function POST(request: NextRequest) {
   }
 
   if (field === 'password_step1') {
-    const { error: authError } = await supabase.auth.signInWithPassword({ email: user.email ?? '', password: parsed.data.password })
-    if (authError) {
+    const claveOk = await contrasenaEsCorrecta(user.email ?? '', parsed.data.password)
+    if (!claveOk) {
       await recordSensitiveAttempt(user.id, ip, 'password_change_step1', false)
       return NextResponse.json({ error: 'Contraseña incorrecta.' }, { status: 401 })
     }
