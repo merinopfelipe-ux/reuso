@@ -59,30 +59,29 @@ test.describe('DPP / Pasaporte', () => {
     await page.goto('/empresa/dpp/nuevo', { waitUntil: 'domcontentloaded', timeout: 60_000 })
     const campoNombre = page.getByPlaceholder('Silla de madera, Mesa de oficina...')
     await expect(campoNombre).toBeVisible({ timeout: 30_000 })
-    // Si se escribe antes de que React termine de hidratar el formulario, el
-    // valor se pierde en silencio (el input vuelve a quedar vacío) y el envío
-    // falla con "Completa el nombre del activo" sin que se vea por qué. Se
-    // reintenta hasta que el valor realmente queda puesto.
+
+    // COMPORTAMIENTO REAL OBSERVADO (2026-09-02): esta pantalla se vuelve a
+    // montar poco después de cargar y BORRA lo que ya estaba escrito. Se
+    // comprobó en vivo: tras llenar y verificar ambos campos, al hacer clic
+    // los dos inputs estaban otra vez vacíos y el navegador bloqueaba el
+    // envío por sus propios `required`, sin ninguna petición ni error visible
+    // (por eso la prueba anterior moría esperando una respuesta que nunca
+    // salía). Por eso llenar y enviar van juntos y se reintentan como una
+    // sola operación: si el remonte borra los campos, el intento siguiente
+    // los vuelve a llenar. En cuanto el envío sale de verdad, la pantalla
+    // navega al detalle y el ciclo termina.
+    // El patrón viejo (/Detalles del Activo|Pasaporte Digital/) además daba
+    // por buena la navegación porque "Pasaportes Digitales" del menú lateral
+    // ya coincidía, aunque el formulario hubiera fallado y siguiera ahí.
     await expect(async () => {
       await campoNombre.fill(nombre)
-      await expect(campoNombre).toHaveValue(nombre, { timeout: 1_000 })
-    }).toPass({ timeout: 30_000 })
-    await expect(async () => {
       await page.getByPlaceholder('8.5').fill('15')
-      await expect(page.getByPlaceholder('8.5')).toHaveValue('15', { timeout: 1_000 })
-    }).toPass({ timeout: 15_000 })
-    // Se espera la respuesta real del alta, no un texto de la pantalla:
-    // el patrón anterior (/Detalles del Activo|Pasaporte Digital/) daba por
-    // buena la navegación porque "Pasaportes Digitales" del menú lateral ya
-    // coincidía, aunque el formulario hubiera fallado y siguiera ahí mismo.
-    const respuestaAlta = page.waitForResponse('**/api/dpp/activos/crear', { timeout: 30_000 })
-    await page.getByRole('button', { name: 'Crea el pasaporte' }).click()
-    const respuesta = await respuestaAlta
-    expect(respuesta.status(), 'el alta del pasaporte debe responder bien').toBeLessThan(400)
-    await page.waitForURL(/\/empresa\/dpp\/[0-9a-f-]{36}/, { timeout: 30_000 })
+      await page.getByRole('button', { name: 'Crea el pasaporte' }).click()
+      await page.waitForURL(/\/empresa\/dpp\/[0-9a-f-]{36}/, { timeout: 8_000 })
+    }).toPass({ timeout: 90_000 })
 
     const { data: creado } = await supabaseAdmin
-      .from('dpp_activos').select('id, codigo_dpp').eq('nombre', nombre).single()
+      .from('dpp_activos').select('id, codigo_dpp').eq('nombre', nombre).maybeSingle()
     expect(creado?.codigo_dpp, 'debe quedar guardado con su código').toBeTruthy()
     if (creado) await borrarActivo(creado.id)
   })

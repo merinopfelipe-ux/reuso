@@ -4,6 +4,15 @@ export default defineConfig({
   testDir: './e2e',
   globalTeardown: './e2e/global-teardown.ts',
   fullyParallel: false,
+  // `fullyParallel: false` solo serializa las pruebas DENTRO de un archivo:
+  // Playwright igual corre varios ARCHIVOS a la vez en workers distintos, y
+  // todos golpean el mismo servidor de desarrollo. Eso fue la causa real de
+  // los cortes de conexión (ERR_EMPTY_RESPONSE / ERR_CONNECTION_RESET) y de
+  // pantallas "Algo salió mal" al azar que parecían bugs de la aplicación
+  // (diagnosticado el 2026-09-02). Un solo worker hace la suite más lenta
+  // pero confiable, que es justo lo que se necesita para que sirva de símil
+  // del QA manual.
+  workers: 1,
   retries: 0,
   timeout: 60_000,
   reporter: 'list',

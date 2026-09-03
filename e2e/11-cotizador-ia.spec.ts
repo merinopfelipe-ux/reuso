@@ -93,6 +93,17 @@ test.describe('Cotizador IA', () => {
   // sin_match_detalle } — es un motor multi-ítem contra el catálogo. Todas
   // reescritas el 2026-09-02 con la forma real y la entrada real.
 
+  // El item_id tiene que ser uno REAL del catálogo: con un id inventado, la
+  // pantalla lo trata como "necesita tu atención" y abre el formulario de
+  // completar a mano en vez de mostrar la tarjeta del ítem reconocido
+  // (comprobado el 2026-09-02 leyendo lo que realmente pinta la pantalla).
+  async function itemRealDelCatalogo() {
+    const { data, error } = await supabaseAdmin
+      .from('items').select('id, nombre').limit(1).single()
+    if (error || !data) throw new Error(`El catálogo no tiene ítems: ${error?.message}`)
+    return data
+  }
+
   const itemDetectado = {
     item_id: '00000000-0000-0000-0000-000000000001',
     item_nombre: 'Sofá E2E',
@@ -106,6 +117,12 @@ test.describe('Cotizador IA', () => {
     co2_evitado_kg_unidad: 10,
     agua_evitada_l_unidad: 5,
     peso_kg_unidad: 20,
+    // Las 3 dimensiones del catálogo son obligatorias en la respuesta real:
+    // sin ellas la tarjeta del ítem revienta con "Cannot read properties of
+    // undefined (reading 'map')" y tumba la pantalla entera.
+    materiales: [{ nombre: 'Madera', peso_kg: 20, factor_co2_kg: 0.5, origen_fuente: 'e2e', nivel_confianza: 'media' }],
+    servicios: [{ nombre: 'Tapicería', precio: 150000 }],
+    insumos: [{ nombre: 'Tela', cantidad: 2, unidad: 'm', precio_unitario: 30000 }],
   }
 
   async function abrirTarjetaDeFotos(page: import('@playwright/test').Page, cotizacionId: string) {
@@ -124,14 +141,18 @@ test.describe('Cotizador IA', () => {
   test('cot-02 - un ítem detectado por la IA aparece en la tarjeta', async ({ page }) => {
     test.setTimeout(120_000)
     const cot = await sembrarCotizacion()
+    const real = await itemRealDelCatalogo()
     await page.route('**/api/cotizador/diagnostico', route => route.fulfill({
       status: 200,
-      json: { items_detectados: [itemDetectado], no_identificados: [], sin_match_detalle: [] },
+      json: {
+        items_detectados: [{ ...itemDetectado, item_id: real.id, item_nombre: real.nombre, titulo: real.nombre }],
+        no_identificados: [], sin_match_detalle: [],
+      },
     }))
     const input = await abrirTarjetaDeFotos(page, cot.id)
     await input.setInputFiles(fotoMinima)
     await page.getByRole('button', { name: 'Analizar este ítem' }).click()
-    await expect(page.getByText('Sofá E2E').first()).toBeVisible({ timeout: 30_000 })
+    await expect(page.getByText(real.nombre).first()).toBeVisible({ timeout: 30_000 })
     await borrarCotizacion(cot.id, cot.clienteId)
   })
 
@@ -185,14 +206,18 @@ test.describe('Cotizador IA', () => {
   test('cot-06 - flujo completo: se detecta, se confirma y queda en la cotización', async ({ page }) => {
     test.setTimeout(150_000)
     const cot = await sembrarCotizacion()
+    const real = await itemRealDelCatalogo()
     await page.route('**/api/cotizador/diagnostico', route => route.fulfill({
       status: 200,
-      json: { items_detectados: [itemDetectado], no_identificados: [], sin_match_detalle: [] },
+      json: {
+        items_detectados: [{ ...itemDetectado, item_id: real.id, item_nombre: real.nombre, titulo: real.nombre }],
+        no_identificados: [], sin_match_detalle: [],
+      },
     }))
     const input = await abrirTarjetaDeFotos(page, cot.id)
     await input.setInputFiles(fotoMinima)
     await page.getByRole('button', { name: 'Analizar este ítem' }).click()
-    await expect(page.getByText('Sofá E2E').first()).toBeVisible({ timeout: 30_000 })
+    await expect(page.getByText(real.nombre).first()).toBeVisible({ timeout: 30_000 })
     // La cotización sembrada sigue siendo la misma: confirmar un ítem nunca
     // crea una cotización nueva a sus espaldas.
     const { data: cotizaciones } = await supabaseAdmin
