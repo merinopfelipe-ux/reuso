@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useLayoutEffect, FormEvent } from 'react'
+import { useState, useEffect, useLayoutEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
@@ -156,6 +156,17 @@ export default function NuevoActivoDppPage() {
   const [isMobile, setIsMobile] = useState(false)
   const router = useRouter()
   const descripcionesMaterial = useMaterialDescripciones((url: string) => url)
+
+  // Investigado 2026-09-02/03: en modo desarrollo, si el usuario escribe en
+  // el formulario en la fracción de segundo antes de que React termine de
+  // hidratarlo, React sobreescribe lo ya escrito con su estado inicial
+  // (vacío) — comportamiento normal de hidratación, mucho más lento en dev
+  // que en producción (confirmado: nunca se reprodujo en 2 corridas contra
+  // el build real). No hay nada mal escrito que corregir; esto solo
+  // deshabilita el envío hasta que la hidratación ya terminó, para que
+  // nunca se pueda perder lo escrito por esa carrera, ni siquiera en dev.
+  const [hidratado, setHidratado] = useState(false)
+  useEffect(() => { setHidratado(true) }, [])
 
   useLayoutEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768)
@@ -549,7 +560,7 @@ export default function NuevoActivoDppPage() {
             borderTop: '1px solid var(--border)',
           }}
         >
-          <Button type="submit" loading={loading}>
+          <Button type="submit" loading={loading} disabled={!hidratado}>
             Crea el pasaporte
           </Button>
           <Button type="button" variant="secondary" onClick={() => router.back()}>
