@@ -418,15 +418,15 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
   {
     id: 'adm-14', categoria: 'Panel Admin', ruta: '/admin/configuracion', critica: false,
-    titulo: 'Configuración del sistema - parámetros globales',
-    descripcion: 'Modifica parámetros operativos de la plataforma y valida su persistencia.',
+    titulo: 'Configuración del sistema - redirige a Plantillas',
+    descripcion: 'Esta pantalla ya no tiene contenido propio. Su único campo real (correo de notificaciones) se movió a /admin/plantillas, y la ruta se dejó como redirección porque el enlace del sidebar todavía apunta aquí.',
     pasos: [
-      'Entra a /admin/configuracion.',
-      'Modifica un parámetro global del sistema (ej. el límite por defecto de invitaciones por empresa o la dirección de contacto técnica).',
-      'Presiona "Guardar".',
+      'Entra a /admin/configuracion (o pulsa Configuración en el sidebar).',
+      'Comprueba que la aplicación te lleva sola a /admin/plantillas.',
+      'Busca ahí el campo de correo de notificaciones, cámbialo y presiona "Guardar plantilla".',
       'Recarga la página para comprobar la persistencia.',
     ],
-    esperado: 'La página de configuración carga sin problemas. Los cambios aplicados se escriben en la base de datos y persisten tras la recarga.',
+    esperado: 'La ruta /admin/configuracion redirige a /admin/plantillas sin mostrar una pantalla vacía ni un error. El correo de notificaciones se guarda ahí y persiste tras recargar.',
   },
   {
     id: 'adm-15', categoria: 'Panel Admin', ruta: '/admin/plantillas', critica: false,
