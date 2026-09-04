@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronDown as CaretDown } from '@/components/ui/icons'
+import { ChevronDown as CaretDown, Sun, Moon } from '@/components/ui/icons'
 import { Bandera } from '@/components/ui/bandera'
 
 interface FooterProps {
@@ -72,6 +72,7 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
 
   return (
     <footer
+      id="site-footer"
       style={{
         padding: isMobile ? '32px 24px 110px 24px' : '40px 60px',
         background: `linear-gradient(0deg, rgba(214, 243, 145, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`, 
@@ -152,6 +153,7 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
             <div style={{ 
               display: 'flex', 
               gap: 16, 
+              alignItems: 'center',
               opacity: 0.8, 
               fontSize: 10,
             }}>
@@ -161,15 +163,46 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
                 <span>
                   <span style={{ opacity: 0.6 }}>{lastVisitLabel} </span>
                   <a 
-                    href={lastVisitHref} 
+                    href={lastVisitHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="footer-email-link" 
-                    style={{ color: 'inherit', textDecoration: 'none', pointerEvents: 'auto' }}
+                    style={{ color: 'inherit', pointerEvents: 'auto' }}
                   >
                     {lastVisit || '-'}
                   </a>
                 </span>
               ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '-'}</span>}
             </div>
+
+            {/* Botón de cambio de tema Día / Noche (Solo ícono) */}
+            <button
+              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
+              title={isDark ? 'Modo claro' : 'Modo noche'}
+              onClick={() => {
+                const current = document.documentElement.getAttribute('data-theme')
+                const next = current === 'dark' ? 'light' : 'dark'
+                document.documentElement.setAttribute('data-theme', next)
+                localStorage.setItem('theme', next)
+                localStorage.setItem('reuso-theme', next)
+                setIsDark(next === 'dark')
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                border: '1px solid var(--border-light)',
+                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
+                color: isDark ? '#D6F391' : '#00827C',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
+            </button>
 
             {/* TODO (v2): Activar cuando estén listas las traducciones */
              false && (

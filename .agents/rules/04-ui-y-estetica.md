@@ -41,3 +41,7 @@ Este pilar unifica la experiencia interactiva, los componentes y la identidad vi
 
 - **Regla de Jerarquía Tipográfica en Feeds (MANDATORIO Y PERMANENTE)**
   - Texto principal (acción) a `13px` y peso regular. Metadatos (fecha, autor) a `10px`.
+
+- **Regla Intocable de Liquid Glass (MANDATORIO Y PERMANENTE)**
+  - El diseño de las tarjetas (cards) de los '18 cálculos' y otras secciones de la Landing utiliza el **Rediseño Liquid Glass Premium**. Esto incluye clases avanzadas como `backdrop-blur-xl` y máscaras complejas en los estilos inline (`WebkitMask`, `maskComposite`, `Reborde Liquid Glass Disímil`).
+  - **BAJO NINGUNA CIRCUNSTANCIA** se debe simplificar, modificar o eliminar este diseño de Liquid Glass. Es el estándar estético aprobado en Obsidian y debe permanecer intacto.

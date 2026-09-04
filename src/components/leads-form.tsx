@@ -4,7 +4,11 @@ import { useRef, useState } from 'react'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, CheckCircle } from '@/components/ui/icons'
 
-export function LeadsForm() {
+interface LeadsFormProps {
+  initialPlan?: string
+}
+
+export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
   const [loading, setLoading] = useState(false)
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,7 +20,7 @@ export function LeadsForm() {
     email: '',
     empresa: '',
     mensaje: '',
-    interes: '',
+    interes: initialPlan || '',
     // Honeypot anti-bots: campo invisible para una persona real, pero los
     // bots que autocompletan todos los inputs sí lo llenan. Si llega con
     // valor, el backend descarta el envío en silencio (ver /api/leads).
@@ -55,16 +59,10 @@ export function LeadsForm() {
 
   if (enviado) {
     return (
-      <div style={{
-        padding: '40px 20px',
-        textAlign: 'center',
-        background: 'rgba(56,185,142,0.05)',
-        borderRadius: 20,
-        border: '1px dashed #38B98E'
-      }}>
-        <CheckCircle size={48} color="#38B98E" style={{ margin: '0 auto 16px' }} />
-        <h3 style={{ fontSize: 20, fontWeight: 700, color: '#474747', margin: '0 0 8px' }}>¡Mensaje recibido!</h3>
-        <p style={{ fontSize: 14, color: '#6B6B6B', margin: 0 }}>
+      <div className="p-8 text-center rounded-2xl border border-dashed border-[#38B98E] bg-[#38B98E]/5">
+        <CheckCircle size={44} color="#38B98E" className="mx-auto mb-3" />
+        <h3 className="text-lg font-bold text-[#474747] dark:text-white mb-2">¡Mensaje recibido!</h3>
+        <p className="text-xs sm:text-sm text-[#737373] dark:text-white/70 m-0">
           Un consultor de impacto se pondrá en contacto contigo en las próximas 24 horas laborables.
         </p>
       </div>
@@ -72,17 +70,9 @@ export function LeadsForm() {
   }
 
   return (
-    <div id="contacto" style={{
-      background: '#fff',
-      padding: '32px',
-      borderRadius: 20,
-      boxShadow: '0 10px 40px rgba(0,130,124,0.06)',
-      border: '1px solid rgba(0,130,124,0.08)'
-    }}>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
-        {/* Honeypot: invisible para una persona (no display:none, para que
-            un bot poco cuidadoso igual lo detecte y lo llene), oculto del
-            lector de pantalla y fuera del tab order. */}
+    <div id="contacto" className="rounded-2xl transition-colors">
+      <form onSubmit={handleSubmit} className="grid gap-3.5">
+        {/* Honeypot anti-bots */}
         <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, overflow: 'hidden' }}>
           <label htmlFor="sitio_web">Sitio web</label>
           <input
@@ -107,9 +97,9 @@ export function LeadsForm() {
           />
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 16 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Nombre completo</label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Nombre completo</label>
             <input
               type="text"
               name="nombre"
@@ -117,11 +107,11 @@ export function LeadsForm() {
               value={formData.nombre}
               onChange={handleChange}
               placeholder="Ej. Juan Pérez"
-              style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-white dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Email corporativo</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Email corporativo</label>
             <input
               type="email"
               name="email"
@@ -129,13 +119,13 @@ export function LeadsForm() {
               value={formData.email}
               onChange={handleChange}
               placeholder="juan@empresa.com"
-              style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-white dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Empresa</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Empresa</label>
           <input
             type="text"
             name="empresa"
@@ -143,68 +133,55 @@ export function LeadsForm() {
             value={formData.empresa}
             onChange={handleChange}
             placeholder="Nombre de tu organización"
-            style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none' }}
+            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-white dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
           />
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Plan de interés</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Plan de interés</label>
           <select
             name="interes"
             value={formData.interes}
             onChange={handleChange}
-            style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none', background: '#fff', color: formData.interes ? '#474747' : '#7FA8A5' }}
+            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-white dark:bg-[#252525] text-[#474747] dark:text-white outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
           >
             <option value="">Selecciona un plan</option>
-            <option value="pyme">Pyme - Desde $99/mes</option>
-            <option value="corporativo">Corporativo - Desde $299/mes</option>
-            <option value="enterprise">Enterprise - Personalizado</option>
+            <option value="Explora">Plan Explora</option>
+            <option value="Circular Lab">Plan Circular Lab</option>
+            <option value="Impacto Ilimitado">Plan Impacto Ilimitado</option>
+            <option value="A Medida">Plan A Medida</option>
+            <option value="Consulta general">Consulta o asesoría general</option>
           </select>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 14, fontWeight: 700, color: '#7FA8A5' }}>Mensaje o requerimiento</label>
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Mensaje o requerimiento</label>
           <textarea
             name="mensaje"
             required
-            rows={4}
+            rows={3}
             value={formData.mensaje}
             onChange={handleChange}
             placeholder="Cuéntanos cómo podemos ayudarte..."
-            style={{ padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,130,124,0.15)', fontSize: 14, outline: 'none', resize: 'none' }}
+            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-white dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-gray-400 dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] resize-none transition-colors"
           />
         </div>
 
         {error && (
-          <p style={{ fontSize: 14, color: '#EF4444', margin: 0, fontWeight: 600 }}>{error}</p>
+          <p className="text-xs font-bold text-red-500 m-0">{error}</p>
         )}
 
         <button
           disabled={loading}
           type="submit"
-          style={{
-            marginTop: 8,
-            padding: '14px',
-            borderRadius: 12,
-            background: '#00827C',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 15,
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 10,
-            boxShadow: '0 4px 12px rgba(0,130,124,0.2)'
-          }}
-          className={loading ? '' : 'hover-send hover-press'}
-        >
+          className={`mt-2 w-full py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
+            loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02]'
+          } bg-[#00827C] dark:bg-[#D6F391] text-white dark:text-[#474747]`}>
           {loading ? (
-            <CircleNotch size={18} style={{ animation: 'spin 2s linear infinite' }} />
+            <CircleNotch size={16} className="animate-spin" />
           ) : (
             <>
-              <PaperPlaneRight size={18} />
+              <PaperPlaneRight size={16} />
               Enviar solicitud
             </>
           )}
