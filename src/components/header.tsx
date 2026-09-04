@@ -5,7 +5,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Menu, Search as MagnifyingGlass, User, Building2 as Buildings, Calculator, UserCheck, Settings as Gear, LogOut as SignOut } from '@/components/ui/icons'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ThemeToggle } from './theme-toggle'
 import { CampanaDropdown } from './alertas/campana-dropdown'
 import { HeaderUserDropdown } from './header-user-dropdown'
 import { HeaderAyudaModal } from './header-ayuda-modal'
@@ -466,7 +465,6 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <ThemeToggle />
               <HeaderAyudaModal />
               <CampanaDropdown />
             </div>

@@ -518,3 +518,21 @@ body {
   transform: scale(0.88);
   transition: transform 0.08s ease;
 }
+
+/* ─── Spinner nativo de <input type="number"> más sutil ───
+   El navegador dibuja el spinner arriba/abajo con un fondo gris por
+   defecto que no hace juego con el sistema de diseño. Nunca
+   appearance:none en el input completo (eso oculta el spinner por
+   completo, contra directriz explícita: debe poder usarse Y escribirse
+   encima) — solo se le quita el fondo a las flechas mismas. */
+input[type="number"].input-numero-sutil::-webkit-inner-spin-button,
+input[type="number"].input-numero-sutil::-webkit-outer-spin-button {
+  background: transparent;
+  opacity: 0.5;
+}
+input[type="number"].input-numero-sutil:hover::-webkit-inner-spin-button,
+input[type="number"].input-numero-sutil:hover::-webkit-outer-spin-button,
+input[type="number"].input-numero-sutil:focus::-webkit-inner-spin-button,
+input[type="number"].input-numero-sutil:focus::-webkit-outer-spin-button {
+  opacity: 1;
+}

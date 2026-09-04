@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Users, Calculator, FileText, ClipboardList } from '@/components/ui/icons'
+import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
@@ -12,6 +12,14 @@ import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/pla
 // pestaña 'precios' en /admin/contenido elimina /admin/planes"). Mismo
 // endpoint de siempre (/api/admin/planes, borrador→publicar), solo cambió
 // dónde vive y su diseño visual (ver src/components/admin/plan-campos.tsx).
+//
+// Autoguardado + "Publicar todo" (2026-09-04, 2ª pasada): antes cada
+// tarjeta tenía su propio "Guardar borrador"/"Publicar". El usuario pidió
+// autoguardado (nunca más un clic para guardar el borrador) pero
+// preguntado explícitamente, confirmó que quería SEGUIR necesitando un
+// clic para publicar — solo que ahora es UN botón para los 4 planes a la
+// vez, no uno por tarjeta. El borrador sigue sin afectar a nadie hasta
+// ese clic, la red de seguridad no se toca.
 
 interface ConfigPlan {
   id: 'free' | 'lab' | 'impulso' | 'ilimitado'
@@ -42,9 +50,9 @@ const NOMBRES: Record<string, string> = {
   free: 'Explora', lab: 'Circular Lab', impulso: 'Impulso Sostenible', ilimitado: 'Impacto Ilimitado',
 }
 
-function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () => void }) {
+function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: string, pendiente: boolean) => void }) {
   const { toast } = useToast()
-  const [borrador, setBorrador] = useState({
+  const valorInicial = {
     borrador_precio_cop: plan.borrador_precio_cop ?? plan.precio_cop,
     borrador_precio_usd: plan.borrador_precio_usd ?? plan.precio_usd,
     borrador_precio_eur: plan.borrador_precio_eur ?? plan.precio_eur,
@@ -55,35 +63,36 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
     borrador_limite_calculos_mes: plan.borrador_limite_calculos_mes ?? plan.limite_calculos_mes,
     borrador_limite_informes_mes: plan.borrador_limite_informes_mes ?? plan.limite_informes_mes,
     borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
-  })
-  const [guardando, setGuardando] = useState(false)
-  const [publicando, setPublicando] = useState(false)
-
-  async function guardarBorrador() {
-    setGuardando(true)
-    const res = await fetch('/api/admin/planes', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: plan.id, ...borrador }),
-    })
-    setGuardando(false)
-    if (!res.ok) { toast.error('No se pudo guardar el borrador.'); return }
-    toast.success('Borrador guardado.')
-    onGuardado()
   }
+  const [borrador, setBorrador] = useState(valorInicial)
+  const [estado, setEstado] = useState<'guardado' | 'guardando'>('guardado')
+  const [huboEdicion, setHuboEdicion] = useState(false)
+  // Snapshot del valor inicial, capturado UNA vez al montar (no dentro del
+  // efecto) — comparar contra esto es lo que decide si hay algo real que
+  // guardar, en vez de una bandera "primera vez" mutable. Un ref con
+  // bandera se rompía con Strict Mode de React (double-invoke en
+  // desarrollo): las 4 tarjetas disparaban un autoguardado espurio apenas
+  // se cargaba la página, sin que el usuario tocara nada — bug real
+  // encontrado y corregido 2026-09-04 antes de comitear.
+  const baseline = useRef(valorInicial).current
 
-  async function publicar() {
-    setPublicando(true)
-    const res = await fetch(`/api/admin/planes/${plan.id}/publicar`, { method: 'POST' })
-    setPublicando(false)
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}))
-      toast.error(data.error ?? 'No se pudo publicar.')
-      return
-    }
-    toast.success(`Plan ${NOMBRES[plan.id]} publicado.`)
-    onGuardado()
-  }
+  useEffect(() => {
+    if (JSON.stringify(borrador) === JSON.stringify(baseline)) return
+    setHuboEdicion(true)
+    onCambio(plan.id, true)
+    setEstado('guardando')
+    const timer = setTimeout(async () => {
+      const res = await fetch('/api/admin/planes', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: plan.id, ...borrador }),
+      })
+      if (res.ok) setEstado('guardado')
+      else toast.error(`No se pudo guardar ${NOMBRES[plan.id]}. Revisa tu conexión.`)
+    }, 900)
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [borrador])
 
   function cambiarMensual(campo: 'cop' | 'usd' | 'eur', v: number) {
     setBorrador(b => ({
@@ -95,6 +104,7 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
 
   const cfg = PLAN_CONFIG[plan.id]
   const IconoPlan = cfg.icon
+  const tieneCambiosSinPublicar = plan.tiene_borrador_sin_publicar || huboEdicion
 
   return (
     <div style={{ borderRadius: 20, border: '1px solid var(--border)', padding: 24, background: 'var(--bg-card)' }}>
@@ -105,7 +115,7 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
           </div>
           <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{NOMBRES[plan.id]}</h3>
         </div>
-        {plan.tiene_borrador_sin_publicar && (
+        {tieneCambiosSinPublicar && (
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-warning)', background: 'var(--color-warning)1A', padding: '2px 8px', borderRadius: 999 }}>
             Cambios sin publicar
           </span>
@@ -134,39 +144,95 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         ))}
       </div>
 
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-        <Button variant="secondary" size="sm" onClick={guardarBorrador} loading={guardando}>Guardar borrador</Button>
-        <Button variant="primary" size="sm" onClick={publicar} loading={publicando} disabled={!plan.tiene_borrador_sin_publicar}>Publicar</Button>
+      {/* Estado de autoguardado — reemplaza el botón "Guardar borrador" de
+          antes, ya no hace falta ningún clic. */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
+        {estado === 'guardando' ? (
+          <><Spinner size={13} className="animate-spin" /> Guardando...</>
+        ) : (
+          <><CheckCircle size={13} style={{ color: 'var(--color-success)' }} /> Guardado</>
+        )}
       </div>
     </div>
   )
 }
 
 export function PreciosTab() {
+  const { toast } = useToast()
   const [planes, setPlanes] = useState<ConfigPlan[]>([])
+  // "cargando" solo tapa la pantalla la PRIMERA vez (todavía no hay nada
+  // que mostrar). El autoguardado ya no dispara un refetch por cada
+  // tecla — antes eso borraba las 4 tarjetas y mostraba solo
+  // "Cargando...", el usuario perdía su lugar en la pantalla en cada
+  // guardado. A pedido del usuario 2026-09-04 ("debería tener la barra
+  // superior cargando y no irse de la pantalla, más fluido").
   const [cargando, setCargando] = useState(true)
+  const [refrescando, setRefrescando] = useState(false)
+  const [pendientes, setPendientes] = useState<Set<string>>(new Set())
+  const [publicandoTodo, setPublicandoTodo] = useState(false)
 
   function cargar() {
-    setCargando(true)
+    if (planes.length === 0) setCargando(true)
+    else setRefrescando(true)
     fetch('/api/admin/planes')
       .then(r => r.json())
       .then(data => setPlanes(data.planes ?? []))
-      .finally(() => setCargando(false))
+      .finally(() => { setCargando(false); setRefrescando(false) })
   }
 
-  useEffect(() => { cargar() }, [])
+  useEffect(() => { cargar() }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function marcarCambio(planId: string, hayPendiente: boolean) {
+    setPendientes(prev => {
+      const next = new Set(prev)
+      if (hayPendiente) next.add(planId); else next.delete(planId)
+      return next
+    })
+  }
+
+  async function publicarTodo() {
+    setPublicandoTodo(true)
+    const idsAPublicar = Array.from(pendientes)
+    const resultados = await Promise.all(
+      idsAPublicar.map(id => fetch(`/api/admin/planes/${id}/publicar`, { method: 'POST' }))
+    )
+    const fallos = resultados.filter(r => !r.ok).length
+    setPublicandoTodo(false)
+    setPendientes(new Set())
+    if (fallos > 0) toast.error(`${fallos} de ${idsAPublicar.length} plan(es) no se pudieron publicar.`)
+    else toast.success(`${idsAPublicar.length} plan(es) publicado(s).`)
+    cargar()
+  }
+
+  const hayPendientes = pendientes.size > 0
 
   return (
-    <div>
-      <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
-        Precios y límites reales de los 4 planes. Los cambios solo aplican al hacer clic en Publicar — antes de eso, quedan como borrador sin afectar a nadie. Para una empresa puntual con precios distintos, negocia desde su propia ficha en Empresas.
-      </p>
+    <div style={{ position: 'relative' }}>
+      {refrescando && (
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, overflow: 'hidden', borderRadius: 2, zIndex: 1 }}>
+          <div style={{ width: '40%', height: '100%', background: 'var(--color-brand)', animation: 'barraCargaSlide 1s ease-in-out infinite' }} />
+        </div>
+      )}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes barraCargaSlide {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(350%); }
+        }
+      ` }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, maxWidth: 640 }}>
+          Precios y límites reales de los 4 planes. Se guardan solos mientras escribes, como borrador — nadie los ve hasta que publiques. Para una empresa puntual con precios distintos, negocia desde su propia ficha en Empresas.
+        </p>
+        <Button variant="primary" size="sm" onClick={publicarTodo} loading={publicandoTodo} disabled={!hayPendientes}>
+          Publicar todo{hayPendientes ? ` (${pendientes.size})` : ''}
+        </Button>
+      </div>
       {cargando ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Cargando...</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="md:grid-cols-2">
           {planes.map(plan => (
-            <TarjetaPlan key={plan.id} plan={plan} onGuardado={cargar} />
+            <TarjetaPlan key={plan.id} plan={plan} onCambio={marcarCambio} />
           ))}
         </div>
       )}

@@ -44,6 +44,8 @@ export function CampoLimiteGrande({ icono: Icono, label, valor, onChange }: {
           min={0}
           value={valor}
           onChange={(e) => onChange(Number(e.target.value))}
+          onFocus={(e) => e.target.select()}
+          className="input-numero-sutil"
           style={{
             width: '100%', fontSize: 30, fontWeight: 300, color: 'var(--text-primary)',
             border: 'none', borderBottom: '1px solid var(--border)', background: 'transparent',
@@ -87,6 +89,8 @@ export function BloqueMoneda({ moneda, mensual, anual, onMensualChange, onAnualC
           <input
             type="number" min={0} step="0.01" value={mensual}
             onChange={(e) => onMensualChange(Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
+            className="input-numero-sutil"
             style={{ width: '100%', padding: '9px 0', fontSize: 14, border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
           />
         </div>
@@ -98,6 +102,8 @@ export function BloqueMoneda({ moneda, mensual, anual, onMensualChange, onAnualC
           <input
             type="number" min={0} step="0.01" value={anual}
             onChange={(e) => onAnualChange(Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
+            className="input-numero-sutil"
             style={{ width: '100%', padding: '9px 0', fontSize: 14, border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
           />
         </div>
