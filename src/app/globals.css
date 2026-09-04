@@ -92,8 +92,15 @@ h3 {
   --border: rgba(255, 255, 255, 0.08);
   --border-light: rgba(255, 255, 255, 0.04);
   --shadow: 0 12px 60px rgba(71, 71, 71, 0.4);
-  --skeleton-base: #525252;
-  --skeleton-shine: #5A5A5A;
+  /* Antes #525252/#5A5A5A — el mismo tono que las tarjetas normales
+     (--bg-secondary/--bg-input), sin ningún matiz que dijera "esto está
+     cargando". Se veía como un bloque plano oscuro, reportado como "se ve
+     como un bloque negro" (2026-09-04). Ahora usa pistacho translúcido —
+     el mismo acento de marca que ya usa el resto del sistema en modo
+     noche — bien visible sobre --bg-primary, con contraste real entre
+     base y brillo. */
+  --skeleton-base: rgba(214, 243, 145, 0.08);
+  --skeleton-shine: rgba(214, 243, 145, 0.18);
   --divider: rgba(255, 255, 255, 0.06);
 
   --color-brand: #D6F391;
