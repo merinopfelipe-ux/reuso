@@ -2223,17 +2223,14 @@ export default function QAPage() {
 
         {/* ── Header glass ──────────────────────────────────────────────────── */}
         <header
-          className={`mb-8 border ${theme.headerBg} rounded-2xl p-6 relative overflow-hidden transition-all duration-300`}
+          className={`mb-6 border ${theme.headerBg} rounded-2xl p-6 relative overflow-hidden transition-all duration-300`}
           style={{ boxShadow: `0 8px 32px 0 ${theme.shadow}` }}
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${isDark ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391]' : 'bg-[#00827C]/20 border-[#00827C]/40 text-[#38B98E]'}`}>
-                  Auditoría & QA
-                </span>
-                <span className={`${theme.textSecondary} text-xs opacity-80`}>Grupo MLP S.A.S</span>
-              </div>
+              <p className={`text-xs font-medium ${theme.textSecondary} mb-1.5`}>
+                Auditoría & QA
+              </p>
               <h1 className={`text-3xl font-bold tracking-tight ${theme.textTitle} mb-2`}>
                 Panel de Pruebas - Reúso
               </h1>
@@ -2281,46 +2278,60 @@ export default function QAPage() {
           </div>
 
           {/* Barra de acciones */}
-          <div className={`mt-6 pt-6 border-t ${theme.divider} flex flex-col sm:flex-row gap-4 items-center justify-between`}>
-            {/* Estado de guardado */}
-            <div className={`flex items-center gap-2 text-xs ${theme.textSecondary}`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
+          <div className={`mt-6 pt-6 border-t ${theme.divider} flex flex-col md:flex-row gap-3 lg:gap-4 items-start md:items-center justify-between`}>
+            {/* Estado de guardado en 2 líneas */}
+            <div className={`flex items-center gap-2 text-xs ${theme.textSecondary} shrink-0`}>
+              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
               {guardadoReciente ? (
-                <span className="text-[#38B98E] font-semibold flex items-center gap-1">
-                  <CheckCircle size={12} /> Guardado
-                </span>
+                <div className="flex flex-col leading-tight">
+                  <span className="text-[#38B98E] font-semibold flex items-center gap-1">
+                    <CheckCircle size={12} /> Guardado
+                  </span>
+                  <span className="text-[11px] opacity-70 whitespace-nowrap">
+                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                  </span>
+                </div>
               ) : ultimoGuardado ? (
-                <span>
-                  Guardado {ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
-                  {' · '}autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
-                </span>
+                <div className="flex flex-col leading-tight">
+                  <span className="whitespace-nowrap">
+                    Guardado {ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  <span className="text-[11px] opacity-70 whitespace-nowrap">
+                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                  </span>
+                </div>
               ) : (
-                <span>Sin guardar · autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}</span>
+                <div className="flex flex-col leading-tight">
+                  <span className="whitespace-nowrap">Sin guardar</span>
+                  <span className="text-[11px] opacity-70 whitespace-nowrap">
+                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                  </span>
+                </div>
               )}
             </div>
 
-            {/* Botones */}
-            <div className="flex items-center gap-3 flex-wrap">
+            {/* Controles y botones en una sola línea */}
+            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-nowrap shrink-0 overflow-x-auto max-w-full pb-1 md:pb-0">
               {/* Búsqueda */}
-              <div className="relative w-64">
-                <MagnifyingGlass size={14} className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.textSecondary} opacity-60`} />
+              <div className="relative w-36 sm:w-40 md:w-44 lg:w-56 xl:w-64 shrink-0 transition-all">
+                <MagnifyingGlass size={13} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${theme.textSecondary} opacity-60`} />
                 <input
                   type="text"
                   placeholder="Buscar prueba..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className={`w-full pl-9 pr-3 py-1.5 ${theme.inputBg} border rounded-lg text-sm ${theme.textPrimary} ${isDark ? 'placeholder-[#D6F391]/50 focus:border-[#D6F391]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
+                  className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-[#D6F391]/50 focus:border-[#D6F391]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
                 />
               </div>
               <button
                 onClick={resetear}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-spin`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-spin shrink-0 whitespace-nowrap`}
               >
                 <ArrowCounterClockwise size={13} /> Reiniciar
               </button>
               <button
                 onClick={() => { guardar(); guardarIntento('completo') }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-download ${
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-download shrink-0 whitespace-nowrap ${
                   guardadoReciente
                     ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
                     : `${theme.cardBg} ${theme.textSecondary}`
@@ -2330,13 +2341,13 @@ export default function QAPage() {
               </button>
               <button
                 onClick={() => setMostrarHistorial('completo')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-pop ${theme.cardBg} ${theme.textSecondary}`}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-pop shrink-0 whitespace-nowrap ${theme.cardBg} ${theme.textSecondary}`}
               >
                 <FileText size={13} /> Historial ({intentos.filter(i => i.alcance === 'completo').length})
               </button>
               <button
                 onClick={() => setMostrarInforme(true)}
-                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop shrink-0 whitespace-nowrap ${
                   isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
                 }`}
               >
@@ -2345,6 +2356,85 @@ export default function QAPage() {
             </div>
           </div>
         </header>
+
+        {/* ── Diagnóstico automático (ancho completo, sutil y elegante) ── */}
+        <div
+          className={`mb-6 border ${theme.headerBg} rounded-2xl px-5 py-3.5 sm:px-6 sm:py-4 transition-all`}
+          style={{ boxShadow: `0 4px 20px ${theme.shadow}` }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0 max-w-2xl">
+              <h3 className={`text-sm font-semibold ${theme.textPrimary}`}>
+                Diagnóstico automático
+              </h3>
+              <p className={`text-xs ${theme.textSecondary} opacity-80 mt-0.5 leading-relaxed`}>
+                Revisa contra la base real lo que no se ve a simple vista: columnas faltantes, archivos mal configurados y consultas que la base rechaza.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={correrDiagnostico}
+                disabled={diagnosticando}
+                className={`text-xs px-3.5 py-1.5 rounded-lg transition-all disabled:opacity-50 font-medium hover:scale-105 active:scale-95 ${
+                  isDark ? 'bg-[#D6F391] text-[#474747]'
+                         : 'bg-[#00827C] text-white'
+                }`}
+              >
+                {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
+              </button>
+              {diagnostico && (
+                <button
+                  onClick={descargarDiagnostico}
+                  className={`text-xs px-3.5 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80 font-medium`}
+                >
+                  Descargar informe
+                </button>
+              )}
+            </div>
+          </div>
+
+          {errorDiagnostico && (
+            <p className="text-xs mt-2.5 text-[#FF5E4B]">{errorDiagnostico}</p>
+          )}
+
+          {diagnostico && (
+            <div className={`mt-3.5 pt-3 border-t ${theme.divider} flex flex-col gap-3`}>
+              <div className="flex items-center gap-4 text-xs flex-wrap">
+                <span className={theme.textSecondary}>{diagnostico.resumen.total} comprobaciones</span>
+                <span className="text-[#38B98E] font-semibold">{diagnostico.resumen.ok} correctas</span>
+                {diagnostico.resumen.avisos > 0 && (
+                  <span className="text-[#F6BF3E] font-semibold">{diagnostico.resumen.avisos} avisos</span>
+                )}
+                <span className={diagnostico.resumen.fallas > 0 ? 'text-[#FF5E4B] font-semibold' : theme.textSecondary}>
+                  {diagnostico.resumen.fallas} fallas
+                </span>
+              </div>
+
+              {/* Solo se listan fallas y avisos: lo que está bien no necesita leerse */}
+              {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').length === 0 ? (
+                <p className="text-xs text-[#38B98E]">
+                  Sin fallas. El sistema respondió a todas las comprobaciones.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
+                  {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').map((x, i) => (
+                    <div
+                      key={`${x.grupo}-${x.nombre}-${i}`}
+                      className={`text-xs px-3 py-2 rounded-lg border ${theme.cardBg}`}
+                    >
+                      <span className={x.estado === 'falla' ? 'text-[#FF5E4B] font-semibold' : 'text-[#F6BF3E] font-semibold'}>
+                        {x.estado === 'falla' ? 'Falla' : 'Aviso'}
+                      </span>
+                      <span className={`${theme.textSecondary} opacity-60`}> · {x.grupo} · </span>
+                      <span className={theme.textPrimary}>{x.nombre}</span>
+                      <p className={`${theme.textSecondary} mt-0.5`}>{x.detalle}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* ── Grid principal ──────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
@@ -2489,86 +2579,6 @@ export default function QAPage() {
 
           {/* Panel de tareas */}
           <div className="lg:col-span-8 flex flex-col gap-4">
-            {/* Diagnóstico automático — la mitad que no se prueba a mano */}
-            <div
-              className={`border ${theme.headerBg} rounded-2xl px-5 py-4 transition-all`}
-              style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
-            >
-              <div className="flex items-start justify-between gap-3 flex-wrap">
-                <div className="min-w-0">
-                  <h3 className={`text-sm font-semiboldr ${theme.textPrimary} mb-0.5`}>
-                    Diagnóstico automático
-                  </h3>
-                  <p className={`text-xs ${theme.textSecondary}`}>
-                    Revisa contra la base real lo que no se ve a simple vista: columnas que falten, archivos mal configurados y consultas que la base rechaza.
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    onClick={correrDiagnostico}
-                    disabled={diagnosticando}
-                    className={`text-xs px-3 py-1.5 rounded-lg transition-all disabled:opacity-50 ${
-                      isDark ? 'bg-[#D6F391] text-[#474747] font-semibold'
-                             : 'bg-[#00827C] text-white font-semibold'
-                    }`}
-                  >
-                    {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
-                  </button>
-                  {diagnostico && (
-                    <button
-                      onClick={descargarDiagnostico}
-                      className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80`}
-                    >
-                      Descargar informe
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {errorDiagnostico && (
-                <p className="text-xs mt-3 text-[#FF5E4B]">{errorDiagnostico}</p>
-              )}
-
-              {diagnostico && (
-                <div className="mt-4 flex flex-col gap-3">
-                  <div className="flex items-center gap-4 text-xs flex-wrap">
-                    <span className={theme.textSecondary}>{diagnostico.resumen.total} comprobaciones</span>
-                    <span className="text-[#38B98E] font-semibold">{diagnostico.resumen.ok} correctas</span>
-                    {diagnostico.resumen.avisos > 0 && (
-                      <span className="text-[#F6BF3E] font-semibold">{diagnostico.resumen.avisos} avisos</span>
-                    )}
-                    <span className={diagnostico.resumen.fallas > 0 ? 'text-[#FF5E4B] font-semibold' : theme.textSecondary}>
-                      {diagnostico.resumen.fallas} fallas
-                    </span>
-                  </div>
-
-                  {/* Solo se listan fallas y avisos: lo que está bien no
-                      necesita leerse, y va completo en el .txt descargable. */}
-                  {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').length === 0 ? (
-                    <p className="text-xs text-[#38B98E]">
-                      Sin fallas. El sistema respondió a todas las comprobaciones.
-                    </p>
-                  ) : (
-                    <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
-                      {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').map((x, i) => (
-                        <div
-                          key={`${x.grupo}-${x.nombre}-${i}`}
-                          className={`text-xs px-3 py-2 rounded-lg border ${theme.cardBg}`}
-                        >
-                          <span className={x.estado === 'falla' ? 'text-[#FF5E4B] font-semibold' : 'text-[#F6BF3E] font-semibold'}>
-                            {x.estado === 'falla' ? 'Falla' : 'Aviso'}
-                          </span>
-                          <span className={`${theme.textSecondary} opacity-60`}> · {x.grupo} · </span>
-                          <span className={theme.textPrimary}>{x.nombre}</span>
-                          <p className={`${theme.textSecondary} mt-0.5`}>{x.detalle}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
             {/* Cabecera del módulo activo */}
             <div
               className={`border ${theme.headerBg} rounded-2xl px-5 py-4 transition-all`}
