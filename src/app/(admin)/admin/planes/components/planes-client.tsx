@@ -52,6 +52,13 @@ const inputSt: React.CSSProperties = {
   border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)',
 }
 const labelSt: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }
+// Solo informativo, nunca editable — a pedido del usuario 2026-09-03: junto
+// al precio anual se muestra a qué mensual equivale (anual / 12), para que
+// quede claro qué le cobra en la práctica a alguien que paga por año.
+const equivalenteSt: React.CSSProperties = { fontSize: 11, color: 'var(--text-secondary)', marginTop: 4, display: 'block' }
+function equivalenteMensual(anual: number): number {
+  return Math.round((anual / 12) * 100) / 100
+}
 
 function CampoIlimitado({ label, valor, onChange }: { label: string; valor: number | null; onChange: (v: number | null) => void }) {
   const ilimitado = valor === null
@@ -139,17 +146,21 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
 
       <span style={{ ...labelSt, marginBottom: 8, fontWeight: 700 }}>Precio mensual</span>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+        {/* Editar el mensual recalcula el anual automáticamente (mensual x
+            10, "2 meses gratis") — a pedido del usuario 2026-09-03. El anual
+            sigue siendo editable por separado después: solo se pisa cuando
+            se vuelve a tocar ESTE campo mensual, no en cada render. */}
         <div>
           <span style={labelSt}>COP</span>
-          <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_cop: Number(e.target.value) }))} style={inputSt} />
+          <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_cop: v, borrador_precio_anual_cop: Math.round(v * 10) })) }} style={inputSt} />
         </div>
         <div>
           <span style={labelSt}>USD</span>
-          <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_usd: Number(e.target.value) }))} style={inputSt} />
+          <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_usd: v, borrador_precio_anual_usd: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
         </div>
         <div>
           <span style={labelSt}>EUR</span>
-          <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_eur: Number(e.target.value) }))} style={inputSt} />
+          <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_eur: v, borrador_precio_anual_eur: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
         </div>
       </div>
 
@@ -172,14 +183,17 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         <div>
           <span style={labelSt}>COP</span>
           <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
+          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_cop).toLocaleString('es-CO')} COP/mes</span>
         </div>
         <div>
           <span style={labelSt}>USD</span>
           <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
+          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_usd).toFixed(2)} USD/mes</span>
         </div>
         <div>
           <span style={labelSt}>EUR</span>
           <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
+          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_eur).toFixed(2)} EUR/mes</span>
         </div>
       </div>
 
