@@ -51,7 +51,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
         { href: '/empresa/clientes', label: 'Clientes' },
-        { href: '/admin/calculos', label: 'Cálculos', grupo: 'Auditoría de plataforma' },
+        { href: '/admin/calculos', label: 'Cálculos', grupo: 'Plataforma' },
         { href: '/admin/reportes', label: 'Reportes' },
       ]
     },
@@ -406,29 +406,41 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           background: rgba(214, 243, 145, 0.18) !important;
         }
 
-        /* Visibilidad Dinámica V13.6 */
+        /* Visibilidad Dinámica — ajustado 2026-09-04 a pedido del usuario:
+           antes el texto SIEMPRE era verde (activo o no, sin distinguir).
+           Ahora: inactivo = Negro Lurdes (día) / Blanco (noche), activo u
+           hover = Verde Sostenible #00827C (día) / Pistacho #D6F391
+           (noche, el "brand" de noche en todo el resto del sistema). */
         .clean-item-nav span, .clean-item-nav svg,
         .menu-header-tech span, .menu-header-tech svg,
         .flyout-item-sustainable span, .flyout-item-sustainable div {
-          color: #006B66 !important; /* Verde Sostenible en Día para contraste */
+          color: #474747 !important;
+        }
+
+        .clean-item-nav.reuso-nav-active span, .clean-item-nav.reuso-nav-active svg,
+        .flyout-item-sustainable.reuso-nav-active span, .flyout-item-sustainable.reuso-nav-active div,
+        .clean-item-nav:hover span, .clean-item-nav:hover svg,
+        .flyout-item-sustainable:hover span, .flyout-item-sustainable:hover div {
+          color: #00827C !important;
         }
 
         [data-theme="dark"] .clean-item-nav span, [data-theme="dark"] .clean-item-nav svg,
         [data-theme="dark"] .menu-header-tech span, [data-theme="dark"] .menu-header-tech svg,
         [data-theme="dark"] .flyout-item-sustainable span, [data-theme="dark"] .flyout-item-sustainable div {
-          color: #FFFFFF !important; /* Blanco Inmaculado en Noche */
+          color: #FFFFFF !important;
+        }
+
+        [data-theme="dark"] .clean-item-nav.reuso-nav-active span, [data-theme="dark"] .clean-item-nav.reuso-nav-active svg,
+        [data-theme="dark"] .flyout-item-sustainable.reuso-nav-active span, [data-theme="dark"] .flyout-item-sustainable.reuso-nav-active div,
+        [data-theme="dark"] .clean-item-nav:hover span, [data-theme="dark"] .clean-item-nav:hover svg,
+        [data-theme="dark"] .flyout-item-sustainable:hover span, [data-theme="dark"] .flyout-item-sustainable:hover div {
+          color: #D6F391 !important;
         }
 
         [data-theme="dark"] .reuso-nav-active {
           background: #474747 !important;
-          color: #FFFFFF !important;
           box-shadow: 0 4px 20px rgba(71, 71, 71, 0.4) !important;
           border: none !important;
-        }
-
-        [data-theme="dark"] .reuso-nav-active span,
-        [data-theme="dark"] .reuso-nav-active svg {
-          color: #FFFFFF !important;
         }
 
         [data-theme="dark"] .reuso-nav-active .active-indicator-pill {
@@ -538,9 +550,14 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           )
         }
 
+        // Títulos de grupo dentro del submenú: negro (var(--text-primary),
+        // que en noche resuelve a blanco — nunca negro puro sobre fondo
+        // oscuro) con una raya debajo, a pedido del usuario 2026-09-04.
+        // Antes eran gris secundario sin ningún separador.
         const tituloEstilo: React.CSSProperties = {
-          padding: '10px 20px 4px', fontSize: '11px', fontWeight: 700,
-          letterSpacing: '0.04em', color: 'var(--text-secondary)',
+          padding: '10px 20px 6px', margin: '0 8px 4px', fontSize: '11px', fontWeight: 700,
+          letterSpacing: '0.04em', color: 'var(--text-primary)',
+          borderBottom: '1px solid var(--border)',
         }
 
         return (
