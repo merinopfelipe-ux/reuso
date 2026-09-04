@@ -7,11 +7,14 @@
 'use client'
 
 import { Square, SquareCheck } from '@/components/ui/icons'
+import { Bandera } from '@/components/ui/bandera'
 
+// paisCodigo: código ISO para <Bandera> (flag-icons SVG), no emoji — a
+// pedido del usuario 2026-09-04, mismo componente ya usado en DPP/login.
 export const MONEDAS = [
-  { codigo: 'cop' as const, bandera: '🇨🇴', label: 'COP', nombre: 'Peso colombiano', simbolo: '$' },
-  { codigo: 'usd' as const, bandera: '🇺🇸', label: 'USD', nombre: 'Dólar estadounidense', simbolo: '$' },
-  { codigo: 'eur' as const, bandera: '🇪🇺', label: 'EUR', nombre: 'Euros', simbolo: '€' },
+  { codigo: 'cop' as const, paisCodigo: 'co', label: 'COP', nombre: 'Peso colombiano', simbolo: '$' },
+  { codigo: 'usd' as const, paisCodigo: 'us', label: 'USD', nombre: 'Dólar estadounidense', simbolo: '$' },
+  { codigo: 'eur' as const, paisCodigo: 'eu', label: 'EUR', nombre: 'Euros', simbolo: '€' },
 ]
 
 export function equivalenteMensual(anual: number): number {
@@ -72,28 +75,34 @@ export function BloqueMoneda({ moneda, mensual, anual, onMensualChange, onAnualC
 }) {
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 14 }}>
-        <span style={{ fontSize: 20 }}>{moneda.bandera}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+        <Bandera codigo={moneda.paisCodigo} alt={moneda.label} style={{ width: 28, height: 19 }} />
         <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>{moneda.label}</span>
         <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{moneda.nombre}</span>
       </div>
       <div style={{ marginBottom: 14 }}>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: 4 }}>Mensual</span>
-        <input
-          type="number" min={0} value={mensual}
-          onChange={(e) => onMensualChange(Number(e.target.value))}
-          style={{ width: '100%', padding: '9px 12px', borderRadius: 8, fontSize: 14, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>{moneda.simbolo}</span>
+          <input
+            type="number" min={0} step="0.01" value={mensual}
+            onChange={(e) => onMensualChange(Number(e.target.value))}
+            style={{ width: '100%', padding: '9px 0', fontSize: 14, border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
+          />
+        </div>
       </div>
       <div>
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'block', marginBottom: 4 }}>Anual</span>
-        <input
-          type="number" min={0} value={anual}
-          onChange={(e) => onAnualChange(Number(e.target.value))}
-          style={{ width: '100%', padding: '9px 12px', borderRadius: 8, fontSize: 14, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
-        />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>{moneda.simbolo}</span>
+          <input
+            type="number" min={0} step="0.01" value={anual}
+            onChange={(e) => onAnualChange(Number(e.target.value))}
+            style={{ width: '100%', padding: '9px 0', fontSize: 14, border: 'none', background: 'transparent', color: 'var(--text-primary)', outline: 'none' }}
+          />
+        </div>
         <span style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 4, display: 'block' }}>
-          ≈ {equivalenteMensual(anual).toLocaleString('es-CO')} {moneda.label}/mes
+          ≈ {moneda.simbolo}{equivalenteMensual(anual).toLocaleString('es-CO')} {moneda.label}/mes
         </span>
       </div>
     </div>

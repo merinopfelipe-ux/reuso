@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Contenido Landing' }
 
+// Sin esto, Next.js cachea las llamadas fetch() internas de Supabase y esta
+// página muestra contenido viejo tras editar/publicar — mismo bug ya
+// documentado y corregido en src/app/api/planes/route.ts. Bug real
+// encontrado 2026-09-04: la pestaña FAQ no mostraba el contenido recién
+// sembrado en la base aunque los datos ya estaban ahí, verificado en vivo.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'

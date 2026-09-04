@@ -4,9 +4,10 @@ interface BanderaProps {
   codigo: string
   alt?: string
   className?: string
+  style?: React.CSSProperties
 }
 
-export function Bandera({ codigo, alt = '', className = '' }: BanderaProps) {
+export function Bandera({ codigo, alt = '', className = '', style }: BanderaProps) {
   if (!codigo) return null
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -19,6 +20,7 @@ export function Bandera({ codigo, alt = '', className = '' }: BanderaProps) {
         height: 11,
         borderRadius: '2px',
         border: '1px solid rgba(0,0,0,0.15)',
+        ...style,
       }}
     />
   )

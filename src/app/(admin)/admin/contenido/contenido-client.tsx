@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
-import { Save as FloppyDisk, CircleHelp as Question, Tag } from '@/components/ui/icons'
+import { useState, useTransition, useRef, useEffect } from 'react'
+import { Save as FloppyDisk, CircleHelp as Question, Tag, Plus, Trash, Pencil, GripVertical } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { PreciosTab } from './precios-tab'
@@ -30,6 +30,28 @@ const TABS = [
 
 type FaqItem = { pregunta: string; respuesta: string }
 
+// Crece con el contenido, nunca activa scroll interno — a pedido del
+// usuario 2026-09-04 ("no activemos el scroll"). Sin librería nueva: solo
+// recalcula la altura al alto real del contenido en cada cambio.
+function TextareaAutoAjustable({ value, onChange, style }: {
+  value: string; onChange: (v: string) => void; style: React.CSSProperties
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+  useEffect(() => {
+    if (!ref.current) return
+    ref.current.style.height = 'auto'
+    ref.current.style.height = `${ref.current.scrollHeight}px`
+  }, [value])
+  return (
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      style={{ ...style, overflow: 'hidden', resize: 'none' }}
+    />
+  )
+}
+
 export function ContenidoClient({ contenido }: Props) {
   const [tab, setTab] = useState('whatsapp')
   const [, startTransition] = useTransition()
@@ -43,10 +65,32 @@ export function ContenidoClient({ contenido }: Props) {
   // WhatsApp state
   const [waNumero, setWaNumero] = useState((getVal('whatsapp').numero as string) ?? WA_NUMBER)
 
-  // FAQ state
+  // FAQ state — colapsada por defecto (solo pregunta + lápiz/caneca), se
+  // expande a los campos editables al tocar el lápiz. Arrastrar con
+  // GripVertical reordena, mismo patrón ya usado para las etapas del
+  // embudo en sales-dashboard.tsx (sin librería de drag and drop nueva).
   const faqInit = getVal('faq')
   const [faqItems, setFaqItems] = useState<FaqItem[]>((faqInit.items as FaqItem[]) ?? [])
   const [newFaq, setNewFaq] = useState<FaqItem>({ pregunta: '', respuesta: '' })
+  const [faqExpandidos, setFaqExpandidos] = useState<Set<number>>(new Set())
+  const [faqDragIndex, setFaqDragIndex] = useState<number | null>(null)
+
+  function toggleFaqExpandido(i: number) {
+    setFaqExpandidos(prev => {
+      const next = new Set(prev)
+      if (next.has(i)) next.delete(i); else next.add(i)
+      return next
+    })
+  }
+
+  function moverFaq(de: number, a: number) {
+    setFaqItems(prev => {
+      const lista = [...prev]
+      const [movida] = lista.splice(de, 1)
+      lista.splice(a, 0, movida)
+      return lista
+    })
+  }
 
   function showToast(msg: string) {
     setToast(msg)
@@ -65,7 +109,6 @@ export function ContenidoClient({ contenido }: Props) {
 
   const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6 }
   const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', background: 'var(--bg-input)' }
-  const cardStyle: React.CSSProperties = { background: 'var(--bg-card)', border: `1px solid ${C.border}`, borderRadius: 16, padding: 28 }
   const btnStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 10, background: C.brand, color: 'var(--text-on-brand)', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }
 
   return (
@@ -93,9 +136,10 @@ export function ContenidoClient({ contenido }: Props) {
         ))}
       </div>
 
-      {/* WhatsApp */}
+      {/* WhatsApp — sin caja alrededor, a pedido del usuario 2026-09-04
+          ("no es necesario encerrar todo tanto"). */}
       {tab === 'whatsapp' && (
-        <div style={{ ...cardStyle, maxWidth: 480 }}>
+        <div style={{ maxWidth: 480 }}>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 20 }}>Número de WhatsApp</h3>
           <div style={{ marginBottom: 20 }}>
             <label style={labelStyle}>Número (formato internacional, sin +)</label>
@@ -114,31 +158,60 @@ export function ContenidoClient({ contenido }: Props) {
           tarjetas de plan necesitan todo el ancho disponible. */}
       {tab === 'precios' && <PreciosTab />}
 
-      {/* FAQ */}
+      {/* FAQ — sin la caja exterior, a pedido del usuario 2026-09-04
+          ("está doblemente encerrado, solo con el de adentro es
+          suficiente"): se queda solo el recuadro punteado de "Nueva
+          pregunta" y el fondo tenue de cada pregunta existente. */}
       {tab === 'faq' && (
-        <div style={{ ...cardStyle, maxWidth: 700 }}>
+        <div style={{ maxWidth: 700 }}>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 20 }}>Preguntas frecuentes</h3>
 
-          {faqItems.map((item, i) => (
-            <div key={i} style={{ marginBottom: 16, padding: 16, background: C.light, borderRadius: 12, position: 'relative' }}>
-              <div style={{ marginBottom: 10 }}>
-                <label style={labelStyle}>Pregunta</label>
-                <input value={item.pregunta}
-                  onChange={e => setFaqItems(prev => prev.map((it, idx) => idx === i ? { ...it, pregunta: e.target.value } : it))}
-                  style={inputStyle} />
+          {faqItems.map((item, i) => {
+            const expandida = faqExpandidos.has(i)
+            return (
+              <div
+                key={i}
+                draggable
+                onDragStart={() => setFaqDragIndex(i)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={() => { if (faqDragIndex !== null && faqDragIndex !== i) moverFaq(faqDragIndex, i); setFaqDragIndex(null) }}
+                onDragEnd={() => setFaqDragIndex(null)}
+                style={{ padding: '14px 0', borderBottom: '1px solid var(--divider)', opacity: faqDragIndex === i ? 0.4 : 1 }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <GripVertical size={14} style={{ color: C.mid, cursor: 'grab', flexShrink: 0 }} sinAnimacion />
+                  <p style={{ flex: 1, fontSize: 14, fontWeight: 600, color: C.dark, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {item.pregunta || 'Pregunta sin título'}
+                  </p>
+                  <button onClick={() => toggleFaqExpandido(i)} title="Editar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: expandida ? C.brand : C.mid, display: 'flex', flexShrink: 0 }}>
+                    <Pencil size={15} sinAnimacion />
+                  </button>
+                  <button onClick={() => setFaqItems(prev => prev.filter((_, idx) => idx !== i))} title="Eliminar" style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', display: 'flex', flexShrink: 0 }}>
+                    <Trash size={15} sinAnimacion />
+                  </button>
+                </div>
+
+                {expandida && (
+                  <div style={{ marginTop: 14, paddingLeft: 24 }}>
+                    <div style={{ marginBottom: 10 }}>
+                      <label style={labelStyle}>Pregunta</label>
+                      <input value={item.pregunta}
+                        onChange={e => setFaqItems(prev => prev.map((it, idx) => idx === i ? { ...it, pregunta: e.target.value } : it))}
+                        style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={labelStyle}>Respuesta</label>
+                      <TextareaAutoAjustable
+                        value={item.respuesta}
+                        onChange={(v) => setFaqItems(prev => prev.map((it, idx) => idx === i ? { ...it, respuesta: v } : it))}
+                        style={{ ...inputStyle, minHeight: 70 }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <label style={labelStyle}>Respuesta</label>
-                <textarea value={item.respuesta}
-                  onChange={e => setFaqItems(prev => prev.map((it, idx) => idx === i ? { ...it, respuesta: e.target.value } : it))}
-                  style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }} />
-              </div>
-              <button onClick={() => setFaqItems(prev => prev.filter((_, idx) => idx !== i))}
-                style={{ position: 'absolute', top: 12, right: 12, background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444', fontSize: 12, fontWeight: 700 }}>
-                Eliminar
-              </button>
-            </div>
-          ))}
+            )
+          })}
 
           <div style={{ marginBottom: 20, padding: 16, border: `1px dashed ${C.border}`, borderRadius: 12 }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, marginBottom: 12 }}>Nueva pregunta</p>
@@ -153,6 +226,7 @@ export function ContenidoClient({ contenido }: Props) {
             </div>
             <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }) }}
               style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
+              <Plus size={15} />
               Agregar pregunta
             </button>
           </div>
