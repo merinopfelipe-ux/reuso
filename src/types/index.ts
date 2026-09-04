@@ -54,6 +54,10 @@ export interface Empresa {
   direccion?: string | null
   sitio_web?: string | null
   tamano_empresa: string | null
+  // Ciclo de facturación (sql/119) — dato manual que marca el super_admin,
+  // no hay pasarela de pagos integrada. null = todavía sin marcar.
+  ciclo_facturacion: 'mensual' | 'anual' | null
+  proxima_renovacion: string | null
 }
 
 export interface Modulo {

@@ -7,14 +7,8 @@ import { MarcaEmpresaClient } from './components/marca-empresa-client'
 import { AdminEmpresaClient } from './components/admin-empresa-client'
 import { CatalogoRestringidoEmpresaClient } from './components/catalogo-restringido-empresa-client'
 import { LineasEmpresaClient } from './components/lineas-empresa-client'
+import { NegociacionEmpresaClient } from './components/negociacion-empresa-client'
 import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
-
-const LIMITES: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number }> = {
-  free:      { empleados: 1,        calculos_mes: 10,       informes_mes: 0 },
-  lab:       { empleados: 5,        calculos_mes: 200,      informes_mes: 5 },
-  impulso:   { empleados: 10,       calculos_mes: 200,      informes_mes: 5 },
-  ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity },
-}
 
 export default async function EmpresaDetallePage({
   params,
@@ -38,7 +32,7 @@ export default async function EmpresaDetallePage({
 
   const inicioMes = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()
 
-  const [empresaRes, empleadosRes, calculosMesRes, logsRes, modulosRes, asignadosRes, lineasRes, lineasAsignadasRes, adminsEmpresaRes] = await Promise.all([
+  const [empresaRes, empleadosRes, calculosMesRes, logsRes, modulosRes, asignadosRes, lineasRes, lineasAsignadasRes, adminsEmpresaRes, negociacionRes] = await Promise.all([
     adminClient.from('empresas').select('*').eq('id', id).single(),
     adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', id),
     adminClient
@@ -76,13 +70,53 @@ export default async function EmpresaDetallePage({
       .select('user_id, nombre, apellido, email')
       .eq('empresa_id', id)
       .eq('rol', 'empresa_admin'),
+    adminClient
+      .from('empresas_negociaciones')
+      .select('*')
+      .eq('empresa_id', id)
+      .maybeSingle(),
   ])
 
   if (!empresaRes.data || empresaRes.error) notFound()
 
   const empresa = empresaRes.data
   const plan = empresa.plan as Plan
-  const limite = LIMITES[plan] ?? LIMITES.free
+
+  // Límites y precio REALES de esta empresa — antes esta página traía una
+  // tabla fija hardcodeada en el propio archivo (LIMITES), desincronizada
+  // de config_planes desde que /admin/planes se volvió editable (sql/115).
+  // Corregido 2026-09-04 de paso, al mover aquí el módulo de negociación:
+  // si la empresa tiene fila en empresas_negociaciones, ESA reemplaza al
+  // plan global por completo (regla ya establecida en sql/115, nunca una
+  // mezcla campo por campo). Si no, se consulta config_planes de verdad.
+  const negociacion = negociacionRes.data
+  const { data: configPlanRow } = negociacion
+    ? { data: null }
+    : await adminClient
+        .from('config_planes')
+        .select('precio_cop, precio_anual_cop, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes')
+        .eq('id', plan)
+        .single()
+
+  const planReal = negociacion
+    ? {
+        origen: 'negociacion' as const,
+        precio_cop: negociacion.precio_cop,
+        precio_anual_cop: null as number | null,
+        limite_empleados: negociacion.limite_empleados,
+        limite_calculos_mes: negociacion.limite_calculos_mes,
+        limite_informes_mes: negociacion.limite_informes_mes,
+        limite_cotizaciones_mes: negociacion.limite_cotizaciones_mes,
+      }
+    : {
+        origen: 'global' as const,
+        precio_cop: configPlanRow?.precio_cop ?? 0,
+        precio_anual_cop: configPlanRow?.precio_anual_cop ?? null,
+        limite_empleados: configPlanRow?.limite_empleados ?? null,
+        limite_calculos_mes: configPlanRow?.limite_calculos_mes ?? null,
+        limite_informes_mes: configPlanRow?.limite_informes_mes ?? null,
+        limite_cotizaciones_mes: configPlanRow?.limite_cotizaciones_mes ?? null,
+      }
 
   const logsEmpresa = logsRes.data ?? []
 
@@ -138,9 +172,8 @@ export default async function EmpresaDetallePage({
       <EstadoCuentaClient
         empresa={empresa}
         totalEmpleados={empleadosRes.count ?? 0}
-        limiteEmpleados={limite.empleados}
         calculosMes={calculosMesRes.count ?? 0}
-        limiteCalculosMes={limite.calculos_mes}
+        planReal={planReal}
         historialPlan={historialCambios}
         adminNombre={`${perfil?.nombre || ''} ${perfil?.apellido || ''}`.trim() || 'Admin'}
       />
@@ -165,12 +198,20 @@ export default async function EmpresaDetallePage({
         <LineasEmpresaClient empresaId={id} lineas={lineasConActivo} />
       </div>
 
-      <div className="border-t pt-8 pb-10" style={{ borderColor: 'var(--border)' }}>
+      <div className="border-t pt-8" style={{ borderColor: 'var(--border)' }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Permisos de Insumos y Materiales Base</h3>
         <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
           Habilita qué materiales e insumos (creados por otras empresas o por la tuya) pueden usarse en los cálculos ambientales de esta empresa.
         </p>
         <CatalogoRestringidoEmpresaClient empresaId={id} />
+      </div>
+
+      <div className="border-t pt-8 pb-10" style={{ borderColor: 'var(--border)' }}>
+        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Negociación de plan</h3>
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+          Precios y límites propios para esta empresa, distintos del plan global. Si no la necesitas, esta empresa sigue usando lo publicado en Planes normalmente.
+        </p>
+        <NegociacionEmpresaClient empresaId={id} />
       </div>
     </div>
   )

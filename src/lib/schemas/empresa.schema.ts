@@ -31,6 +31,9 @@ export const patchEmpresaSchema = z.object({
   direccion: z.string().max(500).nullable().optional(),
   sitio_web: z.string().url('URL inválida').or(z.literal('')).nullable().optional(),
   tamano_empresa: z.string().max(100).nullable().optional(),
+  // Ciclo de facturación (sql/119) — dato manual, ver nota en la migración.
+  ciclo_facturacion: z.enum(['mensual', 'anual']).nullable().optional(),
+  proxima_renovacion: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida').nullable().optional(),
 })
 
 export type PatchEmpresa = z.infer<typeof patchEmpresaSchema>

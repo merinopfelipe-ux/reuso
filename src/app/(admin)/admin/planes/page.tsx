@@ -1,16 +1,9 @@
-import { createAdminClient } from '@/lib/supabase/admin'
 import { PlanesClient } from './components/planes-client'
 
 // El grupo (admin) ya exige super_admin a nivel de layout — ver
-// src/app/(admin)/layout.tsx. Esta página solo carga la lista de empresas
-// server-side (para el selector de negociaciones) y delega el resto al
-// cliente.
-export default async function PlanesPage() {
-  const adminClient = await createAdminClient()
-  const { data: empresas } = await adminClient
-    .from('empresas')
-    .select('id, nombre')
-    .order('nombre', { ascending: true })
-
-  return <PlanesClient empresasIniciales={empresas ?? []} />
+// src/app/(admin)/layout.tsx. La negociación por empresa se movió a la
+// ficha de cada empresa (2026-09-04), esta página ya no necesita cargar
+// la lista de empresas.
+export default function PlanesPage() {
+  return <PlanesClient />
 }

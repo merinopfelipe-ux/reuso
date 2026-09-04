@@ -3,9 +3,7 @@
 import { useEffect, useState } from 'react'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
-import { Modal } from '@/components/ui/modal'
-import { SelectorEmpresa, type EmpresaOpcion } from '@/components/ui/selector-empresa'
-import { Square, SquareCheck, Trash, Users, Calculator, FileText, ClipboardList } from '@/components/ui/icons'
+import { Square, SquareCheck, Users, Calculator, FileText, ClipboardList } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 
@@ -40,17 +38,6 @@ interface ConfigPlan {
 
 const NOMBRES: Record<string, string> = {
   free: 'Explora', lab: 'Circular Lab', impulso: 'Impulso Sostenible', ilimitado: 'Impacto Ilimitado',
-}
-
-interface Negociacion {
-  precio_cop: number
-  precio_usd: number
-  precio_eur: number
-  limite_empleados: number | null
-  limite_calculos_mes: number | null
-  limite_informes_mes: number | null
-  limite_cotizaciones_mes: number | null
-  notas: string | null
 }
 
 const inputSt: React.CSSProperties = {
@@ -303,109 +290,8 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
   )
 }
 
-function SeccionNegociaciones({ empresas }: { empresas: EmpresaOpcion[] }) {
-  const { toast } = useToast()
-  const [empresaId, setEmpresaId] = useState('')
-  const [negociacion, setNegociacion] = useState<Negociacion | null>(null)
-  const [cargando, setCargando] = useState(false)
-  const [guardando, setGuardando] = useState(false)
-  const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false)
-  const [form, setForm] = useState<Negociacion>({
-    precio_cop: 0, precio_usd: 0, precio_eur: 0,
-    limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '',
-  })
 
-  useEffect(() => {
-    if (!empresaId) { setNegociacion(null); return }
-    setCargando(true)
-    fetch(`/api/admin/empresas/${empresaId}/negociacion`)
-      .then(r => r.json())
-      .then(data => {
-        setNegociacion(data.negociacion)
-        if (data.negociacion) setForm(data.negociacion)
-        else setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '' })
-      })
-      .finally(() => setCargando(false))
-  }, [empresaId])
-
-  async function guardar() {
-    setGuardando(true)
-    const res = await fetch(`/api/admin/empresas/${empresaId}/negociacion`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
-    })
-    setGuardando(false)
-    if (!res.ok) { toast.error('No se pudo guardar la negociación.'); return }
-    toast.success('Negociación guardada — esta empresa ya no se ve afectada por cambios al plan global.')
-    setNegociacion(form)
-  }
-
-  async function eliminar() {
-    const res = await fetch(`/api/admin/empresas/${empresaId}/negociacion`, { method: 'DELETE' })
-    setModalEliminarAbierto(false)
-    if (!res.ok) { toast.error('No se pudo quitar la negociación.'); return }
-    toast.success('Negociación eliminada — la empresa vuelve al plan global.')
-    setNegociacion(null)
-    setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '' })
-  }
-
-  return (
-    <div style={{ borderRadius: 12, border: '1px solid var(--border)', padding: 16, background: 'var(--bg-card)', marginTop: 24 }}>
-      <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginTop: 0, marginBottom: 4 }}>Negociaciones por empresa</h3>
-      <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 16 }}>
-        Si una empresa tiene una negociación propia aquí, sus precios y límites quedan fijos — nunca cambian cuando publicas un ajuste al plan global.
-      </p>
-
-      <SelectorEmpresa empresas={empresas} value={empresaId} onChange={setEmpresaId} placeholder="Busca una empresa..." />
-
-      {empresaId && !cargando && (
-        <div style={{ marginTop: 16 }}>
-          {negociacion && (
-            <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-brand)', marginBottom: 12 }}>
-              Esta empresa ya tiene una negociación propia activa.
-            </p>
-          )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
-            <div><span style={labelSt}>Precio COP</span><input type="number" min={0} value={form.precio_cop} onChange={(e) => setForm(f => ({ ...f, precio_cop: Number(e.target.value) }))} style={inputSt} /></div>
-            <div><span style={labelSt}>Precio USD</span><input type="number" min={0} value={form.precio_usd} onChange={(e) => setForm(f => ({ ...f, precio_usd: Number(e.target.value) }))} style={inputSt} /></div>
-            <div><span style={labelSt}>Precio EUR</span><input type="number" min={0} value={form.precio_eur} onChange={(e) => setForm(f => ({ ...f, precio_eur: Number(e.target.value) }))} style={inputSt} /></div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-            <CampoIlimitado label="Empleados" valor={form.limite_empleados} onChange={(v) => setForm(f => ({ ...f, limite_empleados: v }))} />
-            <CampoIlimitado label="Cálculos/mes" valor={form.limite_calculos_mes} onChange={(v) => setForm(f => ({ ...f, limite_calculos_mes: v }))} />
-            <CampoIlimitado label="Informes/mes" valor={form.limite_informes_mes} onChange={(v) => setForm(f => ({ ...f, limite_informes_mes: v }))} />
-            <CampoIlimitado label="Cotizaciones/mes" valor={form.limite_cotizaciones_mes} onChange={(v) => setForm(f => ({ ...f, limite_cotizaciones_mes: v }))} />
-          </div>
-          <div style={{ marginBottom: 12 }}>
-            <span style={labelSt}>Notas (ej. referencia del contrato)</span>
-            <textarea value={form.notas ?? ''} onChange={(e) => setForm(f => ({ ...f, notas: e.target.value }))} style={{ ...inputSt, minHeight: 60, resize: 'vertical' }} />
-          </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <Button variant="primary" size="sm" onClick={guardar} loading={guardando}>Guardar negociación</Button>
-            {negociacion && (
-              <Button variant="ghost" size="sm" onClick={() => setModalEliminarAbierto(true)}>
-                <Trash size={14} sinAnimacion /> Quitar negociación
-              </Button>
-            )}
-          </div>
-        </div>
-      )}
-
-      <Modal
-        abierto={modalEliminarAbierto}
-        onClose={() => setModalEliminarAbierto(false)}
-        titulo="Quitar negociación"
-        descripcion="La empresa volverá a usar los límites y precios del plan global."
-        varianteConfirmar="error"
-        textoConfirmar="Quitar"
-        onConfirmar={eliminar}
-      />
-    </div>
-  )
-}
-
-export function PlanesClient({ empresasIniciales }: { empresasIniciales: EmpresaOpcion[] }) {
+export function PlanesClient() {
   const [planes, setPlanes] = useState<ConfigPlan[]>([])
   const [cargando, setCargando] = useState(true)
 
@@ -436,7 +322,13 @@ export function PlanesClient({ empresasIniciales }: { empresasIniciales: Empresa
         </div>
       )}
 
-      <SeccionNegociaciones empresas={empresasIniciales} />
+      {/* La negociación por empresa ya no vive aquí — se movió a la ficha
+          de cada empresa (2026-09-04, a pedido del usuario: "eso debe ir en
+          cada empresa"). */}
+      <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 24, textAlign: 'center' }}>
+        ¿Necesitas precios o límites distintos para una empresa puntual? Eso se negocia desde su propia ficha en{' '}
+        <a href="/admin/empresas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>Empresas</a>.
+      </p>
     </div>
   )
 }

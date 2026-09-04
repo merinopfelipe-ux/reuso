@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power, RefreshCw, Save } from '@/components/ui/icons'
+import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power, RefreshCw, Save, Calendar, FileText, ClipboardList, Plus, Minus } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { PlanBadge, PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
@@ -15,12 +15,26 @@ interface HistorialPlanEntry {
   cambios: Record<string, unknown>
 }
 
+// Límites y precio REALES de esta empresa hoy — vienen de config_planes
+// (plan global) o de empresas_negociaciones si esta empresa tiene una
+// negociación propia (sql/115). Ya NO es la tabla fija que traía esta
+// página antes, desincronizada desde que /admin/planes se volvió editable
+// — corregido 2026-09-04.
+interface PlanReal {
+  origen: 'global' | 'negociacion'
+  precio_cop: number
+  precio_anual_cop: number | null
+  limite_empleados: number | null
+  limite_calculos_mes: number | null
+  limite_informes_mes: number | null
+  limite_cotizaciones_mes: number | null
+}
+
 interface Props {
   empresa: Empresa
   totalEmpleados: number
-  limiteEmpleados: number
   calculosMes: number
-  limiteCalculosMes: number
+  planReal: PlanReal
   historialPlan: HistorialPlanEntry[]
   adminNombre?: string
 }
@@ -82,9 +96,8 @@ function KpiCard({
 export function EstadoCuentaClient({
   empresa,
   totalEmpleados,
-  limiteEmpleados,
   calculosMes,
-  limiteCalculosMes,
+  planReal,
   historialPlan,
   adminNombre = 'Equipo Interno',
 }: Props) {
@@ -100,6 +113,24 @@ export function EstadoCuentaClient({
   const [menuPlanAbierto, setMenuPlanAbierto] = useState(false)
   const [activa, setActiva] = useState(empresa.activa)
   const [cambiandoActiva, setCambiandoActiva] = useState(false)
+
+  // Ciclo de facturación (sql/119) — dato manual, no hay pasarela de pagos
+  // integrada. El super_admin lo marca a mano, igual que las notas.
+  const [ciclo, setCiclo] = useState<'mensual' | 'anual' | null>(empresa.ciclo_facturacion)
+  const [renovacion, setRenovacion] = useState(empresa.proxima_renovacion ?? '')
+  const [guardandoCiclo, setGuardandoCiclo] = useState(false)
+  const [verDetallePlan, setVerDetallePlan] = useState(false)
+
+  async function guardarCiclo(nuevoCiclo: 'mensual' | 'anual' | null, nuevaRenovacion: string) {
+    setGuardandoCiclo(true)
+    const res = await fetch(`/api/admin/empresas/${empresa.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ciclo_facturacion: nuevoCiclo, proxima_renovacion: nuevaRenovacion || null }),
+    })
+    setGuardandoCiclo(false)
+    if (res.ok) startTransition(() => router.refresh())
+  }
 
   async function toggleActiva() {
     if (cambiandoActiva) return
@@ -257,8 +288,8 @@ export function EstadoCuentaClient({
 
       {/* KPIs de uso */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
-        <KpiCard titulo="Empleados" valor={totalEmpleados} limite={limiteEmpleados} icono={Users} color="#00827C" />
-        <KpiCard titulo="Cálculos este mes" valor={calculosMes} limite={limiteCalculosMes} icono={Calculator} color="#59A6E4" />
+        <KpiCard titulo="Empleados" valor={totalEmpleados} limite={planReal.limite_empleados ?? Infinity} icono={Users} color="#00827C" />
+        <KpiCard titulo="Cálculos este mes" valor={calculosMes} limite={planReal.limite_calculos_mes ?? Infinity} icono={Calculator} color="#59A6E4" />
         <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] relative">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: PLAN_CONFIG[plan]?.bg ?? 'rgba(160,130,200,0.12)', transition: 'background 0.3s', flexShrink: 0 }}>
@@ -318,6 +349,78 @@ export function EstadoCuentaClient({
             )}
           </div>
           {guardandoPlan && <p className="text-xs mt-2 text-[var(--text-secondary)] font-semibold animate-pulse">Guardando cambio...</p>}
+
+          {/* Qué incluye el plan — debajo del nombre del plan, colapsado
+              detrás de un "+" (lista, no un párrafo de texto plano), a
+              pedido del usuario 2026-09-04. Lee planReal (config_planes o
+              empresas_negociaciones, lo que aplique), nunca un número fijo. */}
+          <button
+            type="button"
+            onClick={() => setVerDetallePlan(v => !v)}
+            style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8, fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            {verDetallePlan ? <Minus size={12} /> : <Plus size={12} />}
+            {planReal.origen === 'negociacion' ? 'Negociación propia' : 'Qué incluye este plan'}
+          </button>
+
+          {verDetallePlan && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
+              {([
+                { icono: Calculator, valor: planReal.limite_calculos_mes, etiqueta: 'cálculos/mes' },
+                { icono: FileText, valor: planReal.limite_informes_mes, etiqueta: 'informes/mes' },
+                { icono: ClipboardList, valor: planReal.limite_cotizaciones_mes, etiqueta: 'cotizaciones/mes' },
+                { icono: Users, valor: planReal.limite_empleados, etiqueta: 'empleados' },
+              ]).map(({ icono: Icono, valor, etiqueta }) => (
+                <div key={etiqueta} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-primary)' }}>
+                  <Icono size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+                  <strong>{valor ?? '∞'}</strong> {etiqueta}
+                </div>
+              ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-primary)' }}>
+                <Sparkles size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+                <strong>${planReal.precio_cop.toLocaleString('es-CO')} COP</strong> / mes
+                {planReal.precio_anual_cop != null && (
+                  <span style={{ color: 'var(--text-secondary)' }}>(≈${planReal.precio_anual_cop.toLocaleString('es-CO')}/año)</span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Ciclo de facturación (sql/119) — dato manual, el super_admin
+              lo marca a mano porque no hay pasarela de pagos integrada.
+              A pedido del usuario 2026-09-04: "es un texto... la vigencia,
+              si es mensual o anual", con fecha de renovación. */}
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--divider)' }}>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 8 }}>
+              {(['mensual', 'anual'] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  disabled={guardandoCiclo}
+                  onClick={() => { setCiclo(c); guardarCiclo(c, renovacion) }}
+                  style={{
+                    padding: '4px 12px', borderRadius: 999, fontSize: 11, fontWeight: 700,
+                    border: `1px solid ${ciclo === c ? 'var(--color-brand)' : 'var(--border)'}`,
+                    background: ciclo === c ? 'var(--color-brand)' : 'transparent',
+                    color: ciclo === c ? 'var(--text-on-brand)' : 'var(--text-secondary)',
+                    cursor: guardandoCiclo ? 'wait' : 'pointer',
+                  }}
+                >
+                  {c === 'mensual' ? 'Mensual' : 'Anual'}
+                </button>
+              ))}
+            </div>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'var(--text-secondary)' }}>
+              <Calendar size={13} />
+              Próxima renovación
+              <input
+                type="date"
+                value={renovacion}
+                onChange={(e) => { setRenovacion(e.target.value); guardarCiclo(ciclo, e.target.value) }}
+                style={{ fontSize: 11, padding: '3px 6px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
+              />
+            </label>
+          </div>
         </div>
       </div>
 
