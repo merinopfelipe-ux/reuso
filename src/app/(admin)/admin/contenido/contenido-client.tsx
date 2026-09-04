@@ -108,7 +108,7 @@ export function ContenidoClient({ contenido }: Props) {
     showToast('Guardado correctamente.')
   }
 
-  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 6 }
+  const labelStyle: React.CSSProperties = { fontSize: 12, fontWeight: 700, color: C.mid, display: 'block', marginBottom: 8 }
   const inputStyle: React.CSSProperties = { width: '100%', padding: '10px 14px', borderRadius: 10, border: `1px solid ${C.border}`, fontSize: 14, color: C.dark, outline: 'none', background: 'var(--bg-input)' }
   const btnStyle: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 22px', borderRadius: 10, background: C.brand, color: 'var(--text-on-brand)', fontSize: 13, fontWeight: 800, border: 'none', cursor: 'pointer' }
 
@@ -165,7 +165,7 @@ export function ContenidoClient({ contenido }: Props) {
           pregunta" y el fondo tenue de cada pregunta existente. */}
       {tab === 'faq' && (
         <div style={{ maxWidth: 700 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 20 }}>Preguntas frecuentes</h3>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 28 }}>Preguntas frecuentes</h3>
 
           {faqItems.map((item, i) => {
             const expandida = faqExpandidos.has(i)
@@ -177,9 +177,9 @@ export function ContenidoClient({ contenido }: Props) {
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => { if (faqDragIndex !== null && faqDragIndex !== i) moverFaq(faqDragIndex, i); setFaqDragIndex(null) }}
                 onDragEnd={() => setFaqDragIndex(null)}
-                style={{ padding: '14px 0', borderBottom: '1px solid var(--divider)', opacity: faqDragIndex === i ? 0.4 : 1 }}
+                style={{ padding: '22px 0', borderBottom: '1px solid var(--divider)', opacity: faqDragIndex === i ? 0.4 : 1 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <GripVertical size={14} style={{ color: C.mid, cursor: 'grab', flexShrink: 0 }} sinAnimacion />
                   <p style={{ flex: 1, fontSize: 14, fontWeight: 600, color: C.dark, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {item.pregunta || 'Pregunta sin título'}
@@ -193,8 +193,8 @@ export function ContenidoClient({ contenido }: Props) {
                 </div>
 
                 {expandida && (
-                  <div style={{ marginTop: 14, paddingLeft: 24 }}>
-                    <div style={{ marginBottom: 10 }}>
+                  <div style={{ marginTop: 22, paddingLeft: 30, display: 'flex', flexDirection: 'column', gap: 18 }}>
+                    <div>
                       <label style={labelStyle}>Pregunta</label>
                       <input value={item.pregunta}
                         onChange={e => setFaqItems(prev => prev.map((it, idx) => idx === i ? { ...it, pregunta: e.target.value } : it))}
@@ -218,13 +218,13 @@ export function ContenidoClient({ contenido }: Props) {
               — a pedido del usuario 2026-09-04, mismo criterio que las
               preguntas existentes (no todo abierto de una). */}
           {mostrarNuevaFaq && (
-            <div style={{ marginBottom: 20, padding: 16, border: `1px dashed ${C.border}`, borderRadius: 12 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, marginBottom: 12 }}>Nueva pregunta</p>
-              <div style={{ marginBottom: 10 }}>
+            <div style={{ margin: '24px 0', padding: 24, border: `1px dashed ${C.border}`, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 18 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, margin: 0 }}>Nueva pregunta</p>
+              <div>
                 <label style={labelStyle}>Pregunta</label>
                 <input value={newFaq.pregunta} onChange={e => setNewFaq(prev => ({ ...prev, pregunta: e.target.value }))} style={inputStyle} />
               </div>
-              <div style={{ marginBottom: 12 }}>
+              <div>
                 <label style={labelStyle}>Respuesta</label>
                 <TextareaAutoAjustable
                   value={newFaq.respuesta}
@@ -233,14 +233,14 @@ export function ContenidoClient({ contenido }: Props) {
                 />
               </div>
               <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }); setMostrarNuevaFaq(false) }}
-                style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
+                style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none', alignSelf: 'flex-start' }}>
                 <Plus size={15} />
                 Agregar pregunta
               </button>
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
             <button onClick={() => setMostrarNuevaFaq(v => !v)} className="hover-pop hover-press"
               style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
               <Plus size={15} />
