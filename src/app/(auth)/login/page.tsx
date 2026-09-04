@@ -270,7 +270,15 @@ export default function LoginPage() {
           onSuccess={(token) => setTurnstileToken(token)}
           onExpire={() => setTurnstileToken('')}
           onError={() => {
-            setError(T[idioma].errorDatos || 'Error de verificación de seguridad. Intenta de nuevo.');
+            // Bug real corregido 2026-09-04: mostraba "Credenciales
+            // incorrectas" sin que el usuario hubiera escrito nada, cada vez
+            // que el widget de Turnstile (invisible) fallaba por su cuenta
+            // (red, un bloqueador de anuncios, etc.) — nada que ver con el
+            // email/contraseña. Contradecía la regla del proyecto: Turnstile
+            // SIEMPRE debe fallar en modo abierto, nunca alarmar ni bloquear
+            // al usuario. El backend ya lo maneja bien (token vacío = se
+            // omite la verificación); aquí solo se limpia el token en
+            // silencio para que el envío caiga en ese mismo camino.
             setTurnstileToken('');
             turnstileRef.current?.reset();
           }}
