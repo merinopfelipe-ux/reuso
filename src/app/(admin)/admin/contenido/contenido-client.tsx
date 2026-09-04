@@ -74,6 +74,7 @@ export function ContenidoClient({ contenido }: Props) {
   const [newFaq, setNewFaq] = useState<FaqItem>({ pregunta: '', respuesta: '' })
   const [faqExpandidos, setFaqExpandidos] = useState<Set<number>>(new Set())
   const [faqDragIndex, setFaqDragIndex] = useState<number | null>(null)
+  const [mostrarNuevaFaq, setMostrarNuevaFaq] = useState(false)
 
   function toggleFaqExpandido(i: number) {
     setFaqExpandidos(prev => {
@@ -213,28 +214,43 @@ export function ContenidoClient({ contenido }: Props) {
             )
           })}
 
-          <div style={{ marginBottom: 20, padding: 16, border: `1px dashed ${C.border}`, borderRadius: 12 }}>
-            <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, marginBottom: 12 }}>Nueva pregunta</p>
-            <div style={{ marginBottom: 10 }}>
-              <label style={labelStyle}>Pregunta</label>
-              <input value={newFaq.pregunta} onChange={e => setNewFaq(prev => ({ ...prev, pregunta: e.target.value }))} style={inputStyle} />
+          {/* Colapsado por defecto detrás del botón "Nueva pregunta" de abajo
+              — a pedido del usuario 2026-09-04, mismo criterio que las
+              preguntas existentes (no todo abierto de una). */}
+          {mostrarNuevaFaq && (
+            <div style={{ marginBottom: 20, padding: 16, border: `1px dashed ${C.border}`, borderRadius: 12 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, marginBottom: 12 }}>Nueva pregunta</p>
+              <div style={{ marginBottom: 10 }}>
+                <label style={labelStyle}>Pregunta</label>
+                <input value={newFaq.pregunta} onChange={e => setNewFaq(prev => ({ ...prev, pregunta: e.target.value }))} style={inputStyle} />
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={labelStyle}>Respuesta</label>
+                <TextareaAutoAjustable
+                  value={newFaq.respuesta}
+                  onChange={(v) => setNewFaq(prev => ({ ...prev, respuesta: v }))}
+                  style={{ ...inputStyle, minHeight: 70 }}
+                />
+              </div>
+              <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }); setMostrarNuevaFaq(false) }}
+                style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
+                <Plus size={15} />
+                Agregar pregunta
+              </button>
             </div>
-            <div style={{ marginBottom: 12 }}>
-              <label style={labelStyle}>Respuesta</label>
-              <textarea value={newFaq.respuesta} onChange={e => setNewFaq(prev => ({ ...prev, respuesta: e.target.value }))}
-                style={{ ...inputStyle, minHeight: 70, resize: 'vertical' }} />
-            </div>
-            <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }) }}
+          )}
+
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <button onClick={() => setMostrarNuevaFaq(v => !v)} className="hover-pop hover-press"
               style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
               <Plus size={15} />
-              Agregar pregunta
+              Nueva pregunta
+            </button>
+            <button onClick={() => startTransition(() => { guardar('faq', { items: faqItems }) })} className="hover-pop hover-press" style={btnStyle}>
+              <FloppyDisk size={15} />
+              Guardar FAQ
             </button>
           </div>
-
-          <button onClick={() => startTransition(() => { guardar('faq', { items: faqItems }) })} className="hover-pop hover-press" style={btnStyle}>
-            <FloppyDisk size={15} />
-            Guardar FAQ
-          </button>
         </div>
       )}
     </div>
