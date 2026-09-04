@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Save as FloppyDisk, BarChart2 as ChartBar, CircleHelp as Question, Layers as Stack } from '@/components/ui/icons'
+import { Save as FloppyDisk, CircleHelp as Question, Tag } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
+import { PreciosTab } from './precios-tab'
 
 const C = {
   brand: 'var(--color-brand)', dark: 'var(--text-primary)', mid: 'var(--text-secondary)',
@@ -16,23 +17,14 @@ type Props = { contenido: ContenidoRow[] }
 
 const DEFAULTS: Record<string, Record<string, unknown>> = {
   whatsapp: { numero: WA_NUMBER },
-  hero: {
-    linea1: 'Mide el impacto',
-    linea2: 'de lo que tu empresa',
-    linea3: 'no tira.',
-    subtitulo: 'La primera plataforma que mide el CO₂ evitado al reutilizar.',
-  },
-  stats: {
-    stat1_valor: '2.400', stat1_unidad: 'kg', stat1_label: 'CO₂ evitados en total',
-    stat2_valor: '180', stat2_unidad: 'ton', stat2_label: 'reutilizadas y verificadas',
-    stat3_valor: '+100', stat3_unidad: '', stat3_label: 'organizaciones activas',
-  },
 }
 
+// Hero y Estadísticas se quitaron de esta pantalla a pedido del usuario
+// 2026-09-04 — la pestaña "Precios" (antes la página /admin/planes
+// completa) ocupa su lugar, entre WhatsApp y FAQ.
 const TABS = [
   { id: 'whatsapp', label: 'WhatsApp', icon: WhatsappLogo },
-  { id: 'hero', label: 'Hero', icon: Stack },
-  { id: 'stats', label: 'Estadísticas', icon: ChartBar },
+  { id: 'precios', label: 'Precios', icon: Tag },
   { id: 'faq', label: 'FAQ', icon: Question },
 ]
 
@@ -50,18 +42,6 @@ export function ContenidoClient({ contenido }: Props) {
 
   // WhatsApp state
   const [waNumero, setWaNumero] = useState((getVal('whatsapp').numero as string) ?? WA_NUMBER)
-
-  // Hero state
-  const heroInit = getVal('hero') as Record<string, string>
-  const [hero, setHero] = useState({ linea1: heroInit.linea1 ?? '', linea2: heroInit.linea2 ?? '', linea3: heroInit.linea3 ?? '', subtitulo: heroInit.subtitulo ?? '' })
-
-  // Stats state
-  const statsInit = getVal('stats') as Record<string, string>
-  const [stats, setStats] = useState({
-    stat1_valor: statsInit.stat1_valor ?? '', stat1_unidad: statsInit.stat1_unidad ?? '', stat1_label: statsInit.stat1_label ?? '',
-    stat2_valor: statsInit.stat2_valor ?? '', stat2_unidad: statsInit.stat2_unidad ?? '', stat2_label: statsInit.stat2_label ?? '',
-    stat3_valor: statsInit.stat3_valor ?? '', stat3_unidad: statsInit.stat3_unidad ?? '', stat3_label: statsInit.stat3_label ?? '',
-  })
 
   // FAQ state
   const faqInit = getVal('faq')
@@ -129,55 +109,10 @@ export function ContenidoClient({ contenido }: Props) {
         </div>
       )}
 
-      {/* Hero */}
-      {tab === 'hero' && (
-        <div style={{ ...cardStyle, maxWidth: 640 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 20 }}>Texto del Hero</h3>
-          {(['linea1', 'linea2', 'linea3'] as const).map((k, i) => (
-            <div key={k} style={{ marginBottom: 16 }}>
-              <label style={labelStyle}>Línea {i + 1}</label>
-              <input value={hero[k]} onChange={e => setHero(prev => ({ ...prev, [k]: e.target.value }))} style={inputStyle} />
-            </div>
-          ))}
-          <div style={{ marginBottom: 24 }}>
-            <label style={labelStyle}>Subtítulo</label>
-            <textarea value={hero.subtitulo} onChange={e => setHero(prev => ({ ...prev, subtitulo: e.target.value }))}
-              style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} />
-          </div>
-          <button onClick={() => startTransition(() => { guardar('hero', hero) })} className="hover-pop hover-press" style={btnStyle}>
-            <FloppyDisk size={15} />
-            Guardar hero
-          </button>
-        </div>
-      )}
-
-      {/* Stats */}
-      {tab === 'stats' && (
-        <div style={{ ...cardStyle, maxWidth: 700 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: C.dark, marginBottom: 20 }}>Estadísticas de impacto</h3>
-          {[1, 2, 3].map(n => (
-            <div key={n} style={{ marginBottom: 24, paddingBottom: 24, borderBottom: n < 3 ? `1px solid ${C.border}` : 'none' }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: C.dark, marginBottom: 12 }}>Estadística {n}</p>
-              <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 12 }}>
-                {(['valor', 'unidad', 'label'] as const).map(campo => (
-                  <div key={campo}>
-                    <label style={labelStyle}>{campo === 'valor' ? 'Número' : campo === 'unidad' ? 'Unidad' : 'Descripción'}</label>
-                    <input
-                      value={(stats as Record<string, string>)[`stat${n}_${campo}`]}
-                      onChange={e => setStats(prev => ({ ...prev, [`stat${n}_${campo}`]: e.target.value }))}
-                      style={inputStyle}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-          <button onClick={() => startTransition(() => { guardar('stats', stats) })} className="hover-pop hover-press" style={btnStyle}>
-            <FloppyDisk size={15} />
-            Guardar estadísticas
-          </button>
-        </div>
-      )}
+      {/* Precios — antes la página completa /admin/planes, absorbida aquí
+          2026-09-04 (ver precios-tab.tsx). Sin cardStyle/maxWidth: las 4
+          tarjetas de plan necesitan todo el ancho disponible. */}
+      {tab === 'precios' && <PreciosTab />}
 
       {/* FAQ */}
       {tab === 'faq' && (

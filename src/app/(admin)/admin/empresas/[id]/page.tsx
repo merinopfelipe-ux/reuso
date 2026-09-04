@@ -102,7 +102,7 @@ export default async function EmpresaDetallePage({
     ? {
         origen: 'negociacion' as const,
         precio_cop: negociacion.precio_cop,
-        precio_anual_cop: null as number | null,
+        precio_anual_cop: negociacion.precio_anual_cop as number | null,
         limite_empleados: negociacion.limite_empleados,
         limite_calculos_mes: negociacion.limite_calculos_mes,
         limite_informes_mes: negociacion.limite_informes_mes,

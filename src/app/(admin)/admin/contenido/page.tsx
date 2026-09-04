@@ -25,8 +25,8 @@ export default async function AdminContenidoPage() {
   return (
     <div>
       <AdminPageHeader
-        titulo="Contenido de la Landing"
-        subtitulo="Edita los textos, estadísticas y datos de contacto de la página pública"
+        titulo="Contenido de la landing"
+        subtitulo="WhatsApp de contacto, precios de los 4 planes y preguntas frecuentes de la página pública"
         showBack
       />
       <ContenidoClient contenido={contenido ?? []} />

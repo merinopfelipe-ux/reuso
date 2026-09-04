@@ -44,6 +44,10 @@ const putSchema = z.object({
   precio_cop: z.number().nonnegative(),
   precio_usd: z.number().nonnegative(),
   precio_eur: z.number().nonnegative(),
+  // Precio anual propio (sql/120) — mismo patrón que config_planes (sql/117).
+  precio_anual_cop: z.number().nonnegative(),
+  precio_anual_usd: z.number().nonnegative(),
+  precio_anual_eur: z.number().nonnegative(),
   limite_empleados: z.number().int().positive().nullable(),
   limite_calculos_mes: z.number().int().nonnegative().nullable(),
   limite_informes_mes: z.number().int().nonnegative().nullable(),

@@ -43,7 +43,6 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
         { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
         { href: '/admin/modulos', label: 'Módulos' },
-        { href: '/admin/planes', label: 'Planes' },
       ]
     },
     {
