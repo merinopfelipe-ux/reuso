@@ -156,8 +156,14 @@ export function ContenidoClient({ contenido }: Props) {
 
       {/* Precios — antes la página completa /admin/planes, absorbida aquí
           2026-09-04 (ver precios-tab.tsx). Sin cardStyle/maxWidth: las 4
-          tarjetas de plan necesitan todo el ancho disponible. */}
-      {tab === 'precios' && <PreciosTab />}
+          tarjetas de plan necesitan todo el ancho disponible.
+          Se mantiene SIEMPRE montada (oculta con display:none, no un
+          unmount condicional) para que cambiar de pestaña y volver no
+          dispare de nuevo el fetch ni el skeleton — a pedido del usuario
+          2026-09-04 ("aún más rápido y fluido"). */}
+      <div style={{ display: tab === 'precios' ? 'block' : 'none' }}>
+        <PreciosTab />
+      </div>
 
       {/* FAQ — sin la caja exterior, a pedido del usuario 2026-09-04
           ("está doblemente encerrado, solo con el de adentro es
@@ -169,6 +175,7 @@ export function ContenidoClient({ contenido }: Props) {
 
           {faqItems.map((item, i) => {
             const expandida = faqExpandidos.has(i)
+            const esUltima = i === faqItems.length - 1
             return (
               <div
                 key={i}
@@ -177,7 +184,7 @@ export function ContenidoClient({ contenido }: Props) {
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={() => { if (faqDragIndex !== null && faqDragIndex !== i) moverFaq(faqDragIndex, i); setFaqDragIndex(null) }}
                 onDragEnd={() => setFaqDragIndex(null)}
-                style={{ padding: '22px 0', borderBottom: '1px solid var(--divider)', opacity: faqDragIndex === i ? 0.4 : 1 }}
+                style={{ padding: '22px 0', borderBottom: esUltima ? 'none' : '1px solid var(--divider)', opacity: faqDragIndex === i ? 0.4 : 1 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                   <GripVertical size={14} style={{ color: C.mid, cursor: 'grab', flexShrink: 0 }} sinAnimacion />
@@ -240,7 +247,7 @@ export function ContenidoClient({ contenido }: Props) {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 8 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 80 }}>
             <button onClick={() => setMostrarNuevaFaq(v => !v)} className="hover-pop hover-press"
               style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
               <Plus size={15} />

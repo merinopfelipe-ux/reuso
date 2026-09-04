@@ -6,6 +6,42 @@ import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spi
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
+import { Skeleton } from '@/components/ui/skeleton'
+
+// Skeleton con la misma forma real de una tarjeta de plan (ícono+nombre,
+// fila de 4 límites, fila de 3 monedas) — mismo patrón .skeleton-shimmer
+// (verde claro, con brillo) que ya usa /empresa/cotizador, a pedido del
+// usuario 2026-09-04 ("que cargue los espacios como el cotizador"). Antes
+// esta pantalla mostraba solo un texto plano "Cargando...".
+function TarjetaPlanSkeleton() {
+  return (
+    <div style={{ borderRadius: 20, border: '1px solid var(--border)', padding: 24, background: 'var(--bg-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+        <Skeleton style={{ width: 38, height: 38, borderRadius: 11 }} />
+        <Skeleton style={{ width: 120, height: 20 }} />
+      </div>
+      <Skeleton style={{ width: 70, height: 14, marginBottom: 14 }} />
+      <div className="grid grid-cols-2 sm:grid-cols-4" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
+        {[0, 1, 2, 3].map(i => (
+          <div key={i}>
+            <Skeleton style={{ width: '80%', height: 12, marginBottom: 8 }} />
+            <Skeleton style={{ width: '60%', height: 26 }} />
+          </div>
+        ))}
+      </div>
+      <Skeleton style={{ width: 60, height: 14, marginBottom: 14 }} />
+      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20 }}>
+        {[0, 1, 2].map(i => (
+          <div key={i}>
+            <Skeleton style={{ width: '90%', height: 16, marginBottom: 14 }} />
+            <Skeleton style={{ width: '100%', height: 38, marginBottom: 14, borderRadius: 8 }} />
+            <Skeleton style={{ width: '100%', height: 38, borderRadius: 8 }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 // Pestaña "Precios" de /admin/contenido — antes era la página completa
 // /admin/planes, absorbida aquí a pedido del usuario 2026-09-04 ("la
@@ -89,7 +125,7 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
       })
       if (res.ok) setEstado('guardado')
       else toast.error(`No se pudo guardar ${NOMBRES[plan.id]}. Revisa tu conexión.`)
-    }, 900)
+    }, 500)
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [borrador])
@@ -228,7 +264,9 @@ export function PreciosTab() {
         </Button>
       </div>
       {cargando ? (
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Cargando...</p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="md:grid-cols-2">
+          {[0, 1, 2, 3].map(i => <TarjetaPlanSkeleton key={i} />)}
+        </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="md:grid-cols-2">
           {planes.map(plan => (
