@@ -5,8 +5,9 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { SelectorEmpresa, type EmpresaOpcion } from '@/components/ui/selector-empresa'
-import { Square, SquareCheck, Trash } from '@/components/ui/icons'
+import { Square, SquareCheck, Trash, Users, Calculator, FileText, ClipboardList } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
+import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 
 interface ConfigPlan {
   id: 'free' | 'lab' | 'impulso' | 'ilimitado'
@@ -66,15 +67,21 @@ function equivalenteMensual(anual: number): number {
 }
 
 // Tarjeta chica de estadística — reemplaza la frase larga "Publicado hoy: X
-// · Y · Z" por algo que se lee de un vistazo, a pedido del usuario 2026-09-04.
-// Fondo plano sin borde (var(--bg-input) solo) — mismo lenguaje que las
-// mini-tarjetas de estadística del referente visual que trajo el usuario
-// (fondo tenue relleno, nunca un borde alrededor).
-function ChipResumen({ valor, etiqueta }: { valor: string | number; etiqueta: string }) {
+// · Y · Z" por algo que se lee de un vistazo. Ícono en círculo de color +
+// número grande: mismo lenguaje visual que <KpiCard> en
+// estado-cuenta-client.tsx (ya usado y aprobado en este mismo panel admin),
+// no un patrón nuevo — ajustado 2026-09-04 tras 3 rondas de feedback del
+// usuario pidiendo algo "con más diseño, más estético" como sus referentes
+// (números grandes como protagonistas, ícono con color de identidad, fondo
+// plano sin borde).
+function ChipResumen({ icono: Icono, valor, etiqueta, color }: { icono: React.ElementType; valor: string | number; etiqueta: string; color: string }) {
   return (
-    <div style={{ background: 'var(--bg-input)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
-      <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{etiqueta}</div>
+    <div style={{ background: 'var(--bg-input)', borderRadius: 14, padding: '14px 10px', textAlign: 'center' }}>
+      <div style={{ width: 30, height: 30, margin: '0 auto 8px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 9, background: `${color}18` }}>
+        <Icono size={15} color={color} />
+      </div>
+      <div style={{ fontSize: 19, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
+      <div style={{ fontSize: 10.5, color: 'var(--text-secondary)', marginTop: 3 }}>{etiqueta}</div>
     </div>
   )
 }
@@ -169,10 +176,24 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
     onGuardado()
   }
 
+  const cfg = PLAN_CONFIG[plan.id]
+  const IconoPlan = cfg.icon
+
   return (
-    <div style={{ borderRadius: 12, border: '1px solid var(--border)', padding: 16, background: 'var(--bg-card)' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{NOMBRES[plan.id]}</h3>
+    <div style={{ borderRadius: 20, border: '1px solid var(--border)', padding: 22, background: 'var(--bg-card)' }}>
+      {/* Ícono + nombre con el color de identidad del plan — el mismo
+          PLAN_CONFIG que ya usa <PlanBadge> en toda la plataforma, no un
+          color nuevo. Antes las 4 tarjetas se veían idénticas entre sí
+          (mismo gris, mismo peso tipográfico); esto le da a cada plan su
+          propia identidad de un vistazo, a pedido del usuario 2026-09-04
+          tras 3 rondas pidiendo "más diseño, más estético". */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${cfg.color}18`, flexShrink: 0 }}>
+            <IconoPlan size={19} color={cfg.color} />
+          </div>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{NOMBRES[plan.id]}</h3>
+        </div>
         {plan.tiene_borrador_sin_publicar && (
           <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-warning)', background: 'var(--color-warning)1A', padding: '2px 8px', borderRadius: 999 }}>
             Cambios sin publicar
@@ -180,16 +201,27 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         )}
       </div>
 
-      {/* Resumen de lo YA publicado — antes era una sola frase larga con 5
-          datos separados por "·", difícil de leer de un vistazo. Ahora son
-          tarjetas chicas tipo estadística, a pedido del usuario 2026-09-04
-          ("mejora el UI, hazlo lo más fácil de entender visualmente"). */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))', gap: 6, marginBottom: 16 }}>
-        <ChipResumen valor={`$${plan.precio_cop.toLocaleString('es-CO')}`} etiqueta="COP / mes" />
-        <ChipResumen valor={`$${(plan.precio_anual_cop ?? plan.precio_cop * 10).toLocaleString('es-CO')}`} etiqueta="COP / año" />
-        <ChipResumen valor={plan.limite_calculos_mes ?? '∞'} etiqueta="cálculos/mes" />
-        <ChipResumen valor={plan.limite_informes_mes ?? '∞'} etiqueta="informes/mes" />
-        <ChipResumen valor={plan.limite_cotizaciones_mes ?? '∞'} etiqueta="cotiz./mes" />
+      {/* Precio como cifra protagonista (patrón del referente: un número
+          grande al frente, el dato secundario chico al lado) — antes el
+          precio mensual era un chip más, del mismo tamaño que los demás. */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 32, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em', lineHeight: 1 }}>
+          ${plan.precio_cop.toLocaleString('es-CO')}
+        </span>
+        <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>COP / mes</span>
+      </div>
+      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '4px 0 18px' }}>
+        ≈ ${(plan.precio_anual_cop ?? plan.precio_cop * 10).toLocaleString('es-CO')} COP al año
+      </p>
+
+      {/* Resumen de límites — antes era una frase larga con 5 datos
+          separados por "·". Ahora son 4 tarjetas de estadística con ícono,
+          a pedido del usuario 2026-09-04. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))', gap: 8, marginBottom: 18 }}>
+        <ChipResumen icono={Users} color={cfg.color} valor={plan.limite_empleados ?? '∞'} etiqueta="empleados" />
+        <ChipResumen icono={Calculator} color={cfg.color} valor={plan.limite_calculos_mes ?? '∞'} etiqueta="cálculos/mes" />
+        <ChipResumen icono={FileText} color={cfg.color} valor={plan.limite_informes_mes ?? '∞'} etiqueta="informes/mes" />
+        <ChipResumen icono={ClipboardList} color={cfg.color} valor={plan.limite_cotizaciones_mes ?? '∞'} etiqueta="cotizaciones/mes" />
       </div>
 
       {/* Un solo bloque con línea superior + separadores internos finos,
@@ -397,7 +429,7 @@ export function PlanesClient({ empresasIniciales }: { empresasIniciales: Empresa
       {cargando ? (
         <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Cargando...</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }} className="md:grid-cols-2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="md:grid-cols-2">
           {planes.map(plan => (
             <TarjetaPlan key={plan.id} plan={plan} onGuardado={cargar} />
           ))}
