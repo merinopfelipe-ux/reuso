@@ -67,9 +67,12 @@ function equivalenteMensual(anual: number): number {
 
 // Tarjeta chica de estadística — reemplaza la frase larga "Publicado hoy: X
 // · Y · Z" por algo que se lee de un vistazo, a pedido del usuario 2026-09-04.
+// Fondo neutro (mismo par border+bg-input que ya usan los inputs de este
+// archivo), no un color tintado — ajustado 2026-09-04 tras el rechazo
+// explícito del usuario a "esos colores... lejos del sistema de diseño".
 function ChipResumen({ valor, etiqueta }: { valor: string | number; etiqueta: string }) {
   return (
-    <div style={{ background: 'var(--bg-hover)', borderRadius: 8, padding: '6px 10px', textAlign: 'center' }}>
+    <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px', textAlign: 'center' }}>
       <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
       <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{etiqueta}</div>
     </div>
@@ -77,14 +80,17 @@ function ChipResumen({ valor, etiqueta }: { valor: string | number; etiqueta: st
 }
 
 // Agrupa cada bloque de campos (mensual / anual / límites) en su propia caja
-// con encabezado y una franja de color a la izquierda — antes los 3 bloques
-// se veían todos igual de "sueltos", uno debajo del otro sin ninguna
-// separación visual, a pedido del usuario 2026-09-04.
-function SeccionCard({ titulo, acento, accion, ultima, children }: { titulo: string; acento: string; accion?: React.ReactNode; ultima?: boolean; children: React.ReactNode }) {
+// con encabezado — antes los 3 bloques se veían todos igual de "sueltos",
+// uno debajo del otro sin ninguna separación visual. La primera versión
+// (2026-09-04) usaba una franja de color a la izquierda por bloque; el
+// usuario la rechazó explícitamente ("esos colores... lejos del sistema
+// de diseño"), así que ahora es solo un borde neutro parejo en las 3 cajas,
+// mismo criterio que el resto del panel admin (ej. /admin/status).
+function SeccionCard({ titulo, accion, ultima, children }: { titulo: string; accion?: React.ReactNode; ultima?: boolean; children: React.ReactNode }) {
   return (
     <div style={{
-      background: 'var(--bg-hover)', borderRadius: 10, padding: 12,
-      borderLeft: `3px solid ${acento}`, marginBottom: ultima ? 16 : 10,
+      background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 10, padding: 12,
+      marginBottom: ultima ? 16 : 10,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{titulo}</span>
@@ -188,7 +194,7 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         <ChipResumen valor={plan.limite_cotizaciones_mes ?? '∞'} etiqueta="cotiz./mes" />
       </div>
 
-      <SeccionCard titulo="Precio mensual" acento="var(--color-brand)">
+      <SeccionCard titulo="Precio mensual">
         {/* Editar el mensual recalcula el anual automáticamente (mensual x
             10, "2 meses gratis") — a pedido del usuario 2026-09-03. El anual
             sigue siendo editable por separado después: solo se pisa cuando
@@ -211,7 +217,6 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
 
       <SeccionCard
         titulo="Precio anual"
-        acento="var(--color-brand)"
         accion={
           <button
             type="button"
@@ -246,7 +251,7 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         </div>
       </SeccionCard>
 
-      <SeccionCard titulo="Límites de uso" acento="var(--color-info)" ultima>
+      <SeccionCard titulo="Límites de uso" ultima>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <CampoIlimitado label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
           <CampoIlimitado label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
