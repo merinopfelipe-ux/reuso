@@ -555,8 +555,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         // oscuro) con una raya debajo, a pedido del usuario 2026-09-04.
         // Antes eran gris secundario sin ningún separador.
         const tituloEstilo: React.CSSProperties = {
-          padding: '10px 20px 6px', margin: '0 8px 4px', fontSize: '11px', fontWeight: 700,
-          letterSpacing: '0.04em', color: 'var(--text-primary)',
+          // Mismo tamaño que los ítems del submenú (14px) — a pedido del
+          // usuario 2026-09-04, antes era 11px y se veía muy chico.
+          padding: '10px 20px 6px', margin: '0 8px 4px', fontSize: '14px', fontWeight: 700,
+          letterSpacing: '0.02em', color: 'var(--text-primary)',
           borderBottom: '1px solid var(--border)',
         }
 
