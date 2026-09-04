@@ -51,6 +51,8 @@ const patchSchema = z.object({
   borrador_limite_empleados: z.number().int().positive().nullable(),
   borrador_limite_calculos_mes: z.number().int().nonnegative().nullable(),
   borrador_limite_informes_mes: z.number().int().nonnegative().nullable(),
+  // Límite de cotizaciones/mes (sql/118) — mismo patrón que calculos/informes.
+  borrador_limite_cotizaciones_mes: z.number().int().nonnegative().nullable(),
 })
 
 export async function PATCH(request: NextRequest) {

@@ -47,6 +47,8 @@ const putSchema = z.object({
   limite_empleados: z.number().int().positive().nullable(),
   limite_calculos_mes: z.number().int().nonnegative().nullable(),
   limite_informes_mes: z.number().int().nonnegative().nullable(),
+  // Límite de cotizaciones/mes (sql/118) — mismo patrón que calculos/informes.
+  limite_cotizaciones_mes: z.number().int().nonnegative().nullable(),
   notas: z.string().max(500).optional(),
 })
 

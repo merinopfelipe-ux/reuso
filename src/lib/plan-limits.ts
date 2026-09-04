@@ -16,17 +16,18 @@ export const NOMBRES_PLAN: Record<Plan, string> = {
 // dos, NULL = ilimitado). Si algo falla al leer la base, se cae de vuelta
 // a los límites históricos fijos para no dejar el sistema sin límite por
 // un error de red.
-const LIMITES_RESPALDO: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number }> = {
-  free:     { empleados: 1,        calculos_mes: 10,       informes_mes: 0 },
-  lab:      { empleados: 5,        calculos_mes: 200,      informes_mes: 5 },
-  impulso:  { empleados: 10,       calculos_mes: 200,      informes_mes: 5 },
-  ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity },
+const LIMITES_RESPALDO: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number; cotizaciones_mes: number }> = {
+  free:     { empleados: 1,        calculos_mes: 10,       informes_mes: 0, cotizaciones_mes: 0 },
+  lab:      { empleados: 5,        calculos_mes: 200,      informes_mes: 5, cotizaciones_mes: 0 },
+  impulso:  { empleados: 10,       calculos_mes: 200,      informes_mes: 5, cotizaciones_mes: 200 },
+  ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity, cotizaciones_mes: Infinity },
 }
 
 interface LimitesEfectivos {
   empleados: number
   calculos_mes: number
   informes_mes: number
+  cotizaciones_mes: number
 }
 
 const aInfinito = (v: number | null | undefined): number => (v === null || v === undefined ? Infinity : v)
@@ -35,8 +36,8 @@ async function obtenerLimitesEfectivos(empresaId: string, plan: Plan): Promise<L
   try {
     const adminClient = await createAdminClient()
     const [{ data: negociacion }, { data: config }] = await Promise.all([
-      adminClient.from('empresas_negociaciones').select('limite_empleados, limite_calculos_mes, limite_informes_mes').eq('empresa_id', empresaId).maybeSingle(),
-      adminClient.from('config_planes').select('limite_empleados, limite_calculos_mes, limite_informes_mes').eq('id', plan).single(),
+      adminClient.from('empresas_negociaciones').select('limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes').eq('empresa_id', empresaId).maybeSingle(),
+      adminClient.from('config_planes').select('limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes').eq('id', plan).single(),
     ])
     const fuente = negociacion ?? config
     if (!fuente) return LIMITES_RESPALDO[plan]
@@ -44,6 +45,7 @@ async function obtenerLimitesEfectivos(empresaId: string, plan: Plan): Promise<L
       empleados: aInfinito(fuente.limite_empleados),
       calculos_mes: aInfinito(fuente.limite_calculos_mes),
       informes_mes: aInfinito(fuente.limite_informes_mes),
+      cotizaciones_mes: aInfinito(fuente.limite_cotizaciones_mes),
     }
   } catch {
     return LIMITES_RESPALDO[plan]
@@ -110,6 +112,28 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
 
   if ((count ?? 0) >= limite) {
     return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} informes por mes. Contacta a reuso.lurdes.co para ampliar tu plan.`
+  }
+  return null
+}
+
+export async function checkLimiteCotizaciones(empresaId: string, plan: Plan): Promise<string | null> {
+  const { cotizaciones_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
+  if (limite === Infinity) return null
+  if (limite === 0) {
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Cotizador. Contacta a reuso.lurdes.co para ampliar tu plan.`
+  }
+
+  const { inicioMes, finMes } = inicioYFinMesActual()
+  const adminClient = await createAdminClient()
+  const { count } = await adminClient
+    .from('crm_cotizaciones')
+    .select('*', { count: 'exact', head: true })
+    .eq('empresa_id', empresaId)
+    .gte('created_at', inicioMes)
+    .lt('created_at', finMes)
+
+  if ((count ?? 0) >= limite) {
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cotizaciones por mes. Contacta a reuso.lurdes.co para ampliar tu plan.`
   }
   return null
 }

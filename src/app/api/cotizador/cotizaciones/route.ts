@@ -4,6 +4,8 @@ import { randomInt } from 'crypto'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { checkLimiteCotizaciones } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
 
 interface CotizacionItem {
   id: string
@@ -203,6 +205,18 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
   if (!clienteDueño) {
     return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
+  }
+
+  // Límite de cotizaciones/mes por plan (sql/118) — mismo patrón que
+  // checkLimiteCalculos/checkLimiteInformes.
+  const { data: empresaPlan } = await adminClient
+    .from('empresas')
+    .select('plan')
+    .eq('id', empresa_id)
+    .single()
+  const errorLimite = await checkLimiteCotizaciones(empresa_id, (empresaPlan?.plan ?? 'free') as Plan)
+  if (errorLimite) {
+    return NextResponse.json({ error: errorLimite }, { status: 429 })
   }
 
   // Generar código único COT-YYYY-XXXX (máx 3 intentos)

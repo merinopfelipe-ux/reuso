@@ -21,6 +21,9 @@ interface ConfigPlan {
   limite_empleados: number | null
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
+  // Límite de cotizaciones/mes (sql/118) — antes "Cotizador" era solo Sí/No
+  // por plan (acceso al módulo), sin tope mensual.
+  limite_cotizaciones_mes: number | null
   borrador_precio_cop: number | null
   borrador_precio_usd: number | null
   borrador_precio_eur: number | null
@@ -30,6 +33,7 @@ interface ConfigPlan {
   borrador_limite_empleados: number | null
   borrador_limite_calculos_mes: number | null
   borrador_limite_informes_mes: number | null
+  borrador_limite_cotizaciones_mes: number | null
   tiene_borrador_sin_publicar: boolean
 }
 
@@ -44,6 +48,7 @@ interface Negociacion {
   limite_empleados: number | null
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
+  limite_cotizaciones_mes: number | null
   notas: string | null
 }
 
@@ -58,6 +63,36 @@ const labelSt: React.CSSProperties = { fontSize: 12, fontWeight: 600, color: 'va
 const equivalenteSt: React.CSSProperties = { fontSize: 11, color: 'var(--text-secondary)', marginTop: 4, display: 'block' }
 function equivalenteMensual(anual: number): number {
   return Math.round((anual / 12) * 100) / 100
+}
+
+// Tarjeta chica de estadística — reemplaza la frase larga "Publicado hoy: X
+// · Y · Z" por algo que se lee de un vistazo, a pedido del usuario 2026-09-04.
+function ChipResumen({ valor, etiqueta }: { valor: string | number; etiqueta: string }) {
+  return (
+    <div style={{ background: 'var(--bg-hover)', borderRadius: 8, padding: '6px 10px', textAlign: 'center' }}>
+      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
+      <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{etiqueta}</div>
+    </div>
+  )
+}
+
+// Agrupa cada bloque de campos (mensual / anual / límites) en su propia caja
+// con encabezado y una franja de color a la izquierda — antes los 3 bloques
+// se veían todos igual de "sueltos", uno debajo del otro sin ninguna
+// separación visual, a pedido del usuario 2026-09-04.
+function SeccionCard({ titulo, acento, accion, ultima, children }: { titulo: string; acento: string; accion?: React.ReactNode; ultima?: boolean; children: React.ReactNode }) {
+  return (
+    <div style={{
+      background: 'var(--bg-hover)', borderRadius: 10, padding: 12,
+      borderLeft: `3px solid ${acento}`, marginBottom: ultima ? 16 : 10,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{titulo}</span>
+        {accion}
+      </div>
+      {children}
+    </div>
+  )
 }
 
 function CampoIlimitado({ label, valor, onChange }: { label: string; valor: number | null; onChange: (v: number | null) => void }) {
@@ -99,6 +134,7 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
     borrador_limite_empleados: plan.borrador_limite_empleados ?? plan.limite_empleados,
     borrador_limite_calculos_mes: plan.borrador_limite_calculos_mes ?? plan.limite_calculos_mes,
     borrador_limite_informes_mes: plan.borrador_limite_informes_mes ?? plan.limite_informes_mes,
+    borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
   })
   const [guardando, setGuardando] = useState(false)
   const [publicando, setPublicando] = useState(false)
@@ -140,68 +176,84 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         )}
       </div>
 
-      <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
-        Publicado hoy: {plan.precio_cop.toLocaleString('es-CO')} COP/mes · {(plan.precio_anual_cop ?? plan.precio_cop * 10).toLocaleString('es-CO')} COP/año · {plan.limite_calculos_mes ?? 'Ilimitados'} cálculos/mes · {plan.limite_informes_mes ?? 'Ilimitados'} informes/mes
-      </p>
+      {/* Resumen de lo YA publicado — antes era una sola frase larga con 5
+          datos separados por "·", difícil de leer de un vistazo. Ahora son
+          tarjetas chicas tipo estadística, a pedido del usuario 2026-09-04
+          ("mejora el UI, hazlo lo más fácil de entender visualmente"). */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(90px, 1fr))', gap: 6, marginBottom: 16 }}>
+        <ChipResumen valor={`$${plan.precio_cop.toLocaleString('es-CO')}`} etiqueta="COP / mes" />
+        <ChipResumen valor={`$${(plan.precio_anual_cop ?? plan.precio_cop * 10).toLocaleString('es-CO')}`} etiqueta="COP / año" />
+        <ChipResumen valor={plan.limite_calculos_mes ?? '∞'} etiqueta="cálculos/mes" />
+        <ChipResumen valor={plan.limite_informes_mes ?? '∞'} etiqueta="informes/mes" />
+        <ChipResumen valor={plan.limite_cotizaciones_mes ?? '∞'} etiqueta="cotiz./mes" />
+      </div>
 
-      <span style={{ ...labelSt, marginBottom: 8, fontWeight: 700 }}>Precio mensual</span>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+      <SeccionCard titulo="Precio mensual" acento="var(--color-brand)">
         {/* Editar el mensual recalcula el anual automáticamente (mensual x
             10, "2 meses gratis") — a pedido del usuario 2026-09-03. El anual
             sigue siendo editable por separado después: solo se pisa cuando
             se vuelve a tocar ESTE campo mensual, no en cada render. */}
-        <div>
-          <span style={labelSt}>COP</span>
-          <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_cop: v, borrador_precio_anual_cop: Math.round(v * 10) })) }} style={inputSt} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <div>
+            <span style={labelSt}>COP</span>
+            <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_cop: v, borrador_precio_anual_cop: Math.round(v * 10) })) }} style={inputSt} />
+          </div>
+          <div>
+            <span style={labelSt}>USD</span>
+            <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_usd: v, borrador_precio_anual_usd: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
+          </div>
+          <div>
+            <span style={labelSt}>EUR</span>
+            <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_eur: v, borrador_precio_anual_eur: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
+          </div>
         </div>
-        <div>
-          <span style={labelSt}>USD</span>
-          <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_usd: v, borrador_precio_anual_usd: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
-        </div>
-        <div>
-          <span style={labelSt}>EUR</span>
-          <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_eur: v, borrador_precio_anual_eur: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
-        </div>
-      </div>
+      </SeccionCard>
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ ...labelSt, marginBottom: 0, fontWeight: 700 }}>Precio anual</span>
-        <button
-          type="button"
-          onClick={() => setBorrador(b => ({
-            ...b,
-            borrador_precio_anual_cop: Math.round(b.borrador_precio_cop * 10),
-            borrador_precio_anual_usd: Math.round(b.borrador_precio_usd * 10),
-            borrador_precio_anual_eur: Math.round(b.borrador_precio_eur * 10),
-          }))}
-          style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
-        >
-          Usar sugerido (2 meses gratis)
-        </button>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
-        <div>
-          <span style={labelSt}>COP</span>
-          <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
-          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_cop).toLocaleString('es-CO')} COP/mes</span>
+      <SeccionCard
+        titulo="Precio anual"
+        acento="var(--color-brand)"
+        accion={
+          <button
+            type="button"
+            onClick={() => setBorrador(b => ({
+              ...b,
+              borrador_precio_anual_cop: Math.round(b.borrador_precio_cop * 10),
+              borrador_precio_anual_usd: Math.round(b.borrador_precio_usd * 10),
+              borrador_precio_anual_eur: Math.round(b.borrador_precio_eur * 10),
+            }))}
+            style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Usar sugerido (2 meses gratis)
+          </button>
+        }
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <div>
+            <span style={labelSt}>COP</span>
+            <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
+            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_cop).toLocaleString('es-CO')} COP/mes</span>
+          </div>
+          <div>
+            <span style={labelSt}>USD</span>
+            <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
+            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_usd).toFixed(2)} USD/mes</span>
+          </div>
+          <div>
+            <span style={labelSt}>EUR</span>
+            <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
+            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_eur).toFixed(2)} EUR/mes</span>
+          </div>
         </div>
-        <div>
-          <span style={labelSt}>USD</span>
-          <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
-          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_usd).toFixed(2)} USD/mes</span>
-        </div>
-        <div>
-          <span style={labelSt}>EUR</span>
-          <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
-          <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_eur).toFixed(2)} EUR/mes</span>
-        </div>
-      </div>
+      </SeccionCard>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
-        <CampoIlimitado label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
-        <CampoIlimitado label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
-        <CampoIlimitado label="Informes/mes" valor={borrador.borrador_limite_informes_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_informes_mes: v }))} />
-      </div>
+      <SeccionCard titulo="Límites de uso" acento="var(--color-info)" ultima>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <CampoIlimitado label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
+          <CampoIlimitado label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
+          <CampoIlimitado label="Informes/mes" valor={borrador.borrador_limite_informes_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_informes_mes: v }))} />
+          <CampoIlimitado label="Cotizaciones/mes" valor={borrador.borrador_limite_cotizaciones_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_cotizaciones_mes: v }))} />
+        </div>
+      </SeccionCard>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <Button variant="secondary" size="sm" onClick={guardarBorrador} loading={guardando}>Guardar borrador</Button>
@@ -220,7 +272,7 @@ function SeccionNegociaciones({ empresas }: { empresas: EmpresaOpcion[] }) {
   const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false)
   const [form, setForm] = useState<Negociacion>({
     precio_cop: 0, precio_usd: 0, precio_eur: 0,
-    limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, notas: '',
+    limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '',
   })
 
   useEffect(() => {
@@ -231,7 +283,7 @@ function SeccionNegociaciones({ empresas }: { empresas: EmpresaOpcion[] }) {
       .then(data => {
         setNegociacion(data.negociacion)
         if (data.negociacion) setForm(data.negociacion)
-        else setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, notas: '' })
+        else setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '' })
       })
       .finally(() => setCargando(false))
   }, [empresaId])
@@ -255,7 +307,7 @@ function SeccionNegociaciones({ empresas }: { empresas: EmpresaOpcion[] }) {
     if (!res.ok) { toast.error('No se pudo quitar la negociación.'); return }
     toast.success('Negociación eliminada — la empresa vuelve al plan global.')
     setNegociacion(null)
-    setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, notas: '' })
+    setForm({ precio_cop: 0, precio_usd: 0, precio_eur: 0, limite_empleados: null, limite_calculos_mes: null, limite_informes_mes: null, limite_cotizaciones_mes: null, notas: '' })
   }
 
   return (
@@ -279,10 +331,11 @@ function SeccionNegociaciones({ empresas }: { empresas: EmpresaOpcion[] }) {
             <div><span style={labelSt}>Precio USD</span><input type="number" min={0} value={form.precio_usd} onChange={(e) => setForm(f => ({ ...f, precio_usd: Number(e.target.value) }))} style={inputSt} /></div>
             <div><span style={labelSt}>Precio EUR</span><input type="number" min={0} value={form.precio_eur} onChange={(e) => setForm(f => ({ ...f, precio_eur: Number(e.target.value) }))} style={inputSt} /></div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
             <CampoIlimitado label="Empleados" valor={form.limite_empleados} onChange={(v) => setForm(f => ({ ...f, limite_empleados: v }))} />
             <CampoIlimitado label="Cálculos/mes" valor={form.limite_calculos_mes} onChange={(v) => setForm(f => ({ ...f, limite_calculos_mes: v }))} />
             <CampoIlimitado label="Informes/mes" valor={form.limite_informes_mes} onChange={(v) => setForm(f => ({ ...f, limite_informes_mes: v }))} />
+            <CampoIlimitado label="Cotizaciones/mes" valor={form.limite_cotizaciones_mes} onChange={(v) => setForm(f => ({ ...f, limite_cotizaciones_mes: v }))} />
           </div>
           <div style={{ marginBottom: 12 }}>
             <span style={labelSt}>Notas (ej. referencia del contrato)</span>
