@@ -15,7 +15,7 @@ export async function GET() {
   const adminClient = await createAdminClient()
   const { data, error } = await adminClient
     .from('config_planes')
-    .select('id, precio_cop, precio_usd, precio_eur, limite_empleados, limite_calculos_mes, limite_informes_mes')
+    .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes')
     .order('precio_cop', { ascending: true })
 
   if (error || !data) {

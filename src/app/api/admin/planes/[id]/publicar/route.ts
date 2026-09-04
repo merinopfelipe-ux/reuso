@@ -48,10 +48,12 @@ export async function POST(
 
   const antes = {
     precio_cop: actual.precio_cop, precio_usd: actual.precio_usd, precio_eur: actual.precio_eur,
+    precio_anual_cop: actual.precio_anual_cop, precio_anual_usd: actual.precio_anual_usd, precio_anual_eur: actual.precio_anual_eur,
     limite_empleados: actual.limite_empleados, limite_calculos_mes: actual.limite_calculos_mes, limite_informes_mes: actual.limite_informes_mes,
   }
   const despues = {
     precio_cop: actual.borrador_precio_cop, precio_usd: actual.borrador_precio_usd, precio_eur: actual.borrador_precio_eur,
+    precio_anual_cop: actual.borrador_precio_anual_cop, precio_anual_usd: actual.borrador_precio_anual_usd, precio_anual_eur: actual.borrador_precio_anual_eur,
     limite_empleados: actual.borrador_limite_empleados, limite_calculos_mes: actual.borrador_limite_calculos_mes, limite_informes_mes: actual.borrador_limite_informes_mes,
   }
 

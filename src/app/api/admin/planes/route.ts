@@ -42,6 +42,12 @@ const patchSchema = z.object({
   borrador_precio_cop: z.number().nonnegative(),
   borrador_precio_usd: z.number().nonnegative(),
   borrador_precio_eur: z.number().nonnegative(),
+  // Precio anual (sql/117) — antes era un descuento fijo calculado en el
+  // código (mensual x 10, "2 meses gratis"), ahora es su propio valor
+  // editable, con ese mismo cálculo como sugerencia por defecto en la UI.
+  borrador_precio_anual_cop: z.number().nonnegative(),
+  borrador_precio_anual_usd: z.number().nonnegative(),
+  borrador_precio_anual_eur: z.number().nonnegative(),
   borrador_limite_empleados: z.number().int().positive().nullable(),
   borrador_limite_calculos_mes: z.number().int().nonnegative().nullable(),
   borrador_limite_informes_mes: z.number().int().nonnegative().nullable(),

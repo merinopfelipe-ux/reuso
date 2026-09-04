@@ -13,12 +13,20 @@ interface ConfigPlan {
   precio_cop: number
   precio_usd: number
   precio_eur: number
+  // Precio anual (sql/117) — antes era un descuento fijo en código (mensual
+  // x 10, "2 meses gratis"), ahora su propio valor editable por separado.
+  precio_anual_cop: number | null
+  precio_anual_usd: number | null
+  precio_anual_eur: number | null
   limite_empleados: number | null
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   borrador_precio_cop: number | null
   borrador_precio_usd: number | null
   borrador_precio_eur: number | null
+  borrador_precio_anual_cop: number | null
+  borrador_precio_anual_usd: number | null
+  borrador_precio_anual_eur: number | null
   borrador_limite_empleados: number | null
   borrador_limite_calculos_mes: number | null
   borrador_limite_informes_mes: number | null
@@ -76,6 +84,11 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
     borrador_precio_cop: plan.borrador_precio_cop ?? plan.precio_cop,
     borrador_precio_usd: plan.borrador_precio_usd ?? plan.precio_usd,
     borrador_precio_eur: plan.borrador_precio_eur ?? plan.precio_eur,
+    // Si todavía no hay ningún precio anual guardado (antes de correr
+    // sql/117), se sugiere el mismo cálculo que usaba el código: mensual x 10.
+    borrador_precio_anual_cop: plan.borrador_precio_anual_cop ?? plan.precio_anual_cop ?? plan.precio_cop * 10,
+    borrador_precio_anual_usd: plan.borrador_precio_anual_usd ?? plan.precio_anual_usd ?? plan.precio_usd * 10,
+    borrador_precio_anual_eur: plan.borrador_precio_anual_eur ?? plan.precio_anual_eur ?? plan.precio_eur * 10,
     borrador_limite_empleados: plan.borrador_limite_empleados ?? plan.limite_empleados,
     borrador_limite_calculos_mes: plan.borrador_limite_calculos_mes ?? plan.limite_calculos_mes,
     borrador_limite_informes_mes: plan.borrador_limite_informes_mes ?? plan.limite_informes_mes,
@@ -121,21 +134,52 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
       </div>
 
       <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 12 }}>
-        Publicado hoy: {plan.precio_cop.toLocaleString('es-CO')} COP · {plan.limite_calculos_mes ?? 'Ilimitados'} cálculos/mes · {plan.limite_informes_mes ?? 'Ilimitados'} informes/mes
+        Publicado hoy: {plan.precio_cop.toLocaleString('es-CO')} COP/mes · {(plan.precio_anual_cop ?? plan.precio_cop * 10).toLocaleString('es-CO')} COP/año · {plan.limite_calculos_mes ?? 'Ilimitados'} cálculos/mes · {plan.limite_informes_mes ?? 'Ilimitados'} informes/mes
       </p>
 
+      <span style={{ ...labelSt, marginBottom: 8, fontWeight: 700 }}>Precio mensual</span>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
         <div>
-          <span style={labelSt}>Precio COP</span>
+          <span style={labelSt}>COP</span>
           <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_cop: Number(e.target.value) }))} style={inputSt} />
         </div>
         <div>
-          <span style={labelSt}>Precio USD</span>
+          <span style={labelSt}>USD</span>
           <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_usd: Number(e.target.value) }))} style={inputSt} />
         </div>
         <div>
-          <span style={labelSt}>Precio EUR</span>
+          <span style={labelSt}>EUR</span>
           <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_eur: Number(e.target.value) }))} style={inputSt} />
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ ...labelSt, marginBottom: 0, fontWeight: 700 }}>Precio anual</span>
+        <button
+          type="button"
+          onClick={() => setBorrador(b => ({
+            ...b,
+            borrador_precio_anual_cop: Math.round(b.borrador_precio_cop * 10),
+            borrador_precio_anual_usd: Math.round(b.borrador_precio_usd * 10),
+            borrador_precio_anual_eur: Math.round(b.borrador_precio_eur * 10),
+          }))}
+          style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          Usar sugerido (2 meses gratis)
+        </button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+        <div>
+          <span style={labelSt}>COP</span>
+          <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
+        </div>
+        <div>
+          <span style={labelSt}>USD</span>
+          <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
+        </div>
+        <div>
+          <span style={labelSt}>EUR</span>
+          <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
         </div>
       </div>
 
