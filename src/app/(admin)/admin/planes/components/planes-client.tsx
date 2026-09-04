@@ -67,31 +67,29 @@ function equivalenteMensual(anual: number): number {
 
 // Tarjeta chica de estadística — reemplaza la frase larga "Publicado hoy: X
 // · Y · Z" por algo que se lee de un vistazo, a pedido del usuario 2026-09-04.
-// Fondo neutro (mismo par border+bg-input que ya usan los inputs de este
-// archivo), no un color tintado — ajustado 2026-09-04 tras el rechazo
-// explícito del usuario a "esos colores... lejos del sistema de diseño".
+// Fondo plano sin borde (var(--bg-input) solo) — mismo lenguaje que las
+// mini-tarjetas de estadística del referente visual que trajo el usuario
+// (fondo tenue relleno, nunca un borde alrededor).
 function ChipResumen({ valor, etiqueta }: { valor: string | number; etiqueta: string }) {
   return (
-    <div style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 8, padding: '6px 10px', textAlign: 'center' }}>
-      <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
-      <div style={{ fontSize: 10, color: 'var(--text-secondary)' }}>{etiqueta}</div>
+    <div style={{ background: 'var(--bg-input)', borderRadius: 10, padding: '10px 8px', textAlign: 'center' }}>
+      <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{valor}</div>
+      <div style={{ fontSize: 10, color: 'var(--text-secondary)', marginTop: 2 }}>{etiqueta}</div>
     </div>
   )
 }
 
-// Agrupa cada bloque de campos (mensual / anual / límites) en su propia caja
-// con encabezado — antes los 3 bloques se veían todos igual de "sueltos",
-// uno debajo del otro sin ninguna separación visual. La primera versión
-// (2026-09-04) usaba una franja de color a la izquierda por bloque; el
-// usuario la rechazó explícitamente ("esos colores... lejos del sistema
-// de diseño"), así que ahora es solo un borde neutro parejo en las 3 cajas,
-// mismo criterio que el resto del panel admin (ej. /admin/status).
+// Separa cada bloque de campos (mensual / anual / límites) con una línea
+// fina, no con una caja propia — antes cada bloque tenía su fondo y su
+// borde, y el usuario lo rechazó dos veces ("esos colores... lejos del
+// sistema de diseño", luego "no me gusta todo tan encerrado", con un
+// referente visual de tarjetas SIN borde separadas solo por líneas finas).
+// var(--divider) es justo el token para esa línea (más tenue que
+// var(--border), pensado para separar contenido dentro de una misma
+// tarjeta, no para encerrar una caja nueva).
 function SeccionCard({ titulo, accion, ultima, children }: { titulo: string; accion?: React.ReactNode; ultima?: boolean; children: React.ReactNode }) {
   return (
-    <div style={{
-      background: 'var(--bg-input)', border: '1px solid var(--border)', borderRadius: 10, padding: 12,
-      marginBottom: ultima ? 16 : 10,
-    }}>
+    <div style={{ padding: '14px 0', borderBottom: ultima ? 'none' : '1px solid var(--divider)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-primary)' }}>{titulo}</span>
         {accion}
@@ -194,71 +192,76 @@ function TarjetaPlan({ plan, onGuardado }: { plan: ConfigPlan; onGuardado: () =>
         <ChipResumen valor={plan.limite_cotizaciones_mes ?? '∞'} etiqueta="cotiz./mes" />
       </div>
 
-      <SeccionCard titulo="Precio mensual">
-        {/* Editar el mensual recalcula el anual automáticamente (mensual x
-            10, "2 meses gratis") — a pedido del usuario 2026-09-03. El anual
-            sigue siendo editable por separado después: solo se pisa cuando
-            se vuelve a tocar ESTE campo mensual, no en cada render. */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-          <div>
-            <span style={labelSt}>COP</span>
-            <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_cop: v, borrador_precio_anual_cop: Math.round(v * 10) })) }} style={inputSt} />
+      {/* Un solo bloque con línea superior + separadores internos finos,
+          nunca 3 cajas con borde propio — a pedido del usuario 2026-09-04
+          tras ver un referente visual de tarjetas sin encierro. */}
+      <div style={{ borderTop: '1px solid var(--divider)' }}>
+        <SeccionCard titulo="Precio mensual">
+          {/* Editar el mensual recalcula el anual automáticamente (mensual x
+              10, "2 meses gratis") — a pedido del usuario 2026-09-03. El anual
+              sigue siendo editable por separado después: solo se pisa cuando
+              se vuelve a tocar ESTE campo mensual, no en cada render. */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            <div>
+              <span style={labelSt}>COP</span>
+              <input type="number" min={0} value={borrador.borrador_precio_cop} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_cop: v, borrador_precio_anual_cop: Math.round(v * 10) })) }} style={inputSt} />
+            </div>
+            <div>
+              <span style={labelSt}>USD</span>
+              <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_usd: v, borrador_precio_anual_usd: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
+            </div>
+            <div>
+              <span style={labelSt}>EUR</span>
+              <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_eur: v, borrador_precio_anual_eur: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
+            </div>
           </div>
-          <div>
-            <span style={labelSt}>USD</span>
-            <input type="number" min={0} value={borrador.borrador_precio_usd} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_usd: v, borrador_precio_anual_usd: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
-          </div>
-          <div>
-            <span style={labelSt}>EUR</span>
-            <input type="number" min={0} value={borrador.borrador_precio_eur} onChange={(e) => { const v = Number(e.target.value); setBorrador(b => ({ ...b, borrador_precio_eur: v, borrador_precio_anual_eur: Math.round(v * 10 * 100) / 100 })) }} style={inputSt} />
-          </div>
-        </div>
-      </SeccionCard>
+        </SeccionCard>
 
-      <SeccionCard
-        titulo="Precio anual"
-        accion={
-          <button
-            type="button"
-            onClick={() => setBorrador(b => ({
-              ...b,
-              borrador_precio_anual_cop: Math.round(b.borrador_precio_cop * 10),
-              borrador_precio_anual_usd: Math.round(b.borrador_precio_usd * 10),
-              borrador_precio_anual_eur: Math.round(b.borrador_precio_eur * 10),
-            }))}
-            style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            Usar sugerido (2 meses gratis)
-          </button>
-        }
-      >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-          <div>
-            <span style={labelSt}>COP</span>
-            <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
-            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_cop).toLocaleString('es-CO')} COP/mes</span>
+        <SeccionCard
+          titulo="Precio anual"
+          accion={
+            <button
+              type="button"
+              onClick={() => setBorrador(b => ({
+                ...b,
+                borrador_precio_anual_cop: Math.round(b.borrador_precio_cop * 10),
+                borrador_precio_anual_usd: Math.round(b.borrador_precio_usd * 10),
+                borrador_precio_anual_eur: Math.round(b.borrador_precio_eur * 10),
+              }))}
+              style={{ fontSize: 11, fontWeight: 600, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              Usar sugerido (2 meses gratis)
+            </button>
+          }
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            <div>
+              <span style={labelSt}>COP</span>
+              <input type="number" min={0} value={borrador.borrador_precio_anual_cop} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_cop: Number(e.target.value) }))} style={inputSt} />
+              <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_cop).toLocaleString('es-CO')} COP/mes</span>
+            </div>
+            <div>
+              <span style={labelSt}>USD</span>
+              <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
+              <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_usd).toFixed(2)} USD/mes</span>
+            </div>
+            <div>
+              <span style={labelSt}>EUR</span>
+              <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
+              <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_eur).toFixed(2)} EUR/mes</span>
+            </div>
           </div>
-          <div>
-            <span style={labelSt}>USD</span>
-            <input type="number" min={0} value={borrador.borrador_precio_anual_usd} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_usd: Number(e.target.value) }))} style={inputSt} />
-            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_usd).toFixed(2)} USD/mes</span>
-          </div>
-          <div>
-            <span style={labelSt}>EUR</span>
-            <input type="number" min={0} value={borrador.borrador_precio_anual_eur} onChange={(e) => setBorrador(b => ({ ...b, borrador_precio_anual_eur: Number(e.target.value) }))} style={inputSt} />
-            <span style={equivalenteSt}>≈ {equivalenteMensual(borrador.borrador_precio_anual_eur).toFixed(2)} EUR/mes</span>
-          </div>
-        </div>
-      </SeccionCard>
+        </SeccionCard>
 
-      <SeccionCard titulo="Límites de uso" ultima>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <CampoIlimitado label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
-          <CampoIlimitado label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
-          <CampoIlimitado label="Informes/mes" valor={borrador.borrador_limite_informes_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_informes_mes: v }))} />
-          <CampoIlimitado label="Cotizaciones/mes" valor={borrador.borrador_limite_cotizaciones_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_cotizaciones_mes: v }))} />
-        </div>
-      </SeccionCard>
+        <SeccionCard titulo="Límites de uso" ultima>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <CampoIlimitado label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
+            <CampoIlimitado label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
+            <CampoIlimitado label="Informes/mes" valor={borrador.borrador_limite_informes_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_informes_mes: v }))} />
+            <CampoIlimitado label="Cotizaciones/mes" valor={borrador.borrador_limite_cotizaciones_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_cotizaciones_mes: v }))} />
+          </div>
+        </SeccionCard>
+      </div>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <Button variant="secondary" size="sm" onClick={guardarBorrador} loading={guardando}>Guardar borrador</Button>
