@@ -30,3 +30,20 @@ export function SkeletonLista({ filas = 3 }: { filas?: number }) {
     </div>
   )
 }
+
+// Fallback genérico para el loading.tsx de una subruta que todavía no
+// tiene un skeleton a la medida de su contenido real — Regla de Oro #4
+// del CLAUDE.md ("skeleton obligatorio, nunca pantalla congelada"). No
+// imita la forma exacta de cada pantalla (eso sigue siendo lo ideal,
+// ver SkeletonCard/SkeletonLista arriba), solo evita el hueco en blanco
+// mientras el servidor resuelve. Cada loading.tsx que lo usa queda en
+// una sola línea: `export { PaginaLoadingGenerico as default } from
+// '@/components/ui/skeleton'`.
+export function PaginaLoadingGenerico() {
+  return (
+    <div className="p-6 md:p-10 w-full flex flex-col gap-6">
+      <Skeleton style={{ width: 220, height: 32, borderRadius: 12 }} />
+      <SkeletonLista filas={3} />
+    </div>
+  )
+}
