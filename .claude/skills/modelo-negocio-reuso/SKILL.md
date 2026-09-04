@@ -25,7 +25,7 @@ Planes de suscripción pagados por **empresas**. El super_admin sube o baja el p
 
 ## Planes y límites (valores oficiales)
 
-Ver la tabla completa (nombres, IDs en BD, cálculos/informes/certificados/cotizador/empleados por plan) en la sección "ROLES, PLANES Y LÍMITES" de `CLAUDE.md` — no la dupliques aquí, se desactualiza. Los límites están implementados en `src/lib/plan-limits.ts`; si algo aquí y en `CLAUDE.md` no coincide, `plan-limits.ts` es la fuente de verdad final.
+Ver la tabla de referencia (nombres, IDs en BD, cálculos/informes/cotizaciones/empleados por plan) en la sección "ROLES, PLANES Y LÍMITES" de `CLAUDE.md` — no la dupliques aquí, se desactualiza. **Desde `sql/115`/`117`/`118` (2026-09) los planes ya NO son fijos en código**: la tabla `config_planes` (editable en `/admin/planes`, borrador→publicar, precio mensual y anual en COP/USD/EUR + límites) es la fuente real. `src/lib/plan-limits.ts` solo aplica esos límites y trae un respaldo fijo por si la base no responde — nunca es la fuente de verdad, solo el enforcement. Antes de dar un precio o límite por cierto, consulta `config_planes`, no asumas del código ni de esta tabla.
 
 ---
 
