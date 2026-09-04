@@ -30,7 +30,7 @@ interface NavItem {
 // estético en 375px), agrupando el resto adentro con subtítulos por grupo —
 // decidido con el usuario 2026-09-01, opciones elegidas por rol abajo.
 const NAV_ITEMS: Record<Rol, NavItem[]> = {
-  // Opción B: Inicio · Gestión · CRM · Sistema y Recursos
+  // Opción B: Inicio · Gestión · CRM · Sistema
   super_admin: [
     { href: '/admin', label: 'Resumen', icon: SquaresFour },
     {
@@ -43,6 +43,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
         { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
         { href: '/admin/modulos', label: 'Módulos' },
+        { href: '/admin/planes', label: 'Planes' },
       ]
     },
     {
@@ -56,7 +57,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       ]
     },
     {
-      label: 'Sistema y Recursos',
+      label: 'Sistema',
       icon: Gear,
       subItems: [
         { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Sistema' },
