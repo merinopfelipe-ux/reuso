@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, ShowerHead, Layers, Hammer, HeartHandshake, Scales, Medal, CircleDollarSign, Users, History } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, ShowerHead, Layers, Hammer, HeartHandshake, Scales, Medal, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
@@ -1424,10 +1424,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           <div className="mt-8 sm:mt-10 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
-              className={`group inline-flex items-center gap-2 text-xs sm:text-sm font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#005B56]'}`}
+              className={`group inline-flex items-center gap-1.5 text-xs sm:text-sm font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
             >
               <span className="group-hover:underline">Ver más</span>
-              <ArrowRight size={14} strokeWidth={2.5} className="flex-shrink-0" />
+              <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
             </button>
           </div>
         </div>
@@ -1470,6 +1470,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                               ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent'
                               : 'bg-white border-[#00827C]/10 hover:border-transparent shadow-[0_2px_10px_rgba(0,130,124,0.04)]'
                           }`}
+                          onMouseEnter={e => {
+                            const box = e.currentTarget.querySelector<HTMLElement>('.calc-icon-box')
+                            if (box) { box.style.backgroundColor = color; box.style.color = '#fff' }
+                          }}
+                          onMouseLeave={e => {
+                            const box = e.currentTarget.querySelector<HTMLElement>('.calc-icon-box')
+                            if (box) { box.style.backgroundColor = `${color}20`; box.style.color = color }
+                          }}
                         >
                           {/* Halo difuminado, mismo lenguaje que las 8 tarjetas destacadas */}
                           <div
@@ -1496,10 +1504,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
                           <div className="relative z-20 flex gap-3">
                             <div
-                              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-110 group-hover/item:rotate-6 group-hover/item:text-white"
+                              className="calc-icon-box w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-110 group-hover/item:rotate-6"
                               style={{ backgroundColor: `${color}20`, color }}
-                              onMouseEnter={e => { e.currentTarget.style.backgroundColor = color }}
-                              onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${color}20` }}
                             >
                               <Ic size={16} strokeWidth={2.3} />
                             </div>
