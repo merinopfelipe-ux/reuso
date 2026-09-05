@@ -58,6 +58,19 @@ export function Modal({
     setMounted(true)
   }, [])
 
+  // Bug real reportado 2026-09-05: con el modal abierto, la página de atrás
+  // seguía scrolleando con la rueda del mouse — el usuario terminaba
+  // moviendo el fondo en vez del contenido del popup. Bloqueamos el scroll
+  // del body mientras el modal está abierto, y restauramos el valor
+  // original (no un '' a ciegas, por si algo más ya lo había tocado) al
+  // cerrar o desmontar.
+  useEffect(() => {
+    if (!abierto) return
+    const overflowPrevio = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = overflowPrevio }
+  }, [abierto])
+
   useEffect(() => {
     if (!abierto) return
     function handleKeyDown(e: KeyboardEvent) {
