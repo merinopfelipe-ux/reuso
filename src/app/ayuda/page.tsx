@@ -116,6 +116,22 @@ function ContenidoUsuario() {
   const [form, setForm] = useState({ mensaje: '', categoria: 'Error técnico' })
   const [loading, setLoading] = useState(false)
 
+  // Solución liviana para "reportar un error" sin construir nada nuevo: la
+  // categoría "Error técnico" ya existía y ya es la opción por defecto — lo
+  // único que faltaba era capturar en qué pantalla pasó, que si no se pierde
+  // apenas el usuario navega a /ayuda. Se precarga como punto de partida
+  // editable, nunca se manda nada oculto que el usuario no vea.
+  useEffect(() => {
+    if (typeof document === 'undefined' || !document.referrer) return
+    try {
+      const referrer = new URL(document.referrer)
+      if (referrer.origin !== window.location.origin) return
+      setForm((prev) => prev.mensaje ? prev : { ...prev, mensaje: `Página donde ocurrió: ${referrer.pathname}\n\nDescribe aquí qué pasó:\n` })
+    } catch {
+      // Referrer inválido o bloqueado por el navegador — se deja el mensaje vacío, sin romper nada.
+    }
+  }, [])
+
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement | HTMLSelectElement | HTMLInputElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
