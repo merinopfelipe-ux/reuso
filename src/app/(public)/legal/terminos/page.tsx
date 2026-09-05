@@ -28,7 +28,7 @@ const T = {
       { href: '/legal/reglamento', label: 'Reglamento de Uso' },
     ],
     intro:
-      'Bienvenido a la Calculadora de Reúso, plataforma en línea ubicada en reuso.lurdes.co, propiedad de Grupo MLP S.A.S., empresa constituida bajo las leyes de la República de Colombia, con domicilio en Medellín, Antioquia. Lee estas condiciones antes de usar la plataforma. Al iniciar sesión, registrarte o acceder a la calculadora, confirmas que las aceptas en su totalidad y que celebras un contrato legalmente vinculante con Grupo MLP S.A.S.',
+      'Bienvenido a la Calculadora de Reúso, plataforma en línea ubicada en calculadoradereuso.com, propiedad de Grupo MLP S.A.S., empresa constituida bajo las leyes de la República de Colombia, con domicilio en Medellín, Antioquia. Lee estas condiciones antes de usar la plataforma. Al iniciar sesión, registrarte o acceder a la calculadora, confirmas que las aceptas en su totalidad y que celebras un contrato legalmente vinculante con Grupo MLP S.A.S.',
     definicionesTitle: 'Definiciones',
     definiciones: [
       {
@@ -54,7 +54,7 @@ const T = {
     aceptacionLinkLabel: 'política de privacidad y tratamiento de datos',
     servicioTitle: 'Servicio y funcionamiento',
     servicio1:
-      'La Calculadora de Reúso es una plataforma en línea que permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en reuso.lurdes.co/verificar.',
+      'La Calculadora de Reúso es una plataforma en línea que permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en calculadoradereuso.com/verificar.',
     servicio2:
       'Las estimaciones se basan en factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Constituyen una herramienta de comunicación ambiental y difieren de una auditoría ambiental oficial.',
     servicio3:
@@ -129,7 +129,7 @@ const T = {
       { href: '/legal/reglamento', label: 'Usage Rules' },
     ],
     intro:
-      'Welcome to the Reuse Calculator, an online platform at reuso.lurdes.co, owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, with registered office in Medellín, Antioquia. Please read these terms before using the platform. By logging in, registering or accessing the calculator, you confirm your full acceptance and enter into a legally binding contract with Grupo MLP S.A.S.',
+      'Welcome to the Reuse Calculator, an online platform at calculadoradereuso.com, owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, with registered office in Medellín, Antioquia. Please read these terms before using the platform. By logging in, registering or accessing the calculator, you confirm your full acceptance and enter into a legally binding contract with Grupo MLP S.A.S.',
     definicionesTitle: 'Definitions',
     definiciones: [
       {
@@ -155,7 +155,7 @@ const T = {
     aceptacionLinkLabel: 'privacy and data processing policy',
     servicioTitle: 'Service and operation',
     servicio1:
-      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the CO₂ equivalent avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable at reuso.lurdes.co/verificar.',
+      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the CO₂ equivalent avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable at calculadoradereuso.com/verificar.',
     servicio2:
       'Estimates are based on internationally recognized emission factors and are expressed in kilograms of CO₂ equivalent (kg CO₂e). They are an environmental communication tool and differ from an official environmental audit.',
     servicio3:

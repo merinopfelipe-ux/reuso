@@ -8,10 +8,10 @@ import { CookieBanner } from '@/components/legal/cookie-banner'
 import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://reuso.lurdes.co'),
+  metadataBase: new URL('https://calculadoradereuso.com'),
   title: {
-    default: 'reuso.lurdes.co - Medición de Impacto Ambiental',
-    template: '%s - reuso.lurdes.co',
+    default: 'calculadoradereuso.com - Medición de Impacto Ambiental',
+    template: '%s - calculadoradereuso.com',
   },
   description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
   robots: { index: false, follow: false },
@@ -25,10 +25,10 @@ export const metadata: Metadata = {
     apple: '/logo-icono.svg',
   },
   openGraph: {
-    title: 'reuso.lurdes.co - Medición de Impacto Ambiental',
+    title: 'calculadoradereuso.com - Medición de Impacto Ambiental',
     description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
-    url: 'https://reuso.lurdes.co',
-    siteName: 'reuso.lurdes.co',
+    url: 'https://calculadoradereuso.com',
+    siteName: 'calculadoradereuso.com',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     locale: 'es_CO',
     type: 'website',

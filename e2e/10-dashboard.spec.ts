@@ -97,7 +97,7 @@ test.describe('usuario_libre', () => {
     await page.locator('input[type="date"]').nth(1).fill('2024-12-31')
     await page.locator('button:has-text("Generar informe")').last().click()
     await expect(
-      page.getByText('El plan Explora no incluye generación de informes. Contacta a reuso.lurdes.co para ampliar tu plan.')
+      page.getByText('El plan Explora no incluye generación de informes. Contacta a calculadoradereuso.com para ampliar tu plan.')
     ).toBeVisible({ timeout: 10_000 })
   })
 

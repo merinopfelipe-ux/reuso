@@ -83,7 +83,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setFontSize(7)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(TEXT_LIGHT)
-  doc.text('reuso.lurdes.co · Informe de Impacto Ambiental', 14, 23)
+  doc.text('calculadoradereuso.com · Informe de Impacto Ambiental', 14, 23)
 
   // ── LOGO EMPRESA (derecha) ───────────────────────────────────
   if (datos.empresa_logo_url) {
@@ -223,7 +223,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   y += 12
 
   // ── QR + CÓDIGO DE VERIFICACIÓN ─────────────────────────────
-  const verifyUrl = `https://reuso.lurdes.co/verificar/${datos.codigo_verificacion}`
+  const verifyUrl = `https://calculadoradereuso.com/verificar/${datos.codigo_verificacion}`
   const qrY = y
 
   try {
@@ -312,7 +312,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
 
   doc.text(pieLegal, W / 2, footerY + 2, { align: 'center', maxWidth: W - 30 })
   doc.setFontSize(6)
-  doc.text('© Grupo MLP S.A.S. · reuso.lurdes.co', W / 2, footerY + 8, { align: 'center' })
+  doc.text('© Grupo MLP S.A.S. · calculadoradereuso.com', W / 2, footerY + 8, { align: 'center' })
 
   return Buffer.from(doc.output('arraybuffer'))
 }

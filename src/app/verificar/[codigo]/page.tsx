@@ -29,9 +29,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: 'Informe verificado',
-    description: desc || 'Informe de impacto ambiental verificado en reuso.lurdes.co',
+    description: desc || 'Informe de impacto ambiental verificado en calculadoradereuso.com',
     openGraph: {
-      title: titular ? `Informe de ${titular} - reuso.lurdes.co` : 'Informe verificado - reuso.lurdes.co',
+      title: titular ? `Informe de ${titular} - calculadoradereuso.com` : 'Informe verificado - calculadoradereuso.com',
       description: desc || 'Informe de impacto ambiental por reúso de objetos',
       images: [{ url: '/og-image.png', width: 1200, height: 630 }],
     },
@@ -107,7 +107,7 @@ export default async function VerificarPage({ params }: PageProps) {
             Documento no encontrado
           </h1>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: '0 0 20px' }}>
-            El código de verificación no corresponde a ningún documento registrado en reuso.lurdes.co.
+            El código de verificación no corresponde a ningún documento registrado en calculadoradereuso.com.
             Verifica que el enlace esté completo.
           </p>
           <p style={{ fontSize: 11, color: 'var(--text-placeholder)', fontFamily: 'monospace' }}>
@@ -206,7 +206,7 @@ export default async function VerificarPage({ params }: PageProps) {
           }}>
             {revocado ? <FileX size={13} color="#EF4444" /> : <Leaf size={13} color="var(--color-brand)" />}
             <span style={{ fontSize: 11, fontWeight: 600, color: revocado ? '#B91C1C' : 'var(--color-brand)' }}>
-              {revocado ? 'DOCUMENTO INVÁLIDO' : 'Documento auténtico · reuso.lurdes.co'}
+              {revocado ? 'DOCUMENTO INVÁLIDO' : 'Documento auténtico · calculadoradereuso.com'}
             </span>
           </div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: revocado ? '#B91C1C' : 'var(--text-primary)', margin: '0 0 8px', lineHeight: 1.25 }}>
@@ -477,7 +477,7 @@ export default async function VerificarPage({ params }: PageProps) {
         <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-placeholder)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px' }}>
           Factores de emisión basados en ecoinvent, Humana PPP, DEFRA 2023, Comisión Europea.
           Nosotros protegemos este documento con sellos de seguridad digitales que impiden cualquier modificación.
-          Verificable de forma independiente en <strong style={{ color: 'var(--text-secondary)' }}>reuso.lurdes.co/verificar</strong>.
+          Verificable de forma independiente en <strong style={{ color: 'var(--text-secondary)' }}>calculadoradereuso.com/verificar</strong>.
         </p>
 
         {/* Manual MagnifyingGlass Footer */}

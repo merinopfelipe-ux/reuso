@@ -48,7 +48,7 @@ interface Tenant {
 }
 
 async function crearTenant(letra: 'A' | 'B'): Promise<Tenant> {
-  const email = `test_rls_tenant_${letra.toLowerCase()}_${SUFIJO}@reuso.lurdes.co`
+  const email = `test_rls_tenant_${letra.toLowerCase()}_${SUFIJO}@calculadoradereuso.com`
 
   const { data: empresa, error: errEmpresa } = await adminClient
     .from('empresas')

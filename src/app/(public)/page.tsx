@@ -42,7 +42,7 @@ async function obtenerDatosReales() {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://reuso.lurdes.co'),
+  metadataBase: new URL('https://calculadoradereuso.com'),
   title: 'Software de RSE y Economía Circular | Medición, Trazabilidad y Reportes',
   description: 'Plataforma para gestionar y medir tu Responsabilidad Social Empresarial (RSE). Realiza estimaciones ambientales documentadas, implementa economía circular y facilita la trazabilidad con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
   keywords: [
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     'huella hidrica empresarial',
     'reportes ESG'
   ],
-  authors: [{ name: 'Reúso by Grupo MLP', url: 'https://reuso.lurdes.co' }],
+  authors: [{ name: 'Reúso by Grupo MLP', url: 'https://calculadoradereuso.com' }],
   creator: 'Grupo MLP',
   publisher: 'Reúso',
   robots: {
@@ -77,11 +77,11 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     }
   },
-  alternates: { canonical: 'https://reuso.lurdes.co' },
+  alternates: { canonical: 'https://calculadoradereuso.com' },
   openGraph: {
     title: 'Software RSE y Economía Circular | Mide tu Impacto Ambiental',
     description: 'Estructura tu Responsabilidad Social Empresarial (RSE). Herramienta digital para estimar impacto, reportar actividades y respaldar tus iniciativas con trazabilidad integral.',
-    url: 'https://reuso.lurdes.co',
+    url: 'https://calculadoradereuso.com',
     type: 'website',
     locale: 'es_CO',
     siteName: 'Calculadora de Reúso',
@@ -114,8 +114,8 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@type': 'Organization',
     name: 'Reúso',
     legalName: 'Grupo MLP',
-    url: 'https://reuso.lurdes.co',
-    logo: 'https://reuso.lurdes.co/logo-completo.svg',
+    url: 'https://calculadoradereuso.com',
+    logo: 'https://calculadoradereuso.com/logo-completo.svg',
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: telefonoFormato,
@@ -127,11 +127,11 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Calculadora de Reúso',
-    url: 'https://reuso.lurdes.co',
+    url: 'https://calculadoradereuso.com',
     inLanguage: 'es-CO',
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://reuso.lurdes.co/?q={search_term_string}',
+      target: 'https://calculadoradereuso.com/?q={search_term_string}',
       'query-input': 'required name=search_term_string'
     }
   },
@@ -140,7 +140,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@type': 'SoftwareApplication',
     name: 'Calculadora de Reúso - Software para Seguimiento y Medición de RSE',
     description: 'Plataforma digital para la gestión de la Responsabilidad Social Empresarial (RSE). Facilita estimaciones ambientales, trazabilidad de economía circular y reportes estructurados para respaldar tus memorias ESG.',
-    url: 'https://reuso.lurdes.co',
+    url: 'https://calculadoradereuso.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     inLanguage: 'es-CO',

@@ -532,7 +532,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                 </p>
                 {codigoRegistro && (
                   <p style={{ fontSize: 11, color: TEXT_MED, margin: '6px 0 0' }}>
-                    También puede registrarse en reuso.lurdes.co/registro con el código de empresa:{' '}
+                    También puede registrarse en calculadoradereuso.com/registro con el código de empresa:{' '}
                     <strong style={{ color: BRAND, fontFamily: 'monospace' }}>{codigoRegistro}</strong>
                   </p>
                 )}

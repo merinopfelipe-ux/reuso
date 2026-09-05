@@ -30,7 +30,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const RESEND_KEY = process.env.RESEND_API_KEY
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !RESEND_KEY) {
   console.error('Faltan variables de entorno. Verifica .env.local')
@@ -191,7 +191,7 @@ function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoC
             <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
               <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://reuso.lurdes.co" style="color:#474747;text-decoration:underline;">reuso.lurdes.co</a>
+                <a href="https://calculadoradereuso.com" style="color:#474747;text-decoration:underline;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>
@@ -334,12 +334,12 @@ console.log('\n🔐 Correos Supabase Auth\n')
 await probar('5. Confirm signup (registro nuevo)', async () => {
   // Borrar usuario de prueba si ya existe
   const { data: existing } = await supabaseAdmin.auth.admin.listUsers()
-  const prev = existing?.users?.find(u => u.email === 'test-prueba-correo@reuso.lurdes.co')
+  const prev = existing?.users?.find(u => u.email === 'test-prueba-correo@calculadoradereuso.com')
   if (prev) await supabaseAdmin.auth.admin.deleteUser(prev.id)
 
   // Registrar nuevo usuario → Supabase dispara "Confirm signup"
   const { error } = await supabaseAnon.auth.signUp({
-    email: 'test-prueba-correo@reuso.lurdes.co',
+    email: 'test-prueba-correo@calculadoradereuso.com',
     password: 'TestCorreo2026!',
   })
   if (error) throw new Error(error.message)

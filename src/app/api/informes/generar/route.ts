@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
   if (!empresaId) {
     // usuario_libre sin empresa: retornar mensaje del plan (plan free = Explora)
     return NextResponse.json(
-      { error: 'El plan Explora no incluye generación de informes. Contacta a reuso.lurdes.co para ampliar tu plan.' },
+      { error: 'El plan Explora no incluye generación de informes. Contacta a calculadoradereuso.com para ampliar tu plan.' },
       { status: 429 }
     )
   }

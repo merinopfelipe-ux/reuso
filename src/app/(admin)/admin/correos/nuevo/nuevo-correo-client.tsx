@@ -519,7 +519,7 @@ export function NuevoCorreoClient({ empresas, userEmail, userNombre }: Props) {
               )}
               <p className="m-0">
                 © {new Date().getFullYear()} Grupo MLP S.A.S. · Todos los derechos reservados.<br />
-                <span className="underline text-gray-600">reuso.lurdes.co</span>
+                <span className="underline text-gray-600">calculadoradereuso.com</span>
               </p>
             </div>
           </div>

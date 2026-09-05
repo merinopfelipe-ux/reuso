@@ -84,7 +84,7 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
   const secciones = [
     {
       titulo: 'Introducción',
-      texto: 'El presente Acuerdo de Confidencialidad regula el uso de la plataforma Calculadora de Reúso (ubicada en reuso.lurdes.co), de la cual Grupo MLP S.A.S. es el legítimo propietario. Al registrarse, firmar o acceder a los servicios de la plataforma, el firmante acepta plenamente y se compromete a cumplir con la totalidad de los términos aquí expuestos. Grupo MLP S.A.S. comparte información técnica, metodológica y comercial reservada para el desarrollo de la economía circular.'
+      texto: 'El presente Acuerdo de Confidencialidad regula el uso de la plataforma Calculadora de Reúso (ubicada en calculadoradereuso.com), de la cual Grupo MLP S.A.S. es el legítimo propietario. Al registrarse, firmar o acceder a los servicios de la plataforma, el firmante acepta plenamente y se compromete a cumplir con la totalidad de los términos aquí expuestos. Grupo MLP S.A.S. comparte información técnica, metodológica y comercial reservada para el desarrollo de la economía circular.'
     },
     {
       titulo: 'Objeto',
@@ -98,7 +98,7 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
         '• El diseño, código fuente, algoritmos, y arquitectura de software de la plataforma.\n' +
         '• Los informes de impacto generados.\n' +
         '• Cualquier información técnica, comercial o estratégica provista en el contexto del servicio.\n\n' +
-        'Tu acceso a esta información no implica la transferencia de ningún derecho sobre ella, incluyendo derechos de propiedad intelectual, know-how o patentes. Para más detalles sobre la titularidad y licencias de uso, consulta los Términos y Condiciones de Uso (https://reuso.lurdes.co/legal/terminos).'
+        'Tu acceso a esta información no implica la transferencia de ningún derecho sobre ella, incluyendo derechos de propiedad intelectual, know-how o patentes. Para más detalles sobre la titularidad y licencias de uso, consulta los Términos y Condiciones de Uso (https://calculadoradereuso.com/legal/terminos).'
     },
     {
       titulo: '2. Obligaciones del Firmante',
@@ -109,7 +109,7 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
         '• Abstenerte de copiar, reproducir, descompilar, aplicar ingeniería inversa, distribuir o elaborar resúmenes o extractos de la información sin autorización escrita.\n' +
         '• No utilizar la información para fines comerciales propios ajenos al servicio o para construir productos y servicios competidores o similares a la Calculadora de Reúso.\n' +
         '• Cumplir con las medidas de seguridad informática, análisis de tráfico y control de intrusos de la plataforma.\n\n' +
-        'El tratamiento de los datos personales recolectados en el marco de estas obligaciones se rige bajo los términos de nuestra Política de Privacidad (https://reuso.lurdes.co/legal/privacidad) y nuestra Política de Cookies (https://reuso.lurdes.co/legal/cookies), que detalla el almacenamiento de cookies técnicas y de sesión.'
+        'El tratamiento de los datos personales recolectados en el marco de estas obligaciones se rige bajo los términos de nuestra Política de Privacidad (https://calculadoradereuso.com/legal/privacidad) y nuestra Política de Cookies (https://calculadoradereuso.com/legal/cookies), que detalla el almacenamiento de cookies técnicas y de sesión.'
     },
     {
       titulo: '3. Exclusiones de Confidencialidad',
@@ -126,7 +126,7 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
     {
       titulo: '5. Limitaciones en el Uso de la Información',
       texto: 'Queda estrictamente prohibido utilizar la Información Confidencial para fines lucrativos propios o de terceros ajenos a la relación de servicio. El incumplimiento de este acuerdo constituye una violación del secreto comercial y de la propiedad industrial, generando responsabilidad legal y civil por daños y perjuicios.\n\n' +
-        'Las estimaciones e informes generados están sujetos a las condiciones técnicas y límites de responsabilidad dispuestos en el Reglamento de Uso de la Calculadora (https://reuso.lurdes.co/legal/reglamento). Asimismo, la recolección de los datos de impacto procesados está respaldada por nuestra Política de Tratamiento de Datos Personales (https://reuso.lurdes.co/legal/datos) en cumplimiento con la Ley 1581 de 2012 (Colombia), el RGPD de la Unión Europea y la CCPA de Estados Unidos.'
+        'Las estimaciones e informes generados están sujetos a las condiciones técnicas y límites de responsabilidad dispuestos en el Reglamento de Uso de la Calculadora (https://calculadoradereuso.com/legal/reglamento). Asimismo, la recolección de los datos de impacto procesados está respaldada por nuestra Política de Tratamiento de Datos Personales (https://calculadoradereuso.com/legal/datos) en cumplimiento con la Ley 1581 de 2012 (Colombia), el RGPD de la Unión Europea y la CCPA de Estados Unidos.'
     },
     {
       titulo: '6. Vigencia del Acuerdo',
@@ -247,7 +247,7 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
     doc.setFontSize(7.5)
     doc.setTextColor(130, 130, 130)
     doc.setFont('Open Sans', 'normal')
-    doc.text('© Grupo MLP S.A.S. · Medellín, Colombia · reuso.lurdes.co', margin, footerY)
+    doc.text('© Grupo MLP S.A.S. · Medellín, Colombia · calculadoradereuso.com', margin, footerY)
     doc.text(`Página ${i} de ${totalPages}`, W - margin - 20, footerY)
   }
 

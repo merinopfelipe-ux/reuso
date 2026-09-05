@@ -68,7 +68,7 @@ export async function POST(
     })
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://reuso.lurdes.co'
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://calculadoradereuso.com'
   const enlace = `${baseUrl}/cot/${token}`
 
   await logAuditoria(adminClient, {

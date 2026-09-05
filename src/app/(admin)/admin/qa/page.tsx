@@ -1504,7 +1504,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Abre /registro en una ventana de incógnito y crea una cuenta nueva con un email de prueba (ej. qa_onboarding@tudominio.com). Necesitas acceso a ese correo para confirmar la cuenta.',
       'Confirma la cuenta haciendo clic en el enlace que llega al correo de prueba.',
       'Inicia sesión con esa cuenta nueva. El sistema debe detectar que no tienes empresa vinculada y redirigirte automáticamente a /empresa/nueva.',
-      'Estando en /empresa/nueva (sin completar el formulario), ve a la barra de direcciones del navegador, escribe directamente https://reuso.lurdes.co/empresa y presiona Enter.',
+      'Estando en /empresa/nueva (sin completar el formulario), ve a la barra de direcciones del navegador, escribe directamente https://calculadoradereuso.com/empresa y presiona Enter.',
       'Verifica que el middleware te devuelve a /empresa/nueva en lugar de mostrarte el panel de empresa.',
     ],
     esperado: 'El middleware detecta la ausencia de una organización vinculada a la sesión y te redirige de inmediato a /empresa/nueva con un mensaje indicando que debes completar el registro de tu empresa para poder ingresar al panel. No se renderizan los componentes internos de /empresa ni de /dashboard.',
@@ -1601,7 +1601,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   {
     id: 'pub-09', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: true,
     titulo: 'Metodología de cálculo - página en producción',
-    descripcion: 'Es la única página además de la landing que hoy está publicada de verdad en reuso.lurdes.co, así que un error aquí es visible para cualquier visitante real.',
+    descripcion: 'Es la única página además de la landing que hoy está publicada de verdad en calculadoradereuso.com, así que un error aquí es visible para cualquier visitante real.',
     pasos: [
       'Cierra la sesión activa y navega a /legal/medicion en incógnito.',
       'Recorre el submenú de anclas de la derecha (Qué medimos, Cómo lo calculamos, Nuestras equivalencias, Seguridad digital, Por qué importa, Limitaciones, IA y transparencia, Transparencia, En resumen) haciendo clic en cada una.',

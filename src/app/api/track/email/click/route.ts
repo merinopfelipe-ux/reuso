@@ -6,7 +6,7 @@ export async function GET(req: Request) {
   const trackToken = searchParams.get('t')
   const targetUrl = searchParams.get('url')
 
-  const fallbackUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const fallbackUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   let destination = fallbackUrl
 
   if (targetUrl) {

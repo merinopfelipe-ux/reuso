@@ -450,7 +450,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     doc.setTextColor(150, 150, 150)
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(9)
-    doc.text(`Generado el ${new Date().toLocaleDateString('es-CO')} · reuso.lurdes.co · Grupo MLP S.A.S`, 20, 275)
+    doc.text(`Generado el ${new Date().toLocaleDateString('es-CO')} · calculadoradereuso.com · Grupo MLP S.A.S`, 20, 275)
     doc.save(`reporte-cfo-${activo.codigo_dpp}.pdf`)
   }
 

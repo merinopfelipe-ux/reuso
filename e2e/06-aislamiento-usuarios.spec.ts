@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import path from 'path'
@@ -26,8 +26,8 @@ function loadEnv() {
 }
 loadEnv()
 
-const emailA = `test_security_a_${Date.now()}@reuso.lurdes.co`
-const emailB = `test_security_b_${Date.now()}@reuso.lurdes.co`
+const emailA = `test_security_a_${Date.now()}@calculadoradereuso.com`
+const emailB = `test_security_b_${Date.now()}@calculadoradereuso.com`
 if (!process.env.TEST_SECURITY_PASSWORD) throw new Error('Falta TEST_SECURITY_PASSWORD en .env.local')
 const password = process.env.TEST_SECURITY_PASSWORD
 
@@ -37,7 +37,7 @@ const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey)
 
 const createdUserIds: string[] = []
 
-async function aceptarCookies(page: any) {
+async function aceptarCookies(page: Page) {
   await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
 }
 
@@ -61,7 +61,7 @@ async function registrarUsuarioConAdmin(email: string, apodo: string) {
   return data.user
 }
 
-async function iniciarSesion(page: any, email: string) {
+async function iniciarSesion(page: Page, email: string) {
   await page.goto('/login')
   await page.waitForLoadState('load')
   await aceptarCookies(page)

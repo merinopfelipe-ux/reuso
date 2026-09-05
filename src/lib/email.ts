@@ -167,7 +167,7 @@ function emailPlantilla({
               </p>`}
               <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://reuso.lurdes.co" style="color:#474747;text-decoration:underline;">reuso.lurdes.co</a>
+                <a href="https://calculadoradereuso.com" style="color:#474747;text-decoration:underline;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>
@@ -225,7 +225,7 @@ export async function enviarInvitacion(
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@reuso.lurdes.co>'
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
 
   const saludoPersonal = nombreDestinatario
@@ -352,7 +352,7 @@ export async function enviarInvitacionFirma(
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/legal/firma/${rawToken}`
 
   const boton = `
@@ -424,7 +424,7 @@ export async function enviarConfirmacionFirma(
 <table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
   ${filas}
 </table>
-<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">Adjuntamos tu copia en PDF. Verifica su autenticidad en <a href="https://reuso.lurdes.co/verificar" style="color:#00827C;">reuso.lurdes.co/verificar</a>.</p>`
+<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">Adjuntamos tu copia en PDF. Verifica su autenticidad en <a href="https://calculadoradereuso.com/verificar" style="color:#00827C;">calculadoradereuso.com/verificar</a>.</p>`
 
   const html = emailPlantilla({
     preheader: `Tu ${documentoLabel} quedó firmado. Adjuntamos tu copia en PDF`,
@@ -511,7 +511,7 @@ export async function enviarPropuestaCotizacion(
 // ── Helpers de marketing ──────────────────────────────────────────────────────
 
 export function urlBaja(token: string): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const base = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   return `${base}/unsubscribe?token=${encodeURIComponent(token)}`
 }
 
@@ -569,7 +569,7 @@ export async function enviarCorreoAdmin({
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://reuso.lurdes.co'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
 
   let exitosos = 0
   let fallidos = 0

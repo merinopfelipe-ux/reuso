@@ -28,7 +28,7 @@ function generarPassword(): string {
 }
 
 async function crearCuentaEfimera(rol: 'usuario_libre' | 'empleado' | 'empresa_admin', nombre: string) {
-  const email = `e2e_${rol}_${Date.now()}@reuso.lurdes.co`
+  const email = `e2e_${rol}_${Date.now()}@calculadoradereuso.com`
   const password = generarPassword()
 
   const { data: nuevo, error } = await supabaseAdmin.auth.admin.createUser({

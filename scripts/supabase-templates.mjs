@@ -152,7 +152,7 @@ function plantilla({ subtituloHeader, preheader, saludo, cuerpo, contenidoCentra
               </p>
               <p style="margin:0;font-size:11px;color:${NEGRO};line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://reuso.lurdes.co" style="color:${NEGRO};text-decoration:underline;">reuso.lurdes.co</a>
+                <a href="https://calculadoradereuso.com" style="color:${NEGRO};text-decoration:underline;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>

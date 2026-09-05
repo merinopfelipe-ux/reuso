@@ -209,7 +209,7 @@ export default function LegalIAPage() {
           </a>
         </p>
         <p style={{ ...p, fontWeight: 600 }}>
-          <a href="https://reuso.lurdes.co/legal/dudas" style={{ color: 'var(--color-brand)', textDecoration: 'underline' }}>
+          <a href="https://calculadoradereuso.com/legal/dudas" style={{ color: 'var(--color-brand)', textDecoration: 'underline' }}>
             {t.s7FormLabel}
           </a>
         </p>

@@ -29,7 +29,7 @@ const T = {
       { href: '/legal/privacidad', label: 'Política de Privacidad' },
     ],
     intro:
-      'La Calculadora de Reúso, ubicada en reuso.lurdes.co, es propiedad de Grupo MLP S.A.S., empresa constituida bajo las leyes de la República de Colombia, con domicilio en Medellín, Antioquia. Al registrarte o acceder a la plataforma confirmas que aceptas este reglamento en su totalidad y que celebras un contrato legalmente vinculante con Grupo MLP S.A.S.',
+      'La Calculadora de Reúso, ubicada en calculadoradereuso.com, es propiedad de Grupo MLP S.A.S., empresa constituida bajo las leyes de la República de Colombia, con domicilio en Medellín, Antioquia. Al registrarte o acceder a la plataforma confirmas que aceptas este reglamento en su totalidad y que celebras un contrato legalmente vinculante con Grupo MLP S.A.S.',
     h_definiciones: 'Definiciones',
     def_servicio_label: 'Servicio:',
     def_servicio:
@@ -136,7 +136,7 @@ const T = {
       { href: '/legal/privacidad', label: 'Privacy Policy' },
     ],
     intro:
-      'The Reuse Calculator, located at reuso.lurdes.co, is owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, headquartered in Medellín, Antioquia. By registering or accessing the platform you confirm that you accept these terms in full and that you enter into a legally binding contract with Grupo MLP S.A.S.',
+      'The Reuse Calculator, located at calculadoradereuso.com, is owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, headquartered in Medellín, Antioquia. By registering or accessing the platform you confirm that you accept these terms in full and that you enter into a legally binding contract with Grupo MLP S.A.S.',
     h_definiciones: 'Definitions',
     def_servicio_label: 'Service:',
     def_servicio:

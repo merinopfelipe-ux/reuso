@@ -5,7 +5,7 @@ import type { MetadataRoute } from 'next'
 // /pasaporte/[codigo], /propuesta/[token]) quedan fuera a propósito, cada
 // una es una URL única de una empresa puntual, no contenido genérico.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://reuso.lurdes.co'
+  const base = 'https://calculadoradereuso.com'
   const hoy = new Date()
 
   const paginas = [

@@ -233,7 +233,7 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     // prueba (causa real de las ~24-30 rojas en cada corrida completa de
     // hoy, confirmado leyendo el snapshot de una falla). Se usa una cuenta
     // desechable propia, creada y borrada solo para esta prueba.
-    const email = `e2e_auth12_${Date.now()}@reuso.lurdes.co`
+    const email = `e2e_auth12_${Date.now()}@calculadoradereuso.com`
     const password = 'Auth12Prueba!Aa1'
     const { data: cuenta, error } = await supabaseAdmin.auth.admin.createUser({
       email, password, email_confirm: true,

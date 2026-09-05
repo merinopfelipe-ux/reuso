@@ -29,6 +29,6 @@ export default function robots(): MetadataRoute.Robots {
         '/unsubscribe',
       ],
     },
-    sitemap: 'https://reuso.lurdes.co/sitemap.xml',
+    sitemap: 'https://calculadoradereuso.com/sitemap.xml',
   }
 }

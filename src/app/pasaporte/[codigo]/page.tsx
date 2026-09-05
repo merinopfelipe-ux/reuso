@@ -100,7 +100,7 @@ export default async function PasaportePage({ params }: PageProps) {
           icono={WarningCircle}
           titulo="No encontramos este pasaporte"
           descripcion="Revisa el código QR o escanealo de nuevo. Si crees que es un error, contacta a la empresa emisora."
-          cta={{ label: 'Ir a reuso.lurdes.co', href: '/' }}
+          cta={{ label: 'Ir a calculadoradereuso.com', href: '/' }}
         />
       </main>
     )
@@ -409,7 +409,7 @@ export default async function PasaportePage({ params }: PageProps) {
         {/* ── 8. FOOTER ── */}
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: 16, textAlign: 'center' }}>
           <p style={{ margin: 0, fontSize: 10, color: 'var(--text-secondary)' }}>
-            Emitido por Calculadora de Reúso · reuso.lurdes.co · Grupo MLP S.A.S
+            Emitido por Calculadora de Reúso · calculadoradereuso.com · Grupo MLP S.A.S
           </p>
         </div>
 

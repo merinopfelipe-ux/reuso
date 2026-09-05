@@ -171,7 +171,7 @@ function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoC
               ${avisoPie ?? `<p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.</p>`}
               <p style="margin:0;font-size:11px;color:${NEGRO};line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://reuso.lurdes.co" style="color:${NEGRO};text-decoration:underline;">reuso.lurdes.co</a>
+                <a href="https://calculadoradereuso.com" style="color:${NEGRO};text-decoration:underline;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>
@@ -183,7 +183,7 @@ function emailPlantilla({ preheader, subtituloHeader, saludo, cuerpo, contenidoC
 </html>`
 }
 
-const APP_URL = 'https://reuso.lurdes.co'
+const APP_URL = 'https://calculadoradereuso.com'
 const link = `${APP_URL}/invitacion/TOKEN-EJEMPLO-123`
 
 const boton = (url, texto) => `
@@ -271,7 +271,7 @@ const templates = {
     subtituloHeader: 'Oferta exclusiva para ti',
     saludo: '¡Hola, María! 👋',
     cuerpo: 'Mañana pagan el precio completo. Hoy tú no.',
-    avisoPie: `<p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">Para dejar de recibir estos correos, <a href="https://reuso.lurdes.co/unsubscribe?token=EJEMPLO" style="color:${NEGRO};text-decoration:underline;">cancela tu suscripción</a>.</p>`,
+    avisoPie: `<p style="margin:0 0 10px;font-size:11px;color:${NEGRO};line-height:1.7;">Para dejar de recibir estos correos, <a href="https://calculadoradereuso.com/unsubscribe?token=EJEMPLO" style="color:${NEGRO};text-decoration:underline;">cancela tu suscripción</a>.</p>`,
     mostrarAlerta: false,
     mostrarFirma: false,
     contenidoCentral: `
@@ -365,7 +365,7 @@ const templates = {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px;">
   <tr>
     <td align="center">
-      <a class="eb" href="https://reuso.lurdes.co/planes" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:18px 52px;border-radius:100px;font-size:17px;font-weight:800;letter-spacing:-0.3px;">
+      <a class="eb" href="https://calculadoradereuso.com/planes" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:18px 52px;border-radius:100px;font-size:17px;font-weight:800;letter-spacing:-0.3px;">
         Activar ahora con 50% off
       </a>
     </td>

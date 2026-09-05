@@ -7,7 +7,7 @@ export default defineConfig({
   timeout: 60_000,
   reporter: 'list',
   use: {
-    baseURL: 'https://reuso.lurdes.co',
+    baseURL: 'https://calculadoradereuso.com',
     trace: 'on-first-retry',
     locale: 'es-ES',
   },
