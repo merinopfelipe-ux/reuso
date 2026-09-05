@@ -15,13 +15,17 @@ export interface UnifiedModalProps {
   textoConfirmar?: string
   textoCancelar?: string
   varianteConfirmar?: 'error' | 'brand'
-  onConfirmar: () => void
+  onConfirmar?: () => void
   onCancelar?: () => void
   children?: React.ReactNode
-  // 'xs' (max-w-xs) para popups muy compactos, 'sm' (default, max-w-sm) para confirmaciones simples. 
+  // 'xs' (max-w-xs) para popups muy compactos, 'sm' (default, max-w-sm) para confirmaciones simples.
   // 'lg' (max-w-2xl) para formularios con más de un campo o layout de dos columnas, 'xl' (max-w-3xl) para modales amplios.
   ancho?: 'xs' | 'sm' | 'lg' | 'xl'
   tituloCentrado?: boolean
+  // Excepción deliberada a "siempre dos acciones": solo para contenido puramente
+  // informativo (ej. un catálogo para explorar), sin ninguna decisión que confirmar
+  // o cancelar. El cierre sigue disponible por la X, Escape o clic afuera.
+  sinPie?: boolean
 }
 
 /**
@@ -46,6 +50,7 @@ export function Modal({
   children,
   ancho = 'sm',
   tituloCentrado = false,
+  sinPie = false,
 }: UnifiedModalProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -119,21 +124,25 @@ export function Modal({
           </div>
         </div>
 
-        {/* Footer Fijo con Botones */}
-        <div className="flex-shrink-0 p-5 sm:p-6 pt-3 mt-1">
-          <div className="flex items-center justify-end gap-2.5">
-            <Button variant="secondary" size="sm" onClick={onCancelar || onClose}>
-              {textoCancelar}
-            </Button>
-            <Button
-              variant={varianteConfirmar === 'error' ? 'danger' : 'primary'}
-              size="sm"
-              onClick={onConfirmar}
-            >
-              {textoConfirmar}
-            </Button>
+        {/* Footer Fijo con Botones — omitido a propósito cuando sinPie=true
+            (contenido puramente informativo, sin ninguna acción que confirmar
+            o cancelar; cerrar sigue disponible por la X, Escape o clic afuera) */}
+        {!sinPie && (
+          <div className="flex-shrink-0 p-5 sm:p-6 pt-3 mt-1">
+            <div className="flex items-center justify-end gap-2.5">
+              <Button variant="secondary" size="sm" onClick={onCancelar || onClose}>
+                {textoCancelar}
+              </Button>
+              <Button
+                variant={varianteConfirmar === 'error' ? 'danger' : 'primary'}
+                size="sm"
+                onClick={onConfirmar}
+              >
+                {textoConfirmar}
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

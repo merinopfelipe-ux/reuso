@@ -336,6 +336,17 @@ const TODOS_LOS_CALCULOS = [
   },
 ]
 
+// Un solo color por categoría para el catálogo completo (popup "Ver los 19
+// cálculos") — a diferencia de las 8 tarjetas destacadas, que conservan su
+// color individual de siempre. Verde para Ambiental (ejemplo dado por el
+// usuario), dorado para Financiero, rosa para Social, azul para DPP.
+const COLOR_POR_CATEGORIA: Record<string, string> = {
+  Ambiental: '#38B98E',
+  Financiero: '#F6BF3E',
+  Social: '#F3BBD3',
+  DPP: '#59A6E4',
+}
+
 // ─── Datos de categorías ─────────────────────────────────────────────────────
 const CATEGORIAS = {
   mobiliario: {
@@ -1407,87 +1418,106 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             })}
           </div>
 
-          {/* Puerta de entrada al catálogo completo — centrada, discreta hasta el hover */}
+          {/* Puerta de entrada al catálogo completo — mismo patrón de link
+              que "Conoce nuestro marco ético..." en la sección de IA, solo
+              centrado en este contexto. */}
           <div className="mt-8 sm:mt-10 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
-              className={`group relative flex items-center gap-2.5 px-6 py-3 rounded-full border transition-all duration-300 ${
-                isDark
-                  ? 'border-white/15 hover:border-[#D6F391]/50 bg-white/[0.03] hover:bg-white/[0.06]'
-                  : 'border-[#00827C]/15 hover:border-[#00827C]/40 bg-white hover:shadow-[0_8px_30px_rgba(0,130,124,0.12)]'
-              }`}
+              className={`group inline-flex items-center gap-2 text-xs sm:text-sm font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#005B56]'}`}
             >
-              <Calculator size={16} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
-              <span className={`text-sm font-bold tracking-wide ${tp}`}>Ver los 19 cálculos</span>
-              <ArrowRight size={15} className={`transition-transform duration-300 group-hover:translate-x-1 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`} />
+              <span className="group-hover:underline">Ver más</span>
+              <ArrowRight size={14} strokeWidth={2.5} className="flex-shrink-0" />
             </button>
           </div>
         </div>
 
-        {/* Catálogo completo de los 19 cálculos, agrupado por tipo — solo texto general, nunca fórmulas */}
+        {/* Catálogo completo de los 19 cálculos, agrupado por categoría — mismo
+            lenguaje visual (halo + reborde Liquid Glass) que las 8 tarjetas
+            destacadas de arriba, un solo color por categoría en vez de uno
+            por cálculo. Solo texto general, nunca fórmulas ni metodología. */}
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
           titulo="Los 19 cálculos de Calculadora de Reúso"
-          descripcion="Qué mide cada uno, en términos generales"
+          descripcion="Así de a fondo vas a poder demostrarle tu impacto a clientes, aliados y auditores, desde tu primer cálculo"
           icono={<Calculator size={22} />}
           colorIcono={isDark ? '#D6F391' : '#00827C'}
           ancho="xl"
-          textoConfirmar="Cerrar"
-          onConfirmar={() => setCatalogoCalculosAbierto(false)}
+          sinPie
         >
-          <div className="flex flex-col gap-5 sm:gap-7 max-h-[70vh] sm:max-h-[60vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+          <div className="flex flex-col gap-6 sm:gap-8 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
             {(['Ambiental', 'Financiero', 'Social', 'DPP'] as const).map(grupo => {
               const items = TODOS_LOS_CALCULOS.filter(c => c.tag === grupo)
               if (!items.length) return null
-              const grupoColor = items[0].colorHex
+              const color = COLOR_POR_CATEGORIA[grupo]
               return (
                 <div key={grupo}>
-                  <div className="flex items-center gap-2 mb-3 sm:mb-3.5">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: grupoColor }} />
-                    <h4 className={`text-[11px] font-extrabold uppercase tracking-widest ${isDark ? 'text-white/50' : 'text-[#474747]/55'}`}>
-                      {grupo}
-                    </h4>
+                  <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                    <h4 className={`text-sm font-extrabold ${tp}`}>{grupo}</h4>
                     <span className={`h-px flex-1 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {items.map((calc, idx) => {
                       const Ic = calc.icon
                       const planteado = calc.estado === 'planteado'
                       return (
                         <div
                           key={idx}
-                          className="group/item relative flex gap-3 p-3.5 sm:p-4 rounded-2xl overflow-hidden transition-all duration-300 active:scale-[0.98]"
-                          style={{
-                            background: isDark
-                              ? `linear-gradient(135deg, ${calc.colorHex}14 0%, ${calc.colorHex}05 100%)`
-                              : `linear-gradient(135deg, ${calc.colorHex}12 0%, ${calc.colorHex}03 100%)`,
-                            border: `1px solid ${calc.colorHex}${isDark ? '30' : '25'}`,
-                          }}
+                          className={`group/item relative p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
+                            isDark
+                              ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent'
+                              : 'bg-white border-[#00827C]/10 hover:border-transparent shadow-[0_2px_10px_rgba(0,130,124,0.04)]'
+                          }`}
                         >
-                          {/* Barra de acento del color propio del cálculo */}
-                          <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: calc.colorHex }} />
-
+                          {/* Halo difuminado, mismo lenguaje que las 8 tarjetas destacadas */}
                           <div
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
-                            style={{ backgroundColor: calc.colorHex, color: isDark ? '#474747' : '#fff' }}
-                          >
-                            <Ic size={16} strokeWidth={2.3} />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
-                              <span className={`text-xs sm:text-[13px] font-extrabold ${tp}`}>{calc.titulo}</span>
-                              <span
-                                className={`text-[9px] font-bold px-1.5 py-[1px] rounded-full shrink-0 ${
-                                  planteado
-                                    ? isDark ? 'bg-white/10 text-white/50' : 'bg-[#474747]/[0.07] text-[#474747]/55'
-                                    : isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/18 text-[#1F8C65]'
-                                }`}
-                              >
-                                {planteado ? 'Próximamente' : 'Disponible'}
-                              </span>
+                            className="absolute -inset-1 rounded-2xl opacity-0 group-hover/item:opacity-100 transition-opacity duration-500 blur-xl pointer-events-none"
+                            style={{
+                              background: isDark
+                                ? `radial-gradient(circle at 50% 50%, ${color}40 0%, ${color}12 55%, transparent 80%)`
+                                : `radial-gradient(circle at 50% 50%, ${color}28 0%, ${color}0c 50%, transparent 75%)`,
+                            }}
+                          />
+                          {/* Reborde Liquid Glass, mismo lenguaje que las 8 tarjetas destacadas */}
+                          <div
+                            className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover/item:opacity-100 transition-opacity duration-300 z-10"
+                            style={{
+                              padding: '1.5px',
+                              background: isDark
+                                ? `linear-gradient(135deg, rgba(255,255,255,0.6) 0%, ${color} 40%, rgba(255,255,255,0.05) 70%, ${color}dd 100%)`
+                                : `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, ${color} 42%, rgba(255,255,255,0.2) 72%, ${color}cc 100%)`,
+                              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                              WebkitMaskComposite: 'xor',
+                              maskComposite: 'exclude',
+                            }}
+                          />
+
+                          <div className="relative z-20 flex gap-3">
+                            <div
+                              className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-110 group-hover/item:rotate-6 group-hover/item:text-white"
+                              style={{ backgroundColor: `${color}20`, color }}
+                              onMouseEnter={e => { e.currentTarget.style.backgroundColor = color }}
+                              onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${color}20` }}
+                            >
+                              <Ic size={16} strokeWidth={2.3} />
                             </div>
-                            <p className={`text-[11px] sm:text-[11.5px] leading-relaxed ${ts}`}>{calc.desc}</p>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                                <span className={`text-xs sm:text-[13px] font-extrabold ${tp}`}>{calc.titulo}</span>
+                                <span
+                                  className={`text-[9px] font-bold px-1.5 py-[1px] rounded-full shrink-0 ${
+                                    planteado
+                                      ? isDark ? 'bg-white/10 text-white/50' : 'bg-[#474747]/[0.07] text-[#474747]/55'
+                                      : isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/18 text-[#1F8C65]'
+                                  }`}
+                                >
+                                  {planteado ? 'Próximamente' : 'Disponible'}
+                                </span>
+                              </div>
+                              <p className={`text-[11px] sm:text-[11.5px] leading-relaxed ${ts}`}>{calc.desc}</p>
+                            </div>
                           </div>
                         </div>
                       )

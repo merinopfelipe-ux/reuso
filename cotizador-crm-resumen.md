@@ -166,7 +166,7 @@ NEXT_PUBLIC_BASE_URL=https://reuso.lurdes.co
 
 | Item | Condición |
 |---|---|
-| Sidebar dinámico (mostrar/ocultar Cotizador según acceso) | Requiere clave 2680 para modificar `sidebar.tsx` |
+| Sidebar dinámico (mostrar/ocultar Cotizador según acceso) | Requiere `DESBLOQUEAR_PROTEGIDOS=1 git push` (zona protegida, ver `.husky/pre-push`) para modificar `sidebar.tsx` |
 | Migración 018 — ejecutar en Supabase SQL Editor | Antes de activar el módulo en producción |
 | Migración 020 — ejecutar en Supabase SQL Editor | `sql/020_marca_propuesta.sql` |
 | Variables de entorno en Vercel | `CRON_SECRET`, `NEXT_PUBLIC_BASE_URL`, `GEMINI_KEY`, `OR_KEY`, `GROQ_KEY` |
