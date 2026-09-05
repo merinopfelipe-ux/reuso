@@ -552,9 +552,16 @@ export default function ManualDisenoPage() {
           <div className="flex items-center gap-4 mb-4">
             <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fuentes</h2>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-4 max-w-3xl`}>
             Tres familias tipográficas conforman la identidad textual de Reúso: <strong>Seravek</strong> para títulos y encabezados de gran formato, <strong>Open Sans</strong> para la interfaz general, cuerpo de texto y comunicación, y la <strong>monoespaciada del sistema</strong> para tokens técnicos y código.
           </p>
+          <div className={`p-6 mb-12 rounded-2xl ${isDark ? 'bg-[#D6F391]/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'} max-w-3xl`}>
+            <h4 className="font-bold mb-2">Normas de Jerarquía (SEO) y Puntuación</h4>
+            <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
+              <li><strong>Estructura Headings:</strong> Mantén siempre un orden semántico estricto. <strong>H1</strong> es único por página (Hero), <strong>H2</strong> para secciones principales, <strong>H3</strong> y <strong>H4</strong> para tarjetas o sub-secciones. Usa las clases de CSS para ajustar tamaños visuales sin romper la jerarquía SEO.</li>
+              <li><strong>Puntuación Obligatoria:</strong> Todo texto que no sea un título (descripciones, viñetas, características, métricas, etc.) <strong>debe llevar punto final</strong>.</li>
+            </ul>
+          </div>
           <div className={`p-10 md:p-14 rounded-[2.5rem] space-y-12 ${liquidGlassClass} border-[#00827C]/10`}>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
                 <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Gran Formato (Display)</div>
@@ -817,7 +824,7 @@ export default function ManualDisenoPage() {
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`}><Globe size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
                    <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Voz Positiva y Activa</h4>
-                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>Construimos confianza ambiental con datos trazables y un lenguaje visual premium y transparente que no oculta nada. El Liquid Glass comunica que somos limpios como el cristal corporativo más alto.</p>
+                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>Construimos confianza ambiental con datos trazables y un lenguaje visual premium. <strong>Reglas de redacción:</strong> Escribe siempre en <strong>voz activa</strong> para empoderar al usuario. <strong>Evita por completo el uso de punto y coma (;)</strong> y utiliza oraciones cortas y asertivas. Recuerda que todo texto que no sea título debe finalizar con punto.</p>
                  </div>
               </div>
               <div className="flex gap-4">
@@ -825,6 +832,13 @@ export default function ManualDisenoPage() {
                  <div>
                    <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Filosofía de Cuidado Bio</h4>
                    <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>No solo medimos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
+                 </div>
+              </div>
+              <div className="flex gap-4">
+                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#59A6E4]/10'}`}><Target size={32} className={isDark ? 'text-white' : 'text-[#59A6E4]'} /></div>
+                 <div>
+                   <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Rigor Legal y Cero Promesas</h4>
+                   <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}><strong>Principio de no prometer nada indemostrable:</strong> Prohibido usar superlativos o afirmaciones absolutas como &ldquo;software líder&rdquo;, &ldquo;el mejor&rdquo;, &ldquo;100% garantizado&rdquo; o prometer certificaciones oficiales. Habla siempre de &ldquo;estimaciones ambientales documentadas&rdquo;, &ldquo;respaldo técnico&rdquo; y &ldquo;trazabilidad&rdquo;, protegiendo a la marca frente a riesgos legales y acusaciones de greenwashing.</p>
                  </div>
               </div>
             </div>
