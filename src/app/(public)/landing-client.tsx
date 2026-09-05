@@ -1421,7 +1421,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           {/* Puerta de entrada al catálogo completo — mismo patrón de link
               que "Conoce nuestro marco ético..." en la sección de IA, solo
               centrado en este contexto. */}
-          <div className="mt-8 sm:mt-10 flex justify-center">
+          <div className="mt-4 sm:mt-5 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
               className={`group inline-flex items-center gap-1.5 text-xs sm:text-sm font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
