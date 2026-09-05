@@ -223,7 +223,10 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   y += 12
 
   // ── QR + CÓDIGO DE VERIFICACIÓN ─────────────────────────────
-  const verifyUrl = `https://calculadoradereuso.com/verificar/${datos.codigo_verificacion}`
+  // creuso.app es solo una redirección corta (proyecto aparte, sin código de
+  // app) que baja la densidad del QR impreso — ver conceptos/estrategia-
+  // dominios-2026-09-05 en el Vault. /v/:codigo -> calculadoradereuso.com/verificar/:codigo.
+  const verifyUrl = `https://creuso.app/v/${datos.codigo_verificacion}`
   const qrY = y
 
   try {
