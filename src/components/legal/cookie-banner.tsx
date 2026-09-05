@@ -74,6 +74,9 @@ function saveConsent(f: boolean, a: boolean) {
   const data: ConsentData = { v: 1, ts: Date.now(), e: true, f, a }
   localStorage.setItem(CONSENT_KEY, JSON.stringify(data))
   localStorage.removeItem(LEGACY_KEY)
+  // Avisa a componentes ya montados (ej. Analítica web) que el consentimiento
+  // cambió, sin necesidad de recargar la página para activarlo o apagarlo.
+  window.dispatchEvent(new CustomEvent('reuso_cookies_consent_saved', { detail: { analitica: a } }))
 }
 
 type Step = 'banner' | 'personalizar' | 'hidden'

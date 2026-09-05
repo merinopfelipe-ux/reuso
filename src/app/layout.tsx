@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import NextTopLoader from 'nextjs-toploader'
+import { Analytics } from '@vercel/analytics/next'
 import { AlertasProvider } from '@/components/alertas/alertas-provider'
 import { ToastProvider } from '@/components/toast-provider'
 import { CookieBanner } from '@/components/legal/cookie-banner'
+import { GoogleAnalytics } from '@/components/analytics/google-analytics'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://reuso.lurdes.co'),
@@ -63,6 +65,12 @@ export default function RootLayout({
           <AlertasProvider>{children}</AlertasProvider>
         </ToastProvider>
         <CookieBanner />
+        {/* Analítica web (checklist 19 fundamentales, 2026-09-05). Vercel
+            Analytics no usa cookies ni datos personales, se activa siempre.
+            Google Analytics sí usa cookies (_ga/_gid) y se autorregula por
+            dentro según el consentimiento de la categoría "Analíticas". */}
+        <Analytics />
+        <GoogleAnalytics />
       </body>
     </html>
   )
