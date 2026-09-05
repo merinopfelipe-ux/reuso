@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, ShowerHead, Layers, Hammer, HeartHandshake, Scales, Medal, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, HeartHandshake, Flask, Medal, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
@@ -195,7 +195,7 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent', haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
   },
   {
-    icon: ShowerHead,
+    icon: Bath,
     titulo: 'Duchas ahorradas',
     metrica: 'Equivalencia en duchas de 5 min.',
     desc: 'Traduce el agua preservada a duchas domésticas estándar ahorradas, otra forma cotidiana de dimensionar el impacto hídrico.',
@@ -251,7 +251,7 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent', haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
   },
   {
-    icon: Scales,
+    icon: Flask,
     titulo: 'Análisis de ciclo de vida',
     metrica: 'Extensión de vida útil del activo.',
     desc: 'Cuantifica cuánto se extiende la vida útil de un activo a través de sus reúsos sucesivos, bajo estándares internacionales de ciclo de vida.',
@@ -1338,7 +1338,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
       {/* ── SECCIÓN 3 - CATÁLOGO DE CÁLCULOS ───────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
-      <section id="calculos" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/[0.02]'}`}>
+      <section id="calculos" className={`scroll-mt-28 pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-2 sm:pb-2.5 md:pb-3 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/[0.02]'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
@@ -1538,10 +1538,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
       {/* ── SECCIÓN 4 - CATEGORÍAS / INDUSTRIAS (SIN STICKY SCROLL) ─── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
-      <section 
-        id="categorias" 
-        ref={sectionCategoriasRef} 
-        className={`scroll-mt-28 relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-white'} py-12 sm:py-16`}
+      <section
+        id="categorias"
+        ref={sectionCategoriasRef}
+        className={`scroll-mt-28 relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-white'} pt-4 sm:pt-5 pb-12 sm:pb-16`}
       >
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
           <div className="mb-4 sm:mb-6 md:mb-8">
