@@ -224,7 +224,7 @@ export async function enviarInvitacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
 
@@ -303,7 +303,7 @@ export async function enviarNotificacionTicket(
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filasInfo = [
     { label: 'Usuario',   valor: datos.nombre ?? 'Sin nombre' },
@@ -351,7 +351,7 @@ export async function enviarInvitacionFirma(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/legal/firma/${rawToken}`
 
@@ -407,7 +407,7 @@ export async function enviarConfirmacionFirma(
   if (!process.env.RESEND_API_KEY) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filas = [
     { label: 'Documento', valor: documentoLabel },
@@ -458,7 +458,7 @@ export async function enviarPropuestaCotizacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const boton = `
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
@@ -568,7 +568,7 @@ export async function enviarCorreoAdmin({
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
 
   let exitosos = 0

@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
+const FROM = 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 const DESTINATARIOS = ['luisfe.merino@gmail.com', 'merinop@me.com']
 const ASUNTO = 'Hoy es tu día: 50% en Impulso Sostenible'
 

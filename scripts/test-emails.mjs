@@ -220,8 +220,8 @@ async function probar(nombre, fn) {
 
 // ── BLOQUE 1: Correos Resend ──────────────────────────────────────────────────
 console.log('\n📨 Correos Resend\n')
-const FROM = 'Calculadora de Reúso <noreply@reuso.lurdes.co>'
-const FROM_INV = 'Calculadora de Reúso <invitaciones@reuso.lurdes.co>'
+const FROM = 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+const FROM_INV = 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
 
 await probar('1. Invitación con código de empresa', async () => {
   const link = `${APP_URL}/invitacion/TOKEN-TEST-123`
