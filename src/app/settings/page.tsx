@@ -7,6 +7,7 @@ import { useToast } from '@/components/toast-provider'
 import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'
 import { Selector } from '@/components/ui/selector'
+import { Modal } from '@/components/ui/modal'
 
 type Tema = 'light' | 'dark' | 'system'
 
@@ -266,6 +267,31 @@ export default function SettingsPage() {
     toast.success('Limpiando datos de sesión...')
     localStorage.removeItem('theme')
     setTimeout(() => { window.location.href = '/settings' }, 800)
+  }
+
+  const [modalEliminarAbierto, setModalEliminarAbierto] = useState(false)
+  const [eliminandoCuenta, setEliminandoCuenta] = useState(false)
+  const [errorEliminarCuenta, setErrorEliminarCuenta] = useState('')
+
+  async function eliminarCuenta() {
+    setEliminandoCuenta(true)
+    setErrorEliminarCuenta('')
+    try {
+      const res = await fetch('/api/profile/eliminar-cuenta', { method: 'DELETE' })
+      const data = await res.json()
+      if (!res.ok) {
+        setErrorEliminarCuenta(data.error || 'No pudimos eliminar tu cuenta.')
+        setEliminandoCuenta(false)
+        return
+      }
+      toast.success('Tu cuenta fue eliminada.')
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+      router.push('/login')
+      router.refresh()
+    } catch {
+      setErrorEliminarCuenta('No pudimos eliminar tu cuenta. Inténtalo de nuevo.')
+      setEliminandoCuenta(false)
+    }
   }
 
   const ROL_LABELS: Record<string, string> = {
@@ -711,6 +737,33 @@ export default function SettingsPage() {
                   Limpiar y recargar
                 </button>
               </div>
+
+              {/* Zona de peligro */}
+              <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, border: '1px solid var(--color-error)', marginBottom: 0 }}>
+                <div>
+                  <p style={{ margin: '0 0 3px', fontSize: 14, fontWeight: 700, color: 'var(--color-error)' }}>Zona de peligro</p>
+                  <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
+                    {rol === 'empresa_admin'
+                      ? 'No puedes eliminar tu cuenta mientras seas la persona administradora de tu empresa. Pide a soporte que reasigne el rol antes de intentarlo.'
+                      : rol === 'super_admin'
+                      ? 'Las cuentas de administración del sistema no se pueden eliminar por autoservicio.'
+                      : 'Borra tu cuenta y tu acceso de forma permanente. No se puede deshacer.'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => { setErrorEliminarCuenta(''); setModalEliminarAbierto(true) }}
+                  disabled={rol === 'empresa_admin' || rol === 'super_admin'}
+                  style={{
+                    padding: '9px 18px', borderRadius: 8, border: '1px solid var(--color-error)',
+                    background: 'transparent', fontSize: 13, fontWeight: 600,
+                    cursor: (rol === 'empresa_admin' || rol === 'super_admin') ? 'not-allowed' : 'pointer',
+                    opacity: (rol === 'empresa_admin' || rol === 'super_admin') ? 0.4 : 1,
+                    color: 'var(--color-error)', transition: 'all 0.2s', whiteSpace: 'nowrap',
+                  }}
+                >
+                  Eliminar mi cuenta
+                </button>
+              </div>
             </div>
 
           </div>
@@ -721,6 +774,23 @@ export default function SettingsPage() {
           <PageSubmenu items={SETTINGS_ITEMS} activeHash={activeHash} />
         </aside>
       </div>
+
+      <Modal
+        abierto={modalEliminarAbierto}
+        onClose={() => { if (!eliminandoCuenta) setModalEliminarAbierto(false) }}
+        titulo="Eliminar tu cuenta"
+        descripcion="Esta acción no se puede deshacer."
+        varianteConfirmar="error"
+        textoConfirmar={eliminandoCuenta ? 'Eliminando...' : 'Eliminar mi cuenta'}
+        onConfirmar={eliminarCuenta}
+      >
+        <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          Vas a perder el acceso a Calculadora de Reúso de forma permanente. Tus datos personales, tus cálculos y tu historial dejan de estar disponibles para ti.
+        </p>
+        {errorEliminarCuenta && (
+          <p style={{ fontSize: 13, color: 'var(--color-error)', margin: 0 }}>{errorEliminarCuenta}</p>
+        )}
+      </Modal>
 
       {/* ── Botón guardar - sticky al fondo ── */}
       {!loadingProfile && (
