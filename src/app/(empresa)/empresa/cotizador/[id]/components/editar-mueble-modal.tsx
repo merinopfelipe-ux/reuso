@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Modal } from '@/components/ui/modal'
 import { Selector } from '@/components/ui/selector'
-import { Trash2 as Trash, Leaf, Plus, CircleDollarSign, Pencil as PencilSimple } from '@/components/ui/icons'
+import { Trash2 as Trash, Leaf, Plus, CircleDollarSign, Pencil as PencilSimple, Camera, ClipboardPaste as Clipboard } from '@/components/ui/icons'
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
+import { comprimirImagenBase64 } from '@/lib/image-compress'
 import {
   type Servicio, type Insumo, type Material,
   mergeServicios, mergeInsumos, mergeMateriales,
@@ -27,6 +28,7 @@ export interface MuebleEditable {
   materiales_json: Material[] | null
   co2_evitado_kg: number
   agua_evitada_l: number
+  imagen_url?: string | null
 }
 
 interface Props {
@@ -65,6 +67,16 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
   const [error, setError] = useState<string | null>(null)
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
 
+  // Foto del ítem — antes solo se podía subir al crear la cotización
+  // (diagnóstico por IA), no al editar una ya guardada (journeys 06/07 del
+  // Vault). fotoPreview parte de la foto ya guardada (URL firmada) y cambia
+  // a una data URL local en cuanto se elige/pega una nueva.
+  const [fotoPreview, setFotoPreview] = useState<string | null>(null)
+  const [fotoBase64, setFotoBase64] = useState<string | null>(null)
+  const [quitarFoto, setQuitarFoto] = useState(false)
+  const [subiendoFoto, setSubiendoFoto] = useState(false)
+  const fotoInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     if (!mueble) return
     setTitulo(mueble.titulo || mueble.tipo_mueble)
@@ -79,6 +91,9 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
       categoria_material: m.categoria_material ?? null, origen_fuente: m.origen_fuente ?? null,
       detalle_fuente: m.detalle_fuente ?? null, nivel_confianza: m.nivel_confianza,
     }))))
+    setFotoPreview(mueble.imagen_url ?? null)
+    setFotoBase64(null)
+    setQuitarFoto(false)
     setError(null)
 
     let cancelado = false
@@ -88,6 +103,56 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
       .catch(() => {})
     return () => { cancelado = true }
   }, [mueble, conEmpresa])
+
+  // Pegar imagen copiada (Cmd+V / Ctrl+V) mientras el modal está abierto,
+  // mismo mecanismo que /cotizador/nueva (comprimirImagenBase64 a WebP antes
+  // de guardarla en el estado local).
+  useEffect(() => {
+    if (!mueble) return
+    async function alPegar(e: ClipboardEvent) {
+      const item = Array.from(e.clipboardData?.items ?? []).find(it => it.type.startsWith('image/'))
+      if (!item) return
+      const archivo = item.getAsFile()
+      if (!archivo) return
+      setSubiendoFoto(true)
+      try {
+        const { base64, preview } = await comprimirImagenBase64(archivo)
+        setFotoBase64(base64)
+        setFotoPreview(preview)
+        setQuitarFoto(false)
+      } catch {
+        setError('No pudimos procesar la imagen pegada. Intenta con un archivo.')
+      } finally {
+        setSubiendoFoto(false)
+      }
+    }
+    window.addEventListener('paste', alPegar)
+    return () => window.removeEventListener('paste', alPegar)
+  }, [mueble])
+
+  async function elegirArchivoFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const archivo = e.target.files?.[0]
+    if (fotoInputRef.current) fotoInputRef.current.value = ''
+    if (!archivo) return
+    setSubiendoFoto(true)
+    setError(null)
+    try {
+      const { base64, preview } = await comprimirImagenBase64(archivo)
+      setFotoBase64(base64)
+      setFotoPreview(preview)
+      setQuitarFoto(false)
+    } catch {
+      setError('No pudimos procesar esa imagen. Intenta con otro archivo.')
+    } finally {
+      setSubiendoFoto(false)
+    }
+  }
+
+  function quitarFotoActual() {
+    setFotoPreview(null)
+    setFotoBase64(null)
+    setQuitarFoto(true)
+  }
 
   // Autoseleccionar la categoría si ya hay un ítem asignado
   useEffect(() => {
@@ -167,6 +232,8 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
           insumos_json: insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
           materiales_json: materiales.filter(m => m.nombre.trim() && m.peso_kg > 0),
           factor_rentabilidad: factorRentabilidad,
+          ...(fotoBase64 ? { imagen_base64: fotoBase64, mime_type: 'image/webp' } : {}),
+          ...(quitarFoto ? { quitar_imagen: true } : {}),
         }),
       })
       const d = await res.json()
@@ -247,6 +314,46 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
         <div>
           <label className={`text-xs font-bold tracking-wide mb-1.5 block ${ts}`}>Descripción del ítem</label>
           <input value={descripcion} onChange={e => setDescripcion(e.target.value)} placeholder="Descripción opcional para el cliente..." maxLength={300} className={inputSt} />
+        </div>
+
+        {/* Foto del ítem */}
+        <div>
+          <label className={`text-xs font-bold tracking-wide mb-1.5 block ${ts}`}>Foto</label>
+          <div className="flex items-center gap-3 flex-wrap">
+            {fotoPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={fotoPreview} alt="" className="w-16 h-16 rounded-[10px] object-cover bg-[var(--bg-input)] flex-shrink-0 border border-[var(--border)]" />
+            ) : (
+              <div className="w-16 h-16 rounded-[10px] bg-[var(--bg-input)] flex-shrink-0 flex items-center justify-center border border-[var(--border)]">
+                <Camera size={20} className="text-[#00827C]/40" sinAnimacion />
+              </div>
+            )}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => fotoInputRef.current?.click()}
+                  disabled={subiendoFoto}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <Camera size={13} sinAnimacion /> {subiendoFoto ? 'Procesando...' : fotoPreview ? 'Cambiar foto' : 'Agregar foto'}
+                </button>
+                {fotoPreview && (
+                  <button
+                    type="button"
+                    onClick={quitarFotoActual}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--color-error)] bg-transparent transition-opacity duration-200 hover:opacity-50 cursor-pointer"
+                  >
+                    <Trash size={13} sinAnimacion /> Quitar foto
+                  </button>
+                )}
+              </div>
+              <p className={`text-xs flex items-center gap-1 ${ts}`}>
+                <Clipboard size={12} className="flex-shrink-0" sinAnimacion /> También puedes pegar: ⌘V en Mac, Ctrl+V en PC
+              </p>
+            </div>
+          </div>
+          <input ref={fotoInputRef} type="file" accept="image/*" className="hidden" onChange={elegirArchivoFoto} />
         </div>
 
         {/* Bloques de Costos y Cálculo Ambiental */}

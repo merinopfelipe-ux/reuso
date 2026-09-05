@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
+import { randomUUID } from 'crypto'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
@@ -48,6 +49,15 @@ const schema = z.object({
   // ÍTEM NUEVO (decisión explícita del usuario), ignorando cualquier
   // materiales_json/servicios_json/insumos_json enviado en la misma petición.
   item_id: z.string().uuid().optional(),
+  // Foto del ítem — journeys 06/07 del Vault marcaban esto como un vacío
+  // real (no discoverability): editar un mueble ya guardado no tenía forma
+  // de agregar/cambiar foto, solo el diagnóstico por IA al crear la
+  // cotización la tenía. Mismo patrón de subida que esa pantalla (ver
+  // POST .../mueble/route.ts): el cliente ya comprime a WebP antes de
+  // enviar (src/lib/image-compress.ts), aquí solo se sube el buffer.
+  imagen_base64: z.string().max(5_600_000).optional(),
+  mime_type: z.enum(['image/jpeg', 'image/png', 'image/webp']).optional(),
+  quitar_imagen: z.boolean().optional(),
 }).refine(d => Object.keys(d).length > 0, { message: 'Envía al menos un campo para actualizar.' })
 
 export async function PATCH(
@@ -78,7 +88,7 @@ export async function PATCH(
 
   const { data: mueble, error: fetchError } = await adminClient
     .from('crm_muebles_cotizados')
-    .select('id, cotizacion_id, empresa_id, item_id, titulo, descripcion, tipo_mueble, cantidad, factor_rentabilidad, materiales_json, servicios_json, insumos_json, peso_estandar_kg, co2_evitado_kg, agua_evitada_l, oculto')
+    .select('id, cotizacion_id, empresa_id, item_id, titulo, descripcion, tipo_mueble, cantidad, factor_rentabilidad, materiales_json, servicios_json, insumos_json, peso_estandar_kg, co2_evitado_kg, agua_evitada_l, oculto, imagen_url')
     .eq('id', params.muebleId)
     .eq('cotizacion_id', params.id)
     .eq('empresa_id', empresa_id)
@@ -162,6 +172,29 @@ export async function PATCH(
     agua_evitada_l_unidad,
   })
 
+  // Foto: subir la nueva (si llegó) o quitar la actual (si se pidió
+  // explícitamente) — en ambos casos, si había una foto propia en Storage
+  // (no una URL externa http), se borra para no dejarla huérfana.
+  let imagen_url = mueble.imagen_url
+  if (parsed.data.quitar_imagen) {
+    if (mueble.imagen_url && !mueble.imagen_url.startsWith('http')) {
+      await adminClient.storage.from('cotizador').remove([mueble.imagen_url])
+    }
+    imagen_url = null
+  } else if (parsed.data.imagen_base64) {
+    const buffer = Buffer.from(parsed.data.imagen_base64, 'base64')
+    const nombreArchivo = `cotizador/${empresa_id}/${randomUUID()}.webp`
+    const { error: uploadError } = await adminClient.storage
+      .from('cotizador')
+      .upload(nombreArchivo, buffer, { contentType: parsed.data.mime_type ?? 'image/webp', upsert: false })
+    if (!uploadError) {
+      if (mueble.imagen_url && !mueble.imagen_url.startsWith('http')) {
+        await adminClient.storage.from('cotizador').remove([mueble.imagen_url])
+      }
+      imagen_url = nombreArchivo
+    }
+  }
+
   const { data: actualizado, error: updateError } = await adminClient
     .from('crm_muebles_cotizados')
     .update({
@@ -176,6 +209,7 @@ export async function PATCH(
       materiales_json: materiales,
       factor_rentabilidad,
       oculto,
+      imagen_url,
       precio_mueble: resultado.precio_mueble,
       co2_evitado_kg: resultado.co2_evitado_kg,
       agua_evitada_l: resultado.agua_evitada_l,

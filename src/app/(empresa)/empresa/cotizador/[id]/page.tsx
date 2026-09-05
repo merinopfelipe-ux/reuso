@@ -730,13 +730,10 @@ function DetalleCotizacionContent() {
     muebleActualizado: { id: string; precio_mueble: number; co2_evitado_kg: number; agua_evitada_l: number; cantidad: number; servicios_json: unknown; insumos_json: unknown; imagen_url?: string | null },
     totales: { subtotal: number; total: number; co2_evitado_total_kg: number; agua_evitada_total_l: number }
   ) {
-    setMuebles(prev => prev.map(m => {
-      if (m.id !== muebleActualizado.id) return m
-      const imagenUrlDefinitiva = muebleActualizado.imagen_url && muebleActualizado.imagen_url.startsWith('http')
-        ? muebleActualizado.imagen_url
-        : m.imagen_url
-      return { ...m, ...muebleActualizado, imagen_url: imagenUrlDefinitiva } as Mueble
-    }))
+    // El backend siempre devuelve la fila completa (PATCH .../mueble/[muebleId]
+    // hace select() tras el update) con imagen_url ya firmada si aplica, o
+    // null si se quitó la foto — se puede fusionar directo, sin adivinar.
+    setMuebles(prev => prev.map(m => (m.id === muebleActualizado.id ? { ...m, ...muebleActualizado } as Mueble : m)))
     setCot(c => c ? { ...c, ...totales } : c)
   }
 
