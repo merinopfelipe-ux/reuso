@@ -769,7 +769,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   const [isDark, setIsDark] = useState(false)
   const [contactModalOpen, setContactModalOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
-  const [calcAbiertoIdx, setCalcAbiertoIdx] = useState<number | null>(null)
+  const [catalogoCalculosAbierto, setCatalogoCalculosAbierto] = useState(false)
 
   // Cerrar modal con Escape y bloquear scroll cuando está abierto
   useEffect(() => {
@@ -1334,27 +1334,22 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               Descubre los 19 cálculos ambientales, sociales y financieros
             </h2>
             <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Indicadores listos para respaldar todo lo bueno en términos de circularidad. Toca cualquiera para ver qué significa.
+              Indicadores listos para respaldar todo lo bueno en términos de circularidad.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
-            {TODOS_LOS_CALCULOS.map((calc, i) => {
+            {TODOS_LOS_CALCULOS.slice(0, 8).map((calc, i) => {
               const IconComponent = calc.icon
-              const planteado = calc.estado === 'planteado'
               return (
                 <motion.div
                   key={i}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setCalcAbiertoIdx(i)}
-                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setCalcAbiertoIdx(i) }}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-30px' }}
                   transition={{ duration: 0.45, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, scale: 1.015 }}
-                  className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#00827C] ${
+                  className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
                     isDark
                       ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)]'
                       : 'bg-white border-[#00827C]/10 hover:border-transparent shadow-[0_4px_20px_rgba(0,130,124,0.04)] hover:shadow-[0_20px_40px_-10px_rgba(0,130,124,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
@@ -1403,49 +1398,105 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     <h3 className={`text-sm sm:text-base md:text-sm lg:text-base font-extrabold mb-1 transition-colors duration-300 ${tp}`}>
                       {calc.titulo}
                     </h3>
-                    <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-semibold mb-2.5 ${ts}`}>
-                      {calc.metrica}
+                    <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium leading-relaxed ${ts}`}>
+                      {calc.desc}
                     </p>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-[11px] sm:text-xs font-bold underline-offset-2 group-hover:underline ${isDark ? 'text-white/70' : 'text-[#00827C]'}`}>
-                        Qué significa →
-                      </span>
-                      {planteado && (
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isDark ? 'bg-white/10 text-white/60' : 'bg-[#474747]/[0.06] text-[#474747]/60'}`}>
-                          Próximamente
-                        </span>
-                      )}
-                    </div>
                   </div>
                 </motion.div>
               )
             })}
           </div>
+
+          {/* Puerta de entrada al catálogo completo — centrada, discreta hasta el hover */}
+          <div className="mt-8 sm:mt-10 flex justify-center">
+            <button
+              onClick={() => setCatalogoCalculosAbierto(true)}
+              className={`group relative flex items-center gap-2.5 px-6 py-3 rounded-full border transition-all duration-300 ${
+                isDark
+                  ? 'border-white/15 hover:border-[#D6F391]/50 bg-white/[0.03] hover:bg-white/[0.06]'
+                  : 'border-[#00827C]/15 hover:border-[#00827C]/40 bg-white hover:shadow-[0_8px_30px_rgba(0,130,124,0.12)]'
+              }`}
+            >
+              <Calculator size={16} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
+              <span className={`text-sm font-bold tracking-wide ${tp}`}>Ver los 19 cálculos</span>
+              <ArrowRight size={15} className={`transition-transform duration-300 group-hover:translate-x-1 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`} />
+            </button>
+          </div>
         </div>
 
+        {/* Catálogo completo de los 19 cálculos, agrupado por tipo — solo texto general, nunca fórmulas */}
         <Modal
-          abierto={calcAbiertoIdx !== null}
-          onClose={() => setCalcAbiertoIdx(null)}
-          titulo={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].titulo : ''}
-          descripcion={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].tag : undefined}
-          icono={calcAbiertoIdx !== null ? (() => { const Ic = TODOS_LOS_CALCULOS[calcAbiertoIdx].icon; return <Ic size={22} /> })() : undefined}
-          colorIcono={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].colorHex : undefined}
-          ancho="sm"
-          textoConfirmar="Entendido"
-          onConfirmar={() => setCalcAbiertoIdx(null)}
+          abierto={catalogoCalculosAbierto}
+          onClose={() => setCatalogoCalculosAbierto(false)}
+          titulo="Los 19 cálculos de Calculadora de Reúso"
+          descripcion="Qué mide cada uno, en términos generales"
+          icono={<Calculator size={22} />}
+          colorIcono={isDark ? '#D6F391' : '#00827C'}
+          ancho="xl"
+          textoConfirmar="Cerrar"
+          onConfirmar={() => setCatalogoCalculosAbierto(false)}
         >
-          {calcAbiertoIdx !== null && (
-            <div className="flex flex-col gap-3">
-              <p className={`text-sm leading-relaxed ${ts}`}>
-                {TODOS_LOS_CALCULOS[calcAbiertoIdx].desc}
-              </p>
-              {TODOS_LOS_CALCULOS[calcAbiertoIdx].estado === 'planteado' && (
-                <p className={`text-xs ${isDark ? 'text-white/50' : 'text-[#474747]/50'}`}>
-                  Este indicador está planteado para una próxima versión de la plataforma.
-                </p>
-              )}
-            </div>
-          )}
+          <div className="flex flex-col gap-5 sm:gap-7 max-h-[70vh] sm:max-h-[60vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+            {(['Ambiental', 'Financiero', 'Social', 'DPP'] as const).map(grupo => {
+              const items = TODOS_LOS_CALCULOS.filter(c => c.tag === grupo)
+              if (!items.length) return null
+              const grupoColor = items[0].colorHex
+              return (
+                <div key={grupo}>
+                  <div className="flex items-center gap-2 mb-3 sm:mb-3.5">
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: grupoColor }} />
+                    <h4 className={`text-[11px] font-extrabold uppercase tracking-widest ${isDark ? 'text-white/50' : 'text-[#474747]/55'}`}>
+                      {grupo}
+                    </h4>
+                    <span className={`h-px flex-1 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                    {items.map((calc, idx) => {
+                      const Ic = calc.icon
+                      const planteado = calc.estado === 'planteado'
+                      return (
+                        <div
+                          key={idx}
+                          className="group/item relative flex gap-3 p-3.5 sm:p-4 rounded-2xl overflow-hidden transition-all duration-300 active:scale-[0.98]"
+                          style={{
+                            background: isDark
+                              ? `linear-gradient(135deg, ${calc.colorHex}14 0%, ${calc.colorHex}05 100%)`
+                              : `linear-gradient(135deg, ${calc.colorHex}12 0%, ${calc.colorHex}03 100%)`,
+                            border: `1px solid ${calc.colorHex}${isDark ? '30' : '25'}`,
+                          }}
+                        >
+                          {/* Barra de acento del color propio del cálculo */}
+                          <span className="absolute left-0 top-0 bottom-0 w-[3px]" style={{ backgroundColor: calc.colorHex }} />
+
+                          <div
+                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm"
+                            style={{ backgroundColor: calc.colorHex, color: isDark ? '#474747' : '#fff' }}
+                          >
+                            <Ic size={16} strokeWidth={2.3} />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                              <span className={`text-xs sm:text-[13px] font-extrabold ${tp}`}>{calc.titulo}</span>
+                              <span
+                                className={`text-[9px] font-bold px-1.5 py-[1px] rounded-full shrink-0 ${
+                                  planteado
+                                    ? isDark ? 'bg-white/10 text-white/50' : 'bg-[#474747]/[0.07] text-[#474747]/55'
+                                    : isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/18 text-[#1F8C65]'
+                                }`}
+                              >
+                                {planteado ? 'Próximamente' : 'Disponible'}
+                              </span>
+                            </div>
+                            <p className={`text-[11px] sm:text-[11.5px] leading-relaxed ${ts}`}>{calc.desc}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
         </Modal>
       </section>
 
