@@ -1,4 +1,4 @@
-import { ShieldCheck, ShieldWarning, Leaf, Drop, Car, Tree, FileX, MagnifyingGlass } from '@/components/ui/icons'
+import { ShieldCheck, ShieldWarning, Leaf, Drop, Tree, FileX, MagnifyingGlass } from '@/components/ui/icons'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -51,8 +51,7 @@ function formatFecha(iso: string) {
 function calcularEquivalencias(co2_kg: number, agua_l: number) {
   const arboles = Math.round(co2_kg / (PARAM_EQUIV.CO2_arbol_anual_kg / 365))
   const duchas = Math.round(agua_l / PARAM_EQUIV.litros_ducha_5min)
-  const coches = parseFloat((co2_kg / 4600).toFixed(2))
-  return { arboles, duchas, coches }
+  return { arboles, duchas }
 }
 
 // Normaliza el código ingresado para buscar en la BD.
@@ -313,7 +312,6 @@ export default async function VerificarPage({ params }: PageProps) {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
                 {[
                   { icon: <Tree size={18} color="var(--color-brand)" />, value: String(eq.arboles), label: 'árboles absorbiendo CO2 en 1 día' },
-                  { icon: <Car size={18} color="var(--text-secondary)" />, value: String(eq.coches), label: 'vehículos fuera de circulación' },
                   { icon: <Drop size={18} color="var(--color-info-content)" />, value: cert.agua_total.toLocaleString('es-CO'), label: 'litros de agua equivalentes' },
                   { icon: <Leaf size={18} color="var(--color-success-content)" />, value: String(eq.duchas), label: 'duchas de 5 minutos' },
                 ].map((item, i) => (

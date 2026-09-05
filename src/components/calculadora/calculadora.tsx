@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import { Leaf, Droplet as Drop, TreeDeciduous as Tree, Car, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { Leaf, Droplet as Drop, TreeDeciduous as Tree, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
 import { factorCo2PorKg, factorAguaPorKg, PARAM_EQUIV } from '@/lib/calculos/co2'
 import type { Categoria, Item, Rol } from '@/types'
 
@@ -19,7 +19,7 @@ interface ResultadoGuardado {
   id: string
   co2_total: number
   agua_total: number
-  equivalencias: { arboles: number; coches: number; duchas: number; litros: number }
+  equivalencias: { arboles: number; duchas: number; litros: number }
 }
 
 // ── Cálculo local en tiempo real ─────────────────────────────────────────────
@@ -27,7 +27,7 @@ interface ResultadoGuardado {
 function calcularTotalesKg(
   pesos: Record<string, number>,
   allItems: Item[]
-): { co2: number; agua: number; equivalencias: { arboles: number; coches: number; duchas: number; litros: number } } {
+): { co2: number; agua: number; equivalencias: { arboles: number; duchas: number; litros: number } } {
   let co2 = 0
   let agua = 0
   for (const item of allItems) {
@@ -42,7 +42,6 @@ function calcularTotalesKg(
     agua,
     equivalencias: {
       arboles: Math.round(co2 / (PARAM_EQUIV.CO2_arbol_anual_kg / 365)),
-      coches: parseFloat((co2 / 4600).toFixed(3)),
       duchas: Math.round(agua / PARAM_EQUIV.litros_ducha_5min),
       litros: Math.round(agua),
     },
@@ -102,7 +101,6 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
   const co2Anim = useAnimatedNumber(totales.co2)
   const aguaAnim = useAnimatedNumber(totales.agua)
   const arbolesAnim = useAnimatedNumber(totales.equivalencias.arboles)
-  const cochesAnim = useAnimatedNumber(totales.equivalencias.coches)
 
   const hayItems = useMemo(() => Object.values(pesos).some((v) => v > 0), [pesos])
 
@@ -377,12 +375,6 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
             label="árboles"
             activo={hayItems}
           />
-          <TotalCol
-            icono={<Car size={14} color="#AD7C43" />}
-            valor={cochesAnim.toFixed(3)}
-            label="coches/año"
-            activo={hayItems}
-          />
         </div>
 
         <button
@@ -526,7 +518,6 @@ function ResultadoPanel({ resultado, onReset }: {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
         {[
           { icono: <Tree size={20} color={BRAND} />, valor: eqs.arboles, label: 'árboles absorbiendo CO2 en 1 día' },
-          { icono: <Car size={20} color="#AD7C43" />, valor: eqs.coches, label: 'vehículos retirados' },
           { icono: <Shower size={20} color="#59A6E4" />, valor: eqs.duchas, label: 'duchas de 5 min' },
           { icono: <Drop size={20} color="#38B98E" />, valor: eqs.litros.toLocaleString('es-CO'), label: 'litros de agua' },
         ].map((eq, i) => (

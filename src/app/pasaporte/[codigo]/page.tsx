@@ -1,12 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { IdCard as IdentificationCard, Leaf, Droplet as Drop, Car, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
+import { IdCard as IdentificationCard, Leaf, Droplet as Drop, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
 import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { formatNumero } from '@/lib/format'
+import { PARAM_EQUIV } from '@/lib/calculos/co2'
 
 export const revalidate = 3600
 
@@ -40,11 +41,18 @@ function formatFecha(iso: string | null) {
   return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
+// Bug real corregido 2026-09-04: esta página seguía usando el árbol viejo
+// (8 kg CO2/año), explícitamente reemplazado en todo el sistema desde
+// 2026-07-30 ("no coexisten" con el nuevo valor) — nunca se actualizó aquí.
+// "duchas" queda igual (derivada de CO2, no de litros reales) porque el DPP
+// hoy no trackea agua evitada, solo CO2 (dpp_ciclos.co2_evitado_kg) — a
+// diferencia de calculadora.tsx/verificar, que sí tienen el litro real.
+// Pendiente real: o se agrega agua evitada al DPP, o se documenta esta
+// aproximación explícitamente en el Vault, no dejarla como si fuera exacta.
 function calcEquivalencias(co2_kg: number) {
   return {
-    arboles: Math.round(co2_kg / 8.0),
+    arboles: Math.round(co2_kg / (PARAM_EQUIV.CO2_arbol_anual_kg / 365)),
     duchas: Math.round(co2_kg / 2.0),
-    coches: parseFloat((co2_kg / 4600).toFixed(2)),
   }
 }
 
@@ -342,7 +350,6 @@ export default async function PasaportePage({ params }: PageProps) {
                 { icon: Leaf, color: '#38B98E', value: co2_evitado_total.toFixed(1), label: 'kg CO₂e evitados' },
                 { icon: Tree, color: '#00827C', value: eq.arboles, label: 'árboles protegidos' },
                 { icon: Drop, color: '#59A6E4', value: eq.duchas, label: 'duchas de 10 min' },
-                { icon: Car, color: '#F6BF3E', value: eq.coches > 0.01 ? eq.coches : '-', label: eq.coches > 0.01 ? 'km en coche' : 'impacto en transporte' },
               ].map(({ icon: Icon, color, value, label }, i) => (
                 <div key={i} style={{
                   background: 'var(--bg-card)', border: '1px solid var(--border)',

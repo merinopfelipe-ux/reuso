@@ -18,7 +18,6 @@ export interface ResultadoCalculo {
   co2_por_item: Record<string, number>
   equivalencias: {
     arboles: number
-    coches: number
     duchas: number
     litros: number
   }
@@ -31,6 +30,13 @@ export interface ResultadoCalculo {
 // estándar de 5 minutos. Directriz explícita del usuario (2026-07-30): estos
 // valores reemplazan los anteriores (8 kg CO2/año, ducha de 10 min derivada
 // del CO2) en todo el sistema — no coexisten.
+//
+// La equivalencia de "autos/vehículos retirados de circulación" que existía
+// aquí se eliminó del sistema completo el 2026-09-04 — directriz explícita
+// del usuario tras revisar el riesgo legal de reclamos ambientales tipo
+// "equivalencia narrativa" (Green Claims Directive UE) frente al valor real
+// que aportaba, sin ninguna ley que la exigiera. Árboles y duchas sí se
+// mantienen (decisión explícita de no tocarlos).
 const PARAM_EQUIV = {
   CO2_arbol_anual_kg: 25.0,
   litros_ducha_5min: 100.0,
@@ -63,7 +69,6 @@ export function calcularImpacto(items: ItemCalculo[]): ResultadoCalculo {
   // absorbiendo su cuota diaria (anual/365), igualan el CO2 total en un día.
   const arboles = Math.round(co2_total / (PARAM_EQUIV.CO2_arbol_anual_kg / 365))
   const duchas = Math.round(agua_total / PARAM_EQUIV.litros_ducha_5min)
-  const coches = parseFloat((co2_total / 4600).toFixed(3))
 
   const co2_por_item: Record<string, number> = {}
   for (const item of items) {
@@ -77,7 +82,6 @@ export function calcularImpacto(items: ItemCalculo[]): ResultadoCalculo {
     co2_por_item,
     equivalencias: {
       arboles,
-      coches,
       duchas,
       litros: Math.round(agua_total),
     },
