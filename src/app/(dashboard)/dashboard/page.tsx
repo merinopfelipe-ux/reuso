@@ -163,7 +163,7 @@ export default async function DashboardPage() {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('nombre, apellido, apodo, empresa_id, rol')
+    .select('nombre, apellido, apodo, empresa_id, rol, onboarding_visto')
     .eq('user_id', user.id)
     .single()
 
@@ -628,6 +628,11 @@ export default async function DashboardPage() {
         </div>
       )}
 
+      {/* Tarjeta de bienvenida — independiente de si ya hay cálculos guardados,
+          se guía por onboarding_visto (primer inicio de sesión real), no por
+          el conteo de objetos (ver sql/123_onboarding_visto.sql). */}
+      {!perfil?.onboarding_visto && <OnboardingCard />}
+
       {/* Calculadora + Historial (wrapper cliente para refrescar tras guardar) */}
       {(totalObjetos ?? 0) === 0 ? (
         <>
@@ -640,7 +645,6 @@ export default async function DashboardPage() {
               nombresCategorias={nombresCategorias}
             />
           )}
-          <OnboardingCard />
         </>
       ) : (
         <CalculadoraConHistorial
