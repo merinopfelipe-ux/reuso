@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, ShowerHead, Layers, Hammer, HeartHandshake, Scales, Medal, CircleDollarSign, Users, History } from '@/components/ui/icons'
+import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
 import { LeadsForm } from '@/components/leads-form'
@@ -162,6 +163,7 @@ const TODOS_LOS_CALCULOS = [
     metrica: 'Mayor rentabilidad en cada venta.',
     desc: 'Proyecta la ganancia adicional de tus propuestas al incorporar el valor diferencial de la sostenibilidad.',
     tag: 'Financiero',
+    estado: 'planteado' as const,
     colorHex: '#985fa1',
     bgLight: 'bg-[#985fa1]/20',
     borderLight: 'border-transparent',
@@ -175,6 +177,162 @@ const TODOS_LOS_CALCULOS = [
     hoverIconTextDark: 'group-hover:text-white',
     haloLight: 'from-[#985fa1]/35 via-[#985fa1]/15 to-transparent',
     haloDark: 'from-[#985fa1]/30 via-[#985fa1]/15 to-transparent',
+  },
+
+  // ── LÍNEA 3: EQUIVALENCIAS Y CATÁLOGO AMPLIADO ──
+  {
+    icon: TreePine,
+    titulo: 'Árboles preservados',
+    metrica: 'Equivalencia diaria en árboles.',
+    desc: 'Traduce el CO₂ evitado a árboles necesarios absorbiendo esa misma cantidad en un día, para comunicar el impacto en algo cotidiano.',
+    tag: 'Ambiental',
+    estado: 'construido' as const,
+    colorHex: '#38B98E',
+    bgLight: 'bg-[#38B98E]/20', borderLight: 'border-transparent', bgDark: 'bg-[#38B98E]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#38B98E]', textDark: 'text-[#38B98E]',
+    hoverIconBgLight: 'group-hover:bg-[#38B98E]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#38B98E]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent', haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
+  },
+  {
+    icon: ShowerHead,
+    titulo: 'Duchas ahorradas',
+    metrica: 'Equivalencia en duchas de 5 min.',
+    desc: 'Traduce el agua preservada a duchas domésticas estándar ahorradas, otra forma cotidiana de dimensionar el impacto hídrico.',
+    tag: 'Ambiental',
+    estado: 'construido' as const,
+    colorHex: '#59A6E4',
+    bgLight: 'bg-[#59A6E4]/20', borderLight: 'border-transparent', bgDark: 'bg-[#59A6E4]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#59A6E4]', textDark: 'text-[#59A6E4]',
+    hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
+  },
+  {
+    icon: Layers,
+    titulo: 'Mitigación por ciclos de vida',
+    metrica: 'Impacto acumulado del activo.',
+    desc: 'Suma el beneficio ambiental de un mismo activo a lo largo de todos sus ciclos de reúso, siguiendo una metodología de análisis de ciclo de vida.',
+    tag: 'DPP',
+    estado: 'planteado' as const,
+    colorHex: '#8AD0B2',
+    bgLight: 'bg-[#8AD0B2]/20', borderLight: 'border-transparent', bgDark: 'bg-[#8AD0B2]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#8AD0B2]', textDark: 'text-[#8AD0B2]',
+    hoverIconBgLight: 'group-hover:bg-[#8AD0B2]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#8AD0B2]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent', haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
+  },
+  {
+    icon: Hammer,
+    titulo: 'Costo de restauración',
+    metrica: 'Mano de obra e insumos del taller.',
+    desc: 'Desglosa lo que cuesta reacondicionar un mueble, entre servicios de mano de obra técnica e insumos circulares.',
+    tag: 'Financiero',
+    estado: 'construido' as const,
+    colorHex: '#AD7C43',
+    bgLight: 'bg-[#AD7C43]/20', borderLight: 'border-transparent', bgDark: 'bg-[#AD7C43]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#AD7C43]', textDark: 'text-[#AD7C43]',
+    hoverIconBgLight: 'group-hover:bg-[#AD7C43]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#AD7C43]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent', haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
+  },
+  {
+    icon: HeartHandshake,
+    titulo: 'Retorno social de la inversión',
+    metrica: 'Impacto comunitario y empleo.',
+    desc: 'Valora el retorno social de la inclusión laboral y el empleo local que genera la restauración circular.',
+    tag: 'Social',
+    estado: 'planteado' as const,
+    colorHex: '#F3BBD3',
+    bgLight: 'bg-[#F3BBD3]/25', borderLight: 'border-transparent', bgDark: 'bg-[#F3BBD3]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#F3BBD3]', textDark: 'text-[#F3BBD3]',
+    hoverIconBgLight: 'group-hover:bg-[#F3BBD3]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#F3BBD3]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent', haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
+  },
+  {
+    icon: Scales,
+    titulo: 'Análisis de ciclo de vida',
+    metrica: 'Extensión de vida útil del activo.',
+    desc: 'Cuantifica cuánto se extiende la vida útil de un activo a través de sus reúsos sucesivos, bajo estándares internacionales de ciclo de vida.',
+    tag: 'DPP',
+    estado: 'planteado' as const,
+    colorHex: '#59A6E4',
+    bgLight: 'bg-[#59A6E4]/20', borderLight: 'border-transparent', bgDark: 'bg-[#59A6E4]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#59A6E4]', textDark: 'text-[#59A6E4]',
+    hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
+  },
+  {
+    icon: Medal,
+    titulo: 'Retención de valor',
+    metrica: 'Valor conservado frente a lo nuevo.',
+    desc: 'Compara el valor de mercado de un producto recuperado frente al de su equivalente nuevo, para respaldar su valor de reventa.',
+    tag: 'Financiero',
+    estado: 'planteado' as const,
+    colorHex: '#F6BF3E',
+    bgLight: 'bg-[#F6BF3E]/20', borderLight: 'border-transparent', bgDark: 'bg-[#F6BF3E]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#F6BF3E]', textDark: 'text-[#F6BF3E]',
+    hoverIconBgLight: 'group-hover:bg-[#F6BF3E]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#F6BF3E]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#F6BF3E]/35 via-[#F6BF3E]/15 to-transparent', haloDark: 'from-[#F6BF3E]/30 via-[#F6BF3E]/15 to-transparent',
+  },
+  {
+    icon: ArrowsClockwise,
+    titulo: 'Reciclabilidad al fin de vida',
+    metrica: 'Porcentaje reciclable del activo.',
+    desc: 'Mide qué fracción del peso de un activo es técnicamente separable y reciclable al final de su vida útil.',
+    tag: 'DPP',
+    estado: 'planteado' as const,
+    colorHex: '#D6F391',
+    bgLight: 'bg-[#D6F391]/25', borderLight: 'border-transparent', bgDark: 'bg-[#D6F391]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#D6F391]', textDark: 'text-[#D6F391]',
+    hoverIconBgLight: 'group-hover:bg-[#D6F391]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#D6F391]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#D6F391]/40 via-[#D6F391]/20 to-transparent', haloDark: 'from-[#D6F391]/35 via-[#D6F391]/15 to-transparent',
+  },
+  {
+    icon: CircleDollarSign,
+    titulo: 'Índice de circularidad económica',
+    metrica: 'Huella circular vs. huella lineal.',
+    desc: 'Compara el desempeño económico de un modelo circular frente al modelo lineal tradicional de comprar, usar y desechar.',
+    tag: 'Financiero',
+    estado: 'construido' as const,
+    colorHex: '#985fa1',
+    bgLight: 'bg-[#985fa1]/20', borderLight: 'border-transparent', bgDark: 'bg-[#985fa1]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#985fa1]', textDark: 'text-[#985fa1]',
+    hoverIconBgLight: 'group-hover:bg-[#985fa1]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#985fa1]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#985fa1]/35 via-[#985fa1]/15 to-transparent', haloDark: 'from-[#985fa1]/30 via-[#985fa1]/15 to-transparent',
+  },
+  {
+    icon: Users,
+    titulo: 'Artesanos y personas',
+    metrica: 'Quién intervino en cada pieza.',
+    desc: 'Registra a los artesanos, técnicos o talleres que intervinieron un activo, dando trazabilidad y reconocimiento al trabajo humano detrás de cada reúso.',
+    tag: 'DPP',
+    estado: 'planteado' as const,
+    colorHex: '#AD7C43',
+    bgLight: 'bg-[#AD7C43]/20', borderLight: 'border-transparent', bgDark: 'bg-[#AD7C43]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#AD7C43]', textDark: 'text-[#AD7C43]',
+    hoverIconBgLight: 'group-hover:bg-[#AD7C43]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#AD7C43]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent', haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
+  },
+  {
+    icon: History,
+    titulo: 'Historia y valor sentimental',
+    metrica: 'La trayectoria de cada pieza.',
+    desc: 'Guarda la historia y el valor sentimental de un activo a lo largo de sus ciclos, más allá de lo puramente técnico o financiero.',
+    tag: 'DPP',
+    estado: 'planteado' as const,
+    colorHex: '#F3BBD3',
+    bgLight: 'bg-[#F3BBD3]/25', borderLight: 'border-transparent', bgDark: 'bg-[#F3BBD3]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#F3BBD3]', textDark: 'text-[#F3BBD3]',
+    hoverIconBgLight: 'group-hover:bg-[#F3BBD3]', hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#F3BBD3]', hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent', haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
   },
 ]
 
@@ -611,6 +769,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   const [isDark, setIsDark] = useState(false)
   const [contactModalOpen, setContactModalOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
+  const [calcAbiertoIdx, setCalcAbiertoIdx] = useState<number | null>(null)
 
   // Cerrar modal con Escape y bloquear scroll cuando está abierto
   useEffect(() => {
@@ -801,7 +960,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       link: '#calculos',
       items: [
         { name: 'Comparativa de Impacto', link: '#comparativa' },
-        { name: '14 Cálculos de impacto', link: '#calculos' },
+        { name: '19 Cálculos de impacto', link: '#calculos' },
       ]
     },
     {
@@ -832,7 +991,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
-    { title: '14 Cálculos ambientales y financieros', link: '#calculos' },
+    { title: '19 Cálculos ambientales, sociales y financieros', link: '#calculos' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -1172,25 +1331,30 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre hasta 14 cálculos ambientales y financieros
+              Descubre los 19 cálculos ambientales, sociales y financieros
             </h2>
             <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Indicadores listos para respaldar todo lo bueno en términos de circularidad.
+              Indicadores listos para respaldar todo lo bueno en términos de circularidad. Toca cualquiera para ver qué significa.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
             {TODOS_LOS_CALCULOS.map((calc, i) => {
               const IconComponent = calc.icon
+              const planteado = calc.estado === 'planteado'
               return (
                 <motion.div
                   key={i}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setCalcAbiertoIdx(i)}
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setCalcAbiertoIdx(i) }}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-30px' }}
                   transition={{ duration: 0.45, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, scale: 1.015 }}
-                  className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
+                  className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#00827C] ${
                     isDark
                       ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)]'
                       : 'bg-white border-[#00827C]/10 hover:border-transparent shadow-[0_4px_20px_rgba(0,130,124,0.04)] hover:shadow-[0_20px_40px_-10px_rgba(0,130,124,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
@@ -1242,15 +1406,47 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-semibold mb-2.5 ${ts}`}>
                       {calc.metrica}
                     </p>
-                    <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium leading-relaxed ${ts}`}>
-                      {calc.desc}
-                    </p>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className={`text-[11px] sm:text-xs font-bold underline-offset-2 group-hover:underline ${isDark ? 'text-white/70' : 'text-[#00827C]'}`}>
+                        Qué significa →
+                      </span>
+                      {planteado && (
+                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${isDark ? 'bg-white/10 text-white/60' : 'bg-[#474747]/[0.06] text-[#474747]/60'}`}>
+                          Próximamente
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               )
             })}
           </div>
         </div>
+
+        <Modal
+          abierto={calcAbiertoIdx !== null}
+          onClose={() => setCalcAbiertoIdx(null)}
+          titulo={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].titulo : ''}
+          descripcion={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].tag : undefined}
+          icono={calcAbiertoIdx !== null ? (() => { const Ic = TODOS_LOS_CALCULOS[calcAbiertoIdx].icon; return <Ic size={22} /> })() : undefined}
+          colorIcono={calcAbiertoIdx !== null ? TODOS_LOS_CALCULOS[calcAbiertoIdx].colorHex : undefined}
+          ancho="sm"
+          textoConfirmar="Entendido"
+          onConfirmar={() => setCalcAbiertoIdx(null)}
+        >
+          {calcAbiertoIdx !== null && (
+            <div className="flex flex-col gap-3">
+              <p className={`text-sm leading-relaxed ${ts}`}>
+                {TODOS_LOS_CALCULOS[calcAbiertoIdx].desc}
+              </p>
+              {TODOS_LOS_CALCULOS[calcAbiertoIdx].estado === 'planteado' && (
+                <p className={`text-xs ${isDark ? 'text-white/50' : 'text-[#474747]/50'}`}>
+                  Este indicador está planteado para una próxima versión de la plataforma.
+                </p>
+              )}
+            </div>
+          )}
+        </Modal>
       </section>
 
       {/* ── SECCIÓN 4 - CATEGORÍAS / INDUSTRIAS (SIN STICKY SCROLL) ─── */}

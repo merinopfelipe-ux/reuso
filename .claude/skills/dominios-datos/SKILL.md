@@ -14,8 +14,8 @@ Tarifas de mano de obra, precios de insumos comprados, márgenes de rentabilidad
 Peso de materiales, factores de CO₂/agua por kg, nivel de confianza y fuente. No sabe de precios ni de un mueble específico.
 `item_materiales`, `categoria_materiales_base`, `calculos`, `informes`.
 
-### (C) DPP — Pasaporte Digital de Producto y ciclo de vida
-Identidad física del activo, sus ciclos de vida y verificación pública.
+### (C) DPP y Finanzas Circulares — Pasaporte Digital de Producto y ciclo de vida
+Identidad física del activo, sus ciclos de vida, verificación pública, y su historia financiera circular (TCO, E-ROI, RRV, Inflow Circular, ICE) — todo lo que le pasa al activo DESPUÉS de cotizado. Aclarado 2026-09-05 en el nombre corto porque generaba confusión: la mitad financiera no es un dominio aparte ni vive en (A), es parte de (C).
 `dpp_activos`, `dpp_ciclos`, `dpp_verificaciones`, `dpp_documentos_ingesta`.
 `dpp_metricas_financieras` es financiero puro (TCO, ROI circular) pero vive prefijada `dpp_` porque solo tiene sentido atada a un `dpp_activos.id` — trátala como una extensión de (C), no la muevas a (A).
 

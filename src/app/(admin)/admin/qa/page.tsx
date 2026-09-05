@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
 import { CheckCircle, XCircle, Circle, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, Moon, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question } from '@/components/ui/icons'
 
@@ -1874,13 +1874,13 @@ const CATEGORIAS = [
   { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E' },
   { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2' },
   { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3' },
-  { key: 'Modo Noche',          icono: Moon,         color: '#D6F391' },
+  { key: 'Modo Noche',          icono: Moon,         color: '#6C8E24' }, // Pistacho Intenso (legible en modo día derivado de #D6F391)
   { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B' },
-  { key: 'Seguridad',           icono: ShieldCheck,  color: '#FF5E4B' },
-  { key: 'Alertas',             icono: Bell,         color: '#F6BF3E' },
-  { key: 'Settings',            icono: Gear,         color: 'var(--text-placeholder)' },
-  { key: 'Ayuda',               icono: BookOpen,     color: '#59A6E4' },
-  { key: 'APIs & Validaciones', icono: FileText,     color: '#8AD0B2' },
+  { key: 'Seguridad',           icono: ShieldCheck,  color: '#985fa1' }, // Violeta Trazabilidad
+  { key: 'Alertas',             icono: Bell,         color: '#FF8A65' }, // Coral
+  { key: 'Settings',            icono: Gear,         color: '#849696' },
+  { key: 'Ayuda',               icono: BookOpen,     color: '#00C2D1' }, // Cyan
+  { key: 'APIs & Validaciones', icono: FileText,     color: '#5C6BC0' }, // Indigo
 ]
 
 const ESTADO_CFG: Record<Estado, { label: string; color: string; icono: typeof CheckCircle }> = {
@@ -1927,12 +1927,17 @@ export default function QAPage() {
   // (Autenticación, Panel Admin…), que sirve para revisar un área completa.
   // 'pagina' agrupa por la pantalla real que hay que abrir, para dejar una
   // URL terminada antes de pasar a la siguiente en vez de ir saltando entre
-  // pantallas, que es lo que obliga a hacer el recorrido por tema.
   const [modo, setModo] = useState<'modulo' | 'pagina'>('modulo')
   const [rutaActiva, setRutaActiva] = useState<string | null>(null)
   // Diagnóstico automático: lo que una persona no puede revisar a ojo
   // (columnas que faltan por una migración sin correr, buckets que quedaron
   // públicos, consultas que la base rechaza). Corre contra la base real.
+  
+  const categoriasReactivas = useMemo(() => CATEGORIAS.map(cat => {
+    if (cat.key === 'Modo Noche') return { ...cat, color: isDark ? '#D6F391' : '#6C8E24' }
+    if (cat.key === 'Páginas Públicas') return { ...cat, color: isDark ? '#F3BBD3' : '#C44D7C' }
+    return cat
+  }), [isDark])
   const [diagnostico, setDiagnostico] = useState<{
     resumen: { total: number; ok: number; avisos: number; fallas: number }
     comprobaciones: { grupo: string; nombre: string; estado: 'ok' | 'aviso' | 'falla'; detalle: string }[]
@@ -2112,7 +2117,7 @@ export default function QAPage() {
   const indicePagina = Math.max(0, paginas.findIndex(p => p.ruta === rutaVigente))
   const paginaActual = paginas[indicePagina]
 
-  // Tareas visibles según el modo activo, filtradas por búsqueda
+  // Tareas visibles según el módulo activo, filtradas por búsqueda
   const tareasCategoria = tareas.filter(t => {
     if (modo === 'pagina') {
       if (t.ruta !== rutaVigente) return false
@@ -2121,6 +2126,9 @@ export default function QAPage() {
     const b = busqueda.toLowerCase()
     return t.titulo.toLowerCase().includes(b) || t.ruta.includes(b) || t.descripcion.toLowerCase().includes(b)
   })
+
+  // El contenido del lado se considera pequeño si tiene 2 o menos pruebas
+  const contenidoLadoPequeno = tareasCategoria.length <= 2
 
   // Generación de informe
   const generarInforme = () => {
@@ -2133,7 +2141,7 @@ export default function QAPage() {
       `Cobertura: ${progreso} % (${revisadas}/${total} revisadas)`,
       `${'─'.repeat(60)}`,
     ]
-    for (const cat of CATEGORIAS) {
+    for (const cat of categoriasReactivas) {
       const grupo = tareas.filter(t => t.categoria === cat.key)
       if (!grupo.length) continue
       lineas.push(`\n▸ ${cat.key.toUpperCase()} (${grupo.filter(t => t.estado === 'ok').length}/${grupo.length} ok)`)
@@ -2188,7 +2196,7 @@ export default function QAPage() {
 
   if (!mounted) {
     return (
-      <div className="h-full min-h-[60vh] bg-[#474747] text-white flex items-center justify-center font-sans">
+      <div className="h-full min-h-[60vh] bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center font-sans">
         <LogoSpinner size={96} />
       </div>
     )
@@ -2200,24 +2208,24 @@ export default function QAPage() {
     textPrimary:       isDark ? 'text-white'                             : 'text-[#474747]',
     textSecondary:     isDark ? 'text-white/70'                          : 'text-[#474747]/70',
     textTitle:         isDark ? 'text-white'                             : 'text-[#474747]',
-    headerBg:          isDark ? 'bg-[#D6F391]/[0.08] backdrop-blur-md border-[#D6F391]/15'
+    headerBg:          isDark ? 'bg-black/10 backdrop-blur-md border-white/10'
                               : 'bg-white/60 backdrop-blur-md border-[rgba(0,130,124,0.12)]',
-    cardBg:            isDark ? 'bg-[#D6F391]/[0.05] backdrop-blur-sm border-[#D6F391]/10'
+    cardBg:            isDark ? 'bg-black/5 backdrop-blur-sm border-white/5'
                               : 'bg-white/50 backdrop-blur-sm border-[rgba(0,130,124,0.10)]',
-    sidebarActiveBg:   isDark ? 'bg-[#474747] border-[#D6F391]/25 shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
-                              : 'bg-[#e2f3f1]/80 border-[#00827C] shadow-[0_4px_12px_rgba(0,130,124,0.12)]',
-    sidebarInactiveBg: isDark ? 'bg-transparent border-[#D6F391]/[0.05] hover:border-[#D6F391]/15 hover:bg-[#D6F391]/[0.08]'
-                              : 'bg-white/30 border-[rgba(0,130,124,0.06)] hover:bg-[#f2f9f8]/60 hover:border-[rgba(0,130,124,0.15)]',
-    inputBg:           isDark ? 'bg-[#D6F391]/[0.05] border-[#D6F391]/15' : 'bg-white/60 border-[rgba(0,130,124,0.12)]',
-    divider:           isDark ? 'border-[#D6F391]/[0.08]'               : 'border-[rgba(0,130,124,0.08)]',
-    glowColor:         isDark ? '#D6F391'                                : '#38B98E',
+    sidebarActiveBg:   isDark ? 'bg-white/10 border-[#00827C] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
+                              : 'bg-white/90 border-[rgba(0,130,124,0.3)] shadow-[0_4px_12px_rgba(0,130,124,0.08)]',
+    sidebarInactiveBg: isDark ? 'bg-transparent border-white/[0.05] hover:border-white/10 hover:bg-white/[0.05]'
+                              : 'bg-white/30 border-black/5 hover:bg-white hover:border-black/10',
+    inputBg:           isDark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-[rgba(0,130,124,0.12)]',
+    divider:           isDark ? 'border-white/10'               : 'border-[rgba(0,130,124,0.08)]',
+    glowColor:         isDark ? '#00827C'                                : '#38B98E',
     shadow:            isDark ? 'rgba(0,0,0,0.25)'                      : 'rgba(0,130,124,0.06)',
   }
 
-  const catActual = CATEGORIAS.find(c => c.key === categoriaActiva)!
+  const catActual = categoriasReactivas.find(c => c.key === categoriaActiva)!
 
   return (
-    <div className={`h-full ${theme.bg} ${theme.textPrimary} font-sans antialiased relative overflow-hidden transition-colors duration-500`}>
+    <div className={`h-full ${theme.bg} ${theme.textPrimary} font-sans antialiased relative transition-colors duration-500`}>
 
       <div className="relative z-10 max-w-7xl mx-auto">
 
@@ -2235,7 +2243,7 @@ export default function QAPage() {
                 Panel de Pruebas - Reúso
               </h1>
               <p className={`${theme.textSecondary} text-sm max-w-xl`}>
-                {total} pruebas en {CATEGORIAS.length} módulos. Guarda tus apuntes y genera el informe final.
+                {total} pruebas en {categoriasReactivas.length} módulos. Guarda tus apuntes y genera el informe final.
               </p>
             </div>
 
@@ -2244,15 +2252,15 @@ export default function QAPage() {
               {/* Progress circular */}
               <div
                 className={`border ${theme.cardBg} rounded-xl p-4 flex items-center gap-4 min-w-[240px] transition-all`}
-                style={{ borderColor: isDark ? '#D6F391' : 'rgba(0,130,124,0.18)' }}
+                style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.06)' }}
               >
                 <div className="relative w-16 h-16 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90">
                     <circle cx="32" cy="32" r="28"
-                      className={isDark ? 'stroke-[#D6F391]/20' : 'stroke-[#e2f3f1]'}
+                      className={isDark ? 'stroke-white/10' : 'stroke-[#e2f3f1]'}
                       strokeWidth="6" fill="transparent" />
                     <circle cx="32" cy="32" r="28"
-                      className={isDark ? 'stroke-[#D6F391]' : 'stroke-[#38B98E]'}
+                      className={isDark ? 'stroke-[#00827C]' : 'stroke-[#38B98E]'}
                       strokeWidth="6" fill="transparent"
                       strokeDasharray={175.9}
                       strokeDashoffset={175.9 - (175.9 * progreso) / 100}
@@ -2281,14 +2289,14 @@ export default function QAPage() {
           <div className={`mt-6 pt-6 border-t ${theme.divider} flex flex-col md:flex-row gap-3 lg:gap-4 items-start md:items-center justify-between`}>
             {/* Estado de guardado en 2 líneas */}
             <div className={`flex items-center gap-2 text-xs ${theme.textSecondary} shrink-0`}>
-              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
+              <span className={`w-2 h-2 rounded-full animate-pulse shrink-0 bg-[#00827C]`} />
               {guardadoReciente ? (
                 <div className="flex flex-col leading-tight">
                   <span className="text-[#38B98E] font-semibold flex items-center gap-1">
                     <CheckCircle size={12} /> Guardado
                   </span>
                   <span className="text-[11px] opacity-70 whitespace-nowrap">
-                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                    Autoguardado en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
                   </span>
                 </div>
               ) : ultimoGuardado ? (
@@ -2297,30 +2305,30 @@ export default function QAPage() {
                     Guardado {ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                   <span className="text-[11px] opacity-70 whitespace-nowrap">
-                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                    Autoguardado en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
                   </span>
                 </div>
               ) : (
                 <div className="flex flex-col leading-tight">
                   <span className="whitespace-nowrap">Sin guardar</span>
                   <span className="text-[11px] opacity-70 whitespace-nowrap">
-                    autosave en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
+                    Autoguardado en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
                   </span>
                 </div>
               )}
             </div>
 
-            {/* Controles y botones en una sola línea */}
-            <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-2.5 flex-nowrap shrink-0 overflow-x-auto max-w-full pb-1 md:pb-0">
+            {/* Controles y botones (wrap en móvil) */}
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 lg:gap-2.5 w-full md:w-auto pt-3 md:pt-0">
               {/* Búsqueda */}
-              <div className="relative w-36 sm:w-40 md:w-44 lg:w-56 xl:w-64 shrink-0 transition-all">
+              <div className="relative w-full sm:w-40 md:w-44 lg:w-56 xl:w-64 transition-all">
                 <MagnifyingGlass size={13} className={`absolute left-2.5 top-1/2 -translate-y-1/2 ${theme.textSecondary} opacity-60`} />
                 <input
                   type="text"
                   placeholder="Buscar prueba..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-[#D6F391]/50 focus:border-[#D6F391]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
+                  className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-white/50 focus:border-[#00827C]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
                 />
               </div>
               <button
@@ -2347,9 +2355,7 @@ export default function QAPage() {
               </button>
               <button
                 onClick={() => setMostrarInforme(true)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop shrink-0 whitespace-nowrap ${
-                  isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
-                }`}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop shrink-0 whitespace-nowrap bg-[#00827C] text-white`}
               >
                 <FileText size={13} /> Informe final
               </button>
@@ -2357,121 +2363,45 @@ export default function QAPage() {
           </div>
         </header>
 
-        {/* ── Diagnóstico automático (ancho completo, sutil y elegante) ── */}
-        <div
-          className={`mb-6 border ${theme.headerBg} rounded-2xl px-5 py-3.5 sm:px-6 sm:py-4 transition-all`}
-          style={{ boxShadow: `0 4px 20px ${theme.shadow}` }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="min-w-0 max-w-2xl">
-              <h3 className={`text-sm font-semibold ${theme.textPrimary}`}>
-                Diagnóstico automático
-              </h3>
-              <p className={`text-xs ${theme.textSecondary} opacity-80 mt-0.5 leading-relaxed`}>
-                Revisa contra la base real lo que no se ve a simple vista: columnas faltantes, archivos mal configurados y consultas que la base rechaza.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={correrDiagnostico}
-                disabled={diagnosticando}
-                className={`text-xs px-3.5 py-1.5 rounded-lg transition-all disabled:opacity-50 font-medium hover:scale-105 active:scale-95 ${
-                  isDark ? 'bg-[#D6F391] text-[#474747]'
-                         : 'bg-[#00827C] text-white'
-                }`}
-              >
-                {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
-              </button>
-              {diagnostico && (
-                <button
-                  onClick={descargarDiagnostico}
-                  className={`text-xs px-3.5 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80 font-medium`}
-                >
-                  Descargar informe
-                </button>
-              )}
-            </div>
-          </div>
 
-          {errorDiagnostico && (
-            <p className="text-xs mt-2.5 text-[#FF5E4B]">{errorDiagnostico}</p>
-          )}
 
-          {diagnostico && (
-            <div className={`mt-3.5 pt-3 border-t ${theme.divider} flex flex-col gap-3`}>
-              <div className="flex items-center gap-4 text-xs flex-wrap">
-                <span className={theme.textSecondary}>{diagnostico.resumen.total} comprobaciones</span>
-                <span className="text-[#38B98E] font-semibold">{diagnostico.resumen.ok} correctas</span>
-                {diagnostico.resumen.avisos > 0 && (
-                  <span className="text-[#F6BF3E] font-semibold">{diagnostico.resumen.avisos} avisos</span>
-                )}
-                <span className={diagnostico.resumen.fallas > 0 ? 'text-[#FF5E4B] font-semibold' : theme.textSecondary}>
-                  {diagnostico.resumen.fallas} fallas
-                </span>
-              </div>
-
-              {/* Solo se listan fallas y avisos: lo que está bien no necesita leerse */}
-              {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').length === 0 ? (
-                <p className="text-xs text-[#38B98E]">
-                  Sin fallas. El sistema respondió a todas las comprobaciones.
-                </p>
-              ) : (
-                <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
-                  {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').map((x, i) => (
-                    <div
-                      key={`${x.grupo}-${x.nombre}-${i}`}
-                      className={`text-xs px-3 py-2 rounded-lg border ${theme.cardBg}`}
-                    >
-                      <span className={x.estado === 'falla' ? 'text-[#FF5E4B] font-semibold' : 'text-[#F6BF3E] font-semibold'}>
-                        {x.estado === 'falla' ? 'Falla' : 'Aviso'}
-                      </span>
-                      <span className={`${theme.textSecondary} opacity-60`}> · {x.grupo} · </span>
-                      <span className={theme.textPrimary}>{x.nombre}</span>
-                      <p className={`${theme.textSecondary} mt-0.5`}>{x.detalle}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
 
         {/* ── Grid principal ──────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:items-start">
 
-          {/* Sidebar de categorías */}
-          <div className="lg:col-span-4 flex flex-col gap-4">
+          {/* Sidebar de categorías (Módulos del sistema solo por tema).
+              Solo aplica scroll / límite de altura si es necesario y el
+              contenido del lado es muy pequeño, evitando cortes innecesarios. */}
+          <div className={`lg:col-span-4 flex flex-col gap-4 lg:sticky lg:top-6 lg:z-20 ${contenidoLadoPequeno ? 'lg:max-h-[calc(100vh-2rem)]' : ''}`}>
             <div
-              className={`border ${theme.headerBg} rounded-2xl p-4 transition-all`}
+              className={`border ${theme.headerBg} rounded-2xl p-4 transition-all flex flex-col ${contenidoLadoPequeno ? 'lg:max-h-[calc(100vh-2rem)]' : ''}`}
               style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
             >
-              <h2 className={`text-sm font-semiboldr ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
+              <h2 className={`text-sm font-semibold ${theme.textSecondary} mb-3 px-1 flex items-center justify-between`}>
                 <span>{modo === 'pagina' ? 'Pantallas del sistema' : 'Módulos del sistema'}</span>
-                <span className={`text-xs lowercase ${theme.textSecondary} opacity-60 font-normal`}>Clic para revisar</span>
               </h2>
 
-              {/* Selector de recorrido. Por tema sirve para revisar un área
-                  completa; por pantalla, para dejar una URL terminada antes de
-                  pasar a la siguiente sin ir saltando de una a otra. */}
-              <div className={`flex gap-1 p-1 mb-3 rounded-xl border ${theme.inputBg}`}>
-                {([
-                  { key: 'modulo', label: 'Por tema' },
-                  { key: 'pagina', label: 'Pantalla a pantalla' },
-                ] as const).map(op => (
-                  <button
-                    key={op.key}
-                    onClick={() => { setModo(op.key); setExpandida(null) }}
-                    className={`flex-1 text-xs py-1.5 px-2 rounded-lg transition-all ${
-                      modo === op.key
-                        ? isDark
-                          ? 'bg-[#D6F391] text-[#474747] font-semibold'
-                          : 'bg-[#00827C] text-white font-semibold'
-                        : `${theme.textSecondary} hover:opacity-80`
-                    }`}
-                  >
-                    {op.label}
-                  </button>
-                ))}
+              <div className={`flex gap-1.5 mb-3 p-1 rounded-xl ${isDark ? 'bg-white/5' : 'bg-black/5'}`}>
+                <button
+                  onClick={() => { setModo('modulo'); setExpandida(null) }}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                    modo === 'modulo'
+                      ? 'bg-[#00827C] text-white shadow-sm'
+                      : `bg-transparent ${theme.textSecondary} hover:opacity-70`
+                  }`}
+                >
+                  Por tema
+                </button>
+                <button
+                  onClick={() => { setModo('pagina'); setExpandida(null) }}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
+                    modo === 'pagina'
+                      ? 'bg-[#00827C] text-white shadow-sm'
+                      : `bg-transparent ${theme.textSecondary} hover:opacity-70`
+                  }`}
+                >
+                  Pantalla a pantalla
+                </button>
               </div>
 
               {modo === 'pagina' && (
@@ -2506,74 +2436,73 @@ export default function QAPage() {
                 </div>
               )}
 
-              <div className={`flex-col gap-2.5 max-h-[600px] overflow-y-auto pr-1 ${modo === 'modulo' ? 'flex' : 'hidden'}`}>
-                {CATEGORIAS.map((cat, catIdx) => {
-                  const isActive = categoriaActiva === cat.key
-                  const ct = tareas.filter(t => t.categoria === cat.key)
-                  const cOk = ct.filter(t => t.estado === 'ok').length
-                  const cFail = ct.filter(t => t.estado === 'falla').length
-                  const isDone = ct.length > 0 && ct.every(t => t.estado === 'ok')
-                  const Icon = cat.icono
-                  // Los módulos anteriores se marcan como pendientes, pero ya NO
-                  // bloquean el acceso: con el candado duro, una sola prueba en
-                  // falla dejaba el resto del sistema imposible de revisar ese
-                  // día, que es justo lo contrario de lo que necesita una ronda
-                  // de QA. El orden sigue sugerido, no impuesto.
-                  const prevDone = catIdx === 0 || CATEGORIAS.slice(0, catIdx).every(prevCat => {
-                    const prevTareas = tareas.filter(t => t.categoria === prevCat.key)
-                    return prevTareas.length > 0 && prevTareas.every(t => t.estado === 'ok')
-                  })
-                  const fueraDeOrden = !prevDone
+              {modo === 'modulo' && (
+                <div className={`flex flex-col gap-2.5 p-1.5 -m-1.5 ${contenidoLadoPequeno ? 'lg:overflow-y-auto pr-2' : ''}`}>
+                  {categoriasReactivas.map(cat => {
+                    const isActive = categoriaActiva === cat.key
+                    const ct = tareas.filter(t => t.categoria === cat.key)
+                    const cOk = ct.filter(t => t.estado === 'ok').length
+                    const cFail = ct.filter(t => t.estado === 'falla').length
+                    const isDone = ct.length > 0 && ct.every(t => t.estado === 'ok')
+                    const Icon = cat.icono
 
-                  return (
-                    <button
-                      key={cat.key}
-                      onClick={() => { setCategoriaActiva(cat.key); setExpandida(null) }}
-                      className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 relative group flex flex-col gap-1.5 ${
-                        isActive ? theme.sidebarActiveBg : theme.sidebarInactiveBg
-                      } ${fueraDeOrden && !isActive ? 'opacity-70' : ''}`}
-                    >
-                      {/* Barra lateral de color */}
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl transition-all"
-                        style={{ backgroundColor: cat.color }} />
+                    return (
+                      <button
+                        key={cat.key}
+                        onClick={() => { setCategoriaActiva(cat.key); setExpandida(null) }}
+                        className={`w-full text-left p-3.5 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-[var(--card-color)] ${
+                          isActive 
+                            ? `border-[var(--card-color)] z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] ${isDark ? 'bg-white/5' : 'bg-white'}` 
+                            : `hover:shadow-[0_8px_30px_var(--card-glow)] ${theme.sidebarInactiveBg}`
+                        }`}
+                        style={{
+                          '--card-color': cat.color,
+                          '--card-glow': isDark ? `${cat.color}40` : `${cat.color}30`,
+                          '--card-bg-active': isDark ? `${cat.color}30` : `${cat.color}20`
+                        } as React.CSSProperties}
+                      >
+                        {/* Barra lateral de color */}
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 transition-all rounded-l-xl"
+                          style={{ backgroundColor: cat.color }} />
 
-                      <div className="pl-2.5 flex items-start justify-between gap-2">
-                        <span
-                          className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide flex items-center gap-1"
-                          style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
-                        >
-                          <Icon size={11} />
-                          {cat.key.split(' ')[0]}
-                        </span>
-                        <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-80`}>
-                          <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
-                            {cOk}/{ct.length}
+                        <div className="pl-2.5 flex items-start justify-between gap-2">
+                          <span
+                            className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide flex items-center gap-1"
+                            style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
+                          >
+                            <Icon size={11} />
+                            {cat.key.split(' ')[0]}
                           </span>
-                          {isDone && <CheckCircle size={11} className="text-[#38B98E]" />}
-                          {cFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
+                          <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-80`}>
+                            <span className={cFail > 0 ? 'text-[#FF5E4B] font-semibold' : isDone ? 'text-[#38B98E] font-semibold' : ''}>
+                              {cOk}/{ct.length}
+                            </span>
+                            {isDone && <CheckCircle size={11} className="text-[#38B98E]" />}
+                            {cFail > 0 && <XCircle size={11} className="text-[#FF5E4B]" />}
+                          </div>
                         </div>
-                      </div>
 
-                      <div className={`pl-2.5 font-semibold text-sm ${theme.textTitle} ${isDark ? 'group-hover:text-[#D6F391]' : 'group-hover:text-[#38B98E]'} transition-colors leading-tight`}>
-                        {cat.key}
-                      </div>
-
-                      {/* Mini barra de progreso */}
-                      <div className="pl-2.5 mt-0.5">
-                        <div className={`h-1 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-[#00827C]/8'}`}>
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${ct.length > 0 ? (cOk / ct.length) * 100 : 0}%`,
-                              backgroundColor: cFail > 0 ? '#FF5E4B' : cat.color,
-                            }}
-                          />
+                        <div className={`pl-2.5 font-semibold text-sm transition-colors duration-300 leading-tight group-hover:!text-[var(--card-color)] ${isActive ? '!text-[var(--card-color)]' : theme.textTitle}`}>
+                          {cat.key}
                         </div>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
+
+                        {/* Mini barra de progreso */}
+                        <div className="pl-2.5 mt-0.5">
+                          <div className={`h-1 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-[#00827C]/8'}`}>
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${ct.length > 0 ? (cOk / ct.length) * 100 : 0}%`,
+                                backgroundColor: cFail > 0 ? '#FF5E4B' : cat.color,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
@@ -2625,7 +2554,7 @@ export default function QAPage() {
                         onClick={() => { const i = Math.min(paginas.length - 1, indicePagina + 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
                         disabled={indicePagina >= paginas.length - 1}
                         className={`text-xs px-3 py-1.5 rounded-lg border transition-all disabled:opacity-30 ${
-                          isDark ? 'bg-[#D6F391] text-[#474747] border-transparent font-semibold'
+                          isDark ? 'bg-[#00827C] text-white border-transparent font-semibold'
                                  : 'bg-[#00827C] text-white border-transparent font-semibold'
                         }`}
                       >
@@ -2654,8 +2583,8 @@ export default function QAPage() {
                   <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
                   <div>
                     <div className="flex items-center gap-2 mb-0.5">
-                      <catActual.icono size={16} style={{ color: catActual.color }} />
-                      <span className="text-xs font-boldr" style={{ color: catActual.color }}>
+                      <catActual.icono size={16} color={catActual.color} />
+                      <span className="text-xs font-bold" style={{ color: catActual.color }}>
                         {catActual.key}
                       </span>
                     </div>
@@ -2678,37 +2607,39 @@ export default function QAPage() {
                 const abierta = expandida === tarea.id
                 const EstIcon = ESTADO_CFG[tarea.estado].icono
 
-                const borderGlow = tarea.estado === 'falla'
-                  ? isDark ? 'border-[#FF5E4B]/30' : 'border-[#FF5E4B]/25'
-                  : tarea.estado === 'ok'
-                  ? isDark ? 'border-[#38B98E]/30' : 'border-[#38B98E]/25'
-                  : tarea.estado === 'parcial'
-                  ? isDark ? 'border-[#F6BF3E]/25' : 'border-[#F6BF3E]/20'
-                  : tarea.estado === 'no_clara'
-                  ? isDark ? 'border-[#59A6E4]/25' : 'border-[#59A6E4]/20'
-                  : isDark ? 'border-[#D6F391]/10' : 'border-[rgba(0,130,124,0.10)]'
+                const tareaCat = categoriasReactivas.find(c => c.key === tarea.categoria) || catActual
+                const cardColor = tarea.estado !== 'pendiente' ? ESTADO_CFG[tarea.estado].color : tareaCat.color
 
                 return (
                   <div
                     key={tarea.id}
-                    className={`border ${borderGlow} rounded-2xl overflow-hidden transition-all duration-200 relative`}
-                    style={{ background: isDark ? 'rgba(214,243,145,0.03)' : '#fff', boxShadow: `0 4px 20px ${theme.shadow}` }}
+                    className={`group border rounded-2xl transition-all duration-300 relative hover:z-50 hover:-translate-y-1 hover:border-[var(--card-color)] hover:shadow-[0_8px_30px_var(--card-glow)] border-[var(--card-border)]`}
+                    style={{ 
+                      boxShadow: `0 4px 20px var(--card-shadow)`,
+                      '--card-color': cardColor,
+                      '--card-border': isDark ? `${cardColor}25` : `${cardColor}20`,
+                      '--card-shadow': isDark ? 'rgba(0,0,0,0.5)' : `${cardColor}15`,
+                      '--card-glow': isDark ? `${cardColor}30` : `${cardColor}25`
+                    } as React.CSSProperties}
                   >
-                    {/* Barra lateral de color de categoría */}
-                    <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
-                      style={{ backgroundColor: catActual.color }} />
+                    {/* Fondo y barra lateral con overflow-hidden para corte perfecto de esquinas */}
+                    <div className="absolute inset-0 rounded-[calc(1rem-1px)] overflow-hidden pointer-events-none"
+                         style={{ background: isDark ? 'rgba(255,255,255,0.03)' : '#fff' }}>
+                      <div className="absolute left-0 top-0 bottom-0 w-[5px]"
+                           style={{ backgroundColor: tareaCat.color }} />
+                    </div>
 
                     {/* Cabecera de la tarea */}
                     <div
                       onClick={() => setExpandida(abierta ? null : tarea.id)}
-                      className="flex items-center gap-3 px-5 py-4 cursor-pointer select-none"
+                      className="flex items-center gap-3 px-5 py-4 cursor-pointer select-none relative z-10"
                       style={{ paddingLeft: 20 }}
                     >
-                      <EstIcon size={18} style={{ color: ESTADO_CFG[tarea.estado].color, flexShrink: 0 }} />
+                      <EstIcon size={18} color={ESTADO_CFG[tarea.estado].color} style={{ flexShrink: 0 }} />
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                          <span className={`text-sm font-semibold ${theme.textTitle}`}>{tarea.titulo}</span>
+                          <span className={`text-sm font-semibold transition-colors duration-300 group-hover:!text-[var(--card-color)] ${theme.textTitle}`}>{tarea.titulo}</span>
                           {tarea.critica && (
                             <span className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide bg-[#FF5E4B]/12 text-[#FF5E4B]">
                               CRÍTICA
@@ -2764,24 +2695,70 @@ export default function QAPage() {
                         </div>
                       </div>
 
-                      {/* Botones de estado rápido */}
-                      <div className="flex gap-1" onClick={e => e.stopPropagation()}>
-                        {(['ok', 'falla', 'parcial', 'no_clara', 'pendiente'] as Estado[]).map(est => {
+                      {/* Botones de estado rápido con tooltip explicativo abajo */}
+                      <div className="flex gap-1 items-center relative z-30" onClick={e => e.stopPropagation()}>
+                        {(['ok', 'falla', 'parcial', 'no_clara', 'pendiente'] as Estado[]).map((est, idx) => {
                           const Ic = ESTADO_CFG[est].icono
                           const activo = tarea.estado === est
+                          const cfg = ESTADO_CFG[est]
+                          const tooltipText = est === 'ok'
+                            ? 'Aprobada'
+                            : est === 'falla'
+                            ? 'Falla'
+                            : est === 'parcial'
+                            ? 'Cumple parcialmente'
+                            : est === 'no_clara'
+                            ? 'No es clara / Duda'
+                            : 'Pendiente (sin revisar)'
+
+                          // Alineación para evitar que se corte en los bordes de la tarjeta
+                          const isRight = idx >= 3 // 'no_clara' y 'pendiente' alinean hacia adentro a la derecha
+                          const isLeft = idx === 0  // 'ok' alinea hacia adentro a la izquierda
+
                           return (
-                            <button
-                              key={est}
-                              onClick={() => actualizar(tarea.id, 'estado', est)}
-                              title={ESTADO_CFG[est].label}
-                              className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-                              style={{
-                                border: `1px solid ${activo ? ESTADO_CFG[est].color : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
-                                background: activo ? `${ESTADO_CFG[est].color}18` : 'transparent',
-                              }}
-                            >
-                              <Ic size={13} style={{ color: activo ? ESTADO_CFG[est].color : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,130,124,0.4)' }} />
-                            </button>
+                            <div key={est} className="relative group/qa-tip">
+                              <button
+                                type="button"
+                                onClick={() => actualizar(tarea.id, 'estado', est)}
+                                aria-label={tooltipText}
+                                className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer relative z-10"
+                                style={{
+                                  border: `1px solid ${activo ? cfg.color : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
+                                  background: activo ? `${cfg.color}18` : 'transparent',
+                                }}
+                              >
+                                <Ic size={13} color={activo ? cfg.color : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,130,124,0.4)'} />
+                              </button>
+
+                              {/* Tooltip flotante de frente en Verde Sostenible (#00827C) */}
+                              <div
+                                className={`pointer-events-none absolute top-full mt-1.5 z-[999] opacity-0 group-hover/qa-tip:opacity-100 transition-all duration-150 transform translate-y-[-2px] group-hover/qa-tip:translate-y-0 flex flex-col ${
+                                  isRight
+                                    ? 'right-0 items-end'
+                                    : isLeft
+                                    ? 'left-0 items-start'
+                                    : 'left-1/2 -translate-x-1/2 items-center'
+                                }`}
+                              >
+                                <div
+                                  className="w-2 h-2 rotate-45 mb-[-4px] z-10"
+                                  style={{
+                                    backgroundColor: '#00827C',
+                                    marginRight: isRight ? '14px' : undefined,
+                                    marginLeft: isLeft ? '14px' : undefined,
+                                  }}
+                                />
+                                <span
+                                  className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-white whitespace-nowrap shadow-2xl tracking-wide border border-white/20"
+                                  style={{
+                                    backgroundColor: '#00827C',
+                                    boxShadow: '0 8px 24px rgba(0, 130, 124, 0.5), 0 2px 6px rgba(0,0,0,0.2)',
+                                  }}
+                                >
+                                  {tooltipText}
+                                </span>
+                              </div>
+                            </div>
                           )
                         })}
                       </div>
@@ -2794,7 +2771,7 @@ export default function QAPage() {
                     {/* Detalle expandido */}
                     {abierta && (
                       <div
-                        className={`px-5 pb-5 border-t ${theme.divider}`}
+                        className={`px-5 pb-5 border-t ${theme.divider} relative z-10`}
                         style={{ paddingLeft: 20 }}
                       >
                         <p className={`text-sm ${theme.textSecondary} mt-3 mb-4 leading-relaxed`}>
@@ -2804,10 +2781,10 @@ export default function QAPage() {
                         {/* Pasos */}
                         {tarea.pasos.length > 0 && (
                           <div className="mb-4">
-                            <p className={`text-xs font-boldr ${theme.textSecondary} mb-2`}>Pasos</p>
+                            <p className={`text-xs font-bold ${theme.textSecondary} mb-2`}>Pasos</p>
                             <div
                               className="rounded-xl p-4"
-                              style={{ background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,130,124,0.03)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.08)'}` }}
+                              style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,130,124,0.03)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,130,124,0.08)'}` }}
                             >
                               <ol className="space-y-2 pl-4 list-decimal">
                                 {tarea.pasos.map((p, i) => (
@@ -2821,15 +2798,15 @@ export default function QAPage() {
                         {/* Resultado esperado */}
                         <div
                           className="rounded-xl px-4 py-3 mb-4"
-                          style={{ background: isDark ? 'rgba(214,243,145,0.04)' : 'rgba(0,130,124,0.04)', border: `1px solid ${isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.10)'}` }}
+                          style={{ background: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,130,124,0.04)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,130,124,0.10)'}` }}
                         >
-                          <span className={`text-xs font-boldr ${theme.textSecondary}`}>Resultado esperado: </span>
+                          <span className={`text-xs font-bold ${theme.textSecondary}`}>Resultado esperado: </span>
                           <span className={`text-xs ${theme.textPrimary}`}>{tarea.esperado}</span>
                         </div>
 
                         {/* Checklist de Perfiles de Prueba */}
                         <div className="mb-4">
-                          <p className={`text-xs font-boldr ${theme.textSecondary} mb-2`}>
+                          <p className={`text-xs font-bold ${theme.textSecondary} mb-2`}>
                             Checklist de Perfiles (Marca los probados)
                           </p>
                           <div className="flex flex-wrap gap-2">
@@ -2843,7 +2820,7 @@ export default function QAPage() {
                                     checked
                                       ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
                                       : isDark
-                                      ? 'bg-[#474747] border-white/10 text-white/60 hover:text-white hover:border-white/20'
+                                      ? 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/20'
                                       : 'bg-white border-black/10 text-black/60 hover:text-black hover:border-black/20'
                                   }`}
                                 >
@@ -2865,7 +2842,7 @@ export default function QAPage() {
                           const valorActual = tarea[campo] ?? 'pendiente'
                           return (
                             <div key={campo} className="mb-3">
-                              <p className={`text-xs font-boldr ${theme.textSecondary} mb-1.5`}>
+                              <p className={`text-xs font-bold ${theme.textSecondary} mb-1.5`}>
                                 {esDia ? '☀ Resultado Modo Día' : '☾ Resultado Modo Noche'}
                               </p>
                               <div className="flex gap-1.5 flex-wrap">
@@ -2883,7 +2860,7 @@ export default function QAPage() {
                                         border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                       }}
                                     >
-                                      <Ic size={10} />
+                                      <Ic size={10} color={activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color} />
                                       {ESTADO_CFG[est].label}
                                     </button>
                                   )
@@ -2894,7 +2871,7 @@ export default function QAPage() {
                         })}
 
                         {/* Notas */}
-                        <label className={`block text-xs font-boldr ${theme.textSecondary} mb-2`}>
+                        <label className={`block text-xs font-bold ${theme.textSecondary} mb-2`}>
                           Tus apuntes
                         </label>
                         <textarea
@@ -2906,13 +2883,13 @@ export default function QAPage() {
                           className={`w-full px-4 py-3 rounded-xl border text-xs ${theme.textPrimary} resize-vertical outline-none transition-all font-sans`}
                           style={{
                             background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,130,124,0.02)',
-                            border: `1px solid ${isDark ? 'rgba(214,243,145,0.12)' : 'rgba(0,130,124,0.12)'}`,
+                            border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
                             fontFamily: "'Open Sans', sans-serif",
                           }}
                         />
 
                         {/* Veredicto general */}
-                        <p className={`text-xs font-boldr ${theme.textSecondary} mt-4 mb-2`}>
+                        <p className={`text-xs font-bold ${theme.textSecondary} mt-4 mb-2`}>
                           Veredicto general de la prueba
                         </p>
                         <div className="flex gap-2 flex-wrap">
@@ -2930,7 +2907,7 @@ export default function QAPage() {
                                   border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                 }}
                               >
-                                <Ic size={13} />
+                                <Ic size={13} color={activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color} />
                                 {ESTADO_CFG[est].label}
                               </button>
                             )
@@ -2965,13 +2942,89 @@ export default function QAPage() {
                 </button>
                 <button
                   onClick={() => setMostrarInforme(true)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${isDark ? 'bg-[#00827C]/20 text-[#00827C]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
                 >
                   <FileText size={13} /> Informe parcial
                 </button>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ── Diagnóstico automático (abajo del todo, fuera de las cards/grid, antes del footer) ── */}
+        <div
+          className={`mt-8 mb-4 border-2 rounded-2xl px-5 py-4 sm:px-6 sm:py-5 transition-all w-full ${isDark ? 'bg-[#985fa1]/5 border-[#985fa1]/40' : 'bg-[#985fa1]/[0.04] border-[#985fa1]/40'}`}
+          style={{ boxShadow: `0 4px 20px ${isDark ? 'rgba(152,95,161,0.1)' : 'rgba(152,95,161,0.15)'}` }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0 max-w-2xl">
+              <h3 className={`text-sm font-semibold ${theme.textPrimary}`}>
+                Diagnóstico automático
+              </h3>
+              <p className={`text-xs ${theme.textSecondary} opacity-80 mt-0.5 leading-relaxed`}>
+                Revisa contra la base real lo que no se ve a simple vista: columnas faltantes, archivos mal configurados y consultas que la base rechaza.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={correrDiagnostico}
+                disabled={diagnosticando}
+                className={`text-xs px-3.5 py-1.5 rounded-lg transition-all disabled:opacity-50 font-medium hover:scale-105 active:scale-95 bg-[#985fa1] text-white shadow-sm`}
+              >
+                {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
+              </button>
+              {diagnostico && (
+                <button
+                  onClick={descargarDiagnostico}
+                  className={`text-xs px-3.5 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80 font-medium`}
+                >
+                  Descargar informe
+                </button>
+              )}
+            </div>
+          </div>
+
+          {errorDiagnostico && (
+            <p className="text-xs mt-2.5 text-[#FF5E4B]">{errorDiagnostico}</p>
+          )}
+
+          {diagnostico && (
+            <div className={`mt-3.5 pt-3 border-t ${theme.divider} flex flex-col gap-3`}>
+              <div className="flex items-center gap-4 text-xs flex-wrap">
+                <span className={theme.textSecondary}>{diagnostico.resumen.total} comprobaciones</span>
+                <span className="text-[#38B98E] font-semibold">{diagnostico.resumen.ok} correctas</span>
+                {diagnostico.resumen.avisos > 0 && (
+                  <span className="text-[#F6BF3E] font-semibold">{diagnostico.resumen.avisos} avisos</span>
+                )}
+                <span className={diagnostico.resumen.fallas > 0 ? 'text-[#FF5E4B] font-semibold' : theme.textSecondary}>
+                  {diagnostico.resumen.fallas} fallas
+                </span>
+              </div>
+
+              {/* Solo se listan fallas y avisos: lo que está bien no necesita leerse */}
+              {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').length === 0 ? (
+                <p className="text-xs text-[#38B98E]">
+                  Sin fallas. El sistema respondió a todas las comprobaciones.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-1.5 max-h-64 overflow-y-auto pr-1">
+                  {diagnostico.comprobaciones.filter(x => x.estado !== 'ok').map((x, i) => (
+                    <div
+                      key={`${x.grupo}-${x.nombre}-${i}`}
+                      className={`text-xs px-3 py-2 rounded-lg border ${theme.cardBg}`}
+                    >
+                      <span className={x.estado === 'falla' ? 'text-[#FF5E4B] font-semibold' : 'text-[#F6BF3E] font-semibold'}>
+                        {x.estado === 'falla' ? 'Falla' : 'Aviso'}
+                      </span>
+                      <span className={`${theme.textSecondary} opacity-60`}> · {x.grupo} · </span>
+                      <span className={theme.textPrimary}>{x.nombre}</span>
+                      <p className={`${theme.textSecondary} mt-0.5`}>{x.detalle}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
