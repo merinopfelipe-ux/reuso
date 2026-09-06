@@ -65,7 +65,6 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/configuracion', label: 'Configuración' },
         { href: '/admin/qa', label: 'QA' },
         { href: '/admin/status', label: 'Estado' },
-        { href: '/admin/correos', label: 'Correos', grupo: 'Recursos' },
         { href: '/admin/contenido', label: 'Contenido' },
         { href: '/admin/plantillas', label: 'Plantillas' },
         { href: '/admin/tickets', label: 'Soporte' },
