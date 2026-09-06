@@ -260,6 +260,21 @@ test.describe('super_admin', () => {
     // <span> en su botón, así que no hay placeholder que buscar.
     await expect(page.getByText('Busca una empresa...')).toBeVisible({ timeout: 10_000 })
   })
+
+  // adm-17/adm-18 de /admin/correos/[id] y /admin/correos/nuevo se
+  // quitaron: esa pantalla se eliminó el 2026-09-06 (ver arquitectura de
+  // correos en el Vault), las rutas ya no existen.
+
+  test('adm-26 - /admin/firmas/nueva carga correctamente', async ({ page }) => {
+    await page.goto('/admin/firmas/nueva', { waitUntil: 'domcontentloaded' })
+    await expect(page.locator('body')).toBeVisible()
+    await expect(page.getByText(/error 500|algo salió mal/i)).toHaveCount(0)
+  })
+
+  test('adm-20 - /admin/qa carga el módulo de QA', async ({ page }) => {
+    await page.goto('/admin/qa', { waitUntil: 'domcontentloaded' })
+    await expect(page.getByText(/Panel de Pruebas/i)).toBeVisible({ timeout: 15_000 })
+  })
 })
 
 test('adm-api - la API de admin rechaza a quien no tiene sesión', async ({ browser }) => {

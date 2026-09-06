@@ -1077,7 +1077,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             <span className={ts40}>
               Hecho desde la{' '}
               <a
-                href="https://reuso.lurdes.co"
+                href="https://calculadoradereuso.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:underline font-medium text-inherit"
@@ -1088,27 +1088,29 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           )}
         </div>
 
-        <div className="flex flex-col items-center md:items-end gap-1.5 text-center md:text-right max-w-md w-full md:w-auto">
+        <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right max-w-md w-full md:w-auto">
+          <div className="flex justify-center md:justify-end w-full">
+            <button
+              type="button"
+              onClick={() => {
+                const next = !isDark
+                document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
+                localStorage.setItem('theme', next ? 'dark' : 'light')
+              }}
+              className="p-1.5 rounded-full hover-pop hover-press transition-opacity opacity-70 hover:opacity-100 cursor-pointer"
+              aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+              title={isDark ? 'Modo día' : 'Modo noche'}
+            >
+              {isDark ? (
+                <Sun size={18} strokeWidth={2} className="text-[#F6BF3E]" />
+              ) : (
+                <Moon size={18} strokeWidth={2} className="text-[var(--text-secondary)]" />
+              )}
+            </button>
+          </div>
           <span className={ts60}>
             Esta propuesta es solo para ti. No puedes compartir su contenido ni usarla con fines comerciales sin autorización.
           </span>
-          <button
-            type="button"
-            onClick={() => {
-              const next = !isDark
-              document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-              localStorage.setItem('theme', next ? 'dark' : 'light')
-            }}
-            className="p-1.5 rounded-full hover-pop hover-press transition-opacity opacity-70 hover:opacity-100 cursor-pointer"
-            aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-            title={isDark ? 'Modo día' : 'Modo noche'}
-          >
-            {isDark ? (
-              <Sun size={18} strokeWidth={2} className="text-[#F6BF3E]" />
-            ) : (
-              <Moon size={18} strokeWidth={2} className="text-[var(--text-secondary)]" />
-            )}
-          </button>
         </div>
       </footer>
 

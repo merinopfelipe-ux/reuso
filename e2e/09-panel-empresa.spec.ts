@@ -226,4 +226,9 @@ test.describe('empresa_admin', () => {
     })
     expect([401, 403]).toContain(res.status())
   })
+  test('emp-15 - /empresa/clientes/[id] responde sin errores 500', async ({ page }) => {
+    // Es una ruta dinámica, así que con un fake ID devolverá 404 pero la UI de shell no crashea
+    const res = await page.goto('/empresa/clientes/fake-id', { waitUntil: 'domcontentloaded' })
+    expect(res?.status()).toBeLessThan(500)
+  })
 })

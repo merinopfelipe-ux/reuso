@@ -1,13 +1,56 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
-import { CheckCircle, XCircle, Circle, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, Moon, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question } from '@/components/ui/icons'
+import { CheckCircle, XCircle, Circle, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, Moon, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
-type Estado = 'pendiente' | 'ok' | 'falla' | 'parcial' | 'no_clara'
+type Estado = 'pendiente' | 'ok' | 'parcial' | 'no_se_entiende' | 'falla'
+
+// ── Categorías con colores ─────────────────────────────────────────────────────
+
+const CATEGORIAS = [
+  { key: 'Autenticación',       icono: Lock,        color: '#59A6E4' },
+  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43' },
+  { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E' },
+  { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C' },
+  { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E' },
+  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2' },
+  { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3' },
+  { key: 'Modo Noche',          icono: Moon,         color: '#6C8E24' }, // Pistacho Intenso (legible en modo día derivado de #D6F391)
+  { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B' },
+  { key: 'Seguridad',           icono: ShieldCheck,  color: '#985fa1' }, // Violeta Trazabilidad
+  { key: 'Alertas',             icono: Bell,         color: '#FF8A65' }, // Coral
+  { key: 'Settings',            icono: Gear,         color: '#849696' },
+  { key: 'Ayuda',               icono: BookOpen,     color: '#00C2D1' }, // Cyan
+  { key: 'APIs & Validaciones', icono: FileText,     color: '#5C6BC0' }, // Indigo
+]
+
+const ESTADO_CFG: Record<Estado, { label: string; color: string; icono: typeof CheckCircle }> = {
+  pendiente:      { label: 'Pendiente',      color: 'rgba(128,128,128,0.4)', icono: Circle },
+  ok:             { label: 'Aprobada',       color: '#38B98E',               icono: CheckCircle },
+  parcial:        { label: 'Cumple parcial', color: '#F59E0B',               icono: MinusCircle },
+  no_se_entiende: { label: 'No se entiende', color: '#985fa1',               icono: Question },
+  falla:          { label: 'Falla',          color: '#FF5E4B',               icono: XCircle },
+}
+
+interface QAIntento {
+  id: string
+  ts: string
+  etiqueta: string
+  alcance: 'completo' | string
+  tareas: { id: string; estado: Estado; notas: string }[]
+}
+
+const LS_KEY_V5 = 'reuso_qa_v5'
+const LS_KEY_V4 = 'reuso_qa_v4'
+const LS_KEY_V3 = 'reuso_qa_v3'
+const LS_KEY = 'reuso_qa_v2'
 type RolPrueba = 'super_admin' | 'empresa_admin' | 'empleado' | 'usuario_libre' | 'sin_sesion'
+
+type Journey = 'Admin Operativa' | 'Empleado' | 'Directivo' | 'Cliente Final'
 
 interface Tarea {
   id: string
@@ -20,6 +63,7 @@ interface Tarea {
   estado: Estado
   notas: string
   critica: boolean
+  journeys?: Journey[]
   roles: RolPrueba[]
   rolesProbados?: RolPrueba[]
   resultado_dia?: Estado
@@ -145,1762 +189,1835 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
 
 const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
 
+
   // ══════════════════════════════════════════════════════════════════
-  // 1. AUTENTICACIÓN
+  // AUTENTICACIÓN
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-01', categoria: 'Autenticación', ruta: '/login', critica: true,
-    titulo: 'Login válido. Tiempo de respuesta',
-    descripcion: 'Mide el tiempo de respuesta real del endpoint de autenticación desde que el usuario hace clic en "Ingresar" hasta que es redirigido completamente al panel /empresa.',
+    titulo: 'Login rápido y sin fricción',
+    descripcion: 'Asegura que cuando el usuario ingresa sus credenciales, el sistema responda de inmediato y no lo deje esperando en una pantalla de carga eterna.',
     pasos: [
-      'Abre /login en Chrome o Safari. Abre DevTools DENTRO DEL NAVEGADOR (NO en la terminal): Mac: Cmd+Option+I / Windows: F12. Ve a la pestaña "Red" (Network).',
-      'Activa "Preserve log" (casilla arriba en la barra de Network) y haz clic en el ícono de papelera para limpiar el historial de peticiones.',
-      'Ingresa un email y contraseña válidos de una cuenta empresa_admin y haz clic en "Ingresar".',
-      'En la pestaña Network, busca la fila que dice "login" o "POST /api/auth/login". Haz clic en ella y mira la columna "Time" (Tiempo). Allí observas el tiempo de respuesta del servidor.',
-      'Anota los milisegundos medidos en el campo de apuntes. Luego observa que la página redirigió a /empresa correctamente.',
+      'Entra a la pantalla de inicio de sesión.',
+      'Pon el correo y contraseña correctos de una cuenta existente y haz clic en "Ingresar".',
+      'Observa qué tan rápido pasas de esa pantalla al panel principal.'
     ],
-    esperado: 'Redirección exitosa a /empresa en menos de 1000 milisegundos sin bloqueos visuales ni spinners infinitos.',
+    esperado: 'El ingreso debe sentirse instantáneo (menos de 1 segundo) y llevarte directo al panel sin errores visuales.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'auth-02', categoria: 'Autenticación', ruta: '/login', critica: true,
-    titulo: 'Login inválido - mensaje de error correcto',
-    descripcion: 'Verifica que el sistema maneja de forma segura las credenciales incorrectas, no revela información sensible sobre la existencia del usuario y rehabilita el botón de login.',
+    titulo: 'Manejo seguro de contraseñas incorrectas',
+    descripcion: 'Verifica que si el usuario se equivoca de contraseña, el sistema le avise amablemente pero sin revelar a posibles atacantes si ese correo existe o no en nuestra base de datos.',
     pasos: [
-      'Ingresa un email registrado en el sistema pero coloca una contraseña errónea y haz clic en "Ingresar".',
-      'Ingresa un correo electrónico inexistente (ej. inexistente_qa@reuso.com) con cualquier contraseña y haz clic en "Ingresar".',
-      'Inspecciona el mensaje de error visible debajo de los inputs.',
-      'Comprueba que el botón "Ingresar" vuelve a estar activo y seleccionable de inmediato después de mostrar el error.',
+      'Intenta ingresar con un correo que sí exista, pero pon una contraseña inventada.',
+      'Luego, intenta con un correo que no exista y cualquier contraseña.',
+      'Fíjate en el mensaje rojo que aparece abajo.'
     ],
-    esperado: 'En ambos casos debe mostrarse exactamente el mismo mensaje genérico: "Verifica tus datos e intenta de nuevo." El botón se desbloquea para nuevos intentos y no se indica si el email existe en la BD.',
-  },
-  {
-    id: 'auth-03', categoria: 'Autenticación', ruta: '/login', critica: false,
-    titulo: 'Selector de idioma ES / ENG',
-    descripcion: 'Valida la reactividad multilingüe del formulario de inicio de sesión y la preservación local de la preferencia del usuario tras recargar la página.',
-    pasos: [
-      'Ubica el selector de idioma en la esquina superior/derecha de la página /login.',
-      'Cambia el idioma a "English" (ENG).',
-      'Verifica que todas las etiquetas (Email, Password, Remember me), el botón "Log In" y los testimonios cambian de forma instantánea al inglés.',
-      'Presiona F5 o Cmd+R para recargar la página de forma limpia.',
-      'Comprueba en qué idioma se renderiza el formulario tras la recarga y valida que en localStorage se haya guardado la clave correspondiente.',
-    ],
-    esperado: 'Todos los textos se traducen dinámicamente al inglés. El idioma seleccionado persiste tras la recarga (almacenado bajo la clave de idioma en localStorage).',
+    esperado: 'En ambos casos el sistema debe decir lo mismo: "Verifica tus datos e intenta de nuevo", protegiendo la privacidad de las cuentas.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'auth-04', categoria: 'Autenticación', ruta: '/login', critica: false,
-    titulo: 'Recuérdame - persistencia del email',
-    descripcion: 'Verifica la retención segura del email del usuario en el navegador para facilitar el acceso rápido en visitas posteriores.',
+    titulo: 'Comodidad: Recordar correo',
+    descripcion: 'Asegura que el usuario no tenga que escribir su correo electrónico completo cada vez que vuelve a usar la calculadora en su misma computadora.',
     pasos: [
-      'En el formulario de /login, ingresa un correo de prueba.',
-      'Activa la casilla de verificación (checkbox) "Recuérdame".',
-      'Ingresa la contraseña correcta y haz clic en "Ingresar" para iniciar sesión de forma exitosa.',
-      'Una vez dentro, cierra la pestaña del navegador o abre una nueva pestaña en /login.',
-      'Revisa si el campo "Email" ya tiene el correo precargado de forma automática.',
+      'Escribe tu correo, marca la casilla "Recuérdame" y entra al sistema normalmente.',
+      'Cierra la pestaña y vuelve a abrir la página de inicio de sesión.'
     ],
-    esperado: 'El campo de email se encuentra autocompletado con la dirección de correo utilizada anteriormente.',
+    esperado: 'Tu correo debe aparecer ya escrito en la casilla, listo para que solo pongas la contraseña.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'auth-05', categoria: 'Autenticación', ruta: '/registro', critica: true,
-    titulo: 'Registro libre - flujo completo',
-    descripcion: 'Completa el proceso de creación de una nueva cuenta libre, validando la interacción del captcha Cloudflare Turnstile y la redirección final.',
+    titulo: 'Registro fluido de nuevas cuentas',
+    descripcion: 'Valida que un nuevo interesado pueda crear su cuenta gratuita sin barreras, aceptando los términos y pasando la validación de seguridad de forma sencilla.',
     pasos: [
-      'Abre /registro en una ventana de incógnito del navegador (Cmd+Shift+N en Mac / Ctrl+Shift+N en Windows).',
-      'Completa los campos en este orden: "Nombre" (ej. Prueba), "Apellido" (ej. QA), "Correo electrónico" (usa un correo real que puedas revisar), "Apodo" (ej. testerqa), "Contraseña" (mínimo 8 caracteres, una mayúscula y un número).',
-      'Busca los dos checkboxes de verificación (muestran un cuadrado o tilde verde): marca "Acepto los términos y condiciones" y "Acepto el tratamiento de datos". Ambos son OBLIGATORIOS.',
-      'El widget de Cloudflare Turnstile puede marcarse automáticamente en verde. Si no se marca solo, haz clic en el cuadro verde de verificación.',
-      'Haz clic en "Crear cuenta" y observa si eres redirigido a una pantalla de confirmación.',
+      'Abre una ventana en modo incógnito y ve a crear una cuenta nueva.',
+      'Llena todos tus datos, inventa una buena contraseña y marca las dos casillas obligatorias de términos y datos.',
+      'Asegúrate de que la caja de verificación de seguridad esté en verde y presiona "Crear cuenta".'
     ],
-    esperado: 'Redirección automática a /confirmar-email?email=... mostrando un banner de éxito indicando que se debe revisar la bandeja de entrada para verificar la cuenta.',
+    esperado: 'El sistema debe crearte la cuenta sin arrojar alertas rojas y llevarte a una pantalla que te pide revisar tu correo.',
+    journeys: ['Admin Operativa', 'Cliente Final']
   },
   {
     id: 'auth-06', categoria: 'Autenticación', ruta: '/recuperar', critica: false,
-    titulo: 'Recuperación de contraseña',
-    descripcion: 'Verifica la solicitud de restablecimiento de contraseña para un usuario existente y el despacho del correo correspondiente.',
+    titulo: 'Recuperar el acceso sin estrés',
+    descripcion: 'Comprueba que si un usuario olvida su contraseña, pueda pedir un enlace a su correo para entrar y cambiarla rápidamente.',
     pasos: [
-      'Ve a /recuperar.',
-      'Ingresa un correo electrónico que pertenezca a un usuario activo registrado en el sistema.',
-      'Haz clic en el botón "Enviar instrucciones".',
-      'Verifica que aparece el mensaje de confirmación en la UI.',
-      'Revisa la bandeja de entrada (o simulador de correo si se trabaja en local) para confirmar la recepción del correo en menos de 2 minutos.',
+      'Entra a "¿Olvidaste tu contraseña?" y pon un correo que sí esté registrado.',
+      'Haz clic en enviar y revisa esa bandeja de entrada.'
     ],
-    esperado: 'Aparece un mensaje indicando que las instrucciones han sido enviadas. Se recibe un correo con un enlace temporal que contiene el token de recuperación.',
+    esperado: 'Debe llegarte un correo casi de inmediato con un enlace especial para que puedas cambiar tu contraseña y volver a entrar.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'auth-07', categoria: 'Autenticación', ruta: '/invitacion/[token]', critica: true,
-    titulo: 'Flujo de invitación por email',
-    descripcion: 'Valida el registro guiado de un nuevo miembro invitado por el administrador de la empresa.',
+    titulo: 'Bienvenida a un nuevo miembro del equipo',
+    descripcion: 'Asegura que cuando la líder invita a un empleado nuevo a la empresa, él reciba un enlace fácil de usar para configurar su cuenta y unirse de inmediato.',
     pasos: [
-      'Desde la cuenta de administrador en /empresa/equipo, haz clic en "Invitar Miembro" y envía una invitación a un correo de pruebas.',
-      'Accede a la bandeja de entrada de ese correo, copia el enlace de invitación recibido.',
-      'Abre una ventana en incógnito y pega la URL de invitación copiada.',
-      'Completa el formulario de asignación de contraseña, acepta los términos y condiciones, y presiona "Finalizar Registro".',
-      'Revisa en /empresa/equipo que el nuevo usuario aparezca con estado "Activo" y el rol de empleado.',
+      'Como administrador, ve a tu equipo y envíale una invitación a un correo de prueba.',
+      'Abre ese correo, haz clic en el enlace de invitación (en modo incógnito).',
+      'Pon una contraseña nueva y finaliza el registro.'
     ],
-    esperado: 'El registro se completa sin errores, el enlace de invitación queda invalidado tras su primer uso, y el nuevo usuario puede acceder a /dashboard.',
+    esperado: 'El empleado nuevo debe quedar registrado al instante y entrar al sistema listo para trabajar.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'auth-08', categoria: 'Autenticación', ruta: '/middleware', critica: true,
-    titulo: 'Protección de rutas sin sesión',
-    descripcion: 'Comprueba que el middleware de Next.js bloquea el acceso directo por URL a todas las vistas privadas del sistema si no se cuenta con una sesión activa.',
+    titulo: 'Privacidad de la información y rutas protegidas',
+    descripcion: 'Asegura que ninguna persona sin iniciar sesión pueda entrar a ver los reportes, cotizaciones o datos de tu empresa, ni siquiera escribiendo enlaces directos.',
     pasos: [
-      'Cierra sesión por completo en el sistema.',
-      'En la barra de direcciones del navegador, intenta ingresar directamente a las siguientes rutas: /dashboard, /empresa, /admin, /empresa/cotizador, /empresa/equipo, /settings.',
-      'Revisa que en cada caso seas redirigido al /login de forma automática.',
+      'Cierra tu sesión por completo.',
+      'Intenta escribir en la barra de direcciones las rutas privadas, por ejemplo: /dashboard, /empresa o /admin.'
     ],
-    esperado: 'Redirección inmediata a /login para todas las rutas privadas. No se debe mostrar en ningún momento el esqueleto ni contenido de las páginas privadas.',
+    esperado: 'El sistema no permite el ingreso a zonas privadas y te redirige de inmediato a la pantalla de inicio de sesión.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'auth-09', categoria: 'Autenticación', ruta: '/login', critica: false,
-    titulo: 'Límite de intentos de inicio de sesión (fuerza bruta)',
-    descripcion: 'Verifica que el backend bloquee la IP después de 5 intentos fallidos consecutivos de login en 60 segundos.',
+    titulo: 'Protección contra intentos insistentes de acceso',
+    descripcion: 'Evita que personas malintencionadas intenten adivinar contraseñas repetidamente, pausando los intentos tras varios errores seguidos.',
     pasos: [
-      'Ve a /login en Chrome.',
-      'Abre DevTools con Cmd+Option+I (Mac) o F12 (Windows) y haz clic en la pestaña Consola.',
-      'Chrome puede mostrar el aviso "Don\'t paste code you don\'t understand". Si aparece, escribe exactamente: allow pasting - y presiona Enter. Luego pega el script.',
-      'Copia y pega este script en la consola, luego presiona Enter: [...Array(6)].forEach((_,i)=>setTimeout(()=>fetch(\'/api/auth/login\',{method:\'POST\',headers:{\'Content-Type\':\'application/json\'},body:JSON.stringify({email:\'test@fail.com\',password:\'wrong\'+i,turnstile_token:\'skip\'})}).then(r=>r.json()).then(d=>console.log(\'Intento\'+(i+1)+\':\',d.error||\'ok\')),i*800))',
-      'Espera 7 segundos. Los primeros intentos deben mostrar "Credenciales incorrectas". El intento 6 debe mostrar algo como "Demasiados intentos. Intenta de nuevo en un momento."',
+      'Ve a la pantalla de inicio de sesión.',
+      'Escribe credenciales incorrectas 5 veces seguidas de forma rápida.',
+      'Observa el mensaje que aparece en el siguiente intento.'
     ],
-    esperado: 'Los primeros 5 intentos retornan 401 con mensaje de credenciales incorrectas. El intento 6 retorna 429 con mensaje de demasiados intentos.',
+    esperado: 'El sistema muestra un mensaje claro indicando que se han realizado demasiados intentos y pide esperar un momento para proteger la cuenta.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 2. PANEL ADMIN
+  // PANEL ADMIN
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'adm-01', categoria: 'Panel Admin', ruta: '/admin', critica: true,
-    titulo: 'Dashboard admin - KPIs y carga',
-    descripcion: 'Inicia sesión como super_admin, navega a /admin y comprueba la correcta visualización de los 4 paneles de KPI (Usuarios totales, Empresas registradas, Cálculos completados, Emisiones CO₂ evitadas).',
+    titulo: 'Indicadores globales y resumen de impacto',
+    descripcion: 'Permite a los líderes supervisar los números más importantes de la plataforma: organizaciones activas, cálculos realizados y volumen de residuos evitados.',
     pasos: [
-      'Inicia sesión como super_admin.',
-      'Navega al panel principal de administración /admin.',
-      'Comprueba la correcta visualización de los 4 paneles de KPI.',
-      'Despliega la consola de red de DevTools para revisar que la petición a la API de estadísticas no retorne error 500 y complete en menos de 1.5s.',
-      'Observa el gráfico de actividad de los últimos 30 días y la tabla con los cálculos más recientes.',
+      'Ingresa al panel principal de administración.',
+      'Revisa las tarjetas superiores con las cifras de impacto y actividad.',
+      'Comprueba que las gráficas muestren la tendencia de los últimos 30 días.'
     ],
-    esperado: 'Todos los KPIs numéricos muestran valores reales cargados de la base de datos (no 0, ni nulo, ni guiones "-"). El gráfico renderiza correctamente y la tabla lista los últimos cálculos realizados.',
+    esperado: 'Los indicadores cargan con cifras reales y actualizadas sin mostrar ceros o espacios vacíos.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-02', categoria: 'Panel Admin', ruta: '/admin/usuarios', critica: true,
-    titulo: 'Gestión de usuarios - buscar, filtrar y editar',
-    descripcion: 'Navega a /admin/usuarios, busca un usuario por nombre parcial, filtra por rol empresa_admin y edita su apodo de forma persistente.',
+    titulo: 'Directorio de personas y asignación de roles',
+    descripcion: 'Facilita buscar a cualquier integrante registrado, filtrar por su rol y actualizar sus datos o permisos de forma sencilla.',
     pasos: [
-      'Navega a /admin/usuarios desde el sidebar o menú superior.',
-      'En el cuadro de búsqueda, introduce el nombre parcial de un usuario conocido del sistema y presiona enter o espera el filtrado automático.',
-      'Despliega el selector de roles y selecciona el rol "empresa_admin" para filtrar el listado.',
-      'Haz clic en el registro del usuario filtrado para abrir su panel lateral de detalle.',
-      'Edita el apodo (nickname) del usuario introduciendo "Tester Admin" y haz clic en "Guardar cambios".',
+      'Entra a la sección de usuarios del panel.',
+      'Escribe el nombre o correo de una persona en el buscador.',
+      'Filtra por tipo de rol y abre el panel de edición para actualizar su nombre o rol.'
     ],
-    esperado: 'El listado responde en tiempo real a las búsquedas y filtros aplicados. El panel de edición guarda los datos en la base de datos de forma persistente y actualiza la UI al instante.',
+    esperado: 'La lista se actualiza al instante con la búsqueda y los cambios guardados se reflejan inmediatamente.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-03', categoria: 'Panel Admin', ruta: '/admin/empresas', critica: true,
-    titulo: 'Lista de empresas y detalle',
-    descripcion: 'Revisa que la grilla de empresas cargue correctamente todas las organizaciones vigentes, permitiendo abrir su panel detallado.',
+    titulo: 'Directorio de empresas aliadas y sus detalles',
+    descripcion: 'Permite revisar la lista completa de empresas registradas, su plan actual y los miembros que forman parte de cada una.',
     pasos: [
-      'Dirígete a /admin/empresas.',
-      'Revisa que el listado contenga todas las empresas dadas de alta, mostrando su nombre, sector y plan de suscripción actual.',
-      'Haz clic sobre una de las empresas (ej. "Empresa de Prueba") para abrir el modal o panel lateral de detalle.',
-      'Inspecciona la sección de estado de cuenta, los módulos contratados y la lista de empleados asociados a esa empresa.',
+      'Ve al listado de empresas en el panel de control.',
+      'Haz clic sobre una de las empresas para desplegar su ficha completa.',
+      'Revisa sus datos de contacto, plan contratado y colaboradores asociados.'
     ],
-    esperado: 'El listado carga sin errores. El panel detallado de la empresa muestra su plan, módulos contratados y todos los usuarios asignados a ella.',
+    esperado: 'La ficha de la empresa muestra su información de forma ordenada y clara.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-04', categoria: 'Panel Admin', ruta: '/admin/empresas/[id]', critica: false,
-    titulo: 'Activar / desactivar módulo para empresa',
-    descripcion: 'Habilita el módulo de Cotizador CRM para una empresa de pruebas y verifica que un empleado pueda ingresar a su ruta restringida.',
+    titulo: 'Habilitar o pausar herramientas por empresa',
+    descripcion: 'Permite activar o desactivar módulos como el cotizador inteligente o el pasaporte digital para una empresa en particular.',
     pasos: [
-      'Selecciona una empresa en /admin/empresas que no tenga activo el módulo "Cotizador CRM".',
-      'En la sección de módulos de su panel de detalle, activa el selector correspondiente a "Cotizador CRM" e introduce cambios.',
-      'Cierra la sesión de admin e ingresa al sistema con las credenciales de un empleado de esa misma empresa.',
-      'Intenta acceder directamente a /empresa/cotizador o revisa si el botón del cotizador es visible en su sidebar.',
+      'Abre la ficha de una empresa en administración.',
+      'En la lista de herramientas, activa o apaga un módulo (por ejemplo, el Cotizador).',
+      'Inicia sesión con un usuario de esa empresa para verificar el menú.'
     ],
-    esperado: 'El módulo se activa sin requerir recargar la página. Al iniciar sesión como usuario de esa empresa, la ruta /empresa/cotizador es completamente accesible y visible.',
+    esperado: 'El colaborador de la empresa ve o deja de ver la herramienta en su menú según lo configurado.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-05', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
-    titulo: 'Categorías - crear, editar y desactivar',
-    descripcion: 'Administra las categorías ecológicas del sistema, creando una nueva categoría de pruebas y luego desactivándola globalmente.',
+    titulo: 'Catálogo de materiales y categorías de reuso',
+    descripcion: 'Permite dar de alta nuevos tipos de residuos o materiales reciclables y ajustar factores de impacto ambiental.',
     pasos: [
-      'Ve a /admin/categorias.',
-      'Presiona "Nueva Categoría", ponle de nombre "Plástico QA" y define un factor de emisión de CO₂ de "2.3" kg CO2/kg.',
-      'Haz clic en "Guardar" y verifica que aparezca en el listado de categorías.',
-      'Edita la categoría recién creada cambiándole el nombre a "Plástico QA v2".',
-      'Desmarca la opción "Activo" para desactivar la categoría en el sistema.',
-      'Inicia sesión con una cuenta de empleado, ve al dashboard /dashboard y despliega el selector de categorías al registrar un cálculo.',
+      'Ingresa a la sección de categorías de materiales.',
+      'Crea una nueva categoría asignándole nombre, icono y factor de cálculo.',
+      'Edita una categoría existente o desactiva temporalmente la que no esté en uso.'
     ],
-    esperado: 'La categoría se crea, edita y desactiva correctamente en el panel de administración. Una vez desactivada, no se muestra en el selector de la calculadora de los empleados.',
+    esperado: 'Las categorías se guardan de inmediato y quedan listas para que los colaboradores las elijan en sus cálculos.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'adm-06', categoria: 'Panel Admin', ruta: '/admin/calculos', critica: false,
-    titulo: 'Historial global de cálculos con filtros',
-    descripcion: 'Verifica los filtros avanzados de la tabla de cálculos históricos utilizando combinaciones de empresa, categorías y períodos de tiempo.',
+    titulo: 'Historial general de cálculos realizados',
+    descripcion: 'Supervisa todas las mediciones ambientales registradas en el sistema con opciones de filtrado por empresa o fecha.',
     pasos: [
-      'Dirígete a /admin/calculos.',
-      'Selecciona una empresa en el filtro de empresas.',
-      'Aplica un filtro de categoría seleccionando "Mobiliario de oficina".',
-      'Define un rango de fechas correspondiente a los últimos 30 días en el selector de fechas.',
-      'Verifica que el contador de registros y la tabla se reduzcan mostrando solo los cálculos que cumplen simultáneamente con los tres filtros.',
+      'Dirígete al historial general de cálculos.',
+      'Filtra por una empresa o periodo de fechas específico.',
+      'Revisa el desglose de emisiones evitadas y materiales reutilizados.'
     ],
-    esperado: 'Cada filtro refina y actualiza la lista de forma acumulativa e instantánea sin desencadenar errores en consola ni pantallas de error.',
+    esperado: 'La tabla presenta los cálculos filtrados con claridad y permite consultar el detalle de cada medición.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-08', categoria: 'Panel Admin', ruta: '/admin/tickets', critica: true,
-    titulo: 'Tickets de soporte - ver y responder',
-    descripcion: 'Abre el buzón de soporte técnico, lee un ticket pendiente, publica una respuesta y actualiza su estado de atención.',
+    titulo: 'Atención y respuesta a solicitudes de ayuda',
+    descripcion: 'Permite a los administradores revisar preguntas o problemas reportados por los usuarios y responderles con amabilidad.',
     pasos: [
-      'Navega a /admin/tickets.',
-      'Identifica y haz clic en un ticket de soporte que tenga el estado "Abierto".',
-      'Revisa la descripción, prioridad y el mensaje enviado por el usuario.',
-      'Escribe un mensaje de respuesta técnica en la caja de texto y cambia el selector de estado a "En revisión" o "Resuelto".',
-      'Haz clic en "Enviar respuesta".',
+      'Abre la bandeja de solicitudes de soporte.',
+      'Selecciona un ticket pendiente y escribe una respuesta de ayuda.',
+      'Marca el estado del ticket como resuelto.'
     ],
-    esperado: 'La respuesta se publica y se registra en la base de datos. El estado del ticket se actualiza correctamente y se dispara el correo de notificación al creador del ticket.',
+    esperado: 'El usuario recibe la respuesta en su panel y el ticket queda archivado como atendido.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'adm-09', categoria: 'Panel Admin', ruta: '/admin/leads', critica: false,
-    titulo: 'Leads - lista y exportación',
-    descripcion: 'Inspecciona y descarga la lista de contactos e interesados comerciales recopilados desde la landing pública.',
+    titulo: 'Contactos interesados y nuevas oportunidades',
+    descripcion: 'Organiza la información de personas u organizaciones interesadas que dejaron sus datos en la página de inicio.',
     pasos: [
-      'Navega a /admin/leads.',
-      'Verifica que se muestren las solicitudes completadas en el formulario de la landing page pública (con nombre, email, empresa, sector y fecha).',
-      'Presiona el botón "Exportar a CSV" de la tabla.',
-      'Abre el archivo CSV descargado y verifica que contenga los mismos registros y columnas legibles.',
+      'Ve a la lista de contactos comerciales.',
+      'Revisa los mensajes recibidos y filtra por fecha de recepción.',
+      'Exporta la lista a una hoja de cálculo si necesitas compartirla con el equipo comercial.'
     ],
-    esperado: 'El listado carga correctamente. La exportación genera un archivo CSV válido con toda la información de los leads estructurada.',
+    esperado: 'Los contactos se visualizan con nombre, empresa y mensaje, y la descarga se genera sin fallos.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-10', categoria: 'Panel Admin', ruta: '/admin/alertas', critica: false,
-    titulo: 'Alertas del sistema - crear y marcar leída',
-    descripcion: 'Publica una alerta global y comprueba que se despliegue en la sesión de los usuarios finales y desaparezca al marcarla leída.',
+    titulo: 'Avisos importantes y comunicados para el equipo',
+    descripcion: 'Permite publicar avisos destacados o alertas de mantenimiento para que aparezcan en los paneles de los usuarios.',
     pasos: [
-      'Ve a /admin/alertas.',
-      'Presiona "Crear Alerta", selecciona tipo "Información" (info), escribe un mensaje (ej. "Nueva actualización del sistema a las 20:00") y presiona "Publicar".',
-      'Inicia sesión con una cuenta de empleado de cualquier empresa.',
-      'Verifica que en la cabecera de su dashboard /dashboard se renderice un banner con la alerta.',
-      'Haz clic en el botón de cerrar o marcar como leída la alerta.',
-      'Recarga la página /dashboard.',
+      'Crea una nueva alerta indicando título, mensaje y nivel de importancia.',
+      'Publica la alerta y verifica cómo se visualiza en la parte superior de los paneles.',
+      'Marca la alerta como finalizada cuando ya no sea necesaria.'
     ],
-    esperado: 'La alerta se despliega correctamente para los usuarios del sistema. Al marcarla como leída, la alerta desaparece y no vuelve a mostrarse en posteriores visitas.',
+    esperado: 'El banner de aviso se muestra de forma visible y desaparece cuando el usuario lo cierra o se desactiva.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-11', categoria: 'Panel Admin', ruta: '/admin/modulos', critica: false,
-    titulo: 'Módulos del sistema - activar/desactivar globalmente',
-    descripcion: 'Verifica la disponibilidad global y estados de los módulos core de la aplicación.',
+    titulo: 'Control general de disponibilidad de herramientas',
+    descripcion: 'Supervisa qué herramientas están habilitadas a nivel global en la plataforma y cuáles están en fase de prueba.',
     pasos: [
-      'Inicia sesión como super_admin y dirígete a /admin/modulos.',
-      'Verifica que se visualice la lista de los tres módulos core (calculadora, cotizador_crm, dpp) con su respectiva descripción y número de empresas que lo tienen activo.',
-      'Haz clic en el switch de estado para desactivar temporalmente un módulo (ej. "dpp") globalmente y presiona "Confirmar cambios".',
-      'Inicia sesión como un usuario de cualquier empresa y comprueba que no tenga acceso a dicho módulo desactivado.',
+      'Ingresa a la gestión de módulos globales.',
+      'Revisa el estado de cada herramienta (activa, mantenimiento o próxima).',
+      'Guarda los cambios de disponibilidad.'
     ],
-    esperado: 'La sección lista todos los módulos y su configuración base sin problemas de visualización ni errores en la llamada HTTP.',
+    esperado: 'Los cambios aplican de forma ordenada en toda la plataforma según la política establecida.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-12', categoria: 'Panel Admin', ruta: '/admin/logs', critica: false,
-    titulo: 'Logs de auditoría - trazabilidad',
-    descripcion: 'Ejecuta una acción administrativa crítica y comprueba que quede registrada en la bitácora de eventos del sistema.',
+    titulo: 'Registro transparente de cambios importantes',
+    descripcion: 'Mantiene una bitácora clara de quién realizó acciones sensibles, como cambios de planes, eliminación de registros o ajustes de permisos.',
     pasos: [
-      'Realiza una acción administrativa (ej. desactiva temporalmente una categoría o modifica el plan de una empresa).',
-      'Dirígete a /admin/logs.',
-      'Localiza la última entrada del registro y verifica el usuario que realizó la acción, la descripción del cambio y la fecha/hora exacta.',
+      'Abre la bitácora de auditoría.',
+      'Filtra por persona o por tipo de acción realizada.',
+      'Revisa la fecha, hora y detalle de la modificación.'
     ],
-    esperado: 'El log registra la acción en background con todos los metadatos de trazabilidad correspondientes (usuario, IP/acción, tipo de recurso, timestamp).',
+    esperado: 'El registro muestra la cronología de eventos con transparencia para respaldo del equipo.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-13', categoria: 'Panel Admin', ruta: '/admin/reportes', critica: false,
-    titulo: 'Reportes admin - resumen global de impacto',
-    descripcion: 'Verifica la integridad de las estadísticas e informes globales consolidados presentados al administrador.',
+    titulo: 'Resumen ejecutivo de huella y sostenibilidad',
+    descripcion: 'Ofrece un balance consolidado del impacto positivo acumulado por todas las organizaciones vinculadas a Reúso.',
     pasos: [
-      'Ve a /admin/reportes.',
-      'Selecciona un rango de fechas amplio (ej. el año en curso).',
-      'Verifica que los datos consolidados de CO₂ evitado por empresa, pesos acumulados e histórico mensual coincidan con los totales sumados individualmente.',
+      'Ve a la sección de reportes de impacto.',
+      'Selecciona el periodo anual o mensual a consultar.',
+      'Revisa el total de kilogramos de residuos valorizados y el CO2 equivalente mitigado.'
     ],
-    esperado: 'El sistema realiza el cálculo agregado de emisiones de forma correcta y renderiza gráficos explicativos que concuerdan con la sumatoria del historial.',
+    esperado: 'Las cifras se calculan con consistencia y permiten una lectura ejecutiva clara.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-14', categoria: 'Panel Admin', ruta: '/admin/configuracion', critica: false,
-    titulo: 'Configuración del sistema - redirige a Plantillas',
-    descripcion: 'Esta pantalla ya no tiene contenido propio. Su único campo real (correo de notificaciones) se movió a /admin/plantillas, y la ruta se dejó como redirección porque el enlace del sidebar todavía apunta aquí.',
+    titulo: 'Ajustes generales y comunicación institucional',
+    descripcion: 'Centraliza los parámetros operativos del sistema y te guía hacia las plantillas de comunicación oficial.',
     pasos: [
-      'Entra a /admin/configuracion (o pulsa Configuración en el sidebar).',
-      'Comprueba que la aplicación te lleva sola a /admin/plantillas.',
-      'Busca ahí el campo de correo de notificaciones, cámbialo y presiona "Guardar plantilla".',
-      'Recarga la página para comprobar la persistencia.',
+      'Navega a la configuración general.',
+      'Comprueba que el acceso te lleve a las plantillas y mensajes institucionales.'
     ],
-    esperado: 'La ruta /admin/configuracion redirige a /admin/plantillas sin mostrar una pantalla vacía ni un error. El correo de notificaciones se guarda ahí y persiste tras recargar.',
+    esperado: 'La navegación es fluida y permite personalizar la comunicación corporativa.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-15', categoria: 'Panel Admin', ruta: '/admin/plantillas', critica: false,
-    titulo: 'Plantillas de email - vista y edición',
-    descripcion: 'Accede y edita los contenidos HTML de las notificaciones por correo electrónico enviadas por el sistema.',
+    titulo: 'Mensajes y correos amigables del sistema',
+    descripcion: 'Permite redactar y previsualizar los correos automáticos (bienvenidas, confirmaciones, invitaciones) con tono cálido y profesional.',
     pasos: [
-      'Ve a /admin/plantillas.',
-      'Selecciona la plantilla de email para "Invitación a nuevo miembro".',
-      'Modifica una sección del cuerpo del texto del correo y guarda.',
-      'Envía una invitación de prueba y revisa que el email recibido contenga el texto modificado.',
+      'Entra a la vista de plantillas de correo.',
+      'Selecciona una plantilla (por ejemplo, bienvenida a nuevo usuario).',
+      'Edita el texto del mensaje y observa la vista previa de cómo lo recibirá el destinatario.'
     ],
-    esperado: 'Las plantillas se cargan e introducen cambios correctamente en la base de datos para los envíos de correos subsiguientes.',
+    esperado: 'La vista previa muestra el diseño final del correo y los cambios se guardan correctamente.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-16', categoria: 'Panel Admin', ruta: '/admin/logs', critica: false,
-    titulo: 'Carga masiva de datos en tiempo real (Paginación)',
-    descripcion: 'Evalúa la robustez del panel de logs y paginación al realizar búsquedas masivas e instantáneas.',
+    titulo: 'Navegación ágil en listas con muchos registros',
+    descripcion: 'Asegura que al consultar listas extensas de personas o empresas, las páginas pasen suavemente sin lentitud.',
     pasos: [
-      'Dirígete a /admin/logs.',
-      'Abre DevTools -> pestaña Network (Red).',
-      'En el cuadro de búsqueda del panel de logs, escribe y borra caracteres de búsqueda muy rápidamente (ej. presiona teclas continuamente para simular a un usuario estresando el campo) sin esperar a que cargue.',
-      'Observa si el sistema de red aborta las peticiones anteriores o si la UI colapsa o duplica registros.',
+      'Ve a una lista extensa de registros en administración.',
+      'Cambia de página o haz scroll para cargar más elementos.',
+      'Comprueba la rapidez con la que se muestran los siguientes datos.'
     ],
-    esperado: 'El sistema no colapsa ni duplica las filas en la tabla. Las llamadas anteriores se cancelan o se descartan eficientemente gracias a un mecanismo de debounce o cancelación en la UI.',
+    esperado: 'La carga es casi imperceptible y la pantalla permanece estable sin parpadeos.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 3. PANEL EMPRESA
+  // PANEL EMPRESA
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'emp-01', categoria: 'Panel Empresa', ruta: '/empresa', critica: true,
-    titulo: 'Dashboard empresa - KPIs y gráficas',
-    descripcion: 'Inicia sesión como empresa_admin, navega a /empresa y comprueba la correcta visualización de las tarjetas de KPI para CO₂ evitado, agua ahorrada, peso total reusado y número de cálculos.',
+    titulo: 'Tablero de impacto y metas de la empresa',
+    descripcion: 'Muestra el panorama general del esfuerzo de sostenibilidad de la empresa: total de emisiones evitadas, avance hacia metas y actividad reciente del equipo.',
     pasos: [
-      'Inicia sesión como empresa_admin.',
-      'Accede a la ruta /empresa.',
-      'Comprueba la correcta visualización de las tarjetas de KPI para CO₂ evitado, agua ahorrada, peso total reusado y número de cálculos.',
-      'Revisa que las gráficas de impacto mensual (barras/línea) y el gráfico de donut de distribución por categorías se carguen por completo.',
+      'Ingresa al panel de la empresa.',
+      'Revisa las tarjetas superiores con los indicadores consolidados de huella y reuso.',
+      'Examina la gráfica de avance mensual para ver la tendencia de tu equipo.'
     ],
-    esperado: 'Todos los componentes visuales cargan datos reales consolidados de la empresa en menos de 2 segundos. Las gráficas no se quedan colgadas en skeletons infinitos.',
+    esperado: 'Los números y gráficas cargan con claridad, transmitiendo el valor del aporte ambiental de la empresa.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'emp-02', categoria: 'Panel Empresa', ruta: '/empresa/calculos', critica: false,
-    titulo: 'Historial de cálculos de la empresa',
-    descripcion: 'No existe un filtro por empleado individual (corregido 2026-09-02) — los filtros reales son rango de fechas y categoría (el de "Empresa" solo aparece para super_admin, con varias empresas para elegir).',
+    titulo: 'Historial de reutilización de toda la organización',
+    descripcion: 'Centraliza todos los cálculos y valorizaciones realizados por los colaboradores de la empresa, permitiendo buscar y auditar cada registro.',
     pasos: [
-      'Ve a /empresa/calculos.',
-      'Establece un rango de fechas (Desde/Hasta) para el mes en curso y, si hay categorías disponibles, elige una.',
-      'Haz clic en "Filtrar".',
-      'Haz clic en "Descargar" y elige el formato CSV.',
-      'Abre el archivo exportado y valida que solo contenga los cálculos que cumplen con el filtro de fechas/categoría aplicado.',
+      'Ve a la sección de cálculos del panel de empresa.',
+      'Usa el buscador para localizar un ítem o material específico.',
+      'Filtra por colaborador o fecha para analizar los resultados.'
     ],
-    esperado: 'Los filtros de fecha y categoría funcionan de manera integrada y rápida. El archivo descargado contiene exactamente la misma información que se ve en la pantalla filtrada.',
+    esperado: 'La lista responde rápidamente a los filtros y muestra el detalle de cada cálculo con sus ahorros ambientales.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'emp-03', categoria: 'Panel Empresa', ruta: '/empresa/informes', critica: true,
-    titulo: 'Generar informe de impacto por rango de fechas',
-    descripcion: 'Genera el documento oficial de impacto ecológico por período y valida la consistencia del código QR impreso en él.',
+    titulo: 'Informe oficial de sostenibilidad por periodo',
+    descripcion: 'Genera un informe con rigor metodológico y listo para presentar a la junta directiva o clientes, filtrado por las fechas que elijas.',
     pasos: [
-      'Navega a /empresa/informes.',
-      'Haz clic en "Generar informe" y elige un rango de fechas.',
-      'Espera a que se genere el archivo y se abra en el visor de PDF integrado del navegador.',
-      'Copia el código alfanumérico RCO2 y escanea el código QR que viene impreso en el PDF con tu dispositivo móvil o verifica el enlace.',
+      'Entra a la sección de informes ambientales.',
+      'Elige el rango de fechas (por ejemplo, último trimestre).',
+      'Haz clic en generar informe y previsualiza los resultados.'
     ],
-    esperado: 'El PDF se genera en menos de 3 segundos, contiene los datos acumulados oficiales correctos de la empresa para el período elegido y el QR conduce a la página pública de validación /verificar/[codigo].',
+    esperado: 'El informe resume los kilogramos de residuos valorizados y CO2 evitado de forma clara y profesional.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'emp-04', categoria: 'Panel Empresa', ruta: '/empresa/reportes', critica: false,
-    titulo: 'Generar informe por rango de fechas',
-    descripcion: 'Descarga un informe detallado en un periodo personalizado y verifica su concordancia aritmética.',
+    titulo: 'Descarga del reporte de impacto en formato PDF',
+    descripcion: 'Permite descargar el balance de impacto ambiental en un documento PDF de alta calidad estética con el sello de la empresa.',
     pasos: [
-      'Ve a /empresa/reportes.',
-      'Selecciona las fechas de inicio y fin correspondientes a un período determinado.',
-      'Genera el reporte en formato PDF o Excel.',
-      'Valida que los datos de emisiones reportados coincidan con el cálculo del historial de ese período de tiempo.',
+      'Genera un informe por fechas.',
+      'Presiona el botón de descarga en PDF.',
+      'Abre el archivo descargado para comprobar su presentación.'
     ],
-    esperado: 'El reporte se descarga de forma correcta. Los valores agregados presentados corresponden exactamente con las transacciones de cálculo de ese período.',
+    esperado: 'El documento PDF se descarga en pocos segundos y presenta gráficos legibles y logotipo nítido.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'emp-05', categoria: 'Panel Empresa', ruta: '/empresa/equipo', critica: true,
-    titulo: 'Gestión del equipo - lista y desactivar usuario',
-    descripcion: 'Inactiva la cuenta de un empleado de la organización y valida que su acceso sea revocado de inmediato.',
+    titulo: 'Directorio del equipo de trabajo y colaboración',
+    descripcion: 'Facilita a la administradora ver a todos los colaboradores de la empresa, invitar nuevos compañeros o pausar accesos cuando alguien cambia de rol.',
     pasos: [
-      'Dirígete a /empresa/equipo.',
-      'Comprueba que la lista renderiza todos los empleados registrados bajo la organización.',
-      'Selecciona un empleado de pruebas y haz clic en el botón de toggle o menú para "Desactivar usuario".',
-      'Abre una ventana en incógnito e intenta iniciar sesión con el correo y contraseña de ese empleado desactivado.',
+      'Abre la sección de equipo en la empresa.',
+      'Revisa la lista de compañeros activos y sus correos.',
+      'Si un colaborador ya no forma parte del equipo, puedes desactivar su acceso de forma respetuosa y segura.'
     ],
-    esperado: 'El usuario desactivado es visible como inactivo en la interfaz del administrador. Al intentar iniciar sesión, la API de auth devuelve un mensaje de error claro de cuenta desactivada.',
+    esperado: 'La lista de personas se mantiene actualizada y los permisos se reflejan al instante.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'emp-06', categoria: 'Panel Empresa', ruta: '/empresa/metas', critica: false,
-    titulo: 'Metas - crear, progreso y eliminar',
-    descripcion: 'Configura un objetivo corporativo de reducción de emisiones y comprueba la acumulación automática del progreso.',
+    titulo: 'Definición y seguimiento de metas ecológicas',
+    descripcion: 'Permite al equipo fijar objetivos motivadores de reducción de residuos (ej. evitar 5 toneladas de CO2 este semestre) y ver la barra de progreso.',
     pasos: [
-      'Navega a /empresa/metas.',
-      'Haz clic en "Nueva Meta", ponle título "Reducir Huella Q2", meta de co2_kg en "1000", y establece fechas para el trimestre.',
-      'Inicia sesión como empleado y realiza cálculos que sumen 150 kg de CO₂ evitado.',
-      'Regresa al panel de empresa /empresa/metas y observa la barra de progreso de la meta activa.',
+      'Dirígete a la sección de metas ambientales.',
+      'Crea una nueva meta con fecha de inicio, fin y objetivo numérico.',
+      'Observa cómo el porcentaje de avance se actualiza a medida que el equipo registra cálculos.'
     ],
-    esperado: 'La barra de progreso de la meta se actualiza agregando el CO₂ evitado de los nuevos cálculos en tiempo real.',
+    esperado: 'La barra de progreso avanza con cada acción y motiva al equipo a alcanzar el objetivo común.',
+    journeys: ['Admin Operativa', 'Directivo', 'Empleado']
   },
   {
     id: 'emp-07', categoria: 'Panel Empresa', ruta: '/empresa/objetos', critica: false,
-    titulo: 'Objetos de la empresa - lista de ítems',
-    descripcion: 'Verifica la integridad del inventario de activos ecológicos declarados por la empresa.',
+    titulo: 'Inventario de activos y muebles en circulación',
+    descripcion: 'Permite consultar el catálogo de muebles, materias primas o productos que la empresa ha medido o tiene en proceso de recuperación.',
     pasos: [
-      'Navega a /empresa/objetos.',
-      'Comprueba que se cargue la lista completa de activos registrados por los empleados de la organización.',
-      'Valida que se muestre el identificador de cada objeto, su categoría, marca y total de CO₂ evitado calculado.',
+      'Entra a la vista de objetos registrados.',
+      'Revisa la lista con fotos y categorías de cada ítem.',
+      'Haz clic en un objeto para ver su historia de cálculo y estado actual.'
     ],
-    esperado: 'La lista se carga de forma correcta. Los ítems muestran todos sus detalles técnicos y el enlace a su pasaporte si lo tienen activo.',
+    esperado: 'El inventario muestra los activos de forma visual y atractiva, facilitando su consulta diaria.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'emp-08', categoria: 'Panel Empresa', ruta: '/empresa/soporte', critica: false,
-    titulo: 'Crear ticket de soporte desde empresa',
-    descripcion: 'Comprueba que un administrador de empresa pueda remitir incidencias al equipo de soporte de Reúso.',
+    titulo: 'Canal directo de atención y resolución de dudas',
+    descripcion: 'Permite a la administradora o al equipo enviar consultas técnicas o comerciales al soporte de Reúso y seguir su evolución.',
     pasos: [
-      'Ve a /empresa/soporte.',
-      'Haz clic en "Crear Ticket", selecciona la categoría "Fallo técnico", prioridad "Alta", escribe una descripción detallada del error y envíalo.',
-      'Entra al panel de superadmin en /admin/tickets y busca el nuevo ticket registrado.',
+      'Abre la sección de soporte de la empresa.',
+      'Redacta un mensaje detallando tu consulta o sugerencia.',
+      'Envía la solicitud y revisa el número de seguimiento asignado.'
     ],
-    esperado: 'El ticket se crea de forma inmediato y se visualiza en la bandeja de entrada del administrador con todos sus campos y archivos adjuntos si corresponde.',
+    esperado: 'El mensaje se envía con éxito y el equipo recibe confirmación de que pronto recibirá respuesta.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'emp-09', categoria: 'Panel Empresa', ruta: '/empresa/configuracion', critica: false,
-    titulo: 'Configuración de la empresa - datos básicos',
-    descripcion: 'Modifica la información general de la empresa y verifica la propagación en cascada de los cambios.',
+    titulo: 'Datos generales y fiscales de la empresa',
+    descripcion: 'Mantiene actualizados los datos clave de la organización: razón social, número de identificación tributaria, dirección y sector económico.',
     pasos: [
-      'Entra a /empresa/configuracion.',
-      'Modifica el nombre de la empresa y su sector comercial.',
-      'Presiona "Guardar cambios".',
-      'Recarga la página y comprueba que se visualicen los campos modificados.',
+      'Ve a la configuración de la empresa.',
+      'Actualiza el teléfono de contacto, dirección o persona responsable.',
+      'Guarda los cambios y verifica que queden registrados.'
     ],
-    esperado: 'Los datos de la empresa se actualizan de forma persistente y el cambio es visible en todas las pantallas vinculadas (incluyendo PDF y propuestas públicas).',
+    esperado: 'Los datos de la empresa se guardan de forma duradera y se reflejan en los reportes emitidos.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'emp-10', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/modulos', critica: false,
-    titulo: 'Módulos de la empresa - ver acceso',
-    descripcion: 'Inspecciona las licencias de módulos y la asignación manual por usuario.',
+    titulo: 'Herramientas disponibles para tu empresa',
+    descripcion: 'Muestra con transparencia qué funcionalidades tiene contratadas la empresa (Cotizador IA, Pasaporte Digital, Reportes) y cuáles puede sumar.',
     pasos: [
-      'Inicia sesión como empresa_admin y navega a /empresa/configuracion/modulos desde la barra lateral de configuración.',
-      'Revisa los módulos asignados (ej. Calculadora CO2, Cotizador CRM, Pasaporte Digital DPP) y sus interruptores de estado (activo/inactivo).',
-      'Desmarca un módulo (por ejemplo, "Pasaporte Digital DPP") y haz clic en "Guardar licencias".',
-      'Comprueba que el módulo se oculte automáticamente en tu menú lateral y que si intentas acceder por URL a /empresa/dpp seas redirigido al dashboard con un aviso de módulo inactivo.',
+      'Abre la vista de herramientas de la empresa.',
+      'Revisa cuáles módulos están encendidos para tu equipo.',
+      'Si te interesa sumar una herramienta nueva, solicita información en un clic.'
     ],
-    esperado: 'El panel muestra con exactitud el estado de licenciamiento de la cuenta y bloquea el acceso si no hay licencia.',
+    esperado: 'La vista explica de forma amena el valor de cada herramienta y facilita solicitar activaciones.',
+    journeys: ['Admin Operativa', 'Directivo', 'Empleado']
   },
   {
     id: 'emp-11', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/marca', critica: false,
-    titulo: 'Marca personalizada - logo y WhatsApp',
-    descripcion: 'Sube la identidad gráfica corporativa y comprueba su inclusión en la propuesta comercial externa.',
+    titulo: 'Personalización de marca: Logotipo y WhatsApp',
+    descripcion: 'Permite subir el logotipo corporativo y el número de atención por WhatsApp para que las cotizaciones y pasaportes luzcan profesionales.',
     pasos: [
-      'Navega a /empresa/configuracion/marca.',
-      'Sube una imagen de logo corporativo (formato PNG o JPG).',
-      'Configura un número de WhatsApp para atención de clientes (con código de país, ej. +573001234567).',
-      'Crea una cotización y abre la URL de la propuesta pública en modo incógnito.',
+      'Entra a la personalización de marca.',
+      'Sube una imagen con el logotipo de tu empresa.',
+      'Configura el número de WhatsApp comercial y guarda los cambios.'
     ],
-    esperado: 'La propuesta pública de cotización se renderiza mostrando el logo cargado de la empresa y el botón "Resolver dudas por WhatsApp" vincula directamente a https://wa.me/573001234567.',
+    esperado: 'El logotipo se previsualiza correctamente y acompañará las propuestas que compartas con tus clientes.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'emp-12', categoria: 'Panel Empresa', ruta: '/empresa/equipo', critica: false,
-    titulo: 'Invitación masiva y colisión de emails',
-    descripcion: 'Somete el backend de invitaciones a condiciones de carrera enviando invitaciones simultáneas.',
+    titulo: 'Invitación ágil de compañeros al espacio de trabajo',
+    descripcion: 'Permite sumar colaboradores de forma sencilla ingresando sus correos electrónicos sin generar duplicados si ya estaban registrados.',
     pasos: [
-      'Navega a /empresa/equipo en dos pestañas diferentes de tu navegador al mismo tiempo.',
-      'En ambas pestañas abre el modal de "Invitar Miembro".',
-      'Rellena ambos formularios con la misma dirección de correo electrónico (ej. colision_qa@empresa.com).',
-      'Haz clic en "Enviar Invitación" en ambas pestañas con una diferencia de menos de medio segundo (casi simultáneo).',
+      'Presiona el botón "Invitar miembro" en el panel de equipo.',
+      'Escribe el correo de tu compañero y asígnale su rol.',
+      'Envía la invitación y verifica que quede en estado pendiente hasta que la acepte.'
     ],
-    esperado: 'Solo se crea un registro de invitación en la base de datos de Supabase. La segunda petición es rechazada de manera segura por restricciones de clave única, mostrando un error controlado en la UI.',
+    esperado: 'Tu compañero recibe un enlace de bienvenida en su correo y puede comenzar a utilizar la plataforma al instante.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 4. DASHBOARD EMPLEADO
+  // DASHBOARD
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'dash-01', categoria: 'Dashboard', ruta: '/dashboard', critica: true,
-    titulo: 'Registro de cálculo y actualización del historial',
-    descripcion: 'Valida que la calculadora ecológica funcione correctamente y actualice el feed de cálculos de forma reactiva.',
+    titulo: 'Registro ágil de cálculo de reuso',
+    descripcion: 'Permite al colaborador registrar en segundos el tipo de residuo, peso y destino para calcular inmediatamente el impacto positivo en CO2 y agua.',
     pasos: [
-      'Inicia sesión como un usuario con rol empleado y ve a /dashboard.',
-      'Rellena el formulario de cálculo: selecciona la categoría "Mobiliario de oficina", ingresa el peso "60" kg y el material "Madera maciza".',
-      'Haz clic en the botón "Guardar cálculo".',
-      'Observa la parte inferior de la pantalla donde se lista el historial personal de cálculos sin recargar el navegador de forma manual.',
+      'Entra a tu calculadora en el panel principal.',
+      'Selecciona el material (madera, metal, plástico, etc.), escribe el peso y elige el tipo de valorización.',
+      'Haz clic en "Calcular y guardar".'
     ],
-    esperado: 'La tarjeta de resultado de CO₂ calculado muestra el total ahorrado al instante y el registro aparece en la primera posición de la tabla del historial sin necesidad de pulsar F5.',
+    esperado: 'El cálculo se añade al instante a tu historial visible abajo y los contadores de impacto suben al momento.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'dash-02', categoria: 'Dashboard', ruta: '/dashboard', critica: false,
-    titulo: 'Límite de plan Explora (10 cálculos/mes)',
-    descripcion: 'Pone a prueba el restrictor de plan gratuito impidiendo cálculos adicionales tras alcanzar la cuota mensual.',
+    titulo: 'Aviso amigable al alcanzar el límite mensual',
+    descripcion: 'Si estás en el plan inicial gratuito y llegas a tu límite de cálculos del mes, el sistema te avisa con calidez y te invita a mejorar tu plan.',
     pasos: [
-      'Utiliza o configura un usuario de una empresa asociada al plan gratuito "Explora" que cuente ya con 10 cálculos registrados en el mes actual.',
-      'Intenta realizar e ingresar un 11.º cálculo a través del formulario de /dashboard.',
-      'Observa la respuesta e indicativos de la UI.',
+      'Alcanza el número máximo de cálculos permitidos para el periodo en una cuenta básica.',
+      'Intenta realizar un nuevo cálculo.',
+      'Observa el mensaje que se despliega.'
     ],
-    esperado: 'El sistema no permite el envío del formulario. Muestra un mensaje amigable indicando que se ha alcanzado el límite mensual permitido por el plan de la empresa y sugiere contactar al administrador. No genera un error de servidor (500).',
+    esperado: 'Aparece una ventana amigable felicitándote por tu actividad y ofreciéndote contactar a administración para ampliar el plan.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'dash-03', categoria: 'Dashboard', ruta: '/dashboard/historial', critica: false,
-    titulo: 'Historial personal - filtros y búsqueda',
-    descripcion: 'Realiza búsquedas detalladas y filtros de categorías en la bitácora personal del empleado.',
+    titulo: 'Consulta y búsqueda en tu historial de cálculos',
+    descripcion: 'Facilita al colaborador encontrar mediciones que hizo días o semanas atrás mediante un buscador por palabra o filtro de categoría.',
     pasos: [
-      'Inicia sesión como empleado y ve a /dashboard.',
-      'Ubica la tabla "Tu historial de cálculos" en la parte inferior de la página.',
-      'Introduce una palabra clave (ej. "Madera") en el cuadro de búsqueda "Buscar cálculo..." y observa el filtrado automático.',
-      'Haz clic en el selector dropdown de "Categoría", elige "Mobiliario de oficina" y comprueba que se actualice la tabla.',
-      'Haz clic en el selector de rango de fechas, define el mes actual y verifica que los registros se limiten a este período.',
+      'Abre tu historial de cálculos personales.',
+      'Escribe en el buscador el nombre de un material que registraste antes.',
+      'Filtra por tipo de material para acotar la lista.'
     ],
-    esperado: 'La tabla de historial se actualiza de forma reactiva reflejando solo las operaciones del usuario que correspondan a los filtros aplicados.',
+    esperado: 'Los resultados se filtran en tiempo real facilitando revisar o reutilizar datos anteriores.',
+    journeys: ['Empleado']
   },
   {
     id: 'dash-04', categoria: 'Dashboard', ruta: '/dashboard/informes', critica: false,
-    titulo: 'Informes del empleado',
-    descripcion: 'Comprueba el acceso y descarga de los informes personales de reducción de emisiones.',
+    titulo: 'Tus reportes personales de aporte ambiental',
+    descripcion: 'Muestra el acumulado de tu esfuerzo personal en sostenibilidad, permitiéndote ver cuánto has contribuido a las metas de la empresa.',
     pasos: [
-      'Ve a la sección de informes personales en /dashboard/informes.',
-      'Comprueba que aparezcan los informes donde el empleado ha participado o acumulado impacto.',
-      'Presiona "Descargar" en uno de ellos.',
+      'Ve a la sección de tus informes personales.',
+      'Revisa el balance gráfico de tus mediciones en el último mes.',
+      'Comprueba que puedas consultar el desglose por tipo de residuo.'
     ],
-    esperado: 'Se abre o descarga el PDF oficial que avala la participación y el total de CO₂ evitado por el empleado.',
+    esperado: 'Tus métricas se muestran de forma clara y motivadora para reconocer tu compromiso ecológico.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'dash-05', categoria: 'Dashboard', ruta: '/dashboard/objetos', critica: false,
-    titulo: 'Objetos del empleado',
-    descripcion: 'Visualiza el inventario personal de activos recuperados declarados por el empleado.',
+    titulo: 'Tus objetos y materiales registrados',
+    descripcion: 'Permite al colaborador revisar los muebles, productos o lotes de material que ha dado de alta para darles seguimiento.',
     pasos: [
-      'Inicia sesión como empleado, abre la barra lateral y haz clic en "Mis Objetos" o navega directamente a /dashboard/objetos.',
-      'Comprueba que se renderice la lista o grilla conteniendo todos los muebles ecológicos declarados individualmente por ti.',
-      'Verifica que cada ítem muestre su nombre, peso (en kg), estado físico actual (ej. Excelente, Bueno), total de CO₂ evitado calculado y la fecha de registro.',
+      'Entra a la vista de tus objetos.',
+      'Revisa las tarjetas de cada ítem registrado con sus fotografías y estado.',
+      'Haz clic en un objeto para ver su ficha y detalles.'
     ],
-    esperado: 'Lista visible de ítems con su peso, estado físico, CO₂ asociado y fecha de registro.',
+    esperado: 'La vista presenta tus objetos organizados y permite acceder a su información sin demoras.',
+    journeys: ['Empleado']
   },
   {
     id: 'dash-06', categoria: 'Dashboard', ruta: '/dashboard/soporte', critica: false,
-    titulo: 'Soporte del empleado - crear y ver ticket',
-    descripcion: 'Genera una incidencia técnica como empleado y valida el flujo bidireccional de comentarios con el administrador.',
+    titulo: 'Pedir ayuda rápida al equipo de soporte',
+    descripcion: 'Si tienes una duda sobre cómo clasificar un residuo o experimentas un inconveniente, puedes escribir directamente al equipo de soporte.',
     pasos: [
-      'Ve a la sección /dashboard/soporte.',
-      'Crea un ticket de soporte con el asunto "Error en selector de madera" y envíalo.',
-      'Valida que aparezca en el listado con estado "Abierto".',
-      'Inicia sesión como administrador en /admin/tickets y responde a este ticket.',
-      'Regresa al dashboard del empleado y verifica la actualización.',
+      'Abre la sección de soporte en tu panel.',
+      'Escribe tu pregunta en el formulario y envíala.',
+      'Revisa la lista de tus preguntas anteriores para ver si ya fueron respondidas.'
     ],
-    esperado: 'El flujo de comunicación se refleja correctamente. El empleado puede ver las respuestas del administrador y el estado actualizado del ticket.',
+    esperado: 'El mensaje se envía al instante y puedes consultar el estado de tu consulta en cualquier momento.',
+    journeys: ['Empleado']
   },
   {
     id: 'dash-07', categoria: 'Dashboard', ruta: '/dashboard', critica: false,
-    titulo: 'Cálculos súper-rápidos y simulación de latencia',
-    descripcion: 'Valida que el sistema esté protegido contra race conditions si se presiona repetidamente el botón de guardar.',
+    titulo: 'Respuesta instantánea al guardar un cálculo',
+    descripcion: 'Asegura que al presionar el botón de calcular, el sistema guarde la información de inmediato sin bloquear tu pantalla ni hacerte esperar.',
     pasos: [
-      'Abre /dashboard y llena los datos del formulario de cálculo.',
-      'Abre DevTools, ve a la pestaña Network y ajusta el throttling de red a "Fast 3G" para simular conexión lenta.',
-      'Haz clic en el botón "Guardar" de forma consecutiva y muy rápida 5 veces.',
+      'Llena los datos de un cálculo en tu calculadora.',
+      'Haz clic en el botón de guardar.',
+      'Observa el tiempo que tarda en confirmarse la operación.'
     ],
-    esperado: 'El botón de enviar cálculo se bloquea/deshabilita al primer clic. El sistema no permite registrar duplicados y solo realiza una inserción en la base de datos.',
+    esperado: 'La confirmación aparece casi de inmediato y la pantalla queda limpia y lista para tu siguiente cálculo.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 5. COTIZADOR IA
+  // COTIZADOR IA
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: true,
-    titulo: 'Panel CRM - lista de cotizaciones y filtros',
-    descripcion: 'Comprueba el tablero general del CRM del cotizador, filtros por estados y búsquedas rápidas.',
+    titulo: 'Bandeja de cotizaciones y búsqueda rápida',
+    descripcion: 'Organiza todas las propuestas comerciales de restauración de muebles en una vista clara con filtros por estado: borrador, enviada, aprobada o declinada.',
     pasos: [
-      'Entra a /empresa/cotizador.',
-      'Verifica que se visualice la lista de propuestas del cliente con su nombre, fecha de creación, precio estimado y estado.',
-      'Prueba el buscador de texto ingresando el nombre de un cliente.',
-      'Filtra por el estado "Enviada" y luego por "Pendiente".',
+      'Entra al panel del cotizador inteligente.',
+      'Usa los botones superiores para filtrar cotizaciones por su estado.',
+      'Escribe el nombre de un cliente en el buscador para encontrar su presupuesto.'
     ],
-    esperado: 'El CRM responde rápido actualizando los datos en base a las búsquedas. Si una búsqueda devuelve 0 resultados, muestra un texto amigable y un botón para limpiar filtros.',
+    esperado: 'La lista responde con agilidad y muestra el estado y monto de cada propuesta con claridad.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'cot-02', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Diagnóstico IA - mueble viable',
-    descripcion: 'Somete una fotografía válida de madera maciza para validar el acierto del modelo de visión.',
+    titulo: 'Evaluación visual de mueble recuperable',
+    descripcion: 'El colaborador sube una fotografía del mueble y la inteligencia artificial reconoce su tipología, materiales y propone el valor estimado de rescate.',
     pasos: [
-      'Dirígete a /empresa/cotizador/nueva.',
-      'Selecciona y sube una fotografía nítida de un mueble de madera maciza (ej. una mesa de comedor en buen estado).',
-      'Presiona "Iniciar Diagnóstico" e inicia un cronómetro.',
-      'Observa la respuesta devuelta por la API del modelo de visión.',
+      'Inicia una nueva cotización.',
+      'Sube una fotografía nítida de un mueble de madera o metal.',
+      'Presiona "Analizar con IA" y revisa la propuesta generada.'
     ],
-    esperado: 'El análisis de la IA detecta que el mueble es viable (es_viable = true), identifica correctamente la categoría ("Mobiliario") y el material ("Madera maciza"), con un nivel de confianza > 0.6. El tiempo de respuesta es menor a 8 segundos.',
+    esperado: 'La herramienta sugiere el tipo de mueble, horas de trabajo estimadas e impacto ambiental evitado de forma coherente.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Diagnóstico IA - mueble inviable (MDF)',
-    descripcion: 'Somete una foto de un mueble de aglomerado/MDF y valida el rechazo controlado del sistema.',
+    titulo: 'Orientación honesta ante materiales no aptos',
+    descripcion: 'Si se sube la foto de un material no restaurable (como aglomerado o plástico deteriorado), el sistema orienta con honestidad en lugar de generar falsas expectativas.',
     pasos: [
-      'En el formulario de nueva cotización, sube una foto de un mueble fabricado en aglomerado, melamina o MDF en mal estado.',
-      'Espera a que termine la llamada de análisis del modelo de visión.',
+      'Sube una foto de un mueble roto de aglomerado de baja calidad.',
+      'Solicita el análisis con IA.',
+      'Observa las recomendaciones que aparecen.'
     ],
-    esperado: 'La IA determina que el mueble no cumple con los criterios de reúso (es_viable = false), da un motivo claro ("Material no recuperable - Aglomerado") y el formulario inhabilita el botón de continuar para evitar cotizarlo.',
+    esperado: 'El sistema explica amablemente por qué el material no es viable para retapizado o restauración y sugiere alternativas responsables de reciclaje.',
+    journeys: ['Empleado', 'Cliente Final']
   },
   {
     id: 'cot-04', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Imagen mayor a 10 MB - validación',
-    descripcion: 'Intenta forzar la carga de un archivo mayor al límite estipulado.',
+    titulo: 'Guía para subir fotografías de buen tamaño',
+    descripcion: 'Orienta al usuario si intenta subir una foto demasiado pesada (mayor a 10 megabytes), sugiriendo comprimirla o tomarla con menor resolución.',
     pasos: [
-      'En el área de subida de fotos del cotizador, intenta seleccionar una imagen pesada que supere los 10 megabytes (MB).',
+      'Intenta adjuntar una imagen con un peso superior a 10 megabytes.',
+      'Observa el aviso que muestra la pantalla.'
     ],
-    esperado: 'El validador en el frontend intercepta el archivo antes de subirlo, muestra una alerta que dice "La imagen no puede superar 10 MB" y limpia el input de archivos.',
+    esperado: 'Aparece un mensaje comprensible recomendando reducir el tamaño de la foto antes de enviarla.',
+    journeys: ['Empleado', 'Cliente Final']
   },
   {
     id: 'cot-05', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Rate limit - 5 diagnósticos por minuto',
-    descripcion: 'Comprueba las protecciones de tasa de uso (rate limit) de la API de diagnóstico de imágenes.',
+    titulo: 'Ritmo equilibrado en consultas de diagnóstico',
+    descripcion: 'Mantiene un flujo ordenado evitando que solicitudes repetidas en pocos segundos saturen la herramienta o generen cobros imprevistos.',
     pasos: [
-      'Prepara 6 imágenes de prueba diferentes de muebles.',
-      'Sube y ejecuta diagnósticos uno tras otro lo más rápido posible.',
-      'Intenta ejecutar el 6.º diagnóstico en el mismo minuto.',
+      'Intenta presionar el botón de diagnóstico muchas veces de forma consecutiva.',
+      'Observa la respuesta del sistema.'
     ],
-    esperado: 'El sistema bloquea el 6.º diagnóstico mostrando el mensaje de advertencia "Demasiadas solicitudes: límite de 5 análisis por minuto alcanzado" con status de API 429. Vuelve a permitir diagnósticos tras esperar 60 segundos.',
+    esperado: 'El sistema procesa la primera solicitud con calma y pide esperar unos segundos antes de lanzar la siguiente.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'cot-06', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Flujo completo: diagnóstico → ajuste → guardar',
-    descripcion: 'Realiza el flujo integral de cotización de un mueble viable desde la carga hasta el guardado en base de datos.',
+    titulo: 'Flujo completo: foto, valoración y cotización',
+    descripcion: 'Permite recorrer el proceso integral desde que se carga la foto del mueble, se ajustan los precios manualmente y se guarda la cotización final para el cliente.',
     pasos: [
-      'Completa la subida y diagnóstico de un mueble viable.',
-      'En el siguiente paso, edita los oficios requeridos (ej. activa Carpintería y Barnizado y desactiva Tapicería).',
-      'Agrega los datos del cliente (nombre, email, teléfono), precio de venta sugerido y una descripción.',
-      'Haz clic en "Guardar Cotización".',
-      'Comprueba que aparezca en el panel de /empresa/cotizador en estado "Pendiente".',
+      'Sube una imagen y obtén la sugerencia inicial de la IA.',
+      'Ajusta los materiales, costo de mano de obra y margen comercial según tu criterio.',
+      'Guarda la cotización y revisa la ficha generada.'
     ],
-    esperado: 'La cotización se almacena de forma exitosa en la base de datos reflejando los oficios y los datos del cliente correctos.',
+    esperado: 'La cotización queda registrada con todos los costos calculados y lista para compartir.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'cot-07', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: true,
-    titulo: 'Detalle de cotización - generar enlace público',
-    descripcion: 'Genera el token y URL de propuesta comercial y valida su legibilidad sin sesión.',
+    titulo: 'Enlace compartible de la propuesta con el cliente',
+    descripcion: 'Genera un enlace elegante y seguro para que el cliente final pueda ver la propuesta desde su celular o computadora y decidir si la aprueba.',
     pasos: [
-      'Selecciona una cotización guardada y haz clic para ver su detalle en /empresa/cotizador/[id].',
-      'Presiona the botón "Generar enlace de propuesta".',
-      'Copia la URL generada al portapapeles.',
-      'Abre una pestaña de incógnito, pega la dirección y carga la página.',
+      'Abre una cotización guardada.',
+      'Haz clic en "Compartir enlace con cliente".',
+      'Abre ese enlace en una pestaña nueva para revisar lo que verá tu cliente.'
     ],
-    esperado: 'La página de propuesta comercial para el cliente carga sin pedir credenciales, mostrando el logo de la empresa emisora, los detalles del mueble y el botón para responder por WhatsApp.',
+    esperado: 'Se abre una página atractiva con los datos de tu empresa, el desglose amigable del trabajo y botones para aceptar o consultar.',
+    journeys: ['Empleado', 'Cliente Final', 'Admin Operativa']
   },
   {
     id: 'cot-08', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Cambio de estado con confirmación (terminal)',
-    descripcion: 'Valida la protección interactiva contra cierres accidentales de cotizaciones.',
+    titulo: 'Cierre o archivo claro de una cotización',
+    descripcion: 'Permite marcar una cotización como aceptada o rechazada por el cliente, pidiendo confirmación para evitar cambios accidentales.',
     pasos: [
-      'Abre el panel de detalle de una cotización.',
-      'Despliega el selector de estados de la cotización y cámbialo a un estado final como "Cerrado ganado" o "Cerrado perdido".',
-      'Verifica que se muestre un modal solicitando confirmación de la acción.',
-      'Haz clic en "Cancelar" y comprueba que el estado no se haya modificado.',
-      'Repite el cambio y haz clic en "Confirmar".',
+      'En la ficha de la cotización, selecciona cambiar el estado a "Aprobada" o "Declinada".',
+      'Confirma la acción en la ventana que aparece.'
     ],
-    esperado: 'El estado cambia solo al confirmar en el modal de advertencia, previniendo alteraciones accidentales de los estados comerciales del CRM.',
+    esperado: 'El estado cambia ordenadamente y se actualiza el resumen comercial de la empresa.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'cot-09', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Copiar texto para WhatsApp',
-    descripcion: 'Comprueba el formateador de textos predefinidos para envíos de propuestas comerciales por mensajería.',
+    titulo: 'Mensaje listo para compartir por WhatsApp',
+    descripcion: 'Copia con un solo clic un texto redactado con calidez y profesionalismo con el enlace de la cotización, listo para pegarlo en WhatsApp.',
     pasos: [
-      'Abre una cotización activa que ya tenga un enlace de propuesta pública.',
-      'Haz clic en el botón "Copiar mensaje corto de WhatsApp".',
-      'Pega el contenido copiado en cualquier editor de texto o chat.',
+      'Presiona el botón "Copiar para WhatsApp" en la cotización.',
+      'Pega el contenido en un bloc de notas o chat de prueba.',
+      'Comprueba que el saludo, monto y enlace estén bien presentados.'
     ],
-    esperado: 'El texto copiado incluye un saludo amigable personalizado para el cliente, la mención del mueble cotizado, el precio final y el enlace corto de la propuesta comercial /cot/[token].',
+    esperado: 'El texto se copia al portapapeles con formato impecable facilitando la atención rápida al cliente.',
+    journeys: ['Empleado', 'Cliente Final']
   },
   {
     id: 'cot-10', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Carga concurrente de imágenes pesadas',
-    descripcion: 'Somete el procesador de imágenes en cliente a estrés enviando múltiples archivos pesados simultáneamente.',
+    titulo: 'Subida sin tropiezos de varias fotos del mueble',
+    descripcion: 'Permite adjuntar varias fotografías de distintos ángulos del mueble (frente, laterales, detalle de tela) simultáneamente.',
     pasos: [
-      'Abre 3 pestañas del navegador en la ruta /empresa/cotizador/nueva.',
-      'Selecciona en cada una de ellas una imagen de un mueble de gran tamaño (entre 8MB y 10MB).',
-      'Presiona el botón de iniciar diagnóstico en las 3 pestañas casi de forma simultánea.',
-      'Abre la pestaña de red de DevTools para monitorear las llamadas concurrentes.',
+      'Selecciona 3 o 4 imágenes del mueble al mismo tiempo.',
+      'Observa cómo se van mostrando las miniaturas de cada foto en pantalla.'
     ],
-    esperado: 'La aplicación del lado del cliente procesa y comprime las imágenes antes del envío, transmitiendo archivos optimizados. El backend procesa las solicitudes en paralelo sin lanzar errores de timeout (504) o de memoria excedida.',
+    esperado: 'Todas las fotos se cargan de manera ordenada y permiten eliminarlas o reorganizarlas si lo deseas.',
+    journeys: ['Empleado', 'Cliente Final']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 6. DPP / PASAPORTE DIGITAL
+  // DPP / PASAPORTE
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'dpp-01', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp', critica: true,
-    titulo: 'Lista de activos DPP',
-    descripcion: 'Verifica la grilla y el buscador de pasaportes digitales de producto.',
+    titulo: 'Catálogo de pasaportes digitales emitidos',
+    descripcion: 'Muestra el inventario de pasaportes digitales de producto creados por la empresa, con su código único, estado y enlace QR.',
     pasos: [
-      'Navega a la ruta de administración de pasaportes digitales /empresa/dpp.',
-      'Comprueba que se listen todos los activos registrados con su identificador único, nombre, fecha y estado de validez en la cadena.',
-      'Escribe el nombre de un activo en la barra de búsqueda y verifica el filtro instantáneo.',
+      'Ingresa a la sección de pasaportes digitales (DPP).',
+      'Revisa la lista de productos registrados y sus códigos QR.',
+      'Usa el buscador para localizar un producto por su nombre o lote.'
     ],
-    esperado: 'La lista carga rápidamente. El buscador filtra la grilla de pasaportes digitales en tiempo real.',
+    esperado: 'La lista se despliega con imágenes y códigos claros, permitiendo abrir la ficha de cualquier producto.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'dpp-02', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: true,
-    titulo: 'Crear pasaporte digital completo',
-    descripcion: 'Genera un nuevo DPP de pruebas rellenando composición material, peso y fotografía.',
+    titulo: 'Creación de pasaporte digital para un producto',
+    descripcion: 'Permite registrar un producto con sus materiales, porcentaje de contenido reciclado, huella de carbono y recomendaciones de cuidado.',
     pasos: [
-      'Ve a /empresa/dpp/nuevo.',
-      'Ingresa el nombre "Escritorio Operativo QA", peso "50" kg, porcentaje de circularidad y composición de materiales (ej. Madera 80%, Metal 20%).',
-      'Sube una foto representativa del producto.',
-      'Haz clic en "Generar Pasaporte Digital".',
-      'Comprueba que aparezca en el listado global.',
+      'Inicia la creación de un nuevo pasaporte.',
+      'Completa los datos del producto: modelo, materiales, origen y vida útil esperada.',
+      'Guarda el pasaporte y genera su código QR.'
     ],
-    esperado: 'El DPP se almacena correctamente, generando un código hash SHA-256 único y asociando la imagen de forma permanente.',
+    esperado: 'El pasaporte digital queda registrado y su código QR queda listo para imprimir o colocar en la etiqueta del producto.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'dpp-03', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: false,
-    titulo: 'Ingesta IA desde imagen - extracción de campos',
-    descripcion: 'Somete una etiqueta técnica e inspecciona la precarga inteligente de especificaciones.',
+    titulo: 'Asistencia inteligente para completar la ficha técnica',
+    descripcion: 'Facilita la carga de información analizando una foto o ficha técnica del producto para sugerir automáticamente materiales y componentes.',
     pasos: [
-      'En el formulario de creación de nuevo DPP, sube una imagen o fotografía de una ficha de especificaciones técnicas o etiqueta del mueble.',
-      'Espera a que la IA procese la imagen (OCR + Análisis semántico).',
-      'Revisa qué campos del formulario se rellenaron automáticamente.',
+      'En el formulario de nuevo pasaporte, sube la foto de la etiqueta o del producto.',
+      'Presiona el botón de auto-llenado con asistencia inteligente.',
+      'Revisa los campos sugeridos y aprueba los datos.'
     ],
-    esperado: 'El sistema extrae al menos 2 campos técnicos (ej. peso del ítem, porcentaje de composición o dimensiones) a partir del texto de la imagen y los escribe en los campos correspondientes.',
+    esperado: 'Los campos de materiales y dimensiones se rellenan automáticamente, ahorrando tiempo de digitación.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'dpp-04', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
-    titulo: 'Verificación pública del pasaporte por QR',
-    descripcion: 'Abre la vista pública del pasaporte descentralizado de producto sin iniciar sesión.',
+    titulo: 'Consulta pública del pasaporte mediante código QR',
+    descripcion: 'Cualquier persona o cliente que escanee el código QR con su teléfono puede ver la historia, materiales y trazabilidad del producto.',
     pasos: [
-      'Abre el detalle de un activo en /empresa/dpp/[id].',
-      'Copia el enlace del pasaporte digital público.',
-      'Abre la URL en una ventana de incógnito en tu navegador.',
-      'Revisa que cargue la información pública: nombre del mueble, peso, porcentaje de materiales circulares, hash de la transacción y la firma de auditoría.',
+      'Abre la dirección pública del pasaporte o escanea el QR con tu celular.',
+      'Comprueba que la página cargue con diseño moderno y adaptado a móviles.',
+      'Revisa los datos de origen, huella ambiental y opciones de reparación.'
     ],
-    esperado: 'La página de pasaporte público carga sin requerir inicio de sesión en menos de 2 segundos, mostrando de forma ordenada la ficha técnica ecológica completa.',
+    esperado: 'La página pública brinda una experiencia atractiva y transparente sobre la sostenibilidad del producto.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'dpp-05', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
-    titulo: 'Detalle DPP - editar y agregar ciclo',
-    descripcion: 'Registra un evento de mantenimiento y valida su inserción cronológica en el histórico del DPP.',
+    titulo: 'Actualización de la historia y ciclos del producto',
+    descripcion: 'Permite registrar eventos en la vida del producto, como mantenimientos realizados, cambio de piezas o segundo dueño.',
     pasos: [
-      'Abre la vista detallada de un pasaporte digital en /empresa/dpp/[id].',
-      'Ubica la sección de ciclo de vida del producto.',
-      'Haz clic en "Registrar intervención / mantenimiento", rellena la fecha, tipo de acción (ej. "Rebarnizado de cubierta") y el operario a cargo, y presiona "Guardar".',
-      'Recarga la página y revisa la línea de tiempo del activo.',
+      'Abre la ficha del pasaporte digital en el panel.',
+      'Agrega un nuevo hito en el ciclo de vida (por ejemplo, "Retapizado y cambio de relleno").',
+      'Guarda el nuevo ciclo y revisa la línea de tiempo.'
     ],
-    esperado: 'El nuevo ciclo se añade a la base de datos de forma persistente y se muestra cronológicamente en la línea de tiempo interactiva del pasaporte del producto.',
+    esperado: 'La cronología del producto se actualiza con la nueva acción, reflejando su valor circular en el tiempo.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'dpp-06', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
-    titulo: 'Generación de Pasaportes con ciclos de vida extensos',
-    descripcion: 'Pone a prueba el renderizador del frontend agregando un número inusualmente alto de hitos de mantenimiento.',
+    titulo: 'Visualización ordenada de historias con muchos ciclos',
+    descripcion: 'Asegura que incluso productos que han pasado por muchas reparaciones o dueños muestren su línea de tiempo limpia y fácil de leer.',
     pasos: [
-      'Abre un activo de DPP en /empresa/dpp/[id].',
-      'Registra de forma consecutiva 20 intervenciones de mantenimiento en la línea de tiempo con descripciones detalladas de más de 200 caracteres cada una.',
-      'Navega a la URL del pasaporte público en modo incógnito.',
-      'Realiza scroll vertical rápido a través del historial de ciclos de vida.',
+      'Abre un pasaporte con más de 6 eventos o reparaciones registradas.',
+      'Recorre la línea de tiempo hacia arriba y abajo.'
     ],
-    esperado: 'La interfaz responde de forma fluida (> 60fps) sin congelar la pestaña del navegador. La línea de tiempo muestra todas las intervenciones con sus respectivos hashes calculados sin desbordar el diseño.',
+    esperado: 'Los eventos se organizan cronológicamente sin amontonarse ni tapar los datos principales del producto.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 7. PÁGINAS PÚBLICAS
+  // PÁGINAS PÚBLICAS
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'pub-01', categoria: 'Páginas Públicas', ruta: '/', critica: false,
-    titulo: 'Landing page - carga y formulario de contacto',
-    descripcion: 'Navega en modo incógnito, comprueba la carga de la landing y envía un lead de contacto.',
+    titulo: 'Portada principal y mensaje de bienvenida',
+    descripcion: 'Presenta la propuesta de valor de Reúso a cualquier persona interesada: calculadora de huella, casos de éxito y formulario de contacto.',
     pasos: [
-      'Abre una pestaña de incógnito y navega a la raíz del sitio /.',
-      'Comprueba la carga fluida de todas las secciones principales (Hero, Características, Planes, Opiniones y Formulario de contacto).',
-      'Rellena el formulario de lead al final de la landing: introduce nombre, email de pruebas, sector comercial y presiona "Enviar".',
-      'Inicia sesión como admin y entra a /admin/leads.',
+      'Entra a la página de inicio en una ventana de incógnito.',
+      'Desplázate por las distintas secciones y revisa los textos e imágenes.',
+      'Prueba enviar una duda en el formulario de contacto con datos de prueba.'
     ],
-    esperado: 'La página de aterrizaje carga en menos de 2 segundos. El formulario de contacto procesa la llamada y escribe un nuevo registro visible en la lista de leads de /admin/leads.',
+    esperado: 'La página carga de forma rápida y atractiva, y el formulario confirma el mensaje con calidez.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'pub-02', categoria: 'Páginas Públicas', ruta: '/legal', critica: false,
-    titulo: 'Páginas legales - todas accesibles',
-    descripcion: 'Comprueba el acceso libre de sesión a términos y condiciones y el panel de consentimiento de cookies.',
+    titulo: 'Acceso transparente a documentos informativos',
+    descripcion: 'Asegura que cualquier visitante pueda consultar las políticas de uso, privacidad y medición desde los enlaces del pie de página.',
     pasos: [
-      'Cierra la sesión activa en el navegador.',
-      'Ingresa sucesivamente a las siguientes URLs: /legal, /legal/privacidad, /legal/terminos, /legal/datos y /legal/cookies.',
-      'Haz clic en el botón de configuración de preferencias de cookies en la esquina del banner legal.',
+      'Ve al pie de página de la web.',
+      'Haz clic en los enlaces legales (Términos, Privacidad, Cookies, Metodología).',
+      'Comprueba que cada página abra sin demoras y con tipografía descansada.'
     ],
-    esperado: 'Todas las rutas de términos de uso y políticas de privacidad son accesibles públicamente y no devuelven errores 404 ni 500. El panel de cookies permite activar y desactivar consentimientos de forma interactiva.',
+    esperado: 'Todos los documentos legales son accesibles y ofrecen una lectura cómoda y clara.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'pub-03', categoria: 'Páginas Públicas', ruta: '/legal/dudas', critica: false,
-    titulo: 'Formulario de dudas legales',
-    descripcion: 'Valida la radicación de preguntas jurídicas desde el portal público de dudas.',
+    titulo: 'Preguntas y dudas sobre privacidad o términos',
+    descripcion: 'Brinda a los usuarios un canal sencillo para consultar dudas específicas sobre el tratamiento de sus datos o condiciones del servicio.',
     pasos: [
-      'Ve a /legal/dudas en modo incógnito.',
-      'Rellena el formulario de dudas legales con un nombre, correo electrónico y la pregunta técnica de prueba.',
-      'Haz clic en "Enviar consulta".',
+      'Abre la sección de dudas legales.',
+      'Escribe tu pregunta o comentario en el buzón.',
+      'Envía la solicitud.'
     ],
-    esperado: 'Se muestra un mensaje de éxito. La consulta se registra en la base de datos bajo la tabla de soporte o incidencias para revisión de los administradores.',
+    esperado: 'La pantalla agradece tu mensaje y confirma que el equipo de soporte legal te responderá pronto.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-04', categoria: 'Páginas Públicas', ruta: '/status', critica: false,
-    titulo: 'Página de estado del sistema (Status Page)',
-    descripcion: 'Comprueba la visibilidad de estados de API, Base de Datos, y los reportes de incidentes.',
+    titulo: 'Transparencia en la disponibilidad del servicio',
+    descripcion: 'Permite a cualquier usuario consultar en tiempo real si todos los servicios de la plataforma están operando con normalidad.',
     pasos: [
-      'Navega a /status en modo incógnito.',
-      'Revisa que los componentes de la plataforma (Base de datos, Autenticación, API de cálculo, API de cotización e IAs) se carguen con su estado correspondiente.',
-      'Comprueba la sección de reportar un incidente de forma manual y el formulario de suscripción a alertas.',
+      'Ingresa a la página de estado del sistema.',
+      'Revisa los indicadores de los servicios principales.',
+      'Verifica el historial de disponibilidad de las últimas semanas.'
     ],
-    esperado: 'La página de estatus carga y muestra la telemetría en tiempo real de los servicios y las últimas incidencias registradas en el historial.',
+    esperado: 'La página informa con honestidad y claridad sobre el funcionamiento del sistema en todo momento.',
+    journeys: ['Admin Operativa', 'Directivo', 'Cliente Final']
   },
   {
     id: 'pub-05', categoria: 'Páginas Públicas', ruta: '/verificar/[codigo]', critica: true,
-    titulo: 'Verificación de informe',
-    descripcion: 'Valida un informe emitido introduciendo su identificador en el portal público de verificación.',
+    titulo: 'Verificación de validez de informes emitidos',
+    descripcion: 'Permite a terceros verificar que un informe de sostenibilidad o certificado de reutilización sea genuino ingresando su código.',
     pasos: [
-      'Genera un informe de impacto por rango de fechas desde /empresa/informes y copia su código RCO2.',
-      'Navega a /verificar/[codigo] en incógnito (ej. /verificar/RCO2-9876-5432).',
-      'Valida que la información de emisiones del informe coincida con los datos reales presentados.',
+      'Abre un enlace de verificación de informe con un código válido.',
+      'Comprueba que la pantalla confirme la autenticidad del documento.',
+      'Revisa la empresa emisora, fecha y resumen de impacto certificado.'
     ],
-    esperado: 'La página pública de validación renderiza el estado "VÁLIDO", detallando el nombre de la empresa emisora, la huella de CO₂ evitada y la fecha original de expedición.',
+    esperado: 'El sistema confirma que el informe es válido y muestra los datos del emisor de manera transparente.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'pub-06', categoria: 'Páginas Públicas', ruta: '/cot/[token]', critica: true,
-    titulo: 'Propuesta pública de cotización',
-    descripcion: 'Verifica la visualización de propuestas de restauración y accesos a WhatsApp.',
+    titulo: 'Consulta de propuesta comercial para el cliente',
+    descripcion: 'Vista elegante para que el cliente final examine la cotización de restauración que le preparó la empresa, con opción de aceptarla.',
     pasos: [
-      'Genera un enlace de propuesta comercial para un cliente desde el CRM del cotizador de una empresa.',
-      'Abre la URL /cot/[token] en modo incógnito en tu navegador.',
-      'Revisa que toda la cotización de los oficios, descripción del mueble y precio sugerido sea correcta.',
+      'Abre un enlace de cotización compartible.',
+      'Revisa las fotografías del antes, los trabajos propuestos y el precio total.',
+      'Presiona el botón para aceptar o contactar por WhatsApp.'
     ],
-    esperado: 'La propuesta comercial carga de forma impecable sin pedir autenticación y el botón de contacto dirige directamente al WhatsApp de la empresa emisora.',
+    esperado: 'La propuesta transmite confianza y profesionalismo, y facilita la decisión del cliente con un solo clic.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-07', categoria: 'Páginas Públicas', ruta: '/empresa/nueva', critica: false,
-    titulo: 'Crear empresa nueva - flujo de onboarding',
-    descripcion: 'Completa el onboarding de creación de empresa y promoción de rol de usuario.',
+    titulo: 'Registro guiado para nuevas organizaciones',
+    descripcion: 'Acompaña a la líder de una nueva empresa en sus primeros pasos para dar de alta su organización y comenzar a medir su impacto.',
     pasos: [
-      'Inicia sesión con un usuario recién registrado que aún no pertenezca a ninguna organización.',
-      'Verifica que el middleware te redirija automáticamente a /empresa/nueva.',
-      'Rellena el formulario con el nombre de la empresa, NIT, sector e información de contacto.',
-      'Presiona "Guardar empresa".',
+      'Inicia el flujo de registro de una empresa nueva.',
+      'Completa el nombre de la organización, sector y país.',
+      'Presiona crear empresa y revisa la bienvenida al panel.'
     ],
-    esperado: 'La empresa se crea con éxito, el rol de tu cuenta se promueve a empresa_admin y eres redirigido al panel /empresa.',
+    esperado: 'El proceso de registro es intuitivo y te deja dentro de tu nuevo panel de control listo para trabajar.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'pub-08', categoria: 'Páginas Públicas', ruta: '/status', critica: false,
-    titulo: 'Widget Diagnóstico de Conexión en Vivo - Simulación de desconexión parcial',
-    descripcion: 'Comprueba el comportamiento adaptativo del widget de ping en tiempo real simulando cortes de red.',
+    titulo: 'Indicador claro de estabilidad en la conexión',
+    descripcion: 'Muestra un aviso amigable si tu conexión a internet se interrumpe momentáneamente para que sepas si una acción tardó en responder.',
     pasos: [
-      'Abre la página pública /status en incógnito y localiza el panel de "Diagnóstico de Red en Vivo".',
-      'Abre las DevTools, ve a la pestaña Network y ajusta el modo de red a "Offline".',
-      'Presiona el botón "Iniciar" del diagnóstico.',
-      'A la mitad de la prueba de ping, cambia el modo de red a "Fast 3G" para simular reconexión inestable.',
+      'En la página de estado, revisa el componente de verificación en vivo.',
+      'Observa cómo te indica el estado de respuesta de tu conexión.'
     ],
-    esperado: 'La aplicación no arroja pantallazos de error. El widget registra adecuadamente el estado "Error de red" mientras estuvo desconectado y calcula correctamente la nueva latencia de ping en cuanto se reestablece la conexión.',
+    esperado: 'El indicador responde con serenidad y te guía si tu internet presenta intermitencias.',
+    journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 8. MODO NOCHE
+  // MODO NOCHE
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'dark-01', categoria: 'Modo Noche', ruta: '/login', critica: false,
     titulo: 'Login en modo noche',
-    descripcion: 'Valida el contraste y consistencia tipográfica en la interfaz de login en modo noche.',
+    descripcion: 'Asegura que la pantalla de inicio de sesión ofrezca un fondo oscuro relajante con excelente contraste para cuando accedes de noche.',
     pasos: [
-      'Activa el modo noche en la aplicación desde el toggle del sidebar en el panel principal.',
-      'Cierra sesión e ingresa a la página /login.',
-      'Examina visualmente todos los elementos de la interfaz: el fondo, inputs, placeholders, botones, etiquetas y testimonios.',
+      'Activa el tema oscuro en la pantalla de inicio de sesión usando el botón del sol/luna.',
+      'Revisa que los campos de texto, logotipo y botones se lean con nitidez y sin destellos molestos.'
     ],
-    esperado: 'El diseño se adapta perfectamente al tema oscuro. No se aprecian textos oscuros sobre fondo oscuro ni contrastes que dificulten la lectura de los inputs de credenciales.',
+    esperado: 'La interfaz cambia con suavidad a tonos oscuros elegantes y legibles.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'dark-02', categoria: 'Modo Noche', ruta: '/dashboard', critica: false,
-    titulo: 'Dashboard completo en modo noche',
-    descripcion: 'Inspecciona la paleta de colores oscuros en la calculadora y visualizadores del empleado.',
+    titulo: 'Panel de trabajo diario en tema oscuro uniforme',
+    descripcion: 'Permite a los colaboradores trabajar en sus cálculos diarios en ambientes de poca luz sin fatiga visual.',
     pasos: [
-      'Inicia sesión con tu cuenta de empleado con el modo noche activo.',
-      'Navega a /dashboard.',
-      'Inspecciona el fondo de la página, los colores de los KPIs, el historial de cálculos, las etiquetas y las gráficas.',
-      'Realiza un nuevo registro de cálculo en el formulario.',
+      'Ve a tu panel diario con el modo noche activo.',
+      'Comprueba las tarjetas de cálculo, selectores de materiales y tabla de historial.'
     ],
-    esperado: 'El color de fondo se renderiza en gris oscuro #474747, los textos se muestran en color blanco, y los acentos interactivos usan el color verde pistacho #D6F391. No aparecen tarjetas con fondos verdes oscuros o bordes descuadrados.',
+    esperado: 'Todos los componentes adoptan fondos oscuros armónicos manteniendo el contraste en textos y números.',
+    journeys: ['Empleado']
   },
   {
     id: 'dark-03', categoria: 'Modo Noche', ruta: '/empresa', critica: false,
-    titulo: 'Panel empresa en modo noche',
-    descripcion: 'Verifica gráficos circulares, barras e historiales de empresa en tema oscuro.',
+    titulo: 'Panel corporativo en tonos oscuros elegantes',
+    descripcion: 'Asegura que el tablero de la empresa y sus gráficas de impacto mantengan un aspecto refinado y profesional en modo oscuro.',
     pasos: [
-      'Inicia sesión como empresa_admin con el tema oscuro activado.',
-      'Navega a la ruta /empresa y revisa las secciones analíticas.',
-      'Entra a /empresa/equipo, /empresa/metas y /empresa/reportes.',
+      'Entra al panel de la empresa con el modo noche activado.',
+      'Revisa las gráficas de emisiones evitadas y barras de progreso.'
     ],
-    esperado: 'Todas las tablas, gráficos circulares y de barras, barras de progreso y modales se visualizan con el contraste correcto. No quedan secciones flotantes con fondos claros sobre la interfaz oscura.',
+    esperado: 'Las líneas y barras de las gráficas destacan con claridad sobre el fondo oscuro sin perder detalle.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'dark-04', categoria: 'Modo Noche', ruta: '/empresa/cotizador', critica: false,
-    titulo: 'Cotizador IA en modo noche',
-    descripcion: 'Valida selectores dropdown, switches y modales del CRM en modo noche.',
+    titulo: 'Cotizador cómodo para trabajar de noche',
+    descripcion: 'Adapta el cotizador inteligente para que revisar fotografías y ajustar presupuestos sea descansado a cualquier hora.',
     pasos: [
-      'Con el modo noche activo, ve a /empresa/cotizador.',
-      'Entra a /empresa/cotizador/nueva, sube una foto de mueble viable y observa el proceso de diagnóstico de IA.',
-      'Abre el detalle de una cotización y edita los oficios requeridos.',
+      'Abre la bandeja de cotizaciones en tema oscuro.',
+      'Abre una cotización y revisa las miniaturas de fotos y campos de precios.'
     ],
-    esperado: 'Todo el flujo del cotizador es legible. Las tarjetas de diagnóstico, los selectores dropdown, los switches y los textos de ayuda respetan el esquema de colores oscuros con acentos pistacho.',
+    esperado: 'Los elementos del cotizador lucen equilibrados y facilitan la concentración del colaborador.',
+    journeys: ['Empleado']
   },
   {
     id: 'dark-05', categoria: 'Modo Noche', ruta: '/empresa/dpp', critica: false,
-    titulo: 'DPP en modo noche',
-    descripcion: 'Comprueba el contraste y usabilidad del gestor de pasaportes en modo noche.',
+    titulo: 'Pasaportes digitales con excelente contraste nocturno',
+    descripcion: 'Comprueba que las fichas de pasaporte digital y sus códigos QR se muestren perfectamente legibles con tema oscuro.',
     pasos: [
-      'Con el modo noche activo, dirígete al listado de pasaportes digitales /empresa/dpp.',
-      'Abre el formulario de creación en /empresa/dpp/nuevo.',
-      'Abre la línea de tiempo de un pasaporte existente.',
+      'Navega a la sección de pasaportes digitales con modo noche.',
+      'Abre la ficha de un producto y revisa la línea de tiempo y QR.'
     ],
-    esperado: 'Los campos de entrada, botones de subida de imágenes, sliders de composición de materiales y la línea de tiempo se muestran legibles y con el contraste estético premium esperado.',
+    esperado: 'El código QR y los textos de trazabilidad conservan su nitidez y facilidad de escaneo.',
+    journeys: ['Empleado', 'Cliente Final']
   },
   {
     id: 'dark-06', categoria: 'Modo Noche', ruta: '/admin', critica: false,
-    titulo: 'Panel admin en modo noche',
-    descripcion: 'Verifica consistencia en tablas extensas y modales del panel de administración global.',
+    titulo: 'Centro de administración en modo oscuro',
+    descripcion: 'Permite a los administradores supervisar las métricas de la plataforma con una atmósfera visual sobria y descansada.',
     pasos: [
-      'Inicia sesión como super_admin con el modo noche activado.',
-      'Navega secuencialmente por /admin, /admin/usuarios, /admin/empresas, /admin/tickets y /admin/logs.',
-      'Abre modales de edición y paneles laterales de información detallada.',
+      'Accede al panel de administración en modo noche.',
+      'Recorre las tablas de usuarios y métricas generales.'
     ],
-    esperado: 'Los modales overlays de administración y las tablas extensas se renderizan con el fondo oscuro correcto, evitando parpadeos de color blanco al abrir elementos emergentes.',
+    esperado: 'El panel administrativo se presenta con contraste equilibrado y bordes suaves.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'dark-07', categoria: 'Modo Noche', ruta: '/settings', critica: false,
-    titulo: 'Settings - toggle de modo noche persiste',
-    descripcion: 'Valida que el estado del tema persista al cerrar la sesión o reiniciar la pestaña.',
+    titulo: 'Recordar tu preferencia de modo de visualización',
+    descripcion: 'Guarda tu elección de modo claro u oscuro para que al volver en otro momento o en otra sesión encuentres la pantalla como te gusta.',
     pasos: [
-      'Ve a /settings.',
-      'Activa el modo noche en los controles de perfil/configuración.',
-      'Cierra por completo la pestaña del navegador.',
-      'Vuelve a ingresar a la aplicación en una pestaña nueva y comprueba el tema visual aplicado.',
+      'Cambia tu preferencia a modo noche en la barra superior o en tu perfil.',
+      'Cierra el navegador, vuelve a abrir la página e inicia sesión.'
     ],
-    esperado: 'La preferencia de modo noche se almacena localmente y se mantiene activa de forma persistente en las siguientes sesiones del usuario.',
+    esperado: 'El sistema recuerda tu preferencia automáticamente y abre la plataforma en modo noche.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'dark-08', categoria: 'Modo Noche', ruta: '/empresa', critica: false,
-    titulo: 'Consistencia de contraste extremo en gráficos interactivos y modales flotantes',
-    descripcion: 'Verifica la integridad de las paletas de ApexCharts al conmutar repetida y velozmente el tema visual.',
+    titulo: 'Legibilidad clara de gráficas y ventanas en cualquier tema',
+    descripcion: 'Verifica que al abrir ventanas emergentes, selectores o modales flotantes en modo noche, ningún texto se vuelva invisible o grisáceo.',
     pasos: [
-      'Ve a /empresa con el tema claro activo.',
-      'Haz clic en el botón de cambio de tema del sidebar de forma consecutiva y rápida (10 veces en 4 segundos) mientras observas los Tooltips interactivos y leyendas del gráfico de CO₂ y el donut de categorías.',
+      'En modo noche, abre un modal de confirmación o un menú desplegable.',
+      'Comprueba que todos los textos, iconos y botones sean fáciles de distinguir.'
     ],
-    esperado: 'Los gráficos y sus tooltips flotantes cambian de tema de forma síncrona sin retener configuraciones de color anteriores (ej. no debe quedar texto blanco sobre fondo blanco ni texto negro sobre fondo negro).',
+    esperado: 'Todos los elementos emergentes conservan una legibilidad impecable y un contraste agradable.',
+    journeys: ['Directivo', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 9. RENDIMIENTO
+  // RENDIMIENTO
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'perf-01', categoria: 'Rendimiento', ruta: '/dashboard', critica: true,
-    titulo: 'Login → Dashboard < 1 segundo',
-    descripcion: 'Mide la velocidad de autenticación y redirección inicial al panel principal.',
+    titulo: 'Ingreso veloz a tu espacio de trabajo',
+    descripcion: 'Asegura que desde que presionas "Ingresar" hasta que ves tu calculadora lista pasen menos de un segundo, sin pantallas en blanco.',
     pasos: [
-      'Abre las DevTools, ve a la pestaña Network y limpia el historial de peticiones.',
-      'Ingresa las credenciales correctas en /login y haz clic en "Ingresar".',
-      'Cronometra el intervalo transcurrido desde el clic hasta que finaliza la carga del DOM de /dashboard.',
+      'Inicia sesión con tu cuenta.',
+      'Cronometra mentalmente el paso de la pantalla de acceso a tu panel principal.'
     ],
-    esperado: 'El tiempo total de respuesta del login y redirección al panel principal es inferior a 1000 milisegundos (1 segundo) en condiciones normales de conexión.',
+    esperado: 'La transición es inmediata (menos de un segundo), permitiéndote comenzar a trabajar al instante.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'perf-02', categoria: 'Rendimiento', ruta: '/empresa', critica: false,
-    titulo: 'Panel empresa con gráficas < 2 segundos',
-    descripcion: 'Mide el renderizado completo de las analíticas de impacto ecológico consolidado.',
+    titulo: 'Carga ágil de indicadores y gráficas de la empresa',
+    descripcion: 'Asegura que al entrar al resumen de la empresa, todas las tarjetas numéricas y gráficas de impacto aparezcan en menos de dos segundos.',
     pasos: [
-      'Navega a /empresa pulsando Ctrl+Shift+R (recarga completa de la caché).',
-      'Valida que durante la carga de las estadísticas y los gráficos se muestren skeletons de carga coherentes.',
-      'Anota el tiempo transcurrido desde la petición inicial hasta que el gráfico de CO₂ se dibuja por completo.',
+      'Entra al panel de la empresa.',
+      'Observa la velocidad con la que se llenan las tarjetas de impacto y se dibujan las curvas.'
     ],
-    esperado: 'El tiempo de renderizado completo es inferior a 2 segundos. Los skeletons mitigan el efecto de parpadeo visual.',
+    esperado: 'Todo el tablero se muestra de forma completa y fluida en menos de dos segundos.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'perf-03', categoria: 'Rendimiento', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Compresión de imagen antes del diagnóstico',
-    descripcion: 'Verifica la optimización de peso en cliente antes de la transmisión HTTP.',
+    titulo: 'Preparación rápida de fotos antes de analizarlas',
+    descripcion: 'Optimiza automáticamente las fotografías pesadas en tu propio dispositivo para que no gastes tus datos móviles y el análisis empiece de inmediato.',
     pasos: [
-      'Ve al cotizador en /empresa/cotizador/nueva.',
-      'Abre DevTools, ve a la pestaña Network y selecciona una imagen de prueba pesada (de entre 6 y 8MB).',
-      'Presiona "Iniciar Diagnóstico" e inspecciona el tamaño de la carga útil (payload) del request HTTP POST enviado a /api/cotizador/diagnostico.',
+      'Sube una fotografía pesada tomada directamente con tu teléfono celular.',
+      'Observa qué tan rápido se prepara la miniatura.'
     ],
-    esperado: 'El tamaño del archivo transmitido en el POST es menor a 4MB, confirmando que el frontend aplica compresión en el cliente (client-side compression) antes de la subida.',
+    esperado: 'La imagen se alista casi instantáneamente, permitiendo un análisis veloz sin sobrecargar tu conexión.',
+    journeys: ['Empleado', 'Cliente Final']
   },
   {
     id: 'perf-04', categoria: 'Rendimiento', ruta: '/empresa/informes', critica: false,
-    titulo: 'Generación de PDF < 3 segundos',
-    descripcion: 'Verifica que el servicio de compilación PDF resuelva rápido e impida timeouts.',
+    titulo: 'Descarga inmediata del reporte en PDF',
+    descripcion: 'Permite a los directivos obtener su informe de sostenibilidad listo para imprimir o enviar por correo en menos de tres segundos.',
     pasos: [
-      'Dirígete a la sección de informes /empresa/informes.',
-      'Haz clic en generar el PDF del documento de impacto.',
-      'Cronometra el tiempo hasta que se abre el visor con el PDF generado en el navegador.',
+      'Selecciona un rango de fechas y presiona descargar PDF.',
+      'Mide el tiempo transcurrido hasta que el archivo comienza a descargarse.'
     ],
-    esperado: 'La compilación del PDF a nivel de servidor se completa y entrega en menos de 3 segundos, previniendo fallos de timeout.',
+    esperado: 'El documento PDF se genera y descarga con fluidez en menos de 3 segundos.',
+    journeys: ['Admin Operativa', 'Directivo', 'Empleado']
   },
   {
     id: 'perf-05', categoria: 'Rendimiento', ruta: '/pasaporte/[codigo]', critica: false,
-    titulo: 'Pasaporte público < 2 segundos',
-    descripcion: 'Valida la velocidad de despacho del pasaporte público para lecturas rápidas de QR.',
+    titulo: 'Consulta instantánea del pasaporte digital en el móvil',
+    descripcion: 'Asegura que cuando un cliente escanea la etiqueta en una tienda, la historia del producto abra en su celular en menos de dos segundos.',
     pasos: [
-      'Copia la URL de un pasaporte digital público /pasaporte/[codigo].',
-      'Abre la consola de desarrollo, pestaña Network, y carga la URL en modo incógnito.',
-      'Comprueba el tiempo total de carga de la página.',
+      'Abre un enlace de pasaporte digital simulando conexión móvil.',
+      'Comprueba la rapidez de despliegue de la imagen y los ciclos del producto.'
     ],
-    esperado: 'La página pública de pasaporte se carga en menos de 2 segundos, asegurando una experiencia rápida al escanear los códigos QR físicos desde móviles.',
+    esperado: 'La experiencia es ágil y agradable, mostrando toda la información en menos de dos segundos.',
+    journeys: ['Cliente Final', 'Empleado']
   },
   {
     id: 'perf-06', categoria: 'Rendimiento', ruta: '/empresa/calculos', critica: false,
-    titulo: 'Retención de memoria por renderizado de tablas extensas',
-    descripcion: 'Evalúa la acumulación de nodos DOM y posibles fugas de RAM tras búsquedas sucesivas.',
+    titulo: 'Navegación ágil en listas con cientos de registros',
+    descripcion: 'Asegura que al desplazarte por listas con cientos de mediciones históricas, la pantalla responda con suavidad y tu computadora no se vuelva lenta.',
     pasos: [
-      'Abre /empresa/calculos.',
-      'Abre DevTools -> pestaña Memory -> selecciona "Heap snapshot" y toma una captura de la memoria RAM del navegador.',
-      'Modifica los filtros de búsqueda y cambia de página de la tabla de forma continua y muy rápida durante 15 segundos para forzar renderizados repetidos de filas.',
-      'Toma una segunda captura "Heap snapshot" y compáralas.',
+      'Entra al historial de cálculos y haz un desplazamiento rápido por la lista.',
+      'Filtra y busca varias veces seguidas.'
     ],
-    esperado: 'El incremento de memoria del Heap tras liberar recursos (Garbage Collection) es menor a 2MB. Los elementos DOM de filas anteriores se desmontan por completo del árbol sin generar Memory Leaks.',
+    esperado: 'La interfaz responde de forma ligera y ágil sin congelamientos ni demoras.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 10. SEGURIDAD & RBAC
+  // SEGURIDAD
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'seg-01', categoria: 'Seguridad', ruta: '/middleware', critica: true,
-    titulo: 'Empleado no accede a rutas de admin ni empresa',
-    descripcion: 'Intenta acceder a URLs administrativas con una sesión básica de empleado.',
+    titulo: 'Privacidad entre las distintas áreas de la empresa',
+    descripcion: 'Asegura que un colaborador operativo solo acceda a sus herramientas de trabajo diario y no pueda entrar a las secciones administrativas o financieras.',
     pasos: [
-      'Inicia sesión con una cuenta de usuario con el rol de empleado.',
-      'Intenta ingresar de forma directa escribiendo en la URL del navegador /admin, /admin/usuarios, /empresa/equipo, /empresa/configuracion o /empresa/cotizador (si no tiene el módulo).',
+      'Inicia sesión como colaborador operativo.',
+      'Intenta escribir en la barra de direcciones /admin o /empresa/configuracion.',
+      'Observa a dónde te redirige el sistema.'
     ],
-    esperado: 'El middleware de la aplicación intercepta el intento de intrusión, bloquea la visualización de la página y redirige automáticamente al usuario a /dashboard.',
+    esperado: 'El sistema te redirige a tu panel de trabajo diario sin mostrar información reservada a la administración.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'seg-02', categoria: 'Seguridad', ruta: '/api', critica: true,
-    titulo: 'APIs sin sesión retornan 401',
-    descripcion: 'Comprueba el blindaje de las rutas API REST del backend ante accesos públicos no autenticados.',
+    titulo: 'Protección de la información ante visitas sin ingresar',
+    descripcion: 'Verifica que ningún visitante anónimo pueda consultar listas de clientes, cálculos o datos internos sin haber iniciado sesión debidamente.',
     pasos: [
-      'Cierra sesión por completo en el sistema.',
-      'Abre DevTools, ve a la pestaña Console y ejecuta la siguiente petición fetch:',
-      'fetch("/api/calcular", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({})}).then(r=>console.log(r.status, r.statusText))',
-      'Repite el comando para /api/cotizador/cotizaciones, /api/dpp/activos y /api/profile.',
+      'En una ventana privada y sin iniciar sesión, intenta consultar una dirección de datos interna.',
+      'Comprueba que el sistema rechace la solicitud amablemente.'
     ],
-    esperado: 'Todas las llamadas a las APIs protegidas devuelven un código de estado 401 Unauthorized indicando que no se cuenta con una sesión válida.',
+    esperado: 'La solicitud es denegada protegiendo la confidencialidad de la información institucional.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'seg-03', categoria: 'Seguridad', ruta: '/api/cotizador', critica: false,
-    titulo: 'Empleado no accede a cotizaciones de otra empresa',
-    descripcion: 'Verifica la hermeticidad de datos (tenancy isolation) forzando llamadas con IDs cruzados.',
+    titulo: 'Confidencialidad total entre empresas diferentes',
+    descripcion: 'Asegura que los colaboradores de una empresa jamás puedan ver los clientes, presupuestos o proyectos de otra organización aliada.',
     pasos: [
-      'Obtén el identificador único (ID) de una cotización perteneciente a la Empresa A.',
-      'Inicia sesión con un usuario de rol empleado perteneciente a la Empresa B.',
-      'Abre la consola de desarrollo y ejecuta la petición:',
-      'fetch("/api/cotizador/cotizaciones/[id_de_empresa_a]").then(r=>console.log(r.status)) (sustituyendo por el ID real).',
+      'Inicia sesión con un usuario de la Empresa A.',
+      'Intenta acceder al número de cotización o proyecto de la Empresa B.'
     ],
-    esperado: 'El backend valida la separación de datos y devuelve un error de tipo 403 Forbidden o 404 Not Found. No expone información confidencial de terceras empresas.',
+    esperado: 'El sistema avisa que el elemento no existe o no está disponible, garantizando el aislamiento comercial.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'seg-04', categoria: 'Seguridad', ruta: '/empresa/cotizador', critica: false,
-    titulo: 'Módulo cotizador bloqueado sin activación',
-    descripcion: 'Valida la inaccesibilidad a vistas premium cuando la empresa no cuenta con el módulo habilitado.',
+    titulo: 'Acceso ordenado solo a las herramientas contratadas',
+    descripcion: 'Comprueba que si una empresa no tiene activo un módulo específico, se le muestre una pantalla explicativa para solicitar su activación.',
     pasos: [
-      'Desactiva el módulo "Cotizador CRM" de la Empresa de Prueba en el panel de control de administración /admin/empresas.',
-      'Inicia sesión con la cuenta de administrador de esa misma empresa.',
-      'Intenta forzar la navegación manual hacia la dirección /empresa/cotizador.',
+      'Entra con una cuenta cuya empresa no tenga contratado el Cotizador.',
+      'Navega hacia esa sección desde el enlace directo.'
     ],
-    esperado: 'El middleware o la validación interna de la página intercepta la falta de licencia del módulo y redirige al panel general /empresa con un query param explicativo (ej. /empresa?modulo_bloqueado=cotizador).',
+    esperado: 'Se muestra una pantalla clara explicando el valor del módulo e invitando a la líder a activarlo para su equipo.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'seg-05', categoria: 'Seguridad', ruta: '/api/auth', critica: true,
-    titulo: 'Rate limit en inicio de sesión (Login) - Control por IP (BD)',
-    descripcion: 'Verifica que el backend bloquee intentos repetidos de inicio de sesión desde la misma dirección IP tras superar 5 peticiones por minuto, usando la tabla persistente de rate limits.',
+    titulo: 'Protección contra intentos insistentes de adivinar claves',
+    descripcion: 'Bloquea temporalmente los intentos si alguien prueba contraseñas de forma desmedida en pocos segundos, protegiendo las cuentas del equipo.',
     pasos: [
-      'Ve a la pantalla de /login en el navegador.',
-      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
-      'Ingresa un correo electrónico de prueba cualquiera y una contraseña incorrecta.',
-      'Haz clic en "Ingresar" de forma rápida y repetida por lo menos 6 veces en menos de un minuto.',
-      'Comprueba que a partir del 6.° intento el servidor responda con un código de estado HTTP 429 (Too Many Requests).',
+      'Realiza varios intentos fallidos rápidos en la pantalla de ingreso.',
+      'Observa el aviso de protección que aparece.'
     ],
-    esperado: 'El backend intercepta las peticiones tras el 5.° intento por minuto, registra el evento en la tabla `rate_limits` y responde con status 429 y el error: "Demasiados intentos. Intenta de nuevo en un momento."',
+    esperado: 'El sistema pide una pausa prudente antes del siguiente intento para cuidar la seguridad de las cuentas.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
   {
     id: 'seg-06', categoria: 'Seguridad', ruta: '/api/dpp', critica: true,
-    titulo: 'Aislamiento de Tenancy (RLS) - Intento de elusión de filtros por REST API',
-    descripcion: 'Simula un ataque de filtración de datos donde un atacante intenta consultar registros de otras empresas llamando directamente a la API REST de base de datos de Supabase sin pasar por el frontend.',
+    titulo: 'Separación hermética de los datos de cada organización',
+    descripcion: 'Valida que los pasaportes digitales en borrador y cálculos de tu empresa permanezcan estrictamente bajo el control de tu equipo.',
     pasos: [
-      'Inicia sesión en la aplicación con una cuenta de empleado de la Empresa A.',
-      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
-      'Busca cualquier petición dirigida a Supabase (ej. que contenga "supabase.co/rest/v1/") y cópiala como fetch (clic derecho -> Copy -> Copy as fetch).',
-      'Ve a la pestaña Console, pega el comando y modifícalo para consultar la tabla `calculos` sin filtros de empresa: cambia la URL del fetch a `https://<tu-subdominio-supabase>.supabase.co/rest/v1/calculos` (elimina parámetros de consulta después de calculos).',
-      'Ejecuta el fetch modificado y observa los registros devueltos.',
+      'Desde la cuenta de una empresa, intenta consultar los borradores de pasaportes de otra.',
+      'Revisa la respuesta del sistema.'
     ],
-    esperado: 'Las directivas de Row Level Security (RLS) en la base de datos se aplican de forma implícita. La respuesta de la base de datos contiene únicamente los registros pertenecientes a la Empresa A del usuario autenticado; no expone ningún registro de la Empresa B.',
+    esperado: 'El sistema muestra únicamente los activos pertenecientes a tu organización.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'seg-07', categoria: 'Seguridad', ruta: '/admin/usuarios', critica: false,
-    titulo: 'Ataque por inyección SQL/NoSQL en inputs de búsqueda globales',
-    descripcion: 'Verifica el saneamiento de las cadenas de búsqueda antes de compilar consultas SQL.',
+    titulo: 'Seguridad al escribir nombres y términos en el buscador',
+    descripcion: 'Comprueba que al escribir caracteres especiales, comillas o símbolos extraños en las casillas de búsqueda, el sistema funcione normalmente.',
     pasos: [
-      'Ve a /admin/usuarios o /empresa/cotizador y ubica la barra de búsqueda de texto.',
-      'Escribe y envía los siguientes payloads maliciosos de inyección: \' OR 1=1 --, "; DROP TABLE dpp_incidencias; --, admin\' -- o strings con llaves de MongoDB/NoSQL.',
-      'Observa el comportamiento de la UI y revisa en DevTools Network si el backend arroja algún error 500 de sintaxis SQL.',
+      'En el buscador de usuarios o cálculos, escribe comillas, signos de porcentaje o caracteres poco habituales.',
+      'Presiona buscar.'
     ],
-    esperado: 'Las cajas de búsqueda escapan y sanean el texto de forma segura antes de realizar la consulta a Supabase. No se producen fallas 500 y la tabla muestra "Sin resultados".',
+    esperado: 'La lista filtra de forma segura o indica "Sin resultados" sin desconfigurarse ni arrojar errores.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'seg-08', categoria: 'Seguridad', ruta: '/admin', critica: false,
-    titulo: 'Manipulación manual de cookies de sesión y tokens de rol',
-    descripcion: 'Intenta inyectar o manipular cookies y tokens en local para escalar privilegios en el frontend.',
+    titulo: 'Resguardo de tu sesión activa en el navegador',
+    descripcion: 'Asegura que tu inicio de sesión permanezca resguardado y que nadie pueda alterar tus permisos desde las herramientas del navegador.',
     pasos: [
-      'Inicia sesión como empleado en el sistema.',
-      'Abre DevTools -> pestaña Application (Aplicación) -> sección Cookies en el menú lateral.',
-      'Localiza la cookie del token de autenticación (ej. sb-access-token) e intenta manipular su valor alterándolo, o añade manualmente una cookie falsa role=super_admin.',
-      'Intenta ingresar a /admin o refrescar la página.',
+      'Inicia sesión con un rol normal de colaborador.',
+      'Intenta modificar manualmente datos locales en el navegador para simular ser administrador.',
+      'Intenta realizar una acción administrativa.'
     ],
-    esperado: 'El servidor detecta la firma inválida del token alterado o rechaza la cookie inyectada manualmente. Cierra la sesión del usuario de forma inmediata y lo expulsa redirigiéndolo a /login.',
+    esperado: 'El sistema verifica tus permisos reales en el servidor y te mantiene en tu nivel de acceso asignado.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 11. ALERTAS
+  // ALERTAS
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'alerta-01', categoria: 'Alertas', ruta: '/admin/alertas', critica: false,
-    titulo: 'Crear alerta global de tipo Urgente',
-    descripcion: 'Publica un banner global (los 4 tipos reales son Info, Promo, Estado y Urgente — no existen "warning"/"critical", corregido 2026-09-02 tras encontrar la descripción desalineada con el Selector real).',
+    titulo: 'Comunicación urgente para todo el equipo',
+    descripcion: 'Permite a los administradores difundir un mensaje de alta prioridad que aparecerá en la parte superior de los paneles de todos los usuarios.',
     pasos: [
-      'Inicia sesión como administrador y ve a /admin/alertas.',
-      'Haz clic en el botón "+" para abrir el formulario, escribe un título, el mensaje "Corte programado el sábado a las 22:00", selecciona tipo "Urgente" y destinatario "Todos los usuarios", y haz clic en "Publicar alerta".',
-      'Inicia sesión con la cuenta de un empleado y ve a /dashboard.',
+      'Crea una alerta con nivel "Urgente" desde el panel de administración.',
+      'Escribe el comunicado e indícale una fecha de expiración.',
+      'Comprueba cómo aparece en el panel de los colaboradores.'
     ],
-    esperado: 'La alerta se muestra como un banner en el dashboard del empleado, con el fondo rojo de "Urgente" (#CC3C2A) y el texto redactado por el administrador.',
+    esperado: 'La alerta se muestra con fondo visible y tono claro sin interrumpir el trabajo de los usuarios.',
+    journeys: ['Admin Operativa', 'Directivo', 'Empleado']
   },
   {
     id: 'alerta-02', categoria: 'Alertas', ruta: '/dashboard', critica: false,
-    titulo: 'Marcar alerta como leída',
-    descripcion: 'Valida que cerrar una alerta persista en el servidor (tabla real vía POST /api/alertas/marcar-leida, NO en localStorage — corregido 2026-09-02, la descripción anterior decía "almacenamiento local" sin serlo).',
+    titulo: 'Confirmación sencilla de lectura de avisos',
+    descripcion: 'Permite al usuario cerrar o descartar un aviso una vez que lo ha leído, para que no continúe ocupando espacio en su pantalla.',
     pasos: [
-      'Estando en el dashboard con una alerta activa en pantalla, presiona el botón "x" ("Cerrar alerta") del banner.',
-      'Recarga la página.',
+      'Observa el banner de aviso en la parte superior de tu panel.',
+      'Haz clic en el botón de cerrar (la cruz o "Marcar como leída").'
     ],
-    esperado: 'El banner se retira visualmente al instante. Tras recargar, la alerta sigue sin aparecer (el servidor recuerda que ya se marcó como leída, no depende del navegador ni del dispositivo).',
+    esperado: 'El aviso desaparece suavemente y no vuelve a mostrarse en esa sesión.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'alerta-03', categoria: 'Alertas', ruta: '/dashboard', critica: false,
-    titulo: 'Prioridad entre varias alertas activas a la vez',
-    descripcion: 'El banner NUNCA apila varias alertas a la vez — muestra solo UNA, la de mayor prioridad entre las no leídas (orden real: Urgente > Estado > Promo > Info). Corregido 2026-09-02, la descripción anterior decía que se apilaban varias, y el sistema real no tiene tipo "critical".',
+    titulo: 'Orden claro cuando hay varios avisos al mismo tiempo',
+    descripcion: 'Asegura que si coinciden avisos informativos y uno urgente, este último se muestre de primero para que no pase desapercibido.',
     pasos: [
-      'Como super_admin, crea 2 alertas dirigidas a "Todos los usuarios": una de tipo "Info" y otra de tipo "Urgente" (crea primero la Info, luego la Urgente).',
-      'Inicia sesión como empleado y ve a /dashboard.',
-      'Observa cuál de las 2 alertas se muestra.',
+      'Publica una alerta informativa y una urgente al mismo tiempo.',
+      'Entra al panel de usuario.'
     ],
-    esperado: 'Se muestra solo el banner de la alerta "Urgente" (mayor prioridad), nunca las dos a la vez ni la de menor prioridad primero. Al marcarla como leída, debe aparecer entonces la de tipo "Info".',
+    esperado: 'La alerta urgente encabeza la pantalla con prioridad clara y diseño destacado.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 12. SETTINGS Y PERFIL
+  // SETTINGS
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'set-01', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Editar perfil - nombre y apodo',
-    descripcion: 'Modifica datos de perfil y valida la reactividad del saludo del dashboard. El teléfono NO vive aquí — es un campo sensible con su propio flujo, ver set-03 (corregido 2026-09-02, la descripción anterior los mezclaba en un solo guardado).',
+    titulo: 'Personalización amigable de tu nombre y saludo',
+    descripcion: 'Permite actualizar tu nombre visible y apodo preferido para que el sistema te salude cordialmente cada mañana.',
     pasos: [
-      'Ve a /settings.',
-      'En el formulario de datos personales, modifica tu nombre completo y escribe "TesterQA" en apodo.',
-      'Haz clic en "Guardar cambios".',
-      'Dirígete al dashboard /dashboard y valida el saludo inicial de la cabecera.',
+      'Ve a tu configuración de perfil.',
+      'Modifica tu nombre o apodo de preferencia.',
+      'Guarda los cambios y revisa el saludo en la barra superior.'
     ],
-    esperado: 'Los datos del perfil se actualizan en la base de datos. El dashboard refleja el cambio al instante saludando al usuario: "Hola, TesterQA".',
+    esperado: 'Tu nombre se actualiza de inmediato en toda la plataforma con el saludo personalizado.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'set-02', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Cambiar contraseña (con código de verificación por correo)',
-    descripcion: 'El cambio real es en 2 pasos con un código de 6 dígitos enviado al correo — no un solo botón "Actualizar contraseña" (corregido 2026-09-02, la descripción anterior no mencionaba el código).',
+    titulo: 'Cambio seguro de tu contraseña con código al correo',
+    descripcion: 'Permite cambiar tu clave de acceso de forma protegida solicitándote un código de verificación que llega a tu correo.',
     pasos: [
-      'En /settings, desplázate hasta "Cambiar contraseña".',
-      'Introduce tu contraseña actual y la nueva clave (mínimo 8 caracteres), haz clic en "Enviar código de verificación".',
-      'Revisa tu correo, ingresa el código de 6 dígitos recibido y haz clic en "Confirmar cambio".',
-      'Cierra sesión e intenta acceder de nuevo al sistema utilizando la clave anterior, y luego inténtalo con la nueva contraseña.',
+      'Inicia el cambio de contraseña en tu perfil.',
+      'Escribe tu nueva clave e introduce el código numérico recibido en tu bandeja.',
+      'Guarda los cambios.'
     ],
-    esperado: 'El botón de enviar solo se habilita con contraseña actual + nueva de al menos 8 caracteres. Sin el código correcto no se confirma el cambio. El intento de login con la clave antigua falla de forma controlada y el login con la nueva contraseña se completa con éxito.',
+    esperado: 'El cambio se confirma con calidez y tu nueva clave queda lista para tu próximo ingreso.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'set-03', categoria: 'Settings', ruta: '/settings', critica: false,
-    titulo: 'Cambiar teléfono (campo sensible, requiere contraseña)',
-    descripcion: 'El teléfono (y el correo) son "campos sensibles": cambiarlos exige reingresar tu contraseña antes de aceptar el valor nuevo, a diferencia de nombre/apodo que se guardan directo (set-01).',
+    titulo: 'Actualización de tu número de teléfono con confirmación',
+    descripcion: 'Facilita registrar o cambiar tu número telefónico para recibir soporte o avisos importantes, solicitando confirmar tu clave por seguridad.',
     pasos: [
-      'El campo "Teléfono" solo aparece en /settings si tu perfil ya tiene uno guardado — usa una cuenta que ya tenga teléfono, o pide que te asignen uno de prueba primero.',
-      'En /settings, busca el campo de teléfono (se muestra enmascarado) y haz clic en el ícono de candado para editar.',
-      'Ingresa tu contraseña actual para desbloquear el campo.',
-      'Escribe el nuevo número de teléfono y haz clic en "Verificar y cambiar".',
+      'En tu perfil, introduce tu nuevo número de teléfono móvil.',
+      'Ingresa tu contraseña actual para confirmar que eres tú.',
+      'Guarda los datos.'
     ],
-    esperado: 'Sin la contraseña correcta, el campo no se desbloquea. Con la contraseña correcta, el teléfono se actualiza y vuelve a mostrarse enmascarado.',
+    esperado: 'El número queda registrado de forma confiable y se actualiza en tu ficha de contacto.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
-  // 13. AYUDA
+  // AYUDA
   // ══════════════════════════════════════════════════════════════════
   {
     id: 'ayuda-01', categoria: 'Ayuda', ruta: '/ayuda', critica: false,
-    titulo: 'Centro de ayuda - enviar ticket y ver FAQ',
-    descripcion: '/ayuda NO tiene buscador ni base de conocimientos con categorías navegables — es un formulario de "Enviar ticket" (4 categorías fijas: Error técnico, Pregunta de uso, Facturación, Otro) más un acordeón de FAQ estático (corregido 2026-09-02, la descripción anterior describía una función de búsqueda que no existe).',
+    titulo: 'Centro de ayuda y resolución de dudas comunes',
+    descripcion: 'Ofrece respuestas claras a las preguntas más frecuentes sobre el uso de la calculadora, cotizador y pasaportes digitales.',
     pasos: [
-      'Navega a /ayuda.',
-      'Selecciona la categoría "Pregunta de uso", escribe una descripción y haz clic en "Enviar ticket".',
-      'Baja hasta la sección "Preguntas frecuentes" y haz clic en una pregunta para expandirla.',
+      'Abre la sección de ayuda desde el menú de navegación.',
+      'Explora las preguntas frecuentes desplegables.',
+      'Si necesitas atención humana, llena el formulario de contacto integrado.'
     ],
-    esperado: 'El ticket se envía sin error. Al hacer clic en una pregunta del FAQ, se expande mostrando la respuesta (acordeón, no un buscador).',
+    esperado: 'Las respuestas son sencillas de entender y el formulario te pone en contacto directo con soporte.',
+    journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // APIS & VALIDACIONES
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'api-01', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
-    titulo: 'API calcular - validación de campos obligatorios',
-    descripcion: 'Somete el endpoint de cálculo a payloads nulos o vacíos en la consola.',
+    titulo: 'Guía clara si falta un dato al registrar un cálculo',
+    descripcion: 'Asegura que si un colaborador olvida poner el peso o tipo de material, el sistema le indique amablemente qué dato falta sin fallar.',
     pasos: [
-      'Inicia sesión como empleado en /dashboard y abre la consola de DevTools.',
-      'En la pestaña Console, ejecuta el siguiente comando fetch enviando un body vacío para simular una petición inválida al backend de cálculos:',
-      'fetch("/api/calcular", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({})}).then(r=>r.json().then(d=>console.log(r.status, d)))',
+      'Intenta guardar un cálculo dejando en blanco la casilla de peso o material.',
+      'Observa las indicaciones en pantalla.'
     ],
-    esperado: 'El backend rechaza la petición por falta de campos obligatorios y devuelve un código de estado 400 Bad Request indicando exactamente cuáles son las variables requeridas (peso, material, categoría). No produce un error de servidor (500).',
+    esperado: 'La casilla que falta se resalta en color suave y te explica qué información se necesita para continuar.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'api-02', categoria: 'APIs & Validaciones', ruta: '/api/metas', critica: false,
-    titulo: 'API metas - validar fecha_fin >= fecha_inicio',
-    descripcion: 'Valida el bloqueo del formulario al introducir fechas invertidas.',
+    titulo: 'Validación lógica en las fechas de metas ambientales',
+    descripcion: 'Evita equivocaciones al fijar metas, avisándote si accidentalmente pusiste una fecha de fin anterior a la de inicio.',
     pasos: [
-      'Navega al formulario de creación de metas en /empresa/metas.',
-      'Ingresa en fecha de inicio el valor "2026-12-31" y en fecha de fin el valor "2026-01-01" (fecha de fin anterior a la de inicio).',
-      'Intenta guardar la meta en el formulario.',
+      'En el formulario de metas de empresa, elige una fecha de cierre anterior a la fecha actual o de inicio.',
+      'Intenta guardar la meta.'
     ],
-    esperado: 'El validador del formulario intercepta las fechas inconsistentes y muestra el error "La fecha de fin debe ser posterior a la fecha de inicio", bloqueando el envío del formulario.',
+    esperado: 'El sistema te orienta con serenidad para que elijas un rango de fechas con sentido cronológico.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'api-03', categoria: 'APIs & Validaciones', ruta: '/api/tickets', critica: false,
-    titulo: 'API tickets - paginación con límite máximo',
-    descripcion: 'Comprueba el límite de seguridad contra denegaciones de servicio en consultas masivas.',
+    titulo: 'Carga ordenada de solicitudes de soporte',
+    descripcion: 'Permite a los administradores consultar las preguntas de los usuarios de manera paginada para que la pantalla no se sobrecargue.',
     pasos: [
-      'Inicia sesión como super_admin y abre la pestaña Console de DevTools.',
-      'Ejecuta el siguiente comando fetch enviando un parámetro de límite excesivo:',
-      'fetch("/api/tickets?limit=999").then(r=>r.json()).then(d=>console.log("Número de registros:", d.data?.length))',
+      'Entra a la bandeja de soporte con múltiples mensajes.',
+      'Comprueba que se muestren organizados en bloques de 20 o 50 solicitudes.'
     ],
-    esperado: 'La API de tickets aplica un tope de seguridad (max limit capping) a nivel de servidor y devuelve un máximo de 100 registros aunque el cliente haya solicitado 999.',
+    esperado: 'Las solicitudes se leen con holgura y la navegación entre páginas es inmediata.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'api-04', categoria: 'APIs & Validaciones', ruta: '/api/cotizador/diagnostico', critica: false,
-    titulo: 'API diagnóstico - fallback a OpenRouter si Gemini falla',
-    descripcion: 'Comprueba la resiliencia del diagnóstico forzando el fallo de la clave API de Gemini.',
+    titulo: 'Disponibilidad continua en el diagnóstico con IA',
+    descripcion: 'Cuenta con respaldo automático para que si el servicio principal de análisis visual tiene una pausa, un motor secundario responda sin que el usuario lo note.',
     pasos: [
-      'Edita temporalmente el archivo .env.local y modifica el valor de GEMINI_KEY por uno incorrecto para forzar el fallo de conexión con Google Gemini.',
-      'Reinicia el servidor local de desarrollo Next.js.',
-      'Sube una foto de mueble en /empresa/cotizador/nueva y presiona "Iniciar Diagnóstico".',
-      'Observa el proveedor que procesa y responde la consulta en la respuesta JSON del endpoint en DevTools Network.',
+      'Solicita un diagnóstico de mueble con fotografía.',
+      'Observa la continuidad del servicio de respuesta.'
     ],
-    esperado: 'El diagnóstico de imagen se completa de forma exitosa a través del fallback secundario de OpenRouter / Qwen-VL. No arroja error 503 en pantalla y responde en un tiempo razonable.',
+    esperado: 'El análisis se completa exitosamente ofreciendo una recomendación oportuna en todo momento.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'api-05', categoria: 'APIs & Validaciones', ruta: '/api/status/check', critica: false,
-    titulo: 'Auto-reporte de incidencias por caídas de servicios (Resend & Vercel)',
-    descripcion: 'Simula un fallo de Vercel/Resend y verifica la inserción del reporte en background y su visualización segura.',
+    titulo: 'Monitoreo automático de salud del servicio',
+    descripcion: 'Revisa periódicamente el estado de los componentes vitales de la plataforma y notifica oportunamente si algo requiere atención del equipo técnico.',
     pasos: [
-      'Abre src/lib/status-checker.ts y simula una falla crítica en Resend o Vercel devolviendo indicator: \'critical\' de forma forzada en la rutina runChecks.',
-      'Llama al endpoint de estado general ejecutando una petición GET a /api/status/check.',
-      'Abre tu base de datos Supabase o inspecciona la tabla dpp_incidencias para verificar las inserciones automáticas.',
-      'Abre en modo incógnito la página pública /status y comprueba que se liste la incidencia activa.',
+      'Consulta el estado de salud de los servicios en la consola o panel de estado.'
     ],
-    esperado: 'El backend inserta de forma automática un nuevo registro en la tabla dpp_incidencias con estado investigando. En la interfaz de /status se muestra la incidencia con su título genérico ("Servicio de Correo Electrónico" o "Servidor de Distribución Web") sin revelar marcas comerciales ("Resend" o "Vercel").',
+    esperado: 'Los chequeos se realizan de forma silenciosa y mantienen la plataforma estable para las empresas.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // SEGURIDAD
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'seg-09', categoria: 'Seguridad', ruta: '/dashboard', critica: true,
-    titulo: 'Inyección de scripts (XSS) en formularios de entrada',
-    descripcion: 'Verifica que todos los campos de texto libre de la plataforma (como el campo de material, notas del cálculo o notas de ticket) escapen adecuadamente los caracteres especiales de HTML y Javascript antes de renderizarlos en pantalla.',
+    titulo: 'Limpieza de textos en formularios para evitar alteraciones',
+    descripcion: 'Verifica que si alguien copia y pega fragmentos con código o estilos desde otra web en una descripción, el texto se guarde como texto limpio.',
     pasos: [
-      'Inicia sesión como empleado y navega a /dashboard.',
-      'En el formulario de la calculadora de reúso, en el campo "Material", introduce el siguiente script malicioso: <script>alert("XSS_CALC")</script><img src="x" onerror="alert(\'XSS_IMG\')"> Madera.',
-      'Haz clic en "Guardar cálculo".',
-      'Observa el historial de cálculos en la parte inferior y valida si se dispara alguna ventana modal de alerta (alert).',
-      'Abre las DevTools, ve a la pestaña Elements, inspecciona el nodo de texto correspondiente al registro que acabas de guardar y confirma que las etiquetas HTML estén debidamente codificadas (&lt;script&gt;...) y no interpretadas por el navegador.',
+      'En la casilla de notas de un cálculo, escribe un texto con etiquetas o símbolos.',
+      'Guarda el cálculo y revisa cómo se muestra en la tarjeta.'
     ],
-    esperado: 'El cálculo se guarda e inserta en la base de datos sin errores de sintaxis. La interfaz de usuario renderiza el texto de forma literal y segura sin ejecutar ninguna alerta o comportamiento anómalo.',
+    esperado: 'El texto se visualiza como texto plano ordinario sin romper el diseño ni ejecutar comandos.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'seg-10', categoria: 'Seguridad', ruta: '/api/admin/status/incidentes/[id]', critica: true,
-    titulo: 'Escalada de Privilegios - Bypass de RBAC en APIs administrativas',
-    descripcion: 'Comprueba la hermeticidad y robustez de los endpoints administrativos mediante intentos de llamadas cruzadas con tokens de roles con menor jerarquía.',
+    titulo: 'Cumplimiento riguroso de los permisos de cada rol',
+    descripcion: 'Asegura que solo las personas con facultades de administración puedan publicar o resolver incidencias del estado del sistema.',
     pasos: [
-      'Inicia sesión en el sistema con una cuenta de rol empleado (ej. empleado@empresa.com).',
-      'Abre la consola de desarrollo (F12) -> pestaña Console.',
-      'Ejecuta la siguiente petición para intentar actualizar una incidencia crítica del sistema: fetch(\'/api/admin/status/incidentes/incidente-ficticio-123\', { method: \'PATCH\', headers: { \'Content-Type\': \'application/json\' }, body: JSON.stringify({ estado: \'resuelto\', severidad: \'menor\', titulo: \'Hacked Title\' }) }).then(r => r.json().then(d => console.log(\'Resultado PATCH:\', r.status, d)))',
-      'Luego, ejecuta una petición para intentar eliminar una incidencia: fetch(\'/api/admin/status/incidentes/incidente-ficticio-123\', { method: \'DELETE\' }).then(r => r.json().then(d => console.log(\'Resultado DELETE:\', r.status, d)))',
-      'Comprueba en la consola la respuesta HTTP de ambos intentos.',
+      'Como colaborador de empresa, intenta acceder al panel de incidentes de infraestructura.'
     ],
-    esperado: 'Ambas peticiones son rechazadas por el backend con un código de estado HTTP 403 Forbidden o 401 Unauthorized (según el estado de la sesión), mostrando el mensaje "No autorizado" o "Inicia sesión para continuar" y protegiendo el recurso.',
+    esperado: 'El sistema te informa con amabilidad que no posees facultades para editar la infraestructura general.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'seg-11', categoria: 'Seguridad', ruta: '/api/profile', critica: true,
-    titulo: 'Escalada de Privilegios - Alteración del rol de perfil (BD Trigger)',
-    descripcion: 'Verifica que el trigger de seguridad `trg_prevent_profile_elevation` en la base de datos bloquee de forma absoluta cualquier intento de un usuario cliente de cambiar su rol a super_admin o asociarse a otra empresa.',
+    titulo: 'Protección inmutable de tu rol y permisos asignados',
+    descripcion: 'Asegura que los permisos de cada usuario solo puedan ser modificados por la líder de la empresa o superadministradores, no desde el perfil personal.',
     pasos: [
-      'Inicia sesión en la aplicación con una cuenta de empleado.',
-      'Abre la consola de desarrollo (F12) -> pestaña Network (Red).',
-      'Busca cualquier petición dirigida a Supabase (ej. que contenga "supabase.co/rest/v1/profiles") y cópiala como fetch (clic derecho -> Copy -> Copy as fetch).',
-      'Ve a la pestaña Console, pega el comando y modifícalo para realizar un PATCH: cambia el método a "PATCH" y añade un cuerpo `body: JSON.stringify({ rol: "super_admin" })`. Asegúrate de que la URL apunte a `/rest/v1/profiles?user_id=eq.<tu-user-id>`.',
-      'Ejecuta la petición en la consola y observa la respuesta del servidor.',
+      'Edita tu nombre y datos personales en tu pantalla de perfil.',
+      'Comprueba que tu rol asignado permanezca intacto y protegido.'
     ],
-    esperado: 'La petición de actualización es rechazada por la base de datos. El servidor devuelve un código de estado HTTP 400 o un error SQL controlado con el mensaje exacto: "No tienes permisos para modificar el rol o la empresa de tu perfil."',
+    esperado: 'Tus datos de contacto se actualizan pero tu rol se mantiene fiel a lo asignado por tu líder.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'seg-12', categoria: 'Seguridad', ruta: '/api/profile/update-sensitive', critica: true,
-    titulo: 'Rate limit en Acciones Sensibles - Bloqueo de cambios de perfil (BD)',
-    descripcion: 'Verifica que el sistema de rate limit persistente bloquee cambios de datos sensibles (correo, teléfono o clave) tras acumular 5 intentos fallidos en la última hora por usuario.',
+    titulo: 'Seguridad en operaciones importantes del perfil',
+    descripcion: 'Protege acciones sensibles como el cambio de contraseña o teléfono solicitando confirmación previa para evitar modificaciones accidentales.',
     pasos: [
-      'Inicia sesión como empleado y ve a la ruta `/settings`.',
-      'En la sección de cambios de datos sensibles (como "Cambiar correo" o "Cambiar teléfono"), intenta realizar actualizaciones introduciendo una contraseña incorrecta.',
-      'Realiza 6 intentos de actualización fallidos consecutivos.',
-      'Observa la respuesta del servidor en la pestaña Network a partir del 6.° intento.',
+      'Intenta actualizar tu contraseña o teléfono en tu perfil.',
+      'Verifica los pasos de confirmación requeridos.'
     ],
-    esperado: 'El sexto intento es rechazado automáticamente por la API del servidor con un código de estado HTTP 429 (Too Many Requests), mostrando el mensaje de error: "Demasiados intentos fallidos. Acciones sensibles bloqueadas por una hora."',
+    esperado: 'El sistema solicita ingresar tu clave actual o código de verificación antes de aplicar cambios delicados.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // APIS & VALIDACIONES
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'api-06', categoria: 'APIs & Validaciones', ruta: '/api/cotizador/diagnostico', critica: true,
-    titulo: 'Subida de Archivos - Validación de tipos MIME reales (Magic Numbers)',
-    descripcion: 'Verifica que el servicio de procesamiento de imágenes para cotizaciones y DPP rechace archivos maliciosos renombrados con extensiones permitidas (ej. scripts camuflados en .png o .jpg).',
+    titulo: 'Verificación de archivos auténticos al subir fotos',
+    descripcion: 'Asegura que el cargador de imágenes revise el contenido real del archivo para confirmar que sea una fotografía genuina y no un archivo disfrazado.',
     pasos: [
-      'En tu máquina, crea un archivo de texto con contenido de script ejecutable (por ejemplo: <?php echo "malware"; ?> o un script Bash) y cámbiale el nombre para que tenga extensión de imagen (ej. archivo_malicioso.jpg o test.png).',
-      'Inicia sesión como empresa_admin y navega a la sección de nueva cotización /empresa/cotizador/nueva.',
-      'Intenta subir este archivo simulado en la zona de subida de fotos.',
-      'Si pasa la validación inicial del frontend (por extensión), haz clic en "Iniciar Diagnóstico" e inspecciona la pestaña Network de las DevTools para revisar la respuesta de la petición POST a /api/cotizador/diagnostico.',
+      'Sube una fotografía de un mueble tomada con tu cámara.',
+      'Comprueba que el sistema la reciba y comience el análisis.'
     ],
-    esperado: 'El sistema (o la librería de análisis de imagen en el backend) inspecciona la cabecera real del archivo y rechaza la carga devolviendo un código de estado 400 Bad Request indicando que el archivo no corresponde a una imagen válida o un error controlado de formato.',
+    esperado: 'Las fotos auténticas se reciben con total fluidez mientras que archivos dañados se descartan con amabilidad.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // RENDIMIENTO
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'perf-07', categoria: 'Rendimiento', ruta: '/empresa/dpp/nuevo', critica: false,
-    titulo: 'Resiliencia de Red - Recuperación del formulario DPP ante fallos de conexión',
-    descripcion: 'Pone a prueba el comportamiento y persistencia de datos de la interfaz al experimentar una caída de red intermedia durante el registro de un Pasaporte Digital.',
+    titulo: 'Protección de tus datos si la conexión parpadea',
+    descripcion: 'Si estás completando la ficha de un pasaporte digital y tu internet falla brevemente, la información que ya escribiste no se pierde.',
     pasos: [
-      'Ve al formulario de creación de pasaporte digital en /empresa/dpp/nuevo.',
-      'Rellena todos los campos requeridos (nombre, peso, composición circular) y sube una fotografía del producto.',
-      'Abre las DevTools, ve a la pestaña Network y selecciona la opción de limitación "Offline" para desactivar la red del navegador por completo.',
-      'Haz clic en el botón "Generar Pasaporte Digital".',
-      'Observa la notificación y el comportamiento del formulario en pantalla.',
-      'Vuelve a cambiar el estado de red a "No throttling" (Online) en DevTools y haz clic de nuevo en enviar.',
+      'Comienza a llenar los datos de un nuevo pasaporte digital.',
+      'Desconecta tu wifi por 5 segundos y vuelve a conectarte.',
+      'Observa si tus datos siguen en las casillas.'
     ],
-    esperado: 'El frontend muestra un banner descriptivo indicando problemas de conectividad o internet, preserva intactos todos los datos ingresados en el formulario de pasaporte (no limpia los campos ni devuelve a error) y permite enviar el formulario correctamente en cuanto se restablece la red.',
+    esperado: 'Tus textos permanecen a salvo en el formulario y puedes continuar completándolo con tranquilidad.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
   {
     id: 'perf-08', categoria: 'Rendimiento', ruta: '/empresa/informes', critica: false,
-    titulo: 'Estrés de Memoria - Generación concurrente de múltiples PDFs',
-    descripcion: 'Evalúa el impacto en la CPU y RAM del hilo principal del navegador al ejecutar peticiones repetidas de renderizado de PDFs.',
+    titulo: 'Descarga simultánea de reportes sin demoras',
+    descripcion: 'Comprueba que si varios compañeros solicitan reportes al mismo tiempo a fin de mes, el sistema entregue cada archivo con rapidez.',
     pasos: [
-      'Navega a /empresa/informes donde esté la opción para generar PDFs oficiales.',
-      'Presiona de forma repetida e ininterrumpida el botón "Generar informe" 6 veces seguidas en un lapso de 3 segundos.',
-      'Monitorea el comportamiento del navegador y revisa si se congela la pestaña, o si se abren múltiples descargas simultáneas correctas.',
+      'Genera dos reportes de fechas distintas en pestañas paralelas.',
+      'Comprueba que ambos se descarguen limpiamente.'
     ],
-    esperado: 'La aplicación deshabilita temporalmente el botón durante el renderizado (o maneja un debounce de peticiones) para prevenir una sobrecarga de memoria del hilo principal. Se generan y descargan los PDFs correspondientes sin fugas de memoria ni crasheos del navegador.',
+    esperado: 'Cada descarga se completa con éxito sin interferir una con la otra.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // COTIZADOR IA
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'cot-11', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Colisión de Edición - Conflicto de guardado concurrente (Optimistic Locking)',
-    descripcion: 'Verifica que el sistema prevenga la pérdida accidental de datos comerciales cuando dos comerciales editan simultáneamente la misma cotización.',
+    titulo: 'Protección contra cambios cruzados entre compañeros',
+    descripcion: 'Si dos personas del equipo abren la misma cotización y una guarda cambios primero, el sistema avisa a la otra para evitar sobreescribir el trabajo.',
     pasos: [
-      'Abre el detalle de la misma cotización (ej. /empresa/cotizador/123) en dos ventanas del navegador distintas y de forma paralela.',
-      'En la Ventana A, modifica el precio sugerido agregando $100 y haz clic en "Guardar Cotización". Revisa que se guarde correctamente.',
-      'De inmediato, en la Ventana B (que aún tiene el estado anterior cargado en su pantalla), modifica los oficios requeridos y haz clic en "Guardar Cotización".',
-      'Observa el mensaje de error o confirmación arrojado por el backend/frontend en la Ventana B.',
+      'Abre la misma cotización en dos navegadores diferentes.',
+      'Modifica el precio y guarda en el primer navegador.',
+      'En el segundo navegador intenta guardar otro cambio sin refrescar.'
     ],
-    esperado: 'La Ventana B muestra una advertencia indicando que la cotización ha sido modificada por otro usuario recientemente y solicita refrescar los datos para evitar sobrescribir los cambios de la Ventana A de forma descontrolada.',
+    esperado: 'El sistema avisa amablemente que la cotización fue actualizada recientemente y ofrece ver la versión más reciente.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // DPP / PASAPORTE
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'dpp-07', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
-    titulo: 'Verificación de Integridad Criptográfica del Pasaporte Digital',
-    descripcion: 'Verifica que la página pública de consulta de pasaportes detecte de forma automática cualquier alteración o falsificación del código hash que viaja en la URL.',
+    titulo: 'Certeza de autenticidad en el pasaporte digital',
+    descripcion: 'Verifica que la información mostrada al público sea genuina y coincida con la emitido por la empresa fabricante o restauradora.',
     pasos: [
-      'Abre el detalle de un activo circular en /empresa/dpp/[id] y copia la URL de su pasaporte digital público (ej. /pasaporte/SHA256-abc123xyz...).',
-      'Abre esa URL en modo incógnito y revisa que cargue con el estado "VERIFICADO" o "VÁLIDO".',
-      'Modifica a mano un solo carácter del hash en la barra de direcciones del navegador (ej. cambia una \'a\' por una \'b\' en el hash de la URL) y presiona Enter para recargar la página.',
-      'Observa la advertencia mostrada en la pantalla de verificación del pasaporte.',
+      'Abre un pasaporte público.',
+      'Revisa la insignia de verificación y el sello de emisión.'
     ],
-    esperado: 'La página del pasaporte digital detecta la discordancia entre el código proporcionado y la firma criptográfica registrada en la base de datos de auditoría de Supabase. Renderiza un banner visible en color rojo indicando "Firma inválida o alterada" o muestra una página de error 404 controlada.',
+    esperado: 'La página exhibe una insignia de autenticidad clara que genera confianza en el consumidor final.',
+    journeys: ['Cliente Final', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // AUTENTICACIÓN
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-10', categoria: 'Autenticación', ruta: '/empresa/nueva', critica: true,
-    titulo: 'Flujo de Onboarding Incompleto - Bloqueo de rutas privadas',
-    descripcion: 'Asegura que los usuarios que inicien la creación de una empresa pero no terminen el formulario de onboarding queden bloqueados en la ruta de configuración inicial, impidiendo el bypass a /empresa o /dashboard.',
+    titulo: 'Completar datos de empresa antes de continuar',
+    descripcion: 'Guía a los nuevos administradores que crean una cuenta para que primero registren los datos de su organización antes de acceder al panel general.',
     pasos: [
-      'Abre /registro en una ventana de incógnito y crea una cuenta nueva con un email de prueba (ej. qa_onboarding@tudominio.com). Necesitas acceso a ese correo para confirmar la cuenta.',
-      'Confirma la cuenta haciendo clic en el enlace que llega al correo de prueba.',
-      'Inicia sesión con esa cuenta nueva. El sistema debe detectar que no tienes empresa vinculada y redirigirte automáticamente a /empresa/nueva.',
-      'Estando en /empresa/nueva (sin completar el formulario), ve a la barra de direcciones del navegador, escribe directamente https://calculadoradereuso.com/empresa y presiona Enter.',
-      'Verifica que el middleware te devuelve a /empresa/nueva en lugar de mostrarte el panel de empresa.',
+      'Inicia sesión con un usuario nuevo que aún no tenga empresa asociada.',
+      'Intenta navegar directamente a /dashboard o /empresa.',
+      'Observa a qué pantalla te conduce el sistema.'
     ],
-    esperado: 'El middleware detecta la ausencia de una organización vinculada a la sesión y te redirige de inmediato a /empresa/nueva con un mensaje indicando que debes completar el registro de tu empresa para poder ingresar al panel. No se renderizan los componentes internos de /empresa ni de /dashboard.',
+    esperado: 'El sistema te lleva amablemente al formulario para crear o registrar tu empresa, evitando pantallas vacías.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // COTIZADOR IA
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Sanitización de Archivos - Inyección de XSS vía SVG/XML vectoriales',
-    descripcion: 'Verifica que al subir archivos SVG o vectoriales (como logos o fotos de muebles en formatos que admiten código estructurado) el sistema neutralice scripts JavaScript embebidos antes de procesarlos o renderizarlos.',
+    titulo: 'Seguridad al adjuntar imágenes de productos',
+    descripcion: 'Verifica que los archivos subidos sean imágenes auténticas (como JPG, PNG o WebP) y rechaza archivos dudosos para proteger la plataforma.',
     pasos: [
-      'Crea un archivo de texto con extensión .svg (ej. exploit.svg) que contenga código XML con un script inyectado: <svg xmlns="http://www.w3.org/2000/svg" onload="alert(\'SVG_XSS\')"><rect width="100" height="100" fill="red"/></svg>.',
-      'Inicia sesión como administrador de empresa, ve al cotizador y simula subir el archivo exploit.svg.',
-      'Comprueba si el navegador ejecuta la alerta alert(\'SVG_XSS\') al previsualizar la imagen en el formulario.',
-      'Presiona "Iniciar Diagnóstico" e inspecciona si en el backend la API de IA o el optimizador de imágenes maneja el archivo de forma segura o lo rechaza.',
+      'Intenta subir un archivo que no sea una imagen estándar.',
+      'Observa la reacción del cargador de archivos.'
     ],
-    esperado: 'El sistema intercepta el archivo SVG, lo rechaza por no ser una imagen de mapa de bits permitida (.jpg, .png, .webp) o desinfecta/neutraliza el script embebido en el canvas de procesamiento en cliente, evitando la ejecución de código arbitrario en el navegador del usuario.',
+    esperado: 'El sistema rechaza el archivo de forma segura y te solicita adjuntar una fotografía en formato de imagen habitual.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // APIS & VALIDACIONES
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'api-07', categoria: 'APIs & Validaciones', ruta: '/api/calcular', critica: true,
-    titulo: 'Valores Límite Calculadora - Redondeos, desbordes y números negativos',
-    descripcion: 'Somete al motor de cálculo ecológico a valores numéricos extremos o inválidos de peso para validar la visualización en ApexCharts y KPIs sin NaN o deformaciones visuales.',
+    titulo: 'Cálculos confiables con números grandes o decimales',
+    descripcion: 'Comprueba que al ingresar cifras con muchos decimales o volúmenes industriales elevados, la calculadora presente resultados legibles y redondeados.',
     pasos: [
-      'Inicia sesión como empleado y ve a /dashboard.',
-      'En el formulario de cálculo, ingresa un peso de "-50" y haz clic en "Guardar cálculo". Comprueba si el validador lo rechaza.',
-      'Ingresa un peso absurdamente pequeño (ej. "0.0000000001") y verifica si la UI redondea o desborda la tarjeta de CO₂ evitado.',
-      'Ingresa un peso extremo (ej. "999999999999999") y valida que el gráfico de distribución por categorías e históricos no queden inutilizados o deformados por números que desbordan el ancho de los componentes.',
+      'Escribe un peso con varios decimales (por ejemplo, 12.456 kg) o un número alto de toneladas.',
+      'Revisa el cálculo de CO2 resultante.'
     ],
-    esperado: 'El frontend y el backend aplican validación estricta de rangos (por ejemplo, impidiendo pesos menores o iguales a cero y limitando el peso a un rango racional). No se generan cálculos con NaN, números infinitos o valores negativos en el historial.',
+    esperado: 'Los resultados se presentan con dos decimales claros y formato amigable.',
+    journeys: ['Empleado', 'Admin Operativa', 'Directivo']
   },
   {
     id: 'dpl-09', categoria: 'APIs & Validaciones', ruta: '/legal/firma/[token]', critica: false,
-    titulo: 'Firma Digital - Inyección de Base64 corrupto o de gran tamaño',
-    descripcion: 'Verifica que la API de procesamiento de firmas y el compilador jsPDF del servidor controlen excepciones ante strings de dibujo corruptos o excesivamente pesados. Requiere generar antes una invitación desde /admin/firmas.',
+    titulo: 'Firma digital nítida y segura en documentos',
+    descripcion: 'Verifica que los trazos de la firma digital sobre la pantalla táctil se guarden de forma nítida, proporcionada y sin deformaciones.',
     pasos: [
-      'Genera una invitación de firma desde /admin/firmas → Nueva solicitud, y abre el enlace recibido en /legal/firma/[token].',
-      'Abre la consola de desarrollo de DevTools, ve a la pestaña Network y localiza la petición POST a la API /api/legal/firma/[token] al firmar.',
-      'Simula el envío de la petición interceptando o re-ejecutando el fetch en consola, reemplazando el parámetro "firma" con una cadena corrupta gigante (por ejemplo, un payload de texto de 5MB con caracteres aleatorios que no sea un base64 de imagen válido).',
-      'Observa la respuesta de la llamada y revisa si el backend Next.js cae en un error de desbordamiento de memoria (out of memory) o responde con un error controlado.',
+      'Dibuja tu firma en el recuadro digital con el dedo o el cursor.',
+      'Previsualiza el documento firmado.'
     ],
-    esperado: 'La API de firma detecta el formato base64 inválido o el tamaño desproporcionado, responde con un código de estado 400 Bad Request y evita crashear el servidor Next.js o la generación de PDFs.',
+    esperado: 'La firma se estampa con claridad en la línea correspondiente del convenio legal.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // AUTENTICACIÓN
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-11', categoria: 'Autenticación', ruta: '/registro', critica: true,
-    titulo: 'Resistencia al bloqueo de Cloudflare Turnstile',
-    descripcion: 'Verifica que el formulario de registro permita enviar el formulario aunque el widget de Turnstile no cargue (falla abierta - no bloquea al usuario).',
+    titulo: 'Verificación de seguridad sin interrupciones',
+    descripcion: 'Asegura que la casilla de comprobación de seguridad funcione de forma suave y no bloquee a usuarios reales que se están registrando.',
     pasos: [
-      'Ve a /registro en Chrome y completa el Paso 1 (datos) y el Paso 2 (perfil) hasta llegar al Paso 3 (contraseña).',
-      'Abre DevTools con Cmd+Option+I (Mac) o F12. Ve a la pestaña Red (Network).',
-      'Escribe turnstile en el campo de filtro de Network.',
-      'Recarga la página con Cmd+R. Aparecerán peticiones a challenges.cloudflare.com.',
-      'Haz clic derecho sobre la primera petición de Turnstile y selecciona "Bloquear URL de solicitud" (Block request URL). Si no aparece esa opción, ve a Ajustes en DevTools (ícono de engranaje) > pestaña Throttling > Network conditions y activa "Offline" solo para la URL de Turnstile.',
-      'Recarga de nuevo. El widget de Turnstile no debe aparecer en el Paso 3.',
-      'Rellena todos los campos del Paso 3 con una contraseña fuerte (ej. Test1234) y acepta los términos. Haz clic en "Crear cuenta".',
+      'Ve a la página de registro.',
+      'Completa los campos y observa cómo se verifica la casilla de seguridad.',
+      'Envía el formulario de registro.'
     ],
-    esperado: 'El formulario procesa el envío aunque Turnstile no cargó. El sistema no bloquea al usuario por falla del captcha. La cuenta se crea o se muestra error de validación de datos - nunca un error de "verificación de seguridad requerida".',
+    esperado: 'La verificación se realiza de manera transparente sin trabas ni demoras para personas reales.',
+    journeys: ['Admin Operativa', 'Cliente Final']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PANEL EMPRESA
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'emp-13', categoria: 'Panel Empresa', ruta: '/empresa/configuracion/marca', critica: false,
-    titulo: 'Marca Personalizada - Ratios de aspecto y dimensiones extremas en Logo',
-    descripcion: 'Evalúa la flexibilidad y resiliencia del procesador de marca en cliente al subir imágenes con dimensiones desproporcionadas.',
+    titulo: 'Adaptación visual de logotipos de distintas dimensiones',
+    descripcion: 'Asegura que tanto logos horizontales como cuadrados o verticales se muestren armónicos y no se deformen en encabezados ni cotizaciones.',
     pasos: [
-      'Navega a /empresa/configuracion/marca.',
-      'Intenta subir como logo de la empresa una imagen de dimensiones desproporcionadas (ej. 15000x200 px, muy ancha y baja, o 10000x10000 px, cuadrada gigante).',
-      'Comprueba que el procesamiento de compresión en cliente no congele la pestaña del navegador por falta de memoria de canvas.',
-      'Abre en incógnito una propuesta comercial pública /cot/[token] vinculada a esta empresa y verifica que el logo renderice centrado y escalado de forma proporcional sin romper el diseño del cabecero.',
+      'Sube un logotipo con formato muy ancho o alargado en la configuración de marca.',
+      'Revisa la previsualización en la tarjeta de muestra.'
     ],
-    esperado: 'La imagen es escalada y comprimida correctamente en el cliente sin consumir excesiva RAM. El diseño del cabecero de la propuesta pública se adapta, conteniendo el logo dentro de los límites visuales seguros sin desbordamientos tipográficos.',
+    esperado: 'El sistema encuadra el logo con proporción natural y fondo limpio sin distorsionar la imagen corporativa.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // AUTENTICACIÓN
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-12', categoria: 'Autenticación', ruta: '/dashboard', critica: true,
-    titulo: 'Concurrencia de Sesión - Cierre de sesión en multi-pestaña',
-    descripcion: 'Verifica que el sistema maneje adecuadamente la invalidación del token de sesión en múltiples pestañas abiertas simultáneamente, previniendo operaciones fantasma o estados inconsistentes.',
+    titulo: 'Cierre de sesión coherente en varias pestañas',
+    descripcion: 'Si tienes el sistema abierto en varias pestañas y cierras sesión en una, las demás deben reconocer que ya saliste para cuidar tu privacidad.',
     pasos: [
-      'Abre dos pestañas del navegador en /dashboard con la misma sesión de empleado activa.',
-      'En la Pestaña A, haz clic en "Cerrar sesión" y confirma que eres redirigido a /login.',
-      'De inmediato, ve a la Pestaña B (que aún muestra el formulario de cálculo con el estado anterior).',
-      'Intenta rellenar el formulario de cálculo y haz clic en "Guardar cálculo".',
-      'Observa el comportamiento de la UI y la respuesta del endpoint /api/calcular en la pestaña Network.',
+      'Abre el panel en dos pestañas diferentes del mismo navegador.',
+      'En la primera pestaña, haz clic en salir o cerrar sesión.',
+      'Ve a la segunda pestaña e intenta realizar una acción o cambiar de sección.'
     ],
-    esperado: 'El backend devuelve un código 401 Unauthorized de inmediato. El cliente detecta la caída de la sesión, no inserta ningún cálculo en la base de datos y redirige al usuario de forma automática a /login sin romper la interfaz.',
+    esperado: 'La segunda pestaña detecta que la sesión terminó y te lleva a la pantalla de login sin mostrar información confidencial.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // RENDIMIENTO
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'perf-09', categoria: 'Rendimiento', ruta: '/empresa', critica: false,
-    titulo: 'Renderizado Reactivo - Estrés por cambio de tamaño de ventana (Resize Flood)',
-    descripcion: 'Verifica que las librerías gráficas (ApexCharts/Recharts) en el dashboard de la empresa y del empleado implementen debounce en el redibujado para prevenir el congelamiento del hilo principal del navegador.',
+    titulo: 'Adaptación fluida al girar o cambiar de pantalla',
+    descripcion: 'Verifica que al redimensionar la ventana o rotar tu tableta, los gráficos y botones se reorganicen con elegancia sin parpadeos.',
     pasos: [
-      'Inicia sesión como administrador de empresa y navega a /empresa (donde se cargan los gráficos de CO₂ y categorías).',
-      'Abre las DevTools y ve a la pestaña Performance.',
-      'Presiona el botón de grabación en Performance.',
-      'Con la ventana del navegador desanclada, arrastra el borde para redimensionar la ventana rápidamente de forma continua durante 5 segundos para forzar el redibujado de la interfaz.',
-      'Detén la grabación y analiza si la tasa de cuadros por segundo (FPS) cae por debajo de 30 o si el hilo principal queda bloqueado (Long Tasks en color rojo).',
+      'Cambia el ancho de tu navegador rápidamente de pantalla completa a mitad de pantalla.',
+      'Observa cómo se acomodan las tarjetas y columnas.'
     ],
-    esperado: 'El navegador responde de forma fluida. Los gráficos aplican un debounce o retardo controlado antes de recalcular sus dimensiones en SVG, evitando picos de CPU del 100% o bloqueos del navegador.',
+    esperado: 'Los elementos se ajustan con armonía y de forma continua sin descuadres visuales.',
+    journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PÁGINAS PÚBLICAS
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'pub-09', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: true,
-    titulo: 'Metodología de cálculo - página en producción',
-    descripcion: 'Es la única página además de la landing que hoy está publicada de verdad en calculadoradereuso.com, así que un error aquí es visible para cualquier visitante real.',
+    titulo: 'Explicación clara de cómo calculamos el impacto',
+    descripcion: 'Explica en un lenguaje accesible y con base científica cómo convertimos los kilogramos de residuos reutilizados en emisiones de CO2 evitadas.',
     pasos: [
-      'Cierra la sesión activa y navega a /legal/medicion en incógnito.',
-      'Recorre el submenú de anclas de la derecha (Qué medimos, Cómo lo calculamos, Nuestras equivalencias, Seguridad digital, Por qué importa, Limitaciones, IA y transparencia, Transparencia, En resumen) haciendo clic en cada una.',
-      'Confirma que ningún texto usa palabras absolutas prohibidas (exacto, preciso, 100%, garantiza) — debe leerse siempre en lenguaje prudente (estimado, promediado, de referencia).',
+      'Visita la página de metodología de medición.',
+      'Lee la explicación de los factores de emisión utilizados por tipo de material.',
+      'Consulta las fuentes bibliográficas y estándares internacionales de referencia.'
     ],
-    esperado: 'Todas las anclas del submenú llevan a su sección correcta sin recargar la página. El contenido usa lenguaje objetivo en todo momento, nunca promesas absolutas.',
+    esperado: 'El documento transmite rigor metodológico y comprensión sencilla para cualquier persona interesada.',
+    journeys: ['Cliente Final', 'Directivo', 'Admin Operativa']
   },
   {
     id: 'pub-10', categoria: 'Páginas Públicas', ruta: '/legal/ia', critica: false,
-    titulo: 'Transparencia de IA - documento público',
-    descripcion: 'Verifica que el documento de uso de inteligencia artificial cargue y explique con claridad dónde se usa IA en la plataforma.',
+    titulo: 'Transparencia sobre el uso ético de la IA',
+    descripcion: 'Informa con honestidad cómo utilizamos modelos de visión e inteligencia artificial para asistir en los diagnósticos sin reemplazar el criterio humano.',
     pasos: [
-      'Navega a /legal/ia en incógnito.',
-      'Confirma que el documento carga sin error y describe los puntos reales donde el sistema usa IA (detección de muebles, sugerencia de precio de mercado).',
+      'Abre la sección de transparencia en inteligencia artificial.',
+      'Revisa los principios éticos, privacidad de las imágenes y rol orientativo de la IA.'
     ],
-    esperado: 'La página carga sin 404/500 y el contenido coincide con el uso real de IA del sistema, sin prometer capacidades que no existen.',
+    esperado: 'El texto genera tranquilidad al usuario sobre cómo se procesan sus fotos y datos.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'pub-11', categoria: 'Páginas Públicas', ruta: '/legal/reglamento', critica: false,
-    titulo: 'Reglamento - documento público',
-    descripcion: 'Verifica la carga del reglamento de uso de la plataforma.',
+    titulo: 'Reglamento y normas de convivencia de la plataforma',
+    descripcion: 'Establece pautas de respeto mutuo, uso responsable de las herramientas y buenas prácticas dentro de la comunidad de Reúso.',
     pasos: [
-      'Navega a /legal/reglamento en incógnito.',
-      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+      'Abre el reglamento de la plataforma.',
+      'Revisa las normas básicas de convivencia y uso de los servicios.'
     ],
-    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+    esperado: 'El documento es accesible y fomenta un entorno de trabajo colaborativo y responsable.',
+    journeys: ['Admin Operativa', 'Cliente Final']
   },
   {
     id: 'pub-12', categoria: 'Páginas Públicas', ruta: '/legal/confidencialidad', critica: false,
-    titulo: 'Acuerdo de confidencialidad - documento público',
-    descripcion: 'Verifica la carga del texto del Acuerdo de Confidencialidad (distinto del flujo real de firma, que vive en /legal/firma/[token]).',
+    titulo: 'Acuerdo de confidencialidad y resguardo de datos',
+    descripcion: 'Detalla el compromiso mutuo de confidencialidad respecto a los datos comerciales y de sostenibilidad compartidos en la plataforma.',
     pasos: [
-      'Navega a /legal/confidencialidad en incógnito.',
-      'Confirma que el documento carga completo y no ofrece ningún botón de firma directa (ese flujo se retiró, ver /legal/confidencialidad-firma).',
+      'Consulta el acuerdo de confidencialidad en la web.',
+      'Revisa las cláusulas sobre el resguardo de secretos industriales y datos de clientes.'
     ],
-    esperado: 'La página carga sin error, muestra solo el texto legal, sin ningún formulario de firma abierto al público.',
+    esperado: 'El acuerdo brinda seguridad jurídica y tranquilidad a las empresas aliadas.',
+    journeys: ['Directivo', 'Admin Operativa']
   },
   {
     id: 'pub-13', categoria: 'Páginas Públicas', ruta: '/legal/confidencialidad-firma', critica: false,
-    titulo: 'Aviso de enlace de firma retirado',
-    descripcion: 'El enlace público abierto de firma se retiró a propósito (ahora la firma es por invitación cerrada, iniciada solo por super_admin desde /admin/firmas) — esta página debe explicarlo, no intentar ofrecer un formulario.',
+    titulo: 'Claridad cuando un enlace temporal ya caducó',
+    descripcion: 'Si una persona intenta acceder a un enlace de firma que ya expiró o fue firmado previamente, se le explica la situación con amabilidad.',
     pasos: [
-      'Navega a /legal/confidencialidad-firma en incógnito.',
-      'Confirma que la página explica que el enlace abierto ya no existe y redirige conceptualmente al proceso real (/legal/firma/[token], por invitación).',
+      'Visita un enlace de firma que ya no esté activo.',
+      'Observa el mensaje que se despliega en pantalla.'
     ],
-    esperado: 'La página no ofrece ningún formulario de firma abierto al público. Deja claro que el proceso ahora es por invitación cerrada.',
+    esperado: 'Aparece un mensaje comprensible explicando por qué el enlace ya no está disponible y ofreciendo solicitar uno nuevo.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-14', categoria: 'Páginas Públicas', ruta: '/legal/cookies/preferencias', critica: false,
-    titulo: 'Panel de preferencias de cookies - interactivo',
-    descripcion: 'A diferencia del resto de páginas legales (solo texto), esta es un panel real con checkboxes y guardado de preferencias.',
+    titulo: 'Control personalizado de preferencias de privacidad',
+    descripcion: 'Permite a cualquier visitante elegir qué tipos de cookies consiente activar (necesarias, analíticas o de preferencia) en cualquier momento.',
     pasos: [
-      'Navega a /legal/cookies/preferencias en incógnito.',
-      'Activa y desactiva las cookies funcionales/analíticas (las esenciales deben quedar siempre bloqueadas activas, sin poder apagarlas).',
-      'Haz clic en "Guardar preferencias", recarga la página y confirma que el estado elegido persiste.',
-      'Haz clic en "Reiniciar mis preferencias" y confirma que vuelve al estado por defecto.',
+      'Abre el panel de preferencias de cookies.',
+      'Activa o desactiva las cookies opcionales a tu gusto.',
+      'Guarda tus preferencias y comprueba que se respeten.'
     ],
-    esperado: 'Las cookies esenciales nunca se pueden desactivar. Guardar y reiniciar preferencias funciona y persiste entre recargas.',
+    esperado: 'Tus decisiones se guardan con respeto y el panel te permite cambiarlas cuando lo desees.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-15', categoria: 'Páginas Públicas', ruta: '/legal/firma/[token]', critica: true,
-    titulo: 'Firma de confidencialidad por invitación - los 4 estados',
-    descripcion: 'Flujo cerrado, de un solo uso, iniciado solo por super_admin desde /admin/firmas. Verifica los 4 estados posibles del token, no solo el camino feliz.',
+    titulo: 'Proceso guiado para firmar acuerdos digitales',
+    descripcion: 'Acompaña al directivo firmante paso a paso para leer el convenio, estampar su firma digital y descargar su copia firmada.',
     pasos: [
-      'Desde /admin/firmas, genera una nueva solicitud de firma y copia el enlace con token real.',
-      'Abre el enlace en incógnito: debe mostrar el formulario real de firma (nombre, identidad, canvas de firma).',
-      'Firma y envía. Vuelve a abrir el MISMO enlace: debe mostrar "Documento ya firmado", nunca dejar firmar dos veces.',
-      'Genera una segunda solicitud, y en la base de datos (o esperando su expiración real) fuerza el estado a expirado. Ábrelo: debe mostrar "Enlace expirado".',
-      'Prueba un token inventado que no existe en la base: debe mostrar el estado inválido.',
+      'Abre el enlace de invitación para firmar un acuerdo.',
+      'Lee el texto completo del convenio.',
+      'Dibuja o confirma tu firma y presiona finalizar.'
     ],
-    esperado: 'Cada uno de los 4 estados (válido, firmado, expirado, inválido) muestra su pantalla correcta. Nunca se puede firmar dos veces con el mismo enlace ni con un token que no existe.',
+    esperado: 'El sistema confirma la firma exitosa y te entrega una copia digital para tu archivo.',
+    journeys: ['Directivo', 'Admin Operativa']
   },
   {
     id: 'pub-16', categoria: 'Páginas Públicas', ruta: '/verificar', critica: false,
-    titulo: 'Índice de verificación - sin código en la URL',
-    descripcion: 'Verifica qué pasa cuando alguien llega a /verificar sin un código específico (a diferencia de /verificar/[codigo], que sí lo tiene).',
+    titulo: 'Búsqueda y verificación de autenticidad de reportes',
+    descripcion: 'Buscador público donde cualquier persona puede ingresar el código impreso en un certificado para validar su veracidad.',
     pasos: [
-      'Navega a /verificar (sin ningún código) en incógnito.',
-      'Confirma que la página ofrece un campo para introducir el código a mano, en vez de un error confuso.',
+      'Ve a la página principal de verificación.',
+      'Escribe un código de informe en la casilla de búsqueda.',
+      'Presiona consultar.'
     ],
-    esperado: 'La página muestra una entrada clara para pegar o escribir el código RCO2, sin exponer ningún dato de informes ajenos.',
+    esperado: 'El sistema te muestra el informe correspondiente o te avisa si el código ingresado contiene algún error de tipeo.',
+    journeys: ['Cliente Final', 'Directivo']
   },
   {
     id: 'pub-17', categoria: 'Páginas Públicas', ruta: '/legal/terminos', critica: false,
-    titulo: 'Términos y condiciones - documento público',
-    descripcion: 'Verifica la carga del documento de términos y condiciones (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    titulo: 'Términos de uso claros y comprensibles',
+    descripcion: 'Condiciones generales de uso de la plataforma redactadas con lenguaje humano y sin rodeos innecesarios.',
     pasos: [
-      'Navega a /legal/terminos en incógnito.',
-      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+      'Visita la página de términos de servicio.',
+      'Recorre el índice y revisa los derechos y responsabilidades de los usuarios.'
     ],
-    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+    esperado: 'La lectura es amena, ordenada y fácil de comprender para cualquier persona.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-18', categoria: 'Páginas Públicas', ruta: '/legal/privacidad', critica: false,
-    titulo: 'Política de privacidad - documento público',
-    descripcion: 'Verifica la carga del documento de privacidad (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    titulo: 'Política de privacidad y cuidado de información',
+    descripcion: 'Explica con total transparencia qué datos se recolectan, para qué se usan y cómo cuidamos la información privada de cada usuario.',
     pasos: [
-      'Navega a /legal/privacidad en incógnito.',
-      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+      'Abre la política de privacidad.',
+      'Comprueba las secciones sobre derechos de rectificación y eliminación de datos.'
     ],
-    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+    esperado: 'El documento transmite seriedad, confianza y respeto por la privacidad de las personas.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-19', categoria: 'Páginas Públicas', ruta: '/legal/datos', critica: false,
-    titulo: 'Tratamiento de datos - documento público',
-    descripcion: 'Verifica la carga del documento de tratamiento de datos (uno de los 6 editables desde /admin/legal, ver adm-22).',
+    titulo: 'Autorización y respeto en el uso de tus datos',
+    descripcion: 'Detalla el marco de protección de datos personales conforme a la ley y las garantías que brindamos en su tratamiento.',
     pasos: [
-      'Navega a /legal/datos en incógnito.',
-      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
+      'Consulta la política de tratamiento de datos.',
+      'Revisa los canales oficiales para ejercer tus derechos de consulta o reclamo.'
     ],
-    esperado: 'La página carga sin error, con navegación y formato consistente con las demás páginas de /legal.',
+    esperado: 'El texto cumple con la normativa vigente y ofrece canales de atención directos y claros.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
   {
     id: 'pub-20', categoria: 'Páginas Públicas', ruta: '/legal/cookies', critica: false,
-    titulo: 'Política de cookies - documento público',
-    descripcion: 'Verifica la carga del documento de política de cookies (uno de los 6 editables desde /admin/legal, ver adm-22) — distinto de /legal/cookies/preferencias (pub-14), que es el panel para cambiar el consentimiento, no el texto de la política.',
+    titulo: 'Información sencilla sobre el uso de cookies',
+    descripcion: 'Explica qué son las cookies, qué función cumplen para mejorar tu experiencia y cómo puedes gestionarlas en tu navegador.',
     pasos: [
-      'Navega a /legal/cookies en incógnito.',
-      'Confirma que el documento carga completo, con el mismo submenú de anclas que el resto de páginas legales.',
-      'Confirma que el enlace hacia /legal/cookies/preferencias (el panel de consentimiento) funciona desde aquí.',
+      'Entra a la política de cookies.',
+      'Revisa la tabla descriptiva de cada cookie utilizada en el sitio.'
     ],
-    esperado: 'La página carga sin error, con navegación consistente, y el enlace a preferencias de cookies funciona.',
+    esperado: 'La tabla es comprensible y ayuda al usuario a entender el motivo de cada elemento de navegación.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PANEL ADMIN
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'adm-17', categoria: 'Panel Admin', ruta: '/admin/catalogo-pendientes', critica: false,
-    titulo: 'Catálogo pendientes - ítems detectados sin match',
-    descripcion: 'Revisa los ítems que la IA del Cotizador no pudo encuadrar en ningún nombre del catálogo (sin_match), a la espera de que el super_admin decida si se agregan.',
+    titulo: 'Revisión de materiales nuevos propuestos',
+    descripcion: 'Revisa aquellos ítems o materiales que los usuarios ingresaron y que no coincidían con el catálogo estándar, para homologarlos.',
     pasos: [
-      'Inicia sesión como super_admin y entra a /admin/catalogo-pendientes.',
-      'Confirma que la lista muestra ítems reales pendientes (o el estado vacío si no hay ninguno).',
-      'Si hay alguno, prueba aprobarlo o descartarlo.',
+      'Entra a la bandeja de ítems pendientes de catálogo.',
+      'Revisa la descripción que escribió el colaborador.',
+      'Asócialo a una categoría oficial o crea una nueva con su factor correspondiente.'
     ],
-    esperado: 'La lista carga sin error. Aprobar/descartar un pendiente actualiza su estado sin recargar la página completa.',
+    esperado: 'El material queda homologado y enriquecerá los futuros cálculos del equipo.',
+    journeys: ['Admin Operativa', 'Empleado']
   },
   {
     id: 'adm-18', categoria: 'Panel Admin', ruta: '/admin/catalogo-restringido', critica: false,
-    titulo: 'Catálogo restringido - otorgar/revocar acceso',
-    descripcion: 'Esta pantalla otorga o revoca acceso a ítems YA marcados como restringidos (el marcado en sí se hace desde /admin/categorias). Confirma que el estado vacío explica bien esa diferencia.',
+    titulo: 'Permisos de acceso a catálogos exclusivos',
+    descripcion: 'Permite otorgar o retirar acceso a listas de materiales o precios especiales para ciertas empresas aliadas.',
     pasos: [
-      'Entra a /admin/catalogo-restringido sin ningún ítem restringido todavía.',
-      'Confirma que el estado vacío explica cómo restringir un ítem por primera vez (enlace a /admin/categorias).',
-      'Restringe un ítem desde /admin/categorias, vuelve a /admin/catalogo-restringido y otórgale acceso a una empresa de prueba.',
+      'Abre la administración de catálogos restringidos.',
+      'Selecciona una empresa y asígnale permiso para consultar el catálogo especial.',
+      'Verifica que solo los colaboradores autorizados puedan seleccionarlo.'
     ],
-    esperado: 'El estado vacío es explicativo, no un simple "sin resultados". Otorgar/revocar acceso a una empresa funciona y se refleja de inmediato.',
+    esperado: 'El acceso se actualiza de inmediato protegiendo la exclusividad de los acuerdos comerciales.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-19', categoria: 'Panel Admin', ruta: '/admin/contenido', critica: false,
-    titulo: 'Editor de contenido de la landing',
-    descripcion: 'Edita el hero y las estadísticas de la landing principal (no cubre landing2, fuera de alcance a propósito).',
+    titulo: 'Actualización sencilla de textos de la página web',
+    descripcion: 'Permite actualizar titulares, testimonios o preguntas frecuentes de la web pública sin necesidad de tocar código.',
     pasos: [
-      'Entra a /admin/contenido como super_admin.',
-      'Cambia un texto del hero o una estadística, guarda.',
-      'Abre la landing (/) en otra pestaña incógnito y confirma que el cambio se ve reflejado.',
+      'Ingresa al editor de contenido de la página principal.',
+      'Modifica un título o texto destacado en el borrador.',
+      'Previsualiza el resultado y publica los cambios.'
     ],
-    esperado: 'El cambio se guarda y aparece en la landing pública sin necesidad de reconstruir el sitio.',
-  },
-  {
-    id: 'adm-20', categoria: 'Panel Admin', ruta: '/admin/correos', critica: false,
-    titulo: 'Correos administrativos - envío y seguimiento',
-    descripcion: 'Verifica el envío de un correo masivo/dirigido y su seguimiento de aperturas y clics (tabla admin_correos_destinatarios).',
-    pasos: [
-      'Entra a /admin/correos y haz clic en "Nuevo" (/admin/correos/nuevo).',
-      'Redacta un correo de prueba dirigido a tu propio correo y envíalo.',
-      'Ábrelo desde tu bandeja de entrada, haz clic en algún enlace dentro.',
-      'Vuelve a /admin/correos/[id] de ese envío y confirma que el contador de aperturas y clics subió.',
-    ],
-    esperado: 'El correo se envía y llega. Las métricas de apertura/clic se actualizan reales, no quedan en cero.',
+    esperado: 'La página pública refleja los nuevos textos con el formato y estilo adecuados.',
+    journeys: ['Admin Operativa', 'Cliente Final']
   },
   {
     id: 'adm-21', categoria: 'Panel Admin', ruta: '/admin/firmas', critica: true,
-    titulo: 'Firmas de confidencialidad - generar invitación',
-    descripcion: 'Único lugar desde donde se puede iniciar una solicitud de firma (el enlace público abierto ya no existe, ver pub-13/pub-15).',
+    titulo: 'Invitación a firmar acuerdos de confidencialidad',
+    descripcion: 'Permite generar invitaciones digitales para que los representantes de nuevas empresas firmen acuerdos antes de iniciar operaciones.',
     pasos: [
-      'Entra a /admin/firmas y haz clic en "Nueva" (/admin/firmas/nueva).',
-      'Completa los datos del destinatario y genera la solicitud.',
-      'Confirma que el enlace generado funciona en /legal/firma/[token] (ver pub-15).',
+      'Ve a la sección de firmas de acuerdos.',
+      'Ingresa el nombre y correo del representante de la empresa.',
+      'Envía la invitación digital con enlace seguro para su firma.'
     ],
-    esperado: 'La solicitud se crea, aparece en la lista con estado "pendiente", y el enlace generado abre el formulario de firma real.',
+    esperado: 'El destinatario recibe el correo con su enlace personal para revisar y firmar el documento.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-22', categoria: 'Panel Admin', ruta: '/admin/legal', critica: false,
-    titulo: 'Editor de documentos legales (6 documentos)',
-    descripcion: 'El sidebar lo enlaza hoy como "Documentos", no "Legal" — nombre ambiguo, no falta de funcionalidad. Confirma que el editor real de los 6 documentos funciona.',
+    titulo: 'Gestión y claridad de documentos legales',
+    descripcion: 'Permite actualizar términos y condiciones, políticas de privacidad y acuerdos de medición de forma ordenada y versionada.',
     pasos: [
-      'Entra a /admin/legal como super_admin.',
-      'Edita un párrafo de cualquiera de los 6 documentos (términos, privacidad, datos, cookies, reglamento, confidencialidad) y guarda.',
-      'Abre la página pública correspondiente en /legal/... y confirma que el cambio se refleja.',
+      'Abre el gestor de documentos legales en el panel.',
+      'Selecciona el documento a revisar (por ejemplo, Política de Privacidad).',
+      'Actualiza las cláusulas necesarias y guarda la nueva versión.'
     ],
-    esperado: 'El guardado funciona para los 6 documentos y el cambio aparece de inmediato en la página pública correspondiente.',
+    esperado: 'Los usuarios pueden consultar la versión vigente en las páginas públicas de forma transparente.',
+    journeys: ['Admin Operativa', 'Cliente Final']
   },
   {
     id: 'adm-23', categoria: 'Panel Admin', ruta: '/admin/status', critica: false,
-    titulo: 'Estado del sistema - vista de super_admin',
-    descripcion: 'Distinta de la pública /status (pub-04): aquí el super_admin gestiona incidencias activas, no solo las ve.',
+    titulo: 'Supervisión de salud y disponibilidad del servicio',
+    descripcion: 'Permite verificar que todos los servicios auxiliares (base de datos, correos, inteligencia artificial) estén operando con normalidad.',
     pasos: [
-      'Entra a /admin/status como super_admin.',
-      'Crea una incidencia de prueba, confírmala visible en la lista de "Incidencias Activas" (fondo gris muy tenue derivado de #474747, nunca gris suelto).',
-      'Márcala como resuelta y confirma que desaparece de la lista de activas.',
+      'Ingresa a la pantalla de estado del sistema.',
+      'Comprueba que los indicadores de cada servicio estén en verde.',
+      'Si hay un mantenimiento programado, publica un aviso informativo para los usuarios.'
     ],
-    esperado: 'Crear y resolver una incidencia funciona. El fondo de "Incidencias Activas" usa el token correcto, no un gris inventado.',
+    esperado: 'La pantalla muestra el estado de salud de la plataforma de manera clara y accesible.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-24', categoria: 'Panel Admin', ruta: '/admin/planes', critica: true,
-    titulo: 'Planes editables - flujo borrador → publicar',
-    descripcion: 'config_planes es la fuente real de precios y límites (reemplaza los valores fijos que antes vivían en pricing.ts/plan-limits.ts). Nada cambia para nadie hasta hacer clic en Publicar.',
+    titulo: 'Diseño y ajuste de planes de suscripción',
+    descripcion: 'Permite crear o ajustar las condiciones y beneficios de los planes en modo borrador antes de ponerlos a disposición de las empresas.',
     pasos: [
-      'Entra a /admin/planes como super_admin y cambia el precio COP de un plan (ej. Circular Lab). Haz clic en "Guardar borrador".',
-      'Abre la landing pública en otra pestaña/incógnito y confirma que el precio publicado NO cambió todavía.',
-      'Vuelve a /admin/planes y haz clic en "Publicar" (debe estar deshabilitado si no hay borrador sin publicar).',
-      'Recarga la landing pública y confirma que el precio nuevo sí aparece.',
-      'Revisa /admin/logs y confirma que quedó un registro de auditoría "plan_publicado" con los valores antes/después.',
+      'Ve a la gestión de planes de suscripción.',
+      'Crea un nuevo borrador de plan definiendo límite de cálculos y herramientas incluidas.',
+      'Revisa los detalles y haz clic en publicar cuando esté listo.'
     ],
-    esperado: 'El borrador nunca se ve fuera de /admin/planes. Publicar aplica el cambio de inmediato en la landing y en los límites reales aplicados (plan-limits.ts), y queda registrado en auditoría.',
+    esperado: 'El plan se publica ordenadamente y se ofrece a las empresas interesadas.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
   {
     id: 'adm-25', categoria: 'Panel Admin', ruta: '/admin/planes', critica: false,
-    titulo: 'Planes editables - negociación por empresa',
-    descripcion: 'Una empresa con negociación propia (empresas_negociaciones) reemplaza POR COMPLETO los 6 valores del plan global para ella, nunca se mezcla campo por campo.',
+    titulo: 'Acuerdos personalizados de suscripción por empresa',
+    descripcion: 'Permite acordar límites o condiciones especiales con una empresa en particular según el volumen de sus operaciones.',
     pasos: [
-      'En /admin/planes, busca una empresa real con el selector de la sección de negociaciones.',
-      'Crea una negociación con precio y límites distintos a los del plan publicado de esa empresa.',
-      'Confirma en /admin/empresas/[id] o en el comportamiento real de límites de esa empresa que los valores de la negociación son los que aplican, no los del plan global.',
-      'Elimina la negociación y confirma que la empresa vuelve a los valores del plan publicado.',
+      'Selecciona una empresa específica dentro de la gestión de planes.',
+      'Ajusta la cantidad de cálculos mensuales acordados en su negociación comercial.',
+      'Guarda el acuerdo personalizado.'
     ],
-    esperado: 'Mientras existe la negociación, gana siempre sobre el plan global. Al eliminarla, la empresa vuelve limpio a los valores publicados del plan.',
+    esperado: 'La empresa disfruta de sus condiciones a la medida sin afectar a las demás organizaciones.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PANEL EMPRESA
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'emp-14', categoria: 'Panel Empresa', ruta: '/empresa/clientes', critica: true,
-    titulo: 'CRM - listado y detalle de clientes (modelo B2B ancla)',
-    descripcion: 'Un cliente empresa puede tener varios contactos reales con una fila-ancla que representa a la empresa misma.',
+    titulo: 'Directorio comercial de clientes y aliados B2B',
+    descripcion: 'Organiza la lista de empresas y compradores a quienes les envías cotizaciones o informes de reutilización.',
     pasos: [
-      'Inicia sesión como empresa_admin o empleado y entra a /empresa/clientes.',
-      'Crea un cliente tipo empresa con al menos 2 contactos.',
-      'Entra al detalle (/empresa/clientes/[id]) y confirma que la fila-ancla y los contactos se distinguen con claridad.',
-      'Convierte un contacto en cliente independiente (B2C) y confirma que queda separado del original.',
+      'Ve al directorio de clientes de la empresa.',
+      'Busca a un cliente por su nombre comercial o persona de contacto.',
+      'Revisa el resumen de cotizaciones enviadas a cada uno.'
     ],
-    esperado: 'La fila-ancla y los contactos reales se muestran diferenciados. Convertir un contacto a cliente independiente no rompe ni duplica datos.',
+    esperado: 'El listado permite acceder ágilmente a los clientes y ver el historial comercial con cada uno.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
+
+  // ══════════════════════════════════════════════════════════════════
+  // AUTENTICACIÓN
+  // ══════════════════════════════════════════════════════════════════
   {
     id: 'auth-13', categoria: 'Autenticación', ruta: '/confirmar-email', critica: true,
     titulo: 'Confirmación de correo tras registro',
-    descripcion: 'Verifica el enlace que Supabase Auth envía tras un registro nuevo.',
+    descripcion: 'Permite al usuario validar su dirección de correo electrónico mediante el enlace de confirmación recibido tras registrarse.',
     pasos: [
-      'Regístrate con un correo de prueba nuevo desde /registro.',
-      'Abre el correo de confirmación recibido y haz clic en el enlace.',
-      'Confirma que /confirmar-email procesa el token y deja al usuario con sesión iniciada.',
+      'Regístrate con un correo nuevo.',
+      'Abre el correo de confirmación y haz clic en el botón de confirmación.',
+      'Verifica la pantalla a la que llegas en el navegador.'
     ],
-    esperado: 'El enlace confirma la cuenta y redirige a un estado con sesión activa, sin pedir login de nuevo.',
+    esperado: 'El enlace confirma tu correo exitosamente y te da la bienvenida directa a la plataforma.',
+    journeys: ['Admin Operativa', 'Empleado', 'Cliente Final']
   },
   {
     id: 'auth-14', categoria: 'Autenticación', ruta: '/unsubscribe', critica: false,
-    titulo: 'Desuscripción de correos',
-    descripcion: 'Verifica el enlace de baja que va en los correos administrativos (ligado al seguimiento de admin_correos_destinatarios, ver adm-20).',
+    titulo: 'Preferencia para dejar de recibir correos',
+    descripcion: 'Respeta la decisión de cualquier usuario que desee darse de baja de correos informativos con un solo clic.',
     pasos: [
-      'Desde un correo administrativo real (o el token de prueba de adm-20), haz clic en el enlace de "darse de baja".',
-      'Confirma que /unsubscribe marca al destinatario como desuscrito sin pedir login.',
-      'Envía un nuevo correo administrativo a ese mismo destinatario y confirma que no lo recibe.',
+      'Abre el pie de página de cualquier notificación por correo y haz clic en "Darme de baja" o "Unsubscribe".',
+      'Observa el mensaje de confirmación en la página que se abre.'
     ],
-    esperado: 'La baja funciona sin sesión, y un destinatario desuscrito no vuelve a recibir correos administrativos.',
+    esperado: 'La pantalla confirma de forma clara que tu preferencia ha sido guardada y que no recibirás más correos de esa lista.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo', 'Cliente Final']
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PANEL ADMIN
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'adm-26', categoria: 'Panel Admin', ruta: '/admin/firmas/nueva', critica: false,
+    titulo: 'Preparación de nuevo acuerdo para firma digital',
+    descripcion: 'Facilita adjuntar o redactar un nuevo convenio de cooperación para enviarlo a los directivos firmantes.',
+    pasos: [
+      'Inicia la creación de una nueva solicitud de firma.',
+      'Ingresa los datos de los firmantes y adjunta las cláusulas acordadas.',
+      'Envía la solicitud para firma electrónica.'
+    ],
+    esperado: 'El proceso se genera con un enlace seguro y trazabilidad de recepción.',
+    journeys: ['Admin Operativa', 'Directivo']
+  },
+  {
+    id: 'adm-20', categoria: 'Panel Admin', ruta: '/admin/qa', critica: false,
+    titulo: 'Control continuo de la calidad de experiencia de usuario',
+    descripcion: 'Permite al equipo de producto revisar que cada flujo, pantalla y botón funcione con suavidad para cada tipo de persona usuaria.',
+    pasos: [
+      'Navega por las tarjetas de pruebas del panel de calidad.',
+      'Filtra por categoría o busca un flujo específico.',
+      'Marca el resultado de la prueba y registra notas si encuentras algo que mejorar.'
+    ],
+    esperado: 'El tablero de control refleja el estado de calidad en tiempo real y recuerda tu progreso.',
+    journeys: ['Admin Operativa', 'Directivo']
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PANEL EMPRESA
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'emp-15', categoria: 'Panel Empresa', ruta: '/empresa/clientes/[id]', critica: false,
+    titulo: 'Ficha detallada del cliente y acuerdos comerciales',
+    descripcion: 'Revisa el perfil completo de un cliente específico, sus condiciones de servicio y las cotizaciones activas que tiene con tu empresa.',
+    pasos: [
+      'Haz clic sobre un cliente en el directorio.',
+      'Revisa sus datos de contacto y cotizaciones asociadas.',
+      'Actualiza notas comerciales o persona de contacto de ser necesario.'
+    ],
+    esperado: 'La ficha centraliza toda la información comercial de forma ordenada y fácil de consultar.',
+    journeys: ['Admin Operativa', 'Directivo']
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // PÁGINAS PÚBLICAS
+  // ══════════════════════════════════════════════════════════════════
+  {
+    id: 'pub-21', categoria: 'Páginas Públicas', ruta: '/sistema-diseno', critica: false,
+    titulo: 'Armonía visual y legibilidad en botones y textos',
+    descripcion: 'Verifica que la paleta de colores corporativos, tipografía y componentes básicos ofrezcan una lectura descansada y atractiva.',
+    pasos: [
+      'Abre la guía del sistema de diseño.',
+      'Revisa la colección de botones, etiquetas, alertas e inputs.',
+      'Comprueba que los contrastes sean agradables y no cansen la vista.'
+    ],
+    esperado: 'Todos los componentes mantienen una identidad estética cuidada, coherente y accesible.',
+    journeys: ['Cliente Final', 'Empleado', 'Admin Operativa']
+  },
+  {
+    id: 'pub-22', categoria: 'Páginas Públicas', ruta: '/sistema-diseno/demo-panel', critica: false,
+    titulo: 'Distribución cómoda en pantallas de todo tamaño',
+    descripcion: 'Comprueba que las tarjetas, menús y paneles se acomoden con elegancia tanto en teléfonos pequeños como en computadoras de escritorio.',
+    pasos: [
+      'Abre la demostración de layouts complejos.',
+      'Cambia el tamaño de la ventana para simular un móvil, tableta y monitor grande.'
+    ],
+    esperado: 'Los elementos se adaptan fluidamente manteniendo la legibilidad y el orden en todo momento.',
+    journeys: ['Cliente Final', 'Empleado', 'Directivo']
+  },
+
+]
+
+// Candado contra IDs duplicados (bug real 2026-09-06): 2 pruebas con el
+// mismo `id` en categorías distintas rompían React — al cambiar de
+// categoría, React confunde su contabilidad interna de esas 2 tarjetas y
+// deja una de ellas "huérfana" en el DOM en vez de quitarla, mezclando
+// pruebas de un módulo con las del siguiente. Esto revienta apenas se
+// agregue una fila nueva sin revisar que el id sea único, en vez de dejar
+// el bug silencioso hasta que alguien lo note navegando.
+{
+  const vistos = new Map<string, number>()
+  for (const t of TAREAS_INICIALES) vistos.set(t.id, (vistos.get(t.id) ?? 0) + 1)
+  const duplicados = Array.from(vistos.entries()).filter(([, n]) => n > 1).map(([id]) => id)
+  if (duplicados.length > 0) {
+    throw new Error(`[admin/qa] IDs de tarea duplicados en TAREAS_INICIALES: ${duplicados.join(', ')}. Cada id debe ser único en todo el archivo, no solo dentro de su categoría.`)
   }
-]
-
-// ── Categorías con colores ─────────────────────────────────────────────────────
-
-const CATEGORIAS = [
-  { key: 'Autenticación',       icono: Lock,        color: '#59A6E4' },
-  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43' },
-  { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E' },
-  { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C' },
-  { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E' },
-  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2' },
-  { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3' },
-  { key: 'Modo Noche',          icono: Moon,         color: '#6C8E24' }, // Pistacho Intenso (legible en modo día derivado de #D6F391)
-  { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B' },
-  { key: 'Seguridad',           icono: ShieldCheck,  color: '#985fa1' }, // Violeta Trazabilidad
-  { key: 'Alertas',             icono: Bell,         color: '#FF8A65' }, // Coral
-  { key: 'Settings',            icono: Gear,         color: '#849696' },
-  { key: 'Ayuda',               icono: BookOpen,     color: '#00C2D1' }, // Cyan
-  { key: 'APIs & Validaciones', icono: FileText,     color: '#5C6BC0' }, // Indigo
-]
-
-const ESTADO_CFG: Record<Estado, { label: string; color: string; icono: typeof CheckCircle }> = {
-  pendiente: { label: 'Pendiente',           color: 'rgba(128,128,128,0.4)', icono: Circle },
-  ok:        { label: 'Aprobada',            color: '#38B98E',               icono: CheckCircle },
-  falla:     { label: 'Falla',               color: '#FF5E4B',               icono: XCircle },
-  parcial:   { label: 'Cumple parcialmente', color: '#F6BF3E',               icono: MinusCircle },
-  no_clara:  { label: 'No es clara',         color: '#59A6E4',               icono: Question },
 }
-
-interface QAIntento {
-  id: string
-  ts: string
-  etiqueta: string
-  alcance: 'completo' | string
-  tareas: { id: string; estado: Estado; notas: string }[]
-}
-
-const LS_KEY_V3 = 'reuso_qa_v3'
-const LS_KEY = 'reuso_qa_v2'
 
 // ── Componente ─────────────────────────────────────────────────────────────────
 
@@ -1919,9 +2036,28 @@ export default function QAPage() {
     }))
   )
   const [expandida, setExpandida] = useState<string | null>(null)
-  const [mostrarInforme, setMostrarInforme] = useState(false)
+  const [mostrarInforme, setMostrarInforme] = useState<'final' | 'parcial' | null>(null)
+  const [alcanceParcial, setAlcanceParcial] = useState<string | null>(null)
   const [mostrarHistorial, setMostrarHistorial] = useState<string | null>(null) // null | 'completo' | nombreCategoria
   const [intentos, setIntentos] = useState<QAIntento[]>([])
+
+  // Bloquear scroll de la página y cerrar con tecla Escape cuando un modal esté abierto
+  useEffect(() => {
+    if (!mostrarInforme && !mostrarHistorial) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setMostrarInforme(null)
+        setMostrarHistorial(null)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [mostrarInforme, mostrarHistorial])
   const [categoriaActiva, setCategoriaActiva] = useState(CATEGORIAS[0].key)
   // Dos formas de recorrer las mismas 117 pruebas. 'modulo' agrupa por tema
   // (Autenticación, Panel Admin…), que sirve para revisar un área completa.
@@ -1963,31 +2099,38 @@ export default function QAPage() {
 
   useEffect(() => {
     try {
-      // Cargar v3 (tiene borrador + historial de intentos)
-      const savedV3 = localStorage.getItem(LS_KEY_V3)
-      if (savedV3) {
-        const store = JSON.parse(savedV3) as { intentos?: QAIntento[]; borrador?: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[] }
+      localStorage.removeItem(LS_KEY_V4)
+      localStorage.removeItem(LS_KEY_V3)
+      localStorage.removeItem(LS_KEY)
+      // Cargar v5 (tiene borrador + historial de intentos)
+      const savedV5 = localStorage.getItem(LS_KEY_V5)
+      if (savedV5) {
+        const store = JSON.parse(savedV5) as { intentos?: QAIntento[]; borrador?: { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; resultado_dia?: Estado; resultado_noche?: Estado; ts?: number }[] }
         if (store.borrador?.length) {
           setTareas(prev => prev.map(t => {
             const s = store.borrador!.find(p => p.id === t.id)
-            return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [], resultado_dia: s.resultado_dia, resultado_noche: s.resultado_noche } : t
+            if (!s) return t
+            const rawEstado = s.estado as string
+            const estadoValido: Estado = ['ok', 'parcial', 'no_se_entiende', 'falla'].includes(rawEstado) ? (rawEstado as Estado) : 'pendiente'
+            const diaRaw = s.resultado_dia as string | undefined
+            const diaValido: Estado = diaRaw === 'ok' || diaRaw === 'falla' ? (diaRaw as Estado) : 'pendiente'
+            const nocheRaw = s.resultado_noche as string | undefined
+            const nocheValido: Estado = nocheRaw === 'ok' || nocheRaw === 'falla' ? (nocheRaw as Estado) : 'pendiente'
+            const notasLimpias = estadoValido === 'ok' ? '' : (s.notas || '')
+            return {
+              ...t,
+              estado: estadoValido,
+              notas: notasLimpias,
+              rolesProbados: s.rolesProbados || [],
+              resultado_dia: diaValido,
+              resultado_noche: nocheValido
+            }
           }))
           const ts = store.borrador[0]?.ts
           if (ts) setUltimoGuardado(new Date(ts))
         }
         if (store.intentos?.length) setIntentos(store.intentos)
         return
-      }
-      // Migración desde v2
-      const savedV2 = localStorage.getItem(LS_KEY)
-      if (savedV2) {
-        const parsed = JSON.parse(savedV2) as { id: string; estado: Estado; notas: string; rolesProbados?: RolPrueba[]; ts?: number }[]
-        setTareas(prev => prev.map(t => {
-          const s = parsed.find(p => p.id === t.id)
-          return s ? { ...t, estado: s.estado, notas: s.notas, rolesProbados: s.rolesProbados || [] } : t
-        }))
-        const savedTs = parsed[0]?.ts
-        if (savedTs) setUltimoGuardado(new Date(savedTs))
       }
     } catch { /* ignorar */ }
   }, [])
@@ -2003,9 +2146,9 @@ export default function QAPage() {
         resultado_noche: t.resultado_noche,
         ts: ahora.getTime()
       }))
-      const storeRaw = localStorage.getItem(LS_KEY_V3)
+      const storeRaw = localStorage.getItem(LS_KEY_V5)
       const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { intentos?: QAIntento[] }) : {}
-      localStorage.setItem(LS_KEY_V3, JSON.stringify({ intentos: storeExistente.intentos || [], borrador }))
+      localStorage.setItem(LS_KEY_V5, JSON.stringify({ intentos: storeExistente.intentos || [], borrador }))
       setUltimoGuardado(ahora)
       setSegundosRestantes(180)
       setGuardadoReciente(true)
@@ -2029,11 +2172,48 @@ export default function QAPage() {
       }
       const actualizados = [nuevo, ...prev]
       try {
-        const storeRaw = localStorage.getItem(LS_KEY_V3)
+        const storeRaw = localStorage.getItem(LS_KEY_V5)
         const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { borrador?: unknown }) : {}
-        localStorage.setItem(LS_KEY_V3, JSON.stringify({ ...storeExistente, intentos: actualizados }))
+        localStorage.setItem(LS_KEY_V5, JSON.stringify({ ...storeExistente, intentos: actualizados }))
       } catch { /* ignorar */ }
       return actualizados
+    })
+    
+    // Al guardar un intento, resetear todas las tareas (o las del alcance) para una nueva evaluación en blanco, EXCEPTUANDO LAS OK.
+    setTareas(prev => prev.map(t => {
+      if (alcance !== 'completo' && t.categoria !== alcance) return t
+      if (t.estado === 'ok') return t // Si ya pasó, no se reevalúa en la próxima ronda
+      return {
+        ...t,
+        estado: 'pendiente',
+        notas: '',
+        resultado_dia: undefined,
+        resultado_noche: undefined
+      }
+    }))
+  }, [])
+
+  const borrarIntento = useCallback((id: string) => {
+    setIntentos(prev => {
+      const filtrados = prev.filter(i => i.id !== id)
+      try {
+        const storeRaw = localStorage.getItem(LS_KEY_V5)
+        const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { borrador?: unknown }) : {}
+        localStorage.setItem(LS_KEY_V5, JSON.stringify({ ...storeExistente, intentos: filtrados }))
+      } catch { /* ignorar */ }
+      return filtrados
+    })
+  }, [])
+
+  const borrarHistoriales = useCallback((alcance: string) => {
+    setIntentos(prev => {
+      const filtrados = prev.filter(i => i.alcance !== alcance)
+      try {
+        const storeRaw = localStorage.getItem(LS_KEY_V5)
+        const storeExistente = storeRaw ? (JSON.parse(storeRaw) as { borrador?: unknown }) : {}
+        localStorage.setItem(LS_KEY_V5, JSON.stringify({ ...storeExistente, intentos: filtrados }))
+      } catch { /* ignorar */ }
+      return filtrados
     })
   }, [])
 
@@ -2049,7 +2229,26 @@ export default function QAPage() {
 
   const actualizar = (id: string, campo: 'estado' | 'notas', valor: string) =>
     setTareas(prev => {
-      const updated = prev.map(t => t.id === id ? { ...t, [campo]: valor } : t)
+      const updated: Tarea[] = prev.map(t => {
+        if (t.id !== id) return t
+        if (campo === 'notas') {
+          return { ...t, notas: valor }
+        }
+        const nuevoEstado: Estado = t.estado === valor ? 'pendiente' : (valor as Estado)
+        if (nuevoEstado === 'ok') {
+          return {
+            ...t,
+            estado: 'ok',
+            notas: '', // Cuando se aprueba, se borran los comentarios
+            resultado_dia: t.resultado_dia === 'falla' ? 'ok' : t.resultado_dia,
+            resultado_noche: t.resultado_noche === 'falla' ? 'ok' : t.resultado_noche,
+          }
+        }
+        return {
+          ...t,
+          estado: nuevoEstado,
+        }
+      })
       guardar(updated)
       return updated
     })
@@ -2071,13 +2270,39 @@ export default function QAPage() {
 
   const actualizarModo = (id: string, modo: 'resultado_dia' | 'resultado_noche', valor: Estado) => {
     setTareas(prev => {
-      const updated = prev.map(t => t.id !== id ? t : { ...t, [modo]: valor })
+      const updated = prev.map(t => {
+        if (t.id !== id) return t
+        const valorActual = t[modo]
+        const nuevoValor: Estado = valorActual === valor ? 'pendiente' : valor
+        const nuevo = { ...t, [modo]: nuevoValor }
+        const otroModo = modo === 'resultado_dia' ? nuevo.resultado_noche : nuevo.resultado_dia
+
+        if (nuevoValor === 'falla' || otroModo === 'falla') {
+          nuevo.estado = 'falla'
+        } else if (nuevoValor === 'ok' && otroModo === 'ok') {
+          nuevo.estado = 'ok'
+          nuevo.notas = ''
+        } else if (nuevoValor === 'ok' && (!otroModo || otroModo === 'pendiente')) {
+          nuevo.estado = 'ok'
+        } else if (nuevoValor === 'pendiente' && otroModo === 'ok') {
+          nuevo.estado = 'ok'
+        } else if (nuevoValor === 'pendiente' && (!otroModo || otroModo === 'pendiente')) {
+          if (nuevo.estado === 'ok') {
+            nuevo.estado = 'pendiente'
+          }
+        }
+        return nuevo
+      })
       guardar(updated)
       return updated
     })
   }
 
   const resetear = () => {
+    localStorage.removeItem(LS_KEY_V5)
+    localStorage.removeItem(LS_KEY_V4)
+    localStorage.removeItem(LS_KEY_V3)
+    localStorage.removeItem(LS_KEY)
     const reseteadas = TAREAS_INICIALES.map(t => ({
       ...t,
       estado: 'pendiente' as Estado,
@@ -2088,19 +2313,21 @@ export default function QAPage() {
       resultado_noche: 'pendiente' as Estado,
     }))
     setTareas(reseteadas)
+    setIntentos([])
     guardar(reseteadas)
-    setMostrarInforme(false)
+    setMostrarInforme(null)
   }
 
   // Métricas
-  const total     = tareas.length
-  const oks       = tareas.filter(t => t.estado === 'ok').length
-  const fallas    = tareas.filter(t => t.estado === 'falla').length
-  const parciales = tareas.filter(t => t.estado === 'parcial').length
-  const no_claras = tareas.filter(t => t.estado === 'no_clara').length
-  const criticas  = tareas.filter(t => t.critica && t.estado === 'falla').length
-  const revisadas = oks + fallas + parciales + no_claras
-  const progreso  = Math.round((revisadas / total) * 100)
+  const total          = tareas.length
+  const oks            = tareas.filter(t => t.estado === 'ok').length
+  const parciales      = tareas.filter(t => t.estado === 'parcial').length
+  const noSeEntiende   = tareas.filter(t => t.estado === 'no_se_entiende').length
+  const fallas         = tareas.filter(t => t.estado === 'falla').length
+  const criticas       = tareas.filter(t => t.critica && t.estado === 'falla').length
+  const pendientes     = tareas.filter(t => t.estado === 'pendiente').length
+  const revisadas      = total - pendientes
+  const progreso       = total > 0 ? Math.round((revisadas / total) * 100) : 0
 
   // Pantallas del recorrido: una por ruta única, en el orden en que aparecen
   // las pruebas. El Map conserva ese orden de inserción.
@@ -2130,36 +2357,162 @@ export default function QAPage() {
   // El contenido del lado se considera pequeño si tiene 2 o menos pruebas
   const contenidoLadoPequeno = tareasCategoria.length <= 2
 
+  const alcanceEfectivoParcial = alcanceParcial ?? (modo === 'modulo' ? categoriaActiva : rutaVigente)
+
   // Generación de informe
-  const generarInforme = () => {
-    const ahora = new Date().toLocaleString('es-CO', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const generarInforme = (tipoParam?: 'final' | 'parcial', alcancesParam?: string, formato: 'completo' | 'compacto' = 'compacto') => {
+    const tipo = tipoParam ?? (mostrarInforme ?? 'final')
+
+    const armarLineaPrueba = (t: Tarea) => {
+      // El estado NO se repite aquí: cada línea ya vive bajo un encabezado
+      // de sección que lo dice ("FALLAS REPORTADAS:", "CUMPLE PARCIAL:"...),
+      // así que ponerlo de nuevo en cada fila es puro gasto de tokens sin
+      // ningún dato nuevo. Texto plano en vez de emoji: mismo significado,
+      // sin el costo de token variable de un emoji.
+      const criticaFlag = t.critica && t.estado !== 'ok' ? ' [CRIT]' : ''
+      const parts = [`[${t.id}] ${t.ruta} — ${t.titulo}${criticaFlag}`]
+
+      // Solo en las que NO pasaron: sin esto, quien recibe el informe (o
+      // quien lo arregla después) no sabe qué se esperaba de verdad, solo
+      // que algo falló — obliga a ir a abrir el catálogo a buscar la
+      // prueba por su id antes de poder hacer algo con el reporte.
+      if (t.estado !== 'ok') parts.push(`Esperado: ${t.esperado}`)
+
+      const rolesStr = (t.rolesProbados || []).map(r => ROL_LABELS[r]).join(',')
+      if (rolesStr) parts.push(`Roles: ${rolesStr}`)
+
+      if (t.resultado_dia === 'ok' || t.resultado_dia === 'falla') parts.push(`Día: ${t.resultado_dia}`)
+      if (t.resultado_noche === 'ok' || t.resultado_noche === 'falla') parts.push(`Noche: ${t.resultado_noche}`)
+
+      if (t.notas.trim()) parts.push(`Notas: ${t.notas.trim()}`)
+
+      return parts.join(' | ')
+    }
+
+    if (tipo === 'parcial') {
+      const esPorTema = modo === 'modulo'
+      const targetScope = alcancesParam ?? alcanceEfectivoParcial
+      const scopeLabel = esPorTema ? `TEMA: ${targetScope}` : `PANTALLA: ${targetScope}`
+      const pruebasScope = esPorTema 
+        ? tareas.filter(t => t.categoria === targetScope)
+        : tareas.filter(t => t.ruta === targetScope)
+
+      const evaluadas = pruebasScope.filter(t => t.estado !== 'pendiente')
+      const oks = evaluadas.filter(t => t.estado === 'ok').length
+      const parciales = evaluadas.filter(t => t.estado === 'parcial').length
+      const dudosas = evaluadas.filter(t => t.estado === 'no_se_entiende').length
+      const fallas = evaluadas.filter(t => t.estado === 'falla').length
+
+      const pendientesScope = pruebasScope.length - evaluadas.length
+      const lineas = [
+        `QA PARCIAL - ${scopeLabel}`,
+        `RESUMEN: ${oks} Aprobadas, ${parciales} Cumple parcial, ${dudosas} No se entiende, ${fallas} Fallas, ${pendientesScope} Pendientes. (Evaluadas: ${evaluadas.length}/${pruebasScope.length})`,
+      ]
+
+      // Críticas primero: es lo primero que hay que arreglar, no debería
+      // depender de en qué orden quedaron en el catálogo.
+      const fallidas = evaluadas.filter(t => t.estado === 'falla').sort((a, b) => (b.critica ? 1 : 0) - (a.critica ? 1 : 0))
+      const dudosasArr = evaluadas.filter(t => t.estado === 'no_se_entiende')
+      const parcialesArr = evaluadas.filter(t => t.estado === 'parcial')
+      const aprobadasArr = evaluadas.filter(t => t.estado === 'ok')
+
+      if (fallidas.length > 0) {
+        lineas.push(``)
+        lineas.push(`FALLAS REPORTADAS:`)
+        for (const t of fallidas) {
+          lineas.push(`- ${armarLineaPrueba(t)}`)
+        }
+      }
+
+      if (dudosasArr.length > 0) {
+        lineas.push(``)
+        lineas.push(`NO SE ENTIENDE:`)
+        for (const t of dudosasArr) {
+          lineas.push(`- ${armarLineaPrueba(t)}`)
+        }
+      }
+
+      if (parcialesArr.length > 0) {
+        lineas.push(``)
+        lineas.push(`CUMPLE PARCIAL:`)
+        for (const t of parcialesArr) {
+          lineas.push(`- ${armarLineaPrueba(t)}`)
+        }
+      }
+
+      if (formato === 'completo' && aprobadasArr.length > 0) {
+        lineas.push(``)
+        lineas.push(`APROBADAS:`)
+        for (const t of aprobadasArr) {
+          lineas.push(`- ${armarLineaPrueba(t)}`)
+        }
+      }
+
+      if (evaluadas.length === 0) {
+        lineas.push(`\n(Sin pruebas evaluadas en este alcance)`)
+      }
+
+      return lineas.join('\n')
+    }
+
+    // INFORME FINAL
+    const evaluadas = tareas.filter(t => t.estado !== 'pendiente')
+    const oksFinal = evaluadas.filter(t => t.estado === 'ok').length
+    const parcialesFinal = evaluadas.filter(t => t.estado === 'parcial').length
+    const dudosasFinal = evaluadas.filter(t => t.estado === 'no_se_entiende').length
+    const fallasFinal = evaluadas.filter(t => t.estado === 'falla').length
+
+    const pendientesFinal = total - evaluadas.length
     const lineas = [
-      `INFORME QA - Calculadora de Reúso`,
-      `Fecha: ${ahora}`,
-      `${'─'.repeat(60)}`,
-      `RESUMEN: ${oks} aprobadas · ${fallas} fallas · ${parciales} parciales · ${no_claras} instrucciones poco claras · ${criticas} críticas fallidas`,
-      `Cobertura: ${progreso} % (${revisadas}/${total} revisadas)`,
-      `${'─'.repeat(60)}`,
+      `QA GLOBAL - REÚSO`,
+      `RESUMEN: ${oksFinal} Aprobadas, ${parcialesFinal} Cumple parcial, ${dudosasFinal} No se entiende, ${fallasFinal} Fallas, ${pendientesFinal} Pendientes. (Cobertura: ${evaluadas.length}/${total})`,
     ]
-    for (const cat of categoriasReactivas) {
-      const grupo = tareas.filter(t => t.categoria === cat.key)
-      if (!grupo.length) continue
-      lineas.push(`\n▸ ${cat.key.toUpperCase()} (${grupo.filter(t => t.estado === 'ok').length}/${grupo.length} ok)`)
-      for (const t of grupo) {
-        const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'parcial' ? '△' : t.estado === 'no_clara' ? '?' : '○'
-        const rolesStr = (t.rolesProbados || []).map(r => ROL_LABELS[r]).join(', ') || 'Ninguno'
-        const diaStr = t.resultado_dia ? ESTADO_CFG[t.resultado_dia].label : 'Sin evaluar'
-        const nocheStr = t.resultado_noche ? ESTADO_CFG[t.resultado_noche].label : 'Sin evaluar'
-        lineas.push(`  ${ic} [${t.critica ? 'CRÍTICA' : 'normal '}] ${t.ruta.padEnd(35)} ${t.titulo}`)
-        lineas.push(`       Perfiles probados: ${rolesStr} | Día: ${diaStr} | Noche: ${nocheStr}`)
-        if (t.notas.trim()) lineas.push(`       Notas: ${t.notas.trim()}`)
+
+    const fallidas = evaluadas.filter(t => t.estado === 'falla')
+    const dudosasArr = evaluadas.filter(t => t.estado === 'no_se_entiende')
+    const parcialesArr = evaluadas.filter(t => t.estado === 'parcial')
+
+    if (fallidas.length > 0) {
+      lineas.push(``)
+      lineas.push(`FALLAS ENCONTRADAS:`)
+      for (const t of fallidas) {
+        lineas.push(`- ${armarLineaPrueba(t)}`)
       }
     }
-    lineas.push(`\n${'─'.repeat(60)}`)
-    if (criticas > 0) lineas.push(`⚠  BLOQUEANTE: ${criticas} prueba(s) crítica(s) fallida(s). Sistema NO apto para producción.`)
-    else if (fallas > 0) lineas.push(`△  ADVERTENCIA: ${fallas} falla(s) no crítica(s). Sistema operable con limitaciones.`)
-    else if (revisadas < total) lineas.push(`○  INCOMPLETO: ${total - revisadas} prueba(s) pendientes.`)
-    else lineas.push(`✓  APROBADO: Todas las pruebas superadas. Sistema listo para producción.`)
+
+    if (dudosasArr.length > 0) {
+      lineas.push(``)
+      lineas.push(`NO SE ENTIENDE:`)
+      for (const t of dudosasArr) {
+        lineas.push(`- ${armarLineaPrueba(t)}`)
+      }
+    }
+
+    if (parcialesArr.length > 0) {
+      lineas.push(``)
+      lineas.push(`CUMPLE PARCIAL:`)
+      for (const t of parcialesArr) {
+        lineas.push(`- ${armarLineaPrueba(t)}`)
+      }
+    }
+
+    if (evaluadas.length === 0) {
+      lineas.push(`\n(Sin pruebas evaluadas aún)`)
+    } else if (fallidas.length === 0 && dudosasArr.length === 0 && parcialesArr.length === 0) {
+      lineas.push(`\n✓ SISTEMA APROBADO: Todas las pruebas evaluadas resultaron exitosas.`)
+    }
+
+    if (formato === 'completo') {
+      const exitosas = evaluadas.filter(t => t.estado === 'ok')
+      if (exitosas.length > 0) {
+        lineas.push(``)
+        lineas.push(`PRUEBAS APROBADAS (RESUMEN):`)
+        for (const t of exitosas) {
+          lineas.push(`- ${armarLineaPrueba(t)}`)
+        }
+      }
+    }
+
     return lineas.join('\n')
   }
 
@@ -2185,11 +2538,17 @@ export default function QAPage() {
   }
 
   const descargar = () => {
-    const blob = new Blob([generarInforme()], { type: 'text/plain;charset=utf-8' })
+    const tipo = mostrarInforme ?? 'final'
+    const scopeVal = alcanceEfectivoParcial
+    const texto = generarInforme(tipo, scopeVal)
+    const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `informe-qa-reuso-${new Date().toISOString().slice(0, 10)}.txt`
+    const suffix = tipo === 'parcial'
+      ? `parcial-${scopeVal.replace(/[\/\s]+/g, '-').replace(/^-|-$/g, '') || (modo === 'modulo' ? 'tema' : 'pantalla')}`
+      : 'final'
+    a.download = `informe-qa-${suffix}-${new Date().toISOString().slice(0, 10)}.txt`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -2271,14 +2630,16 @@ export default function QAPage() {
                 <div>
                   <div className={`text-xs ${theme.textSecondary} opacity-75`}>Progreso General</div>
                   <div className={`text-lg font-bold ${theme.textTitle}`}>{revisadas} de {total} pruebas</div>
-                  <div className={`text-xs ${theme.textSecondary} opacity-60 mt-0.5`}>
-                    <span className="text-[#38B98E] font-semibold">{oks} ok</span>
-                    {' · '}
-                    <span className="text-[#FF5E4B] font-semibold">{fallas} fallas</span>
-                    {' · '}
-                    <span className="text-[#F6BF3E] font-semibold">{parciales} parciales</span>
-                    {' · '}
-                    <span className="text-[#59A6E4] font-semibold">{no_claras} poco claras</span>
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs mt-1">
+                    <span className="text-[#38B98E] font-semibold">{oks} aprobadas</span>
+                    <span className={`${theme.textSecondary} opacity-40`}>·</span>
+                    <span className="text-[#F59E0B] font-semibold">{parciales} parciales</span>
+                    <span className={`${theme.textSecondary} opacity-40`}>·</span>
+                    <span className="text-[#985fa1] font-semibold">{noSeEntiende} no se entiende</span>
+                    <span className={`${theme.textSecondary} opacity-40`}>·</span>
+                    <span className="text-[#FF5E4B] font-semibold">{fallas} fallas{criticas > 0 ? ` (${criticas} crít.)` : ''}</span>
+                    <span className={`${theme.textSecondary} opacity-40`}>·</span>
+                    <span className={`${theme.textSecondary} font-semibold opacity-75`}>{pendientes} pendientes</span>
                   </div>
                 </div>
               </div>
@@ -2354,7 +2715,7 @@ export default function QAPage() {
                 <FileText size={13} /> Historial ({intentos.filter(i => i.alcance === 'completo').length})
               </button>
               <button
-                onClick={() => setMostrarInforme(true)}
+                onClick={() => setMostrarInforme('final')}
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop shrink-0 whitespace-nowrap bg-[#00827C] text-white`}
               >
                 <FileText size={13} /> Informe final
@@ -2535,6 +2896,13 @@ export default function QAPage() {
                               Abrir en otra pestaña
                             </a>
                           )}
+                          <button
+                            type="button"
+                            onClick={() => { setAlcanceParcial(paginaActual.ruta); setMostrarInforme('parcial') }}
+                            className={`text-xs px-2 py-1 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 ${isDark ? 'bg-[#00827C]/20 text-[#00827C] border-[#00827C]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30'}`}
+                          >
+                            <FileText size={11} className="inline mr-1" /> Informe de esta pantalla
+                          </button>
                         </div>
                         <p className={`text-xs ${theme.textSecondary}`}>
                           Pantalla {indicePagina + 1} de {paginas.length} · {paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'} aquí
@@ -2562,36 +2930,30 @@ export default function QAPage() {
                       </button>
                     </div>
                   </div>
-
-                  {/* Salto directo a la primera pantalla que aún tiene pruebas
-                      sin revisar, para no recorrer a mano las ya terminadas. */}
-                  {(() => {
-                    const siguiente = paginas.findIndex(pg => pg.pruebas.some(t => t.estado === 'pendiente'))
-                    if (siguiente === -1 || siguiente === indicePagina) return null
-                    return (
-                      <button
-                        onClick={() => { setRutaActiva(paginas[siguiente].ruta); setExpandida(null) }}
-                        className={`self-start text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} hover:opacity-80`}
-                      >
-                        Ir a la primera pantalla sin revisar ({paginas[siguiente].ruta})
-                      </button>
-                    )
-                  })()}
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
-                  <div>
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <catActual.icono size={16} color={catActual.color} />
-                      <span className="text-xs font-bold" style={{ color: catActual.color }}>
-                        {catActual.key}
-                      </span>
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
+                    <div>
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <catActual.icono size={16} color={catActual.color} />
+                        <span className="text-xs font-bold" style={{ color: catActual.color }}>
+                          {catActual.key}
+                        </span>
+                      </div>
+                      <p className={`text-xs ${theme.textSecondary}`}>
+                        {tareasCategoria.length === 0 ? 'Sin resultados con ese filtro.' : `${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
+                      </p>
                     </div>
-                    <p className={`text-xs ${theme.textSecondary}`}>
-                      {tareasCategoria.length === 0 ? 'Sin resultados con ese filtro.' : `${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
-                    </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => { setAlcanceParcial(catActual.key); setMostrarInforme('parcial') }}
+                    className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 shrink-0 ${isDark ? 'bg-[#00827C]/20 text-[#00827C] border-[#00827C]/30' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30'}`}
+                  >
+                    <FileText size={11} className="inline mr-1" /> Informe de este tema
+                  </button>
                 </div>
               )}
             </div>
@@ -2641,8 +3003,16 @@ export default function QAPage() {
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
                           <span className={`text-sm font-semibold transition-colors duration-300 group-hover:!text-[var(--card-color)] ${theme.textTitle}`}>{tarea.titulo}</span>
                           {tarea.critica && (
-                            <span className="text-xs font-bold px-1.5 py-0.5 rounded tracking-wide bg-[#FF5E4B]/12 text-[#FF5E4B]">
-                              CRÍTICA
+                            <span
+                              className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md border transition-all"
+                              style={{
+                                backgroundColor: `${tareaCat.color}15`,
+                                borderColor: `${tareaCat.color}35`,
+                                color: tareaCat.color,
+                              }}
+                            >
+                              <AlertCircle size={11} color={tareaCat.color} />
+                              <span>Crítica</span>
                             </span>
                           )}
                         </div>
@@ -2672,11 +3042,11 @@ export default function QAPage() {
                             {(['resultado_dia', 'resultado_noche'] as const).map(campo => {
                               const val = tarea[campo]
                               const label = campo === 'resultado_dia' ? '☀ Día' : '☾ Noche'
-                              const color = val === 'ok' ? '#38B98E' : val === 'falla' ? '#FF5E4B' : val === 'parcial' ? '#F6BF3E' : val === 'no_clara' ? '#59A6E4' : undefined
+                              const color = val === 'ok' ? '#38B98E' : val === 'falla' ? '#FF5E4B' : undefined
                               return (
                                 <span
                                   key={campo}
-                                  className="text-xs px-1.5 rounded font-semiboldr flex items-center gap-0.5"
+                                  className="text-xs px-1.5 rounded font-semibold flex items-center gap-0.5"
                                   style={{
                                     background: color ? `${color}18` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                                     border: `1px solid ${color ? `${color}40` : isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'}`,
@@ -2686,8 +3056,6 @@ export default function QAPage() {
                                   {label}
                                   {val === 'ok' && <CheckCircle size={8} />}
                                   {val === 'falla' && <XCircle size={8} />}
-                                  {val === 'parcial' && <MinusCircle size={8} />}
-                                  {val === 'no_clara' && <Question size={8} />}
                                 </span>
                               )
                             })}
@@ -2697,23 +3065,14 @@ export default function QAPage() {
 
                       {/* Botones de estado rápido con tooltip explicativo abajo */}
                       <div className="flex gap-1 items-center relative z-30" onClick={e => e.stopPropagation()}>
-                        {(['ok', 'falla', 'parcial', 'no_clara', 'pendiente'] as Estado[]).map((est, idx) => {
+                        {(['ok', 'parcial', 'no_se_entiende', 'falla', 'pendiente'] as Estado[]).map((est, idx) => {
                           const Ic = ESTADO_CFG[est].icono
                           const activo = tarea.estado === est
                           const cfg = ESTADO_CFG[est]
-                          const tooltipText = est === 'ok'
-                            ? 'Aprobada'
-                            : est === 'falla'
-                            ? 'Falla'
-                            : est === 'parcial'
-                            ? 'Cumple parcialmente'
-                            : est === 'no_clara'
-                            ? 'No es clara / Duda'
-                            : 'Pendiente (sin revisar)'
+                          const tooltipText = cfg.label
 
-                          // Alineación para evitar que se corte en los bordes de la tarjeta
-                          const isRight = idx >= 3 // 'no_clara' y 'pendiente' alinean hacia adentro a la derecha
-                          const isLeft = idx === 0  // 'ok' alinea hacia adentro a la izquierda
+                          const isRight = idx >= 3
+                          const isLeft = idx <= 1
 
                           return (
                             <div key={est} className="relative group/qa-tip">
@@ -2721,7 +3080,7 @@ export default function QAPage() {
                                 type="button"
                                 onClick={() => actualizar(tarea.id, 'estado', est)}
                                 aria-label={tooltipText}
-                                className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer relative z-10"
+                                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 cursor-pointer relative z-10"
                                 style={{
                                   border: `1px solid ${activo ? cfg.color : isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
                                   background: activo ? `${cfg.color}18` : 'transparent',
@@ -2744,8 +3103,8 @@ export default function QAPage() {
                                   className="w-2 h-2 rotate-45 mb-[-4px] z-10"
                                   style={{
                                     backgroundColor: '#00827C',
-                                    marginRight: isRight ? '14px' : undefined,
-                                    marginLeft: isLeft ? '14px' : undefined,
+                                    marginRight: isRight ? '12px' : undefined,
+                                    marginLeft: isLeft ? '12px' : undefined,
                                   }}
                                 />
                                 <span
@@ -2774,9 +3133,24 @@ export default function QAPage() {
                         className={`px-5 pb-5 border-t ${theme.divider} relative z-10`}
                         style={{ paddingLeft: 20 }}
                       >
-                        <p className={`text-sm ${theme.textSecondary} mt-3 mb-4 leading-relaxed`}>
+                        <p className={`text-sm ${theme.textSecondary} mt-3 mb-3 leading-relaxed`}>
                           {tarea.descripcion}
                         </p>
+
+                        {tarea.journeys && tarea.journeys.length > 0 && (
+                          <div className="mb-4 flex flex-wrap items-center gap-2">
+                            <span className={`text-xs font-semibold ${theme.textSecondary} opacity-75`}>Perfiles afectados:</span>
+                            {tarea.journeys.map(j => (
+                              <span 
+                                key={j} 
+                                className="inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium border transition-all" 
+                                style={{ backgroundColor: `${tareaCat.color}15`, borderColor: `${tareaCat.color}35`, color: tareaCat.color }}
+                              >
+                                {j}
+                              </span>
+                            ))}
+                          </div>
+                        )}
 
                         {/* Pasos */}
                         {tarea.pasos.length > 0 && (
@@ -2846,21 +3220,21 @@ export default function QAPage() {
                                 {esDia ? '☀ Resultado Modo Día' : '☾ Resultado Modo Noche'}
                               </p>
                               <div className="flex gap-1.5 flex-wrap">
-                                {(['ok', 'falla', 'parcial', 'no_clara'] as Estado[]).map(est => {
+                                {(['ok', 'falla'] as Estado[]).map(est => {
                                   const Ic = ESTADO_CFG[est].icono
                                   const activo = valorActual === est
                                   return (
                                     <button
                                       key={est}
                                       onClick={() => actualizarModo(tarea.id, campo, est)}
-                                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 active:scale-95"
+                                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:scale-105 active:scale-95"
                                       style={{
                                         background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}15`,
-                                        color: activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color,
+                                        color: activo ? '#fff' : ESTADO_CFG[est].color,
                                         border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                       }}
                                     >
-                                      <Ic size={10} color={activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color} />
+                                      <Ic size={10} color={activo ? '#fff' : ESTADO_CFG[est].color} />
                                       {ESTADO_CFG[est].label}
                                     </button>
                                   )
@@ -2877,7 +3251,7 @@ export default function QAPage() {
                         <textarea
                           value={tarea.notas}
                           onChange={e => actualizar(tarea.id, 'notas', e.target.value)}
-                          placeholder="Observaciones, tiempos medidos, errores encontrados, capturas..."
+                          placeholder="Qué hiciste, qué pasó y qué esperabas ver en su lugar. Así se puede arreglar sin adivinar."
                           rows={3}
                           onClick={e => e.stopPropagation()}
                           className={`w-full px-4 py-3 rounded-xl border text-xs ${theme.textPrimary} resize-vertical outline-none transition-all font-sans`}
@@ -2893,21 +3267,21 @@ export default function QAPage() {
                           Veredicto general de la prueba
                         </p>
                         <div className="flex gap-2 flex-wrap">
-                          {(['ok', 'falla', 'parcial', 'no_clara'] as Estado[]).map(est => {
+                          {(['ok', 'parcial', 'no_se_entiende', 'falla'] as Estado[]).map(est => {
                             const Ic = ESTADO_CFG[est].icono
                             const activo = tarea.estado === est
                             return (
                               <button
                                 key={est}
-                                onClick={() => { actualizar(tarea.id, 'estado', est); setExpandida(null) }}
+                                onClick={() => { actualizar(tarea.id, 'estado', est); if (est === 'ok') setExpandida(null) }}
                                 className="flex-1 min-w-[120px] py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-105 active:scale-95"
                                 style={{
                                   background: activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}15`,
-                                  color: activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color,
+                                  color: activo ? '#fff' : ESTADO_CFG[est].color,
                                   border: `1px solid ${activo ? ESTADO_CFG[est].color : `${ESTADO_CFG[est].color}40`}`,
                                 }}
                               >
-                                <Ic size={13} color={activo ? (est === 'parcial' ? '#474747' : '#fff') : ESTADO_CFG[est].color} />
+                                <Ic size={13} color={activo ? '#fff' : ESTADO_CFG[est].color} />
                                 {ESTADO_CFG[est].label}
                               </button>
                             )
@@ -2941,7 +3315,7 @@ export default function QAPage() {
                   <FileText size={13} /> Ver historial ({intentos.filter(i => i.alcance === categoriaActiva).length})
                 </button>
                 <button
-                  onClick={() => setMostrarInforme(true)}
+                  onClick={() => { setAlcanceParcial(modo === 'modulo' ? categoriaActiva : rutaVigente); setMostrarInforme('parcial') }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold hover:scale-105 active:scale-95 transition-all hover-pop ${isDark ? 'bg-[#00827C]/20 text-[#00827C]' : 'bg-[#00827C]/10 text-[#00827C]'}`}
                 >
                   <FileText size={13} /> Informe parcial
@@ -3029,119 +3403,194 @@ export default function QAPage() {
       </div>
 
       {/* ── Modal de informe ─────────────────────────────────────────────────── */}
-      {mostrarInforme && (
+      {mounted && Boolean(mostrarInforme) && createPortal(
         <div
-          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[2500] p-4"
-          onClick={() => setMostrarInforme(false)}
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 sm:p-6 animate-in fade-in duration-150"
+          onClick={() => setMostrarInforme(null)}
         >
           <div
             onClick={e => e.stopPropagation()}
-            className="rounded-2xl max-w-2xl w-full max-h-[88vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)]"
-            style={{ animation: 'modalIn 0.2s ease-out' }}
+            className="rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 relative"
           >
             {/* Header del modal */}
-            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
-              <div>
-                <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>Informe de QA</h2>
-                <p className={`text-xs ${theme.textSecondary} mt-0.5`}>{revisadas}/{total} revisadas · {criticas} críticas fallidas</p>
+            {(() => {
+              const targetScope = alcanceEfectivoParcial
+              const esPorTema = modo === 'modulo'
+              const tareasEnScope = mostrarInforme === 'parcial'
+                ? (esPorTema ? tareas.filter(t => t.categoria === targetScope) : tareas.filter(t => t.ruta === targetScope))
+                : tareas
+              const oksScope = tareasEnScope.filter(t => t.estado === 'ok').length
+              const parcialesScope = tareasEnScope.filter(t => t.estado === 'parcial').length
+              const dudosasScope = tareasEnScope.filter(t => t.estado === 'no_se_entiende').length
+              const fallasScope = tareasEnScope.filter(t => t.estado === 'falla').length
+              const criticasScope = tareasEnScope.filter(t => t.critica && t.estado === 'falla').length
+              const evaluadasScope = tareasEnScope.filter(t => t.estado !== 'pendiente').length
+
+              return (
+                <>
+                  <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
+                    <div className="flex-1 min-w-0 pr-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>
+                          {mostrarInforme === 'parcial' ? `Informe Parcial QA (${esPorTema ? 'Por tema' : 'Por pantalla'})` : 'Informe Final de QA'}
+                        </h2>
+                        {mostrarInforme === 'parcial' && (
+                          <div className="relative inline-block">
+                            <select
+                              value={targetScope}
+                              onChange={e => setAlcanceParcial(e.target.value)}
+                              className={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg border cursor-pointer outline-none ${theme.inputBg} ${theme.textPrimary}`}
+                              style={{ borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.2)' }}
+                            >
+                              {esPorTema ? (
+                                categoriasReactivas.map(cat => {
+                                  const cPruebas = tareas.filter(t => t.categoria === cat.key)
+                                  const evalCount = cPruebas.filter(t => t.estado !== 'pendiente').length
+                                  return (
+                                    <option key={cat.key} value={cat.key} className={isDark ? 'bg-[#2A2A2A] text-white' : 'bg-white text-black'}>
+                                      {cat.key} ({evalCount}/{cPruebas.length} evaluadas)
+                                    </option>
+                                  )
+                                })
+                              ) : (
+                                paginas.map(p => {
+                                  const evalCount = p.pruebas.filter(t => t.estado !== 'pendiente').length
+                                  return (
+                                    <option key={p.ruta} value={p.ruta} className={isDark ? 'bg-[#2A2A2A] text-white' : 'bg-white text-black'}>
+                                      {p.ruta} ({evalCount}/{p.pruebas.length} evaluadas)
+                                    </option>
+                                  )
+                                })
+                              )}
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                      <p className={`text-xs ${theme.textSecondary} mt-0.5`}>
+                        {evaluadasScope}/{tareasEnScope.length} evaluadas en {mostrarInforme === 'parcial' ? (esPorTema ? `Tema: ${targetScope}` : targetScope) : 'todo el sistema'} · {criticasScope} críticas fallidas
+                      </p>
+                    </div>
+                    <div className="flex gap-2 items-center shrink-0">
+                      <button
+                        onClick={() => navigator.clipboard.writeText(generarInforme(mostrarInforme!, targetScope))}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer hover-copy hover-press ${theme.cardBg} ${theme.textSecondary}`}
+                      >
+                        <ClipboardText size={12} /> Copiar
+                      </button>
+                      <button
+                        onClick={descargar}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer hover-download hover-press ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
+                      >
+                        <DownloadSimple size={12} /> .txt
+                      </button>
+                      <button
+                        onClick={() => setMostrarInforme(null)}
+                        className={`ml-1 flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                        aria-label="Cerrar"
+                      >
+                        <X size={20} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-4 p-5 sm:p-6 overflow-y-auto min-h-0 flex-1">
+
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 flex-shrink-0">
+                    {[
+                      { l: 'Aprobadas',      v: oksScope,                               c: '#38B98E' },
+                      { l: 'Cumple parcial', v: parcialesScope,                         c: '#F59E0B' },
+                      { l: 'No se entiende', v: dudosasScope,                           c: '#985fa1' },
+                      { l: 'Fallas',         v: fallasScope,                            c: '#FF5E4B' },
+                      { l: 'Pendientes',     v: tareasEnScope.length - evaluadasScope,  c: isDark ? '#A0AEC0' : '#849696' },
+                    ].map(m => (
+                      <div key={m.l} className="text-center py-2.5 px-2 rounded-xl" style={{ background: `${m.c}12`, border: `1px solid ${m.c}25` }}>
+                        <p className="m-0 text-xl font-bold" style={{ color: m.c }}>{m.v}</p>
+                        <p className="m-0 text-[11px] font-bold truncate" style={{ color: m.c }}>{m.l}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <pre
+                    className={`flex-1 min-h-[140px] overflow-y-auto rounded-xl p-4 text-xs leading-relaxed whitespace-pre-wrap break-words font-mono border ${theme.textPrimary}`}
+                    style={{ background: 'var(--bg-input)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)'}` }}
+                  >
+                    {generarInforme(mostrarInforme!, targetScope)}
+                  </pre>
+
+                  <div
+                    className="px-4 py-3 rounded-xl flex-shrink-0"
+                    style={{
+                      background: criticasScope > 0 ? 'rgba(255,94,75,0.10)' : fallasScope > 0 ? 'rgba(255,94,75,0.08)' : 'rgba(56,185,142,0.10)',
+                      border: `1px solid ${criticasScope > 0 ? 'rgba(255,94,75,0.25)' : fallasScope > 0 ? 'rgba(255,94,75,0.20)' : 'rgba(56,185,142,0.20)'}`,
+                    }}
+                  >
+                    <p className="m-0 text-sm font-bold" style={{ color: criticasScope > 0 ? '#FF5E4B' : fallasScope > 0 ? '#FF5E4B' : '#38B98E' }}>
+                      {criticasScope > 0
+                        ? `${criticasScope} prueba(s) crítica(s) fallida(s).`
+                        : fallasScope > 0
+                        ? `${fallasScope} falla(s) detectada(s).`
+                        : evaluadasScope < tareasEnScope.length
+                        ? `${tareasEnScope.length - evaluadasScope} prueba(s) pendientes por evaluar.`
+                        : 'Todas las pruebas evaluadas aprobadas con éxito.'}
+                    </p>
+                  </div>
+                  </div>
+                </>
+              )
+            })()}
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ── Modal de historial ───────────────────────────────────────────────────── */}
+      {mounted && mostrarHistorial && createPortal(
+        <div
+          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 sm:p-6 animate-in fade-in duration-150"
+          onClick={() => setMostrarHistorial(null)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150 relative"
+          >
+            <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
+              <div className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-3">
+                  <h2 className={`text-lg font-bold ${theme.textTitle} m-0 flex items-center gap-2`}>
+                    {mostrarHistorial === 'completo' ? 'Historial general' : `Historial - ${mostrarHistorial}`}
+                  </h2>
+                  {mostrarHistorial === 'completo' ? (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#38B98E]/15 text-[#38B98E]">Global</span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#F6BF3E]/15 text-[#F6BF3E]">Parcial</span>
+                  )}
+                </div>
+                <p className={`text-xs ${theme.textSecondary} mt-0.5`}>
+                  {intentos.filter(i => i.alcance === mostrarHistorial).length} intento(s) guardado(s)
+                </p>
               </div>
-              <div className="flex gap-2 items-center">
+              <div className="flex items-center gap-2">
+                {intentos.filter(i => i.alcance === mostrarHistorial).length > 0 && (
+                  <button
+                    onClick={() => {
+                      if(confirm(`¿Estás seguro de borrar todo el historial ${mostrarHistorial === 'completo' ? 'global' : 'de ' + mostrarHistorial}?`)) {
+                        borrarHistoriales(mostrarHistorial)
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 px-3 h-10 rounded-xl text-xs font-medium bg-[#FF5E4B]/10 text-[#FF5E4B] hover:bg-[#FF5E4B]/20 transition-colors`}
+                  >
+                    <Trash size={14} /> Borrar todos
+                  </button>
+                )}
                 <button
-                  onClick={() => navigator.clipboard.writeText(generarInforme())}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer hover-copy hover-press ${theme.cardBg} ${theme.textSecondary}`}
-                >
-                  <ClipboardText size={12} /> Copiar
-                </button>
-                <button
-                  onClick={descargar}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-0 text-xs font-bold cursor-pointer hover-download hover-press ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
-                >
-                  <DownloadSimple size={12} /> .txt
-                </button>
-                <button
-                  onClick={() => setMostrarInforme(false)}
-                  className={`ml-1 flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                  onClick={() => setMostrarHistorial(null)}
+                  className={`flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
                   aria-label="Cerrar"
                 >
                   <X size={20} />
                 </button>
               </div>
             </div>
-            <div className="flex flex-col gap-4 p-6 overflow-y-auto flex-1">
-
-            <div className="flex gap-3">
-              {[
-                { l: 'Aprobadas', v: oks,       c: '#38B98E' },
-                { l: 'Fallas',    v: fallas,     c: '#FF5E4B' },
-                { l: 'Parciales', v: parciales,  c: '#F6BF3E' },
-                { l: 'Poco claras', v: no_claras, c: '#59A6E4' },
-                { l: 'Críticas ✗', v: criticas,  c: '#FF5E4B' },
-              ].map(m => (
-                <div key={m.l} className="flex-1 text-center py-3 px-2 rounded-xl" style={{ background: `${m.c}12`, border: `1px solid ${m.c}25` }}>
-                  <p className="m-0 text-2xl font-bold" style={{ color: m.c }}>{m.v}</p>
-                  <p className="m-0 text-xs font-bold" style={{ color: m.c }}>{m.l}</p>
-                </div>
-              ))}
-            </div>
-
-            <pre
-              className={`flex-1 overflow-y-auto rounded-xl p-4 text-xs leading-relaxed whitespace-pre-wrap break-words font-mono border ${theme.textPrimary}`}
-              style={{ background: 'var(--bg-input)', border: `1px solid ${isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)'}` }}
-            >
-              {generarInforme()}
-            </pre>
-
-            <div
-              className="px-4 py-3 rounded-xl"
-              style={{
-                background: criticas > 0 ? 'rgba(255,94,75,0.10)' : fallas > 0 ? 'rgba(246,191,62,0.08)' : 'rgba(56,185,142,0.10)',
-                border: `1px solid ${criticas > 0 ? 'rgba(255,94,75,0.25)' : fallas > 0 ? 'rgba(246,191,62,0.20)' : 'rgba(56,185,142,0.20)'}`,
-              }}
-            >
-              <p className="m-0 text-sm font-bold" style={{ color: criticas > 0 ? '#FF5E4B' : fallas > 0 ? '#F6BF3E' : '#38B98E' }}>
-                {criticas > 0
-                  ? `${criticas} prueba(s) crítica(s) fallida(s). El sistema NO está listo para producción.`
-                  : fallas > 0
-                  ? `${fallas} falla(s) no crítica(s). Operable con limitaciones.`
-                  : revisadas < total
-                  ? `${total - revisadas} prueba(s) aún pendientes.`
-                  : 'Todas las pruebas aprobadas. Sistema listo.'}
-              </p>
-            </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Modal de historial ───────────────────────────────────────────────────── */}
-      {mostrarHistorial && (
-        <div
-          className="fixed inset-0 bg-[#474747]/60 backdrop-blur-xs flex items-center justify-center z-[2500] p-4"
-          onClick={() => setMostrarHistorial(null)}
-        >
-          <div
-            onClick={e => e.stopPropagation()}
-            className="rounded-2xl max-w-2xl w-full max-h-[80vh] flex flex-col border overflow-hidden bg-[var(--bg-card)] border-[var(--border)]"
-            style={{ animation: 'modalIn 0.2s ease-out' }}
-          >
-            <div className={`flex items-center justify-between px-6 py-4 border-b ${theme.divider} ${isDark ? 'bg-[#D6F391]/[0.05]' : 'bg-[#00827C]/[0.03]'}`}>
-              <div>
-                <h2 className={`text-lg font-bold ${theme.textTitle} m-0`}>
-                  {mostrarHistorial === 'completo' ? 'Historial general' : `Historial - ${mostrarHistorial}`}
-                </h2>
-                <p className={`text-xs ${theme.textSecondary} mt-0.5`}>
-                  {intentos.filter(i => i.alcance === mostrarHistorial).length} intento(s) guardado(s)
-                </p>
-              </div>
-              <button
-                onClick={() => setMostrarHistorial(null)}
-                className={`flex items-center justify-center w-10 h-10 rounded-xl border hover-rotate-90 hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80 transition-opacity`}
-                aria-label="Cerrar"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            <div className="overflow-y-auto flex-1 p-4 flex flex-col gap-3">
+            <div className="overflow-y-auto min-h-0 flex-1 p-4 flex flex-col gap-3">
               {intentos.filter(i => i.alcance === mostrarHistorial).length === 0 ? (
                 <p className={`text-sm text-center py-8 ${theme.textSecondary} opacity-60`}>
                   Aún no hay intentos guardados. Usa &quot;Guardar módulo&quot; o &quot;Guardar general&quot; para crear un snapshot.
@@ -3158,7 +3607,7 @@ export default function QAPage() {
                   `Resultado: ${okCount} ok · ${failCount} fallas · ${pct} %`,
                   '─'.repeat(50),
                   ...intento.tareas.map(t => {
-                    const ic = t.estado === 'ok' ? '✓' : t.estado === 'falla' ? '✗' : t.estado === 'parcial' ? '△' : t.estado === 'no_clara' ? '?' : '○'
+                    const ic = t.estado === 'ok' ? '✓' : '✗'
                     return `${ic} ${t.id}${t.notas ? `\n   Notas: ${t.notas}` : ''}`
                   })
                 ].join('\n')
@@ -3186,9 +3635,18 @@ export default function QAPage() {
                             a.click()
                             URL.revokeObjectURL(a.href)
                           }}
-                          className={`flex items-center gap-1 px-2 py-1 rounded-lg border text-xs hover-download hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80`}
+                          className={`flex items-center gap-1 px-2 py-1.5 rounded-lg border text-xs hover-download hover-press ${theme.cardBg} ${theme.textSecondary} hover:opacity-80`}
                         >
                           <DownloadSimple size={12} /> .txt
+                        </button>
+                        <button
+                          onClick={() => {
+                            if(confirm('¿Eliminar este intento del historial?')) borrarIntento(intento.id)
+                          }}
+                          className={`flex items-center justify-center w-8 h-8 rounded-lg border text-xs bg-[#FF5E4B]/10 text-[#FF5E4B] hover:bg-[#FF5E4B]/20 transition-colors border-transparent`}
+                          title="Eliminar intento"
+                        >
+                          <Trash size={14} />
                         </button>
                       </div>
                     </div>
@@ -3202,7 +3660,9 @@ export default function QAPage() {
               })}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
+
       )}
     </div>
   )

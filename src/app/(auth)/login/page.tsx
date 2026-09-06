@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { Eye, EyeOff as EyeSlash, Mail as Envelope, KeyRound as LockKey, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, Loader2 as CircleNotch, CircleUser as UserCircle, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
+import { Eye, EyeOff as EyeSlash, Mail as Envelope, KeyRound as LockKey, ChevronLeft as CaretLeft, ChevronRight as CaretRight, Loader2 as CircleNotch, CircleUser as UserCircle, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import type { Rol } from '@/types'
@@ -128,7 +128,6 @@ export default function LoginPage() {
   const [passError, setPassError] = useState(false)
   const [recordarme, setRecordarme] = useState(false)
   const [idioma, setIdioma] = useState<'ES' | 'ENG'>('ES')
-  const [idiomaOpen, setIdiomaOpen] = useState(false)
 
   useEffect(() => {
     const guardado = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
@@ -289,8 +288,8 @@ export default function LoginPage() {
       <section className="anim-left w-full lg:w-[40%] flex flex-col justify-between relative overflow-y-auto z-10 bg-primary">
 
         {/* Header */}
-        <header className="flex items-center justify-between w-full px-8 pt-8 md:px-12">
-          <Link href="/" aria-label="Ir al inicio">
+        <header className="flex items-center justify-center sm:justify-between w-full px-8 pt-8 md:px-12 flex-shrink-0">
+          <Link href="/" aria-label="Ir al inicio" className="flex items-center justify-center">
             <Image
               src="/logo-completo.svg"
               alt="Calculadora de Reúso"
@@ -300,9 +299,9 @@ export default function LoginPage() {
               style={{ width: 140, height: 44, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
             />
           </Link>
-          <p className="text-sm text-secondary font-medium hidden sm:block">
+          <p className="text-sm text-secondary font-medium hidden sm:block text-right ml-auto pl-4">
             {T[idioma].cuentaQ}{' '}
-            <Link href="/registro" className="text-brand hover:underline transition-colors">
+            <Link href="/registro" className="text-brand font-semibold hover:underline transition-colors">
               {T[idioma].registrate}
             </Link>
           </p>
@@ -328,7 +327,15 @@ export default function LoginPage() {
           )}
 
           {error && (
-            <div role="alert" className="mb-6 p-3 rounded-md bg-error/10 border border-error/30 text-error text-sm text-center font-medium">
+            <div
+              role="alert"
+              className="mb-6 p-3.5 rounded-md text-sm text-center font-semibold transition-colors"
+              style={{
+                background: isDark ? 'rgba(255, 94, 75, 0.16)' : 'rgba(255, 94, 75, 0.08)',
+                border: isDark ? '1px solid rgba(255, 155, 155, 0.45)' : '1px solid rgba(255, 94, 75, 0.3)',
+                color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)',
+              }}
+            >
               {error}
             </div>
           )}
@@ -356,7 +363,11 @@ export default function LoginPage() {
                   className={`w-full py-3.5 pl-12 pr-4 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-none focus:ring-1 transition-all text-sm shadow-sm ${emailError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
                 />
               </div>
-              {emailError && <p className="text-xs text-error px-1">{T[idioma].errorCorreo}</p>}
+              {emailError && (
+                <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
+                  {T[idioma].errorCorreo}
+                </p>
+              )}
             </div>
 
             {/* Campo Contraseña */}
@@ -388,7 +399,11 @@ export default function LoginPage() {
                   {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              {passError && <p className="text-xs text-error px-1">{T[idioma].errorPass}</p>}
+              {passError && (
+                <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
+                  {T[idioma].errorPass}
+                </p>
+              )}
             </div>
 
             {/* Recuérdame + ¿Olvidaste? */}
@@ -432,7 +447,11 @@ export default function LoginPage() {
                   .
                 </span>
               </div>
-              {legalError && <p className="text-xs text-error px-1">{T[idioma].errorLegal}</p>}
+              {legalError && (
+                <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
+                  {T[idioma].errorLegal}
+                </p>
+              )}
             </div>
 
             {/* Botón principal */}
@@ -453,9 +472,9 @@ export default function LoginPage() {
               ) : T[idioma].ingresar}
             </button>
 
-            <p className="text-xs text-center text-secondary mt-2 sm:hidden">
+            <p className="text-sm font-medium text-center text-secondary mt-4 sm:hidden">
               {T[idioma].cuentaQ}{' '}
-              <Link href="/registro" className="text-brand hover:underline transition-colors">
+              <Link href="/registro" className="text-brand font-semibold hover:underline transition-colors">
                 {T[idioma].registrate}
               </Link>
             </p>
@@ -488,78 +507,10 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Controles de accesibilidad - idioma + modo noche */}
+            {/* Controles de accesibilidad - modo noche */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-
-            {/* Selector de idioma - dropdown */}
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => setIdiomaOpen(o => !o)}
-                className="hover-pop"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  fontSize: 11, fontWeight: 600, padding: '5px 10px',
-                  borderRadius: 6, border: '1px solid var(--border-light)',
-                  cursor: 'pointer', background: 'transparent',
-                  color: 'var(--text-secondary)', transition: 'all 0.2s',
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${idioma === 'ES' ? 'es' : 'gb'}.svg`}
-                  alt=""
-                  style={{
-                    width: 16,
-                    height: 11,
-                    borderRadius: '2px',
-                    objectFit: 'cover',
-                    border: '1px solid rgba(0,0,0,0.15)',
-                  }}
-                />
-                {idioma}
-                <CaretDown size={11} style={{ transform: idiomaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
-              {idiomaOpen && (
-                <div style={{
-                  position: 'absolute', bottom: '100%', right: 0, marginBottom: 4,
-                  background: 'var(--bg-card)', border: '1px solid var(--border-light)',
-                  borderRadius: 8, overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  minWidth: 110, zIndex: 10,
-                }}>
-                  {(['ES', 'ENG'] as const).map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => { setIdioma(lang); setIdiomaOpen(false); localStorage.setItem('reuso_idioma', lang); window.dispatchEvent(new Event('reuso_idioma_change')) }}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        width: '100%', padding: '8px 12px', border: 'none',
-                        background: idioma === lang ? 'var(--color-brand)' : 'transparent',
-                        color: idioma === lang ? '#fff' : 'var(--text-primary)',
-                        fontSize: 12, fontWeight: idioma === lang ? 600 : 400,
-                        cursor: 'pointer', textAlign: 'left',
-                      }}
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={`https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${lang === 'ES' ? 'es' : 'gb'}.svg`}
-                        alt=""
-                        style={{
-                          width: 16,
-                          height: 11,
-                          borderRadius: '2px',
-                          objectFit: 'cover',
-                          border: `1px solid ${idioma === lang ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.15)'}`,
-                        }}
-                      />
-                      <span>{lang === 'ES' ? 'Español' : 'English'}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
               <ThemeToggle />
-            </div>{/* cierra controles */}
+            </div>
 
           </div>
         </footer>

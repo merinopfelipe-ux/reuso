@@ -127,21 +127,59 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
           alignItems: isMobile ? 'center' : 'flex-end',
           gap: 12
         }}>
-          {!hideLegalLinks && (
-            <div style={{
-              display: 'flex',
-              gap: isMobile ? 12 : 24,
-              fontWeight: 500,
-              flexWrap: 'wrap',
-              justifyContent: isMobile ? 'center' : 'flex-end'
-            }}>
-              <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Sobre la medición</a>
-              <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
-              <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Reglamento</a>
-              <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
-              <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Política de privacidad</a>
-            </div>
-          )}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: isMobile ? 12 : 20,
+            flexWrap: 'wrap',
+            justifyContent: isMobile ? 'center' : 'flex-end'
+          }}>
+            {!hideLegalLinks && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: isMobile ? 12 : 24,
+                fontWeight: 500,
+                flexWrap: 'wrap',
+                justifyContent: isMobile ? 'center' : 'flex-end'
+              }}>
+                <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Sobre la medición</a>
+                <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
+                <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Reglamento</a>
+                <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
+                <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Política de privacidad</a>
+              </div>
+            )}
+            
+            {/* Botón de cambio de tema Día / Noche */}
+            <button
+              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
+              title={isDark ? 'Modo claro' : 'Modo noche'}
+              onClick={() => {
+                const current = document.documentElement.getAttribute('data-theme')
+                const next = current === 'dark' ? 'light' : 'dark'
+                document.documentElement.setAttribute('data-theme', next)
+                localStorage.setItem('theme', next)
+                localStorage.setItem('reuso-theme', next)
+                setIsDark(next === 'dark')
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                border: '1px solid var(--border-light)',
+                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
+                color: isDark ? '#D6F391' : '#00827C',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
+            </button>
+          </div>
           
           <div style={{ 
             display: 'flex', 
@@ -174,35 +212,6 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
                 </span>
               ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '-'}</span>}
             </div>
-
-            {/* Botón de cambio de tema Día / Noche (Solo ícono) */}
-            <button
-              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
-              title={isDark ? 'Modo claro' : 'Modo noche'}
-              onClick={() => {
-                const current = document.documentElement.getAttribute('data-theme')
-                const next = current === 'dark' ? 'light' : 'dark'
-                document.documentElement.setAttribute('data-theme', next)
-                localStorage.setItem('theme', next)
-                localStorage.setItem('reuso-theme', next)
-                setIsDark(next === 'dark')
-              }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                border: '1px solid var(--border-light)',
-                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
-                color: isDark ? '#D6F391' : '#00827C',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
-            </button>
 
             {/* TODO (v2): Activar cuando estén listas las traducciones */
              false && (

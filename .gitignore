@@ -52,3 +52,8 @@ playwright-report/
 
 # Credenciales del proyecto de pruebas (staging). Nunca se suben.
 .env.staging
+
+# Symlink local al Vault de Obsidian (apunta a una ruta absoluta fuera del
+# repo) — útil en esta máquina, pero sería un enlace roto para cualquier
+# otra persona que clone el repositorio.
+obsidian_vault

@@ -37,6 +37,8 @@ import {
   Lightning,
   Save,
   Check,
+  Sun,
+  Moon,
 } from '@/components/ui/icons'
 import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
@@ -1717,12 +1719,33 @@ export default function ManualDisenoPage() {
               </p>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 24, fontWeight: 500, fontSize: 12 }}>
+          <div style={{ display: 'flex', gap: 24, fontWeight: 500, fontSize: 12, alignItems: 'center' }}>
             <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Sobre la medición</a>
             <span style={{ opacity: 0.3 }}>&bull;</span>
             <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Reglamento</a>
             <span style={{ opacity: 0.3 }}>&bull;</span>
             <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Política de privacidad</a>
+            <button
+              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
+              title={isDark ? 'Modo claro' : 'Modo noche'}
+              onClick={toggleDark}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                border: '1px solid var(--border-light)',
+                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
+                color: isDark ? '#D6F391' : '#00827C',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                marginLeft: 12
+              }}
+            >
+              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
+            </button>
           </div>
         </div>
       </footer>

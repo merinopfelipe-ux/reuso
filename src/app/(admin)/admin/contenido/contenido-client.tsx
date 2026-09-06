@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition, useRef, useEffect } from 'react'
-import { Save as FloppyDisk, CircleHelp as Question, Tag, Plus, Trash, Pencil, GripVertical } from '@/components/ui/icons'
+import { Save as FloppyDisk, CircleHelp as Question, Tag, Plus, Trash, Pencil, GripVertical, X } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { PreciosTab } from './precios-tab'
@@ -226,7 +226,29 @@ export function ContenidoClient({ contenido }: Props) {
               preguntas existentes (no todo abierto de una). */}
           {mostrarNuevaFaq && (
             <div style={{ margin: '24px 0', padding: 24, border: `1px dashed ${C.border}`, borderRadius: 14, display: 'flex', flexDirection: 'column', gap: 18 }}>
-              <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, margin: 0 }}>Nueva pregunta</p>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, margin: 0 }}>Nueva pregunta</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewFaq({ pregunta: '', respuesta: '' })
+                    setMostrarNuevaFaq(false)
+                  }}
+                  title="Descartar pregunta"
+                  className="hover-pop"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#EF4444',
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: 4,
+                  }}
+                >
+                  <Trash size={15} sinAnimacion />
+                </button>
+              </div>
               <div>
                 <label style={labelStyle}>Pregunta</label>
                 <input value={newFaq.pregunta} onChange={e => setNewFaq(prev => ({ ...prev, pregunta: e.target.value }))} style={inputStyle} />
@@ -239,15 +261,40 @@ export function ContenidoClient({ contenido }: Props) {
                   style={{ ...inputStyle, minHeight: 70 }}
                 />
               </div>
-              <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }); setMostrarNuevaFaq(false) }}
-                style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none', alignSelf: 'flex-start' }}>
-                <Plus size={15} />
-                Agregar pregunta
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <button onClick={() => { if (!newFaq.pregunta || !newFaq.respuesta) return; setFaqItems(prev => [...prev, newFaq]); setNewFaq({ pregunta: '', respuesta: '' }); setMostrarNuevaFaq(false) }}
+                  style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
+                  <Plus size={15} />
+                  Agregar pregunta
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewFaq({ pregunta: '', respuesta: '' })
+                    setMostrarNuevaFaq(false)
+                  }}
+                  className="hover-pop"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: C.mid,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '8px 12px',
+                  }}
+                >
+                  <X size={14} sinAnimacion />
+                  Cancelar
+                </button>
+              </div>
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 80 }}>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28 }}>
             <button onClick={() => setMostrarNuevaFaq(v => !v)} className="hover-pop hover-press"
               style={{ ...btnStyle, background: 'var(--bg-primary)', color: C.brand, border: `1.5px solid ${C.border}`, boxShadow: 'none' }}>
               <Plus size={15} />

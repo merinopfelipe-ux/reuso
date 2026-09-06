@@ -214,4 +214,11 @@ test.describe('Páginas Públicas', () => {
     // El acceso a preferencias es un <button> que abre el panel, no un enlace.
     await expect(page.getByText('Cambiar mis preferencias de cookies')).toBeVisible({ timeout: 15_000 })
   })
+  test('pub-21 - /sistema-diseno carga sin errores de React', async ({ page }) => {
+    await cargaSinError(page, '/sistema-diseno')
+  })
+
+  test('pub-22 - /sistema-diseno/demo-panel carga correctamente', async ({ page }) => {
+    await cargaSinError(page, '/sistema-diseno/demo-panel')
+  })
 })

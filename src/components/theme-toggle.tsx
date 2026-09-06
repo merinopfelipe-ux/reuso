@@ -28,29 +28,28 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+      aria-label={isDark ? 'Cambiar a modo día' : 'Cambiar a modo noche'}
       style={{
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         borderRadius: '50%',
-        border: 'none',
-        background: 'var(--bg-card)',
-        color: 'var(--text-secondary)',
-        display: 'flex',
+        border: '1px solid var(--border-light)',
+        background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
+        color: isDark ? '#D6F391' : '#00827C',
+        display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
         transition: 'all 0.2s',
         flexShrink: 0,
         padding: 0,
-        boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
       }}
       className="theme-toggle-circle hover-rotate-180 hover-press"
     >
-      {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      {isDark ? <Sun size={15} strokeWidth={2.2} /> : <Moon size={15} strokeWidth={2.2} />}
       <style>{`
         .theme-toggle-circle:hover {
-          background: rgba(0,0,0,0.03);
+          background: ${isDark ? 'rgba(255, 255, 255, 0.14)' : 'rgba(0, 130, 124, 0.12)'};
           transform: scale(1.05);
         }
       `}</style>
