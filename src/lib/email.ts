@@ -214,13 +214,16 @@ export function emailBase({
 }
 
 // ── Correo de invitación de empresa ──────────────────────────────────────────
+// El id que devuelve Resend permite al webhook (/api/webhooks/resend) saber
+// exactamente a qué invitación corresponde cada evento de apertura/clic —
+// nunca se hace match por email o fecha, que puede repetirse.
 export async function enviarInvitacion(
   to: string,
   rawToken: string,
   empresaNombre: string,
   codigoEmpresa?: string | null,
   nombreDestinatario?: string | null,
-): Promise<void> {
+): Promise<{ resendEmailId: string | null }> {
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
@@ -280,12 +283,15 @@ export async function enviarInvitacion(
     mostrarAlerta: true,
   })
 
-  await resend.emails.send({
+  const { data } = await resend.emails.send({
     from: FROM,
     to,
     subject: `${empresaNombre} te invitó a la Calculadora de Reúso`,
     html,
+    replyTo: 'soporte@calculadoradereuso.com',
   })
+
+  return { resendEmailId: data?.id ?? null }
 }
 
 // ── Notificación de ticket de soporte ────────────────────────────────────────
@@ -337,6 +343,7 @@ export async function enviarNotificacionTicket(
     to: destinatarios,
     subject: `Nuevo ticket de soporte. ${datos.categoria}`,
     html,
+    replyTo: 'soporte@calculadoradereuso.com',
   })
 }
 
@@ -394,6 +401,7 @@ export async function enviarInvitacionFirma(
     to,
     subject: `Firma tu ${documentoLabel} en Calculadora de Reúso`,
     html,
+    replyTo: 'soporte@calculadoradereuso.com',
   })
 }
 
@@ -440,6 +448,7 @@ export async function enviarConfirmacionFirma(
     to,
     subject: `Tu ${documentoLabel} está firmado`,
     html,
+    replyTo: 'soporte@calculadoradereuso.com',
     attachments: [
       { filename: `${documentoLabel.toLowerCase().replace(/\s+/g, '-')}-reuso.pdf`, content: pdfBuffer },
     ],
@@ -502,6 +511,7 @@ export async function enviarPropuestaCotizacion(
     to,
     subject: `Tu propuesta de ${empresaNombre} ya está lista`,
     html,
+    replyTo: 'soporte@calculadoradereuso.com',
     attachments: [
       { filename: `cotizacion-${codigoCotizacion.replace(/\s+/g, '-')}.pdf`, content: pdfBuffer },
     ],
@@ -638,6 +648,7 @@ export async function enviarCorreoAdmin({
         to: d.email,
         subject: asunto.replace(/{nombre}/gi, nombreFinal).replace(/{empresa}/gi, empresaFinal),
         html,
+        replyTo: 'soporte@calculadoradereuso.com',
       })
 
       exitosos++

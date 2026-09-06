@@ -91,7 +91,10 @@ export async function POST(request: NextRequest) {
       .eq('id', empresa_id)
       .single()
     if (empresa?.nombre) {
-      await enviarInvitacion(email, token, empresa.nombre, empresa.codigo_registro ?? null)
+      const { resendEmailId } = await enviarInvitacion(email, token, empresa.nombre, empresa.codigo_registro ?? null)
+      if (resendEmailId) {
+        await adminClient.from('invitaciones').update({ resend_email_id: resendEmailId }).eq('id', invitacion.id)
+      }
     }
   } catch (emailError) {
     console.error('[invitar] Email no enviado:', emailError)

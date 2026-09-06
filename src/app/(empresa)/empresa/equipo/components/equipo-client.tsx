@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { UserPlus, Mail as Envelope, Clock, CheckCircle, XCircle, Users, Loader2 as CircleNotch, Copy, Check, Link, Trash2 as Trash, Pencil as PencilSimple, X, AlertCircle as WarningCircle } from '@/components/ui/icons'
+import { UserPlus, Mail as Envelope, Clock, CheckCircle, XCircle, Users, Loader2 as CircleNotch, Copy, Check, Link, Trash2 as Trash, Pencil as PencilSimple, X, AlertCircle as WarningCircle, EnvelopeOpen, CursorClick } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 import { Selector } from '@/components/ui/selector'
 import { formatFecha as formatFechaBase } from '@/lib/format'
@@ -22,6 +22,8 @@ interface Invitacion {
   rol_asignado: string
   created_at: string
   expires_at: string
+  abierta_at?: string | null
+  clic_at?: string | null
 }
 
 interface Props {
@@ -381,6 +383,17 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
                           <>
                             <p style={{ fontSize: 14, fontWeight: 600, color: TEXT_DARK, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{inv.email}</p>
                             <p style={{ fontSize: 11, color: TEXT_MED, margin: 0 }}>{ROL_LABELS[inv.rol_asignado] ?? inv.rol_asignado} · {formatFecha(inv.created_at)}</p>
+                            {inv.estado === 'pendiente' && (
+                              <p style={{ fontSize: 11, color: inv.clic_at ? '#38B98E' : inv.abierta_at ? '#F6BF3E' : TEXT_MED, margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                                {inv.clic_at ? (
+                                  <><CursorClick size={12} /> Hizo clic en el enlace</>
+                                ) : inv.abierta_at ? (
+                                  <><EnvelopeOpen size={12} /> Abrió el correo</>
+                                ) : (
+                                  <><Envelope size={12} /> Todavía no abre el correo</>
+                                )}
+                              </p>
+                            )}
                           </>
                         )}
                       </div>

@@ -30,7 +30,7 @@ export default async function EmpresaEquipoPage() {
       .order('created_at', { ascending: true }),
     adminClient
       .from('invitaciones')
-      .select('id, email, estado, rol_asignado, created_at, expires_at')
+      .select('id, email, estado, rol_asignado, created_at, expires_at, abierta_at, clic_at')
       .eq('empresa_id', empresaId)
       .eq('estado', 'pendiente')
       .order('created_at', { ascending: false })
