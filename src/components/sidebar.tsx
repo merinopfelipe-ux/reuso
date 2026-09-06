@@ -37,9 +37,9 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       label: 'Gestión',
       icon: Buildings,
       subItems: [
-        { href: '/admin/empresas', label: 'Empresas' },
+        { href: '/admin/empresas', label: 'Empresas', grupo: 'Empresas' },
         { href: '/admin/leads', label: 'Leads' },
-        { href: '/admin/categorias', label: 'Categorías' },
+        { href: '/admin/categorias', label: 'Categorías', grupo: 'Catálogo' },
         { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
         { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
         { href: '/admin/modulos', label: 'Módulos' },
@@ -59,18 +59,18 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       label: 'Sistema',
       icon: Gear,
       subItems: [
-        { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Sistema' },
+        { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Monitoreo' },
         { href: '/admin/logs', label: 'Auditoría' },
         { href: '/admin/alertas', label: 'Alertas' },
-        { href: '/admin/configuracion', label: 'Configuración' },
         { href: '/admin/qa', label: 'QA' },
         { href: '/admin/status', label: 'Estado' },
+        { href: '/admin/configuracion', label: 'Configuración', grupo: 'Contenido' },
         { href: '/admin/contenido', label: 'Contenido' },
         { href: '/admin/plantillas', label: 'Plantillas' },
-        { href: '/admin/tickets', label: 'Soporte' },
-        { href: '/ayuda', label: 'Ayuda' },
         { href: '/admin/legal', label: 'Documentos' },
         { href: '/admin/firmas', label: 'Firmas' },
+        { href: '/admin/tickets', label: 'Soporte', grupo: 'Soporte' },
+        { href: '/ayuda', label: 'Ayuda' },
       ]
     },
   ],
@@ -517,14 +517,32 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         // último grupo con nombre visto antes (mismo criterio ya usado para
         // decidir cuándo pintar el encabezado de grupo).
         let ultimoGrupo: string | undefined
-        const columnas: { titulo?: string; items: SubItem[] }[] = []
+        const grupos: { titulo?: string; items: SubItem[] }[] = []
         for (const sub of subItems) {
           const grupoEfectivo = sub.grupo ?? ultimoGrupo
           if (sub.grupo) ultimoGrupo = sub.grupo
-          let columna = columnas.find(c => c.titulo === grupoEfectivo)
-          if (!columna) { columna = { titulo: grupoEfectivo, items: [] }; columnas.push(columna) }
-          columna.items.push(sub)
+          let grupo = grupos.find(g => g.titulo === grupoEfectivo)
+          if (!grupo) { grupo = { titulo: grupoEfectivo, items: [] }; grupos.push(grupo) }
+          grupo.items.push(sub)
         }
+        // Máximo 2 columnas, siempre — regla explícita del usuario
+        // 2026-09-06: el grupo más largo (más ítems) queda SOLO en la
+        // columna de la derecha; todos los demás se apilan juntos, uno
+        // encima del otro y en su orden original, en la columna de la
+        // izquierda. Con empate de tamaño, gana el que aparece último
+        // (mismo orden en que se declaran los subItems).
+        const columnas: { titulo?: string; items: SubItem[] }[][] =
+          grupos.length <= 1
+            ? grupos.map(g => [g])
+            : (() => {
+                let idxMasLargo = 0
+                for (let i = 1; i < grupos.length; i++) {
+                  if (grupos[i].items.length >= grupos[idxMasLargo].items.length) idxMasLargo = i
+                }
+                const masLargo = grupos[idxMasLargo]
+                const resto = grupos.filter((_, i) => i !== idxMasLargo)
+                return [resto, [masLargo]]
+              })()
         const modoGrilla = columnas.length >= 2
         const anchoColumna = 190
         const ancho = modoGrilla ? columnas.length * anchoColumna : 180
@@ -595,8 +613,12 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           {modoGrilla
             ? columnas.map((col, cidx) => (
                 <div key={cidx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  {col.titulo && <div style={tituloEstilo}>{col.titulo}</div>}
-                  {col.items.map((sub, sidx) => renderItem(sub, `${cidx}-${sidx}`))}
+                  {col.map((grupo, gidx) => (
+                    <div key={gidx} style={gidx > 0 ? { marginTop: 12 } : undefined}>
+                      {grupo.titulo && <div style={tituloEstilo}>{grupo.titulo}</div>}
+                      {grupo.items.map((sub, sidx) => renderItem(sub, `${cidx}-${gidx}-${sidx}`))}
+                    </div>
+                  ))}
                 </div>
               ))
             : subItems.map((sub, sidx, arr) => {
