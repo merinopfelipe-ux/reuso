@@ -526,11 +526,12 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           grupo.items.push(sub)
         }
         // Máximo 2 columnas, siempre — regla explícita del usuario
-        // 2026-09-06: el grupo más largo (más ítems) queda SOLO en la
-        // columna de la derecha; todos los demás se apilan juntos, uno
-        // encima del otro y en su orden original, en la columna de la
-        // izquierda. Con empate de tamaño, gana el que aparece último
-        // (mismo orden en que se declaran los subItems).
+        // 2026-09-06: un grupo (el más largo) se aísla; el resto se apila
+        // junto, uno encima del otro y en su orden original. La columna con
+        // MÁS ítems en total queda siempre a la IZQUIERDA, sin importar si
+        // es la aislada o la apilada (ej. Sistema: Monitoreo+Soporte suman
+        // más que Contenido solo, así que van a la izquierda aunque
+        // Contenido sea, individualmente, el grupo "más largo" aislado).
         const columnas: { titulo?: string; items: SubItem[] }[][] =
           grupos.length <= 1
             ? grupos.map(g => [g])
@@ -541,7 +542,8 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
                 }
                 const masLargo = grupos[idxMasLargo]
                 const resto = grupos.filter((_, i) => i !== idxMasLargo)
-                return [resto, [masLargo]]
+                const totalResto = resto.reduce((s, g) => s + g.items.length, 0)
+                return totalResto >= masLargo.items.length ? [resto, [masLargo]] : [[masLargo], resto]
               })()
         const modoGrilla = columnas.length >= 2
         const anchoColumna = 190
