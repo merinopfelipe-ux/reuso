@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home as House, Package, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, Building2 as Buildings, Target, FileText, LayoutGrid as SquaresFour, Menu, X, Settings as Gear, TrendingUp as TrendUp, Mail } from '@/components/ui/icons'
+import { Home as House, Package, History as ClockCounterClockwise, LifeBuoy as Lifebuoy, Building2 as Buildings, Target, FileText, LayoutGrid as SquaresFour, Menu, X, Settings as Gear, TrendingUp as TrendUp } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface MobileBottomNavProps {
@@ -43,7 +43,6 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           { href: '/admin/usuarios', label: 'Usuarios', icon: Gear },
         ],
         drawerItems: [
-          { href: '/admin/correos', label: 'Correos', icon: Mail },
           { href: '/admin/leads', label: 'Leads', icon: SquaresFour },
           { href: '/admin/categorias', label: 'Categorías', icon: SquaresFour },
           { href: '/admin/modulos', label: 'Módulos', icon: SquaresFour },

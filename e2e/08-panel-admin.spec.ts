@@ -229,13 +229,6 @@ test.describe('super_admin', () => {
     await expect(page.getByText(/whatsapp/i).first()).toBeVisible({ timeout: 30_000 })
   })
 
-  test('adm-20 - correos: la bandeja de envíos carga con sus columnas', async ({ page }) => {
-    // A propósito NO se envía ningún correo real desde la prueba (ya hubo un
-    // incidente real de correos de soporte disparados por las pruebas).
-    await page.goto('/admin/correos', { waitUntil: 'domcontentloaded' })
-        await expect(page.getByPlaceholder('Buscar por asunto...')).toBeVisible({ timeout: 15_000 })
-  })
-
   test('adm-21 - firmas: la lista de solicitudes carga con estado', async ({ page }) => {
     await page.goto('/admin/firmas', { waitUntil: 'domcontentloaded' })
         await expect(page.getByText(/destinatario|estado|documento/i).first()).toBeVisible({ timeout: 15_000 })
