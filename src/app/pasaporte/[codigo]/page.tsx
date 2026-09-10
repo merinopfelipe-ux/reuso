@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { IdCard as IdentificationCard, Leaf, Droplet as Drop, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
@@ -8,6 +9,7 @@ import { CollapseSection, ShareWhatsApp } from './collapse-section'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { formatNumero } from '@/lib/format'
 import { PARAM_EQUIV } from '@/lib/calculos/co2'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 export const revalidate = 3600
 
@@ -149,22 +151,24 @@ export default async function PasaportePage({ params }: PageProps) {
         top: 0,
         zIndex: 10,
       }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-            <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--color-brand)' }}>reuso</span>
-            <span style={{ fontSize: 18, color: 'var(--color-brand)' }}>.lurdes.co</span>
-          </div>
-          <p style={{ margin: 0, fontSize: 10, color: 'var(--text-placeholder)', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <Image src="/logo-completo.svg" alt="Calculadora de Reúso" width={130} height={26} className="logo-dark-invert" />
+          </Link>
+          <span style={{ fontSize: 11, color: 'var(--text-placeholder)', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
             {activo.codigo_dpp}
-          </p>
+          </span>
         </div>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'var(--color-brand-light)', color: 'var(--color-brand)',
-          padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
-        }}>
-          <IdentificationCard size={14} />
-          Pasaporte Verificado
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: 'var(--color-brand-light)', color: 'var(--color-brand)',
+            padding: '6px 12px', borderRadius: 20, fontSize: 12, fontWeight: 700,
+          }}>
+            <IdentificationCard size={14} />
+            Pasaporte Verificado
+          </div>
+          <ThemeToggle />
         </div>
       </header>
 

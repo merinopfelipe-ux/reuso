@@ -1,9 +1,9 @@
 'use client'
 
-import DOMPurify from 'dompurify'
+import DOMPurify from 'isomorphic-dompurify'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { calcularDesglose, transportePorItem } from '@/lib/cotizador/precio'
-import { Download, ChatCircle, CreditCard, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, RefreshCcw as ArrowsCounterClockwise, ZoomIn } from '@/components/ui/icons'
+import { Download, ChatCircle, CreditCard, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, RefreshCcw as ArrowsCounterClockwise, ZoomIn, CheckCircle } from '@/components/ui/icons'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 import { renderTextoSimple, conPuntoFinal } from '@/lib/cotizador/texto-simple'
 import { formatEnteroMillones } from '@/lib/format'
@@ -63,6 +63,7 @@ interface Props {
   total: number
   token: string
   isDark: boolean
+  aceptada?: boolean
   onDescargarPdf?: (e?: React.MouseEvent) => void
   descargandoPdf?: boolean
 }
@@ -94,7 +95,7 @@ export function VistaCot({
   garantiaActivo = true, garantiaTexto = '1 año en estructura y acabados',
   envioGratisActivo = false, envioGratisTexto, envioGratisIcono,
   destacados = [],
-  onVerImagen, total, isDark, onDescargarPdf, descargandoPdf,
+  onVerImagen, total, isDark, aceptada = false, onDescargarPdf, descargandoPdf,
 }: Props) {
   const tp = isDark ? 'text-white' : 'text-[#1a1a1a]'
   const ts = isDark ? 'text-white/60' : 'text-[#1a1a1a]/60'
@@ -114,11 +115,25 @@ export function VistaCot({
     ? (empresaRazonSocial ?? `${clienteNombre} ${clienteApellido ?? ''}`.trim())
     : `${clienteNombre} ${clienteApellido ?? ''}`.trim()
 
-  const identificacionText = esEmpresa
-    ? (empresaNit ? `NIT ${empresaNit}` : (clienteIdentificacion ? `NIT ${clienteIdentificacion}` : null))
-    : (clienteIdentificacion ? `CC ${clienteIdentificacion}` : null)
+  const cleanNit = (val: string | null | undefined) => {
+    if (!val) return null
+    const cleaned = val.replace(/^(NIT\s*:?\s*)+/i, '').trim()
+    return cleaned ? `NIT ${cleaned}` : null
+  }
 
-  const nombreContacto = esEmpresa && esContactoReal && clienteNombre ? `${clienteNombre} ${clienteApellido ?? ''}`.trim() : null
+  const cleanCC = (val: string | null | undefined) => {
+    if (!val) return null
+    const cleaned = val.replace(/^CC\s*:?\s*/i, '').trim()
+    return cleaned ? `CC ${cleaned}` : null
+  }
+
+  const identificacionText = esEmpresa
+    ? (cleanNit(empresaNit) || cleanNit(clienteIdentificacion))
+    : cleanCC(clienteIdentificacion)
+
+  const nombreContacto = esEmpresa && esContactoReal && clienteNombre && `${clienteNombre} ${clienteApellido ?? ''}`.trim() !== nombrePrincipal
+    ? `${clienteNombre} ${clienteApellido ?? ''}`.trim()
+    : null
   const direccionMostrar = empresaDireccion || clienteDireccion
 
   return (
@@ -148,13 +163,19 @@ export function VistaCot({
         </div>
 
         {/* Derecha: Código COT + Fecha */}
-        <div className="text-right flex-shrink-0">
+        <div className="text-right flex-shrink-0 flex flex-col items-end">
           <p className="text-[22px] md:text-[26px] font-black leading-tight tracking-tight">
             {codigoCotizacion.toUpperCase().startsWith('COT')
               ? codigoCotizacion.toUpperCase()
               : `COT ${codigoCotizacion.toUpperCase()}`}
           </p>
           <p className={`text-[14px] mt-1 font-normal ${ts}`}>{fechaLarga}</p>
+          {aceptada && (
+            <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EDF8F4] dark:bg-[#38B98E]/15 text-[#4EAA8B] dark:text-[#4EAA8B] font-medium text-xs print:hidden">
+              <CheckCircle size={14} className="text-[#4EAA8B]" />
+              Propuesta aceptada
+            </div>
+          )}
         </div>
       </div>
 
@@ -169,7 +190,7 @@ export function VistaCot({
         {muebles.map(m => {
           const totalLinea = m.precio_mueble + transportePorLinea
           const unitario = m.cantidad > 0 ? totalLinea / m.cantidad : totalLinea
-          const tituloMueble = m.titulo || m.tipo_mueble
+          const tituloMueble = (m.titulo || m.tipo_mueble).replace(/\s*\(x\d+\)\s*$/i, '')
           return (
             <div key={m.id} className={`flex flex-col sm:grid sm:grid-cols-[1fr_90px_150px_150px] print:grid print:grid-cols-[1fr_90px_150px_150px] gap-3 sm:gap-4 sm:items-center print:items-center py-4 sm:py-3 print:py-3 border-b ${borderLight}`}>
               

@@ -26,6 +26,8 @@ export interface UnifiedModalProps {
   // informativo (ej. un catálogo para explorar), sin ninguna decisión que confirmar
   // o cancelar. El cierre sigue disponible por la X, Escape o clic afuera.
   sinPie?: boolean
+  // Solo botón de confirmación/entendido (sin botón cancelar redundante)
+  soloBotonConfirmar?: boolean
 }
 
 /**
@@ -51,6 +53,7 @@ export function Modal({
   ancho = 'sm',
   tituloCentrado = false,
   sinPie = false,
+  soloBotonConfirmar = false,
 }: UnifiedModalProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -143,9 +146,11 @@ export function Modal({
         {!sinPie && (
           <div className="flex-shrink-0 p-5 sm:p-6 pt-3 mt-1">
             <div className="flex items-center justify-end gap-2.5">
-              <Button variant="secondary" size="sm" onClick={onCancelar || onClose}>
-                {textoCancelar}
-              </Button>
+              {!soloBotonConfirmar && (
+                <Button variant="secondary" size="sm" onClick={onCancelar || onClose}>
+                  {textoCancelar}
+                </Button>
+              )}
               <Button
                 variant={varianteConfirmar === 'error' ? 'danger' : 'primary'}
                 size="sm"

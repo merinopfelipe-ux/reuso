@@ -8,6 +8,8 @@ import { buscarUbicacionPorIp } from '@/lib/geo-ip'
 // URL ya es el mecanismo de acceso (mismo modelo que /cot/[token]).
 const LIMITE_DESCARGAS = 6
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest, { params }: { params: { token: string } }) {
   const adminClient = await createAdminClient()
 

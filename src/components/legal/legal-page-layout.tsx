@@ -21,10 +21,11 @@ interface SeccionItem {
 
 interface LegalPageLayoutProps {
   titulo: string
+  subtitulo?: string
   breadcrumbLabel: string
   secciones: SeccionItem[]
   resumen: string
-  leeTabien: LeeTabienItem[]
+  leeTabien?: LeeTabienItem[]
   children: React.ReactNode
   requiresAccept?: React.ReactNode
   transparenciaTexto?: React.ReactNode | null
@@ -38,18 +39,22 @@ const ALL_LEGAL_PAGES = {
     { href: '/legal/privacidad', label: 'Política de Privacidad', descripcion: 'Cómo protegemos y tratamos la información de los usuarios.' },
     { href: '/legal/datos', label: 'Tratamiento de Datos', descripcion: 'Política conforme a la Ley 1581 de 2012, RGPD y CCPA.' },
     { href: '/legal/cookies', label: 'Política de Cookies', descripcion: 'Qué cookies usamos, para qué y cómo gestionarlas.' },
-    { href: '/legal/reglamento', label: 'Reglamento de Uso', descripcion: 'Condiciones técnicas de la calculadora, cálculos e informes.' },
-    { href: '/legal/confidencialidad', label: 'Acuerdo de Confidencialidad', descripcion: 'Compromiso de no replicar ni extraer información.' },
+    { href: '/legal/reglamento', label: 'Reglamento de Uso', descripcion: 'Condiciones técnicas de la calculadora e informes.' },
+    { href: '/legal/confidencialidad', label: 'Acuerdo de Confidencialidad', descripcion: 'Compromiso de no replicar o extraer información.' },
+    { href: '/legal/ptee', label: 'Programa de Ética (PTEE)', descripcion: 'Programa anticorrupción, antisoborno transnacional y código ético.' },
+    { href: '/legal/sagrilaft', label: 'Política SAGRILAFT', descripcion: 'Prevención de lavado de activos y financiación del terrorismo.' },
     { href: '/legal/ia', label: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos IA para construir la plataforma y calcular CO₂.' },
-    { href: '/legal/medicion', label: 'Metodología de Cálculo', descripcion: 'Cómo estimamos el CO₂e evitado de forma inmutable y verificable.' },
+    { href: '/legal/medicion', label: 'Metodología de Cálculo', descripcion: 'Cómo estimamos el CO₂e evitado de manera inmutable y verificable.' },
   ],
   ENG: [
-    { href: '/legal/terminos', label: 'Terms and Conditions', descripcion: 'Platform usage rules, rights and obligations.' },
+    { href: '/legal/terminos', label: 'Terms and Conditions', descripcion: 'Rules for using the platform, rights, and obligations.' },
     { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'How we protect and process user information.' },
-    { href: '/legal/datos', label: 'Data Processing', descripcion: 'Policy under Law 1581 of 2012, GDPR and CCPA.' },
+    { href: '/legal/datos', label: 'Data Processing', descripcion: 'Policy compliant with Law 1581 of 2012, GDPR, and CCPA.' },
     { href: '/legal/cookies', label: 'Cookie Policy', descripcion: 'What cookies we use, why, and how to manage them.' },
     { href: '/legal/reglamento', label: 'Usage Regulations', descripcion: 'Technical conditions of the calculator and reports.' },
     { href: '/legal/confidencialidad', label: 'Confidentiality Agreement', descripcion: 'Commitment not to replicate or extract information.' },
+    { href: '/legal/ptee', label: 'Ethics Program (PTEE)', descripcion: 'Anti-corruption, anti-bribery program and corporate conduct.' },
+    { href: '/legal/sagrilaft', label: 'SAGRILAFT Policy', descripcion: 'Anti-money laundering and counter-terrorist financing compliance.' },
     { href: '/legal/ia', label: 'Artificial Intelligence Use', descripcion: 'How we use AI to build the platform and calculate CO₂.' },
     { href: '/legal/medicion', label: 'Calculation Methodology', descripcion: 'How we estimate avoided CO₂e immutably and verifiably.' },
   ]
@@ -57,10 +62,11 @@ const ALL_LEGAL_PAGES = {
 
 export function LegalPageLayout({
   titulo,
+  subtitulo,
   breadcrumbLabel,
   secciones,
   resumen,
-  leeTabien,
+  leeTabien = [],
   children,
   requiresAccept,
   transparenciaTexto,
@@ -101,8 +107,6 @@ export function LegalPageLayout({
     .slice(0, 3)
 
   const activeCards = shuffledCards.length > 0 ? shuffledCards : (leeTabien && leeTabien.length > 0 ? leeTabien.slice(0, 3) : defaultFallback)
-
-
 
   const todasSecciones: SeccionItem[] = [...secciones]
   if (transparenciaTexto !== null) {
@@ -165,7 +169,7 @@ export function LegalPageLayout({
               background: 'var(--bg-primary)',
               paddingTop: 12,
               paddingBottom: 12,
-              marginBottom: 24,
+              marginBottom: subtitulo ? 12 : 24,
             }}
           >
             <div
@@ -192,6 +196,22 @@ export function LegalPageLayout({
               {titulo}
             </h1>
           </div>
+
+          {/* Subtítulo no sticky para no sobrecargar el encabezado flotante */}
+          {subtitulo && (
+            <p
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                color: 'var(--text-secondary)',
+                lineHeight: 1.6,
+                marginTop: 0,
+                marginBottom: 28,
+              }}
+            >
+              {subtitulo}
+            </p>
+          )}
 
           {/* ── CONTENIDO PRINCIPAL ─────────────────────────────────── */}
           <div
@@ -269,19 +289,18 @@ export function LegalPageLayout({
           {!hideResumen && resumen && (
             <div
               id="en-resumen"
+              className="legal-resumen-box"
               style={{
                 marginTop: 32,
                 padding: '20px 24px',
                 borderRadius: 14,
-                background: 'rgba(0,130,124,0.05)',
-                border: '1px solid rgba(0,130,124,0.14)',
               }}
             >
               <p
+                className="legal-resumen-title"
                 style={{
                   fontSize: 11,
                   fontWeight: 700,
-                  color: 'var(--color-brand)',
                   marginBottom: 8,
                   margin: '0 0 8px',
                 }}
@@ -429,11 +448,34 @@ export function LegalPageLayout({
         /* Anclas: offset para no quedar ocultas bajo header sticky + h1 sticky */
         [id] { scroll-margin-top: 168px; }
 
+        /* En resumen */
+        [data-theme="light"] .legal-resumen-box {
+          background: rgba(0, 130, 124, 0.05);
+          border: 1px solid rgba(0, 130, 124, 0.14);
+        }
+        [data-theme="light"] .legal-resumen-title {
+          color: #00827C;
+        }
+        [data-theme="dark"] .legal-resumen-box {
+          background: rgba(214, 243, 145, 0.08);
+          border: 1px solid rgba(214, 243, 145, 0.22);
+        }
+        [data-theme="dark"] .legal-resumen-title {
+          color: #D6F391;
+        }
+
         /* Lee también */
         .lee-tambien-card:hover {
           box-shadow: 0 4px 20px rgba(0,130,124,0.12);
           transform: translateY(-2px);
           border-color: rgba(0,130,124,0.28) !important;
+        }
+        [data-theme="dark"] .lee-tambien-card {
+          border-color: rgba(214, 243, 145, 0.15) !important;
+        }
+        [data-theme="dark"] .lee-tambien-card:hover {
+          box-shadow: 0 4px 20px rgba(214,243,145,0.08);
+          border-color: rgba(214, 243, 145, 0.35) !important;
         }
 
         /* Botón scroll al final */

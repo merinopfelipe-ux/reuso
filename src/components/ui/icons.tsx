@@ -664,12 +664,15 @@ function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>
       const fallbackClass = (!usarAnimado && !sinAnimacion) ? 'transition-transform duration-200 group-hover:scale-110 hover:scale-110' : ''
       const combinedClassName = [className, fallbackClass].filter(Boolean).join(' ')
 
+      const resolvedColor = (props as { color?: string }).color || ((props as { style?: React.CSSProperties }).style)?.color
+
       const IconEl = (
         <BaseIcon
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ref={iconRef as any}
           size={size}
           className={combinedClassName}
+          {...(resolvedColor ? { color: resolvedColor as string } : {})}
           {...extraProps}
           {...props}
         />
@@ -677,7 +680,7 @@ function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>
 
       if (usarAnimado) {
         return (
-          <span ref={containerRef} className="contents">
+          <span ref={containerRef} className="contents" style={resolvedColor ? { color: resolvedColor as string } : undefined}>
             {IconEl}
           </span>
         )

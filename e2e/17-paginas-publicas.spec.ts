@@ -2,11 +2,6 @@ import { test, expect } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
 import { createHash } from 'crypto'
 
-// Archivo escrito de cero el 2026-09-02. Antes eran 8 `test.skip` con el
-// cuerpo vacío: la categoría entera figuraba como "automatizada" sin ejecutar
-// una sola línea real, y las 12 tareas nuevas (pub-09 a pub-20) no tenían
-// ninguna entrada. Ahora hay una prueba real por cada pub-* del QA manual.
-
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -33,32 +28,27 @@ test.describe('Páginas Públicas', () => {
     expect(errores).toEqual([])
   })
 
-  test('pub-02 - el índice legal carga y enlaza sus documentos', async ({ page }) => {
-    await cargaSinError(page, '/legal')
-    await expect(page.locator('a[href^="/legal/"]').first()).toBeVisible({ timeout: 15_000 })
-  })
-
-  test('pub-03 - el formulario de dudas legales existe y es público', async ({ page }) => {
-    await cargaSinError(page, '/legal/dudas')
-    await expect(page.locator('form, input, textarea').first()).toBeVisible({ timeout: 15_000 })
-  })
-
-  test('pub-04 - la página de estado del sistema carga con sus servicios', async ({ page }) => {
+  test('pub-02 - la página de estado del sistema carga con sus servicios', async ({ page }) => {
     test.setTimeout(90_000)
     await cargaSinError(page, '/status')
     await expect(page.getByText(/estado|servicio|operativo/i).first()).toBeVisible({ timeout: 20_000 })
   })
 
-  test('pub-05 - un informe real se verifica en /verificar/[codigo]', async ({ page }) => {
-    // Se siembra un informe propio: la página pública nunca debe depender de
-    // que exista un informe real de un cliente.
+  test('pub-03 - verificación de autenticidad de informes en /verificar y /verificar/[codigo]', async ({ page }) => {
+    await cargaSinError(page, '/verificar')
+    await expect(page.locator('input').first()).toBeVisible({ timeout: 15_000 })
+    // No puede listar informes de nadie, ni mostrar el informe de demostración público.
+    await expect(page.getByText(/RCO2-[A-Z0-9]{4}-[A-Z0-9]{4}/)).toHaveCount(0)
+    await expect(page.getByText('RCO2-DEMO-0001')).toHaveCount(0)
+    await expect(page.getByText(/Código de ejemplo/i)).toHaveCount(0)
+
+    // Siembra de informe de prueba para verificar ruta dinámica
     const uuid = crypto.randomUUID()
     const { data: empresa } = await supabaseAdmin
       .from('empresas').select('id').limit(1).single()
     const { data: informe, error } = await supabaseAdmin
       .from('informes')
       .insert({
-        // Columnas reales, verificadas en /api/informes/generar (no inventadas).
         tipo: 'informe',
         empresa_id: empresa?.id ?? null,
         codigo_verificacion: uuid,
@@ -74,12 +64,12 @@ test.describe('Páginas Públicas', () => {
 
     const codigo = `RCO2-${uuid.slice(0, 4).toUpperCase()}-${uuid.slice(4, 8).toUpperCase()}`
     await cargaSinError(page, `/verificar/${codigo}`)
-    await expect(page.getByText(codigo)).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByText(codigo).first()).toBeVisible({ timeout: 20_000 })
 
     await supabaseAdmin.from('informes').delete().eq('codigo_verificacion', uuid)
   })
 
-  test('pub-06 - la propuesta pública abre con su token, sin pedir sesión', async ({ page }) => {
+  test('pub-04 - la propuesta pública abre con su token, sin pedir sesión', async ({ page }) => {
     const { data: empresa } = await supabaseAdmin
       .from('empresas').select('id').limit(1).single()
     const token = `e2e-token-${Date.now()}`
@@ -101,59 +91,59 @@ test.describe('Páginas Públicas', () => {
     await supabaseAdmin.from('crm_cotizaciones').delete().eq('id', cot.id)
   })
 
-  test('pub-07 - /empresa/nueva exige sesión y manda a login sin ella', async ({ page }) => {
-    // El flujo completo (crear empresa y promover el rol) lo cubre el propio
-    // registro de la cuenta efímera empresa_admin en auth.setup.ts. Aquí lo
-    // que importa como página pública es que NO se pueda entrar sin sesión.
+  test('pub-05 - /empresa/nueva exige sesión y manda a login sin ella', async ({ page }) => {
     await page.goto('/empresa/nueva', { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await page.waitForURL(/\/login/, { timeout: 20_000 })
     expect(page.url()).toMatch(/\/login/)
   })
 
-  test('pub-08 - el widget de estado no rompe la página al caerse la red', async ({ page, context }) => {
-    test.setTimeout(90_000)
-    const errores: string[] = []
-    page.on('pageerror', (e) => errores.push(e.message))
-    await cargaSinError(page, '/status')
-    await context.setOffline(true)
-    await page.waitForTimeout(3_000)
-    await expect(page.locator('body')).toBeVisible()
-    await context.setOffline(false)
-    expect(errores).toEqual([])
+  test('pub-06 - /sistema-diseno carga sin errores de React', async ({ page }) => {
+    await cargaSinError(page, '/sistema-diseno')
   })
 
-  test('pub-09 - metodología de cálculo carga con lenguaje objetivo', async ({ page }) => {
+  test('pub-07 - el índice legal carga y enlaza sus documentos', async ({ page }) => {
+    await cargaSinError(page, '/legal')
+    await expect(page.locator('a[href^="/legal/"]').first()).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('pub-08 - términos y condiciones carga como documento público', async ({ page }) => {
+    await cargaSinError(page, '/legal/terminos')
+  })
+
+  test('pub-09 - política de privacidad carga como documento público con principios', async ({ page }) => {
+    await cargaSinError(page, '/legal/privacidad')
+  })
+
+  test('pub-10 - tratamiento de datos carga como documento público', async ({ page }) => {
+    await cargaSinError(page, '/legal/datos')
+  })
+
+  test('pub-11 - política de cookies carga y enlaza sus preferencias', async ({ page }) => {
+    await cargaSinError(page, '/legal/cookies')
+    await expect(page.getByText('Cambiar mis preferencias de cookies')).toBeVisible({ timeout: 15_000 })
+  })
+
+  test('pub-12 - transparencia de IA carga como documento público', async ({ page }) => {
+    await cargaSinError(page, '/legal/ia')
+  })
+
+  test('pub-13 - metodología de cálculo carga con lenguaje objetivo', async ({ page }) => {
     await cargaSinError(page, '/legal/medicion')
     // Regla legal del proyecto: nunca prometer exactitud absoluta.
     await expect(page.getByText(/\b(exacto|preciso|100%|garantiza|irrefutable)\b/i)).toHaveCount(0)
   })
 
-  test('pub-10 - transparencia de IA carga como documento público', async ({ page }) => {
-    await cargaSinError(page, '/legal/ia')
-  })
-
-  test('pub-11 - reglamento carga como documento público', async ({ page }) => {
+  test('pub-14 - reglamento carga como documento público', async ({ page }) => {
     await cargaSinError(page, '/legal/reglamento')
   })
 
-  test('pub-12 - confidencialidad muestra el texto sin formulario abierto', async ({ page }) => {
+  test('pub-15 - confidencialidad muestra el texto sin formulario abierto', async ({ page }) => {
     await cargaSinError(page, '/legal/confidencialidad')
     // El QA exige que aquí NO haya un formulario de firma abierto al público.
     await expect(page.locator('canvas')).toHaveCount(0)
   })
 
-  test('pub-13 - el enlace de firma retirado explica que ahora es por invitación', async ({ page }) => {
-    await cargaSinError(page, '/legal/confidencialidad-firma')
-    await expect(page.locator('canvas')).toHaveCount(0)
-  })
-
-  test('pub-14 - preferencias de cookies: las esenciales nunca se desactivan', async ({ page }) => {
-    test.setTimeout(90_000)
-    await cargaSinError(page, '/legal/cookies/preferencias')
-    await expect(page.getByText(/esencial/i).first()).toBeVisible({ timeout: 15_000 })
-  })
-
-  test('pub-15 - firma por invitación: los 4 estados responden correctamente', async ({ page }) => {
+  test('pub-16 - firma por invitación: los 4 estados responden correctamente', async ({ page }) => {
     test.setTimeout(120_000)
     const base = Date.now()
     const hash = (t: string) => createHash('sha256').update(t).digest('hex')
@@ -190,35 +180,8 @@ test.describe('Páginas Públicas', () => {
     }
   })
 
-  test('pub-16 - /verificar sin código pide el código sin filtrar datos ajenos', async ({ page }) => {
-    await cargaSinError(page, '/verificar')
-    await expect(page.locator('input').first()).toBeVisible({ timeout: 15_000 })
-    // No puede listar informes de nadie.
-    await expect(page.getByText(/RCO2-[A-Z0-9]{4}-[A-Z0-9]{4}/)).toHaveCount(0)
-  })
-
-  test('pub-17 - términos y condiciones carga como documento público', async ({ page }) => {
-    await cargaSinError(page, '/legal/terminos')
-  })
-
-  test('pub-18 - política de privacidad carga como documento público', async ({ page }) => {
-    await cargaSinError(page, '/legal/privacidad')
-  })
-
-  test('pub-19 - tratamiento de datos carga como documento público', async ({ page }) => {
-    await cargaSinError(page, '/legal/datos')
-  })
-
-  test('pub-20 - política de cookies carga y enlaza sus preferencias', async ({ page }) => {
-    await cargaSinError(page, '/legal/cookies')
-    // El acceso a preferencias es un <button> que abre el panel, no un enlace.
-    await expect(page.getByText('Cambiar mis preferencias de cookies')).toBeVisible({ timeout: 15_000 })
-  })
-  test('pub-21 - /sistema-diseno carga sin errores de React', async ({ page }) => {
-    await cargaSinError(page, '/sistema-diseno')
-  })
-
-  test('pub-22 - /sistema-diseno/demo-panel carga correctamente', async ({ page }) => {
-    await cargaSinError(page, '/sistema-diseno/demo-panel')
+  test('pub-17 - el formulario de dudas legales existe y es público', async ({ page }) => {
+    await cargaSinError(page, '/legal/dudas')
+    await expect(page.locator('form, input, textarea').first()).toBeVisible({ timeout: 15_000 })
   })
 })

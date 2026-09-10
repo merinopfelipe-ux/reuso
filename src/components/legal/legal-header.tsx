@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { X, Sun, Moon, Question } from '@/components/ui/icons'
+import { ArrowLeft, Question } from '@/components/ui/icons'
 
 export function LegalHeader() {
   const [mounted, setMounted] = useState(false)
@@ -22,12 +22,6 @@ export function LegalHeader() {
   }, [])
 
   const headerBg = isDark ? 'rgba(71, 71, 71, 0.5)' : 'rgba(255, 255, 255, 0.5)'
-
-  function toggleDark() {
-    const next = !isDark
-    document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-    localStorage.setItem('theme', next ? 'dark' : 'light')
-  }
 
   return (
     <header
@@ -49,10 +43,10 @@ export function LegalHeader() {
         gap: 16,
       }}
     >
-      {/* Izquierda: cerrar → home con tooltip */}
-      <Link href="/" className="legal-header-btn hover-rotate-90">
-        <X size={18} strokeWidth={2.5} />
-        <span className="legal-tooltip legal-tooltip--bottom">Volver al inicio</span>
+      {/* Izquierda: volver con tooltip */}
+      <Link href="/legal" className="legal-header-btn hover-wiggle">
+        <ArrowLeft size={18} strokeWidth={2.5} />
+        <span className="legal-tooltip legal-tooltip--bottom">Volver</span>
       </Link>
 
       {/* Centro: logo */}
@@ -72,19 +66,8 @@ export function LegalHeader() {
         />
       </Link>
 
-      {/* Derecha: tema + ayuda */}
+      {/* Derecha: ayuda */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-        <button
-          onClick={toggleDark}
-          className="legal-header-btn hover-rotate-180"
-          aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-        >
-          {mounted && isDark ? <Sun size={18} strokeWidth={2.5} /> : <Moon size={18} strokeWidth={2.5} />}
-          <span className="legal-tooltip legal-tooltip--bottom">
-            {mounted && isDark ? 'Modo día' : 'Modo noche'}
-          </span>
-        </button>
-        
         <Link href="/legal/dudas" className="legal-header-btn hover-wiggle">
           <Question size={18} strokeWidth={2.5} />
           <span className="legal-tooltip legal-tooltip--bottom">Tengo una duda</span>

@@ -37,9 +37,9 @@ import {
   Lightning,
   Save,
   Check,
-  Sun,
-  Moon,
+  ShieldCheck,
 } from '@/components/ui/icons'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
@@ -52,6 +52,7 @@ import { InputTelefono } from '@/components/ui/input-telefono'
 import { Pagination } from '@/components/ui/pagination'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { PAISES } from '@/components/ui/selector-pais'
+import { TablaCotizadorDemo } from './components/tabla-cotizador-demo'
 
 const PRICING_PLANS = PLANS;
 
@@ -283,7 +284,7 @@ export default function ManualDisenoPage() {
   ]
 
   return (
-    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#474747] text-white' : 'bg-white text-[#474747]'}`} style={{ overflowX: 'clip' }}>
+    <div className={`min-h-screen font-sans transition-all duration-500 allow-select ${isDark ? 'bg-[#474747] text-white' : 'bg-primary text-[#474747]'}`} style={{ overflowX: 'clip' }}>
       
       {/* ESTILOS GLOBALES DE NAVEGACIÓN */}
       <style jsx global>{`
@@ -397,11 +398,11 @@ export default function ManualDisenoPage() {
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-8">
               <div className={`w-2 h-2 rounded-full ${isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]'}`} />
-              <span className={`text-xs font-bold tracking-[0.2em] ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
-                Catálogo de Sistema de Diseño
+              <span className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+                Catálogo Maestro &middot; Guía Oficial
               </span>
             </div>
-            <h1 className={`text-4xl sm:text-5xl md:text-[5rem] font-bold tracking-tighter leading-[1.05] mb-8 ${isDark ? 'text-white' : 'text-[#474747]'}`}>
+            <h1 className={`text-4xl sm:text-5xl md:text-[5rem] font-bold tracking-tighter leading-[1.05] mb-8 text-primary`}>
               Identidad de la<br/>Calculadora de Reúso
             </h1>
             <p className={`${isDark ? 'text-white/60' : 'text-[#474747]'} text-xl leading-relaxed max-w-2xl font-medium`}>
@@ -413,7 +414,7 @@ export default function ManualDisenoPage() {
         {/* SECCION 01: COLOR */}
         <section id="s01-color" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-4">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de color</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Arquitectura de color</h2>
           </div>
           <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Las familias cromáticas organizadas lógicamente. El <strong>Negro Lurdes (#474747)</strong> es el fondo de página en modo noche. Nuestra identidad se basa en binomios dinámicos: en el modo <strong>Día</strong> predominan el <strong>Blanco Puro</strong> y el <strong>Verde Sostenible</strong>; mientras que en el modo <strong>Noche</strong> la armonía maestra se construye con <strong>Negro Lurdes</strong> y acentos en <strong>Sueños de Pistacho</strong>.</p>
           
@@ -431,7 +432,7 @@ export default function ManualDisenoPage() {
                     <div className={`h-28 w-full rounded-[2rem] shadow-lg transition-transform hover:scale-105 ${color.border ? 'border border-[#00827C]/10' : ''}`} style={{ backgroundColor: color.hex }} />
                     <div className="px-1 flex items-center justify-between group/hex">
                       <div>
-                        <div className={`text-[13px] font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{color.name}</div>
+                        <div className={`text-[13px] font-bold text-primary`}>{color.name}</div>
                         <div className={`text-[10px] font-bold mt-1 select-all flex items-center gap-1.5 ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
                           {color.hex}
                           <button 
@@ -464,7 +465,7 @@ export default function ManualDisenoPage() {
                     <div className="h-16 w-full rounded-2xl transition-transform hover:scale-105" style={{ backgroundColor: color.hex }} />
                     <div className="flex items-center justify-between group/hex">
                       <div>
-                        <div className={`text-[13px] font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{color.name}</div>
+                        <div className={`text-[13px] font-bold text-primary`}>{color.name}</div>
                         <div className={`text-[10px] font-bold mt-1 select-all flex items-center gap-1.5 ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
                           {color.hex}
                           <button 
@@ -493,7 +494,7 @@ export default function ManualDisenoPage() {
                     <div className="h-10 w-full rounded-xl transition-transform hover:scale-105" style={{ backgroundColor: color.hex }} />
                     <div className="flex items-center justify-between group/hex">
                       <div>
-                        <div className={`text-[13px] font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{color.name}</div>
+                        <div className={`text-[13px] font-bold text-primary`}>{color.name}</div>
                         <div className={`text-[10px] font-bold mt-1 select-all flex items-center gap-1.5 ${isDark ? 'text-white/60' : 'text-[#00827C]/60'}`}>
                           {color.hex}
                           <button 
@@ -517,17 +518,17 @@ export default function ManualDisenoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                   <div className="glass-stat flex flex-col gap-2">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Transparencia</span>
-                    <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>65%</span>
+                    <span className={`glass-number text-4xl font-black text-primary`}>65%</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>bg-white/35 (Día) · bg-[#D6F391]/08 (Noche)</span>
                     </div>
                     <div className="glass-stat flex flex-col gap-2">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Blur</span>
-                    <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>60px</span>
+                    <span className={`glass-number text-4xl font-black text-primary`}>60px</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>backdrop-blur-[60px] · saturate(200%)</span>
                     </div>
                     <div className="glass-stat flex flex-col gap-2">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Borde</span>
-                    <span className={`glass-number text-4xl font-black ${isDark ? 'text-white' : 'text-[#474747]'}`}>10%</span>
+                    <span className={`glass-number text-4xl font-black text-primary`}>10%</span>
                     <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>border-[#00827C]/10 (Día) · border-white/10 (Noche)</span>
                   </div>
                 </div>
@@ -552,56 +553,57 @@ export default function ManualDisenoPage() {
         {/* SECCION 02: TIPOGRAFÍA */}
         <section id="s02-typography" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-4">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fuentes</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Fuentes</h2>
           </div>
           <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-4 max-w-3xl`}>
             Tres familias tipográficas conforman la identidad textual de Reúso: <strong>Seravek</strong> para títulos y encabezados de gran formato, <strong>Open Sans</strong> para la interfaz general, cuerpo de texto y comunicación, y la <strong>monoespaciada del sistema</strong> para tokens técnicos y código.
           </p>
           <div className={`p-6 mb-12 rounded-2xl ${isDark ? 'bg-[#D6F391]/10 text-white' : 'bg-[#00827C]/5 text-[#474747]'} max-w-3xl`}>
-            <h4 className="font-bold mb-2">Normas de Jerarquía (SEO) y Puntuación</h4>
+            <h4 className="font-bold mb-2">Normas de Jerarquía (SEO), Puntuación y Mayúsculas</h4>
             <ul className="list-disc pl-5 space-y-2 text-sm font-medium">
               <li><strong>Estructura Headings:</strong> Mantén siempre un orden semántico estricto. <strong>H1</strong> es único por página (Hero), <strong>H2</strong> para secciones principales, <strong>H3</strong> y <strong>H4</strong> para tarjetas o sub-secciones. Usa las clases de CSS para ajustar tamaños visuales sin romper la jerarquía SEO.</li>
               <li><strong>Puntuación Obligatoria:</strong> Todo texto que no sea un título (descripciones, viñetas, características, métricas, etc.) <strong>debe llevar punto final</strong>.</li>
+              <li><strong>Prohibición de Mayúsculas Sostenidas:</strong> Prohibido usar MAYÚSCULAS SOSTENIDAS en textos, títulos, antetítulos o botones. El texto debe ser en Capitalize o frase natural.</li>
             </ul>
           </div>
           <div className={`p-10 md:p-14 rounded-[2.5rem] space-y-12 ${liquidGlassClass} border-[#00827C]/10`}>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Gran Formato (Display)</div>
-                <div className="md:col-span-9"><h1 className={`text-6xl md:text-7xl font-bold tracking-tighter ${isDark ? 'text-white' : 'text-[#474747]'}`}>El Futuro es Ahora</h1></div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Gran formato (display)</div>
+                <div className="md:col-span-9"><h1 className={`text-6xl md:text-7xl font-bold text-primary`}>El futuro es ahora</h1></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Título Principal (H1)</div>
-                <div className="md:col-span-9"><h1 className={`text-4xl md:text-5xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tu impacto ambiental real</h1></div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Título principal (H1)</div>
+                <div className="md:col-span-9"><h1 className={`text-4xl md:text-5xl font-bold text-primary`}>Tu impacto ambiental real</h1></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Subtítulo (H2)</div>
-                <div className="md:col-span-9"><h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Categorías de impacto mitigado</h2></div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Subtítulo (H2)</div>
+                <div className="md:col-span-9"><h2 className={`text-3xl font-bold text-primary`}>Categorías de impacto mitigado</h2></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Sección (H3)</div>
-                <div className="md:col-span-9"><h3 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Asignación criptográfica de tokens</h3></div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Sección (H3)</div>
+                <div className="md:col-span-9"><h3 className={`text-xl font-bold text-primary`}>Asignación criptográfica de tokens</h3></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Etiqueta Micro</div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Etiqueta micro</div>
                 <div className="md:col-span-9">
                   <div className="flex items-center gap-3">
                      <span className="w-2 h-2 rounded-full bg-[#00827C]" />
-                     <span className={`text-[11px] font-bold tracking-[0.2em] ${isDark ? 'text-white' : 'text-[#474747]'}`}>Términos y Condiciones</span>
+                     <span className={`text-[12px] font-semibold text-primary`}>Términos y condiciones</span>
                   </div>
                 </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6 border-b border-[#00827C]/10 pb-8">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Monoespaciada</div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Monoespaciada</div>
                 <div className="md:col-span-9">
                   <code className={`text-sm font-mono ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>var(--color-brand): #00827C</code>
                   <p className={`text-xs mt-2 ${isDark ? 'text-white/40' : 'text-[#474747]/70'}`}>JetBrains Mono · Tokens técnicos y código</p>
                 </div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-12 items-baseline gap-6">
-                <div className={`md:col-span-3 text-sm font-bold tracking-widest ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cuerpo (Body)</div>
+                <div className={`md:col-span-3 text-sm font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Cuerpo (body)</div>
                 <div className="md:col-span-9 space-y-4">
-                  <p className={`text-lg leading-relaxed ${isDark ? 'text-white' : 'text-[#474747]'}`}>Este es un texto normal donde aseguramos la lectura prolongada sin cansar la vista. Se utiliza principalmente en descripciones y noticias de la red.</p>
-                  <p className={`text-lg leading-relaxed font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Y esto es el cuerpo de texto en su variante negrita o Bold, utilizado para destacar datos críticos en informes.</p>
+                  <p className={`text-lg leading-relaxed text-primary`}>Este es un texto normal donde aseguramos la lectura prolongada sin cansar la vista. Se utiliza principalmente en descripciones y noticias de la red.</p>
+                  <p className={`text-lg leading-relaxed font-bold text-primary`}>Y esto es el cuerpo de texto en su variante negrita o Bold, utilizado para destacar datos críticos en informes.</p>
                 </div>
              </div>
           </div>
@@ -610,9 +612,9 @@ export default function ManualDisenoPage() {
         {/* SECCION 03: BOTONES */}
         <section id="s03-buttons" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Variantes de botón</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Variantes de botón</h2>
           </div>
-          <div className={`p-12 rounded-[3.5rem] grid grid-cols-2 md:grid-cols-3 gap-12 border border-[#00827C]/10 ${isDark ? 'bg-[#D6F391]/05' : 'bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)]`}>
+          <div className={`p-12 rounded-[3.5rem] grid grid-cols-2 md:grid-cols-3 gap-12 border border-[#00827C]/10 ${isDark ? 'bg-[#D6F391]/05' : 'bg-primary'} shadow-[0_12px_40px_rgba(0,130,124,0.04)]`}>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>1. Primario Reúso</span>
                 <button className={`px-8 py-4 rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white shadow-[0_8px_20px_rgba(0,130,124,0.2)]'}`}>Acción Primaria</button>
@@ -631,7 +633,7 @@ export default function ManualDisenoPage() {
               </div>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>5. Alerta / Feedback</span>
-                <button className={`px-8 py-4 rounded-full font-bold transition-all text-[12px] tracking-wide border ${isDark ? 'bg-[#F6BF3E]/20 border-[#F6BF3E]/40 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border border-[#F6BF3E]/30 text-[#AD7C43] hover:bg-[#F6BF3E]/20'}`}>Validando emisión...</button>
+                <button className={`px-8 py-4 rounded-full font-bold transition-all text-[12px] border ${isDark ? 'bg-[#F6BF3E]/20 border-[#F6BF3E]/40 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border border-[#F6BF3E]/30 text-[#AD7C43] hover:bg-[#F6BF3E]/20'}`}>Validando emisión...</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
                 <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>6. Flotante Celeste Acción</span>
@@ -659,12 +661,12 @@ export default function ManualDisenoPage() {
         {/* SECCION 04: TARJETAS & KPI */}
         <section id="s04-cards" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tarjetas de Identidad y KPI</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Tarjetas de Identidad y KPI</h2>
           </div>
           
           {/* A. FORMAS DE TARJETA FIRMA */}
           <div className="mb-16">
-            <h3 className={`text-xs tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Geometrías de Firma Reúso</h3>
+            <h3 className={`text-sm font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Geometrías de Firma Reúso</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-center">
                
                <div className="flex flex-col gap-6">
@@ -681,13 +683,13 @@ export default function ManualDisenoPage() {
                     <div className="w-full h-full rounded-full shadow-2xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#D6F391' }}>
                       <User size={80} className="text-[#00827C] opacity-40 group-hover:scale-110 transition-transform duration-700" />
                     </div>
-                    <button className="absolute bottom-[18%] -right-2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg text-[#474747] hover:rotate-45 transition-transform z-10 border border-black/5">
+                    <button className="absolute bottom-[18%] -right-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg text-[#474747] hover:rotate-45 transition-transform z-10 border border-black/5">
                       <ArrowRight size={20} strokeWidth={2.5} />
                     </button>
                   </div>
                   <div className="text-center">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-1`}>&bull; Retrato Circular</span>
-                    <div className={`text-sm font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>Curva Orgánica Firma</div>
+                    <div className={`text-sm font-bold text-primary`}>Curva Orgánica Firma</div>
                   </div>
                 </div>
 
@@ -695,7 +697,7 @@ export default function ManualDisenoPage() {
                <div className="flex flex-col gap-6">
                  <div className={`w-full h-64 rounded-[120px] border border-[#00827C]/10 shadow-[0_24px_48px_rgba(0,130,124,0.06)] flex items-center justify-center p-12 text-center transition-transform hover:rotate-1 duration-500 ${isDark ? 'bg-white/10' : 'bg-[#FCFBFA]'}`}>
                     <div className="flex flex-col items-center">
-                      <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Fila Editorial Cápsula</h4>
+                      <h4 className={`text-xl font-bold mb-2 text-primary`}>Fila Editorial Cápsula</h4>
                       <p className={`text-[10px] font-bold ${isDark ? 'text-white/40' : 'text-[#474747]/60'}`}>Radio 999px &bull; bg Blanco Roto &bull; sombra 0 24 48 / 0.08</p>
                     </div>
                  </div>
@@ -706,7 +708,7 @@ export default function ManualDisenoPage() {
           </div>
 
           <div className="mb-8">
-            <h3 className={`text-xs tracking-[0.2em] font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. Indicadores KPI Administrativos</h3>
+            <h3 className={`text-sm font-bold mb-8 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. Indicadores KPI Administrativos</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { title: 'Usuarios registrados', val: '4', icon: Users, c: 'bg-[#00827C]' },
@@ -735,22 +737,22 @@ export default function ManualDisenoPage() {
         {/* SECCION 05: FORMULARIOS */}
         <section id="s05-forms" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Elementos de formulario</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Elementos de formulario</h2>
           </div>
-          <div className={`p-10 rounded-[3.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05 backdrop-blur-md' : 'border-[#00827C]/10 bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] max-w-4xl`}>
+          <div className={`p-10 rounded-[3.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05 backdrop-blur-md' : 'border-[#00827C]/10 bg-primary'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] max-w-4xl`}>
              <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div className="flex flex-col gap-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Nombre Completo</span>
-                 <input type="text" placeholder="Ej. Juan Pérez" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <input type="text" placeholder="Ej. Juan Pérez" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
                <div className="flex flex-col gap-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Correo Institucional</span>
-                 <input type="email" placeholder="usuario@lurdes.co" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <input type="email" placeholder="usuario@calculadoradereuso.com" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
                <div className="flex flex-col gap-2 relative">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Contraseña Institucional</span>
                  <div className="relative">
-                   <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                   <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                    <button type="button" onClick={() => setShowPwd(!showPwd)} className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${isDark ? 'text-[#D6F391]/60 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/50 hover:bg-[#00827C]/10 hover:text-[#00827C]'}`}>
                      {showPwd ? <EyeSlash size={22} strokeWidth={1.5}/> : <Eye size={22} strokeWidth={1.5}/>}
                    </button>
@@ -761,7 +763,7 @@ export default function ManualDisenoPage() {
                </div>
                <div className="flex flex-col gap-2 md:col-span-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Mensaje de Impacto</span>
-                 <textarea placeholder="Cuéntanos tu objetivo..." className={`p-4 rounded-2xl border transition-all h-32 resize-none ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-white border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <textarea placeholder="Cuéntanos tu objetivo..." className={`p-4 rounded-2xl border transition-all h-32 resize-none ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
                </div>
              </form>
           </div>
@@ -772,7 +774,7 @@ export default function ManualDisenoPage() {
           
           <section id="s06-radius">
             <div className="flex items-center gap-4 mb-10">
-              <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Escala de radios</h2>
+              <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Escala de radios</h2>
             </div>
             <div className={`grid grid-cols-2 lg:grid-cols-3 gap-6 p-10 rounded-[2.5rem] border border-[#00827C]/10 ${isDark ? 'bg-white/5' : 'bg-[#00827C]/[0.02]'}`}>
               {[
@@ -786,7 +788,7 @@ export default function ManualDisenoPage() {
                 <div key={rad.r} className="flex flex-col items-center gap-3">
                   <div className={`w-16 h-16 transition-all ${isDark ? 'bg-white/10 border border-[#D6F391]/30' : 'bg-[#00827C]/10 border border-[#00827C]/30'} ${rad.cls}`} />
                   <div className="text-center">
-                    <div className={`text-xs font-bold ${isDark ? 'text-white' : 'text-[#474747]'}`}>{rad.r}</div>
+                    <div className={`text-xs font-bold text-primary`}>{rad.r}</div>
                     <div className={`text-[9px] ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>{rad.label}</div>
                   </div>
                 </div>
@@ -796,7 +798,7 @@ export default function ManualDisenoPage() {
 
           <section id="s07-elevation">
             <div className="flex items-center gap-4 mb-10">
-              <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Elevación y profundidad</h2>
+              <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Elevación y profundidad</h2>
             </div>
             <div className="space-y-6">
               {[
@@ -804,9 +806,9 @@ export default function ManualDisenoPage() {
                 { name: 'Tarjeta Flotante (shadow-lg)', base: 'shadow-[0_12px_24px_rgba(0,130,124,0.06)]', text: 'Tarjetas en lienzo puro' },
                 { name: 'Cristal Profundo Liquid (shadow-2xl)', base: 'shadow-[0_32px_64px_rgba(0,130,124,0.15),inset_2px_2px_0_rgba(255,255,255,0.7)]', text: 'Paneles Maestros de Cristal' },
               ].map(el => (
-                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] saturate-[180%]' : 'bg-white border border-[#00827C]/10'} ${el.base}`}>
+                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] saturate-[180%]' : 'bg-primary border border-[#00827C]/10'} ${el.base}`}>
                   {isDark && <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/[0.05] to-transparent pointer-events-none" />}
-                  <h4 className={`font-bold ${isDark ? 'text-white' : 'text-[#474747]'} select-all relative z-10`}>{el.name}</h4>
+                  <h4 className={`font-bold text-primary select-all relative z-10`}>{el.name}</h4>
                   <p className={`text-sm ${isDark ? 'text-white/60' : 'text-[#474747]'} relative z-10`}>{el.text}</p>
                 </div>
               ))}
@@ -818,28 +820,28 @@ export default function ManualDisenoPage() {
         {/* SECCION 08: TONO E INTERACCION - Banner Liquid Glass restaurado */}
         <section id="s08-tono" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-16">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tono e interacción</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Tono e interacción</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="flex gap-4">
-                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`}><Globe size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
+                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-active`}><Globe size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
-                   <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Voz Positiva y Activa</h4>
+                   <h4 className={`text-xl font-bold mb-2 text-primary`}>Voz Positiva y Activa</h4>
                    <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>Construimos confianza ambiental con datos trazables y un lenguaje visual premium. <strong>Reglas de redacción:</strong> Escribe siempre en <strong>voz activa</strong> para empoderar al usuario. <strong>Evita por completo el uso de punto y coma (;)</strong> y utiliza oraciones cortas y asertivas. Recuerda que todo texto que no sea título debe finalizar con punto.</p>
                  </div>
               </div>
               <div className="flex gap-4">
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#38B98E]/10'}`}><Tree size={32} className={isDark ? 'text-white' : 'text-[#00827C]'} /></div>
                  <div>
-                   <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Filosofía de Cuidado Bio</h4>
+                   <h4 className={`text-xl font-bold mb-2 text-primary`}>Filosofía de Cuidado Bio</h4>
                    <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}>No solo medimos CO₂, celebramos la vida. La interfaz debe respirar, dejando aire entre elementos (espaciado generoso) y colores inspirados en la fotosíntesis.</p>
                  </div>
               </div>
               <div className="flex gap-4">
                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#59A6E4]/10'}`}><Target size={32} className={isDark ? 'text-white' : 'text-[#59A6E4]'} /></div>
                  <div>
-                   <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Rigor Legal y Cero Promesas</h4>
+                   <h4 className={`text-xl font-bold mb-2 text-primary`}>Rigor Legal y Cero Promesas</h4>
                    <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}><strong>Principio de no prometer nada indemostrable:</strong> Prohibido usar superlativos o afirmaciones absolutas como &ldquo;software líder&rdquo;, &ldquo;el mejor&rdquo;, &ldquo;100% garantizado&rdquo; o prometer certificaciones oficiales. Habla siempre de &ldquo;estimaciones ambientales documentadas&rdquo;, &ldquo;respaldo técnico&rdquo; y &ldquo;trazabilidad&rdquo;, protegiendo a la marca frente a riesgos legales y acusaciones de greenwashing.</p>
                  </div>
               </div>
@@ -861,10 +863,10 @@ export default function ManualDisenoPage() {
                 />
                {/* Contenido central */}
                <div className="relative z-10 text-center">
-                 <div className={`glass-shimmer-text text-5xl font-black tracking-tight mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>
-                   Liquid Glass
+                 <div className={`glass-shimmer-text text-5xl font-black mb-3 text-primary`}>
+                   Reúso Glass
                  </div>
-                 <p className={`glass-subtitle text-sm font-bold tracking-[0.3em] ${isDark ? 'text-[#D6F391]/60' : 'text-[#474747]/60'}`}>Transparencia &middot; Blur &middot; Saturación</p>
+                 <p className={`glass-subtitle text-sm font-bold ${isDark ? 'text-[#D6F391]/60' : 'text-[#474747]/60'}`}>Transparencia &middot; Blur &middot; Saturación</p>
                </div>
             </div>
           </div>
@@ -873,68 +875,46 @@ export default function ManualDisenoPage() {
 
         {/* SECCION 09: ESTÁNDAR DE TABLAS Y DATOS */}
         <section id="s09-tablas" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
-          <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Estándar de tablas y datos</h2>
+          <div className="flex items-center gap-4 mb-4">
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Estándar de tablas y datos</h2>
           </div>
-          <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-10 max-w-xl`}>
-            La legibilidad en scroll es un mandato institucional. Las tablas deben ser sólidas para evitar el ruido visual.
+          <p className={`text-base ${isDark ? 'text-white/60' : 'text-[#474747]'} font-medium mb-8 max-w-3xl`}>
+            La legibilidad en scroll y la interacción estructurada son mandatos institucionales. El modelo de tabla del <strong>Cotizador (/empresa/cotizador)</strong> define el estándar para todo el ecosistema Reúso: barra de control superior con pestañas de filtro, búsqueda en tiempo real, ordenamiento, celdas zebra, estados semánticos y paginación.
           </p>
-          
-          <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)] border-b border-[var(--border)]">
-                    <th className="px-4 py-3.5 text-left font-bold text-xs tracking-wide">Categoría</th>
-                    <th className="px-4 py-3.5 text-center font-bold text-xs tracking-wide">Estado</th>
-                    <th className="px-4 py-3.5 text-right font-bold text-xs tracking-wide">Cifra de impacto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { id: 1, cat: 'Textiles Reutilizados', estado: 'Activo', co2: '-42,8 kg CO₂' },
-                    { id: 2, cat: 'Madera de Roble Recuperada', estado: 'Activo', co2: '-125,4 kg CO₂' },
-                    { id: 3, cat: 'Estructuras Metálicas', estado: 'Inactivo', co2: '-310,0 kg CO₂' },
-                  ].map((item, idx) => (
-                    <tr
-                      key={item.id}
-                      className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
-                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
-                      }`}
-                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
-                    >
-                      <td className="px-4 py-3 text-[var(--text-primary)]">
-                        {item.cat}
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span style={{ 
-                          padding: '2px 10px', 
-                          borderRadius: 100, 
-                          fontSize: 10, 
-                          fontWeight: 800, 
-                          background: item.estado === 'Activo' ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)', 
-                          color: item.estado === 'Activo' ? 'var(--color-success-content)' : 'var(--color-error-content)',
-                          border: '1px solid currentColor',
-                          opacity: 0.9,
-                        }}>
-                          {item.estado}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--text-secondary)] text-right">
-                        {item.co2}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+          {/* Reglas de Diseño Explícitas */}
+          <div className={`p-6 mb-10 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#00827C]/5 border-[#00827C]/15'} max-w-4xl`}>
+            <h3 className={`text-sm font-bold mb-3 flex items-center gap-2 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+              <ShieldCheck size={18} /> Reglas Obligatorias del Sistema de Diseño
+            </h3>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium leading-relaxed">
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Prohibición de mayúsculas sostenidas:</strong> Nunca uses texto en mayúsculas completas en títulos, botones o tablas, salvo siglas normativas (NIT, CO₂, UUID, PDF, QA, IA, ARCO, RGPD, CCPA).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>ThemeToggle en footer:</strong> El interruptor de tema (Modo Día / Modo Noche) debe ubicarse siempre en la primera línea del pie de página a la derecha.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Colores inmutables vs adaptables:</strong> Los colores semánticos (#00827C, #38B98E, #D6F391, #F6BF3E, #FF5E4B) mantienen su identidad visual pero adaptan su contraste sobre fondo oscuro #474747.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Microanimaciones táctiles:</strong> Todos los elementos interactivos deben incluir clases de transición suave (<code>hover-pop</code>, <code>hover-press</code>, microescalas de 1.05x).</span>
+              </li>
+            </ul>
           </div>
+
+          {/* MODELO COMPLETO DE TABLA: Patrón Cotizador (/empresa/cotizador) */}
+          <TablaCotizadorDemo />
         </section>
 
         {/* SECCION 10: TOKENS DEL SISTEMA */}
         <section id="s10-tokens" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-4">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Tokens del sistema</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Tokens del sistema</h2>
           </div>
           <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-3 max-w-2xl`}>
             Cada elemento del manual tiene un nombre. Úsalos para dar instrucciones exactas.
@@ -948,7 +928,7 @@ export default function ManualDisenoPage() {
               <div key={group.category}>
                 <div className="flex items-center gap-3 mb-6">
                   <h3 className={`text-xs font-black ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>{group.category}</h3>
-                  <div className={`flex-1 h-px ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
+                  <div className={`flex-1 h-px bg-active`} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {group.tokens.map((token) => {
@@ -959,7 +939,7 @@ export default function ManualDisenoPage() {
                     return (
                       <button
                         key={token.name}
-                        className={`text-left p-5 rounded-[1.75rem] border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,130,124,0.08)] group ${isCopied ? 'token-copied' : ''} ${isDark ? 'bg-white/5 border-white/10 hover:border-white/20' : 'bg-white border-[#00827C]/10 hover:border-[#00827C]/20'}`}
+                        className={`text-left p-5 rounded-[1.75rem] border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,130,124,0.08)] group ${isCopied ? 'token-copied' : ''} ${isDark ? 'bg-white/5 border-white/10 hover:border-white/20' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/20'}`}
                         onClick={() => {
                           navigator.clipboard.writeText(token.name)
                           setCopiedToken(token.name)
@@ -982,11 +962,11 @@ export default function ManualDisenoPage() {
                               style={{ borderRadius: previewValue === '999' ? '999px' : `${previewValue}px` }} />
                           )}
                           {previewType === 'shadow' && (
-                            <div className="w-10 h-10 rounded-xl bg-white"
+                            <div className="w-10 h-10 rounded-xl bg-primary"
                               style={{ boxShadow: previewValue === '15' ? '0 32px 64px rgba(0,130,124,0.15)' : previewValue === '6' ? '0 12px 24px rgba(0,130,124,0.06)' : '0 4px 20px rgba(0,130,124,0.06)' }} />
                           )}
                           {previewType === 'motion' && (
-                            <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} style={{ width: '2.5rem' }}>
+                            <div className={`h-2 rounded-full overflow-hidden bg-active`} style={{ width: '2.5rem' }}>
                               <div className="h-full bg-[#00827C] rounded-full animate-pulse" />
                             </div>
                           )}
@@ -1002,7 +982,7 @@ export default function ManualDisenoPage() {
                           <code className={`text-sm font-black tracking-tight ${isCopied ? 'text-[#38B98E]' : isDark ? 'text-white' : 'text-[#474747]'}`}>
                             {isCopied ? '¡Copiado!' : token.name}
                           </code>
-                          <Copy size={12} strokeWidth={2.5} className={`flex-shrink-0 opacity-0 group-hover:opacity-40 transition-opacity ${isDark ? 'text-white' : 'text-[#474747]'}`} />
+                          <Copy size={12} strokeWidth={2.5} className={`flex-shrink-0 opacity-0 group-hover:opacity-40 transition-opacity text-primary`} />
                         </div>
 
                         {/* Valor */}
@@ -1023,7 +1003,7 @@ export default function ManualDisenoPage() {
         <section id="s11-iconografia" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
             <div className="flex items-center gap-4">
-              <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Iconografía</h2>
+              <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Iconografía</h2>
             </div>
             <a 
               href="https://lucide.dev/" 
@@ -1087,9 +1067,9 @@ export default function ManualDisenoPage() {
               { i: Calculator, n: 'Calculadora', c: 'hover-calc hover-press' },
               { i: IaIcon, n: 'IA (Font Seravek)', c: 'hover-press' },
             ].map((icon, idx) => (
-              <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${icon.c} ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#474747]/10'}`}>
+              <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${icon.c} ${isDark ? 'bg-white/5 border-white/10' : 'bg-primary border-[#474747]/10'}`}>
                 <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#474747]'} transition-colors mb-4`} />
-                <span className={`text-[10px] font-bold tracking-tighter text-center ${isDark ? 'text-white/30' : 'text-[#474747]/60'}`}>{icon.n}</span>
+                <span className={`text-[10px] font-bold text-center ${isDark ? 'text-white/30' : 'text-[#474747]/60'}`}>{icon.n}</span>
               </div>
             ))}
           </div>
@@ -1146,7 +1126,7 @@ export default function ManualDisenoPage() {
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/70' : 'text-[#474747]/85'} mb-3`}>
                 <strong>Queda terminantemente prohibido el uso del ícono <code>Target</code> (diana o círculos concéntricos)</strong> en toda la plataforma, landings y flujos de DDP. Es un ícono ambiguo que genera confusión semántica y no comunica con claridad los conceptos de cálculo, algoritmos o sectores.
               </p>
-              <div className={`p-3.5 rounded-xl text-[11px] leading-relaxed ${isDark ? 'bg-white/5 text-white/80' : 'bg-white text-[#474747]'}`}>
+              <div className={`p-3.5 rounded-xl text-[11px] leading-relaxed ${isDark ? 'bg-white/5 text-white/80' : 'bg-primary text-[#474747]'}`}>
                 <div className="font-bold mb-1.5 text-[#FF5E4B]">Reemplazos oficiales obligatorios:</div>
                 <div>• <strong>Algoritmos, cómputo y cálculo inteligente:</strong> <code>&lt;Cpu /&gt;</code>, <code>&lt;Sparkles /&gt;</code> o <code>&lt;Calculator /&gt;</code>.</div>
                 <div>• <strong>Textil, retales y fibras:</strong> <code>&lt;Scissors /&gt;</code>, <code>&lt;Layers /&gt;</code> o <code>&lt;Package /&gt;</code>.</div>
@@ -1163,7 +1143,7 @@ export default function ManualDisenoPage() {
 
           {/* Subsección: Logotipos de Marcas Oficiales (Brand Logos) */}
           <div className="mt-16">
-            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Logotipos de Marca Oficiales (Brand Logos)</h3>
+            <h3 className={`text-lg font-bold mb-3 text-primary`}>Logotipos de Marca Oficiales (Brand Logos)</h3>
             <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
               Logotipos vectoriales oficiales de empresas, redes sociales y plataformas de terceros. Para garantizar la máxima fidelidad y reconocimiento oficial, <strong>se utiliza la librería Phosphor Icons (<code>@phosphor-icons/react</code>) de forma exclusiva para estos casos</strong>. Se muestran de forma estática (sin animaciones interactivas de hover) y con colores corporativos oficiales.
             </p>
@@ -1173,10 +1153,10 @@ export default function ManualDisenoPage() {
                 { i: LinkedinLogo, n: 'LinkedIn', c: 'text-[#0A66C2]' },
                 { i: InstagramLogo, n: 'Instagram', c: isDark ? 'text-white' : 'text-[#E4405F]' },
                 { i: FacebookLogo, n: 'Facebook', c: 'text-[#1877F2]' },
-                { i: XLogo, n: 'X (Twitter)', c: isDark ? 'text-white' : 'text-black' },
+                { i: XLogo, n: 'X (Twitter)', c: isDark ? 'text-white' : 'text-primary' },
                 { i: YoutubeLogo, n: 'YouTube', c: 'text-[#FF0000]' },
               ].map((logo, idx) => (
-                <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl group ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-[#00827C]/10'}`}>
+                <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl group ${isDark ? 'bg-white/5 border-white/10' : 'bg-primary border-[#00827C]/10'}`}>
                   <logo.i size={36} className={`${logo.c} mb-4 transition-transform group-hover:scale-110 duration-200`} />
                   <span className={`text-[11px] font-bold ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>{logo.n}</span>
                 </div>
@@ -1186,7 +1166,7 @@ export default function ManualDisenoPage() {
 
           {/* Subsección: Lucide Animated (Micro-interacciones de Interfaz) */}
           <div className="mt-16">
-            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Lucide Animated (Micro-interacciones de Interfaz)</h3>
+            <h3 className={`text-lg font-bold mb-3 text-primary`}>Lucide Animated (Micro-interacciones de Interfaz)</h3>
             <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
               Micro-interacciones basadas en el registro real de <code>lucide-animated.com</code>, integradas directo al hub de íconos del sistema (no la librería <code>@animateicons/react</code>, que resultó no funcionar en este proyecto). Se activan al pasar el cursor (hover) por encima de cada cajón. Basura y Estrella no tienen versión animada en ese registro, así que muestran el zoom estándar del sistema en vez de una animación propia.
             </p>
@@ -1210,12 +1190,12 @@ export default function ManualDisenoPage() {
               ].map((item, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-white border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
                 >
                   <div className={`${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-4 transition-colors`}>
                     <item.i size={28} />
                   </div>
-                  <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
+                  <span className={`text-[11px] font-bold block text-primary`}>{item.n}</span>
                   <span className={`text-[9px] font-medium mt-1 block opacity-50 ${isDark ? 'text-white/50' : 'text-[#00827C]/50'}`}>{item.d}</span>
                   <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">lucide-animated.com</code>
                 </div>
@@ -1225,7 +1205,7 @@ export default function ManualDisenoPage() {
 
           {/* Subsección: Lucide Lab (Iconos Experimentales) */}
           <div className="mt-16">
-            <h3 className={`text-lg font-bold mb-3 ${isDark ? 'text-white' : 'text-[#474747]'}`}>Lucide Lab (Iconos Experimentales)</h3>
+            <h3 className={`text-lg font-bold mb-3 text-primary`}>Lucide Lab (Iconos Experimentales)</h3>
             <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-xs font-medium mb-8 max-w-3xl`}>
               Iconos experimentales oficiales importados directamente del repositorio oficial de <code>@lucide/lab</code>. Estos diseños están en fase experimental y no pertenecen a la librería Core, pero se integran perfectamente mediante el componente contenedor <code>Icon</code> de <code>lucide-react</code>.
             </p>
@@ -1241,12 +1221,12 @@ export default function ManualDisenoPage() {
               ].map((item, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-white border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
                 >
                   <div className={`${isDark ? 'text-[#D6F391] group-hover:scale-110' : 'text-[#00827C] group-hover:scale-110'} mb-4 transition-transform duration-200`}>
                     <Icon iconNode={item.node} size={32} />
                   </div>
-                  <span className={`text-[11px] font-bold block ${isDark ? 'text-white' : 'text-[#474747]'}`}>{item.n}</span>
+                  <span className={`text-[11px] font-bold block text-primary`}>{item.n}</span>
                   <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">@lucide/lab</code>
                 </div>
               ))}
@@ -1257,7 +1237,7 @@ export default function ManualDisenoPage() {
         {/* SECCION 12: MOSAICOS EMBEBIDOS DE SERVICIOS */}
         <section id="s12-mosaicos" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Mosaicos embebidos de servicios</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Mosaicos embebidos de servicios</h2>
           </div>
           <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Tarjetas de servicio con imagen prominente y llamada a la acción clara.</p>
           
@@ -1278,7 +1258,7 @@ export default function ManualDisenoPage() {
                 { title: 'Logística Verde', desc: 'Gestión in situ de materiales para maximizar el ahorro de CO₂.', btn: 'Pide tu seguro', gradient: 'from-[#8AD0B2] via-[#59A6E4] to-[#59A6E4]' },
                 { title: 'Trazabilidad Tokenizada', desc: 'Cada gramo cuenta. Registro inmutable en el historial Reúso.', btn: 'Empieza aquí', gradient: 'from-[#D6F391] via-[#8AD0B2] to-[#00827C]' },
               ].map((card, i) => (
-                <div key={i} className={`group shrink-0 w-[calc(100vw-80px)] max-w-xs md:w-auto snap-center overflow-hidden rounded-[2rem] hover:-translate-y-2 transition-all duration-500 ${isDark ? 'bg-[#D6F391]/05 border border-white/10' : 'bg-white shadow-[0_8px_32px_rgba(0,130,124,0.08)] border border-[#00827C]/8'}`}>
+                <div key={i} className={`group shrink-0 w-[calc(100vw-80px)] max-w-xs md:w-auto snap-center overflow-hidden rounded-[2rem] hover:-translate-y-2 transition-all duration-500 ${isDark ? 'bg-[#D6F391]/05 border border-white/10' : 'bg-primary shadow-[0_8px_32px_rgba(0,130,124,0.08)] border border-[#00827C]/8'}`}>
                   <div className={`w-full h-48 bg-gradient-to-br ${card.gradient} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-[#474747]/5 group-hover:bg-[#474747]/0 transition-all duration-500" />
                     <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/20 rounded-full backdrop-blur-md flex items-center justify-center">
@@ -1286,9 +1266,9 @@ export default function ManualDisenoPage() {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h4 className={`text-base font-bold mb-1.5 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{card.title}</h4>
+                    <h4 className={`text-base font-bold mb-1.5 text-primary`}>{card.title}</h4>
                     <p className={`text-sm mb-5 leading-relaxed ${isDark ? 'text-white/50' : 'text-[#474747]/80'}`}>{card.desc}</p>
-                    <button className={`px-5 py-2 rounded-full border text-sm font-semibold transition-all ${isDark ? 'border-white/20 text-white hover:bg-white hover:text-[#474747]' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C] hover:text-white'}`}>
+                    <button className={`px-5 py-2 rounded-full border text-sm font-semibold transition-all ${isDark ? 'border-white/20 text-white hover:bg-primary hover:text-[#474747]' : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C] hover:text-white'}`}>
                       {card.btn}
                     </button>
                   </div>
@@ -1343,7 +1323,7 @@ export default function ManualDisenoPage() {
         {/* SECCION 13: ARQUITECTURA DE NAVEGACIÓN 7/22/2 */}
         <section id="s13-nav" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Arquitectura de navegación</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Arquitectura de navegación</h2>
           </div>
           <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-10 max-w-xl`}>
             Optimización absoluta de espacio y carga cognitiva mediante la regla institucional <strong>7/22/2</strong>.
@@ -1369,7 +1349,7 @@ export default function ManualDisenoPage() {
 
           <div className={`mt-10 p-10 rounded-[2.5rem] border border-[#00827C]/20 bg-[#00827C]/5 relative overflow-hidden group`}>
             <div className="flex items-center gap-6 relative z-10">
-               <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+               <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                   <Stack size={32} className="text-[#00827C]" />
                </div>
                <div>
@@ -1384,7 +1364,7 @@ export default function ManualDisenoPage() {
         {/* SECCION 14: TABLAS DE PRECIO ESG */}
         <section id="s14-pricing" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-10">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Precios</h2>
+            <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Precios</h2>
           </div>
           
           <div className={`flex flex-col md:flex-row items-center justify-center gap-8 mb-8`}>
@@ -1395,7 +1375,7 @@ export default function ManualDisenoPage() {
             </div>
             <div className={`flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-[40px] saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
               <span className={`text-sm font-bold ${!isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Mensual</span>
-              <button onClick={() => setIsYearly(!isYearly)} className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${isYearly ? 'bg-[#00827C]' : isDark ? 'bg-white/20' : 'bg-[#474747]/15'}`}><div className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-7' : 'translate-x-1'}`} /></button>
+              <button onClick={() => setIsYearly(!isYearly)} className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${isYearly ? 'bg-[#00827C]' : isDark ? 'bg-white/20' : 'bg-[#474747]/15'}`}><div className={`absolute top-1 w-6 h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-7' : 'translate-x-1'}`} /></button>
               <span className={`text-sm font-bold ${isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Anual</span>
             </div>
           </div>
@@ -1412,16 +1392,16 @@ export default function ManualDisenoPage() {
               const formattedPrice = plan.id === 'free' ? 'Gratis' : `${currency.symbol}${currency.format(displayPrice)}`;
 
               return (
-                <div key={plan.id} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col h-full ${plan.popular ? (isDark ? 'bg-white/10 border-[#D6F391]/40 shadow-[0_20px_50px_rgba(214,243,145,0.1)]' : 'bg-white border-[#00827C]/30 shadow-[0_20px_50px_rgba(0,130,124,0.1)]') : (isDark ? 'bg-[#D6F391]/05 border-white/10' : 'bg-white/80 border-[#00827C]/10 backdrop-blur-md')}`}>
+                <div key={plan.id} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col h-full ${plan.popular ? (isDark ? 'bg-white/10 border-[#D6F391]/40 shadow-[0_20px_50px_rgba(214,243,145,0.1)]' : 'bg-primary border-[#00827C]/30 shadow-[0_20px_50px_rgba(0,130,124,0.1)]') : (isDark ? 'bg-[#D6F391]/05 border-white/10' : 'bg-white/80 border-[#00827C]/10 backdrop-blur-md')}`}>
                   {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#474747] text-[#D6F391] text-[9px] font-bold tracking-[0.3em] rounded-full shadow-lg whitespace-nowrap">LO MÁS BUSCADO</div>}
                   <div className="mb-8">
-                    <span className={`text-[10px] font-black tracking-widest opacity-40 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{plan.tagline}</span>
-                    <h3 className={`text-3xl font-black mt-2 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{formattedPrice}</h3>
+                    <span className={`text-[10px] font-black tracking-widest opacity-40 text-primary`}>{plan.tagline}</span>
+                    <h3 className={`text-3xl font-black mt-2 text-primary`}>{formattedPrice}</h3>
                     {plan.id !== 'free' && <div className={`text-[10px] mt-1 font-bold ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{isYearly ? 'al año' : 'mensual'}</div>}
                   </div>
                   <p className={`text-sm leading-relaxed mb-8 font-medium ${isDark ? 'text-white/60' : 'text-[#474747]'}`}>{plan.id === 'free' ? 'Para individuos que inician su viaje circular.' : plan.tagline}</p>
-                  <div className={`w-full h-px mb-8 ${isDark ? 'bg-white/10' : 'bg-[#00827C]/10'}`} />
-                  <ul className="space-y-4 mb-10 flex-grow">{plan.features.map((feat: string, idx: number) => (<li key={idx} className="flex items-start gap-3"><div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}><span className="text-[10px] font-bold">&#10003;</span></div><span className={`text-sm ${isDark ? 'text-white/80' : 'text-[#474747]'}`}>{feat}</span></li>))}</ul>
+                  <div className={`w-full h-px mb-8 bg-active`} />
+                  <ul className="space-y-4 mb-10 flex-grow">{plan.features.map((feat: string, idx: number) => (<li key={idx} className="flex items-start gap-3"><div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}><span className="text-[10px] font-bold">&#10003;</span></div><span className={`text-sm text-primary`}>{feat}</span></li>))}</ul>
                   <button className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${plan.popular ? 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg hover:shadow-[#00827C]/20' : (isDark ? 'border border-white/20 text-white hover:bg-white/5' : 'border border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5')}`}>{plan.cta || 'Seleccionar Plan'}</button>
                 </div>
               );
@@ -1485,21 +1465,21 @@ export default function ManualDisenoPage() {
         {/* SECCION 15: COMPONENTES REUTILIZABLES */}
         <section id="s15-componentes" className={`border-t ${isDark ? 'border-[#D6F391]/20' : 'border-[#00827C]/10'} pt-20`}>
           <div className="flex items-center gap-4 mb-4">
-            <h2 className={`text-3xl font-bold tracking-tight ${isDark ? 'text-white' : 'text-[#474747]'}`}>Componentes reutilizables</h2>
+            <h2 className={`text-3xl font-bold text-primary`}>Componentes reutilizables</h2>
           </div>
-          <p className={`text-sm mb-10 max-w-3xl ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+          <p className={`text-sm mb-6 max-w-3xl ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
             A diferencia de las secciones anteriores (mockups ilustrativos), todo lo que ves aquí abajo es el componente real de <code className="text-[10px] font-mono opacity-70">src/components/ui/</code>, importado tal cual se usa en producción — funcional, interactivo, con el mismo estado que tendría en cualquier pantalla de la app. Antes de construir un control nuevo (botón, switch, selector, paginador), revisa primero si ya existe aquí.
           </p>
 
-          <div className={`p-8 md:p-10 rounded-[2.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05' : 'border-[#00827C]/10 bg-white'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] flex flex-col gap-14`}>
+          <div className={`p-8 md:p-10 rounded-[2.5rem] border ${isDark ? 'border-white/10 bg-[#D6F391]/05' : 'border-[#00827C]/10 bg-primary'} shadow-[0_12px_40px_rgba(0,130,124,0.04)] flex flex-col gap-8 md:gap-10`}>
 
             {/* A. BUTTON */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Button</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>A. Button</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/button.tsx</code>
               </div>
-              <div className="flex flex-wrap items-center gap-4 mb-5">
+              <div className="flex flex-wrap items-center gap-4 mb-3">
                 <Button variant="primary">Primario</Button>
                 <Button variant="secondary">Secundario</Button>
                 <Button variant="danger">Peligro</Button>
@@ -1526,12 +1506,12 @@ export default function ManualDisenoPage() {
 
             {/* B. SWITCH OPCIONES */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. SwitchOpciones</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>B. SwitchOpciones</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/switch-opciones.tsx</code>
               </div>
-              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Fondo + píldora deslizante, único permitido para elegir entre 2-3 opciones excluyentes con apariencia de switch. Nunca crear uno ad-hoc por pantalla.</p>
-              <div className="flex flex-wrap items-center gap-8 mb-5">
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Fondo + píldora deslizante, único permitido para elegir entre 2-3 opciones excluyentes con apariencia de switch. Nunca crear uno ad-hoc por pantalla.</p>
+              <div className="flex flex-wrap items-center gap-8 mb-3">
                 <SwitchOpciones
                   className="max-w-[220px]"
                   valor={demoSwitch2}
@@ -1559,12 +1539,12 @@ export default function ManualDisenoPage() {
 
             {/* C. SELECTOR */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>C. Selector</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>C. Selector</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/selector.tsx</code>
               </div>
-              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Reemplazo genérico del <code className="text-[10px] font-mono opacity-70">{'<select>'}</code> nativo — prohibido en toda la plataforma, cada sistema operativo lo dibuja distinto.</p>
-              <div className="max-w-xs mb-5">
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Reemplazo genérico del <code className="text-[10px] font-mono opacity-70">{'<select>'}</code> nativo — prohibido en toda la plataforma, cada sistema operativo lo dibuja distinto.</p>
+              <div className="max-w-xs mb-3">
                 <Selector
                   opciones={[
                     { value: 'lab', label: 'Circular Lab' },
@@ -1583,15 +1563,15 @@ export default function ManualDisenoPage() {
 
             {/* D. INPUT TELEFONO */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>D. InputTelefono</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>D. InputTelefono</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/input-telefono.tsx</code>
               </div>
-              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Indicativo de país (bandera + código, ancho fijo 140px) + número con formato automático — nunca un {'<SelectorPais>'} suelto junto a un input a mano, deja el número reducido a un cuadro diminuto.</p>
-              <p className={`text-xs mb-5 rounded-lg px-3 py-2 border ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#AD7C43]'}`}>
+              <p className={`text-xs mb-2 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Indicativo de país (bandera + código, ancho fijo 140px) + número con formato automático — nunca un {'<SelectorPais>'} suelto junto a un input a mano, deja el número reducido a un cuadro diminuto.</p>
+              <p className={`text-xs mb-3 rounded-lg px-3 py-2 border ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#F6BF3E]' : 'bg-[#F6BF3E]/10 border-[#F6BF3E]/30 text-[#AD7C43]'}`}>
                 <strong>Regla global de validación de celular</strong> (src/lib/telefono.ts, función validarTelefono): cada indicativo tiene su propio número exacto de dígitos y prefijo — hoy solo Colombia está verificada (+57, 10 dígitos, empieza en 3). InputTelefono ya la aplica solo, mostrando el error al salir del campo (no antes, para no regañar al usuario mientras todavía está escribiendo) — ninguna pantalla nueva necesita repetir esta validación a mano. Escribe menos de 10 dígitos abajo y sal del campo para verlo.
               </p>
-              <div className="max-w-sm mb-5">
+              <div className="max-w-sm mb-3">
                 <InputTelefono
                   indicativo={demoIndicativo}
                   onChangeIndicativo={setDemoIndicativo}
@@ -1601,7 +1581,7 @@ export default function ManualDisenoPage() {
                 />
               </div>
               {demoTelefono && (
-                <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+                <p className={`text-xs mb-2 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
                   Valor sin formato que llega al backend: <code className="text-[10px] font-mono opacity-70">{PAISES.find(p => p.dial === demoIndicativo)?.dial}{demoTelefono}</code>
                 </p>
               )}
@@ -1612,12 +1592,12 @@ export default function ManualDisenoPage() {
 
             {/* E. PAGINATION */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>E. Pagination</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>E. Pagination</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/pagination.tsx</code>
               </div>
-              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Paginado único de la plataforma — numeración con página actual recuadrada, Anterior/Siguiente y selector de &quot;N por página&quot;. Prohibido armar uno ad-hoc por tabla.</p>
-              <div className="mb-5">
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Paginado único de la plataforma — numeración con página actual recuadrada, Anterior/Siguiente y selector de &quot;N por página&quot;. Prohibido armar uno ad-hoc por tabla.</p>
+              <div className="mb-3">
                 <Pagination
                   page={demoPagina}
                   totalPages={12}
@@ -1633,12 +1613,12 @@ export default function ManualDisenoPage() {
 
             {/* F. SKELETON */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>F. Skeleton / SkeletonCard</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>F. Skeleton / SkeletonCard</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/skeleton.tsx</code>
               </div>
-              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único estado de carga permitido — nunca texto plano &quot;Cargando...&quot; ni <code className="text-[10px] font-mono opacity-70">animate-pulse</code> con colores inventados.</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 max-w-2xl">
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único estado de carga permitido — nunca texto plano &quot;Cargando...&quot; ni <code className="text-[10px] font-mono opacity-70">animate-pulse</code> con colores inventados.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3 max-w-2xl">
                 <SkeletonCard />
                 <div className="flex flex-col gap-2 justify-center">
                   <Skeleton style={{ width: '100%' }} />
@@ -1653,11 +1633,11 @@ export default function ManualDisenoPage() {
 
             {/* G. MODAL */}
             <div>
-              <div className="flex items-center justify-between mb-5">
-                <h3 className={`text-xs tracking-[0.2em] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>G. Modal</h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>G. Modal</h3>
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/modal.tsx</code>
               </div>
-              <p className={`text-xs mb-5 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único componente permitido para confirmaciones/formularios cortos — overlay Negro Lurdes, nunca <code className="text-[10px] font-mono opacity-70">bg-black</code>, pie siempre con dos acciones.</p>
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>Único componente permitido para confirmaciones/formularios cortos — overlay Negro Lurdes, nunca <code className="text-[10px] font-mono opacity-70">bg-black</code>, pie siempre con dos acciones.</p>
               <Button variant="secondary" icon={<Trash size={16} />} onClick={() => setDemoModalAbierto(true)}>Abrir modal de ejemplo</Button>
               <Modal
                 abierto={demoModalAbierto}
@@ -1670,7 +1650,7 @@ export default function ManualDisenoPage() {
               >
                 <p className={`text-sm ${isDark ? 'text-white/70' : 'text-[#474747]'}`}>Este es el mismo componente Modal usado en toda la plataforma — portal a document.body, overlay Negro Lurdes al 60%, panel rounded-3xl.</p>
               </Modal>
-              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-5 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-3 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
                 {'<Modal abierto={open} onClose={...} titulo="..." varianteConfirmar="error" textoConfirmar="Eliminar" onConfirmar={...}>{children}</Modal>'}
               </div>
             </div>
@@ -1697,7 +1677,7 @@ export default function ManualDisenoPage() {
           gap: 32,
           flexWrap: 'wrap' as const,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div className="footer-left-container" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src="/diseno/logo_gurpomlp.svg" 
@@ -1709,7 +1689,7 @@ export default function ManualDisenoPage() {
                 filter: isDark ? 'brightness(0) invert(1)' : undefined
               }}
             />
-            <div style={{ width: 1, height: 20, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }} />
+            <div className="footer-divider" style={{ width: 1, height: 20, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }} />
             <div style={{ lineHeight: 1.5 }}>
               <p style={{ margin: 0, opacity: 0.7, fontSize: 11, fontWeight: 500 }}>
                 &copy; {new Date().getFullYear()} &middot; Todos los derechos reservados.
@@ -1725,29 +1705,23 @@ export default function ManualDisenoPage() {
             <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Reglamento</a>
             <span style={{ opacity: 0.3 }}>&bull;</span>
             <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Política de privacidad</a>
-            <button
-              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
-              title={isDark ? 'Modo claro' : 'Modo noche'}
-              onClick={toggleDark}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                border: '1px solid var(--border-light)',
-                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
-                color: isDark ? '#D6F391' : '#00827C',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                marginLeft: 12
-              }}
-            >
-              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
-            </button>
+            <div className="ml-3 flex items-center">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
+        <style>{`
+          @media (max-width: 1150px) and (min-width: 769px) {
+            .footer-left-container {
+              flex-direction: column !important;
+              align-items: flex-start !important;
+              gap: 8px !important;
+            }
+            .footer-divider {
+              display: none !important;
+            }
+          }
+        `}</style>
       </footer>
 
       <style jsx global>{`

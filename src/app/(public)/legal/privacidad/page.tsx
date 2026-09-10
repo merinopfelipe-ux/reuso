@@ -266,12 +266,14 @@ export default function PrivacidadPage() {
       breadcrumbLabel={t.breadcrumb}
       secciones={t.secciones}
       transparenciaTexto={
-        <p style={{ margin: 0 }}>
-          {t.transparencia.texto}{' '}
-          <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600 }}>
-            {t.transparencia.link}
-          </Link>
-        </p>
+        <div style={{ margin: 0 }}>
+          <p style={{ margin: 0, marginBottom: 8 }}>{t.transparencia.texto}</p>
+          <div>
+            <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+              {t.transparencia.link}
+            </Link>
+          </div>
+        </div>
       }
       resumen={t.resumen}
       leeTabien={t.leeTabien}
@@ -303,39 +305,6 @@ export default function PrivacidadPage() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Bloque Privacy First */}
-      <div style={{ marginBottom: 40 }}>
-        <p style={{ ...p, fontWeight: 700, fontSize: 18, marginBottom: 16 }}>{t.privacyFirst.titulo}</p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 16,
-          marginBottom: 16,
-        }}>
-          {t.privacyFirst.cards.map((card) => (
-            <div
-              key={card.nombre}
-              style={{
-                background: 'rgba(0,130,124,0.04)',
-                border: '1px solid rgba(0,130,124,0.18)',
-                borderRadius: 10,
-                padding: '18px 20px',
-              }}
-            >
-              <div style={{ color: 'var(--color-brand)', marginBottom: 8 }}>
-                {(() => {
-                  const Icono = ICONOS_PRIVACIDAD[card.icono as keyof typeof ICONOS_PRIVACIDAD]
-                  return Icono ? <Icono size={24} /> : null
-                })()}
-              </div>
-              <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)' }}>{card.nombre}</div>
-              <div style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{card.detalle}</div>
-            </div>
-          ))}
-        </div>
-        <p style={{ ...p, fontStyle: 'italic', marginBottom: 0 }}>{t.privacyFirst.cierre}</p>
       </div>
 
       <p style={p}>
@@ -375,6 +344,41 @@ export default function PrivacidadPage() {
       <h2 id="seguridad" style={h2}>{t.seguridad.titulo}</h2>
       <p style={p}>{t.seguridad.texto}</p>
 
+      {/* Bloque Privacy First: Tus datos son tuyos */}
+      <div style={{ marginTop: 28, marginBottom: 36 }}>
+        <p style={{ ...p, fontWeight: 700, fontSize: 18, marginBottom: 16 }}>{t.privacyFirst.titulo}</p>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 16,
+          marginBottom: 16,
+        }}>
+          {t.privacyFirst.cards.map((card) => (
+            <div
+              key={card.nombre}
+              style={{
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+                padding: '20px 22px',
+                boxShadow: 'var(--shadow)',
+                transition: 'border-color 0.2s',
+              }}
+            >
+              <div style={{ color: 'var(--color-brand)', marginBottom: 10 }}>
+                {(() => {
+                  const Icono = ICONOS_PRIVACIDAD[card.icono as keyof typeof ICONOS_PRIVACIDAD]
+                  return Icono ? <Icono size={24} /> : null
+                })()}
+              </div>
+              <div style={{ fontWeight: 700, marginBottom: 6, color: 'var(--text-primary)', fontSize: 15 }}>{card.nombre}</div>
+              <div style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--text-secondary)' }}>{card.detalle}</div>
+            </div>
+          ))}
+        </div>
+        <p style={{ ...p, fontStyle: 'italic', marginBottom: 0, color: 'var(--text-secondary)' }}>{t.privacyFirst.cierre}</p>
+      </div>
+
       <h2 id="derechos" style={h2}>{t.derechos.titulo}</h2>
       <ul style={ul}>
         {t.derechos.items.map((item, i) => (
@@ -385,8 +389,8 @@ export default function PrivacidadPage() {
       </ul>
       <p style={p}>
         {t.derechos.contacto}{' '}
-        <a href="mailto:servicio@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
-          servicio@lurdes.co
+        <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
+          servicio@calculadoradereuso.com
         </a>{' '}
         {lang === 'ES' ? 'o mediante el formulario de' : 'or via the'}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

@@ -53,6 +53,11 @@ export interface DatosCotizacionPDF extends DatosPrecio {
   destacados_json: { icono: string; texto: string; mostrar_lista?: boolean }[]
   legales_json: string[]
   muebles: MuebleDoc[]
+  valor_nuevo_total?: number | null
+  valor_reparacion_total?: number | null
+  porcentaje_ahorro?: number | null
+  co2_evitado_kg?: number | null
+  agua_evitada_l?: number | null
 }
 
 // El PDF es texto plano (jsPDF no soporta HTML) — las notas públicas vienen
@@ -102,8 +107,9 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
   let logoDibujado = false
   if (datos.empresa_logo_base64) {
     try {
-      // Pasamos el Data URL tal cual; jsPDF soporta data URLs
-      doc.addImage(datos.empresa_logo_base64, 'PNG', MARGIN_X, y - 8, 28, 28)
+      const isJpg = datos.empresa_logo_base64.startsWith('data:image/jpeg') || datos.empresa_logo_base64.startsWith('data:image/jpg')
+      const format = isJpg ? 'JPEG' : 'PNG'
+      doc.addImage(datos.empresa_logo_base64, format, MARGIN_X, y - 8, 28, 28)
       logoDibujado = true
     } catch {
       // Fallback
@@ -127,11 +133,25 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
     ? (datos.empresa_cliente_razon_social ?? `${datos.cliente_nombre} ${datos.cliente_apellido ?? ''}`.trim())
     : `${datos.cliente_nombre} ${datos.cliente_apellido ?? ''}`.trim()
 
-  const identificacionText = esEmpresa
-    ? (datos.empresa_cliente_nit ? `NIT ${datos.empresa_cliente_nit}` : (datos.cliente_identificacion ? `NIT ${datos.cliente_identificacion}` : null))
-    : (datos.cliente_identificacion ? `CC ${datos.cliente_identificacion}` : null)
+  const cleanNitPdf = (val: string | null | undefined) => {
+    if (!val) return null
+    const cleaned = val.replace(/^(NIT\s*:?\s*)+/i, '').trim()
+    return cleaned ? `NIT ${cleaned}` : null
+  }
 
-  const nombreContacto = esEmpresa && (datos.cliente_es_contacto_real ?? true) && datos.cliente_nombre ? `${datos.cliente_nombre} ${datos.cliente_apellido ?? ''}`.trim() : null
+  const cleanCCPdf = (val: string | null | undefined) => {
+    if (!val) return null
+    const cleaned = val.replace(/^(CC\s*:?\s*)+/i, '').trim()
+    return cleaned ? `CC ${cleaned}` : null
+  }
+
+  const identificacionText = esEmpresa
+    ? (cleanNitPdf(datos.empresa_cliente_nit) || cleanNitPdf(datos.cliente_identificacion))
+    : cleanCCPdf(datos.cliente_identificacion)
+
+  const contactoStr = `${datos.cliente_nombre || ''} ${datos.cliente_apellido || ''}`.trim()
+  const esMismoNombre = contactoStr.toLowerCase() === nombrePrincipal.toLowerCase()
+  const nombreContacto = esEmpresa && (datos.cliente_es_contacto_real ?? true) && datos.cliente_nombre && !esMismoNombre ? contactoStr : null
   const direccionMostrar = datos.empresa_cliente_direccion || datos.cliente_direccion
 
   doc.setFontSize(9)
@@ -191,7 +211,8 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(11)
     doc.setTextColor(NEGRO)
-    doc.text(m.titulo, MARGIN_X, y, { maxWidth: 100 })
+    const tituloMueble = m.titulo.replace(/\s*\(x\d+\)\s*$/i, '')
+    doc.text(tituloMueble, MARGIN_X, y, { maxWidth: 100 })
     
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(9)
@@ -348,8 +369,153 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
       y += lines.length * 4 + 2
     })
   }
-  
-  y += 4
+
+  // --- TU AHORRO FRENTE A COMPRAR NUEVO (PDF) ---
+  if (datos.valor_nuevo_total && datos.valor_reparacion_total && datos.valor_nuevo_total > datos.valor_reparacion_total) {
+    const cardH = 34
+    addPageIfNeeded(cardH + 8)
+    y += 4
+
+    // Tarjeta con fondo tenue y borde sobrio
+    doc.setFillColor(249, 250, 251)
+    doc.setDrawColor(225, 228, 232)
+    doc.roundedRect(MARGIN_X, y, CONTENT_W, cardH, 2, 2, 'FD')
+
+    // Título de la tarjeta
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10.5)
+    doc.setTextColor(NEGRO)
+    doc.text('Tu ahorro frente a comprar nuevo', MARGIN_X + 6, y + 8)
+
+    const pct = datos.porcentaje_ahorro ?? Math.round(((datos.valor_nuevo_total - datos.valor_reparacion_total) / datos.valor_nuevo_total) * 100)
+    const diff = datos.valor_nuevo_total - datos.valor_reparacion_total
+
+    // Badge porcentual
+    const badgeText = `${pct}% de ahorro`
+    doc.setFontSize(7.5)
+    doc.setFont('helvetica', 'bold')
+    const badgeW = doc.getTextWidth(badgeText) + 8
+    const badgeX = W - MARGIN_X - 6 - badgeW
+    doc.setFillColor(26, 26, 26)
+    doc.roundedRect(badgeX, y + 4, badgeW, 6, 1.2, 1.2, 'F')
+    doc.setTextColor(255, 255, 255)
+    doc.text(badgeText, badgeX + 4, y + 8.2)
+
+    // Línea divisoria interior
+    doc.setDrawColor(235, 238, 242)
+    doc.line(MARGIN_X + 6, y + 13, W - MARGIN_X - 6, y + 13)
+
+    // 3 columnas: Nuevo en mercado | Renovación Reúso | Ahorro directo
+    const colW = (CONTENT_W - 12) / 3
+
+    // Columna 1
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(GRIS_TEXTO)
+    doc.text('Nuevo según el mercado', MARGIN_X + 6, y + 19)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.setTextColor(NEGRO)
+    doc.text(formatCOP(datos.valor_nuevo_total), MARGIN_X + 6, y + 25)
+
+    // Columna 2
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(GRIS_TEXTO)
+    doc.text('Inversión en renovación', MARGIN_X + 6 + colW, y + 19)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.setTextColor(NEGRO)
+    doc.text(formatCOP(datos.valor_reparacion_total), MARGIN_X + 6 + colW, y + 25)
+
+    // Columna 3
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(7.5)
+    doc.setTextColor(GRIS_TEXTO)
+    doc.text('Ahorro estimado', MARGIN_X + 6 + colW * 2, y + 19)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.setTextColor(NEGRO)
+    doc.text(formatCOP(diff), MARGIN_X + 6 + colW * 2, y + 25)
+
+    y += cardH + 6
+  }
+
+  // --- IMPACTO AMBIENTAL EVITADO (PDF) ---
+  const tieneCo2 = datos.co2_evitado_kg && datos.co2_evitado_kg > 0
+  const tieneAgua = datos.agua_evitada_l && datos.agua_evitada_l > 0
+
+  if (tieneCo2 || tieneAgua) {
+    const cardH = 34
+    addPageIfNeeded(cardH + 8)
+    y += 2
+
+    // Tarjeta con fondo tenue y borde sobrio
+    doc.setFillColor(249, 250, 251)
+    doc.setDrawColor(225, 228, 232)
+    doc.roundedRect(MARGIN_X, y, CONTENT_W, cardH, 2, 2, 'FD')
+
+    // Título de la tarjeta
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10.5)
+    doc.setTextColor(NEGRO)
+    doc.text('Tu decisión le hace bien al planeta', MARGIN_X + 6, y + 8)
+
+    // Badge impacto
+    const badgeText = 'Impacto ambiental positivo'
+    doc.setFontSize(7.5)
+    doc.setFont('helvetica', 'bold')
+    const badgeW = doc.getTextWidth(badgeText) + 8
+    const badgeX = W - MARGIN_X - 6 - badgeW
+    doc.setFillColor(235, 238, 240)
+    doc.roundedRect(badgeX, y + 4, badgeW, 6, 1.2, 1.2, 'F')
+    doc.setTextColor(60, 60, 60)
+    doc.text(badgeText, badgeX + 4, y + 8.2)
+
+    // Línea divisoria interior
+    doc.setDrawColor(235, 238, 242)
+    doc.line(MARGIN_X + 6, y + 13, W - MARGIN_X - 6, y + 13)
+
+    const colsCount = (tieneCo2 && tieneAgua) ? 2 : 1
+    const colW = (CONTENT_W - 12) / colsCount
+    let curCol = 0
+
+    if (tieneCo2) {
+      const colX = MARGIN_X + 6 + curCol * colW
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(11)
+      doc.setTextColor(NEGRO)
+      doc.text(`${Math.round(datos.co2_evitado_kg!)} kg CO2 eq evitados`, colX, y + 20)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7.5)
+      doc.setTextColor(GRIS_TEXTO)
+      doc.text('Emisiones de gases de efecto invernadero evitadas', colX, y + 25)
+      curCol++
+    }
+
+    if (tieneAgua) {
+      const colX = MARGIN_X + 6 + curCol * colW
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(11)
+      doc.setTextColor(NEGRO)
+      doc.text(`${formatEnteroMillones(Math.round(datos.agua_evitada_l!))} L de agua ahorrados`, colX, y + 20)
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(7.5)
+      doc.setTextColor(GRIS_TEXTO)
+      doc.text('Huella hídrica de manufactura virgen prevenida', colX, y + 25)
+    }
+
+    y += cardH + 6
+  }
+
+  // Nota ecológica antes de los legales o footer
+  addPageIfNeeded(14)
+  y += 2
+  doc.setFont('helvetica', 'italic')
+  doc.setFontSize(7.5)
+  doc.setTextColor(GRIS_TEXTO)
+  doc.text('Piensa en el planeta antes de imprimir este documento. No lo imprimas si no es necesario.', W / 2, y, { align: 'center' })
+  y += 5
 
   // --- TEXTOS LEGALES ---
   if (datos.legales_json && datos.legales_json.length > 0) {

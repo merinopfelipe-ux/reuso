@@ -1161,7 +1161,7 @@ export function SalesDashboard({
               onClick={() => setCiudadesAgruparActivo(!ciudadesAgruparActivo)}
               className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out border border-[var(--border)] ${ciudadesAgruparActivo ? 'bg-[var(--color-brand)] border-transparent' : 'bg-[var(--bg-hover)]'}`}
             >
-              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${ciudadesAgruparActivo ? 'translate-x-4' : 'translate-x-[1px]'}`} />
+              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-primary shadow ring-0 transition duration-200 ease-in-out ${ciudadesAgruparActivo ? 'translate-x-4' : 'translate-x-[1px]'}`} />
             </button>
           </div>
 

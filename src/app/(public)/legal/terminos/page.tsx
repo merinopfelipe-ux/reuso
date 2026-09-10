@@ -243,12 +243,14 @@ export default function TerminosPage() {
       breadcrumbLabel={t.breadcrumbLabel}
       secciones={t.secciones}
       transparenciaTexto={
-        <p style={{ margin: 0 }}>
-          {t.transparenciaTexto}{' '}
-          <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600 }}>
-            {t.transparenciaLink}
-          </Link>
-        </p>
+        <div style={{ margin: 0 }}>
+          <p style={{ margin: 0, marginBottom: 8 }}>{t.transparenciaTexto}</p>
+          <div>
+            <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+              {t.transparenciaLink}
+            </Link>
+          </div>
+        </div>
       }
       resumen={t.resumen}
       leeTabien={t.leeTabien}
@@ -358,10 +360,10 @@ export default function TerminosPage() {
       <p style={p}>
         {t.ley2}{' '}
         <a
-          href="mailto:servicio@lurdes.co"
+          href="mailto:servicio@calculadoradereuso.com"
           style={{ color: 'var(--color-brand)', fontWeight: 600 }}
         >
-          servicio@lurdes.co
+          servicio@calculadoradereuso.com
         </a>
         {t.ley3}
       </p>

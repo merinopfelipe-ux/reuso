@@ -231,7 +231,7 @@ function ClientesContent() {
                 {(filtroTipo === 'personas' || (filtroTipo === 'todos' && personasTodas.length > 0)) && (
                   <div>
                     {filtroTipo === 'todos' && (
-                      <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
+                      <h2 className="text-xs font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
                         <User size={14} className="text-[#00827C]" />
                         Personas ({personasTodas.length})
                       </h2>
@@ -267,7 +267,7 @@ function ClientesContent() {
                 {(filtroTipo === 'empresas' || (filtroTipo === 'todos' && empresasLista.length > 0)) && (
                   <div>
                     {filtroTipo === 'todos' && (
-                      <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
+                      <h2 className="text-xs font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
                         <Buildings size={14} className="text-[#00827C]" />
                         Empresas ({empresasLista.length})
                       </h2>
@@ -302,7 +302,7 @@ function ClientesContent() {
                           {/* Personas Vinculadas a esta Empresa */}
                           {emp.contactos.length > 0 && (
                             <div className="pt-2 border-t border-[var(--border)] space-y-1.5">
-                              <p className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1">
+                              <p className="text-[10px] font-bold text-[var(--text-secondary)] mb-1">
                                 Personas vinculadas
                               </p>
                               {emp.contactos.map(contacto => (

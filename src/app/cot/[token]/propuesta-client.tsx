@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Sun, Moon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, Tag, Hammer, TrendDown, Sparkles, ZoomIn } from '@/components/ui/icons'
+import { CheckCircle, Leaf, Droplet as Drop, TreeDeciduous as Tree, Bath as Bathtub, RefreshCcw as ArrowsCounterClockwise, CircleHelp as Question, List, LayoutGrid as GridIcon, Download, Mail, Share2, ChatCircle, Calendar, Clock, ShieldCheck, Loader2 as CircleNotch, Hammer, TrendDown, Sparkles, ZoomIn } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { useTopLoader } from 'nextjs-toploader'
 import { VistaCot } from './vista-cot'
 import { PARAM_EQUIV } from '@/lib/calculos/co2'
@@ -252,7 +253,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   const saludoNombre = esContactoReal ? clienteNombre : null
   // Nombre comercial en TODO lo visible (header, título, WhatsApp, alt de
   // imágenes) — la razón social es SOLO para el pie legal, ver más abajo.
-  const empresaNombre = cotizacion.empresas?.nombre ?? 'Lurdes'
+  const empresaNombre = cotizacion.empresas?.nombre ?? 'Calculadora de Reúso'
   const razonSocialFooter = cotizacion.empresas?.nombre_footer_propuesta ?? empresaNombre
   const logoUrl = cotizacion.empresas?.logo_url   // ya priorizado en page.tsx (PNG/WebP raster)
   const logoSvgUrl = cotizacion.empresas?.logo_svg_url ?? null   // vectorial, día/noche
@@ -391,7 +392,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   // preguntar.
   return (
     <div
-      className={`min-h-screen flex flex-col justify-between font-sans transition-colors duration-300 select-none ${isDark ? 'bg-[#474747]' : 'bg-white'}`}
+      className={`min-h-screen flex flex-col justify-between font-sans transition-colors duration-300 select-none ${isDark ? 'bg-[#474747]' : 'bg-primary'}`}
       onCopy={(e) => e.preventDefault()}
       onCut={(e) => e.preventDefault()}
       onPaste={(e) => e.preventDefault()}
@@ -462,7 +463,17 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               style={{ height: logoAltoPx }}
             />
           ) : (
-            <span className={`text-base font-semibold ${tp}`}>{empresaNombre}</span>
+            <div className="flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                draggable={false}
+                src="/logo-icono.svg"
+                alt={empresaNombre}
+                className="w-7 h-7 object-contain flex-shrink-0"
+                style={isDark ? { filter: 'brightness(0) invert(1)' } : undefined}
+              />
+              <span className={`text-base font-semibold ${tp}`}>{empresaNombre}</span>
+            </div>
           )}
         </div>
 
@@ -476,10 +487,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 vista === 'galeria'
                   ? isDark
                     ? 'bg-[#00827C] text-white shadow-xs'
-                    : 'bg-white text-[#00827C] shadow-sm'
+                    : 'bg-primary text-[#00827C] shadow-sm'
                   : isDark
                     ? 'text-white/60 hover:text-white hover:bg-white/10'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-black/5'
+                    : 'text-secondary hover:text-primary hover:bg-black/5'
               }`}
               aria-label="Galería"
             >
@@ -493,10 +504,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 vista === 'lista'
                   ? isDark
                     ? 'bg-[#00827C] text-white shadow-xs'
-                    : 'bg-white text-[#00827C] shadow-sm'
+                    : 'bg-primary text-[#00827C] shadow-sm'
                   : isDark
                     ? 'text-white/60 hover:text-white hover:bg-white/10'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-black/5'
+                    : 'text-secondary hover:text-primary hover:bg-black/5'
               }`}
               aria-label="Lista"
             >
@@ -535,7 +546,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <div className="fixed inset-0 z-40" onClick={() => setMenuCompartirAbierto(false)} />
                 <div
                   className={`absolute right-0 top-[calc(100%+8px)] z-50 min-w-[170px] rounded-2xl border overflow-hidden ${
-                    isDark ? 'bg-[#2a2a2a] border-white/15' : 'bg-white border-black/10'
+                    isDark ? 'bg-[#2a2a2a] border-white/15' : 'bg-primary border-black/10'
                   }`}
                   style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}
                 >
@@ -617,6 +628,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             total={Number(cotizacion.total)}
             isDark={isDark}
             token={token}
+            aceptada={aceptada}
             onDescargarPdf={handleDescargarPdf}
             descargandoPdf={descargandoPdf}
           />
@@ -624,6 +636,16 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           })()
         ) : (
           <>
+
+        {/* ── Propuesta Aceptada badge (si aplica) ── */}
+        {aceptada && (
+          <div className="text-center mb-6 print:hidden">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#EDF8F4] dark:bg-[#38B98E]/15 text-[#4EAA8B] dark:text-[#4EAA8B] font-medium text-xs">
+              <CheckCircle size={15} className="text-[#4EAA8B]" />
+              Propuesta aceptada
+            </div>
+          </div>
+        )}
 
         {/* ── Encabezado ── */}
         <div className="text-center mb-10 print:hidden">
@@ -634,7 +656,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
         {/* ── Muebles ── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 lg:gap-14 mb-12">
           {muebles.map((m, index) => {
-            const tituloMueble = m.titulo || m.tipo_mueble
+            const tituloMueble = (m.titulo || m.tipo_mueble).replace(/\s*\(x\d+\)\s*$/i, '')
             const isLastOdd = muebles.length % 2 !== 0 && index === muebles.length - 1
             
             return (
@@ -669,7 +691,12 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 </div>
               )}
               <div className="min-w-0">
-                <p className={`text-base font-semibold ${tp}`}>{tituloMueble}</p>
+                <p className={`text-base font-semibold ${tp}`}>
+                  {tituloMueble}
+                  {m.cantidad > 1 && (
+                    <span className={`ml-1.5 text-sm font-normal ${ts60}`}>(x{m.cantidad})</span>
+                  )}
+                </p>
                 {m.descripcion && (
                   <p className={`text-sm mt-0.5 ${ts60}`}>{m.descripcion}</p>
                 )}
@@ -862,14 +889,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
         {/* ── A partir de aquí, mismos módulos en ambas vistas (propuesta y
             cotización): impacto ambiental, aprobación y por qué elegirnos. ── */}
 
-        {/* ── Valor: nuevo vs. restaurado — encima del impacto ambiental,
-            a pedido explícito del usuario (2026-08-27), sacado del plan de
-            Reportes V2 para construirlo ahora, suelto. Solo aparece si al
-            menos un mueble tiene precio de mercado nuevo confirmado o
-            sugerido; "valor de la reparación" es SIEMPRE precio_mueble (lo
-            que paga el cliente), nunca el costo interno de servicios+insumos
-            — esta es una página pública, mostrar el costo interno revelaría
-            el margen de ganancia a cualquiera con el enlace. */}
+        {/* ── Valor: nuevo vs. restaurado — Amber Palette ── */}
         {mostrarValor && (
           <div className="mb-10 print:hidden">
             <div className="text-center mb-5">
@@ -877,31 +897,41 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               <p className={`text-sm mt-0.5 ${ts50}`}>Comparado con el precio de mercado de un producto nuevo equivalente</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-white/5' : 'bg-[#474747]/[0.03]'}`}>
-                <div className={`w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-[#474747]/08'}`}>
-                  <Tag size={26} className={tp} />
+              {/* Tarjeta 1: Nuevo según la IA — Morado #985fa1 */}
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#985fa1]/15' : 'bg-[#985fa1]/[0.06]'}`}>
+                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#985fa1]/15">
+                  <Sparkles size={24} className="text-[#985fa1]" />
                 </div>
                 <div className="min-w-0">
-                  <p className={`text-sm font-bold ${tp}`}>Nuevo, en el mercado</p>
+                  <p className={`text-sm font-bold flex items-center gap-1.5 ${tp}`}>
+                    <span>Nuevo según la IA ✨</span>
+                  </p>
                   <p className={`text-2xl font-bold leading-tight ${tp}`}>{formatCOPCompact(valorNuevoTotal)}</p>
                 </div>
               </div>
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/[0.04]'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#00827C]/12">
-                  <Hammer size={26} className="text-[#00827C]" />
+
+              {/* Tarjeta 2: Restaurarlo — Café #AD7C43 */}
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#AD7C43]/15' : 'bg-[#AD7C43]/[0.06]'}`}>
+                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#AD7C43]/15">
+                  <Hammer size={24} className="text-[#AD7C43]" />
                 </div>
                 <div className="min-w-0">
-                  <p className={`text-sm font-bold ${tp}`}>Restaurado, con nosotros</p>
+                  <p className={`text-sm font-bold ${tp}`}>Restaurarlo</p>
                   <p className={`text-2xl font-bold leading-tight ${tp}`}>{formatCOPCompact(valorReparacionTotal)}</p>
                 </div>
               </div>
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 ${isDark ? 'bg-[#38B98E]/10' : 'bg-[#38B98E]/[0.06]'}`}>
+
+              {/* Tarjeta 3: Ahorras — Verde #38B98E */}
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#38B98E]/15' : 'bg-[#38B98E]/[0.06]'}`}>
                 <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#38B98E]/15">
-                  <TrendDown size={26} className="text-[#38B98E]" />
+                  <TrendDown size={24} className="text-[#38B98E]" />
                 </div>
                 <div className="min-w-0">
                   <p className={`text-sm font-bold ${tp}`}>Ahorras</p>
-                  <p className="text-2xl font-bold leading-tight text-[#38B98E]">{porcentajeAhorro}%</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-2xl font-bold leading-tight text-[#38B98E]">{porcentajeAhorro}%</p>
+                    <p className={`text-xs font-semibold ${isDark ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>({formatCOPCompact(valorNuevoTotal - valorReparacionTotal)})</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -911,7 +941,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 onClick={() => setModalValorAbierto(true)}
                 className={`text-xs ${ts50} hover:underline inline-flex items-center gap-1 cursor-pointer transition-colors`}
               >
-                <Question size={13} /> ¿Cómo calculamos este valor?
+                <Question size={13} /> ¿Cómo calculamos el ahorro?
               </button>
             </div>
           </div>
@@ -997,15 +1027,6 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           </div>
         </div>
 
-        {/* ── Propuesta Aceptada badge (si aplica) ── */}
-        {aceptada && (
-          <div className="text-center mb-10 print:hidden">
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#38B98E]/10 text-[#38B98E] font-semibold">
-              <CheckCircle size={20} />
-              Propuesta aceptada - Te contactamos pronto
-            </div>
-          </div>
-        )}
 
         {/* ── ¿Por qué elegirnos? (solo vista galería) — 100% personalizable
             desde /admin/empresas. No hay contenido por defecto: si la
@@ -1071,7 +1092,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             : 'linear-gradient(0deg, rgba(214,243,145,0.2) 0%, transparent 100%)',
         }}
       >
-        <div className={`flex flex-col gap-1 text-center md:text-left ${ts60}`}>
+        <div className={`flex flex-col gap-1 items-center md:items-start text-center md:text-left w-full md:w-auto ${ts60}`}>
           <span>© Todos los derechos reservados. {razonSocialFooter}</span>
           {mostrarMarcaReuso && (
             <span className={ts40}>
@@ -1088,29 +1109,14 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           )}
         </div>
 
-        <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right max-w-md w-full md:w-auto">
-          <div className="flex justify-center md:justify-end w-full">
-            <button
-              type="button"
-              onClick={() => {
-                const next = !isDark
-                document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-                localStorage.setItem('theme', next ? 'dark' : 'light')
-              }}
-              className="p-1.5 rounded-full hover-pop hover-press transition-opacity opacity-70 hover:opacity-100 cursor-pointer"
-              aria-label={isDark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
-              title={isDark ? 'Modo día' : 'Modo noche'}
-            >
-              {isDark ? (
-                <Sun size={18} strokeWidth={2} className="text-[#F6BF3E]" />
-              ) : (
-                <Moon size={18} strokeWidth={2} className="text-[var(--text-secondary)]" />
-              )}
-            </button>
-          </div>
-          <span className={ts60}>
-            Esta propuesta es solo para ti. No puedes compartir su contenido ni usarla con fines comerciales sin autorización.
+        <div className="flex items-center justify-center md:justify-end gap-3 max-w-xl w-full mt-4 md:mt-0">
+          <span className={`text-[11.5px] ${ts60} text-center md:text-right leading-[1.4]`}>
+            Esta propuesta es solo para ti. No puedes compartir su contenido<br />
+            ni usarla con fines comerciales sin autorización.
           </span>
+          <div className="flex-shrink-0 flex items-center">
+            <ThemeToggle />
+          </div>
         </div>
       </footer>
 
@@ -1146,8 +1152,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <table className="w-full text-left border-collapse text-[11.5px]">
                   <thead>
                     <tr className="bg-[var(--bg-table-header)] border-b border-[var(--border)]">
-                      <th className="py-2 px-3 font-semibold text-[var(--color-brand)]">Material recuperado</th>
-                      <th className="py-2 px-3 font-semibold text-[var(--color-brand)] text-right w-[100px]">Peso estimado</th>
+                      <th className="py-2 px-3 font-semibold text-[#00827C]">Material recuperado</th>
+                      <th className="py-2 px-3 font-semibold text-[#00827C] text-right w-[100px]">Peso estimado</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1180,7 +1186,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
             {/* Ecuación Visual */}
             <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-gradient-to-br from-[var(--bg-hover)] to-[var(--bg-card)] border border-[var(--border)] shadow-sm relative overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-24 h-24 bg-[var(--color-brand)]/10 blur-2xl rounded-full" />
+              <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#00827C]/10 blur-2xl rounded-full" />
               
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-xl font-black text-[var(--text-primary)] leading-none mb-1">{totalPesoStr}</span>
@@ -1188,26 +1194,26 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">recuperados</span>
               </div>
 
-              <div className="text-[var(--color-brand)] opacity-50 font-black text-lg relative z-10 mb-1">
+              <div className="text-[#00827C] opacity-50 font-black text-lg relative z-10 mb-1">
                 ×
               </div>
 
               <div className="flex flex-col items-center flex-1 relative z-10">
-                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-brand)]/10 mb-1">
-                  <Leaf size={12} className="text-[var(--color-brand)]" />
+                <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#00827C]/10 mb-1">
+                  <Leaf size={12} className="text-[#00827C]" />
                 </div>
                 <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">Impacto</span>
                 <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">por material</span>
               </div>
 
-              <div className="text-[var(--color-brand)] opacity-50 relative z-10 mb-1">
+              <div className="text-[#00827C] opacity-50 relative z-10 mb-1">
                 <Equal size={14} strokeWidth={3} />
               </div>
 
               <div className="flex flex-col items-center flex-1 relative z-10">
-                <span className="text-xl font-black text-[var(--color-brand)] leading-none mb-1">{totalCO2Str}</span>
+                <span className="text-xl font-black text-[#00827C] leading-none mb-1">{totalCO2Str}</span>
                 <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">CO₂</span>
-                <span className="text-[9px] font-medium text-[var(--color-brand)] opacity-80 leading-none mt-0.5">evitado</span>
+                <span className="text-[9px] font-medium text-[#00827C] opacity-80 leading-none mt-0.5">evitado</span>
               </div>
             </div>
           </div>
@@ -1216,38 +1222,51 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           <div className="flex-1 flex flex-col justify-center">
             {/* Timeline de Pasos */}
             <div className="relative px-2 sm:px-4 space-y-1">
-              <div className="absolute left-[24px] sm:left-[32px] top-4 bottom-4 w-px bg-gradient-to-b from-[var(--color-brand)]/60 via-[var(--color-brand)]/30 to-transparent" />
+              {/* Línea vertical conectora continua entre íconos */}
+              <div className="absolute left-[20px] sm:left-[28px] top-6 bottom-6 w-[2px] bg-[#00827C]/35 rounded-full" />
 
               {/* Paso 1 */}
               <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[var(--color-brand)]/30 group-hover:border-[var(--color-brand)] group-hover:bg-[var(--color-brand)] shadow-sm flex-shrink-0 z-10 transition-all duration-300">
-                  <ScanSearch size={14} className={`text-[var(--color-brand)] ${isDark ? 'group-hover:text-[#1c1c1c]' : 'group-hover:text-white'} transition-colors duration-300`} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <ScanSearch size={14} className="text-[#00827C]" />
                 </div>
-                <div className="flex flex-col gap-0.5 pt-1">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)]">1. ¿De qué está hecho?</span>
-                  <span className="text-[12px] text-[var(--text-secondary)] leading-relaxed pr-2">Vemos los materiales principales de tus elementos para saber exactamente qué estamos salvando.</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    1. Identificación precisa de cada material
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Analizamos la composición de tus elementos para saber exactamente qué estamos salvando.
+                  </span>
                 </div>
               </div>
 
               {/* Paso 2 */}
               <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[var(--color-brand)]/30 group-hover:border-[var(--color-brand)] group-hover:bg-[var(--color-brand)] shadow-sm flex-shrink-0 z-10 transition-all duration-300">
-                  <Scale size={14} className={`text-[var(--color-brand)] ${isDark ? 'group-hover:text-[#1c1c1c]' : 'group-hover:text-white'} transition-colors duration-300`} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <Scale size={14} className="text-[#00827C]" />
                 </div>
-                <div className="flex flex-col gap-0.5 pt-1">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)]">2. ¿Cuánto pesa?</span>
-                  <span className="text-[12px] text-[var(--text-secondary)] leading-relaxed pr-2">Estimamos el volumen que estás evitando desechar y que de otro modo terminaría en la basura.</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    2. Estimación de peso y volumen evitado
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Calculamos los kilogramos reales de residuo que no terminarán en un botadero o relleno.
+                  </span>
                 </div>
               </div>
 
               {/* Paso 3 */}
               <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[var(--color-brand)]/30 group-hover:border-[var(--color-brand)] group-hover:bg-[var(--color-brand)] shadow-sm flex-shrink-0 z-10 transition-all duration-300">
-                  <ShieldCheck size={14} className={`text-[var(--color-brand)] ${isDark ? 'group-hover:text-[#1c1c1c]' : 'group-hover:text-white'} transition-colors duration-300`} />
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <ShieldCheck size={14} className="text-[#00827C]" />
                 </div>
-                <div className="flex flex-col gap-0.5 pt-1">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)]">3. ¿De dónde sale el dato?</span>
-                  <span className="text-[12px] text-[var(--text-secondary)] leading-relaxed pr-2">Usamos matrices de <strong>Análisis de Ciclo de Vida (ACV)</strong> para estimar tu ahorro de forma estructurada.</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    3. Rigor metodológico con análisis de ciclo de vida
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Aplicamos matrices técnicas de huella ambiental para sustentar cada cifra de impacto ecológico.
+                  </span>
                 </div>
               </div>
             </div>
@@ -1259,26 +1278,156 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
         </div>
       </Modal>
 
-      {/* ── Modal ¿Cómo calculamos este valor? — transparencia sobre el uso
-          de IA en el precio de mercado nuevo. Corto a propósito. ── */}
+      {/* ── Modal ¿Cómo calculamos el ahorro? — desglose itemizado y metodología IA ── */}
       <Modal
         abierto={modalValorAbierto}
         onClose={() => setModalValorAbierto(false)}
-        icono={<Sparkles size={24} />}
-        titulo="¿Cómo calculamos este valor?"
+        icono={null}
+        titulo="¿Cómo calculamos el ahorro?"
         tituloCentrado
-        ancho="sm"
-        textoCancelar="Cerrar"
+        ancho="lg"
+        soloBotonConfirmar
         textoConfirmar="Entendido"
-        onCancelar={() => setModalValorAbierto(false)}
         onConfirmar={() => setModalValorAbierto(false)}
       >
-        <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-          Buscamos con inteligencia artificial un producto nuevo similar al tuyo en tiendas y páginas de venta reales, y tomamos su precio como referencia para calcular tu ahorro.
-        </p>
-        <p className="text-sm leading-relaxed text-[var(--text-secondary)] mt-3">
-          Es un valor estimado, no una cotización exacta — puede variar según el momento y el lugar donde se busque. Ante cualquier duda, escríbenos.
-        </p>
+        <div
+          className="flex flex-col sm:flex-row gap-5 sm:gap-6 mt-1 sm:-mt-1 select-none"
+          onCopy={(e) => e.preventDefault()}
+          onCut={(e) => e.preventDefault()}
+          onPaste={(e) => e.preventDefault()}
+          onContextMenu={(e) => e.preventDefault()}
+          onDragStart={(e) => e.preventDefault()}
+        >
+          {/* Columna Izquierda: Tabla comparativa de ítems */}
+          <div className="flex-1 flex flex-col justify-center">
+            {mueblesConPrecioNuevo.length > 0 && (
+              <div className="mb-4 rounded-[12px] overflow-hidden border border-[var(--border)] shadow-sm bg-[var(--bg-card)]">
+                <table className="w-full text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="bg-[var(--bg-table-header)] border-b border-[var(--border)]">
+                      <th className="py-2 px-3 font-semibold text-[#985fa1]">Elemento</th>
+                      <th className="py-2 px-2 font-semibold text-[var(--text-secondary)] text-right">Nuevo (IA)</th>
+                      <th className="py-2 px-2 font-semibold text-[var(--text-secondary)] text-right">Restaurar</th>
+                      <th className="py-2 px-3 font-semibold text-[#985fa1] text-right">Ahorro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mueblesConPrecioNuevo.map((m, idx) => {
+                      const nuevoItem = m.precio_mercado_nuevo * m.cantidad
+                      const restItem = Number(m.precio_mueble)
+                      const pctItem = nuevoItem > 0 ? Math.round(((nuevoItem - restItem) / nuevoItem) * 100) : 0
+                      return (
+                        <tr
+                          key={m.id || idx}
+                          className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-table-hover)] transition-colors ${
+                            idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                        >
+                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium max-w-[140px] leading-tight">
+                            {(m.titulo || m.tipo_mueble).replace(/\s*\(x\d+\)\s*$/i, '')}
+                          </td>
+                          <td className="py-1.5 px-2 text-[var(--text-secondary)] text-right font-medium">
+                            {formatCOPCompact(nuevoItem)}
+                          </td>
+                          <td className="py-1.5 px-2 text-[var(--text-primary)] text-right font-medium">
+                            {formatCOPCompact(restItem)}
+                          </td>
+                          <td className="py-1.5 px-3 text-[#985fa1] font-bold text-right">
+                            {pctItem}%
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Resumen comparativo en caja destacada — Morado #985fa1 */}
+            <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-gradient-to-br from-[#985fa1]/10 via-[#985fa1]/5 to-[var(--bg-card)] border border-[#985fa1]/20 shadow-sm relative overflow-hidden">
+              <div className="flex flex-col items-center flex-1 relative z-10">
+                <span className="text-base font-bold text-[var(--text-secondary)] leading-none mb-1">{formatCOPCompact(valorNuevoTotal)}</span>
+                <span className="text-[9px] uppercase font-bold text-[var(--text-secondary)] tracking-wider">Nuevo (IA)</span>
+              </div>
+
+              <div className="text-[#985fa1] opacity-50 font-black text-lg relative z-10 mb-1">
+                −
+              </div>
+
+              <div className="flex flex-col items-center flex-1 relative z-10">
+                <span className="text-base font-bold text-[var(--text-primary)] leading-none mb-1">{formatCOPCompact(valorReparacionTotal)}</span>
+                <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">Restaurado</span>
+              </div>
+
+              <div className="text-[#985fa1] opacity-50 relative z-10 mb-1">
+                <Equal size={14} strokeWidth={3} />
+              </div>
+
+              <div className="flex flex-col items-center flex-1 relative z-10">
+                <span className="text-lg font-black text-[#985fa1] leading-none mb-1">{porcentajeAhorro}%</span>
+                <span className="text-[9px] font-bold text-[#985fa1] opacity-90 leading-none mt-0.5">({formatCOPCompact(valorNuevoTotal - valorReparacionTotal)})</span>
+              </div>
+            </div>
+
+            {/* Aviso sobre IVA e impuestos B2B */}
+            <p className="text-[10.5px] leading-relaxed text-[var(--text-secondary)] opacity-80 mt-2.5 px-1">
+              <strong>Impuestos B2B:</strong> Valores calculados sobre la base de mercado. En cotizaciones corporativas, el IVA (19%) se discrimina sobre el servicio contratado.
+            </p>
+          </div>
+
+          {/* Columna Derecha: Metodología explicativa */}
+          <div className="flex-1 flex flex-col justify-center">
+            <div className="relative px-2 sm:px-4 space-y-1">
+              {/* Línea vertical conectora continua entre íconos */}
+              <div className="absolute left-[20px] sm:left-[28px] top-6 bottom-6 w-[2px] bg-[#985fa1]/35 rounded-full" />
+
+              {/* Paso 1 */}
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <Sparkles size={14} className="text-[#985fa1]" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    1. Rastreo con inteligencia artificial en el mercado
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Buscamos modelos idénticos o equivalentes en las principales tiendas y marcas del país.
+                  </span>
+                </div>
+              </div>
+
+              {/* Paso 2 */}
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <Scale size={14} className="text-[#985fa1]" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    2. Comparativa transparente y objetiva frente a nuevo
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Contrastamos el precio de comprar a estrenar frente a la inversión en restauración experta.
+                  </span>
+                </div>
+              </div>
+
+              {/* Paso 3 */}
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+                  <TrendDown size={14} className="text-[#985fa1]" />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                    3. Ahorro económico real y capital optimizado
+                  </span>
+                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                    Obtienes la misma vida útil y garantía conservando tu presupuesto y liquidez.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
 
       {/* ── Modal límite de descargas ── */}

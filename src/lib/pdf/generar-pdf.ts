@@ -153,7 +153,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setFontSize(9)
   doc.setFont('helvetica', 'normal')
   doc.setTextColor(WHITE)
-  doc.text('CO₂ eq evitado total', 14 + (W - 28) / 4, y + 8, { align: 'center' })
+  doc.text('CO2 eq evitado total', 14 + (W - 28) / 4, y + 8, { align: 'center' })
   doc.text('Agua ahorrada', 14 + 3 * (W - 28) / 4, y + 8, { align: 'center' })
 
   doc.setFontSize(20)
@@ -190,7 +190,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setTextColor(WHITE)
   doc.text('Categoría', 18, y + 5.5)
   doc.text('Objetos reusados', 110, y + 5.5, { align: 'center' })
-  doc.text('CO₂ eq evitado (kg)', W - 18, y + 5.5, { align: 'right' })
+  doc.text('CO2 eq evitado (kg)', W - 18, y + 5.5, { align: 'right' })
   y += 10
 
   datos.desglose.forEach((row, idx) => {
@@ -219,7 +219,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setTextColor(TEXT_DARK)
   doc.text('Total', 18, y + 4)
   doc.setTextColor(BRAND)
-  doc.text(`${datos.co2_total_kg.toFixed(3)} kg CO₂ eq`, W - 18, y + 4, { align: 'right' })
+  doc.text(`${datos.co2_total_kg.toFixed(3)} kg CO2 eq`, W - 18, y + 4, { align: 'right' })
   y += 12
 
   // ── QR + CÓDIGO DE VERIFICACIÓN ─────────────────────────────

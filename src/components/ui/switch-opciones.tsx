@@ -24,7 +24,7 @@ export function SwitchOpciones<T extends string>({ opciones, valor, onChange, cl
   const n = opciones.length
 
   return (
-    <div className={`relative flex p-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] ${className}`}>
+    <div className={`relative flex w-full p-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] ${className}`}>
       <div
         className="absolute inset-y-1 rounded-full bg-[var(--color-brand)] shadow-sm transition-[left] duration-300 ease-out"
         style={{

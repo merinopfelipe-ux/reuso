@@ -189,9 +189,9 @@ export default function StatusPage() {
   // programado > todo operativo (un mantenimiento nunca tapa una falla real).
   let globalStatus: 'ok' | 'degradado' | 'error' | 'mantenimiento' = 'ok'
   let globalMessage = 'Todos los sistemas están operando normalmente.'
-  let bannerBg = isDark ? 'rgba(56,185,142,0.18)' : 'rgba(56,185,142,0.12)'
-  let bannerBorder = 'rgba(56,185,142,0.25)'
-  let bannerColor = '#38B98E'
+  let bannerBg = isDark ? 'rgba(56,185,142,0.16)' : 'rgba(56,185,142,0.12)'
+  let bannerBorder = isDark ? 'rgba(74,222,128,0.35)' : 'rgba(56,185,142,0.25)'
+  let bannerColor = isDark ? '#4ADE80' : '#00827C'
   let bannerTitulo = 'Sistemas Operativos'
 
   if (activos.length > 0) {
@@ -201,24 +201,28 @@ export default function StatusPage() {
       ? 'Incidencia crítica: Estamos experimentando fallas en algunos servicios.'
       : 'Incidencia menor: Algunos servicios operan con degradación.'
     bannerBg = tieneCritico
-      ? (isDark ? 'rgba(255,94,75,0.18)' : 'rgba(255,94,75,0.12)')
-      : (isDark ? 'rgba(246,191,62,0.18)' : 'rgba(246,191,62,0.12)')
-    bannerBorder = tieneCritico ? 'rgba(255,94,75,0.25)' : 'rgba(246,191,62,0.25)'
-    bannerColor = tieneCritico ? '#FF5E4B' : '#F6BF3E'
+      ? (isDark ? 'rgba(255,94,75,0.22)' : 'rgba(255,94,75,0.12)')
+      : (isDark ? 'rgba(246,191,62,0.22)' : 'rgba(246,191,62,0.12)')
+    bannerBorder = tieneCritico 
+      ? (isDark ? 'rgba(248,113,113,0.4)' : 'rgba(255,94,75,0.25)')
+      : (isDark ? 'rgba(251,191,36,0.4)' : 'rgba(246,191,62,0.25)')
+    bannerColor = tieneCritico 
+      ? (isDark ? '#F87171' : '#FF5E4B') 
+      : (isDark ? '#FBBF24' : '#D97706')
     bannerTitulo = tieneCritico ? 'Falla del Servicio' : 'Degradación del Servicio'
   } else if (mantenimientosActivos.length > 0) {
     globalStatus = 'mantenimiento'
     globalMessage = mantenimientosActivos[0].descripcion || mantenimientosActivos[0].titulo
-    bannerBg = isDark ? 'rgba(89,166,228,0.18)' : 'rgba(89,166,228,0.12)'
-    bannerBorder = 'rgba(89,166,228,0.25)'
-    bannerColor = '#59A6E4'
+    bannerBg = isDark ? 'rgba(89,166,228,0.22)' : 'rgba(89,166,228,0.12)'
+    bannerBorder = isDark ? 'rgba(96,165,250,0.4)' : 'rgba(89,166,228,0.25)'
+    bannerColor = isDark ? '#60A5FA' : '#3B82F6'
     bannerTitulo = mantenimientosActivos[0].titulo
   } else if (!checks && !loading) {
     globalStatus = 'degradado'
     globalMessage = 'No se pudo comprobar el estado automático. Algunos servicios podrían no responder.'
-    bannerBg = isDark ? 'rgba(246,191,62,0.18)' : 'rgba(246,191,62,0.12)'
-    bannerBorder = 'rgba(246,191,62,0.25)'
-    bannerColor = '#F6BF3E'
+    bannerBg = isDark ? 'rgba(246,191,62,0.22)' : 'rgba(246,191,62,0.12)'
+    bannerBorder = isDark ? 'rgba(251,191,36,0.4)' : 'rgba(246,191,62,0.25)'
+    bannerColor = isDark ? '#FBBF24' : '#D97706'
     bannerTitulo = 'Degradación del Servicio'
   }
 
@@ -654,11 +658,20 @@ export default function StatusPage() {
             fontWeight: 600
           }}>
             <ArrowLeft size={16} />
-            Volver a Reúso
+            Volver
           </Link>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
-            <span style={{ fontSize: 20, fontWeight: 700, color: t.colorBrand }}>reuso</span>
-            <span style={{ fontSize: 20, color: t.textSecondary }}>.lurdes.co</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-completo.svg"
+              alt="Calculadora de Reúso"
+              style={{
+                height: 34,
+                width: 'auto',
+                filter: isDark ? 'brightness(0) invert(1)' : 'none',
+                transition: 'filter 0.3s'
+              }}
+            />
           </div>
         </div>
       </header>

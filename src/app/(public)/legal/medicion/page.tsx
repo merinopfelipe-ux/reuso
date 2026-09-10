@@ -10,9 +10,9 @@ const T = {
     breadcrumb: 'Metodología de cálculo',
     resumen: 'Medimos una estimación rigurosa del impacto ambiental que evitas al reutilizar, restaurar o prolongar la vida de los materiales, en lugar de extraer materias primas nuevas. Calculamos dos indicadores de forma independiente: las emisiones de CO₂ equivalente y la huella hídrica. Los resultados son inmutables y verificables con un sello digital único. Esta metodología es propiedad intelectual de Grupo MLP S.A.S. y no puedes reproducirla sin autorización.',
     leeTabien: [
-      { href: '/legal/reglamento', label: 'Reglamento de Uso' },
-      { href: '/legal/confidencialidad', label: 'Confidencialidad' },
-      { href: '/legal/terminos', label: 'Términos y Condiciones' },
+      { href: '/legal/ia', label: 'Uso de IA', descripcion: 'Transparencia sobre modelos y procesamiento de datos.' },
+      { href: '/legal/reglamento', label: 'Reglamento de Uso', descripcion: 'Términos de servicio y normas de la plataforma.' },
+      { href: '/legal/confidencialidad', label: 'Confidencialidad', descripcion: 'Protección de fórmulas y metodologías.' },
     ],
     secciones: [
       { id: 'que-medimos', label: '¿Qué medimos?' },
@@ -59,9 +59,9 @@ const T = {
     breadcrumb: 'Calculation methodology',
     resumen: 'We measure a rigorous estimate of the environmental impact you avoid by reusing, restoring, or extending the life of materials instead of extracting new raw materials. We calculate two indicators independently: CO₂ equivalent emissions and the water footprint. Results are immutable and verifiable with a unique digital seal. This methodology is the intellectual property of Grupo MLP S.A.S. and you cannot reproduce it without authorization.',
     leeTabien: [
-      { href: '/legal/reglamento', label: 'Usage Rules' },
-      { href: '/legal/confidencialidad', label: 'Confidentiality' },
-      { href: '/legal/terminos', label: 'Terms and Conditions' },
+      { href: '/legal/ia', label: 'AI Use', descripcion: 'Transparency on models and data processing.' },
+      { href: '/legal/reglamento', label: 'Usage Rules', descripcion: 'Terms of service and platform standards.' },
+      { href: '/legal/confidencialidad', label: 'Confidentiality', descripcion: 'Protection of formulas and methodologies.' },
     ],
     secciones: [
       { id: 'que-medimos', label: 'What we measure' },
@@ -139,8 +139,16 @@ export default function MedicionPage() {
       breadcrumbLabel={t.breadcrumb}
       secciones={t.secciones}
       resumen={t.resumen}
-      leeTabien={t.leeTabien}
-      transparenciaTexto={<p style={{ margin: 0 }}>{t.transparenciaIA}</p>}
+      transparenciaTexto={
+        <div style={{ margin: 0 }}>
+          <p style={{ margin: 0, marginBottom: 8 }}>{t.transparenciaIA}</p>
+          <div>
+            <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+              {lang === 'ENG' ? 'Read our AI usage policy →' : 'Lee nuestra política de uso de IA →'}
+            </Link>
+          </div>
+        </div>
+      }
     >
       {/* IP notice */}
       <p
@@ -198,6 +206,14 @@ export default function MedicionPage() {
           {t.s6CierreLink}
         </Link>
         .
+      </p>
+
+      <h2 id="ia-transparencia" style={h2}>{lang === 'ENG' ? 'AI and Transparency' : 'IA y Transparencia'}</h2>
+      <p style={p}>{t.transparenciaIA}</p>
+      <p style={p}>
+        <Link href="/legal/ia" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
+          {lang === 'ENG' ? 'Learn more in our AI policy →' : 'Conoce todos los detalles en nuestra política de uso de IA →'}
+        </Link>
       </p>
     </LegalPageLayout>
   )

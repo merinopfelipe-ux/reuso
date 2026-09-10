@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 
@@ -41,16 +41,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const supabase = await createClient()
+  const supabase = await createAdminClient()
   const { error } = await supabase.from('leads').insert({
     nombre,
     email,
-    tipo: 'consulta_legal',
+    interes: `Consulta legal (${tipo})`,
     mensaje: `[${tipo}] ${mensaje}`,
-    plan: null,
   })
 
   if (error) {
+    console.error('Error insertando consulta legal:', error)
     return NextResponse.json({ error: 'No pudimos guardar tu consulta. Inténtalo de nuevo.' }, { status: 500 })
   }
 

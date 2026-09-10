@@ -300,7 +300,7 @@ export function DesignSystemHeader({
           <div
             id="mobile-menu-panel"
             ref={mobileMenuRef}
-            className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-white border-[#474747]/10'}`}
+            className={`absolute mx-4 p-6 rounded-[2.5rem] border shadow-2xl ${isDark ? 'bg-[#121212] border-white/10' : 'bg-primary border-[#474747]/10'}`}
             style={{
               bottom: 88, // 72 height + 16 bottom
               left: 0,
@@ -317,7 +317,7 @@ export function DesignSystemHeader({
             <div className="grid grid-cols-1 gap-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                {menuGroups.map((group, gIdx) => (
                  <div key={gIdx} className="space-y-3">
-                   <div className={`text-[9px] font-black opacity-30 ${isDark ? 'text-white' : 'text-[#474747]'}`}>{group.name}</div>
+                   <div className={`text-[9px] font-black opacity-30 text-primary`}>{group.name}</div>
                    <div className="flex flex-col gap-1">
                      {group.items.map((item, i) => (
                        <a
@@ -352,7 +352,7 @@ export function DesignSystemHeader({
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-white border-[#474747]/12'}`}>
+          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-primary border-[#474747]/12'}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items.map((item, i) => (
                 <a

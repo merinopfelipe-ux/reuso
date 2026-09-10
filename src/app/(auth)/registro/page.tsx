@@ -700,7 +700,7 @@ export default function RegistroPage() {
                   className={`w-11 h-6 rounded-full transition-all flex items-center px-0.5 ${quiereAsesoria ? 'bg-[var(--color-brand)]' : 'bg-[var(--border)]'}`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${quiereAsesoria ? 'translate-x-5' : 'translate-x-0'}`}
+                    className={`w-5 h-5 rounded-full bg-primary shadow transition-transform ${quiereAsesoria ? 'translate-x-5' : 'translate-x-0'}`}
                   />
                 </div>
               </div>

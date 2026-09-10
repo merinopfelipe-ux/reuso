@@ -484,7 +484,8 @@ function DetalleCotizacionContent() {
     setDescuentoActivoInput(cot.descuento_activo ?? false)
     setDescuentoInput(String(cot.descuento ?? 0))
     setDescuentoTipoInput(cot.descuento_tipo ?? 'valor')
-    setIvaActivoInput(cot.iva_activo ?? false)
+    const esB2B = !!cot.crm_clientes?.crm_empresas_clientes
+    setIvaActivoInput(esB2B ? true : (cot.iva_activo ?? false))
     setIvaPorcentajeInput(String(cot.iva_porcentaje ?? 19))
     setEditandoTotales(true)
   }
@@ -503,7 +504,7 @@ function DetalleCotizacionContent() {
           descuento_activo: descuentoActivoInput,
           descuento: Math.max(0, parseNumero(descuentoInput)),
           descuento_tipo: descuentoTipoInput,
-          iva_activo: ivaActivoInput,
+          iva_activo: !!cot?.crm_clientes?.crm_empresas_clientes ? true : ivaActivoInput,
           iva_porcentaje: Math.min(100, Math.max(0, parseNumero(ivaPorcentajeInput))),
         }),
       })
@@ -778,7 +779,7 @@ function DetalleCotizacionContent() {
 
         {/* Cabecero */}
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push(conEmpresa('/empresa/cotizador'))} className={`p-2 rounded-full hover-pop hover-press ${isDark ? 'hover:bg-white/10' : 'hover:bg-[#00827C]/08'} transition-colors`}>
+          <button onClick={() => router.push(conEmpresa('/empresa/cotizador'))} className={`p-2 rounded-full hover-pop hover-press hover:bg-hover transition-colors`}>
             <ArrowLeft size={20} className={tp} />
           </button>
           <div className="flex-1 min-w-0">
@@ -958,7 +959,7 @@ function DetalleCotizacionContent() {
                     </div>
                     {cot.crm_clientes.empresa_cliente_id && (
                       <>
-                        <div className={`pt-2 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                        <div className={`pt-2 mt-1 border-t border-light`}>
                           <p className={`text-xs font-semibold mb-2 ${ts}`}>Empresa</p>
                         </div>
                         <div>
@@ -1103,7 +1104,7 @@ function DetalleCotizacionContent() {
                             <span className={`text-sm ${tp}`}>{formatCOP(desglose.ivaMonto)}</span>
                           </div>
                         )}
-                        <div className={`flex justify-between items-center pt-2 mt-1 border-t ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                        <div className={`flex justify-between items-center pt-2 mt-1 border-t border-light`}>
                           <span className={`text-sm font-bold ${tp}`}>Total</span>
                           <span className="text-xl font-bold text-[#00827C]">{formatCOP(Number(cot.total))}</span>
                         </div>
@@ -1141,7 +1142,7 @@ function DetalleCotizacionContent() {
                     {descuentoActivoInput && (
                       <>
                         <div className="flex items-center justify-start mb-1">
-                          <div className={`flex items-center rounded-full border p-0.5 ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                          <div className={`flex items-center rounded-full border p-0.5 border-light`}>
                             <button
                               type="button"
                               onClick={() => setDescuentoTipoInput('valor')}
@@ -1177,7 +1178,7 @@ function DetalleCotizacionContent() {
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setIvaActivoInput(v => !v)}>
+                    <label className={`flex items-center gap-2 select-none mb-2 ${!!cot?.crm_clientes?.crm_empresas_clientes ? 'cursor-not-allowed opacity-80' : 'cursor-pointer group'}`} onClick={() => !cot?.crm_clientes?.crm_empresas_clientes && setIvaActivoInput(v => !v)} title={!!cot?.crm_clientes?.crm_empresas_clientes ? "Los clientes B2B siempre requieren IVA" : ""}>
                       {ivaActivoInput
                         ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
                         : <Square size={18} className={`${ts} flex-shrink-0`} />
@@ -1363,7 +1364,7 @@ function DetalleCotizacionContent() {
                     )}
                     {formaPagoActivaInput && (
                       <div className="space-y-2">
-                        <div className={`flex items-center rounded-full border p-0.5 w-fit ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                        <div className={`flex items-center rounded-full border p-0.5 w-fit border-light`}>
                           <button
                             type="button"
                             onClick={() => setFormaPagoTipoInput('anticipo')}
@@ -1448,7 +1449,7 @@ function DetalleCotizacionContent() {
                     )}
                     {validezActivaInput && (
                       <div className="flex flex-col gap-2">
-                        <div className={`flex items-center rounded-full border p-0.5 w-fit ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                        <div className={`flex items-center rounded-full border p-0.5 w-fit border-light`}>
                           <button
                             type="button"
                             onClick={() => setValidezModoInput('dias')}
@@ -1546,7 +1547,7 @@ function DetalleCotizacionContent() {
                     <label className={`text-sm font-medium block mb-2 ${tp}`}>Mensajes destacados</label>
                     <div className="flex flex-col gap-3">
                       {destacadosInput.map((d, i) => (
-                        <div key={i} className={`flex flex-col gap-2 p-3 rounded-xl border ${isDark ? 'border-white/10' : 'border-[#00827C]/10'}`}>
+                        <div key={i} className={`flex flex-col gap-2 p-3 rounded-xl border border-light`}>
                           <div className="flex items-center justify-between">
                             <span className={`text-xs ${ts}`}>Mensaje {i + 1}</span>
                             <button
@@ -1713,7 +1714,7 @@ function DetalleCotizacionContent() {
                     <div className="space-y-2">
                       <div className={`space-y-2 ${mostrarTodaActividad ? 'max-h-72 overflow-y-auto pr-1' : ''}`}>
                         {(mostrarTodaActividad ? items : items.slice(0, 3)).map(item => (
-                          <TimelineItem key={item.key} icon={item.icon} label={item.label} fecha={item.fecha} isDark={isDark} />
+                          <TimelineItem key={item.key} icon={item.icon} label={item.label} fecha={item.fecha} />
                         ))}
                       </div>
                       {items.length > 3 && (
@@ -1835,14 +1836,14 @@ function DetalleCotizacionContent() {
 
 // ── Subcomponentes ─────────────────────────────────────────────────────────────
 
-function TimelineItem({ icon, label, fecha, isDark }: { icon: React.ReactNode; label: string; fecha: string; isDark: boolean }) {
+function TimelineItem({ icon, label, fecha }: { icon: React.ReactNode; label: string; fecha: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex-shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
-        <span className={`text-xs ${isDark ? 'text-white/70' : 'text-[#474747]/70'}`}>{label}</span>
+        <span className={`text-xs text-secondary`}>{label}</span>
       </div>
-      <span className={`text-xs flex-shrink-0 ${isDark ? 'text-white/40' : 'text-[#474747]/40'}`}>
+      <span className={`text-xs flex-shrink-0 text-placeholder`}>
         {formatFecha(fecha)}
       </span>
     </div>

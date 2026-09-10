@@ -2,8 +2,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ChevronDown as CaretDown, Sun, Moon } from '@/components/ui/icons'
-import { Bandera } from '@/components/ui/bandera'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { FECHA_ACTUALIZACION_LEGAL } from '@/lib/constants/contacto'
 
 interface FooterProps {
   ip?: string
@@ -18,8 +18,6 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
   const [isDark, setIsDark] = useState(false)
   const [currentYear, setCurrentYear] = useState<number>(new Date().getFullYear())
   const [isMobile, setIsMobile] = useState(false)
-  const [idioma, setIdioma] = useState<'ES' | 'ENG'>('ES')
-  const [idiomaOpen, setIdiomaOpen] = useState(false)
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear())
@@ -44,32 +42,6 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
     }
   }, [])
 
-  useEffect(() => {
-    const guardado = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
-    if (guardado) {
-      setIdioma(guardado)
-    } else {
-      const sys = navigator.language?.toLowerCase() ?? ''
-      setIdioma(sys.startsWith('es') ? 'ES' : 'ENG')
-    }
-  }, [])
-
-  useEffect(() => {
-    const handleOutsideChange = () => {
-      const guardado = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
-      if (guardado) setIdioma(guardado)
-    }
-    window.addEventListener('reuso_idioma_change', handleOutsideChange)
-    return () => window.removeEventListener('reuso_idioma_change', handleOutsideChange)
-  }, [])
-
-  const handleIdiomaChange = (lang: 'ES' | 'ENG') => {
-    setIdioma(lang)
-    setIdiomaOpen(false)
-    localStorage.setItem('reuso_idioma', lang)
-    window.dispatchEvent(new Event('reuso_idioma_change'))
-  }
-
   return (
     <footer
       id="site-footer"
@@ -91,12 +63,13 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
         gap: isMobile ? 24 : 32
       }}>
         {/* Lado Izquierdo: Logo + Copyright + Motto */}
-        <div style={{ 
+        <div className="footer-left-container" style={{ 
           display: 'flex', 
           flexDirection: isMobile ? 'column' : 'row',
           alignItems: 'center', 
           gap: isMobile ? 12 : 20,
-          textAlign: isMobile ? 'center' : 'left'
+          textAlign: isMobile ? 'center' : 'left',
+          flexShrink: 0,
         }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
@@ -106,160 +79,126 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
               width: 180,
               height: 'auto',
               opacity: isDark ? 0.9 : 1, 
-              filter: isDark ? 'brightness(0) invert(1)' : 'var(--logo-filter)' 
+              filter: isDark ? 'brightness(0) invert(1)' : 'var(--logo-filter)',
+              flexShrink: 0,
             }}
           />
-          {!isMobile && <div style={{ width: 1, height: 20, background: 'var(--divider)', opacity: 0.3 }} />}
-          <div style={{ lineHeight: 1.5 }}>
-            <p style={{ margin: 0, opacity: 0.7, fontSize: 11, fontWeight: 500 }}>
+          {!isMobile && <div className="footer-divider" style={{ width: 1, height: 20, background: 'var(--divider)', opacity: 0.3, flexShrink: 0 }} />}
+          <div style={{ lineHeight: 1.5, flexShrink: 0 }}>
+            <p style={{ margin: 0, opacity: 0.7, fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap' }}>
               © {currentYear} · Todos los derechos reservados.
             </p>
-            <p style={{ margin: 0, opacity: 0.6, fontSize:isMobile ? 10 : 11 }}>
+            <p style={{ margin: 0, opacity: 0.6, fontSize: isMobile ? 10 : 11, whiteSpace: 'nowrap' }}>
               Tecnología con propósito para un futuro sostenible.
             </p>
           </div>
         </div>
 
-        {/* Lado Derecho: Links + Selector de idioma + Info Técnica */}
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: isMobile ? 'center' : 'flex-end',
-          gap: 12
-        }}>
+        {/* Lado Derecho: Links + Selector de tema + Info Técnica */}
+        {hideLegalLinks ? (
           <div style={{
             display: 'flex',
+            flexDirection: 'column',
+            alignItems: isMobile ? 'center' : 'flex-end',
+            gap: 6,
+            fontSize: 11,
+          }}>
+            {/* Primera línea: Última actualización + ThemeToggle */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              justifyContent: isMobile ? 'center' : 'flex-end',
+            }}>
+              <span style={{ opacity: 0.7, fontWeight: 500 }}>
+                {ipLabel} {ip || FECHA_ACTUALIZACION_LEGAL}
+              </span>
+              <ThemeToggle />
+            </div>
+
+            {/* Segunda línea: Correo de contacto */}
+            {lastVisit && (
+              <div style={{ opacity: 0.85 }}>
+                <span style={{ opacity: 0.6 }}>{lastVisitLabel} </span>
+                {lastVisitHref ? (
+                  <a
+                    href={lastVisitHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer-email-link"
+                    style={{ color: 'inherit', pointerEvents: 'auto' }}
+                  >
+                    {lastVisit}
+                  </a>
+                ) : (
+                  <span>{lastVisit}</span>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             alignItems: 'center',
             gap: isMobile ? 12 : 20,
             flexWrap: 'wrap',
             justifyContent: isMobile ? 'center' : 'flex-end'
           }}>
-            {!hideLegalLinks && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? 12 : 16,
+              fontWeight: 500,
+              flexWrap: 'wrap',
+              justifyContent: isMobile ? 'center' : 'flex-end'
+            }}>
+              <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Sobre la medición</a>
+              <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
+              <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Reglamento</a>
+              <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
+              <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Política de privacidad</a>
+
+              {/* Botón de cambio de tema Día / Noche al lado de Política de privacidad */}
+              <ThemeToggle />
+            </div>
+
+            {(ip || lastVisit) && (
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: isMobile ? 12 : 24,
-                fontWeight: 500,
+                gap: 12,
+                opacity: 0.9,
+                fontSize: 11,
                 flexWrap: 'wrap',
                 justifyContent: isMobile ? 'center' : 'flex-end'
               }}>
-                <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Sobre la medición</a>
-                <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
-                <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Reglamento</a>
-                <span style={{ color: 'var(--divider)', display: isMobile ? 'none' : 'inline' }}>•</span>
-                <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={linkStyle} className="footer-link">Política de privacidad</a>
+                {ip && (
+                  <>
+                    <span title={ip} style={{ opacity: 0.6 }}>{ipLabel} {ip}</span>
+                    {lastVisit && <span style={{ opacity: 0.3 }}>|</span>}
+                  </>
+                )}
+                {lastVisit && (
+                  lastVisitHref ? (
+                    <span>
+                      <span style={{ opacity: 0.6 }}>{lastVisitLabel} </span>
+                      <a
+                        href={lastVisitHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="footer-email-link"
+                        style={{ color: 'inherit', pointerEvents: 'auto' }}
+                      >
+                        {lastVisit}
+                      </a>
+                    </span>
+                  ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit}</span>
+                )}
               </div>
             )}
-            
-            {/* Botón de cambio de tema Día / Noche */}
-            <button
-              aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo noche'}
-              title={isDark ? 'Modo claro' : 'Modo noche'}
-              onClick={() => {
-                const current = document.documentElement.getAttribute('data-theme')
-                const next = current === 'dark' ? 'light' : 'dark'
-                document.documentElement.setAttribute('data-theme', next)
-                localStorage.setItem('theme', next)
-                localStorage.setItem('reuso-theme', next)
-                setIsDark(next === 'dark')
-              }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                border: '1px solid var(--border-light)',
-                background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
-                color: isDark ? '#D6F391' : '#00827C',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-            >
-              {isDark ? <Sun size={14} strokeWidth={2.2} /> : <Moon size={14} strokeWidth={2.2} />}
-            </button>
           </div>
-          
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            gap: 16, 
-            flexWrap: 'wrap',
-            justifyContent: isMobile ? 'center' : 'flex-end'
-          }}>
-            <div style={{ 
-              display: 'flex', 
-              gap: 16, 
-              alignItems: 'center',
-              opacity: 0.8, 
-              fontSize: 10,
-            }}>
-              <span title={ip} style={{ opacity: 0.6 }}>{ipLabel} {ip || '-'}</span>
-              <span style={{ opacity: 0.3 }}>|</span>
-              {lastVisitHref ? (
-                <span>
-                  <span style={{ opacity: 0.6 }}>{lastVisitLabel} </span>
-                  <a 
-                    href={lastVisitHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="footer-email-link" 
-                    style={{ color: 'inherit', pointerEvents: 'auto' }}
-                  >
-                    {lastVisit || '-'}
-                  </a>
-                </span>
-              ) : <span style={{ opacity: 0.6 }}>{lastVisitLabel} {lastVisit || '-'}</span>}
-            </div>
-
-            {/* TODO (v2): Activar cuando estén listas las traducciones */
-             false && (
-            <div style={{ position: 'relative' }}>
-              <button
-                onClick={() => setIdiomaOpen(o => !o)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 6,
-                  fontSize: 11, fontWeight: 600, padding: '5px 10px',
-                  borderRadius: 6, border: '1px solid var(--border-light)',
-                  cursor: 'pointer', background: 'transparent',
-                  color: 'var(--text-secondary)', transition: 'all 0.2s',
-                }}
-              >
-                <Bandera codigo={idioma === 'ES' ? 'CO' : 'GB'} />
-                {idioma}
-                <CaretDown size={11} style={{ transform: idiomaOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
-              {idiomaOpen && (
-                <div style={{
-                  position: 'absolute', bottom: '100%', right: 0, marginBottom: 4,
-                  background: 'var(--bg-card)', border: '1px solid var(--border-light)',
-                  borderRadius: 8, overflow: 'hidden', boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-                  minWidth: 110, zIndex: 50,
-                }}>
-                  {(['ES', 'ENG'] as const).map((lang) => (
-                    <button
-                      key={lang}
-                      onClick={() => handleIdiomaChange(lang)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        width: '100%', padding: '8px 12px', border: 'none',
-                        background: idioma === lang ? 'var(--color-brand)' : 'transparent',
-                        color: idioma === lang ? '#fff' : 'var(--text-primary)',
-                        fontSize: 12, fontWeight: idioma === lang ? 600 : 400,
-                        cursor: 'pointer', textAlign: 'left',
-                      }}
-                    >
-                      <Bandera codigo={lang === 'ES' ? 'CO' : 'GB'} />
-                      <span>{lang === 'ES' ? 'Español' : 'English'}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
 
       <style>{`
@@ -277,6 +216,16 @@ export function Footer({ ip, lastVisit, ipLabel = 'Dirección IP:', lastVisitLab
         .footer-email-link:hover {
           color: var(--color-brand);
           text-decoration: underline;
+        }
+        @media (max-width: 1150px) and (min-width: 769px) {
+          .footer-left-container {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          .footer-divider {
+            display: none !important;
+          }
         }
       `}</style>
     </footer>

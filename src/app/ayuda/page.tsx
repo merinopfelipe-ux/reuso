@@ -235,7 +235,7 @@ function ContenidoUsuario() {
             { q: '¿Cómo agrego colaboradores a mi empresa?', a: 'Ve a Panel de empresa → Equipo → Invitar colaborador. Ingresa el correo y envía la invitación. El colaborador recibirá un link de registro.' },
             { q: '¿Cómo genero un informe?', a: 'Registra objetos en "Mis objetos" o "Historial de objetos", luego ve a Informes y selecciona "Generar informe".' },
             { q: '¿Los datos de CO₂ son verificables?', a: 'Sí. Cada informe tiene un código único y un QR que lleva a una página de verificación pública en Calculadora de Reúso.' },
-            { q: '¿Cómo cambio mi plan?', a: 'Los cambios de plan los gestiona nuestro equipo. Escríbenos a servicio@lurdes.co indicando el plan que necesitas.' },
+            { q: '¿Cómo cambio mi plan?', a: 'Los cambios de plan los gestiona nuestro equipo. Escríbenos a servicio@calculadoradereuso.com indicando el plan que necesitas.' },
             { q: '¿Cómo funciona el modo oscuro?', a: 'Ve a Configuración → Preferencias y elige entre Claro, Oscuro o Sistema (sigue automáticamente tu dispositivo).' },
           ].map(({ q, a }) => (
             <details key={q} style={{ border: '1px solid var(--border)', borderRadius: 8, overflow: 'hidden' }}>
@@ -260,7 +260,7 @@ function SeccionContacto() {
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <a
-          href="mailto:servicio@lurdes.co"
+          href="mailto:servicio@calculadoradereuso.com"
           style={{
             display: 'flex', alignItems: 'center', gap: 12,
             padding: '14px 16px', borderRadius: 10,
@@ -275,7 +275,7 @@ function SeccionContacto() {
           </div>
           <div>
             <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>Correo electrónico</p>
-            <p style={{ margin: 0, fontSize: 13, color: 'var(--color-brand)' }}>servicio@lurdes.co</p>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--color-brand)' }}>servicio@calculadoradereuso.com</p>
           </div>
         </a>
       </div>

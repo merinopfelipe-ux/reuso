@@ -472,7 +472,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                 <div className="flex flex-col gap-3 mt-3">
                   <div>
                     <p className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5">Previsualización header día</p>
-                    <div className="w-full max-w-[150px] aspect-video rounded-xl border border-[var(--border)] flex items-center justify-center p-3 bg-white">
+                    <div className="w-full max-w-[150px] aspect-video rounded-xl border border-[var(--border)] flex items-center justify-center p-3 bg-primary">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={logoSvgPreview} alt="Logo en el header, modo día" className="w-full h-full object-contain" />
                     </div>

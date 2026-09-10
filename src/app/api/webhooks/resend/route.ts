@@ -46,11 +46,11 @@ export async function POST(request: NextRequest) {
   // si Resend reintenta o manda el mismo evento más de una vez.
   const { data: invitacion } = await adminClient
     .from('invitaciones')
-    .select(`id, ${campo}`)
+    .select('id, abierta_at, clic_at')
     .eq('resend_email_id', emailId)
     .maybeSingle()
 
-  if (invitacion && !(invitacion as Record<string, unknown>)[campo]) {
+  if (invitacion && !invitacion[campo as keyof typeof invitacion]) {
     await adminClient
       .from('invitaciones')
       .update({ [campo]: new Date().toISOString() })

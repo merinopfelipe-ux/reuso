@@ -12,7 +12,7 @@ const T = {
     breadcrumb: 'Duda legal',
     titulo: 'Tengo una duda legal',
     descripcion:
-      'Escríbenos con tu consulta o comentario. El equipo de Grupo MLP S.A.S. responde en un plazo máximo de 10 días hábiles.',
+      'Escríbenos con tu consulta o comentario. Al enviar este formulario se genera automáticamente un ticket de consulta en el buzón oficial de soporte legal de Grupo MLP S.A.S. (servicio@calculadoradereuso.com), con un tiempo de respuesta de máximo 10 días hábiles.',
     leeTabien: 'Lee también',
     links: [
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -26,7 +26,7 @@ const T = {
     breadcrumb: 'Legal enquiry',
     titulo: 'I have a legal question',
     descripcion:
-      'Send us your query or comment. The Grupo MLP S.A.S. team responds within a maximum of 10 business days.',
+      'Send us your query or comment. Submitting this form automatically creates a consultation ticket in the official legal support inbox of Grupo MLP S.A.S. (servicio@calculadoradereuso.com), with a maximum response time of 10 business days.',
     leeTabien: 'See also',
     links: [
       { href: '/legal/terminos', label: 'Terms & Conditions' },
@@ -136,17 +136,7 @@ export default function DudasPage() {
               <Link
                 key={item.href}
                 href={item.href}
-                style={{
-                  display: 'inline-block',
-                  padding: '8px 16px',
-                  borderRadius: 100,
-                  border: '1px solid rgba(0,130,124,0.20)',
-                  color: 'var(--color-brand)',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  background: 'rgba(0,130,124,0.04)',
-                }}
+                className="lee-tambien-tag hover-pop"
               >
                 {item.label}
               </Link>
@@ -155,6 +145,33 @@ export default function DudasPage() {
         </div>
       </div>
 
+      <style dangerouslySetInnerHTML={{ __html: `
+        .lee-tambien-tag {
+          display: inline-block;
+          padding: 8px 16px;
+          border-radius: 100px;
+          border: 1px solid rgba(0, 130, 124, 0.20);
+          color: var(--color-brand);
+          font-size: 13px;
+          font-weight: 500;
+          text-decoration: none;
+          background: rgba(0, 130, 124, 0.04);
+          transition: all 0.2s ease;
+        }
+        .lee-tambien-tag:hover {
+          border-color: rgba(0, 130, 124, 0.40);
+          background: rgba(0, 130, 124, 0.08);
+        }
+        [data-theme="dark"] .lee-tambien-tag {
+          border: 1px solid rgba(214, 243, 145, 0.25);
+          background: rgba(214, 243, 145, 0.08);
+          color: #D6F391;
+        }
+        [data-theme="dark"] .lee-tambien-tag:hover {
+          border-color: rgba(214, 243, 145, 0.50);
+          background: rgba(214, 243, 145, 0.15);
+        }
+      `}} />
     </>
   )
 }

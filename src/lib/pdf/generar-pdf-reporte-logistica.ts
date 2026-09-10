@@ -35,14 +35,14 @@ export function generarPDFLogistica({ empresa_nombre, empresa_logo_base64, desde
 
   doc.setFontSize(10)
   doc.setTextColor(...NEGRO)
-  doc.text(`CO₂ eq de logística: ${resultado.co2_logistica_total_kg.toFixed(2)} kg`, 14, 32)
+  doc.text(`CO2 eq de logística: ${resultado.co2_logistica_total_kg.toFixed(2)} kg`, 14, 32)
   doc.text(`Tasa de desvío de vertedero: ${resultado.tasa_desvio_vertedero_pct !== null ? resultado.tasa_desvio_vertedero_pct.toFixed(1) + '%' : 'Sin residuo registrado'}`, 120, 32)
   doc.setFontSize(7.5)
   doc.setTextColor(...GRIS)
   doc.text('Factores de emisión: DEFRA UK Greenhouse Gas Conversion Factors, nivel de confianza media (estimación provisional).', 14, 38)
 
   autoTable(doc, {
-    head: [['Vehículo', 'Distancia (km)', 'CO₂ eq logística (kg)', 'Residuo taller (kg)', 'Residuo reciclado (kg)', 'Destino']],
+    head: [['Vehículo', 'Distancia (km)', 'CO2 eq logística (kg)', 'Residuo taller (kg)', 'Residuo reciclado (kg)', 'Destino']],
     body: resultado.ciclos.map((c) => [
       c.tipo_vehiculo_transporte ? (ETIQUETA_VEHICULO[c.tipo_vehiculo_transporte] ?? c.tipo_vehiculo_transporte) : 'Sin transporte',
       c.distancia_transporte_km.toFixed(1),

@@ -27,7 +27,7 @@ export async function GET() {
     .eq('id', 'default')
     .single()
 
-  return NextResponse.json(data ?? { email_notificaciones: 'servicio@lurdes.co' })
+  return NextResponse.json(data ?? { email_notificaciones: 'servicio@calculadoradereuso.com' })
 }
 
 const patchSchema = z.object({

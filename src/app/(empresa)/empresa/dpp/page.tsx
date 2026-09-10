@@ -38,14 +38,25 @@ export default async function DppPage({
     .eq('user_id', user.id)
     .single()
 
-  if (!perfil?.empresa_id) redirect('/dashboard')
-
   const adminClient = await createAdminClient()
+  let empresaId = perfil?.empresa_id
+
+  if (!empresaId && perfil?.rol === 'super_admin') {
+    const { data: primeraEmpresa } = await adminClient
+      .from('empresas')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (primeraEmpresa) empresaId = primeraEmpresa.id
+  }
+
+  if (!empresaId) redirect('/dashboard')
 
   let query = adminClient
     .from('dpp_activos')
     .select('id, codigo_dpp, nombre, estado, n_ciclos, updated_at, created_at')
-    .eq('empresa_id', perfil.empresa_id)
+    .eq('empresa_id', empresaId)
     .order('updated_at', { ascending: false })
 
   if (searchParams.estado) query = query.eq('estado', searchParams.estado as string)

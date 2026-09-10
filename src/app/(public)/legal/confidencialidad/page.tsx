@@ -228,12 +228,14 @@ export default function ConfidencialidadPage() {
       secciones={t.secciones}
       resumen={t.resumen}
       transparenciaTexto={
-        <p style={{ margin: 0 }}>
-          {t.transparencia.texto}{' '}
-          <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600 }}>
-            {t.transparencia.link}
-          </Link>
-        </p>
+        <div style={{ margin: 0 }}>
+          <p style={{ margin: 0, marginBottom: 8 }}>{t.transparencia.texto}</p>
+          <div>
+            <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+              {t.transparencia.link}
+            </Link>
+          </div>
+        </div>
       }
       leeTabien={t.leeTabien}
     >

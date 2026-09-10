@@ -1,9 +1,7 @@
 import { headers } from 'next/headers'
 import { FooterPublic } from '@/components/footer-public'
 import { ProteccionPublica } from '@/components/proteccion-publica'
-
-const FECHA_ACTUALIZACION = '18 de abril de 2026'
-const EMAIL_CONTACTO = 'servicio@lurdes.co'
+import { FECHA_ACTUALIZACION_LEGAL, EMAIL_CONTACTO_LEGAL } from '@/lib/constants/contacto'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   void headers()
@@ -16,11 +14,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </main>
 
       <FooterPublic
-        ip={FECHA_ACTUALIZACION}
-        lastVisit={EMAIL_CONTACTO}
+        ip={FECHA_ACTUALIZACION_LEGAL}
+        lastVisit={EMAIL_CONTACTO_LEGAL}
         ipLabel="Actualización:"
         lastVisitLabel="Contacto:"
-        lastVisitHref="mailto:servicio@lurdes.co"
+        lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
       />
     </div>
   )

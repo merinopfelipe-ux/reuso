@@ -54,11 +54,11 @@ const TF = {
     mensaje_label: 'Mensaje',
     mensaje_placeholder: 'Describe tu consulta con el mayor detalle posible...',
     error_campos: 'Completa todos los campos para continuar.',
-    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a servicio@lurdes.co.',
+    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a servicio@calculadoradereuso.com.',
     enviando: 'Enviando...',
     enviar: 'Enviar consulta',
     exito: () =>
-      `Recibimos tu consulta. Te respondemos en un máximo de 10 días hábiles a`,
+      `Recibimos tu consulta y generamos el ticket de soporte legal correspondiente. Te responderemos en un plazo máximo de 10 días hábiles a`,
     exitoPost: '.',
   },
   ENG: {
@@ -71,11 +71,11 @@ const TF = {
     mensaje_label: 'Message',
     mensaje_placeholder: 'Describe your query in as much detail as possible...',
     error_campos: 'Please complete all fields to continue.',
-    error_envio: 'Something went wrong. Try again or email us at servicio@lurdes.co.',
+    error_envio: 'Something went wrong. Try again or email us at servicio@calculadoradereuso.com.',
     enviando: 'Sending...',
     enviar: 'Send enquiry',
     exito: () =>
-      `We received your query. We will respond within 10 business days to`,
+      `We received your query and created a legal support ticket. We will respond within a maximum of 10 business days to`,
     exitoPost: '.',
   },
 }
@@ -247,9 +247,12 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
         disabled={enviando}
         style={{
           alignSelf: 'flex-start',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
           padding: '11px 24px',
           borderRadius: 10,
-          background: enviando ? 'rgba(0,130,124,0.5)' : 'var(--color-brand)',
+          background: enviando ? (isDark ? 'rgba(214,243,145,0.4)' : 'rgba(0,130,124,0.5)') : 'var(--color-brand)',
           color: isDark ? '#474747' : '#fff',
           fontWeight: 600,
           fontSize: 14,
@@ -258,6 +261,12 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
           transition: 'background 0.2s',
         }}
       >
+        {enviando && (
+          <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+            <path d="M12 2a10 10 0 0 1 10 10" />
+          </svg>
+        )}
         {enviando ? tf.enviando : tf.enviar}
       </button>
     </form>

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+// Script de build (se ejecuta con `node`, no se transpila) — CommonJS a propósito.
 const fs = require('fs');
 const path = require('path');
 
@@ -16,7 +18,6 @@ const ALLOWED_FILES = [
   'src/app/cot/[token]/propuesta-client.tsx',
   'src/app/(admin)/admin/qa/page.tsx',
   'src/app/sistema-diseno/page.tsx',
-  'src/app/sistema-diseno/demo-panel/page.tsx',
   'src/app/(admin)/admin/empresas/[id]/components/marca-empresa-client.tsx', // Vista previa fija de logo en modo día Y noche a la vez, no sigue el tema de la página
   'src/components/design-system-header.tsx',
   'src/app/globals.css', // Defines variables

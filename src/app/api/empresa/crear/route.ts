@@ -15,8 +15,8 @@ const bodySchema = z.object({
   pais: z.string().min(1, 'El país es obligatorio.').max(100),
   region: z.string().min(1, 'La región es obligatoria.').max(100),
   ciudad: z.string().min(1, 'La ciudad es obligatoria.').max(100),
-  direccion: z.string().min(1, 'La dirección es obligatoria.').max(500),
-  sitio_web: z.string().url('URL inválida').or(z.literal('')).nullable().optional(),
+  direccion: z.string().max(500).optional().or(z.literal('')),
+  sitio_web: z.string().min(1, 'El sitio web es obligatorio.').max(255),
 })
 
 function generarSlug(nombre: string): string {

@@ -14,5 +14,13 @@ interface FooterPublicProps {
 export function FooterPublic(props: FooterPublicProps) {
   const pathname = usePathname()
   const hideLegalLinks = pathname.startsWith('/legal')
-  return <Footer {...props} hideLegalLinks={hideLegalLinks} />
+  const hideDate = pathname === '/' || pathname.startsWith('/status')
+  return (
+    <Footer
+      {...props}
+      ip={hideDate ? undefined : props.ip}
+      ipLabel={hideDate ? undefined : props.ipLabel}
+      hideLegalLinks={hideLegalLinks}
+    />
+  )
 }

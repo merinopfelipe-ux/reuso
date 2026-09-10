@@ -34,7 +34,7 @@ export function generarPDFMitigacion({ empresa_nombre, empresa_logo_base64, desd
 
   doc.setFontSize(10)
   doc.setTextColor(...NEGRO)
-  doc.text(`CO₂ eq evitado: ${resultado.co2_total_kg.toFixed(2)} kg`, 14, 32)
+  doc.text(`CO2 eq evitado: ${resultado.co2_total_kg.toFixed(2)} kg`, 14, 32)
   doc.text(`Agua ahorrada: ${resultado.agua_total_l.toLocaleString('es-CO')} L`, 100, 32)
   doc.text(`Índice de Certeza Metodológica (ICD): ${resultado.icd_porcentaje.toFixed(1)} %`, 180, 32)
   doc.setFontSize(7.5)
@@ -42,7 +42,7 @@ export function generarPDFMitigacion({ empresa_nombre, empresa_logo_base64, desd
   doc.text('ICD: alta=100 (dato primario/EPD), media=85 (DEFRA/Ecoinvent/IPCC), baja=50 (estimación por analogía), ponderado por peso.', 14, 38)
 
   autoTable(doc, {
-    head: [['Tipo de material', 'Peso total (kg)', 'CO₂ eq evitado (kg)', 'Agua evitada (L)']],
+    head: [['Tipo de material', 'Peso total (kg)', 'CO2 eq evitado (kg)', 'Agua evitada (L)']],
     body: resultado.desglose_por_material.map((d) => [
       ETIQUETA_CATEGORIA[d.categoria_material] ?? d.categoria_material,
       d.peso_kg_total.toFixed(2),

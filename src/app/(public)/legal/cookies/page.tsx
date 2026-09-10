@@ -26,10 +26,10 @@ const T = {
     ],
     trust: {
       heading: 'Transparencia total sobre lo que usamos.',
-      sub: 'Usamos cookies para que la plataforma funcione, y herramientas como Google Analytics y Hotjar para entender el uso y mejorar tu experiencia.',
+      sub: 'Usamos cookies para que la plataforma funcione, y herramientas de analítica y métricas para entender el uso y mejorar tu experiencia.',
       cards: [
-        { icon: 'Lock' as const, title: 'Datos protegidos', desc: 'Mantenemos tus datos seguros y no los vendemos a data brokers.' },
-        { icon: 'ChartBar' as const, title: 'Analítica para mejorar', desc: 'Si aceptas, usamos Google Analytics para marketing y Hotjar para entender el comportamiento y mapas de calor.' },
+        { icon: 'Lock' as const, title: 'Datos protegidos', desc: 'Mantenemos tus datos seguros y no los vendemos a terceros.' },
+        { icon: 'ChartBar' as const, title: 'Analítica para mejorar', desc: 'Si aceptas, usamos herramientas de métricas para entender el comportamiento y optimizar el uso.' },
         { icon: 'SlidersHorizontal' as const, title: 'Tú decides', desc: 'Puedes cambiar tu elección en cualquier momento desde el panel de cookies.' },
       ],
     },
@@ -39,10 +39,10 @@ const T = {
     s2Title: '1. Cookies esenciales',
     s2Desc: 'Estas cookies son necesarias para que el sitio funcione. Se activan automáticamente cuando usas la plataforma. No puedes desactivarlas sin que el sitio deje de funcionar. No requieren tu consentimiento (RGPD Art. 5(3) / Directiva ePrivacy).',
     s2Rows: [
-      { nombre: 'sb-* (Supabase Auth)', dominio: 'calculadoradereuso.com', duracion: 'Sesión / 1 año', finalidad: 'Gestión de sesión autenticada. Identifica que estás conectado.' },
+      { nombre: 'sb-* (Autenticación de sesión)', dominio: 'calculadoradereuso.com', duracion: 'Sesión / 1 año', finalidad: 'Gestión de sesión autenticada. Identifica que estás conectado.' },
       { nombre: 'reuso_cookies_consent', dominio: 'calculadoradereuso.com', duracion: '1 año', finalidad: 'Guarda tu elección sobre cookies (esenciales / funcionales / analíticas).' },
       { nombre: '__Host-* / __Secure-*', dominio: 'calculadoradereuso.com', duracion: 'Sesión', finalidad: 'Protección CSRF. Previene ataques de falsificación de solicitudes.' },
-      { nombre: '_cfuvid, cf_clearance', dominio: '*.lurdes.co', duracion: 'Sesión / 24 h', finalidad: 'Cookies de seguridad de Cloudflare. Protegen contra bots y ataques DDoS.' },
+      { nombre: '_cfuvid, cf_clearance', dominio: 'calculadoradereuso.com', duracion: 'Sesión / 24 h', finalidad: 'Cookies de seguridad. Protegen contra bots y ataques de denegación de servicio.' },
     ],
     s3Title: '2. Cookies funcionales',
     s3Desc: 'Opcionales. Recuerdan tus preferencias para mejorar tu experiencia. Si las rechazas, la plataforma sigue funcionando pero puede que no recuerde tus ajustes entre sesiones.',
@@ -52,18 +52,18 @@ const T = {
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com', duracion: '30 días', finalidad: 'Mantiene la sesión iniciada si marcas «Recuérdame» en el login.' },
     ],
     s4Title: '3. Cookies analíticas',
-    s4Desc: 'Opcionales. Utilizamos Google Analytics para análisis de uso y marketing, y Hotjar para generar mapas de calor y analizar el comportamiento. Solo nos ayudan a entender qué páginas son útiles y a optimizar la plataforma.',
+    s4Desc: 'Opcionales. Utilizamos métricas web para análisis de uso y optimización de experiencia. Solo nos ayudan a entender qué páginas son útiles y a optimizar la plataforma.',
     s4Rows: [
-      { nombre: '_ga, _gid (Google Analytics)', dominio: '.lurdes.co', duracion: '2 años / 24 h', finalidad: 'Estadísticas de uso y marketing: páginas vistas, tiempo de sesión.' },
-      { nombre: '_hj* (Hotjar)', dominio: '.lurdes.co', duracion: '1 año / Sesión', finalidad: 'Mapas de calor y análisis de comportamiento del usuario.' },
+      { nombre: '_ga, _gid (Analítica web)', dominio: 'calculadoradereuso.com', duracion: '2 años / 24 h', finalidad: 'Estadísticas de uso: páginas vistas, tiempo de sesión.' },
+      { nombre: '_hj* (Mapas de calor)', dominio: 'calculadoradereuso.com', duracion: '1 año / Sesión', finalidad: 'Mapas de calor y análisis de comportamiento del usuario.' },
     ],
     s5Title: 'Cookies de terceros',
     s5: [
-      { proveedor: 'Supabase', rol: 'Base de datos y autenticación', info: 'Gestiona la sesión y el acceso seguro a tus datos. Opera bajo los mismos acuerdos de privacidad.' },
-      { proveedor: 'Vercel', rol: 'Infraestructura y hosting', info: 'Puede establecer cookies técnicas de enrutamiento y rendimiento para servir el sitio correctamente.' },
-      { proveedor: 'Cloudflare', rol: 'Seguridad y protección DDoS', info: 'Establece cookies de seguridad (_cfuvid, cf_clearance) para identificar tráfico legítimo y bloquear ataques.' },
-      { proveedor: 'Google Analytics', rol: 'Analítica web y marketing', info: 'Recopila datos sobre el tráfico y las interacciones para mejorar nuestros servicios y campañas.' },
-      { proveedor: 'Hotjar', rol: 'Mapas de calor y comportamiento', info: 'Nos ayuda a entender cómo los usuarios navegan y hacen clic en la plataforma para optimizar la experiencia.' },
+      { proveedor: 'Base de datos y autenticación', rol: 'Servidor de Autenticación', info: 'Gestiona la sesión y el acceso seguro a tus datos. Opera bajo estrictos acuerdos de privacidad.' },
+      { proveedor: 'Infraestructura y hosting', rol: 'Servidor de Aplicaciones', info: 'Establece cookies técnicas de enrutamiento y rendimiento para servir la plataforma de forma veloz.' },
+      { proveedor: 'Seguridad y protección DDoS', rol: 'Proveedor de Seguridad', info: 'Establece cookies de seguridad (_cfuvid, cf_clearance) para identificar tráfico legítimo y bloquear ataques.' },
+      { proveedor: 'Analítica web y métricas', rol: 'Proveedor de Métricas', info: 'Recopila datos sobre el tráfico y las interacciones para optimizar la experiencia de uso.' },
+      { proveedor: 'Mapas de calor y usabilidad', rol: 'Proveedor de Experiencia', info: 'Nos ayuda a entender cómo los usuarios navegan y hacen clic en la plataforma para optimizar la experiencia.' },
     ],
     s6Title: 'Gestión y derechos',
     s6a: 'También puedes bloquear o eliminar cookies desde la configuración de tu navegador:',
@@ -86,6 +86,7 @@ const T = {
     leeTabien: [
       { href: '/legal/privacidad', label: 'Política de Privacidad', descripcion: 'Qué datos recopilamos y cómo los protegemos.' },
       { href: '/legal/ia', label: 'Uso de IA', descripcion: 'Cómo usamos inteligencia artificial en la plataforma.' },
+      { href: '/legal/cookies/preferencias', label: 'Panel de Preferencias', descripcion: 'Configura y administra tus permisos de cookies.' },
     ],
     thNombre: 'Cookie', thDominio: 'Dominio', thDuracion: 'Duración', thFinalidad: 'Finalidad',
   },
@@ -103,10 +104,10 @@ const T = {
     ],
     trust: {
       heading: 'Full transparency on what we use.',
-      sub: 'We use cookies for the platform to work, and tools like Google Analytics and Hotjar to understand usage and improve your experience.',
+      sub: 'We use cookies for the platform to work, and analytics and metrics tools to understand usage and improve your experience.',
       cards: [
-        { icon: 'Lock' as const, title: 'Protected data', desc: 'We keep your data secure and do not sell it to data brokers.' },
-        { icon: 'ChartBar' as const, title: 'Analytics for improvement', desc: 'If you accept, we use Google Analytics for marketing and Hotjar to understand behavior and heatmaps.' },
+        { icon: 'Lock' as const, title: 'Protected data', desc: 'We keep your data secure and do not sell it to third parties.' },
+        { icon: 'ChartBar' as const, title: 'Analytics for improvement', desc: 'If you accept, we use metric tools to understand user behavior and optimize performance.' },
         { icon: 'SlidersHorizontal' as const, title: 'You decide', desc: 'Change your choice at any time from the cookie panel.' },
       ],
     },
@@ -116,10 +117,10 @@ const T = {
     s2Title: '1. Essential cookies',
     s2Desc: 'These cookies are required for the site to work. They activate automatically when you use the platform. You cannot disable them without the site ceasing to function. They do not require your consent (GDPR Art. 5(3) / ePrivacy Directive).',
     s2Rows: [
-      { nombre: 'sb-* (Supabase Auth)', dominio: 'calculadoradereuso.com', duracion: 'Session / 1 year', finalidad: 'Authenticated session management. Identifies that you are logged in.' },
+      { nombre: 'sb-* (Session Authentication)', dominio: 'calculadoradereuso.com', duracion: 'Session / 1 year', finalidad: 'Authenticated session management. Identifies that you are logged in.' },
       { nombre: 'reuso_cookies_consent', dominio: 'calculadoradereuso.com', duracion: '1 year', finalidad: 'Stores your cookie choice (essential / functional / analytics).' },
       { nombre: '__Host-* / __Secure-*', dominio: 'calculadoradereuso.com', duracion: 'Session', finalidad: 'CSRF protection. Prevents cross-site request forgery attacks.' },
-      { nombre: '_cfuvid, cf_clearance', dominio: '*.lurdes.co', duracion: 'Session / 24 h', finalidad: 'Cloudflare security cookies. Protect against bots and DDoS attacks.' },
+      { nombre: '_cfuvid, cf_clearance', dominio: 'calculadoradereuso.com', duracion: 'Session / 24 h', finalidad: 'Security cookies. Protect against bots and DDoS attacks.' },
     ],
     s3Title: '2. Functional cookies',
     s3Desc: 'Optional. They remember your preferences to improve your experience. If you reject them, the platform continues to work but may not remember your settings between sessions.',
@@ -129,18 +130,18 @@ const T = {
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com', duracion: '30 days', finalidad: 'Keeps your session active if you check «Remember me» at login.' },
     ],
     s4Title: '3. Analytics cookies',
-    s4Desc: 'Optional. We use Google Analytics for usage analysis and marketing, and Hotjar to generate heatmaps and analyze behavior. They help us understand which pages are useful and optimize the platform.',
+    s4Desc: 'Optional. We use web analytics for usage analysis, and heatmaps to analyze behavior. They help us understand which pages are useful and optimize the platform.',
     s4Rows: [
-      { nombre: '_ga, _gid (Google Analytics)', dominio: '.lurdes.co', duracion: '2 years / 24 h', finalidad: 'Usage statistics and marketing: page views, session time.' },
-      { nombre: '_hj* (Hotjar)', dominio: '.lurdes.co', duracion: '1 year / Session', finalidad: 'Heatmaps and user behavior analysis.' },
+      { nombre: '_ga, _gid (Web Analytics)', dominio: 'calculadoradereuso.com', duracion: '2 years / 24 h', finalidad: 'Usage statistics: page views, session time.' },
+      { nombre: '_hj* (Heatmaps)', dominio: 'calculadoradereuso.com', duracion: '1 year / Session', finalidad: 'Heatmaps and user behavior analysis.' },
     ],
     s5Title: 'Third-party cookies',
     s5: [
-      { proveedor: 'Supabase', rol: 'Database and authentication', info: 'Manages session and secure access to your data. Operates under the same privacy agreements.' },
-      { proveedor: 'Vercel', rol: 'Infrastructure and hosting', info: 'May set technical routing and performance cookies to serve the site correctly.' },
-      { proveedor: 'Cloudflare', rol: 'Security and DDoS protection', info: 'Sets security cookies (_cfuvid, cf_clearance) to identify legitimate traffic and block attacks.' },
-      { proveedor: 'Google Analytics', rol: 'Web analytics and marketing', info: 'Collects data on traffic and interactions to improve our services and campaigns.' },
-      { proveedor: 'Hotjar', rol: 'Heatmaps and behavior', info: 'Helps us understand how users navigate and click on the platform to optimize the experience.' },
+      { proveedor: 'Database & authentication', rol: 'Authentication Provider', info: 'Manages user session and secure data access under strict privacy agreements.' },
+      { proveedor: 'Infrastructure & hosting', rol: 'Application Server', info: 'Sets technical routing and performance cookies to serve the platform efficiently.' },
+      { proveedor: 'Security & DDoS protection', rol: 'Security Provider', info: 'Sets security cookies (_cfuvid, cf_clearance) to identify legitimate traffic and mitigate attacks.' },
+      { proveedor: 'Web analytics & metrics', rol: 'Metrics Provider', info: 'Collects anonymous traffic data to improve platform usability and user flow.' },
+      { proveedor: 'Heatmaps & behavior', rol: 'Experience Provider', info: 'Helps us understand how users navigate and interact with interface elements.' },
     ],
     s6Title: 'Management and rights',
     s6a: 'You can also block or delete cookies from your browser settings:',
@@ -163,6 +164,7 @@ const T = {
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'What data we collect and how we protect it.' },
       { href: '/legal/ia', label: 'AI Use', descripcion: 'How we use artificial intelligence in the platform.' },
+      { href: '/legal/cookies/preferencias', label: 'Preferences Panel', descripcion: 'Configure and manage your cookie permissions.' },
     ],
     thNombre: 'Cookie', thDominio: 'Domain', thDuracion: 'Duration', thFinalidad: 'Purpose',
   },
@@ -260,29 +262,29 @@ export default function CookiesPage() {
           {t.trust.cards.map((card, i) => (
             <div
               key={i}
+              className="legal-trust-card"
               style={{
                 padding: '14px 16px',
                 borderRadius: 12,
-                border: '1px solid rgba(0,130,124,0.14)',
-                background: 'rgba(0,130,124,0.03)',
               }}
             >
-              <div style={{ color: 'var(--color-brand)', marginBottom: 8 }}>
+              <div className="legal-trust-icon" style={{ marginBottom: 8 }}>
                 {(() => {
                   const Icono = ICONOS_CONFIANZA[card.icon as keyof typeof ICONOS_CONFIANZA]
                   return Icono ? <Icono size={22} /> : null
                 })()}
               </div>
-              <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{card.title}</p>
+              <p className="legal-trust-title" style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700 }}>{card.title}</p>
               <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{card.desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Botón para abrir el banner de cookies */}
-      <div style={{ marginBottom: 28 }}>
+      {/* Botones para gestionar cookies */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 28 }}>
         <button
+          className="btn-cookies-pref"
           onClick={() => {
             localStorage.removeItem('reuso_cookies_consent')
             window.dispatchEvent(new Event('reuso_cookies_reset'))
@@ -290,13 +292,24 @@ export default function CookiesPage() {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '10px 20px', borderRadius: 10,
-            background: 'var(--color-brand)', color: '#fff',
             fontSize: 13, fontWeight: 700, border: 'none', cursor: 'pointer',
             boxShadow: '0 2px 8px rgba(0,130,124,0.25)',
           }}
         >
           {t.prefBtnText}
         </button>
+        <Link
+          href="/legal/cookies/preferencias"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '10px 20px', borderRadius: 10,
+            background: 'transparent', color: 'var(--color-brand)',
+            border: '1.5px solid var(--color-brand)',
+            fontSize: 13, fontWeight: 700, textDecoration: 'none',
+          }}
+        >
+          {lang === 'ENG' ? 'Cookie preferences panel →' : 'Panel de preferencias de cookies →'}
+        </Link>
       </div>
 
       {/* 1. Qué son */}
@@ -348,8 +361,8 @@ export default function CookiesPage() {
         </ul>
         <p style={p}>
           {t.s6c}{' '}
-          <a href="mailto:servicio@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
-            servicio@lurdes.co
+          <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
+            servicio@calculadoradereuso.com
           </a>{' '}
           {t.s6cMid}{' '}
           <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
@@ -368,6 +381,37 @@ export default function CookiesPage() {
           </div>
         ))}
       </section>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        [data-theme="light"] .btn-cookies-pref {
+          background: #00827C;
+          color: #ffffff;
+        }
+        [data-theme="dark"] .btn-cookies-pref {
+          background: #D6F391;
+          color: #474747;
+        }
+        [data-theme="light"] .legal-trust-card {
+          border: 1px solid rgba(0, 130, 124, 0.14);
+          background: rgba(0, 130, 124, 0.05);
+        }
+        [data-theme="light"] .legal-trust-icon {
+          color: #00827C;
+        }
+        [data-theme="light"] .legal-trust-title {
+          color: #474747;
+        }
+        [data-theme="dark"] .legal-trust-card {
+          border: 1px solid rgba(214, 243, 145, 0.35);
+          background: rgba(214, 243, 145, 0.20);
+        }
+        [data-theme="dark"] .legal-trust-icon {
+          color: #D6F391;
+        }
+        [data-theme="dark"] .legal-trust-title {
+          color: #D6F391;
+        }
+      `}} />
     </LegalPageLayout>
   )
 }

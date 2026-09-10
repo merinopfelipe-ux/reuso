@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Upload, Leaf } from '@/components/ui/icons'
+import { Upload } from '@/components/ui/icons'
 import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { SelectorPais, PAISES } from '@/components/ui/selector-pais'
 import { SelectorCiudad } from '@/components/ui/selector-ciudad'
@@ -88,6 +88,7 @@ export default function NuevaEmpresaForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.nombre.trim()) { setError('El nombre de la empresa es obligatorio.'); return }
+    if (!form.sitio_web.trim()) { setError('El sitio web de la empresa es obligatorio.'); return }
     setLoading(true)
     setError('')
 
@@ -169,7 +170,7 @@ export default function NuevaEmpresaForm() {
             fontWeight: 600,
           }}
         >
-          {logoFile ? 'Cambiar logo' : 'Subir logo (opcional)'}
+          {logoFile ? 'Cambiar logo' : 'Subir logo'}
         </button>
         <input
           ref={fileRef}
@@ -196,14 +197,14 @@ export default function NuevaEmpresaForm() {
 
       <div style={{ marginBottom: 12 }}>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
-          NIT / RFC / NIF
+          NIT / RFC / NIF <span style={{ color: '#e53e3e' }}>*</span>
         </label>
-        <InputDocumento value={form.nit} onChange={(val) => setForm(p => ({...p, nit: val}))} style={{ ...inputStyle, width: '100%', padding: '0 12px' }} placeholder="900.123.456" />
+        <InputDocumento value={form.nit} onChange={(val) => setForm(p => ({...p, nit: val}))} style={{ ...inputStyle, width: '100%' }} placeholder="900.123.456" />
       </div>
 
       <div style={{ marginBottom: 12 }}>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
-          Actividad económica (CIIU) (opcional)
+          Actividad económica (CIIU)
         </label>
         <SelectorCiiu
           value={form.sector}
@@ -248,16 +249,16 @@ export default function NuevaEmpresaForm() {
 
       <div style={{ marginBottom: 12 }}>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
-          Dirección física <span style={{ color: '#e53e3e' }}>*</span>
+          Dirección física
         </label>
         <InputDireccion value={form.direccion} onChange={(val) => setForm((prev) => ({ ...prev, direccion: val }))} paisCodigo={PAISES.find(p => p.nombre === form.pais)?.codigo} />
       </div>
 
       <div style={{ marginBottom: 12 }}>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
-          Sitio Web
+          Sitio Web <span style={{ color: '#e53e3e' }}>*</span>
         </label>
-        <input name="sitio_web" value={form.sitio_web} onChange={handleChange} style={inputStyle} placeholder="https://ejemplo.com" type="url" />
+        <input name="sitio_web" value={form.sitio_web} onChange={handleChange} style={inputStyle} placeholder="https://ejemplo.com" type="url" required />
       </div>
 
       {error && (
@@ -292,7 +293,6 @@ export default function NuevaEmpresaForm() {
       </button>
 
       <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', margin: 0 }}>
-        <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: BRAND }} />
         Tu empresa comenzará en plan Free. El equipo de Calculadora de Reúso te contactará para ampliar el plan.
       </p>
     </form>

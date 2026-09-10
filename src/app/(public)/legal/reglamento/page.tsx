@@ -249,12 +249,14 @@ export default function ReglamentoPage() {
   const t = T[lang]
 
   const transparenciaTexto = (
-    <>
-      {t.transparencia.texto}{' '}
-      <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600 }}>
-        {t.transparencia.link}
-      </Link>
-    </>
+    <div style={{ margin: 0 }}>
+      <p style={{ margin: 0, marginBottom: 8 }}>{t.transparencia.texto}</p>
+      <div>
+        <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+          {t.transparencia.link}
+        </Link>
+      </div>
+    </div>
   )
 
   return (
@@ -365,10 +367,10 @@ export default function ReglamentoPage() {
       <p style={p}>
         {t.ley_p2_pre}{' '}
         <a
-          href="mailto:servicio@lurdes.co"
-          style={{ color: 'var(--color-brand)', fontWeight: 600 }}
+          href="mailto:servicio@calculadoradereuso.com"
+          style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}
         >
-          servicio@lurdes.co
+          servicio@calculadoradereuso.com
         </a>{' '}
         {t.ley_p2_o}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

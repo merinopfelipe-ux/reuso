@@ -235,7 +235,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
       }}
     >
       {/* IZQUIERDA: Botón Menú + Logo y Rol */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 64 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 28 }}>
         {/* Disparador de Menú - Sostenible Core V11.2 */}
         {!isMobile && (
           <button
@@ -267,14 +267,15 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
         )}
 
         {/* Logo (simplificado en móvil V8.0) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 0 : 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <Image
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
-            width={isMobile ? 100 : 120}
-            height={28}
+            width={isMobile ? 110 : 135}
+            height={isMobile ? 28 : 34}
+            priority
             className="logo-dark-invert"
-            style={{ width: isMobile ? 100 : 120, height: 28, objectFit: 'contain' }}
+            style={{ width: isMobile ? 110 : 135, height: isMobile ? 28 : 34, objectFit: 'contain' }}
           />
         </div>
       </div>

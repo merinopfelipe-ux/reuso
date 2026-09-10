@@ -1,9 +1,8 @@
 // Texto legal por defecto de la cotización pública — se muestra mientras
 // legales_json esté vacío, y es el primer renglón editable la primera vez
-// que el vendedor abre "Legales" en el editor. Enlaza a los Términos y
-// Condiciones de lurdes.co (página externa, no de este proyecto).
+// que el vendedor abre "Legales" en el editor.
 export const LEGAL_TEXTO_DEFECTO =
-  'Al aceptar nuestra cotización, aceptas nuestros [términos y condiciones](https://lurdes.co/tyc/), así como los [parámetros de garantía](https://lurdes.co/tyc/#garantia).'
+  'Al aceptar nuestra cotización, aceptas nuestros [términos y condiciones](/legal/terminos), así como los parámetros de garantía aplicables.'
 
 import { renderTextoSimple } from './texto-simple'
 

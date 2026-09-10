@@ -69,7 +69,10 @@ export async function cotizadorAuthCheck(
   if (base.rol !== 'super_admin') return base
 
   const empresaOverride = request.nextUrl.searchParams.get('empresa_id')
-  if (!empresaOverride) return { ok: false, status: 400 }
+  if (!empresaOverride) {
+    if (base.empresa_id) return base
+    return { ok: false, status: 400 }
+  }
 
   const { data: empresa } = await base.adminClient
     .from('empresas')

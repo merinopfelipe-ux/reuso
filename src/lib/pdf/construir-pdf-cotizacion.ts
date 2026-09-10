@@ -18,7 +18,7 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
       garantia_activo, garantia, garantia_mostrar_lista,
       envio_gratis_activo, envio_gratis_texto, envio_gratis_mostrar_lista,
       nota_mostrar_lista, destacados_json, legales_json,
-      observaciones, created_at,
+      observaciones, created_at, co2_evitado_total_kg, agua_evitada_total_l,
       crm_clientes (
         id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo, email, direccion, es_contacto_real,
         crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
@@ -32,15 +32,21 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
 
   const { data: muebles } = await adminClient
     .from('crm_muebles_cotizados')
-    .select('titulo, descripcion, tipo_mueble, cantidad, precio_mueble, imagen_url')
+    .select('titulo, descripcion, tipo_mueble, cantidad, precio_mueble, imagen_url, precio_mercado_nuevo')
     .eq('cotizacion_id', cot.id)
     .eq('oculto', false)
     .order('created_at')
 
   const cliente = Array.isArray(cot.crm_clientes) ? cot.crm_clientes[0] : cot.crm_clientes
   const empresa = Array.isArray(cot.empresas) ? cot.empresas[0] : cot.empresas
-  const logoUrl = empresa?.logo_propuesta_url ?? empresa?.logo_url ?? null
-  const logoBase64 = logoUrl ? await fetchImageAsBase64(logoUrl) : null
+  let logoUrl = empresa?.logo_propuesta_url ?? empresa?.logo_url ?? null
+  if (logoUrl && !logoUrl.startsWith('http')) {
+    const { data: signedLogo } = await adminClient.storage
+      .from('logos')
+      .createSignedUrl(logoUrl, 3600)
+    logoUrl = signedLogo?.signedUrl ?? adminClient.storage.from('logos').getPublicUrl(logoUrl).data.publicUrl ?? logoUrl
+  }
+  const logoBase64 = logoUrl ? await fetchImageAsBase64(logoUrl).catch(() => null) : null
 
   const telefonoDigits = cliente?.telefono?.replace(/\D/g, '') ?? ''
   const clienteTelefono = telefonoDigits
@@ -92,6 +98,16 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     }
   }))
 
+  const mueblesConPrecioNuevo = (muebles ?? []).filter(
+    (m): m is typeof m & { precio_mercado_nuevo: number } =>
+      m.precio_mercado_nuevo !== null && Number(m.precio_mercado_nuevo) > 0
+  )
+  const valorNuevoTotal = mueblesConPrecioNuevo.reduce((s, m) => s + Number(m.precio_mercado_nuevo) * (m.cantidad ?? 1), 0)
+  const valorReparacionTotal = mueblesConPrecioNuevo.reduce((s, m) => s + Number(m.precio_mueble), 0)
+  const porcentajeAhorro = valorNuevoTotal > 0
+    ? Math.round(((valorNuevoTotal - valorReparacionTotal) / valorNuevoTotal) * 100)
+    : 0
+
   const empCliente = cliente?.crm_empresas_clientes
     ? (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
     : null
@@ -141,7 +157,12 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     descuento_activo: cot.descuento_activo ?? false,
     descuento: Number(cot.descuento) || 0,
     descuento_tipo: (cot.descuento_tipo ?? 'valor') as 'valor' | 'porcentaje',
-    iva_activo: cot.iva_activo ?? false,
+    iva_activo: cliente?.crm_empresas_clientes ? true : (cot.iva_activo ?? false),
     iva_porcentaje: Number(cot.iva_porcentaje) || 0,
+    valor_nuevo_total: valorNuevoTotal > valorReparacionTotal ? valorNuevoTotal : null,
+    valor_reparacion_total: valorNuevoTotal > valorReparacionTotal ? valorReparacionTotal : null,
+    porcentaje_ahorro: valorNuevoTotal > valorReparacionTotal ? porcentajeAhorro : null,
+    co2_evitado_kg: Number(cot.co2_evitado_total_kg) || null,
+    agua_evitada_l: Number(cot.agua_evitada_total_l) || null,
   })
 }

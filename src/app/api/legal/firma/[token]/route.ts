@@ -10,6 +10,10 @@ const schema = z.object({
   indicativo: z.string().regex(/^\+\d{1,4}$/),
   telefono: z.string().min(5).max(20),
   firma: z.string().startsWith('data:image/'),
+  nombre: z.string().optional(),
+  apellido: z.string().optional(),
+  tipoDocumento: z.string().optional(),
+  numeroIdentidad: z.string().optional(),
 })
 
 // Firma efectiva de la solicitud: valida el token server-side (nunca desde
@@ -56,12 +60,17 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
   const fecha = new Date().toLocaleString('es-CO', { timeZone: 'America/Bogota', dateStyle: 'full', timeStyle: 'medium' })
   const verificationCode = randomUUID().toUpperCase()
 
+  const nombreCompleto = [parsed.data.nombre, parsed.data.apellido].filter(Boolean).join(' ').trim() || solicitud.nombre
+  const docIdCompleto = parsed.data.numeroIdentidad
+    ? `${parsed.data.tipoDocumento ? parsed.data.tipoDocumento + ' ' : ''}${parsed.data.numeroIdentidad}`.trim()
+    : solicitud.numero_identidad
+
   let pdfBuffer: Buffer
   try {
     pdfBuffer = documento.generarPDF(
       {
-        nombre: solicitud.nombre,
-        numeroIdentidad: solicitud.numero_identidad,
+        nombre: nombreCompleto,
+        numeroIdentidad: docIdCompleto,
         email: solicitud.email,
         indicativo: parsed.data.indicativo,
         telefono: parsed.data.telefono,
@@ -90,6 +99,8 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
     .update({
       estado: 'firmado',
       firmado_at: new Date().toISOString(),
+      nombre: nombreCompleto,
+      numero_identidad: docIdCompleto,
       indicativo: parsed.data.indicativo,
       telefono: parsed.data.telefono,
       ip_address: ip,

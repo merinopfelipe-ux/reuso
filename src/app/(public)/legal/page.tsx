@@ -3,13 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
-import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, MessageSquare as ChatCircle } from '@/components/ui/icons'
+import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {
   ES: {
     titulo: 'Documentos legales',
-    subtitulo: 'Toda la documentación legal de la Calculadora de Reúso. Diseñada para cumplir con el RGPD (Europa), la CCPA (EE. UU.) y la Ley 1581 (Colombia).',
     inicio: 'Inicio',
     duda: 'Tengo una duda legal',
     dudaDesc: 'Escríbenos directamente. El equipo de Grupo MLP S.A.S. responde en un máximo de 10 días hábiles.',
@@ -21,12 +20,13 @@ const T = {
       { href: '/legal/reglamento', titulo: 'Reglamento de Uso', descripcion: 'Condiciones y políticas de uso de los informes.' },
       { href: '/legal/confidencialidad', titulo: 'Acuerdo de Confidencialidad', descripcion: 'Garantía de confidencialidad para usuarios y empresas registradas.' },
       { href: '/legal/medicion', titulo: 'Metodología de Medición', descripcion: 'Cómo calculamos el CO₂ eq evitado y la huella hídrica de cada reúso.' },
+      { href: '/legal/ptee', titulo: 'Programa de Ética (PTEE)', descripcion: 'Programa anticorrupción, antisoborno transnacional y código ético de Grupo MLP S.A.S.' },
+      { href: '/legal/sagrilaft', titulo: 'Política SAGRILAFT', descripcion: 'Autocontrol y gestión del riesgo integral de LA/FT/FPADM y debida diligencia.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
     ],
   },
   ENG: {
     titulo: 'Legal Documents',
-    subtitulo: 'All legal documentation of the Calculadora de Reúso. Compliant with GDPR (Europe), CCPA (US), and Law 1581 (Colombia).',
     inicio: 'Home',
     duda: 'Legal inquiries',
     dudaDesc: 'Write to us directly. The Grupo MLP S.A.S. team will reply within 10 business days.',
@@ -38,6 +38,8 @@ const T = {
       { href: '/legal/reglamento', titulo: 'Usage Regulations', descripcion: 'Terms and policies for reports usage.' },
       { href: '/legal/confidencialidad', titulo: 'Confidentiality Agreement', descripcion: 'Confidentiality guarantee for registered users and companies.' },
       { href: '/legal/medicion', titulo: 'Measurement Methodology', descripcion: 'How we calculate CO₂ eq avoided and the water footprint of each reuse.' },
+      { href: '/legal/ptee', titulo: 'Ethics Program (PTEE)', descripcion: 'Anti-corruption, anti-bribery program, and corporate code of conduct.' },
+      { href: '/legal/sagrilaft', titulo: 'SAGRILAFT Policy', descripcion: 'Prevention and control of money laundering and terrorist financing risks.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
     ],
   },
@@ -48,9 +50,11 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
   '/legal/privacidad': Shield,
   '/legal/datos': Database,
   '/legal/cookies': Cookie,
-  '/legal/reglamento': Scale,
+  '/legal/reglamento': BookOpen,
   '/legal/confidencialidad': Lock,
   '/legal/medicion': Calculator,
+  '/legal/ptee': Scale,
+  '/legal/sagrilaft': ClipboardList,
   '/legal/ia': IaIcon,
 }
 
@@ -84,13 +88,10 @@ export default function LegalIndexPage() {
         </nav>
 
         {/* Título */}
-        <div style={{ marginBottom: 48 }}>
-          <h1 style={{ fontSize: 34, fontWeight: 700, marginBottom: 12, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+        <div style={{ marginBottom: 36 }}>
+          <h1 style={{ fontSize: 34, fontWeight: 700, margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
             {t.titulo}
           </h1>
-          <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, maxWidth: 580, margin: 0 }}>
-            {t.subtitulo}
-          </p>
         </div>
 
         {/* Grid de documentos */}
@@ -121,6 +122,7 @@ export default function LegalIndexPage() {
                 className={`legal-card ${esIA ? 'hover-ia' : 'hover-pop'}`}
               >
                 <div
+                  className={esIA ? undefined : 'legal-icon-box'}
                   style={{
                     width: 40,
                     height: 40,
@@ -128,7 +130,7 @@ export default function LegalIndexPage() {
                     flexShrink: 0,
                     background: esIA
                       ? 'rgba(89,166,228,0.12)'
-                      : 'rgba(0,130,124,0.08)',
+                      : 'var(--color-brand-light)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -164,13 +166,13 @@ export default function LegalIndexPage() {
             padding: '24px 28px',
             borderRadius: 16,
             border: '1.5px dashed rgba(0,130,124,0.30)',
-            background: 'rgba(0,130,124,0.02)',
+            background: 'var(--color-brand-light)',
             textDecoration: 'none',
             transition: 'box-shadow 0.2s, background 0.2s',
           }}
           className="legal-duda-module hover-pop"
         >
-          <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div className="legal-icon-box" style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--color-brand-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ChatCircle size={22} color="var(--color-brand)" />
           </div>
           <div style={{ flex: 1 }}>
@@ -187,8 +189,16 @@ export default function LegalIndexPage() {
           transform: translateY(-2px);
         }
         .legal-duda-module:hover {
-          background: rgba(0,130,124,0.05) !important;
           box-shadow: 0 4px 20px rgba(0,130,124,0.10);
+        }
+        [data-theme="dark"] .legal-icon-box {
+          background: rgba(214, 243, 145, 0.12) !important;
+        }
+        [data-theme="dark"] .legal-duda-module {
+          border-color: rgba(214, 243, 145, 0.25) !important;
+        }
+        [data-theme="dark"] .legal-duda-module:hover {
+          box-shadow: 0 4px 20px rgba(214,243,145,0.10);
         }
       `}} />
     </>

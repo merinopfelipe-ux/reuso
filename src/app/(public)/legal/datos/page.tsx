@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout } from '@/components/legal/legal-page-layout'
+import { ShieldCheck, Lock, Eye, Trash2 } from '@/components/ui/icons'
 
 const T = {
   ES: {
@@ -317,17 +318,106 @@ export default function DatosPage() {
       breadcrumbLabel={t.breadcrumbLabel}
       secciones={t.secciones}
       transparenciaTexto={
-        <p style={{ margin: 0 }}>
-          {t.transparenciaTexto}{' '}
-          <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600 }}>
-            {t.transparenciaLink}
-          </Link>
-        </p>
+        <div style={{ margin: 0 }}>
+          <p style={{ margin: 0, marginBottom: 8 }}>{t.transparenciaTexto}</p>
+          <div>
+            <Link href="/legal/ia" style={{ color: '#59A6E4', textDecoration: 'underline', fontWeight: 600, display: 'inline-block' }}>
+              {t.transparenciaLink}
+            </Link>
+          </div>
+        </div>
       }
       resumen={t.resumen}
       leeTabien={t.leeTabien}
     >
       <p style={p}>{t.intro}</p>
+
+      {/* Mapa Conceptual y Ciclo de Vida del Dato */}
+      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-[var(--bg-card)] border border-[var(--border)] text-left shadow-sm">
+        <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
+          <ShieldCheck size={22} color="var(--color-brand)" />
+          {lang === 'ENG' ? 'Personal Data Lifecycle & ARCO Protection' : 'Ciclo de Vida del Dato y Protección ARCO'}
+        </h3>
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+          {lang === 'ENG'
+            ? 'Visual overview of how your information is collected, safeguarded, and how you exercise full ownership over your data at every step.'
+            : 'Resumen visual de cómo recolectamos, protegemos y garantizamos el control total de tu información en cada etapa.'}
+        </p>
+
+        {/* 4 Fases del Ciclo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            {
+              num: '01',
+              title: lang === 'ENG' ? 'Collection & Consent' : 'Recolección y Consentimiento',
+              desc: lang === 'ENG' ? 'Explicit prior authorization. Only minimal required operational data.' : 'Autorización previa y explícita. Solo datos mínimos para operar el servicio.',
+              icon: Lock,
+            },
+            {
+              num: '02',
+              title: lang === 'ENG' ? 'Encrypted Storage' : 'Custodia Cifrada',
+              desc: lang === 'ENG' ? 'End-to-end encryption in transit and rest. Role-based isolated access.' : 'Cifrado integral en tránsito y reposo con aislamiento estricto por roles.',
+              icon: ShieldCheck,
+            },
+            {
+              num: '03',
+              title: lang === 'ENG' ? 'Isolated Processing' : 'Procesamiento Seguro',
+              desc: lang === 'ENG' ? 'Used only for carbon calculations. AI models NEVER train on your data.' : 'Uso exclusivo para cálculos. La IA jamás entrena con tus datos.',
+              icon: Eye,
+            },
+            {
+              num: '04',
+              title: lang === 'ENG' ? 'Control & Erasure' : 'Control y Supresión',
+              desc: lang === 'ENG' ? 'Direct self-service export, modification or irreversible deletion.' : 'Herramientas directas para modificar, exportar o eliminar datos para siempre.',
+              icon: Trash2,
+            },
+          ].map((step) => {
+            const IconComponent = step.icon
+            return (
+              <div
+                key={step.num}
+                className="p-4 rounded-[12px] bg-[var(--bg-primary)] border border-[var(--border)] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-bold text-[var(--color-brand)] bg-[var(--color-brand-light)] px-2 py-0.5 rounded-full">
+                      {lang === 'ENG' ? `Step ${step.num}` : `Fase ${step.num}`}
+                    </span>
+                    <IconComponent size={18} color="var(--color-brand)" />
+                  </div>
+                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1.5">{step.title}</h4>
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed m-0">{step.desc}</p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Matriz ARCO */}
+        <div className="p-4 rounded-[12px] bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20">
+          <div className="text-xs font-bold text-[var(--color-brand)] uppercase tracking-wider mb-2">
+            {lang === 'ENG' ? 'Universal ARCO & GDPR Rights Matrix' : 'Matriz de Derechos ARCO y Soberanía Digital'}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div>
+              <strong className="text-[var(--text-primary)] block">A · {lang === 'ENG' ? 'Access' : 'Acceso'}</strong>
+              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Know what data is stored' : 'Conoce qué datos guardamos'}</span>
+            </div>
+            <div>
+              <strong className="text-[var(--text-primary)] block">R · {lang === 'ENG' ? 'Rectify' : 'Rectificación'}</strong>
+              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Update & correct info' : 'Actualiza y corrige tus datos'}</span>
+            </div>
+            <div>
+              <strong className="text-[var(--text-primary)] block">C · {lang === 'ENG' ? 'Cancel' : 'Cancelación'}</strong>
+              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Delete upon request' : 'Elimina cuando lo decidas'}</span>
+            </div>
+            <div>
+              <strong className="text-[var(--text-primary)] block">O · {lang === 'ENG' ? 'Opposition' : 'Oposición'}</strong>
+              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Portability & opt-out' : 'Portabilidad y revocación'}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <h2 id="objetivos" style={h2}>{t.objetivosTitle}</h2>
       <p style={p}>{t.objetivos}</p>
@@ -380,8 +470,8 @@ export default function DatosPage() {
       <p style={p}>{t.peticiones2}</p>
       <p style={p}>
         {t.peticiones3a}{' '}
-        <a href="mailto:servicio@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
-          servicio@lurdes.co
+        <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
+          servicio@calculadoradereuso.com
         </a>
         {t.peticiones3b}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

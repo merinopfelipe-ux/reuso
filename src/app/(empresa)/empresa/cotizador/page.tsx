@@ -183,6 +183,11 @@ function PanelCotizadorContent() {
         if (d?.empresas) {
           setEsSuperAdmin(true)
           setEmpresas(d.empresas)
+          if (!searchParams.get('empresa_id') && d.empresas.length > 0) {
+            const params = new URLSearchParams(searchParams)
+            params.set('empresa_id', d.empresas[0].id)
+            router.replace(`/empresa/cotizador?${params}`)
+          }
         }
       })
       .finally(() => setCargandoContexto(false))

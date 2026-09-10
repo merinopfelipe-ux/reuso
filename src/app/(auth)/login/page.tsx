@@ -571,7 +571,7 @@ export default function LoginPage() {
                   onClick={() => setActiveTestimonial(idx)}
                   className={`h-2 rounded-full transition-all duration-300 ease-out focus:outline-none ${
                     idx === activeTestimonial
-                      ? 'w-10 bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]'
+                      ? 'w-10 bg-primary shadow-[0_0_10px_rgba(255,255,255,0.5)]'
                       : 'w-2 bg-white/30 hover:bg-white/50'
                   }`}
                   aria-label={`Ir al testimonio ${idx + 1}`}

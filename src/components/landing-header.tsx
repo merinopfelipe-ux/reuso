@@ -384,7 +384,7 @@ export function LandingHeader({
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#1E1E1E] border-white/10' : 'bg-white border-[#00827C]/12'}`}>
+          <div className={`p-2 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#1E1E1E] border-white/10' : 'bg-primary border-[#00827C]/12'}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items?.map((item, i) => (
                 <a
