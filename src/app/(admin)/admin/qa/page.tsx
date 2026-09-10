@@ -1807,6 +1807,90 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   }
 }
 
+// ── Capturas de una prueba ────────────────────────────────────────────────────
+// Las rutas de las imágenes viven dentro de `notas` como marcadores
+// `[captura: <path>]`, para que persistan en localStorage con el resto de la
+// nota y salgan en el informe descargable. El bit binario está en el bucket
+// privado `qa-evidencias` (ver sql/125), se accede solo con URL firmada.
+function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar }: {
+  taskId: string
+  notas: string
+  isDark: boolean
+  subiendo: boolean
+  onElegirArchivo: (file: File) => void
+  onQuitar: (path: string) => void
+}) {
+  void taskId
+  const paths = useMemo(() => {
+    const out: string[] = []
+    const re = /\[captura: ([^\]]+)\]/g
+    let m: RegExpExecArray | null
+    while ((m = re.exec(notas))) out.push(m[1])
+    return out
+  }, [notas])
+  const [urls, setUrls] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    let cancel = false
+    paths.forEach(async p => {
+      try {
+        const r = await fetch(`/api/admin/qa/evidencia?path=${encodeURIComponent(p)}`)
+        const d = await r.json()
+        if (!cancel && d.url) setUrls(prev => (prev[p] ? prev : { ...prev, [p]: d.url }))
+      } catch {
+        /* miniatura no crítica */
+      }
+    })
+    return () => { cancel = true }
+  }, [paths])
+
+  const borde = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.15)'
+
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2" onClick={e => e.stopPropagation()}>
+      {paths.map(p => (
+        <div key={p} className="relative">
+          {urls[p] ? (
+            <a href={urls[p]} target="_blank" rel="noopener noreferrer">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={urls[p]} alt="captura de la prueba" className="h-16 w-16 rounded-lg object-cover border" style={{ borderColor: borde }} />
+            </a>
+          ) : (
+            <div className="h-16 w-16 rounded-lg skeleton-shimmer" />
+          )}
+          <button
+            onClick={() => onQuitar(p)}
+            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full text-white text-xs flex items-center justify-center"
+            style={{ background: '#FF5E4B' }}
+            title="Quitar captura"
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      <label
+        className="h-16 min-w-16 px-2 rounded-lg border border-dashed flex items-center justify-center cursor-pointer text-[10px] text-center leading-tight"
+        style={{
+          borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,130,124,0.25)',
+          color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,130,124,0.7)',
+        }}
+      >
+        {subiendo ? 'Subiendo captura.' : 'Pegar o subir captura'}
+        <input
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+          className="hidden"
+          onChange={e => {
+            const f = e.target.files?.[0]
+            if (f) onElegirArchivo(f)
+            e.target.value = ''
+          }}
+        />
+      </label>
+    </div>
+  )
+}
+
 // ── Componente ─────────────────────────────────────────────────────────────────
 
 export default function QAPage() {
@@ -1829,6 +1913,7 @@ export default function QAPage() {
   const [mostrarHistorial, setMostrarHistorial] = useState<string | null>(null) // null | 'completo' | nombreCategoria
   const [mostrarProgresoModal, setMostrarProgresoModal] = useState(false)
   const [intentos, setIntentos] = useState<QAIntento[]>([])
+  const [capturaSubiendo, setCapturaSubiendo] = useState<string | null>(null)
   const [copiadoId, setCopiadoId] = useState<string | null>(null)
   const [copiadoRutaId, setCopiadoRutaId] = useState<string | null>(null)
   const [detalleIntentoId, setDetalleIntentoId] = useState<string | null>(null)
@@ -2100,6 +2185,13 @@ export default function QAPage() {
       } catch { /* ignorar */ }
       return filtrados
     })
+    // Al borrar el historial ya no hay nada que referencie las capturas: se
+    // limpia el bucket entero de una vez.
+    fetch('/api/admin/qa/evidencia', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ all: true }),
+    }).catch(() => {})
     mostrarToast(`Historial de ${alcance === 'completo' ? 'todo el sistema' : alcance} eliminado`)
   }, [mostrarToast])
 
@@ -2129,6 +2221,55 @@ export default function QAPage() {
       guardar(updated)
       return updated
     })
+
+  const subirCaptura = async (taskId: string, file: File) => {
+    if (file.size > 5_242_880) { alert('La imagen supera los 5 MB.'); return }
+    setCapturaSubiendo(taskId)
+    try {
+      const dataUrl = await new Promise<string>((res, rej) => {
+        const r = new FileReader()
+        r.onload = () => res(r.result as string)
+        r.onerror = () => rej(new Error('lectura'))
+        r.readAsDataURL(file)
+      })
+      const resp = await fetch('/api/admin/qa/evidencia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId, dataUrl }),
+      })
+      const data = await resp.json().catch(() => ({}))
+      if (!resp.ok) { alert(data.error || 'No se pudo subir la captura.'); return }
+      setTareas(prev => {
+        const updated = prev.map(t => {
+          if (t.id !== taskId) return t
+          const sep = t.notas === '' || t.notas.endsWith('\n') ? '' : '\n'
+          return { ...t, notas: `${t.notas}${sep}[captura: ${data.path}]` }
+        })
+        guardar(updated)
+        return updated
+      })
+    } catch {
+      alert('No se pudo subir la captura.')
+    } finally {
+      setCapturaSubiendo(null)
+    }
+  }
+
+  const quitarCaptura = async (taskId: string, path: string) => {
+    fetch('/api/admin/qa/evidencia', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path }),
+    }).catch(() => {})
+    setTareas(prev => {
+      const escapado = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const updated = prev.map(t => t.id === taskId
+        ? { ...t, notas: t.notas.replace(new RegExp(`\\n?\\[captura: ${escapado}\\]`), '') }
+        : t)
+      guardar(updated)
+      return updated
+    })
+  }
 
   const toggleRolProbado = (id: string, rol: RolPrueba) => {
     setTareas(prev => {
@@ -3454,10 +3595,17 @@ export default function QAPage() {
                           onChange={e => actualizar(tarea.id, 'notas', e.target.value)}
                           onFocus={() => {
                             if (tarea.notas.trim() === '') {
-                              actualizar(tarea.id, 'notas', 'Hice: \nEsperaba ver: \nEn su lugar pasó: \nCaptura: (pégala en el chat con Claude)')
+                              actualizar(tarea.id, 'notas', 'Hice: \nEsperaba ver: \nEn su lugar pasó: ')
                             }
                           }}
-                          placeholder={'Hice: abrí X y pulsé Y\nEsperaba ver: Z\nEn su lugar pasó: W'}
+                          onPaste={e => {
+                            const img = Array.from(e.clipboardData.items).find(i => i.type.startsWith('image/'))
+                            if (!img) return
+                            e.preventDefault()
+                            const file = img.getAsFile()
+                            if (file) subirCaptura(tarea.id, file)
+                          }}
+                          placeholder={'Hice: abrí X y pulsé Y\nEsperaba ver: Z\nEn su lugar pasó: W\n(pega una captura con Cmd+V)'}
                           rows={5}
                           onClick={e => e.stopPropagation()}
                           className={`w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs sm:text-sm ${theme.textPrimary} resize-vertical outline-none transition-all font-sans`}
@@ -3466,6 +3614,14 @@ export default function QAPage() {
                             border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
                             fontFamily: "'Open Sans', sans-serif",
                           }}
+                        />
+                        <CapturasQA
+                          taskId={tarea.id}
+                          notas={tarea.notas}
+                          isDark={isDark}
+                          subiendo={capturaSubiendo === tarea.id}
+                          onElegirArchivo={file => subirCaptura(tarea.id, file)}
+                          onQuitar={path => quitarCaptura(tarea.id, path)}
                         />
 
                         {/* Veredicto general */}
