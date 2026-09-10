@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { sincronizarContactoLoops } from '@/lib/loops'
 import { randomBytes } from 'crypto'
 
 const bodySchema = z.object({
@@ -107,6 +108,17 @@ export async function POST(request: NextRequest) {
     detalle: { empresa_id: empresa.id, nombre, slug, sector: sector ?? null },
     ip,
   })
+
+  // Actualiza el contacto en Loops: ahora es empresa_admin y tiene empresa.
+  if (user.email) {
+    await sincronizarContactoLoops({
+      email: user.email,
+      source: 'empresa-creada',
+      rol: 'empresa_admin',
+      empresa: nombre,
+      sector: sector ?? null,
+    })
+  }
 
   return NextResponse.json({ empresa_id: empresa.id, slug })
 }

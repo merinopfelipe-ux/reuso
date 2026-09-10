@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { createHash } from 'crypto'
 import { rateLimit } from '@/lib/rate-limit'
+import { sincronizarContactoLoops } from '@/lib/loops'
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
   const formData = new FormData()
@@ -146,6 +147,15 @@ export async function POST(request: NextRequest) {
       rol_asignado: invitacion.rol_asignado,
     },
     ip,
+  })
+
+  // Alta en Loops del empleado invitado. No-op sin LOOPS_API_KEY.
+  await sincronizarContactoLoops({
+    email: invitacion.email,
+    firstName: nombre,
+    source: 'invitacion',
+    subscribed: false,
+    rol: invitacion.rol_asignado,
   })
 
   return NextResponse.json({ ok: true })

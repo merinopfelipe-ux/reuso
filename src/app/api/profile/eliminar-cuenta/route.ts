@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { eliminarContactoLoops } from '@/lib/loops'
 
 // Autoeliminación de cuenta — fundamental de producto, 2026-09-05.
 // El user_id SIEMPRE sale de la sesión real (auth.getUser()), nunca del
@@ -54,6 +55,9 @@ export async function DELETE(request: NextRequest) {
     detalle: { nombre: perfil.nombre, email: perfil.email, rol: perfil.rol },
     ip: getIp(request),
   })
+
+  // Baja también en Loops.so (derecho al olvido). No-op sin LOOPS_API_KEY.
+  if (perfil.email) await eliminarContactoLoops(perfil.email)
 
   return NextResponse.json({ ok: true })
 }

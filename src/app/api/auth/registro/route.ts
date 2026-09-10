@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { encryptSensitive } from '@/lib/encryption.server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { sincronizarContactoLoops } from '@/lib/loops'
 
 async function checkRateLimit(ip: string, accion: string, max: number, windowMs: number): Promise<boolean> {
   try {
@@ -161,6 +162,18 @@ export async function POST(request: NextRequest) {
       : 'No pudimos crear tu cuenta. Intenta de nuevo en unos minutos.'
     return NextResponse.json({ error: mensaje }, { status: 400 })
   }
+
+  // Sincroniza el contacto con Loops.so (marketing / ciclo de vida). No-op si
+  // no hay LOOPS_API_KEY, y nunca lanza: un fallo de Loops no bloquea el alta.
+  await sincronizarContactoLoops({
+    email,
+    firstName: nombre,
+    lastName: apellido,
+    source: codigo_empresa ? 'registro-invitacion' : 'registro',
+    subscribed: suscrito_newsletter ?? false,
+    rol: 'usuario_libre',
+    sector: sector ?? null,
+  })
 
   return NextResponse.json({ ok: true })
 }
