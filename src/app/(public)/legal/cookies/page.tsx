@@ -55,7 +55,7 @@ const T = {
     s4Desc: 'Opcionales. Utilizamos métricas web para análisis de uso y optimización de experiencia. Solo nos ayudan a entender qué páginas son útiles y a optimizar la plataforma.',
     s4Rows: [
       { nombre: '_ga, _gid (Analítica web)', dominio: 'calculadoradereuso.com', duracion: '2 años / 24 h', finalidad: 'Estadísticas de uso: páginas vistas, tiempo de sesión.' },
-      { nombre: '_hj* (Mapas de calor)', dominio: 'calculadoradereuso.com', duracion: '1 año / Sesión', finalidad: 'Mapas de calor y análisis de comportamiento del usuario.' },
+      { nombre: '_clck, _clsk (Mapas de calor)', dominio: 'calculadoradereuso.com', duracion: '1 año / Sesión', finalidad: 'Mapas de calor y grabación de sesión para analizar el comportamiento del usuario (Microsoft Clarity).' },
     ],
     s5Title: 'Cookies de terceros',
     s5: [
@@ -133,7 +133,7 @@ const T = {
     s4Desc: 'Optional. We use web analytics for usage analysis, and heatmaps to analyze behavior. They help us understand which pages are useful and optimize the platform.',
     s4Rows: [
       { nombre: '_ga, _gid (Web Analytics)', dominio: 'calculadoradereuso.com', duracion: '2 years / 24 h', finalidad: 'Usage statistics: page views, session time.' },
-      { nombre: '_hj* (Heatmaps)', dominio: 'calculadoradereuso.com', duracion: '1 year / Session', finalidad: 'Heatmaps and user behavior analysis.' },
+      { nombre: '_clck, _clsk (Heatmaps)', dominio: 'calculadoradereuso.com', duracion: '1 year / Session', finalidad: 'Heatmaps and session recording for user behavior analysis (Microsoft Clarity).' },
     ],
     s5Title: 'Third-party cookies',
     s5: [
