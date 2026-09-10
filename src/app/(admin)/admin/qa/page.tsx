@@ -3446,11 +3446,19 @@ export default function QAPage() {
                         <label className={`block text-xs font-bold ${theme.textSecondary} mb-1.5`}>
                           Tus apuntes
                         </label>
+                        <p className={`text-[11px] ${theme.textSecondary} opacity-70 mb-1.5 leading-relaxed`}>
+                          Llena estos 3 espacios cuando algo falle. Así se arregla sin adivinar y sin idas y vueltas.
+                        </p>
                         <textarea
                           value={tarea.notas}
                           onChange={e => actualizar(tarea.id, 'notas', e.target.value)}
-                          placeholder="Qué hiciste, qué pasó y qué esperabas ver en su lugar. Así se puede arreglar sin adivinar."
-                          rows={3}
+                          onFocus={() => {
+                            if (tarea.notas.trim() === '') {
+                              actualizar(tarea.id, 'notas', 'Hice: \nEsperaba ver: \nEn su lugar pasó: \nCaptura: (pégala en el chat con Claude)')
+                            }
+                          }}
+                          placeholder={'Hice: abrí X y pulsé Y\nEsperaba ver: Z\nEn su lugar pasó: W'}
+                          rows={5}
                           onClick={e => e.stopPropagation()}
                           className={`w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs sm:text-sm ${theme.textPrimary} resize-vertical outline-none transition-all font-sans`}
                           style={{

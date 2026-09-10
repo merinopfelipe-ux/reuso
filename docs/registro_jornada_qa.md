@@ -13,7 +13,6 @@ Se expandió la matriz de pruebas de 117 a **145 casos de prueba exhaustivos**, 
 - `/cot/[token]` (Propuesta interactiva pública para clientes)
 - `/empresa/clientes/[id]` (Ficha 360° del cliente y acuerdos comerciales)
 - `/sistema-diseno` (Catálogo maestro de tokens y componentes)
-- `/sistema-diseno/demo-panel` (Demostración de adaptabilidad y layouts)
 
 ### B. Alineación con Perfiles de Usuario (Journeys de Obsidian)
 Se integraron explícitamente los perfiles de usuario reales definidos en el Vault de Obsidian, eliminando nombres ficticios y adoptando los 4 roles directos:
@@ -89,7 +88,7 @@ Se corrigió la lógica del generador y modal de informes parciales:
 Se extendió y sincronizó la suite de pruebas End-to-End en `e2e/`:
 - **`e2e/08-panel-admin.spec.ts`**: Pruebas de navegación para `/admin/qa`, `/admin/contenido`, gestión de usuarios y empresas.
 - **`e2e/09-panel-empresa.spec.ts`**: Pruebas de `/empresa/clientes/[id]` y cotizador.
-- **`e2e/17-paginas-publicas.spec.ts`**: Pruebas de `/sistema-diseno`, `/sistema-diseno/demo-panel` y `/cot/[token]`.
+- **`e2e/17-paginas-publicas.spec.ts`**: Pruebas de `/sistema-diseno` y `/cot/[token]`.
 - Validación de alternancia de tema Claro/Oscuro (`data-theme="dark"` / `light`) y adaptación responsive en móviles y escritorio.
 
 ---
