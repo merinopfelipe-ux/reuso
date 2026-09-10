@@ -22,6 +22,9 @@ function VerificarForm() {
       setCodigo(param.trim())
       validarYRedirigir(param.trim())
     }
+    // Se dispara solo cuando cambia el ?codigo de la URL. validarYRedirigir se
+    // recrea en cada render pero su lógica es estable, no hace falta en deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   const validarYRedirigir = async (cod: string) => {

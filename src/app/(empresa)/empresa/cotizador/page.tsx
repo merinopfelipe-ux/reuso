@@ -191,6 +191,9 @@ function PanelCotizadorContent() {
         }
       })
       .finally(() => setCargandoContexto(false))
+    // Solo al montar: detecta si es super_admin y, si no hay empresa en la URL,
+    // salta a la primera. No debe re-ejecutarse cuando cambia searchParams.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function cambiarEmpresa(id: string) {
