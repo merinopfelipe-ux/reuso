@@ -4,10 +4,21 @@ import Script from 'next/script'
 import { Suspense, useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
-// Analítica web (checklist de 19 fundamentales, 2026-09-05): Google Analytics
-// se activa solo si la persona aceptó la categoría "Analíticas" del banner de
-// cookies (usa cookies propias de Google, _ga/_gid) — Vercel Analytics, en
-// cambio, no usa cookies y se monta sin este condicionamiento (ver layout.tsx).
+// Analítica web (checklist de 19 fundamentales, 2026-09-05).
+//
+// Google Analytics 4 con Consent Mode v2:
+//   - gtag.js se carga SIEMPRE, pero arranca con `analytics_storage: 'denied'`.
+//     En ese estado NO escribe cookies (_ga/_gid) ni identifica al visitante:
+//     manda "pings" anónimos y sin cookies que Google usa para modelar el
+//     tráfico. Esto es lo que la ley permite sin consentimiento previo.
+//   - Cuando la persona acepta la categoría "Analíticas" del banner, se hace
+//     `consent update` a 'granted' y a partir de ahí sí hay medición completa
+//     con cookies. Si la revoca, vuelve a 'denied' sin recargar la página.
+//
+// Vercel Analytics y Speed Insights no usan cookies y se montan sin este
+// condicionamiento (ver layout.tsx). Microsoft Clarity NO tiene un modo
+// sin cookies equivalente, así que ese sí solo se carga con consentimiento
+// (ver microsoft-clarity.tsx).
 const CONSENT_KEY = 'reuso_cookies_consent'
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
@@ -31,7 +42,10 @@ function GoogleAnalyticsPageview({ gaId }: { gaId: string }) {
     const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag
     if (!gtag) return
     const query = searchParams.toString()
-    gtag('config', gaId, { page_path: query ? `${pathname}?${query}` : pathname })
+    gtag('event', 'page_view', {
+      page_path: query ? `${pathname}?${query}` : pathname,
+      send_to: gaId,
+    })
   }, [pathname, searchParams, gaId])
 
   return null
@@ -52,30 +66,28 @@ export function GoogleAnalytics() {
 
   useEffect(() => {
     if (!GA_ID) return
-    // Interruptor oficial de Google para apagar el envío de datos sin
-    // necesidad de recargar la página cuando la persona revoca el permiso.
-    ;(window as unknown as Record<string, boolean>)[`ga-disable-${GA_ID}`] = !permitido
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag
+    if (!gtag) return
+    // Sube o baja el nivel de consentimiento en vivo, sin recargar.
+    gtag('consent', 'update', {
+      analytics_storage: permitido ? 'granted' : 'denied',
+    })
   }, [permitido])
 
   if (!GA_ID) return null
 
+  // El `consent default: denied` se fija antes que nada en el <head> del
+  // layout raíz (script inline, junto al del tema) — así gtag.js nunca llega
+  // a correr sin saber que arranca en modo sin cookies.
   return (
     <>
       <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
-      <Script
-        id="google-analytics-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window['ga-disable-${GA_ID}'] = ${!permitido};
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
-          `,
-        }}
-      />
+      <Script id="google-analytics-init" strategy="afterInteractive">
+        {`
+          gtag('js', new Date());
+          gtag('config', '${GA_ID}', { anonymize_ip: true });
+        `}
+      </Script>
       <Suspense fallback={null}>
         <GoogleAnalyticsPageview gaId={GA_ID} />
       </Suspense>

@@ -52,7 +52,7 @@ const T = {
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com', duracion: '30 días', finalidad: 'Mantiene la sesión iniciada si marcas «Recuérdame» en el login.' },
     ],
     s4Title: '3. Cookies analíticas',
-    s4Desc: 'Opcionales. Utilizamos métricas web para análisis de uso y optimización de experiencia. Solo nos ayudan a entender qué páginas son útiles y a optimizar la plataforma.',
+    s4Desc: 'Opcionales. Utilizamos métricas web para análisis de uso y optimización de experiencia. Solo nos ayudan a entender qué páginas son útiles y a optimizar la plataforma. Si no aceptas, Google Analytics funciona en modo sin cookies (mediciones anónimas y agregadas, sin identificarte), y los mapas de calor no se cargan.',
     s4Rows: [
       { nombre: '_ga, _gid (Analítica web)', dominio: 'calculadoradereuso.com', duracion: '2 años / 24 h', finalidad: 'Estadísticas de uso: páginas vistas, tiempo de sesión.' },
       { nombre: '_clck, _clsk (Mapas de calor)', dominio: 'calculadoradereuso.com', duracion: '1 año / Sesión', finalidad: 'Mapas de calor y grabación de sesión para analizar el comportamiento del usuario (Microsoft Clarity).' },
@@ -130,7 +130,7 @@ const T = {
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com', duracion: '30 days', finalidad: 'Keeps your session active if you check «Remember me» at login.' },
     ],
     s4Title: '3. Analytics cookies',
-    s4Desc: 'Optional. We use web analytics for usage analysis, and heatmaps to analyze behavior. They help us understand which pages are useful and optimize the platform.',
+    s4Desc: 'Optional. We use web analytics for usage analysis, and heatmaps to analyze behavior. They help us understand which pages are useful and optimize the platform. If you do not accept, Google Analytics runs in cookieless mode (anonymous, aggregated measurement that does not identify you), and heatmaps are not loaded.',
     s4Rows: [
       { nombre: '_ga, _gid (Web Analytics)', dominio: 'calculadoradereuso.com', duracion: '2 years / 24 h', finalidad: 'Usage statistics: page views, session time.' },
       { nombre: '_clck, _clsk (Heatmaps)', dominio: 'calculadoradereuso.com', duracion: '1 year / Session', finalidad: 'Heatmaps and session recording for user behavior analysis (Microsoft Clarity).' },

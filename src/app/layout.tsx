@@ -54,6 +54,21 @@ export default function RootLayout({
             document.documentElement.setAttribute('data-theme', theme);
           })();
         ` }} />
+        {/* Google Consent Mode v2: se fija ANTES de cargar gtag.js. Todo
+            arranca en 'denied' (sin cookies); GoogleAnalytics sube a 'granted'
+            solo si la persona acepta la categoría "Analíticas" del banner. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('consent', 'default', {
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            analytics_storage: 'denied',
+            wait_for_update: 500
+          });
+        ` }} />
       </head>
       <body>
         <NextTopLoader 
