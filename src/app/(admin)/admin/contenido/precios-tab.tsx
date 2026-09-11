@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   CheckCircle,
@@ -8,7 +8,6 @@ import {
   Calculator,
   FileText,
   ClipboardList,
-  Loader2 as Spinner,
   Square,
   SquareCheck,
   Sparkles,
@@ -118,8 +117,13 @@ const NOMBRES: Record<string, string> = {
   free: 'Explora', lab: 'Circular Lab', impulso: 'Impulso Sostenible', ilimitado: 'Impacto Ilimitado',
 }
 
-function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: string, pendiente: boolean) => void }) {
-  const { toast } = useToast()
+export interface TarjetaPlanHandle {
+  // Guarda el borrador y publica en un solo viaje al servidor — se llama
+  // solo cuando el usuario pulsa "Publicar todo", nunca mientras escribe.
+  publicar: () => Promise<boolean>
+}
+
+const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: (planId: string, pendiente: boolean) => void }>(function TarjetaPlan({ plan, onCambio }, ref) {
   const featuresLanding = PLANS.find(p => p.id === plan.id)?.features ?? []
   const featuresIniciales = (plan.borrador_features_json && plan.borrador_features_json.length > 0)
     ? plan.borrador_features_json
@@ -143,38 +147,43 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
     borrador_features_json: featuresIniciales,
   }
   const [borrador, setBorrador] = useState(valorInicial)
-  const [estado, setEstado] = useState<'guardado' | 'guardando'>('guardado')
-  const [huboEdicion, setHuboEdicion] = useState(false)
   const [beneficiosAbierto, setBeneficiosAbierto] = useState(false)
   const [dragIndex, setDragIndex] = useState<number | null>(null)
   // Snapshot del valor inicial, capturado UNA vez al montar (no dentro del
   // efecto) — comparar contra esto es lo que decide si hay algo real que
-  // guardar, en vez de una bandera "primera vez" mutable. Un ref con
+  // publicar, en vez de una bandera "primera vez" mutable. Un ref con
   // bandera se rompía con Strict Mode de React (double-invoke en
-  // desarrollo): las 4 tarjetas disparaban un autoguardado espurio apenas
-  // se cargaba la página, sin que el usuario tocara nada — bug real
+  // desarrollo): las 4 tarjetas disparaban un aviso espurio apenas se
+  // cargaba la página, sin que el usuario tocara nada — bug real
   // encontrado y corregido 2026-09-04 antes de comitear.
   const baseline = useRef(valorInicial).current
 
+  // Solo marca "hay algo pendiente" para habilitar "Publicar todo" — sin
+  // llamar al servidor. El borrador vive únicamente en este estado local
+  // mientras se escribe; antes cada tecla disparaba un guardado en la base
+  // 500ms después, lo que se sentía lento con cualquier latencia de red.
+  // Ahora un solo viaje al servidor ocurre al publicar (ver `publicar` más
+  // abajo), no en cada cambio — corregido 2026-09-10 a pedido del usuario.
   useEffect(() => {
-    if (JSON.stringify(borrador) === JSON.stringify(baseline)) return
-    setHuboEdicion(true)
-    onCambio(plan.id, true)
-    setEstado('guardando')
-    const timer = setTimeout(async () => {
-      const res = await fetch('/api/admin/planes', {
+    const hayCambios = JSON.stringify(borrador) !== JSON.stringify(baseline)
+    onCambio(plan.id, hayCambios)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [borrador])
+
+  useImperativeHandle(ref, () => ({
+    async publicar() {
+      const resGuardar = await fetch('/api/admin/planes', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         // Los beneficios vacíos (recién agregados, todavía sin escribir) no
         // se envían — el schema del servidor los rechazaría.
         body: JSON.stringify({ ...borrador, id: plan.id, borrador_features_json: borrador.borrador_features_json.filter(f => f.trim() !== '') }),
       })
-      if (res.ok) setEstado('guardado')
-      else toast.error(`No se pudo guardar ${NOMBRES[plan.id]}. Revisa tu conexión.`)
-    }, 500)
-    return () => clearTimeout(timer)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [borrador])
+      if (!resGuardar.ok) return false
+      const resPublicar = await fetch(`/api/admin/planes/${plan.id}/publicar`, { method: 'POST' })
+      return resPublicar.ok
+    },
+  }), [borrador, plan.id])
 
   function cambiarMensual(campo: 'cop' | 'usd' | 'eur', v: number) {
     setBorrador(b => ({
@@ -206,7 +215,8 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
 
   const cfg = PLAN_CONFIG[plan.id]
   const IconoPlan = cfg.icon
-  const tieneCambiosSinPublicar = plan.tiene_borrador_sin_publicar || huboEdicion
+  const hayCambiosLocales = JSON.stringify(borrador) !== JSON.stringify(baseline)
+  const tieneCambiosSinPublicar = plan.tiene_borrador_sin_publicar || hayCambiosLocales
 
   return (
     <div style={{ borderRadius: 20, border: '1px solid var(--border)', padding: 24, background: 'var(--bg-card)' }}>
@@ -465,18 +475,18 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
         )}
       </div>
 
-      {/* Estado de autoguardado — reemplaza el botón "Guardar borrador" de
-          antes, ya no hace falta ningún clic. */}
+      {/* Nada se manda al servidor mientras escribes — solo al pulsar
+          "Publicar todo" arriba. Este aviso es puramente local. */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)' }}>
-        {estado === 'guardando' ? (
-          <><Spinner size={13} className="animate-spin" /> Guardando...</>
+        {hayCambiosLocales ? (
+          <><Square size={13} sinAnimacion style={{ color: 'var(--color-warning)' }} /> Cambios sin guardar en este navegador</>
         ) : (
-          <><CheckCircle size={13} style={{ color: 'var(--color-success)' }} /> Guardado</>
+          <><CheckCircle size={13} style={{ color: 'var(--color-success)' }} /> Sin cambios pendientes</>
         )}
       </div>
     </div>
   )
-}
+})
 
 export function PreciosTab() {
   const { toast } = useToast()
@@ -491,6 +501,7 @@ export function PreciosTab() {
   const [refrescando, setRefrescando] = useState(false)
   const [pendientes, setPendientes] = useState<Set<string>>(new Set())
   const [publicandoTodo, setPublicandoTodo] = useState(false)
+  const refsTarjetas = useRef<Map<string, TarjetaPlanHandle>>(new Map())
 
   function cargar() {
     if (planes.length === 0) setCargando(true)
@@ -525,11 +536,19 @@ export function PreciosTab() {
 
   async function publicarTodo() {
     setPublicandoTodo(true)
+    // Los planes con borrador de una sesión anterior (sin tarjeta editada
+    // ahora, sin ref con cambios locales) se publican directo por API. Los
+    // que sí tienen cambios locales en esta sesión pasan por el handle de
+    // su tarjeta, que primero guarda y luego publica en una sola llamada.
     const idsAPublicar = Array.from(pendientes)
     const resultados = await Promise.all(
-      idsAPublicar.map(id => fetch(`/api/admin/planes/${id}/publicar`, { method: 'POST' }))
+      idsAPublicar.map(id => {
+        const handle = refsTarjetas.current.get(id)
+        if (handle) return handle.publicar()
+        return fetch(`/api/admin/planes/${id}/publicar`, { method: 'POST' }).then(r => r.ok)
+      })
     )
-    const fallos = resultados.filter(r => !r.ok).length
+    const fallos = resultados.filter(ok => !ok).length
     setPublicandoTodo(false)
     setPendientes(new Set())
     if (fallos > 0) toast.error(`${fallos} de ${idsAPublicar.length} plan(es) no se pudieron publicar.`)
@@ -554,7 +573,7 @@ export function PreciosTab() {
       ` }} />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
         <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, maxWidth: 640 }}>
-          Precios y límites reales de los 4 planes. Se guardan solos mientras escribes, como borrador — nadie los ve hasta que publiques. Para una empresa puntual con precios distintos, negocia desde su propia ficha en Empresas.
+          Precios y límites reales de los 4 planes. Los cambios se quedan en tu navegador mientras escribes — nadie los ve hasta que pulses &quot;Publicar todo&quot;. Para una empresa puntual con precios distintos, negocia desde su propia ficha en Empresas.
         </p>
         <Button variant="primary" size="sm" onClick={publicarTodo} loading={publicandoTodo} disabled={!hayPendientes}>
           Publicar todo{hayPendientes ? ` (${pendientes.size})` : ''}
@@ -567,7 +586,15 @@ export function PreciosTab() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 20 }} className="md:grid-cols-2">
           {planes.map(plan => (
-            <TarjetaPlan key={plan.id} plan={plan} onCambio={marcarCambio} />
+            <TarjetaPlan
+              key={plan.id}
+              plan={plan}
+              onCambio={marcarCambio}
+              ref={(handle) => {
+                if (handle) refsTarjetas.current.set(plan.id, handle)
+                else refsTarjetas.current.delete(plan.id)
+              }}
+            />
           ))}
         </div>
       )}

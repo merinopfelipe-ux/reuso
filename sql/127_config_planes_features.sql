@@ -43,7 +43,7 @@ UPDATE config_planes SET features_json = '[
 
 UPDATE config_planes SET features_json = '[
   "Todo lo de Impulso Sostenible, sin límites de uso",
-  "Indicador de Circularidad de Materiales (MCI)",
+  "Circularidad de Materiales",
   "Exportación a Excel y CSV",
   "Integración con tus sistemas",
   "Soporte prioritario"

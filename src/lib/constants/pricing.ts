@@ -101,7 +101,7 @@ export const PLANS = [
     priceMonthlyCOP: 349000,
     features: [
       'Todo lo de Impulso Sostenible, sin límites de uso',
-      'Indicador de Circularidad de Materiales (MCI)',
+      'Circularidad de Materiales',
       'Exportación a Excel y CSV',
       'Integración con tus sistemas',
       'Soporte prioritario',

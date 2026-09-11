@@ -526,25 +526,20 @@ body {
   transition: transform 0.08s ease;
 }
 
-/* ─── Spinner nativo de <input type="number"> más sutil ───
-   El navegador dibuja el spinner arriba/abajo con un fondo gris por
-   defecto que no hace juego con el sistema de diseño. Nunca
-   appearance:none en el input completo (eso oculta el spinner por
-   completo, contra directriz explícita: debe poder usarse Y escribirse
-   encima) — solo se le quita el fondo a las flechas mismas. */
-input[type="number"].input-numero-sutil::-webkit-inner-spin-button,
-input[type="number"].input-numero-sutil::-webkit-outer-spin-button {
-  background: transparent !important;
-  border: none;
-  box-shadow: none;
-  opacity: 0.5;
+/* ─── Control numérico pulido para <input type="number"> ───
+   Oculta los botones grises nativos del navegador (-webkit-inner-spin-button)
+   para reemplazarlos con flechas SVG minimalistas y elegantes que solo se
+   muestran cuando el usuario escribe o usa las teclas arriba/abajo. */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  margin: 0;
 }
-input[type="number"].input-numero-sutil:hover::-webkit-inner-spin-button,
-input[type="number"].input-numero-sutil:hover::-webkit-outer-spin-button,
-input[type="number"].input-numero-sutil:focus::-webkit-inner-spin-button,
-input[type="number"].input-numero-sutil:focus::-webkit-outer-spin-button {
-  background: transparent !important;
-  opacity: 1;
+input[type="number"] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
 }
+
 
 
