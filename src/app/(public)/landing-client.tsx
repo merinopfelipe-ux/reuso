@@ -1903,7 +1903,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 onClick={() => setComparativaAbierta(true)}
                 className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
               >
-                <span className="group-hover:underline">Ver cuadro comparativo</span>
+                <span className="group-hover:underline">Compara</span>
                 <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
               </button>
             </div>
