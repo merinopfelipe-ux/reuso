@@ -211,7 +211,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Ve a la página principal de verificación.',
       'Usa el código de demostración: RCO2-DEMO-0001 (o abre directamente /verificar/RCO2-DEMO-0001).',
-      'Presiona consultar y examina la ficha de autenticidad con los 19 cálculos certificados.'
+      'Presiona consultar y examina la ficha de autenticidad con los 15 cálculos certificados.'
     ],
     esperado: 'El sistema confirma si el informe es auténtico, mostrando la empresa emisora, fecha y resumen de impacto certificado.',
     journeys: ['Cliente Final', 'Directivo']

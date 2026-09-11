@@ -40,7 +40,7 @@ export default async function DppDetallePage({ params }: PageProps) {
       .order('numero_ciclo', { ascending: false }),
     adminClient
       .from('dpp_metricas_financieras')
-      .select('id, tco, costo_evitado, e_roi, ice_porcentaje, inflow_circular_pct, snapshot_json, calculado_at, version')
+      .select('id, tco, costo_evitado, e_roi, inflow_circular_pct, snapshot_json, calculado_at, version')
       .eq('activo_id', params.id)
       .order('calculado_at', { ascending: false })
       .limit(10),

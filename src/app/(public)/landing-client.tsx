@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
@@ -171,28 +171,6 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent',
     haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
   },
-  {
-    icon: BadgePercent,
-    titulo: 'Margen comercial',
-    metrica: 'Mayor rentabilidad en cada venta.',
-    desc: 'Proyecta la ganancia adicional de tus propuestas al incorporar el valor diferencial de la sostenibilidad.',
-    tag: 'Financiero',
-    estado: 'planteado' as const,
-    colorHex: '#985fa1',
-    bgLight: 'bg-[#985fa1]/20',
-    borderLight: 'border-transparent',
-    bgDark: 'bg-[#985fa1]/20',
-    borderDark: 'border-transparent',
-    textLight: 'text-[#985fa1]',
-    textDark: 'text-[#985fa1]',
-    hoverIconBgLight: 'group-hover:bg-[#985fa1]',
-    hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#985fa1]',
-    hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#985fa1]/35 via-[#985fa1]/15 to-transparent',
-    haloDark: 'from-[#985fa1]/30 via-[#985fa1]/15 to-transparent',
-  },
-
   // ── LÍNEA 3: EQUIVALENCIAS Y CATÁLOGO AMPLIADO ──
   {
     icon: TreePine,
@@ -263,20 +241,6 @@ const TODOS_LOS_CALCULOS = [
     hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
     hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
     haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
-  },
-  {
-    icon: CircleDollarSign,
-    titulo: 'Índice de circularidad económica',
-    metrica: 'Huella circular vs. huella lineal.',
-    desc: 'Compara el desempeño económico del modelo circular frente al modelo lineal de comprar, usar y desechar.',
-    tag: 'Financiero',
-    estado: 'construido' as const,
-    colorHex: '#985fa1',
-    bgLight: 'bg-[#985fa1]/20', borderLight: 'border-transparent', bgDark: 'bg-[#985fa1]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#985fa1]', textDark: 'text-[#985fa1]',
-    hoverIconBgLight: 'group-hover:bg-[#985fa1]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#985fa1]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#985fa1]/35 via-[#985fa1]/15 to-transparent', haloDark: 'from-[#985fa1]/30 via-[#985fa1]/15 to-transparent',
   },
   {
     icon: Users,
@@ -951,7 +915,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       link: '#calculos',
       items: [
         { name: 'Comparativa de Impacto', link: '#comparativa' },
-        { name: '17 Cálculos de impacto', link: '#calculos' },
+        { name: '15 Cálculos de impacto', link: '#calculos' },
       ]
     },
     {
@@ -982,7 +946,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
-    { title: '17 Cálculos ambientales, sociales y financieros', link: '#calculos' },
+    { title: '15 Cálculos ambientales, sociales y financieros', link: '#calculos' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -1350,7 +1314,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 17 cálculos ambientales, sociales y financieros
+              Descubre los 15 cálculos ambientales, sociales y financieros
             </h2>
             <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Descubre cómo medir tu impacto y transforma descartes en oportunidades de oro, adaptándose a lo que necesite tu industria.
@@ -1440,14 +1404,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           </div>
         </div>
 
-        {/* Catálogo completo de los 17 cálculos, agrupado por categoría — mismo
+        {/* Catálogo completo de los 15 cálculos, agrupado por categoría — mismo
             lenguaje visual (halo + reborde Liquid Glass) que las 8 tarjetas
             destacadas de arriba, un solo color por categoría en vez de uno
             por cálculo. Solo texto general, nunca fórmulas ni metodología. */}
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
-          titulo="Los 17 cálculos de Calculadora de Reúso"
+          titulo="Los 15 cálculos de Calculadora de Reúso"
           descripcion="Así de a fondo vas a poder demostrarle tu impacto a clientes, aliados y auditores, desde tu primer cálculo"
           icono={<Calculator size={22} />}
           colorIcono={isDark ? '#D6F391' : '#00827C'}

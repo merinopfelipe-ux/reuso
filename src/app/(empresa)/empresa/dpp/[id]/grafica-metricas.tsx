@@ -24,7 +24,7 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
 
   const datosCirc = [
     { nombre: 'E-ROI %', valor: resultados.e_roi },
-    { nombre: 'ICE %', valor: resultados.ice_porcentaje },
+    { nombre: 'Inflow %', valor: resultados.inflow_circular_pct },
   ]
 
   return (

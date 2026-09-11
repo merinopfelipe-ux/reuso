@@ -433,7 +433,7 @@ export default async function VerificarPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* ── Resumen de los 19 Cálculos Certificados ────────────────── */}
+        {/* ── Resumen de los 15 Cálculos Certificados ────────────────── */}
         <div style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
@@ -447,7 +447,7 @@ export default async function VerificarPage({ params }: PageProps) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-brand)' }} />
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                  Certificación de los 19 Cálculos de Impacto
+                  Certificación de los 15 Cálculos de Impacto
                 </h3>
               </div>
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
