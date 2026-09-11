@@ -579,6 +579,15 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
   function eliminarCategoria(i: number) {
     setCategorias(c => c.filter((_, idx) => idx !== i))
   }
+  function moverCategoria(de: number, a: number) {
+    if (a < 0 || a >= categorias.length) return
+    setCategorias(c => {
+      const lista = [...c]
+      const [movida] = lista.splice(de, 1)
+      lista.splice(a, 0, movida)
+      return lista
+    })
+  }
   function cambiarNombreCategoria(i: number, nombre: string) {
     setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, nombre } : cat))
   }
@@ -589,6 +598,16 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
   }
   function eliminarFila(i: number, j: number) {
     setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, filas: cat.filas.filter((_, fj) => fj !== j) } : cat))
+  }
+  function moverFila(i: number, de: number, a: number) {
+    setCategorias(c => c.map((cat, idx) => {
+      if (idx !== i) return cat
+      if (a < 0 || a >= cat.filas.length) return cat
+      const lista = [...cat.filas]
+      const [movida] = lista.splice(de, 1)
+      lista.splice(a, 0, movida)
+      return { ...cat, filas: lista }
+    }))
   }
   function cambiarFila(i: number, j: number, cambios: Partial<FilaComparativa>) {
     setCategorias(c => c.map((cat, idx) => idx === i
@@ -651,9 +670,29 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                   placeholder="Nombre de la categoría (ej. Uso y límites)"
                   style={{ ...inputComparativaStyle, fontWeight: 700, fontSize: 14, flex: 1 }}
                 />
-                <button type="button" onClick={() => eliminarCategoria(i)} style={{ color: 'var(--color-error)', flexShrink: 0 }} title="Eliminar categoría">
-                  <Trash size={16} sinAnimacion />
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    disabled={i === 0}
+                    onClick={() => moverCategoria(i, i - 1)}
+                    title="Subir categoría"
+                    style={{ display: 'flex', padding: 3, borderRadius: 4, color: 'var(--text-secondary)', opacity: i === 0 ? 0.2 : 0.7, cursor: i === 0 ? 'default' : 'pointer' }}
+                  >
+                    <ArrowUp size={14} sinAnimacion />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={i === categorias.length - 1}
+                    onClick={() => moverCategoria(i, i + 1)}
+                    title="Bajar categoría"
+                    style={{ display: 'flex', padding: 3, borderRadius: 4, color: 'var(--text-secondary)', opacity: i === categorias.length - 1 ? 0.2 : 0.7, cursor: i === categorias.length - 1 ? 'default' : 'pointer' }}
+                  >
+                    <ArrowDown size={14} sinAnimacion />
+                  </button>
+                  <button type="button" onClick={() => eliminarCategoria(i)} style={{ color: 'var(--color-error)', display: 'flex', padding: 3 }} title="Eliminar categoría">
+                    <Trash size={16} sinAnimacion />
+                  </button>
+                </div>
               </div>
 
               {categoria.filas.map((fila, j) => (
@@ -713,9 +752,29 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                       )
                     })}
                   </div>
-                  <button type="button" onClick={() => eliminarFila(i, j)} style={{ color: 'var(--color-error)', flexShrink: 0 }} title="Eliminar fila">
-                    <Trash size={14} sinAnimacion />
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      disabled={j === 0}
+                      onClick={() => moverFila(i, j, j - 1)}
+                      title="Subir fila"
+                      style={{ display: 'flex', padding: 3, borderRadius: 4, color: 'var(--text-secondary)', opacity: j === 0 ? 0.2 : 0.7, cursor: j === 0 ? 'default' : 'pointer' }}
+                    >
+                      <ArrowUp size={12} sinAnimacion />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={j === categoria.filas.length - 1}
+                      onClick={() => moverFila(i, j, j + 1)}
+                      title="Bajar fila"
+                      style={{ display: 'flex', padding: 3, borderRadius: 4, color: 'var(--text-secondary)', opacity: j === categoria.filas.length - 1 ? 0.2 : 0.7, cursor: j === categoria.filas.length - 1 ? 'default' : 'pointer' }}
+                    >
+                      <ArrowDown size={12} sinAnimacion />
+                    </button>
+                    <button type="button" onClick={() => eliminarFila(i, j)} style={{ color: 'var(--color-error)', display: 'flex', padding: 3 }} title="Eliminar fila">
+                      <Trash size={14} sinAnimacion />
+                    </button>
+                  </div>
                 </div>
               ))}
 
