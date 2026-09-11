@@ -41,7 +41,7 @@ export const ANNUAL_DISCOUNT = 10 / 12 // 2 meses gratis
 // Precios). Compartida entre los dos archivos para que nunca puedan
 // desincronizarse — son acentos ya aprobados del sistema (constantes, no
 // cambian entre temas), nunca un hex nuevo sin aprobar.
-export const PALETA_COMPARATIVA = ['#474747', '#38B98E', '#59A6E4', '#F6BF3E', '#985fa1', '#F3BBD3', '#8AD0B2', '#AD7C43']
+export const PALETA_COMPARATIVA = ['#38B98E', '#59A6E4', '#F6BF3E', '#985fa1', '#F3BBD3', '#8AD0B2', '#AD7C43']
 
 // Precios y límites: deben coincidir siempre con config_planes (fuente real,
 // editable desde /admin/planes). Si cambias un precio o límite aquí sin

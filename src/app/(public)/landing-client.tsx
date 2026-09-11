@@ -2000,7 +2000,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                   <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-brand)] ${tp}`}>
                                     {plan.name}
                                   </span>
-                                  <span className="text-[9px] font-bold text-[var(--color-brand)] opacity-70 group-hover:opacity-100 group-hover:underline">
+                                  <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-brand)] ${ts}`}>
                                     Elegir →
                                   </span>
                                 </button>
