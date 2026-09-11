@@ -406,7 +406,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden px-3 sm:px-4"
           >
-            <p className={`text-xs sm:text-sm leading-relaxed py-3 font-medium ${isDark ? 'text-white/75' : 'text-[#474747]/80'}`}>{a}</p>
+            <p className={`text-sm sm:text-base leading-relaxed py-3 font-medium ${isDark ? 'text-white/75' : 'text-[#474747]/80'}`}>{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1036,19 +1036,20 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
     return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(mensual) : mensual), currency)}</>
   }
 
+  // El pago anual (a diferencia del precio mensual y el equivalente
+  // mensual) NUNCA lleva decimales, en ninguna moneda — es un total, no un
+  // precio unitario. Se redondea al entero y se formatea sin fracción.
   const getAnnualTotal = (plan: typeof PLANS[0]) => {
+    const c = CURRENCIES[currency]
+    const formatearSinDecimales = (n: number) => `${c.symbol}${Math.round(n).toLocaleString(currency === 'EUR' ? 'de-DE' : currency === 'USD' ? 'en-US' : 'es-CO')}`
     const real = precioReal(plan)
     if (real) {
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
-      const c = CURRENCIES[currency]
-      const finalAmount = anual ?? (currency === 'COP' ? Math.round(mensual * 10) : mensual * 10)
-      return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(finalAmount) : finalAmount), currency)}</>
+      return formatearSinDecimales(anual ?? mensual * 10)
     }
-    const c = CURRENCIES[currency]
     const amount = plan.priceMonthlyCOP * c.rate * 10
-    const finalAmount = currency === 'COP' ? Math.round(amount) : amount
-    return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
+    return formatearSinDecimales(amount)
   }
 
   // Las 4 cuotas del plan (empleados, cálculos/mes, informes/mes,
@@ -1191,10 +1192,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
         }}
         extraActions={
           <>
-            <Link href="/registro" className={`px-3 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
+            <Link href="/registro" className={`px-3 sm:px-5 py-2 rounded-full text-sm sm:text-base font-bold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
               Empezar gratis
             </Link>
-            <Link href="/login" className={`inline-flex px-3 sm:px-4 py-2 rounded-full border text-xs sm:text-sm font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
+            <Link href="/login" className={`inline-flex px-3 sm:px-4 py-2 rounded-full border text-sm sm:text-base font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
               Entrar
             </Link>
           </>
@@ -1211,7 +1212,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
-            <p className={`text-xs sm:text-sm font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+            <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
               La plataforma ideal para darle seguimiento a tu RSE.
             </p>
             
@@ -1228,7 +1229,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
               <a 
                 href="#planes" 
-                className={`animate-shimmer inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-xs sm:text-sm transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
+                className={`animate-shimmer inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_8px_32px_rgba(214,243,145,0.3)]' 
                     : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_8px_32px_rgba(0,130,124,0.35)]'
@@ -1238,7 +1239,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               </a>
               <a 
                 href="#calculos" 
-                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-bold text-xs sm:text-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
+                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-bold text-sm sm:text-base backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'border-[#D6F391]/25 text-[#D6F391] hover:bg-[#D6F391]/10' 
                     : 'border-[#00827C]/25 text-[#00827C] hover:bg-[#00827C]/8'
@@ -1270,7 +1271,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               El valor de medir tu impacto: <br className="hidden sm:block" />
               de buenas intenciones a resultados reales
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               No basta con hacer las cosas bien, ¡hay que contarlo! La Calculadora de Reúso te da los datos reales que respaldan tu esfuerzo ante tus clientes, tu equipo y el mundo entero.
             </p>
           </div>
@@ -1302,7 +1303,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     }`}>
                       <X size={10} strokeWidth={3} className="transition-transform duration-300" />
                     </div>
-                    <span className={`text-xs sm:text-sm md:text-xs lg:text-sm font-medium leading-relaxed ${ts}`}>{item}</span>
+                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts}`}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -1347,7 +1348,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     }`}>
                       <Check size={10} strokeWidth={3} className="transition-transform duration-300" />
                     </div>
-                    <span className={`text-xs sm:text-sm md:text-xs lg:text-sm font-bold leading-relaxed ${ts}`}>{item}</span>
+                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold leading-relaxed ${ts}`}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -1364,7 +1365,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Descubre los 15 cálculos ambientales, sociales y financieros
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Descubre cómo medir tu impacto y transforma descartes en oportunidades de oro, adaptándose a lo que necesite tu industria.
             </p>
           </div>
@@ -1420,7 +1421,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                         <IconComponent size={20} strokeWidth={2.2} />
                       </div>
                       
-                      <span className={`text-[11px] sm:text-xs font-semibold ${
+                      <span className={`text-xs sm:text-sm font-semibold ${
                         isDark ? 'text-white/60' : 'text-[#474747]/70'
                       }`}>
                         {calc.tag}
@@ -1444,7 +1445,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           <div className="mt-4 sm:mt-5 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
-              className={`group inline-flex items-center gap-1.5 text-xs sm:text-sm font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
+              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
             >
               <span className="group-hover:underline">Ver más</span>
               <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
@@ -1556,7 +1557,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 sm:mb-2.5 md:mb-3 leading-snug ${tp}`}>
               ¿Cuánto valor recupera tu empresa con economía circular?
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl ${ts}`}>
               Descubre cómo medir tu impacto transforma descartes en oportunidades de oro, adaptándose a lo que necesite tu industria.
             </p>
           </div>
@@ -1622,7 +1623,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   <button
                     key={c.id}
                     onClick={() => scrollToCategory(c.id as CatKey)}
-                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-xs md:text-xs lg:text-sm transition-colors duration-200 active:scale-95 ${
+                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-sm md:text-sm lg:text-sm transition-colors duration-200 active:scale-95 ${
                       isSelected
                         ? (isDark ? 'text-[#474747]' : 'text-white')
                         : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20 hover:text-white' : 'border-[#00827C]/12 hover:border-[#00827C]/20 hover:text-[#00827C]'}`
@@ -1676,14 +1677,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     <h3 className={`text-base sm:text-lg md:text-lg lg:text-xl font-black mb-1 md:mb-1.5 ${tp}`}>
                       {cat.h3}
                     </h3>
-                    <p className={`text-xs sm:text-sm md:text-xs lg:text-sm font-bold mb-4 sm:mb-5 md:mb-5 lg:mb-6 ${ts}`}>
+                    <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold mb-4 sm:mb-5 md:mb-5 lg:mb-6 ${ts}`}>
                       {cat.ejemplo}
                     </p>
 
                       {/* Métricas con animación Count-up dinámica */}
                       <CategoryMetricsDisplay cat={cat} isDark={isDark} tp={tp} ts={ts} />
 
-                      <p className={`text-xs sm:text-sm md:text-xs lg:text-sm font-medium leading-relaxed ${ts}`}>
+                      <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts}`}>
                         {cat.desc}
                       </p>
                     </motion.div>
@@ -1704,7 +1705,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               <br />
               de forma cercana y amable
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Herramientas pensadas para que tu equipo pueda medir, validar y contarle al mundo el impacto real de todo lo que hacen.
             </p>
           </div>
@@ -1762,7 +1763,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   <h3 className={`text-sm sm:text-base md:text-base lg:text-lg font-bold mb-3 ${tp}`}>
                     {paso.titulo}
                   </h3>
-                  <p className={`text-xs sm:text-sm font-medium leading-relaxed flex-1 ${ts}`}>
+                  <p className={`text-sm sm:text-base font-medium leading-relaxed flex-1 ${ts}`}>
                     {paso.desc}
                   </p>
                 </div>
@@ -1780,7 +1781,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
               Cada plan de pago incluye una <strong>Tarifa de Implementación (pago único)</strong>, cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
             </p>
           </div>
@@ -1792,11 +1793,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               ))}
             </div>
             <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-[40px] border-[#00827C]/10'}`}>
-              <span className={`text-xs md:text-xs lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts} opacity-50`}`}>Mensual</span>
+              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts} opacity-50`}`}>Mensual</span>
               <button onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${billing === 'annual' ? 'translate-x-4 lg:translate-x-5' : 'translate-x-0.5'}`} />
               </button>
-              <span className={`text-xs md:text-xs lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts} opacity-50`}`}>Anual</span>
+              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts} opacity-50`}`}>Anual</span>
               {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] bg-[#00827C]/8'}`}>2 meses gratis.</span>}
             </div>
           </div>
@@ -1838,7 +1839,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 </dl>
                 <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
                   {(precioReal(plan)?.features_json?.length ? precioReal(plan)!.features_json! : plan.features).map((f, j) => (
-                    <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-xs md:text-xs lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
+                    <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-sm md:text-sm lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
                       <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                         isDark
                           ? 'bg-[#D6F391]/15 text-[#D6F391] group-hover/item:bg-[#D6F391] group-hover/item:text-[#474747] group-hover/item:shadow-[0_0_12px_rgba(214,243,145,0.4)]'
@@ -1853,7 +1854,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 {plan.priceMonthlyCOP === 0 ? (
                   <Link
                     href="/registro"
-                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-xs md:text-xs lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
+                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
                   >
                     {plan.cta}
                   </Link>
@@ -1864,7 +1865,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                       setSelectedPlan(plan.name)
                       setContactModalOpen(true)
                     }}
-                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-xs md:text-xs lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
+                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
                   >
                     {plan.cta}
                   </button>
@@ -1901,14 +1902,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
               {/* Lado izquierdo: narrativa e información */}
               <div className="lg:col-span-7">
-                <p className={`text-xs sm:text-sm font-bold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+                <p className={`text-sm sm:text-base font-bold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
                   Inteligencia artificial amigable y responsable.
                 </p>
                 <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2.5 leading-snug ${tp}`}>
                   Diagnóstico visual con IA, <br className="hidden sm:block" />
                   con ciencia detrás de cada cálculo
                 </h2>
-                <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium leading-relaxed mb-5 ${ts}`}>
+                <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium leading-relaxed mb-5 ${ts}`}>
                   Usamos visión por computadora para reconocer materiales con solo una foto, combinándolo con bases de datos estandarizadas globalmente. La IA te da una mano extra para que todo quede ordenado, claro y fácil de demostrar, estimando tu impacto de forma rigurosa.
                 </p>
 
@@ -1918,8 +1919,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                       <IaIcon size={14} />
                     </div>
                     <div>
-                      <h4 className={`text-xs sm:text-sm font-bold ${tp}`}>Reconocimiento visual automático</h4>
-                      <p className={`text-[11px] sm:text-xs font-medium ${ts}`}>Descubre de qué material están hechas las cosas con solo analizar una imagen.</p>
+                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Reconocimiento visual automático</h4>
+                      <p className={`text-xs sm:text-sm font-medium ${ts}`}>Descubre de qué material están hechas las cosas con solo analizar una imagen.</p>
                     </div>
                   </div>
 
@@ -1928,8 +1929,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                       <ShieldCheck size={14} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h4 className={`text-xs sm:text-sm font-bold ${tp}`}>Estimaciones con base científica</h4>
-                      <p className={`text-[11px] sm:text-xs font-medium ${ts}`}>Usamos bases de datos que todo el mundo respeta para que tus cálculos sean sólidos y respaldados.</p>
+                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Estimaciones con base científica</h4>
+                      <p className={`text-xs sm:text-sm font-medium ${ts}`}>Usamos bases de datos que todo el mundo respeta para que tus cálculos sean sólidos y respaldados.</p>
                     </div>
                   </div>
                 </div>
@@ -1938,7 +1939,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   href="/legal/ia"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group inline-flex items-center gap-2 text-xs sm:text-sm font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#005B56]'}`}
+                  className={`group inline-flex items-center gap-2 text-sm sm:text-base font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#005B56]'}`}
                 >
                   <span className="group-hover:underline">Conoce nuestro marco ético y gobernanza en la Política de IA</span>
                   <ArrowRight size={14} strokeWidth={2.5} className="flex-shrink-0" />
@@ -1955,7 +1956,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-inherit">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className={`text-[11px] sm:text-xs font-bold ${tp}`}>Muestra de diagnóstico.</span>
+                      <span className={`text-xs sm:text-sm font-bold ${tp}`}>Muestra de diagnóstico.</span>
                     </div>
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>
                       Diagnóstico circular y ambiental.
@@ -2000,7 +2001,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           <div className="mb-8 md:mb-12 text-center max-w-3xl mx-auto">
             <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-4 sm:mb-6">
               <div className={`hidden md:block w-12 h-px ${isDark ? 'bg-white/20' : 'bg-[#474747]/20'}`} />
-              <div className={`text-[11px] sm:text-xs font-bold tracking-normal ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+              <div className={`text-xs sm:text-sm font-bold tracking-normal ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
                 Compromiso agenda 2030 de la ONU
               </div>
               <div className={`hidden md:block w-12 h-px ${isDark ? 'bg-white/20' : 'bg-[#474747]/20'}`} />
@@ -2090,7 +2091,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                         >
                           <col.Icon size={18} className={`${col.textColor} transition-transform duration-300 group-hover:scale-125`} />
                         </motion.div>
-                        <span className={`text-[11px] sm:text-xs font-bold tracking-normal ${col.textColor}`}>
+                        <span className={`text-xs sm:text-sm font-bold tracking-normal ${col.textColor}`}>
                           {col.tag}
                         </span>
                       </div>
@@ -2106,7 +2107,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
                   <div className={`pt-4 border-t flex flex-col gap-2 relative z-10 border-light`}>
                     {col.puntos.map((pt, pIdx) => (
-                      <div key={pIdx} className="flex items-center gap-3 text-xs sm:text-sm font-semibold">
+                      <div key={pIdx} className="flex items-center gap-3 text-sm sm:text-base font-semibold">
                         <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${col.glowColor}`} />
                         <span className={isDark ? 'text-white/80' : 'text-[#474747]'}>{pt}</span>
                       </div>
@@ -2126,7 +2127,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 md:mb-3 lg:mb-4 leading-snug ${tp}`}>
               Preguntas frecuentes
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>Todo lo que necesitas saber para sustentar el impacto de tus productos sin greenwashing.</p>
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>Todo lo que necesitas saber para sustentar el impacto de tus productos sin greenwashing.</p>
           </div>
           <div>
             {(faqItems && faqItems.length > 0 ? faqItems.map(f => ({ q: f.pregunta, a: f.respuesta })) : FAQS)
@@ -2177,7 +2178,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             />
 
             <div className="relative z-10 max-w-xl mx-auto">
-              <p className={`text-xs sm:text-sm font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+              <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
                 Rentabilidad para tu negocio + impacto positivo.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
@@ -2189,7 +2190,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               </p>
               <Link
                 href="/registro"
-                className={`inline-flex items-center justify-center gap-2.5 md:gap-3 w-full sm:w-auto px-6 py-3.5 md:px-7 md:py-4 lg:px-10 lg:py-5 rounded-full font-black text-xs sm:text-sm md:text-sm lg:text-base transition-all hover:-translate-y-1 hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_12px_40px_rgba(214,243,145,0.25)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_12px_40px_rgba(0,130,124,0.35)]'}`}
+                className={`inline-flex items-center justify-center gap-2.5 md:gap-3 w-full sm:w-auto px-6 py-3.5 md:px-7 md:py-4 lg:px-10 lg:py-5 rounded-full font-black text-sm sm:text-base md:text-base lg:text-base transition-all hover:-translate-y-1 hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_12px_40px_rgba(214,243,145,0.25)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_12px_40px_rgba(0,130,124,0.35)]'}`}
               >
                 Crear mi cuenta y calcular mi primer diagnóstico <ArrowRight size={18} strokeWidth={2.5} />
               </Link>
@@ -2301,7 +2302,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 <h3 className="text-xl sm:text-2xl font-black tracking-tight mb-2">
                   {selectedPlan ? `Comienza con tu plan ${selectedPlan}` : 'Empieza a medir tu impacto hoy'}
                 </h3>
-                <p className={`text-xs sm:text-sm font-medium ${ts}`}>
+                <p className={`text-sm sm:text-base font-medium ${ts}`}>
                   {selectedPlan
                     ? `Déjanos tus datos para activar tu plan ${selectedPlan} y acompañarte en tus primeros cálculos.`
                     : 'Déjanos tus datos y un especialista te contactará para orientarte con la solución ideal.'}
