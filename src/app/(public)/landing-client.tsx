@@ -1996,11 +1996,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                   type="button"
                                   onClick={() => irAPlan(plan)}
                                   className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
+                                  style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
                                 >
-                                  <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-brand)] ${tp}`}>
+                                  <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-categoria)] ${tp}`}>
                                     {plan.name}
                                   </span>
-                                  <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-brand)] ${ts}`}>
+                                  <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-categoria)] ${ts}`}>
                                     Elegir →
                                   </span>
                                 </button>
