@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
 import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus, ClipboardList } from '@/components/ui/icons'
@@ -282,6 +283,14 @@ const COLOR_POR_CATEGORIA: Record<string, string> = {
   Social: '#F3BBD3',
   DPP: '#59A6E4',
 }
+
+// Paleta cíclica para el cuadro comparativo de planes (popup "Compara") —
+// las categorías las define el super_admin en /admin/contenido, con
+// cualquier nombre y cualquier cantidad, así que no se les asigna un color
+// fijo por nombre como arriba (COLOR_POR_CATEGORIA): se ciclan estos 6
+// acentos ya aprobados del sistema (constantes, no cambian entre temas),
+// nunca un hex nuevo sin aprobar.
+const PALETA_COMPARATIVA = ['#38B98E', '#59A6E4', '#F6BF3E', '#F3BBD3', '#8AD0B2', '#AD7C43']
 
 // ─── Datos de categorías ─────────────────────────────────────────────────────
 const CATEGORIAS = {
@@ -737,6 +746,7 @@ interface LandingClientProps {
 
 // ─── Página principal ─────────────────────────────────────────────────────────
 export default function LandingClient({ planesPrecios, whatsappNumero, faqItems, comparativaCategorias }: LandingClientProps) {
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
   const [activeCategory, setActiveCategory] = useState<CatKey>('mobiliario')
   const [currency, setCurrency] = useState<keyof typeof CURRENCIES>('COP')
@@ -746,6 +756,20 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [catalogoCalculosAbierto, setCatalogoCalculosAbierto] = useState(false)
   const [comparativaAbierta, setComparativaAbierta] = useState(false)
+
+  // Misma acción que el botón de cada tarjeta de precios (Empezar
+  // gratis/Hablar con un asesor), pero disparada desde el nombre del plan
+  // en el popup "Compara" — cierra ese popup primero para que no quede
+  // debajo del modal de contacto o de la navegación a /registro.
+  function irAPlan(plan: typeof PLANS[0]) {
+    setComparativaAbierta(false)
+    if (plan.priceMonthlyCOP === 0) {
+      router.push('/registro')
+    } else {
+      setSelectedPlan(plan.name)
+      setContactModalOpen(true)
+    }
+  }
 
   // Cerrar modal con Escape y bloquear scroll cuando está abierto
   useEffect(() => {
@@ -1913,77 +1937,112 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* Popup del cuadro comparativo completo, agrupado por categorías
           (mismo criterio que el catálogo de cálculos: Modal ancho xl,
-          scroll interno). La tabla en sí scrollea horizontal con la columna
-          de etiquetas fija a la izquierda — mismo estándar de tabla ancha en
-          mobile que usa el resto de la plataforma, no un patrón nuevo. */}
+          scroll interno). Cada categoría es su propia tabla, pero TODAS
+          comparten el mismo <colgroup> de anchos fijos en píxeles — si cada
+          tabla dejara que el navegador calculara el ancho de columna según
+          su propio contenido, la columna de "Explora" de una categoría
+          quedaba más ancha o angosta que la de otra, y las columnas no
+          alineaban verticalmente al bajar (bug real reportado). La columna
+          de etiquetas queda fija a la izquierda al scrollear horizontal en
+          mobile, mismo estándar de tabla ancha del resto de la plataforma.
+          Un color de acento distinto por categoría (ciclando la paleta de
+          acentos ya aprobada del sistema, nunca un hex nuevo) para que se
+          distinga cada bloque de un vistazo. El nombre de cada plan, en el
+          encabezado, dispara la misma acción de "elegir este plan" que ya
+          usan las tarjetas de precios de arriba. */}
       {comparativaCategorias && comparativaCategorias.length > 0 && (
         <Modal
           abierto={comparativaAbierta}
           onClose={() => setComparativaAbierta(false)}
           titulo="Compara los 4 planes"
-          descripcion="Todo lo que incluye cada plan, uno al lado del otro"
+          descripcion="Todo lo que incluye cada plan, uno al lado del otro. Toca el nombre de un plan para elegirlo."
           icono={<ClipboardList size={22} />}
           colorIcono={isDark ? '#D6F391' : '#00827C'}
           ancho="xl"
           sinPie
         >
-          <div className="flex flex-col gap-8 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
-            {comparativaCategorias.map((categoria, ci) => (
-              <div key={ci}>
-                {categoria.nombre && (
-                  <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
-                )}
-                <div className={`rounded-[12px] border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#00827C]/10 bg-primary'}`}>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr className={isDark ? 'bg-white/5' : 'bg-[#00827C]/[0.04]'}>
-                          <th
-                            className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
-                            style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#3d3d3d' : '#FAFEFE' }}
-                          >
-                            &nbsp;
-                          </th>
-                          {PLANS.map(plan => (
-                            <th key={plan.id} className={`text-center px-3 py-2.5 text-xs font-bold whitespace-nowrap ${tp}`}>
-                              {plan.name}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {categoria.filas.map((fila, fi) => (
-                          <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
-                            <td
-                              className={`text-left px-3 py-2.5 whitespace-nowrap ${tp}`}
-                              style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
+          <div className="flex flex-col gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+            {comparativaCategorias.map((categoria, ci) => {
+              const colorCategoria = PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
+              return (
+                <div key={ci}>
+                  {categoria.nombre && (
+                    <div
+                      className="inline-flex items-center px-3 py-1.5 rounded-lg mb-3"
+                      style={{ background: `${colorCategoria}1F`, borderLeft: `4px solid ${colorCategoria}` }}
+                    >
+                      <span className="text-xs sm:text-sm font-black" style={{ color: colorCategoria }}>{categoria.nombre}</span>
+                    </div>
+                  )}
+                  <div className={`rounded-[12px] border-2 overflow-hidden`} style={{ borderColor: `${colorCategoria}40` }}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                        <colgroup>
+                          <col style={{ width: 132 }} />
+                          {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
+                        </colgroup>
+                        <thead>
+                          <tr style={{ background: `${colorCategoria}14` }}>
+                            <th
+                              className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
+                              style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#3d3d3d' : '#FAFEFE' }}
                             >
-                              {fila.label}
-                            </td>
-                            {PLANS.map(plan => {
-                              const val = fila.valores[plan.id]
-                              return (
-                                <td key={plan.id} className="text-center px-3 py-2.5">
-                                  {fila.tipo === 'check' ? (
-                                    val ? (
-                                      <Check size={16} strokeWidth={3} className="inline-block text-[#38B98E]" />
-                                    ) : (
-                                      <X size={14} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/25' : 'text-[#474747]/25'}`} />
-                                    )
-                                  ) : (
-                                    <span className={`whitespace-nowrap ${ts}`}>{(val as string) || '—'}</span>
-                                  )}
-                                </td>
-                              )
-                            })}
+                              &nbsp;
+                            </th>
+                            {PLANS.map(plan => (
+                              <th key={plan.id} className="text-center px-2 py-2">
+                                <button
+                                  type="button"
+                                  onClick={() => irAPlan(plan)}
+                                  className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
+                                >
+                                  <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-brand)] ${tp}`}>
+                                    {plan.name}
+                                  </span>
+                                  <span className="text-[9px] font-bold text-[var(--color-brand)] opacity-70 group-hover:opacity-100 group-hover:underline">
+                                    Elegir →
+                                  </span>
+                                </button>
+                              </th>
+                            ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {categoria.filas.map((fila, fi) => (
+                            <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
+                              <td
+                                className={`text-left px-3 py-2.5 whitespace-nowrap ${tp}`}
+                                style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
+                              >
+                                {fila.label}
+                              </td>
+                              {PLANS.map(plan => {
+                                const val = fila.valores[plan.id]
+                                return (
+                                  <td key={plan.id} className="text-center px-2 py-2.5">
+                                    {fila.tipo === 'check' ? (
+                                      val ? (
+                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
+                                          <Check size={14} strokeWidth={3} style={{ color: colorCategoria }} />
+                                        </span>
+                                      ) : (
+                                        <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
+                                      )
+                                    ) : (
+                                      <span className={`whitespace-nowrap text-xs sm:text-sm font-semibold ${tp}`}>{(val as string) || '—'}</span>
+                                    )}
+                                  </td>
+                                )
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </Modal>
       )}
