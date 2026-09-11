@@ -1008,7 +1008,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
     return (
       <>
         {formateado.slice(0, idx)}
-        <span className="text-[0.55em] align-top">{formateado.slice(idx)}</span>
+        <span className="text-[0.55em] align-bottom">{formateado.slice(idx)}</span>
       </>
     )
   }
