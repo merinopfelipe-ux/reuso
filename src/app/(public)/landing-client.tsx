@@ -1986,7 +1986,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           <tr style={{ background: `${colorCategoria}14` }}>
                             <th
                               className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
-                              style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#3d3d3d' : '#FAFEFE' }}
+                              style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#525252' : '#FFFFFF' }}
                             >
                               &nbsp;
                             </th>
@@ -2013,7 +2013,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                             <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
                               <td
                                 className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
-                                style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
+                                style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
                               >
                                 <span className="flex items-start gap-1 min-w-0">
                                   <span className="break-words min-w-0">{fila.label}</span>
