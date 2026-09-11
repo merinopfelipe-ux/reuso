@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, HeartHandshake, Flask, Medal, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, BadgePercent, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, CircleDollarSign, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
@@ -14,6 +14,20 @@ import { waLink } from '@/lib/constants/contacto'
 
 // ─── Catálogo integral de cálculos (Línea 1: Ambientales / Línea 2: Financieros) ─
 const TODOS_LOS_CALCULOS = [
+  // ── DIFERENCIAL: Indicador de Circularidad de Materiales (plan Impacto Ilimitado) ──
+  {
+    icon: ArrowsClockwise,
+    titulo: 'Indicador de Circularidad de Materiales (MCI)',
+    metrica: 'Qué tan circular es cada pieza, de 0 a 1.',
+    desc: 'Combina el material reusado o reciclado que entra, el que se va a vertedero y cuánto tiempo se usa la pieza, en un solo indicador de circularidad alineado a la metodología de la Fundación Ellen MacArthur. Es el análisis más completo de la plataforma.',
+    tag: 'DPP',
+    colorHex: '#D6F391',
+    bgLight: 'bg-[#D6F391]/25', borderLight: 'border-transparent', bgDark: 'bg-[#D6F391]/20', borderDark: 'border-transparent',
+    textLight: 'text-[#474747]', textDark: 'text-[#D6F391]',
+    hoverIconBgLight: 'group-hover:bg-[#D6F391]', hoverIconTextLight: 'group-hover:text-[#474747]',
+    hoverIconBgDark: 'group-hover:bg-[#D6F391]', hoverIconTextDark: 'group-hover:text-[#474747]',
+    haloLight: 'from-[#D6F391]/40 via-[#D6F391]/20 to-transparent', haloDark: 'from-[#D6F391]/35 via-[#D6F391]/15 to-transparent',
+  },
   // ── LÍNEA 1: 4 CÁLCULOS AMBIENTALES Y CIRCULARES ──
   {
     icon: Leaf,
@@ -237,20 +251,6 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent', haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
   },
   {
-    icon: HeartHandshake,
-    titulo: 'Retorno social de la inversión',
-    metrica: 'Impacto comunitario y empleo.',
-    desc: 'Valora el retorno social de la inclusión laboral y el empleo local que genera la restauración circular.',
-    tag: 'Social',
-    estado: 'planteado' as const,
-    colorHex: '#F3BBD3',
-    bgLight: 'bg-[#F3BBD3]/25', borderLight: 'border-transparent', bgDark: 'bg-[#F3BBD3]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#F3BBD3]', textDark: 'text-[#F3BBD3]',
-    hoverIconBgLight: 'group-hover:bg-[#F3BBD3]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#F3BBD3]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent', haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
-  },
-  {
     icon: Flask,
     titulo: 'Análisis de ciclo de vida',
     metrica: 'Extensión de vida útil del activo.',
@@ -263,34 +263,6 @@ const TODOS_LOS_CALCULOS = [
     hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
     hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
     haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
-  },
-  {
-    icon: Medal,
-    titulo: 'Retención de valor',
-    metrica: 'Valor conservado frente a lo nuevo.',
-    desc: 'Compara el valor de mercado de un producto recuperado frente al de su equivalente nuevo, para respaldar su valor de reventa.',
-    tag: 'Financiero',
-    estado: 'planteado' as const,
-    colorHex: '#F6BF3E',
-    bgLight: 'bg-[#F6BF3E]/20', borderLight: 'border-transparent', bgDark: 'bg-[#F6BF3E]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#F6BF3E]', textDark: 'text-[#F6BF3E]',
-    hoverIconBgLight: 'group-hover:bg-[#F6BF3E]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#F6BF3E]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#F6BF3E]/35 via-[#F6BF3E]/15 to-transparent', haloDark: 'from-[#F6BF3E]/30 via-[#F6BF3E]/15 to-transparent',
-  },
-  {
-    icon: ArrowsClockwise,
-    titulo: 'Reciclabilidad al fin de vida',
-    metrica: 'Porcentaje reciclable del activo.',
-    desc: 'Mide qué fracción del peso de un activo es técnicamente separable y reciclable al final de su vida útil.',
-    tag: 'DPP',
-    estado: 'planteado' as const,
-    colorHex: '#D6F391',
-    bgLight: 'bg-[#D6F391]/25', borderLight: 'border-transparent', bgDark: 'bg-[#D6F391]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#D6F391]', textDark: 'text-[#D6F391]',
-    hoverIconBgLight: 'group-hover:bg-[#D6F391]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#D6F391]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#D6F391]/40 via-[#D6F391]/20 to-transparent', haloDark: 'from-[#D6F391]/35 via-[#D6F391]/15 to-transparent',
   },
   {
     icon: CircleDollarSign,
@@ -971,7 +943,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       link: '#calculos',
       items: [
         { name: 'Comparativa de Impacto', link: '#comparativa' },
-        { name: '19 Cálculos de impacto', link: '#calculos' },
+        { name: '17 Cálculos de impacto', link: '#calculos' },
       ]
     },
     {
@@ -1002,7 +974,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
 
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
-    { title: '19 Cálculos ambientales, sociales y financieros', link: '#calculos' },
+    { title: '17 Cálculos ambientales, sociales y financieros', link: '#calculos' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -1342,7 +1314,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 19 cálculos ambientales, sociales y financieros
+              Descubre los 17 cálculos ambientales, sociales y financieros
             </h2>
             <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Descubre cómo medir tu impacto y transforma descartes en oportunidades de oro, adaptándose a lo que necesite tu industria.
@@ -1432,14 +1404,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           </div>
         </div>
 
-        {/* Catálogo completo de los 19 cálculos, agrupado por categoría — mismo
+        {/* Catálogo completo de los 17 cálculos, agrupado por categoría — mismo
             lenguaje visual (halo + reborde Liquid Glass) que las 8 tarjetas
             destacadas de arriba, un solo color por categoría en vez de uno
             por cálculo. Solo texto general, nunca fórmulas ni metodología. */}
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
-          titulo="Los 19 cálculos de Calculadora de Reúso"
+          titulo="Los 17 cálculos de Calculadora de Reúso"
           descripcion="Así de a fondo vas a poder demostrarle tu impacto a clientes, aliados y auditores, desde tu primer cálculo"
           icono={<Calculator size={22} />}
           colorIcono={isDark ? '#D6F391' : '#00827C'}
