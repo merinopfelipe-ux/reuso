@@ -58,6 +58,8 @@ const patchSchema = z.object({
   // ni en la landing: es interna, se cotiza por cliente según lo que migra.
   borrador_incluye_ia: z.boolean(),
   borrador_limite_dpp_mes: z.number().int().nonnegative().nullable(),
+  // Beneficios (bullets) de la tarjeta de plan en la landing, editables.
+  borrador_features_json: z.array(z.string().trim().min(1).max(140)).max(15),
 })
 
 export async function PATCH(request: NextRequest) {

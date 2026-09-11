@@ -738,6 +738,9 @@ export interface PlanPrecioReal {
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
+  // Beneficios editables desde /admin/contenido -> Precios. null/[] = usa
+  // el respaldo fijo de PLANS.
+  features_json: string[] | null
 }
 
 interface LandingClientProps {
@@ -1765,7 +1768,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>Sin ataduras. Arranca gratis para explorar y activa herramientas más potentes solo cuando estés listo.</p>
+            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>
+              Cada plan de pago incluye una <strong>Tarifa de Implementación (pago único)</strong>, cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8 lg:mb-10">
@@ -1822,7 +1827,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   ))}
                 </dl>
                 <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
-                  {plan.features.map((f, j) => (
+                  {(precioReal(plan)?.features_json?.length ? precioReal(plan)!.features_json! : plan.features).map((f, j) => (
                     <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-xs md:text-xs lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
                       <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                         isDark

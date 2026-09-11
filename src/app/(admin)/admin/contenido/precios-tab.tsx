@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner, Square, SquareCheck, Sparkles, IdCard } from '@/components/ui/icons'
+import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner, Square, SquareCheck, Sparkles, IdCard, X, Plus } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
@@ -71,8 +71,10 @@ interface ConfigPlan {
   limite_cotizaciones_mes: number | null
   incluye_ia: boolean
   limite_dpp_mes: number | null
+  features_json: string[] | null
   borrador_incluye_ia: boolean | null
   borrador_limite_dpp_mes: number | null
+  borrador_features_json: string[] | null
   borrador_precio_cop: number | null
   borrador_precio_usd: number | null
   borrador_precio_eur: number | null
@@ -105,6 +107,7 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
     borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
     borrador_incluye_ia: plan.borrador_incluye_ia ?? plan.incluye_ia,
     borrador_limite_dpp_mes: plan.borrador_limite_dpp_mes ?? plan.limite_dpp_mes,
+    borrador_features_json: plan.borrador_features_json ?? plan.features_json ?? [],
   }
   const [borrador, setBorrador] = useState(valorInicial)
   const [estado, setEstado] = useState<'guardado' | 'guardando'>('guardado')
@@ -127,7 +130,9 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
       const res = await fetch('/api/admin/planes', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: plan.id, ...borrador }),
+        // Los beneficios vacíos (recién agregados, todavía sin escribir) no
+        // se envían — el schema del servidor los rechazaría.
+        body: JSON.stringify({ ...borrador, id: plan.id, borrador_features_json: borrador.borrador_features_json.filter(f => f.trim() !== '') }),
       })
       if (res.ok) setEstado('guardado')
       else toast.error(`No se pudo guardar ${NOMBRES[plan.id]}. Revisa tu conexión.`)
@@ -142,6 +147,16 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
       [`borrador_precio_${campo}`]: v,
       [`borrador_precio_anual_${campo}`]: Math.round(v * 10 * 100) / 100,
     }))
+  }
+
+  function cambiarBeneficio(i: number, texto: string) {
+    setBorrador(b => ({ ...b, borrador_features_json: b.borrador_features_json.map((f, j) => j === i ? texto : f) }))
+  }
+  function quitarBeneficio(i: number) {
+    setBorrador(b => ({ ...b, borrador_features_json: b.borrador_features_json.filter((_, j) => j !== i) }))
+  }
+  function agregarBeneficio() {
+    setBorrador(b => ({ ...b, borrador_features_json: [...b.borrador_features_json, ''] }))
   }
 
   const cfg = PLAN_CONFIG[plan.id]
@@ -182,6 +197,42 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
         {borrador.borrador_incluye_ia ? <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} /> : <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />}
         <Sparkles size={14} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
         Asistente de IA. Si se apaga, este plan crea los DPP y cotiza siempre a mano.
+      </button>
+
+      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Beneficios</h4>
+      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 12px' }}>La lista que ve la persona en la tarjeta de este plan, en la landing.</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+        {borrador.borrador_features_json.map((f, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input
+              type="text"
+              value={f}
+              placeholder="Escribe el beneficio..."
+              onChange={(e) => cambiarBeneficio(i, e.target.value)}
+              maxLength={140}
+              style={{
+                flex: 1, fontSize: 13, color: 'var(--text-primary)',
+                border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-input)',
+                padding: '8px 10px', outline: 'none',
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => quitarBeneficio(i)}
+              aria-label="Quitar beneficio"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', flexShrink: 0 }}
+            >
+              <X size={15} sinAnimacion />
+            </button>
+          </div>
+        ))}
+      </div>
+      <button
+        type="button"
+        onClick={agregarBeneficio}
+        style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 28, fontSize: 12, fontWeight: 700, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        <Plus size={14} sinAnimacion /> Agregar beneficio
       </button>
 
       <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Precios</h4>
