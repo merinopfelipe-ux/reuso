@@ -19,7 +19,7 @@ async function obtenerDatosReales() {
   const [{ data: planes }, { data: contenido }, { data: faq }] = await Promise.all([
     adminClient
       .from('config_planes')
-      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, tarifa_implementacion_cop, tarifa_implementacion_usd, tarifa_implementacion_eur')
+      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes')
       .order('precio_cop', { ascending: true }),
     adminClient
       .from('contenido_landing')

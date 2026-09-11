@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner } from '@/components/ui/icons'
+import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner, Square, SquareCheck, Sparkles, IdCard } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
@@ -69,6 +69,16 @@ interface ConfigPlan {
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
+  incluye_ia: boolean
+  limite_dpp_mes: number | null
+  tarifa_implementacion_cop: number | null
+  tarifa_implementacion_usd: number | null
+  tarifa_implementacion_eur: number | null
+  borrador_incluye_ia: boolean | null
+  borrador_limite_dpp_mes: number | null
+  borrador_tarifa_implementacion_cop: number | null
+  borrador_tarifa_implementacion_usd: number | null
+  borrador_tarifa_implementacion_eur: number | null
   borrador_precio_cop: number | null
   borrador_precio_usd: number | null
   borrador_precio_eur: number | null
@@ -99,6 +109,11 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
     borrador_limite_calculos_mes: plan.borrador_limite_calculos_mes ?? plan.limite_calculos_mes,
     borrador_limite_informes_mes: plan.borrador_limite_informes_mes ?? plan.limite_informes_mes,
     borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
+    borrador_incluye_ia: plan.borrador_incluye_ia ?? plan.incluye_ia,
+    borrador_limite_dpp_mes: plan.borrador_limite_dpp_mes ?? plan.limite_dpp_mes,
+    borrador_tarifa_implementacion_cop: plan.borrador_tarifa_implementacion_cop ?? plan.tarifa_implementacion_cop,
+    borrador_tarifa_implementacion_usd: plan.borrador_tarifa_implementacion_usd ?? plan.tarifa_implementacion_usd,
+    borrador_tarifa_implementacion_eur: plan.borrador_tarifa_implementacion_eur ?? plan.tarifa_implementacion_eur,
   }
   const [borrador, setBorrador] = useState(valorInicial)
   const [estado, setEstado] = useState<'guardado' | 'guardando'>('guardado')
@@ -164,6 +179,46 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
         <CampoLimiteGrande icono={Calculator} label="Cálculos/mes" valor={borrador.borrador_limite_calculos_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_calculos_mes: v }))} />
         <CampoLimiteGrande icono={FileText} label="Informes/mes" valor={borrador.borrador_limite_informes_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_informes_mes: v }))} />
         <CampoLimiteGrande icono={ClipboardList} label="Cotizaciones/mes" valor={borrador.borrador_limite_cotizaciones_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_cotizaciones_mes: v }))} />
+        <CampoLimiteGrande icono={IdCard} label="DPP/mes" valor={borrador.borrador_limite_dpp_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_dpp_mes: v }))} />
+      </div>
+
+      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Capacidades</h4>
+      <button
+        type="button"
+        onClick={() => setBorrador(b => ({ ...b, borrador_incluye_ia: !b.borrador_incluye_ia }))}
+        style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28, fontSize: 13, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        {borrador.borrador_incluye_ia ? <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)' }} /> : <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)' }} />}
+        <Sparkles size={14} style={{ color: 'var(--text-secondary)' }} />
+        Asistente de IA (ingesta de DPP y diagnóstico del Cotizador)
+      </button>
+
+      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Tarifa de implementación (pago único)</h4>
+      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 14px' }}>Informativa. Se muestra en la landing. Déjala vacía si este plan no la cobra.</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
+        {MONEDAS.map((moneda) => {
+          const campo = `borrador_tarifa_implementacion_${moneda.codigo}` as const
+          const valor = borrador[campo]
+          return (
+            <div key={moneda.codigo}>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{moneda.simbolo} {moneda.label}</span>
+              <input
+                type="number"
+                min={0}
+                value={valor ?? ''}
+                placeholder="Sin cobro"
+                onChange={(e) => setBorrador(b => ({ ...b, [campo]: e.target.value === '' ? null : Number(e.target.value) }))}
+                onFocus={(e) => e.target.select()}
+                className="input-numero-sutil"
+                style={{
+                  width: '100%', fontSize: 22, fontWeight: 300, color: 'var(--text-primary)',
+                  border: 'none', borderBottom: '1px solid var(--border)', background: 'transparent',
+                  padding: '2px 0', outline: 'none',
+                }}
+              />
+            </div>
+          )
+        })}
       </div>
 
       <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Precios</h4>

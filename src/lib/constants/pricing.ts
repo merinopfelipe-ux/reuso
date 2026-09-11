@@ -28,7 +28,7 @@ export const PLANS = [
       'Dashboard de impacto personal.',
       'Calculadora de CO₂ y agua.',
       'Historial de cálculos.',
-      'Onboarding guiado gratis.',
+      'Puesta en marcha guiada gratis.',
       'Soporte por email.',
     ],
     limits: {
@@ -53,7 +53,7 @@ export const PLANS = [
       'Hasta 5 informes de mitigación al mes.',
       'Código QR de verificación pública.',
       'Logo de tu empresa en documentos.',
-      'Onboarding guiado gratis.',
+      'Puesta en marcha guiada gratis.',
       'Soporte por email.',
     ],
     limits: {
@@ -80,7 +80,7 @@ export const PLANS = [
       'Pasaporte Digital de Producto (DPP).',
       'Cotizador y Gestión Circular B2B.',
       'Trazabilidad de ciclo de vida.',
-      'Onboarding guiado gratis.',
+      'Puesta en marcha guiada gratis.',
       'Soporte por email.',
     ],
     limits: {

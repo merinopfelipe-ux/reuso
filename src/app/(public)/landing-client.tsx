@@ -738,10 +738,6 @@ export interface PlanPrecioReal {
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
-  // Tarifa de implementación (pago único). NULL = no configurada.
-  tarifa_implementacion_cop: number | null
-  tarifa_implementacion_usd: number | null
-  tarifa_implementacion_eur: number | null
 }
 
 interface LandingClientProps {
@@ -1065,18 +1061,6 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       { etiqueta: 'Cotizaciones por mes', valor: plan.limits.cotizaciones },
     ]
   }
-
-  // Tarifa de implementación (pago único) del plan más alto que la tenga
-  // configurada, para el bloque bajo el título de la sección de planes.
-  const tarifaImplementacion = ((): string | null => {
-    const conTarifa = (planesPrecios ?? [])
-      .map(p => currency === 'COP' ? p.tarifa_implementacion_cop : currency === 'USD' ? p.tarifa_implementacion_usd : p.tarifa_implementacion_eur)
-      .filter((v): v is number => typeof v === 'number' && v > 0)
-    if (conTarifa.length === 0) return null
-    const c = CURRENCIES[currency]
-    const monto = Math.min(...conTarifa)
-    return `${c.symbol}${c.format(currency === 'COP' ? Math.round(monto) : monto)}`
-  })()
 
   const cat = CATEGORIAS[activeCategory]
   const tp = isDark ? 'text-white' : 'text-[#474747]'
@@ -1780,9 +1764,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
             <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>
-              {tarifaImplementacion
-                ? <>Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> desde {tarifaImplementacion}, que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.</>
-                : <>Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.</>}
+              Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.
             </p>
           </div>
 

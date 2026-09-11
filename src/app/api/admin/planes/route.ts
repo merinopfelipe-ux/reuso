@@ -53,6 +53,14 @@ const patchSchema = z.object({
   borrador_limite_informes_mes: z.number().int().nonnegative().nullable(),
   // Límite de cotizaciones/mes (sql/118) — mismo patrón que calculos/informes.
   borrador_limite_cotizaciones_mes: z.number().int().nonnegative().nullable(),
+  // Modelo de planes 2026-09 (sql/126): asistente de IA sí/no, límite de DPP
+  // (0 = no incluye, null = ilimitado) y tarifa de implementación (pago único,
+  // null = no configurada).
+  borrador_incluye_ia: z.boolean(),
+  borrador_limite_dpp_mes: z.number().int().nonnegative().nullable(),
+  borrador_tarifa_implementacion_cop: z.number().nonnegative().nullable(),
+  borrador_tarifa_implementacion_usd: z.number().nonnegative().nullable(),
+  borrador_tarifa_implementacion_eur: z.number().nonnegative().nullable(),
 })
 
 export async function PATCH(request: NextRequest) {
