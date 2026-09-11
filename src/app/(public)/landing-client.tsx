@@ -969,6 +969,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   // — la pantalla nunca se rompe por falta de datos.
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
+  // El equivalente mensual del plan anual (anual / 12) casi nunca cae en un
+  // número "limpio" (ej. $1.241.667). Se redondea hacia arriba a la unidad
+  // más chica que tenga sentido mostrar en cada moneda — el precio anual en
+  // sí NUNCA cambia, solo esta cifra de referencia. COP: al millar. USD/EUR:
+  // al centavo (ya son su unidad mínima visible).
+  const redondearMensualDesdeAnual = (amount: number, moneda: keyof typeof CURRENCIES) =>
+    moneda === 'COP' ? Math.ceil(amount / 1000) * 1000 : Math.ceil(amount * 100) / 100
+
   const formatPrice = (plan: typeof PLANS[0]) => {
     if (plan.priceMonthlyCOP === 0) return 'Gratis'
     const real = precioReal(plan)
@@ -976,14 +984,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
       const c = CURRENCIES[currency]
-      const amount = billing === 'monthly' ? mensual : (anual ?? mensual * 10) / 12
+      const amount = billing === 'monthly' ? mensual : redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
       const finalAmount = currency === 'COP' ? Math.round(amount) : amount
       return `${c.symbol}${c.format(finalAmount)}`
     }
     const c = CURRENCIES[currency]
     const amount = billing === 'monthly'
       ? plan.priceMonthlyCOP * c.rate
-      : (plan.priceMonthlyCOP * c.rate * 10) / 12
+      : redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
     const finalAmount = currency === 'COP' ? Math.round(amount) : amount
     return `${c.symbol}${c.format(finalAmount)}`
   }
