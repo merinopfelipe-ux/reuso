@@ -1807,7 +1807,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                       <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
                       {billing === 'annual' && (
                         <p className={`text-[10px] md:text-[10px] lg:text-[11px] mt-1 ${tp}`}>
-                          Único pago anual de <span className="text-sm md:text-sm lg:text-base font-bold">{getAnnualTotal(plan)}</span>
+                          Único pago anual de <span className="text-[16px] md:text-[16px] lg:text-[18px] font-bold">{getAnnualTotal(plan)}</span>
                         </p>
                       )}
                     </div>
