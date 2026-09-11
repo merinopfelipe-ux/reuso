@@ -758,7 +758,7 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                       style={inputComparativaStyle}
                     />
                     <span style={{ fontSize: 10, color: 'var(--text-secondary)', textAlign: 'right' }}>
-                      {fila.label.length}/{MAX_CARACTERES_FILA_COMPARATIVA} — pensado para 2 líneas en la landing (si no alcanza, pasa a más, nunca se corta)
+                      {fila.label.length}/{MAX_CARACTERES_FILA_COMPARATIVA} — pensado para 2 líneas en la landing
                     </span>
                     <input
                       value={fila.descripcion ?? ''}
