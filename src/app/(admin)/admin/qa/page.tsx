@@ -11,20 +11,24 @@ type Estado = 'pendiente' | 'ok' | 'parcial' | 'no_se_entiende' | 'falla'
 
 // ── Categorías con colores ─────────────────────────────────────────────────────
 
+// Orden = el orden en que hay que revisar el sistema (ver Vault,
+// conceptos/prioridades-2026-09-10). Primero lo del evento del 21 (DPP y
+// páginas públicas), luego el resto de V1, luego el Cotizador (aplazado a
+// después del evento), y al final las revisiones técnicas transversales.
 const CATEGORIAS = [
-  { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3', desc: 'Portada, status, verificación, legales' },
-  { key: 'Autenticación',       icono: Lock,        color: '#59A6E4', desc: 'Registro, acceso, recuperación, invitaciones' },
-  { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E', desc: 'Espacio diario de cálculo y mediciones' },
-  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43', desc: 'Valoración inteligente, escaneo y propuestas' },
-  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2', desc: 'Pasaporte digital de producto y trazabilidad' },
-  { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C', desc: 'Gestión de equipo, clientes CRM y metas' },
-  { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E', desc: 'Supervisión ejecutiva, catálogos y métricas' },
-  { key: 'Settings',            icono: Gear,         color: '#6366F1', desc: 'Preferencias de perfil y sistema' },
-  { key: 'Alertas',             icono: Bell,         color: '#FF8A65', desc: 'Centro de notificaciones y avisos' },
-  { key: 'Ayuda',               icono: BookOpen,     color: '#00C2D1', desc: 'Centro de ayuda y soporte técnico' },
-  { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B', desc: 'Carga veloz, fluidez y respuesta' },
-  { key: 'Seguridad',           icono: ShieldCheck,  color: '#985fa1', desc: 'Rutas protegidas, tokens y permisos' },
-  { key: 'APIs & Validaciones', icono: FileText,     color: '#5C6BC0', desc: 'Endpoints, integridad y fórmulas' },
+  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2', desc: 'P1 · La estrella del evento. Pasaporte digital y trazabilidad' },
+  { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3', desc: 'P1 · Lo primero que ve la gente. Portada, verificación, legales' },
+  { key: 'Autenticación',       icono: Lock,        color: '#59A6E4', desc: 'P1 · La puerta a todo. Registro, acceso, recuperación, invitaciones' },
+  { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E', desc: 'P2 · La Calculadora. Cálculo diario y mediciones' },
+  { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C', desc: 'P2 · Gestión de equipo, clientes CRM y metas' },
+  { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E', desc: 'P2 · Supervisión ejecutiva, catálogos y métricas' },
+  { key: 'Cotizador IA',        icono: Robot,        color: '#AD7C43', desc: 'P4 · Aplazado a después del evento. Valoración con IA y propuestas' },
+  { key: 'Settings',            icono: Gear,         color: '#6366F1', desc: 'P2 · Preferencias de perfil y sistema' },
+  { key: 'Alertas',             icono: Bell,         color: '#FF8A65', desc: 'P2 · Centro de notificaciones y avisos' },
+  { key: 'Ayuda',               icono: BookOpen,     color: '#00C2D1', desc: 'P2 · Centro de ayuda y soporte técnico' },
+  { key: 'Rendimiento',         icono: Lightning,    color: '#FF5E4B', desc: 'Transversal · Carga veloz, fluidez y respuesta' },
+  { key: 'Seguridad',           icono: ShieldCheck,  color: '#985fa1', desc: 'Transversal · Rutas protegidas, tokens y permisos' },
+  { key: 'APIs & Validaciones', icono: FileText,     color: '#5C6BC0', desc: 'Transversal · Endpoints, integridad y fórmulas' },
 ]
 
 
