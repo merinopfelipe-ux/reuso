@@ -4,6 +4,8 @@ import { createHash, randomBytes } from 'crypto'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { checkLimiteDpp } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
 
 const schema = z.object({
   nombre: z.string().min(1, 'Completa el nombre del activo.').max(200),
@@ -64,6 +66,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Empresa no encontrada.' }, { status: 404 })
     }
     targetEmpresaId = bodyEmpresaId
+  }
+
+  // Límite de DPP del plan (Explora no incluye DPP; el resto lo tiene
+  // ilimitado salvo que el super_admin ponga un tope en /admin/planes).
+  const { data: empPlan } = await adminClient
+    .from('empresas')
+    .select('plan')
+    .eq('id', targetEmpresaId)
+    .single()
+  const errorLimiteDpp = await checkLimiteDpp(targetEmpresaId, (empPlan?.plan ?? 'free') as Plan)
+  if (errorLimiteDpp) {
+    return NextResponse.json({ error: errorLimiteDpp }, { status: 403 })
   }
 
   // El cliente, si llega, debe pertenecer a la misma empresa (nunca confiar

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { rateLimit } from '@/lib/rate-limit'
+import { planIncluyeIA } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
 import type { Material as MaterialCompleto } from '@/lib/cotizador/plantillas-base'
 
 // Sin esto, Vercel mata la función a los 10s por defecto (plan Hobby) —
@@ -287,6 +289,20 @@ export async function POST(request: NextRequest) {
             : 'Sin permiso para usar el Cotizador.',
       },
       { status: auth.status }
+    )
+  }
+
+  // 1b. El asistente de IA es de Impulso Sostenible en adelante. Circular Lab
+  // y Explora no lo tienen.
+  const { data: empDiag } = await auth.adminClient
+    .from('empresas')
+    .select('plan')
+    .eq('id', auth.empresa_id)
+    .single()
+  if (!(await planIncluyeIA(auth.empresa_id, (empDiag?.plan ?? 'free') as Plan))) {
+    return NextResponse.json(
+      { error: 'El asistente de IA está disponible desde el plan Impulso Sostenible. Contacta a calculadoradereuso.com para ampliar tu plan.' },
+      { status: 403 }
     )
   }
 

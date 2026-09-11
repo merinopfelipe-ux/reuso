@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { planIncluyeIA } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
 
@@ -294,6 +296,16 @@ export async function POST(request: NextRequest) {
   }
   const { empresa_id, adminClient, user_id } = auth
   const ip = getIp(request)
+
+  // La ingesta con IA es de Impulso Sostenible en adelante. Circular Lab crea
+  // los DPP a mano, sin IA.
+  const { data: empIA } = await adminClient.from('empresas').select('plan').eq('id', empresa_id).single()
+  if (!(await planIncluyeIA(empresa_id, (empIA?.plan ?? 'free') as Plan))) {
+    return NextResponse.json(
+      { error: 'La lectura automática de documentos con IA está disponible desde el plan Impulso Sostenible. En tu plan, el pasaporte se completa a mano.' },
+      { status: 403 }
+    )
+  }
 
   const body = await request.json().catch(() => null)
   const parsed = z.object({ documento_id: z.uuid('ID de documento inválido.') }).safeParse(body)

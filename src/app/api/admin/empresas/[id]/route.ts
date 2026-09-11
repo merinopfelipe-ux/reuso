@@ -4,6 +4,7 @@ import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { patchEmpresaSchema } from '@/lib/schemas/empresa.schema'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
+import { sincronizarModulosSegunPlan } from '@/lib/permisos/sync-modulos-plan'
 
 export async function PATCH(
   request: NextRequest,
@@ -41,6 +42,12 @@ export async function PATCH(
 
   if (error) {
     return NextResponse.json({ error: 'Error al actualizar la empresa.' }, { status: 500 })
+  }
+
+  // Si cambió el plan, alinear los módulos de la empresa con el nuevo plan
+  // (el super_admin puede afinar después módulo por módulo si hace falta).
+  if (parsed.data.plan) {
+    await sincronizarModulosSegunPlan(guard.adminClient, params.id, parsed.data.plan)
   }
 
   await logAuditoria(guard.adminClient, {

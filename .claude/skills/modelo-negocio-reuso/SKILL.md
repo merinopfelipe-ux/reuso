@@ -27,6 +27,21 @@ Planes de suscripción pagados por **empresas**. El super_admin sube o baja el p
 
 Ver la tabla de referencia (nombres, IDs en BD, cálculos/informes/cotizaciones/empleados por plan) en la sección "ROLES, PLANES Y LÍMITES" de `CLAUDE.md` — no la dupliques aquí, se desactualiza. **Desde `sql/115`/`117`/`118` (2026-09) los planes ya NO son fijos en código**: la tabla `config_planes` (editable en `/admin/planes`, borrador→publicar, precio mensual y anual en COP/USD/EUR + límites) es la fuente real. `src/lib/plan-limits.ts` solo aplica esos límites y trae un respaldo fijo por si la base no responde — nunca es la fuente de verdad, solo el enforcement. Antes de dar un precio o límite por cierto, consulta `config_planes`, no asumas del código ni de esta tabla.
 
+### Modelo de planes 2026-09 (`sql/126`) — qué distingue a cada uno
+
+| Plan | IA (`incluye_ia`) | DPP (`limite_dpp_mes`) | Catálogo | Cotizaciones | Diferencial |
+|---|---|---|---|---|---|
+| **Explora** (`free`) | No | 0 (no incluye) | Solo lectura del compartido | 0 | Prueba del cálculo de CO2/agua |
+| **Circular Lab** (`lab`) | **No** | Ilimitado, **manual** | Limitado, **no crea los propios** | 0 | Cálculo automatizado con factores estándar, pymes que inician |
+| **Impulso Sostenible** (`impulso`) | **Sí** | Ilimitado (con IA) | Puede crear los propios | Según `limite_cotizaciones_mes` | Asistente de IA + DPP + Cotizador |
+| **Impacto Ilimitado** (`ilimitado`) | Sí | Ilimitado | Puede crear los propios | Ilimitado | **MCI (Indicador de Circularidad de Materiales)** — va destacado y primero en la landing, se cobra más |
+
+- **`incluye_ia`** gatea: ingesta de DPP con IA (`/api/dpp/ingesta/procesar-ia`) y diagnóstico del Cotizador (`/api/cotizador/diagnostico`). Helper: `planIncluyeIA()` en `plan-limits.ts`.
+- **`limite_dpp_mes`**: `NULL` = ilimitado, `0` = no incluye. Helper: `checkLimiteDpp()`.
+- **Tarifa de implementación** (pago único, `tarifa_implementacion_*` en `config_planes`): parametrización de categorías, ingesta del catálogo histórico de la empresa y capacitación. Es informativa — no hay pasarela, el pago se registra en las notas de la empresa.
+- **Al cambiar el plan de una empresa** en `/admin/empresas/[id]`, `sincronizarModulosSegunPlan()` alinea `modulos_empresas` con el plan (después el super_admin puede afinar módulo por módulo).
+- **NUNCA** se van a construir factores de emisión personalizados por empresa (decisión firme del usuario, 2026-09-10). Lo que sí existe y es de planes altos: crear **categorías/ítems propios** por empresa, con permiso (`items.creado_por_empresa_id`, `item_permisos_empresa`).
+
 ---
 
 ## Diferencial competitivo
