@@ -1006,13 +1006,24 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
   // Regla general de diseño: los decimales van en la misma línea, pero más pequeños
   // (como en /admin/contenido), sin desfasar la altura de línea.
-  const conDecimalesChicos = (formateado: string) => {
-    if (!formateado.includes(',')) return <span>{formateado}</span>
-    const [entero, centavos] = formateado.split(',')
+  //
+  // El separador de decimales depende de la moneda: COP y EUR usan coma
+  // (,), USD usa punto (.) — y en USD la coma es el separador de MILES
+  // ("1,199.00"), no de decimales. Buscar "," a ciegas cortaba el número
+  // en el lugar equivocado (o nunca encontraba nada en "399.00"), bug real
+  // reportado: los decimales nunca se veían chicos en dólares. Se busca la
+  // ÚLTIMA aparición del separador real de esa moneda, nunca la primera —
+  // así conviven con separadores de miles sin confundirse.
+  const conDecimalesChicos = (formateado: string, moneda: keyof typeof CURRENCIES) => {
+    const separador = moneda === 'USD' ? '.' : ','
+    const idx = formateado.lastIndexOf(separador)
+    if (idx === -1) return <span>{formateado}</span>
+    const entero = formateado.slice(0, idx)
+    const decimales = formateado.slice(idx)
     return (
       <span>
         {entero}
-        <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>,{centavos}</span>
+        <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>{decimales}</span>
       </span>
     )
   }
@@ -1032,22 +1043,22 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         const manual = equivalenteManual(real, currency)
         const finalAmount = manual ?? ((anual ?? mensual * 10) / 12)
         const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
-        return <>{c.symbol}{conDecimalesChicos(str)}</>
+        return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
       }
 
       const str = currency === 'COP' ? formatearPrecioColombiano(mensual, true) : c.format(mensual)
-      return <>{c.symbol}{conDecimalesChicos(str)}</>
+      return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
     }
 
     if (billing === 'annual') {
       const finalAmount = (plan.priceMonthlyCOP * c.rate * 10) / 12
       const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
-      return <>{c.symbol}{conDecimalesChicos(str)}</>
+      return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
     }
 
     const mensual = plan.priceMonthlyCOP * c.rate
     const str = currency === 'COP' ? formatearPrecioColombiano(mensual, true) : c.format(mensual)
-    return <>{c.symbol}{conDecimalesChicos(str)}</>
+    return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
   }
 
   // El pago anual (a diferencia del precio mensual y el equivalente
