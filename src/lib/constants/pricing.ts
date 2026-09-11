@@ -28,12 +28,14 @@ export const PLANS = [
       'Dashboard de impacto personal.',
       'Calculadora de CO₂ y agua.',
       'Historial de cálculos.',
+      'Onboarding guiado gratis.',
       'Soporte por email.',
     ],
     limits: {
       empleados: '1 persona',
       calculos: '10 cálculos al mes',
       informes: 'Sin informes',
+      cotizaciones: 'Sin cotizaciones',
     }
   },
   {
@@ -51,12 +53,14 @@ export const PLANS = [
       'Hasta 5 informes de mitigación al mes.',
       'Código QR de verificación pública.',
       'Logo de tu empresa en documentos.',
-      'Soporte prioritario.',
+      'Onboarding guiado gratis.',
+      'Soporte por email.',
     ],
     limits: {
       empleados: 'Hasta 5 miembros',
       calculos: '200 cálculos al mes',
       informes: '5 informes al mes',
+      cotizaciones: 'Sin cotizaciones',
     }
   },
   {
@@ -72,16 +76,18 @@ export const PLANS = [
     isFuture: false,
     features: [
       'Todo lo del plan Circular Lab.',
+      'Asistente de IA (fotos y documentos).',
       'Pasaporte Digital de Producto (DPP).',
-      'Módulo de Gestión Circular B2B.',
+      'Cotizador y Gestión Circular B2B.',
       'Trazabilidad de ciclo de vida.',
-      'Alertas de impacto personalizadas.',
-      'Onboarding guiado.',
+      'Onboarding guiado gratis.',
+      'Soporte por email.',
     ],
     limits: {
       empleados: 'Hasta 10 miembros',
       calculos: '200 cálculos al mes',
-      informes: '5 informes al mes + Pasaporte DPP',
+      informes: '5 informes al mes',
+      cotizaciones: '200 cotizaciones al mes',
     }
   },
   {
@@ -96,14 +102,16 @@ export const PLANS = [
     priceMonthlyCOP: 349000,
     features: [
       'Todo lo del plan Impulso Sostenible, sin límites.',
+      'Indicador de Circularidad de Materiales (MCI).',
       'Exportación avanzada (CSV/Excel).',
-      'Soporte dedicado con SLA.',
       'Integración con sistemas propios.',
+      'Soporte prioritario.',
     ],
     limits: {
       empleados: 'Ilimitados',
       calculos: 'Ilimitados',
-      informes: 'Todo Ilimitado',
+      informes: 'Ilimitados',
+      cotizaciones: 'Ilimitadas',
     }
   },
 ]

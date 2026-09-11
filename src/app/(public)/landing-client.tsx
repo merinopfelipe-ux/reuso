@@ -733,6 +733,15 @@ export interface PlanPrecioReal {
   precio_anual_cop: number | null
   precio_anual_usd: number | null
   precio_anual_eur: number | null
+  // Límites reales de config_planes. NULL = ilimitado, 0 = no incluye.
+  limite_empleados: number | null
+  limite_calculos_mes: number | null
+  limite_informes_mes: number | null
+  limite_cotizaciones_mes: number | null
+  // Tarifa de implementación (pago único). NULL = no configurada.
+  tarifa_implementacion_cop: number | null
+  tarifa_implementacion_usd: number | null
+  tarifa_implementacion_eur: number | null
 }
 
 interface LandingClientProps {
@@ -1030,6 +1039,44 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
     const finalAmount = currency === 'COP' ? Math.round(amount) : amount
     return `${c.symbol}${c.format(finalAmount)}`
   }
+
+  // Las 4 cuotas del plan (empleados, cálculos/mes, informes/mes,
+  // cotizaciones/mes), tomadas de config_planes (reemplazables desde
+  // /admin/contenido). Si no llegó el dato real, cae al texto fijo de PLANS.
+  const cuotasPlan = (plan: typeof PLANS[0]): { etiqueta: string; valor: string }[] => {
+    const real = precioReal(plan)
+    const num = (v: number | null | undefined, unidad: string, cero: string): string => {
+      if (v === null || v === undefined) return 'Ilimitado'
+      if (v === 0) return cero
+      return `${v.toLocaleString('es-CO')} ${unidad}`
+    }
+    if (real) {
+      return [
+        { etiqueta: 'Miembros del equipo', valor: num(real.limite_empleados, 'personas', '1 persona') },
+        { etiqueta: 'Cálculos por mes', valor: num(real.limite_calculos_mes, 'cálculos', 'Sin cálculos') },
+        { etiqueta: 'Informes por mes', valor: num(real.limite_informes_mes, 'informes', 'Sin informes') },
+        { etiqueta: 'Cotizaciones por mes', valor: num(real.limite_cotizaciones_mes, 'cotizaciones', 'Sin cotizaciones') },
+      ]
+    }
+    return [
+      { etiqueta: 'Miembros del equipo', valor: plan.limits.empleados },
+      { etiqueta: 'Cálculos por mes', valor: plan.limits.calculos },
+      { etiqueta: 'Informes por mes', valor: plan.limits.informes },
+      { etiqueta: 'Cotizaciones por mes', valor: plan.limits.cotizaciones },
+    ]
+  }
+
+  // Tarifa de implementación (pago único) del plan más alto que la tenga
+  // configurada, para el bloque bajo el título de la sección de planes.
+  const tarifaImplementacion = ((): string | null => {
+    const conTarifa = (planesPrecios ?? [])
+      .map(p => currency === 'COP' ? p.tarifa_implementacion_cop : currency === 'USD' ? p.tarifa_implementacion_usd : p.tarifa_implementacion_eur)
+      .filter((v): v is number => typeof v === 'number' && v > 0)
+    if (conTarifa.length === 0) return null
+    const c = CURRENCIES[currency]
+    const monto = Math.min(...conTarifa)
+    return `${c.symbol}${c.format(currency === 'COP' ? Math.round(monto) : monto)}`
+  })()
 
   const cat = CATEGORIAS[activeCategory]
   const tp = isDark ? 'text-white' : 'text-[#474747]'
@@ -1732,7 +1779,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>Sin ataduras. Arranca gratis para explorar y activa herramientas más potentes solo cuando estés listo.</p>
+            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>
+              {tarifaImplementacion
+                ? <>Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> desde {tarifaImplementacion}, que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.</>
+                : <>Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.</>}
+            </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8 lg:mb-10">
@@ -1780,6 +1831,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     </div>
                   )}
                 </div>
+                <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/12'}`}>
+                  {cuotasPlan(plan).map((c, k) => (
+                    <div key={k}>
+                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold uppercase tracking-wide opacity-55 ${ts}`}>{c.etiqueta}</dt>
+                      <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
+                    </div>
+                  ))}
+                </dl>
                 <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
                   {plan.features.map((f, j) => (
                     <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-xs md:text-xs lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
