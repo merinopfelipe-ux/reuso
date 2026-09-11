@@ -1819,12 +1819,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 <div className="mb-4 md:mb-5 lg:mb-6">
                   <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 opacity-60 ${ts}`}>{plan.tagline}</p>
                   <h3 className={`text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 group-hover:${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} ${tp}`}>{plan.name}</h3>
-                  <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 ${tp}`}>{formatPrice(plan)}</div>
+                  <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 group-hover:text-[var(--color-brand)] ${tp}`}>{formatPrice(plan)}</div>
                   {plan.priceMonthlyCOP > 0 && (
                     <div className="flex flex-col gap-0.5">
                       <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
                       {billing === 'annual' && (
-                        <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className="text-[14px] md:text-[14px] lg:text-[16px] font-bold">{getAnnualTotal(plan)}</span></p>
+                        <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 group-hover:text-[var(--color-brand)]`}>{getAnnualTotal(plan)}</span></p>
                       )}
                     </div>
                   )}
