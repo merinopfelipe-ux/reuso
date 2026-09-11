@@ -1983,7 +1983,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
                         </colgroup>
                         <thead>
-                          <tr style={{ background: `${colorCategoria}14` }}>
+                          <tr className={isDark ? 'bg-white/5' : 'bg-[#00827C]/[0.04]'}>
                             <th
                               className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
                               style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#3d3d3d' : '#FAFEFE' }}
