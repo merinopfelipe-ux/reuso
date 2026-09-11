@@ -822,32 +822,53 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       mouseXRef.current = e.clientX - window.innerWidth / 2
       mouseYRef.current = e.clientY - window.innerHeight / 2
     }
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('mousemove', handleMouse, { passive: true })
+    // El parallax de los blobs solo reacciona al mouse (todo data-blob de
+    // esta página usa data-ms="0", el scroll nunca los mueve en la
+    // práctica) — en un celular sin mouse no hay nada que animar, así que
+    // ni se registran los listeners ni se arranca el loop de abajo. Antes
+    // corría siempre, para siempre, sin aportar nada visual en táctil y
+    // compitiendo por el hilo principal contra las animaciones de entrada
+    // (whileInView), que en celulares se veían "en flash" por los frames
+    // perdidos.
+    const tieneMouseReal = window.matchMedia('(pointer: fine)').matches
+    let rafId: number | undefined
 
-    // rAF + lerp para blobs (cero re-renders de React)
-    let smoothX = 0, smoothY = 0
-    let rafId: number
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t
-    const tick = () => {
-      smoothX = lerp(smoothX, mouseXRef.current, 0.1)
-      smoothY = lerp(smoothY, mouseYRef.current, 0.1)
-      const sy = scrollYRef.current
-      document.querySelectorAll<HTMLElement>('[data-blob]').forEach(el => {
-        const mx = parseFloat(el.dataset.mx ?? '0')
-        const my = parseFloat(el.dataset.my ?? '0')
-        const ms = parseFloat(el.dataset.ms ?? '0')
-        el.style.transform = `translate(${smoothX * mx}px, ${smoothY * my + sy * ms}px)`
-      })
+    if (tieneMouseReal) {
+      window.addEventListener('scroll', handleScroll, { passive: true })
+      window.addEventListener('mousemove', handleMouse, { passive: true })
+
+      // rAF + lerp para blobs (cero re-renders de React). Los elementos
+      // [data-blob] son fijos en el árbol (nunca se montan/desmontan), así
+      // que se consultan UNA sola vez aquí — antes se hacía un
+      // querySelectorAll sobre toda la página en cada uno de los 60 frames
+      // por segundo, para siempre.
+      const blobs = Array.from(document.querySelectorAll<HTMLElement>('[data-blob]')).map(el => ({
+        el,
+        mx: parseFloat(el.dataset.mx ?? '0'),
+        my: parseFloat(el.dataset.my ?? '0'),
+        ms: parseFloat(el.dataset.ms ?? '0'),
+      }))
+      let smoothX = 0, smoothY = 0
+      const lerp = (a: number, b: number, t: number) => a + (b - a) * t
+      const tick = () => {
+        smoothX = lerp(smoothX, mouseXRef.current, 0.1)
+        smoothY = lerp(smoothY, mouseYRef.current, 0.1)
+        const sy = scrollYRef.current
+        for (const { el, mx, my, ms } of blobs) {
+          el.style.transform = `translate(${smoothX * mx}px, ${smoothY * my + sy * ms}px)`
+        }
+        rafId = requestAnimationFrame(tick)
+      }
       rafId = requestAnimationFrame(tick)
     }
-    rafId = requestAnimationFrame(tick)
 
     return () => {
       themeObserver.disconnect()
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('mousemove', handleMouse)
-      cancelAnimationFrame(rafId)
+      if (tieneMouseReal) {
+        window.removeEventListener('scroll', handleScroll)
+        window.removeEventListener('mousemove', handleMouse)
+        if (rafId !== undefined) cancelAnimationFrame(rafId)
+      }
     }
   }, [])
 
@@ -863,19 +884,6 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
     handleHash()
     window.addEventListener('hashchange', handleHash)
     return () => window.removeEventListener('hashchange', handleHash)
-  }, [mounted])
-
-  // IntersectionObserver para reveal al scroll
-  useEffect(() => {
-    if (!mounted) return
-    const observer = new IntersectionObserver(
-      entries => entries.forEach(entry => {
-        if (entry.isIntersecting) { entry.target.setAttribute('data-revealed', ''); observer.unobserve(entry.target) }
-      }),
-      { rootMargin: '0px 0px -20px 0px', threshold: 0.01 }
-    )
-    document.querySelectorAll('section[id]').forEach(el => observer.observe(el))
-    return () => observer.disconnect()
   }, [mounted])
 
   // Detección dinámica del footer para botones flotantes (WhatsApp y Te llamamos)
@@ -1101,13 +1109,6 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       {/* ESTILOS GLOBALES Y ANIMACIONES MODERNAS */}
       <style jsx global>{`
         html { scroll-behavior: smooth; scroll-padding-top: 96px; }
-        section[id] {
-          opacity: 0; transform: translateY(28px); filter: blur(6px);
-          transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                      transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                      filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        section[id][data-revealed] { opacity: 1; transform: translateY(0); filter: blur(0); }
         @keyframes glassStatIn {
           from { opacity: 0; transform: translateY(16px) scale(0.96); filter: blur(4px); }
           to   { opacity: 1; transform: translateY(0) scale(1);       filter: blur(0); }
@@ -1210,7 +1211,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
               <span className="block">Mide, gestiona y comparte</span>
-              <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental (RSE)</span>
+              <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental{' '}(RSE)</span>
               <span className="block">desde la economía circular</span>
             </h1>
             
