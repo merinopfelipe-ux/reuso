@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react'
 import { UserPlus, Mail as Envelope, Clock, CheckCircle, XCircle, Users, Loader2 as CircleNotch, Copy, Check, Link, Trash2 as Trash, Pencil as PencilSimple, X, AlertCircle as WarningCircle, EnvelopeOpen, CursorClick } from '@/components/ui/icons'
 import type { Rol } from '@/types'
+import { useToast } from '@/components/toast-provider'
 import { Selector } from '@/components/ui/selector'
 import { formatFecha as formatFechaBase } from '@/lib/format'
 
@@ -65,6 +66,7 @@ function formatFecha(iso: string) {
 }
 
 export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invitacionesIniciales, empresaId, codigoRegistro }: Props) {
+  const { toast } = useToast()
   // ── Invitar ──────────────────────────────────────────────────────────────────
   const [modalOpen, setModalOpen]         = useState(false)
   const [emailInvitar, setEmailInvitar]   = useState('')
@@ -120,7 +122,10 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
         body: JSON.stringify({ email: emailInvitar, rol_asignado: rolInvitado, empresa_id: empresaId }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Error al enviar la invitación.')
+      if (!res.ok) {
+        if (res.status === 429) toast.limite(data.error ?? 'Llegaste al límite de tu plan.')
+        throw new Error(data.error ?? 'Error al enviar la invitación.')
+      }
       setInvitaciones(prev => [data.invitacion, ...prev])
       setLinkInvitacion(`${window.location.origin}/invitacion/${data.rawToken as string}`)
       setEmailInvitar('')
@@ -129,7 +134,7 @@ export function EquipoClient({ miembros: miembrosIniciales, invitaciones: invita
     } finally {
       setEnviando(false)
     }
-  }, [emailInvitar, rolInvitado, empresaId])
+  }, [emailInvitar, rolInvitado, empresaId, toast])
 
   // ── Handlers - Eliminar miembro ──────────────────────────────────────────────
   const handleEliminarMiembro = useCallback(async (id: string) => {

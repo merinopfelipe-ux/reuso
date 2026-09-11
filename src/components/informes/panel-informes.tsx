@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { FileText, Download, ExternalLink as ArrowSquareOut, X, Calendar, Loader2 as CircleNotch } from '@/components/ui/icons'
 import type { Informe } from '@/types'
+import { useToast } from '@/components/toast-provider'
 import { PopupAmbiental } from './popup-ambiental'
 import { formatFecha } from '@/lib/format'
 
@@ -19,6 +20,7 @@ const btn: React.CSSProperties = {
 }
 
 export function PanelInformes({ informes, empresaId, modo }: PanelInformesProps) {
+  const { toast } = useToast()
   const [modalAbierto, setModalAbierto] = useState(false)
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
@@ -54,7 +56,9 @@ export function PanelInformes({ informes, empresaId, modo }: PanelInformesProps)
     }
 
     if (!res.ok) {
-      setError((data.error as string) ?? 'Ocurrió un error al generar el documento.')
+      const mensaje = (data.error as string) ?? 'Ocurrió un error al generar el documento.'
+      setError(mensaje)
+      if (res.status === 429) toast.limite(mensaje)
       setGenerando(false)
       isGeneratingRef.current = false
       return

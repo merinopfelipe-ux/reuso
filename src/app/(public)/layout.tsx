@@ -1,10 +1,12 @@
 import { headers } from 'next/headers'
 import { FooterPublic } from '@/components/footer-public'
 import { ProteccionPublica } from '@/components/proteccion-publica'
-import { FECHA_ACTUALIZACION_LEGAL, EMAIL_CONTACTO_LEGAL } from '@/lib/constants/contacto'
+import { getFechaActualizacionLegal } from '@/lib/legal/fecha-actualizacion'
+import { EMAIL_CONTACTO_LEGAL } from '@/lib/constants/contacto'
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   void headers()
+  const fechaActualizacion = await getFechaActualizacionLegal()
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column' }}>
@@ -14,9 +16,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </main>
 
       <FooterPublic
-        ip={FECHA_ACTUALIZACION_LEGAL}
+        ip={fechaActualizacion}
         lastVisit={EMAIL_CONTACTO_LEGAL}
-        ipLabel="Actualización:"
+        ipLabel="Última actualización:"
         lastVisitLabel="Contacto:"
         lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
       />

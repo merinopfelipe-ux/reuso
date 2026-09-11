@@ -54,7 +54,10 @@ export async function POST(request: NextRequest) {
     .single()
   const errorLimite = await checkLimiteEmpleados(empresa_id, (empresaData?.plan ?? 'free') as Plan)
   if (errorLimite) {
-    return NextResponse.json({ error: errorLimite }, { status: 403 })
+    // 429 (no 403): es un tope de plan, no un permiso denegado — mismo
+    // código que el resto de límites, para que el frontend sepa mostrar
+    // el aviso de "escríbenos para ampliar tu plan".
+    return NextResponse.json({ error: errorLimite }, { status: 429 })
   }
 
   // Generar token único

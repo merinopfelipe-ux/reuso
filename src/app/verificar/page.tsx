@@ -342,7 +342,7 @@ function VerificarForm() {
       <FooterPublic
         ip={FECHA_ACTUALIZACION_LEGAL}
         lastVisit={EMAIL_CONTACTO_LEGAL}
-        ipLabel="Actualización:"
+        ipLabel="Última actualización:"
         lastVisitLabel="Contacto:"
         lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
       />

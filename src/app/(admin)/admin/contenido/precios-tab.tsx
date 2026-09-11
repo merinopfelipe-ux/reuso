@@ -2,17 +2,36 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, Users, Calculator, FileText, ClipboardList, Loader2 as Spinner, Square, SquareCheck, Sparkles, IdCard, X, Plus } from '@/components/ui/icons'
+import {
+  CheckCircle,
+  Users,
+  Calculator,
+  FileText,
+  ClipboardList,
+  Loader2 as Spinner,
+  Square,
+  SquareCheck,
+  Sparkles,
+  IdCard,
+  Plus,
+  Trash,
+  GripVertical,
+  ChevronDown,
+  ArrowUp,
+  ArrowDown,
+} from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
 import { Skeleton } from '@/components/ui/skeleton'
+import { PLANS } from '@/lib/constants/pricing'
 
-// Skeleton con la misma forma real de una tarjeta de plan (ícono+nombre,
-// fila de 4 límites, fila de 3 monedas) — mismo patrón .skeleton-shimmer
-// (verde claro, con brillo) que ya usa /empresa/cotizador, a pedido del
-// usuario 2026-09-04 ("que cargue los espacios como el cotizador"). Antes
-// esta pantalla mostraba solo un texto plano "Cargando...".
+// Skeleton con la misma forma real de una tarjeta de plan:
+// 1. Ícono + nombre
+// 2. Límites (fila de 5)
+// 3. Precios (fila de 3 monedas)
+// 4. Capacidades de IA
+// 5. Beneficios plegable
 function TarjetaPlanSkeleton() {
   return (
     <div style={{ borderRadius: 20, border: '1px solid var(--border)', padding: 24, background: 'var(--bg-card)' }}>
@@ -20,17 +39,19 @@ function TarjetaPlanSkeleton() {
         <Skeleton style={{ width: 38, height: 38, borderRadius: 11 }} />
         <Skeleton style={{ width: 120, height: 20 }} />
       </div>
+      {/* 1. Límites */}
       <Skeleton style={{ width: 70, height: 14, marginBottom: 14 }} />
-      <div className="grid grid-cols-2 sm:grid-cols-4" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
-        {[0, 1, 2, 3].map(i => (
+      <div className="grid grid-cols-2 md:grid-cols-5" style={{ display: 'grid', gap: 16, marginBottom: 28 }}>
+        {[0, 1, 2, 3, 4].map(i => (
           <div key={i}>
             <Skeleton style={{ width: '80%', height: 12, marginBottom: 8 }} />
             <Skeleton style={{ width: '60%', height: 26 }} />
           </div>
         ))}
       </div>
+      {/* 2. Precios */}
       <Skeleton style={{ width: 60, height: 14, marginBottom: 14 }} />
-      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
         {[0, 1, 2].map(i => (
           <div key={i}>
             <Skeleton style={{ width: '90%', height: 16, marginBottom: 14 }} />
@@ -39,6 +60,11 @@ function TarjetaPlanSkeleton() {
           </div>
         ))}
       </div>
+      {/* 3. Capacidades de IA */}
+      <Skeleton style={{ width: 130, height: 14, marginBottom: 12 }} />
+      <Skeleton style={{ width: '100%', height: 42, marginBottom: 24, borderRadius: 10 }} />
+      {/* 4. Beneficios */}
+      <Skeleton style={{ width: '100%', height: 36, borderRadius: 8 }} />
     </div>
   )
 }
@@ -94,6 +120,13 @@ const NOMBRES: Record<string, string> = {
 
 function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: string, pendiente: boolean) => void }) {
   const { toast } = useToast()
+  const featuresLanding = PLANS.find(p => p.id === plan.id)?.features ?? []
+  const featuresIniciales = (plan.borrador_features_json && plan.borrador_features_json.length > 0)
+    ? plan.borrador_features_json
+    : (plan.features_json && plan.features_json.length > 0)
+      ? plan.features_json
+      : featuresLanding
+
   const valorInicial = {
     borrador_precio_cop: plan.borrador_precio_cop ?? plan.precio_cop,
     borrador_precio_usd: plan.borrador_precio_usd ?? plan.precio_usd,
@@ -107,11 +140,13 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
     borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
     borrador_incluye_ia: plan.borrador_incluye_ia ?? plan.incluye_ia,
     borrador_limite_dpp_mes: plan.borrador_limite_dpp_mes ?? plan.limite_dpp_mes,
-    borrador_features_json: plan.borrador_features_json ?? plan.features_json ?? [],
+    borrador_features_json: featuresIniciales,
   }
   const [borrador, setBorrador] = useState(valorInicial)
   const [estado, setEstado] = useState<'guardado' | 'guardando'>('guardado')
   const [huboEdicion, setHuboEdicion] = useState(false)
+  const [beneficiosAbierto, setBeneficiosAbierto] = useState(false)
+  const [dragIndex, setDragIndex] = useState<number | null>(null)
   // Snapshot del valor inicial, capturado UNA vez al montar (no dentro del
   // efecto) — comparar contra esto es lo que decide si hay algo real que
   // guardar, en vez de una bandera "primera vez" mutable. Un ref con
@@ -158,6 +193,16 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
   function agregarBeneficio() {
     setBorrador(b => ({ ...b, borrador_features_json: [...b.borrador_features_json, ''] }))
   }
+  function moverBeneficio(de: number, a: number) {
+    if (de === a || de < 0 || a < 0) return
+    setBorrador(b => {
+      const lista = [...b.borrador_features_json]
+      if (de >= lista.length || a >= lista.length) return b
+      const [movida] = lista.splice(de, 1)
+      lista.splice(a, 0, movida)
+      return { ...b, borrador_features_json: lista }
+    })
+  }
 
   const cfg = PLAN_CONFIG[plan.id]
   const IconoPlan = cfg.icon
@@ -179,6 +224,7 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
         )}
       </div>
 
+      {/* 1. Límites */}
       <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Límites</h4>
       <div className="grid grid-cols-2 md:grid-cols-5" style={{ display: 'grid', gap: 16, marginBottom: 28 }}>
         <CampoLimiteGrande icono={Users} label="Empleados" valor={borrador.borrador_limite_empleados} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_empleados: v }))} />
@@ -188,55 +234,9 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
         <CampoLimiteGrande icono={IdCard} label="DPP/mes" valor={borrador.borrador_limite_dpp_mes} onChange={(v) => setBorrador(b => ({ ...b, borrador_limite_dpp_mes: v }))} />
       </div>
 
-      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Capacidades</h4>
-      <button
-        type="button"
-        onClick={() => setBorrador(b => ({ ...b, borrador_incluye_ia: !b.borrador_incluye_ia }))}
-        style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 28, fontSize: 13, color: 'var(--text-primary)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
-      >
-        {borrador.borrador_incluye_ia ? <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} /> : <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />}
-        <Sparkles size={14} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
-        Asistente de IA. Si se apaga, este plan crea los DPP y cotiza siempre a mano.
-      </button>
-
-      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Beneficios</h4>
-      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 12px' }}>La lista que ve la persona en la tarjeta de este plan, en la landing.</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
-        {borrador.borrador_features_json.map((f, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input
-              type="text"
-              value={f}
-              placeholder="Escribe el beneficio..."
-              onChange={(e) => cambiarBeneficio(i, e.target.value)}
-              maxLength={140}
-              style={{
-                flex: 1, fontSize: 13, color: 'var(--text-primary)',
-                border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-input)',
-                padding: '8px 10px', outline: 'none',
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => quitarBeneficio(i)}
-              aria-label="Quitar beneficio"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 30, height: 30, borderRadius: 8, background: 'none', border: 'none', color: 'var(--color-error)', cursor: 'pointer', flexShrink: 0 }}
-            >
-              <X size={15} sinAnimacion />
-            </button>
-          </div>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={agregarBeneficio}
-        style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 28, fontSize: 12, fontWeight: 700, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-      >
-        <Plus size={14} sinAnimacion /> Agregar beneficio
-      </button>
-
+      {/* 2. Precios */}
       <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 14 }}>Precios</h4>
-      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20, marginBottom: 20 }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
         {MONEDAS.map((moneda) => (
           <BloqueMoneda
             key={moneda.codigo}
@@ -247,6 +247,222 @@ function TarjetaPlan({ plan, onCambio }: { plan: ConfigPlan; onCambio: (planId: 
             onAnualChange={(v) => setBorrador(b => ({ ...b, [`borrador_precio_anual_${moneda.codigo}`]: v }))}
           />
         ))}
+      </div>
+
+      {/* 3. Capacidades de IA */}
+      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Capacidades de IA</h4>
+      <button
+        type="button"
+        onClick={() => setBorrador(b => ({ ...b, borrador_incluye_ia: !b.borrador_incluye_ia }))}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 28,
+          fontSize: 13,
+          color: 'var(--text-primary)',
+          background: borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.06)' : 'var(--bg-input)',
+          border: `1px solid ${borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.3)' : 'var(--border)'}`,
+          borderRadius: 10,
+          padding: '10px 14px',
+          cursor: 'pointer',
+          textAlign: 'left',
+          width: '100%',
+          transition: 'all 0.15s ease',
+        }}
+      >
+        {borrador.borrador_incluye_ia ? (
+          <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
+        ) : (
+          <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+        )}
+        <Sparkles size={14} style={{ color: borrador.borrador_incluye_ia ? 'var(--color-brand)' : 'var(--text-secondary)', flexShrink: 0 }} />
+        <span style={{ flex: 1, lineHeight: 1.4 }}>
+          Activa la IA para DPP y el cotizador. Si no se activa, se crean manualmente.
+        </span>
+      </button>
+
+      {/* 4. Beneficios desplegables (cerrado por defecto, reordenable estilo FAQ) */}
+      <div style={{ marginBottom: 24, borderTop: '1px solid var(--border)', paddingTop: 18 }}>
+        <button
+          type="button"
+          onClick={() => setBeneficiosAbierto(v => !v)}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 0,
+            textAlign: 'left',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Beneficios</h4>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'var(--text-secondary)',
+                background: 'var(--bg-hover)',
+                padding: '2px 8px',
+                borderRadius: 999,
+                border: '1px solid var(--border)',
+              }}
+            >
+              {borrador.borrador_features_json.length}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', fontSize: 12 }}>
+            <span>{beneficiosAbierto ? 'Ocultar' : 'Ver lista'}</span>
+            <ChevronDown
+              size={15}
+              sinAnimacion
+              style={{
+                transform: beneficiosAbierto ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            />
+          </div>
+        </button>
+
+        {beneficiosAbierto && (
+          <div style={{ marginTop: 14 }}>
+            <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 12px' }}>
+              La lista que ve la persona en la tarjeta de este plan, en la landing. Puedes arrastrar para reordenar, editar, eliminar o agregar beneficios.
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+              {borrador.borrador_features_json.map((f, i) => (
+                <div
+                  key={i}
+                  draggable
+                  onDragStart={() => setDragIndex(i)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (dragIndex !== null && dragIndex !== i) moverBeneficio(dragIndex, i)
+                    setDragIndex(null)
+                  }}
+                  onDragEnd={() => setDragIndex(null)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 10px',
+                    borderRadius: 8,
+                    background: 'var(--bg-input)',
+                    border: '1px solid var(--border)',
+                    opacity: dragIndex === i ? 0.4 : 1,
+                    transition: 'opacity 0.2s',
+                  }}
+                >
+                  <div
+                    title="Arrastra para cambiar el orden"
+                    style={{ cursor: 'grab', display: 'flex', alignItems: 'center', color: 'var(--text-secondary)', flexShrink: 0 }}
+                  >
+                    <GripVertical size={14} sinAnimacion />
+                  </div>
+                  <input
+                    type="text"
+                    value={f}
+                    placeholder="Escribe el beneficio..."
+                    onChange={(e) => cambiarBeneficio(i, e.target.value)}
+                    maxLength={140}
+                    style={{
+                      flex: 1,
+                      fontSize: 13,
+                      color: 'var(--text-primary)',
+                      background: 'transparent',
+                      border: 'none',
+                      outline: 'none',
+                      padding: '2px 0',
+                    }}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+                    <button
+                      type="button"
+                      disabled={i === 0}
+                      onClick={() => moverBeneficio(i, i - 1)}
+                      title="Subir"
+                      aria-label="Subir beneficio"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: i === 0 ? 'default' : 'pointer',
+                        opacity: i === 0 ? 0.2 : 0.7,
+                        color: 'var(--text-secondary)',
+                        display: 'flex',
+                        padding: 3,
+                        borderRadius: 4,
+                      }}
+                    >
+                      <ArrowUp size={12} sinAnimacion />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={i === borrador.borrador_features_json.length - 1}
+                      onClick={() => moverBeneficio(i, i + 1)}
+                      title="Bajar"
+                      aria-label="Bajar beneficio"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: i === borrador.borrador_features_json.length - 1 ? 'default' : 'pointer',
+                        opacity: i === borrador.borrador_features_json.length - 1 ? 0.2 : 0.7,
+                        color: 'var(--text-secondary)',
+                        display: 'flex',
+                        padding: 3,
+                        borderRadius: 4,
+                      }}
+                    >
+                      <ArrowDown size={12} sinAnimacion />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => quitarBeneficio(i)}
+                      title="Eliminar beneficio"
+                      aria-label="Eliminar beneficio"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 24,
+                        height: 24,
+                        borderRadius: 6,
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--color-error, #EF4444)',
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
+                    >
+                      <Trash size={13} sinAnimacion />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={agregarBeneficio}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'var(--color-brand)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            >
+              <Plus size={14} sinAnimacion /> Agregar beneficio
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Estado de autoguardado — reemplaza el botón "Guardar borrador" de

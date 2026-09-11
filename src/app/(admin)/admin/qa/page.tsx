@@ -17,8 +17,8 @@ type Estado = 'pendiente' | 'ok' | 'parcial' | 'no_se_entiende' | 'falla'
 // después del evento), y al final las revisiones técnicas transversales.
 const CATEGORIAS = [
   { key: 'Páginas Públicas',    icono: Globe,        color: '#F3BBD3', desc: 'P1 · Lo primero que ve la gente. Portada, verificación de informes, legales' },
-  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2', desc: 'P1 · La estrella del evento. Pasaporte digital y trazabilidad' },
   { key: 'Autenticación',       icono: Lock,        color: '#59A6E4', desc: 'P1 · La puerta a todo. Registro, acceso, recuperación, invitaciones' },
+  { key: 'DPP / Pasaporte',     icono: ClipboardText,color: '#8AD0B2', desc: 'P1 · La estrella del evento. Pasaporte digital y trazabilidad' },
   { key: 'Dashboard',           icono: ChartBar,     color: '#38B98E', desc: 'P2 · La Calculadora y sus informes de CO2. Cálculo diario y mediciones' },
   { key: 'Panel Empresa',       icono: Storefront,   color: '#00827C', desc: 'P2 · Gestión de equipo, clientes CRM, metas e informes de la empresa' },
   { key: 'Panel Admin',         icono: Buildings,    color: '#F6BF3E', desc: 'P2 · Supervisión ejecutiva, catálogos y métricas' },
@@ -313,30 +313,6 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Cliente Final', 'Admin Operativa']
   },
 {
-    id: 'pub-12', categoria: 'Páginas Públicas', ruta: '/legal/ia', critica: false,
-    titulo: 'Transparencia sobre el uso ético de la IA',
-    descripcion: 'Informa con honestidad cómo utilizamos modelos de visión e inteligencia artificial para asistir en los diagnósticos sin reemplazar el criterio humano.',
-    pasos: [
-      'Abre la sección de transparencia en inteligencia artificial.',
-      'Revisa los principios éticos, privacidad de las imágenes y rol orientativo de la IA.',
-      'Verifica el canal de contacto para consultas de IA.'
-    ],
-    esperado: 'El texto genera tranquilidad al usuario sobre cómo se procesan sus fotos y datos.',
-    journeys: ['Cliente Final', 'Directivo']
-  },
-{
-    id: 'pub-13', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: true,
-    titulo: 'Metodología de cálculo y factores de emisión',
-    descripcion: 'Explica en un lenguaje accesible y con base científica cómo convertimos los kilogramos de residuos reutilizados en emisiones de CO2 evitadas, enlazando a la política de IA.',
-    pasos: [
-      'Visita la página de metodología de medición.',
-      'Lee la explicación de los factores de emisión utilizados por tipo de material.',
-      'Comprueba el enlace directo a la política de uso de IA en su propio renglón.'
-    ],
-    esperado: 'El documento transmite rigor metodológico y comprensión sencilla para cualquier persona interesada.',
-    journeys: ['Cliente Final', 'Directivo', 'Admin Operativa']
-  },
-{
     id: 'pub-14', categoria: 'Páginas Públicas', ruta: '/legal/reglamento', critica: false,
     titulo: 'Reglamento y normas de convivencia de la plataforma',
     descripcion: 'Establece pautas de respeto mutuo, uso responsable de las herramientas y buenas prácticas dentro de la comunidad de Reúso.',
@@ -361,28 +337,16 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Directivo', 'Admin Operativa']
   },
 {
-    id: 'pub-16', categoria: 'Páginas Públicas', ruta: '/legal/firma/[token]', critica: true,
-    titulo: 'Proceso guiado para firmar acuerdos digitales por invitación',
-    descripcion: 'Acompaña al directivo firmante paso a paso para leer el convenio, estampar su firma digital y descargar su copia firmada.',
+    id: 'pub-13', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: true,
+    titulo: 'Metodología de cálculo y factores de emisión',
+    descripcion: 'Explica en un lenguaje accesible y con base científica cómo convertimos los kilogramos de residuos reutilizados en emisiones de CO2 evitadas, enlazando a la política de IA.',
     pasos: [
-      'Abre el enlace de invitación para firmar un acuerdo.',
-      'Lee el texto completo del convenio.',
-      'Dibuja o confirma tu firma y presiona finalizar.'
+      'Visita la página de metodología de medición.',
+      'Lee la explicación de los factores de emisión utilizados por tipo de material.',
+      'Comprueba el enlace directo a la política de uso de IA en su propio renglón.'
     ],
-    esperado: 'El sistema confirma la firma exitosa y te entrega una copia digital para tu archivo.',
-    journeys: ['Directivo', 'Admin Operativa']
-  },
-{
-    id: 'pub-17', categoria: 'Páginas Públicas', ruta: '/legal/dudas', critica: false,
-    titulo: 'Buzón de dudas legales y consultas de privacidad',
-    descripcion: 'Brinda a los usuarios un canal sencillo para consultar dudas específicas sobre el tratamiento de sus datos o condiciones del servicio.',
-    pasos: [
-      'Abre la sección de dudas legales en /legal/dudas.',
-      'Escribe tu consulta en el formulario.',
-      'Comprueba que el envío o mensaje de respaldo utilice el correo oficial servicio@calculadoradereuso.com.'
-    ],
-    esperado: 'La pantalla agradece tu mensaje y confirma que el equipo de soporte legal te responderá pronto.',
-    journeys: ['Cliente Final', 'Admin Operativa']
+    esperado: 'El documento transmite rigor metodológico y comprensión sencilla para cualquier persona interesada.',
+    journeys: ['Cliente Final', 'Directivo', 'Admin Operativa']
   },
 {
     id: 'pub-18', categoria: 'Páginas Públicas', ruta: '/legal/ptee', critica: false,
@@ -407,6 +371,42 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'El documento acredita el estricto blindaje de la plataforma frente a riesgos de lavado de activos y financiación del terrorismo.',
     journeys: ['Directivo', 'Admin Operativa']
+  },
+{
+    id: 'pub-12', categoria: 'Páginas Públicas', ruta: '/legal/ia', critica: false,
+    titulo: 'Transparencia sobre el uso ético de la IA',
+    descripcion: 'Informa con honestidad cómo utilizamos modelos de visión e inteligencia artificial para asistir en los diagnósticos sin reemplazar el criterio humano.',
+    pasos: [
+      'Abre la sección de transparencia en inteligencia artificial.',
+      'Revisa los principios éticos, privacidad de las imágenes y rol orientativo de la IA.',
+      'Verifica el canal de contacto para consultas de IA.'
+    ],
+    esperado: 'El texto genera tranquilidad al usuario sobre cómo se procesan sus fotos y datos.',
+    journeys: ['Cliente Final', 'Directivo']
+  },
+{
+    id: 'pub-16', categoria: 'Páginas Públicas', ruta: '/legal/firma/[token]', critica: true,
+    titulo: 'Proceso guiado para firmar acuerdos digitales por invitación',
+    descripcion: 'Acompaña al directivo firmante paso a paso para leer el convenio, estampar su firma digital y descargar su copia firmada.',
+    pasos: [
+      'Abre el enlace de invitación para firmar un acuerdo.',
+      'Lee el texto completo del convenio.',
+      'Dibuja o confirma tu firma y presiona finalizar.'
+    ],
+    esperado: 'El sistema confirma la firma exitosa y te entrega una copia digital para tu archivo.',
+    journeys: ['Directivo', 'Admin Operativa']
+  },
+{
+    id: 'pub-17', categoria: 'Páginas Públicas', ruta: '/legal/dudas', critica: false,
+    titulo: 'Buzón de dudas legales y consultas de privacidad',
+    descripcion: 'Brinda a los usuarios un canal sencillo para consultar dudas específicas sobre el tratamiento de sus datos o condiciones del servicio.',
+    pasos: [
+      'Abre la sección de dudas legales en /legal/dudas.',
+      'Escribe tu consulta en el formulario.',
+      'Comprueba que el envío o mensaje de respaldo utilice el correo oficial servicio@calculadoradereuso.com.'
+    ],
+    esperado: 'La pantalla agradece tu mensaje y confirma que el equipo de soporte legal te responderá pronto.',
+    journeys: ['Cliente Final', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -566,6 +566,92 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
 
   // ══════════════════════════════════════════════════════════════════
+  // DPP / PASAPORTE
+  // ══════════════════════════════════════════════════════════════════
+{
+    id: 'dpp-01', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp', critica: true,
+    titulo: 'Catálogo de pasaportes digitales emitidos',
+    descripcion: 'Muestra el inventario de pasaportes digitales de producto creados por la empresa, con su código único, estado y enlace QR.',
+    pasos: [
+      'Ingresa a la sección de pasaportes digitales (DPP).',
+      'Revisa la lista de productos registrados y sus códigos QR.',
+      'Usa el buscador para localizar un producto por su nombre o lote.'
+    ],
+    esperado: 'La lista se despliega con imágenes y códigos claros, permitiendo abrir la ficha de cualquier producto.',
+    journeys: ['Admin Operativa', 'Empleado']
+  },
+{
+    id: 'dpp-02', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: true,
+    titulo: 'Creación de pasaporte digital para un producto',
+    descripcion: 'Permite registrar un producto con sus materiales, porcentaje de contenido reciclado, huella de carbono y recomendaciones de cuidado.',
+    pasos: [
+      'Inicia la creación de un nuevo pasaporte.',
+      'Completa los datos del producto: modelo, materiales, origen y vida útil esperada.',
+      'Guarda el pasaporte y genera su código QR.'
+    ],
+    esperado: 'El pasaporte digital queda registrado y su código QR queda listo para imprimir o colocar en la etiqueta del producto.',
+    journeys: ['Admin Operativa', 'Empleado']
+  },
+{
+    id: 'dpp-03', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: false,
+    titulo: 'Asistencia inteligente para completar la ficha técnica',
+    descripcion: 'Facilita la carga de información analizando una foto o ficha técnica del producto para sugerir automáticamente materiales y componentes.',
+    pasos: [
+      'En el formulario de nuevo pasaporte, sube la foto de la etiqueta o del producto.',
+      'Presiona el botón de auto-llenado con asistencia inteligente.',
+      'Revisa los campos sugeridos y aprueba los datos.'
+    ],
+    esperado: 'Los campos de materiales y dimensiones se rellenan automáticamente, ahorrando tiempo de digitación.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'dpp-04', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
+    titulo: 'Consulta pública del pasaporte mediante código QR',
+    descripcion: 'Cualquier persona o cliente que escanee el código QR con su teléfono puede ver la historia, materiales y trazabilidad del producto.',
+    pasos: [
+      'Abre la dirección pública del pasaporte o escanea el QR con tu celular.',
+      'Comprueba que la página cargue con diseño moderno y adaptado a móviles.',
+      'Revisa los datos de origen, huella ambiental y opciones de reparación.'
+    ],
+    esperado: 'La página pública brinda una experiencia atractiva y transparente sobre la sostenibilidad del producto.',
+    journeys: ['Cliente Final', 'Directivo']
+  },
+{
+    id: 'dpp-05', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
+    titulo: 'Actualización de la historia y ciclos del producto',
+    descripcion: 'Permite registrar eventos en la vida del producto, como mantenimientos realizados, cambio de piezas o segundo dueño.',
+    pasos: [
+      'Abre la ficha del pasaporte digital en el panel.',
+      'Agrega un nuevo hito en el ciclo de vida (por ejemplo, "Retapizado y cambio de relleno").',
+      'Guarda el nuevo ciclo y revisa la línea de tiempo.'
+    ],
+    esperado: 'La cronología del producto se actualiza con la nueva acción, reflejando su valor circular en el tiempo.',
+    journeys: ['Admin Operativa', 'Empleado']
+  },
+{
+    id: 'dpp-06', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
+    titulo: 'Visualización ordenada de historias con muchos ciclos',
+    descripcion: 'Asegura que incluso productos que han pasado por muchas reparaciones o dueños muestren su línea de tiempo limpia y fácil de leer.',
+    pasos: [
+      'Abre un pasaporte con más de 6 eventos o reparaciones registradas.',
+      'Recorre la línea de tiempo hacia arriba y abajo.'
+    ],
+    esperado: 'Los eventos se organizan cronológicamente sin amontonarse ni tapar los datos principales del producto.',
+    journeys: ['Cliente Final', 'Admin Operativa']
+  },
+{
+    id: 'dpp-07', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
+    titulo: 'Certeza de autenticidad en el pasaporte digital',
+    descripcion: 'Verifica que la información mostrada al público sea genuina y coincida con la emitido por la empresa fabricante o restauradora.',
+    pasos: [
+      'Abre un pasaporte público.',
+      'Revisa la insignia de verificación y el sello de emisión.'
+    ],
+    esperado: 'La página exhibe una insignia de autenticidad clara que genera confianza en el consumidor final.',
+    journeys: ['Cliente Final', 'Directivo']
+  },
+
+  // ══════════════════════════════════════════════════════════════════
   // DASHBOARD
   // ══════════════════════════════════════════════════════════════════
 {
@@ -651,235 +737,6 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'La confirmación aparece casi de inmediato y la pantalla queda limpia y lista para tu siguiente cálculo.',
     journeys: ['Empleado', 'Admin Operativa']
-  },
-
-  // ══════════════════════════════════════════════════════════════════
-  // COTIZADOR IA
-  // ══════════════════════════════════════════════════════════════════
-{
-    id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: true,
-    titulo: 'Bandeja de cotizaciones y búsqueda rápida',
-    descripcion: 'Organiza todas las propuestas comerciales de restauración de muebles en una vista clara con filtros por estado: borrador, enviada, aprobada o declinada.',
-    pasos: [
-      'Entra al panel del cotizador inteligente.',
-      'Usa los botones superiores para filtrar cotizaciones por su estado.',
-      'Escribe el nombre de un cliente en el buscador para encontrar su presupuesto.'
-    ],
-    esperado: 'La lista responde con agilidad y muestra el estado y monto de cada propuesta con claridad.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-02', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Evaluación visual de mueble recuperable',
-    descripcion: 'El colaborador sube una fotografía del mueble y la inteligencia artificial reconoce su tipología, materiales y propone el valor estimado de rescate.',
-    pasos: [
-      'Inicia una nueva cotización.',
-      'Sube una fotografía nítida de un mueble de madera o metal.',
-      'Presiona "Analizar con IA" y revisa la propuesta generada.'
-    ],
-    esperado: 'La herramienta sugiere el tipo de mueble, horas de trabajo estimadas e impacto ambiental evitado de forma coherente.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Orientación honesta ante materiales no aptos',
-    descripcion: 'Si se sube la foto de un material no restaurable (como aglomerado o plástico deteriorado), el sistema orienta con honestidad en lugar de generar falsas expectativas.',
-    pasos: [
-      'Sube una foto de un mueble roto de aglomerado de baja calidad.',
-      'Solicita el análisis con IA.',
-      'Observa las recomendaciones que aparecen.'
-    ],
-    esperado: 'El sistema explica amablemente por qué el material no es viable para retapizado o restauración y sugiere alternativas responsables de reciclaje.',
-    journeys: ['Empleado', 'Cliente Final']
-  },
-{
-    id: 'cot-04', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Guía para subir fotografías de buen tamaño',
-    descripcion: 'Orienta al usuario si intenta subir una foto demasiado pesada (mayor a 10 megabytes), sugiriendo comprimirla o tomarla con menor resolución.',
-    pasos: [
-      'Intenta adjuntar una imagen con un peso superior a 10 megabytes.',
-      'Observa el aviso que muestra la pantalla.'
-    ],
-    esperado: 'Aparece un mensaje comprensible recomendando reducir el tamaño de la foto antes de enviarla.',
-    journeys: ['Empleado', 'Cliente Final']
-  },
-{
-    id: 'cot-05', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Ritmo equilibrado en consultas de diagnóstico',
-    descripcion: 'Mantiene un flujo ordenado evitando que solicitudes repetidas en pocos segundos saturen la herramienta o generen cobros imprevistos.',
-    pasos: [
-      'Intenta presionar el botón de diagnóstico muchas veces de forma consecutiva.',
-      'Observa la respuesta del sistema.'
-    ],
-    esperado: 'El sistema procesa la primera solicitud con calma y pide esperar unos segundos antes de lanzar la siguiente.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-06', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Flujo completo: foto, valoración y cotización',
-    descripcion: 'Permite recorrer el proceso integral desde que se carga la foto del mueble, se ajustan los precios manualmente y se guarda la cotización final para el cliente.',
-    pasos: [
-      'Sube una imagen y obtén la sugerencia inicial de la IA.',
-      'Ajusta los materiales, costo de mano de obra y margen comercial según tu criterio.',
-      'Guarda la cotización y revisa la ficha generada.'
-    ],
-    esperado: 'La cotización queda registrada con todos los costos calculados y lista para compartir.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-07', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: true,
-    titulo: 'Enlace compartible de la propuesta con el cliente',
-    descripcion: 'Genera un enlace elegante y seguro para que el cliente final pueda ver la propuesta desde su celular o computadora y decidir si la aprueba.',
-    pasos: [
-      'Abre una cotización guardada.',
-      'Haz clic en "Compartir enlace con cliente".',
-      'Abre ese enlace en una pestaña nueva para revisar lo que verá tu cliente.'
-    ],
-    esperado: 'Se abre una página atractiva con los datos de tu empresa, el desglose amigable del trabajo y botones para aceptar o consultar.',
-    journeys: ['Empleado', 'Cliente Final', 'Admin Operativa']
-  },
-{
-    id: 'cot-08', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Cierre o archivo claro de una cotización',
-    descripcion: 'Permite marcar una cotización como aceptada o rechazada por el cliente, pidiendo confirmación para evitar cambios accidentales.',
-    pasos: [
-      'En la ficha de la cotización, selecciona cambiar el estado a "Aprobada" o "Declinada".',
-      'Confirma la acción en la ventana que aparece.'
-    ],
-    esperado: 'El estado cambia ordenadamente y se actualiza el resumen comercial de la empresa.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-09', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Mensaje listo para compartir por WhatsApp',
-    descripcion: 'Copia con un solo clic un texto redactado con calidez y profesionalismo con el enlace de la cotización, listo para pegarlo en WhatsApp.',
-    pasos: [
-      'Presiona el botón "Copiar para WhatsApp" en la cotización.',
-      'Pega el contenido en un bloc de notas o chat de prueba.',
-      'Comprueba que el saludo, monto y enlace estén bien presentados.'
-    ],
-    esperado: 'El texto se copia al portapapeles con formato impecable facilitando la atención rápida al cliente.',
-    journeys: ['Empleado', 'Cliente Final']
-  },
-{
-    id: 'cot-10', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
-    titulo: 'Subida sin tropiezos de varias fotos del mueble',
-    descripcion: 'Permite adjuntar varias fotografías de distintos ángulos del mueble (frente, laterales, detalle de tela) simultáneamente.',
-    pasos: [
-      'Selecciona 3 o 4 imágenes del mueble al mismo tiempo.',
-      'Observa cómo se van mostrando las miniaturas de cada foto en pantalla.'
-    ],
-    esperado: 'Todas las fotos se cargan de manera ordenada y permiten eliminarlas o reorganizarlas si lo deseas.',
-    journeys: ['Empleado', 'Cliente Final']
-  },
-{
-    id: 'cot-11', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
-    titulo: 'Protección contra cambios cruzados entre compañeros',
-    descripcion: 'Si dos personas del equipo abren la misma cotización y una guarda cambios primero, el sistema avisa a la otra para evitar sobreescribir el trabajo.',
-    pasos: [
-      'Abre la misma cotización en dos navegadores diferentes.',
-      'Modifica el precio y guarda en el primer navegador.',
-      'En el segundo navegador intenta guardar otro cambio sin refrescar.'
-    ],
-    esperado: 'El sistema avisa amablemente que la cotización fue actualizada recientemente y ofrece ver la versión más reciente.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
-    titulo: 'Seguridad al adjuntar imágenes de productos',
-    descripcion: 'Verifica que los archivos subidos sean imágenes auténticas (como JPG, PNG o WebP) y rechaza archivos dudosos para proteger la plataforma.',
-    pasos: [
-      'Intenta subir un archivo que no sea una imagen estándar.',
-      'Observa la reacción del cargador de archivos.'
-    ],
-    esperado: 'El sistema rechaza el archivo de forma segura y te solicita adjuntar una fotografía en formato de imagen habitual.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-
-  // ══════════════════════════════════════════════════════════════════
-  // DPP / PASAPORTE
-  // ══════════════════════════════════════════════════════════════════
-{
-    id: 'dpp-01', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp', critica: true,
-    titulo: 'Catálogo de pasaportes digitales emitidos',
-    descripcion: 'Muestra el inventario de pasaportes digitales de producto creados por la empresa, con su código único, estado y enlace QR.',
-    pasos: [
-      'Ingresa a la sección de pasaportes digitales (DPP).',
-      'Revisa la lista de productos registrados y sus códigos QR.',
-      'Usa el buscador para localizar un producto por su nombre o lote.'
-    ],
-    esperado: 'La lista se despliega con imágenes y códigos claros, permitiendo abrir la ficha de cualquier producto.',
-    journeys: ['Admin Operativa', 'Empleado']
-  },
-{
-    id: 'dpp-02', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: true,
-    titulo: 'Creación de pasaporte digital para un producto',
-    descripcion: 'Permite registrar un producto con sus materiales, porcentaje de contenido reciclado, huella de carbono y recomendaciones de cuidado.',
-    pasos: [
-      'Inicia la creación de un nuevo pasaporte.',
-      'Completa los datos del producto: modelo, materiales, origen y vida útil esperada.',
-      'Guarda el pasaporte y genera su código QR.'
-    ],
-    esperado: 'El pasaporte digital queda registrado y su código QR queda listo para imprimir o colocar en la etiqueta del producto.',
-    journeys: ['Admin Operativa', 'Empleado']
-  },
-{
-    id: 'dpp-03', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: false,
-    titulo: 'Asistencia inteligente para completar la ficha técnica',
-    descripcion: 'Facilita la carga de información analizando una foto o ficha técnica del producto para sugerir automáticamente materiales y componentes.',
-    pasos: [
-      'En el formulario de nuevo pasaporte, sube la foto de la etiqueta o del producto.',
-      'Presiona el botón de auto-llenado con asistencia inteligente.',
-      'Revisa los campos sugeridos y aprueba los datos.'
-    ],
-    esperado: 'Los campos de materiales y dimensiones se rellenan automáticamente, ahorrando tiempo de digitación.',
-    journeys: ['Empleado', 'Admin Operativa']
-  },
-{
-    id: 'dpp-04', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
-    titulo: 'Consulta pública del pasaporte mediante código QR',
-    descripcion: 'Cualquier persona o cliente que escanee el código QR con su teléfono puede ver la historia, materiales y trazabilidad del producto.',
-    pasos: [
-      'Abre la dirección pública del pasaporte o escanea el QR con tu celular.',
-      'Comprueba que la página cargue con diseño moderno y adaptado a móviles.',
-      'Revisa los datos de origen, huella ambiental y opciones de reparación.'
-    ],
-    esperado: 'La página pública brinda una experiencia atractiva y transparente sobre la sostenibilidad del producto.',
-    journeys: ['Cliente Final', 'Directivo']
-  },
-{
-    id: 'dpp-05', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
-    titulo: 'Actualización de la historia y ciclos del producto',
-    descripcion: 'Permite registrar eventos en la vida del producto, como mantenimientos realizados, cambio de piezas o segundo dueño.',
-    pasos: [
-      'Abre la ficha del pasaporte digital en el panel.',
-      'Agrega un nuevo hito en el ciclo de vida (por ejemplo, "Retapizado y cambio de relleno").',
-      'Guarda el nuevo ciclo y revisa la línea de tiempo.'
-    ],
-    esperado: 'La cronología del producto se actualiza con la nueva acción, reflejando su valor circular en el tiempo.',
-    journeys: ['Admin Operativa', 'Empleado']
-  },
-{
-    id: 'dpp-06', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/[id]', critica: false,
-    titulo: 'Visualización ordenada de historias con muchos ciclos',
-    descripcion: 'Asegura que incluso productos que han pasado por muchas reparaciones o dueños muestren su línea de tiempo limpia y fácil de leer.',
-    pasos: [
-      'Abre un pasaporte con más de 6 eventos o reparaciones registradas.',
-      'Recorre la línea de tiempo hacia arriba y abajo.'
-    ],
-    esperado: 'Los eventos se organizan cronológicamente sin amontonarse ni tapar los datos principales del producto.',
-    journeys: ['Cliente Final', 'Admin Operativa']
-  },
-{
-    id: 'dpp-07', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
-    titulo: 'Certeza de autenticidad en el pasaporte digital',
-    descripcion: 'Verifica que la información mostrada al público sea genuina y coincida con la emitido por la empresa fabricante o restauradora.',
-    pasos: [
-      'Abre un pasaporte público.',
-      'Revisa la insignia de verificación y el sello de emisión.'
-    ],
-    esperado: 'La página exhibe una insignia de autenticidad clara que genera confianza en el consumidor final.',
-    journeys: ['Cliente Final', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1460,6 +1317,149 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'Las respuestas son sencillas de entender y el formulario te pone en contacto directo con soporte.',
     journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // COTIZADOR IA
+  // ══════════════════════════════════════════════════════════════════
+{
+    id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: true,
+    titulo: 'Bandeja de cotizaciones y búsqueda rápida',
+    descripcion: 'Organiza todas las propuestas comerciales de restauración de muebles en una vista clara con filtros por estado: borrador, enviada, aprobada o declinada.',
+    pasos: [
+      'Entra al panel del cotizador inteligente.',
+      'Usa los botones superiores para filtrar cotizaciones por su estado.',
+      'Escribe el nombre de un cliente en el buscador para encontrar su presupuesto.'
+    ],
+    esperado: 'La lista responde con agilidad y muestra el estado y monto de cada propuesta con claridad.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-02', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    titulo: 'Evaluación visual de mueble recuperable',
+    descripcion: 'El colaborador sube una fotografía del mueble y la inteligencia artificial reconoce su tipología, materiales y propone el valor estimado de rescate.',
+    pasos: [
+      'Inicia una nueva cotización.',
+      'Sube una fotografía nítida de un mueble de madera o metal.',
+      'Presiona "Analizar con IA" y revisa la propuesta generada.'
+    ],
+    esperado: 'La herramienta sugiere el tipo de mueble, horas de trabajo estimadas e impacto ambiental evitado de forma coherente.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    titulo: 'Orientación honesta ante materiales no aptos',
+    descripcion: 'Si se sube la foto de un material no restaurable (como aglomerado o plástico deteriorado), el sistema orienta con honestidad en lugar de generar falsas expectativas.',
+    pasos: [
+      'Sube una foto de un mueble roto de aglomerado de baja calidad.',
+      'Solicita el análisis con IA.',
+      'Observa las recomendaciones que aparecen.'
+    ],
+    esperado: 'El sistema explica amablemente por qué el material no es viable para retapizado o restauración y sugiere alternativas responsables de reciclaje.',
+    journeys: ['Empleado', 'Cliente Final']
+  },
+{
+    id: 'cot-04', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
+    titulo: 'Guía para subir fotografías de buen tamaño',
+    descripcion: 'Orienta al usuario si intenta subir una foto demasiado pesada (mayor a 10 megabytes), sugiriendo comprimirla o tomarla con menor resolución.',
+    pasos: [
+      'Intenta adjuntar una imagen con un peso superior a 10 megabytes.',
+      'Observa el aviso que muestra la pantalla.'
+    ],
+    esperado: 'Aparece un mensaje comprensible recomendando reducir el tamaño de la foto antes de enviarla.',
+    journeys: ['Empleado', 'Cliente Final']
+  },
+{
+    id: 'cot-05', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
+    titulo: 'Ritmo equilibrado en consultas de diagnóstico',
+    descripcion: 'Mantiene un flujo ordenado evitando que solicitudes repetidas en pocos segundos saturen la herramienta o generen cobros imprevistos.',
+    pasos: [
+      'Intenta presionar el botón de diagnóstico muchas veces de forma consecutiva.',
+      'Observa la respuesta del sistema.'
+    ],
+    esperado: 'El sistema procesa la primera solicitud con calma y pide esperar unos segundos antes de lanzar la siguiente.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-06', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    titulo: 'Flujo completo: foto, valoración y cotización',
+    descripcion: 'Permite recorrer el proceso integral desde que se carga la foto del mueble, se ajustan los precios manualmente y se guarda la cotización final para el cliente.',
+    pasos: [
+      'Sube una imagen y obtén la sugerencia inicial de la IA.',
+      'Ajusta los materiales, costo de mano de obra y margen comercial según tu criterio.',
+      'Guarda la cotización y revisa la ficha generada.'
+    ],
+    esperado: 'La cotización queda registrada con todos los costos calculados y lista para compartir.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-07', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: true,
+    titulo: 'Enlace compartible de la propuesta con el cliente',
+    descripcion: 'Genera un enlace elegante y seguro para que el cliente final pueda ver la propuesta desde su celular o computadora y decidir si la aprueba.',
+    pasos: [
+      'Abre una cotización guardada.',
+      'Haz clic en "Compartir enlace con cliente".',
+      'Abre ese enlace en una pestaña nueva para revisar lo que verá tu cliente.'
+    ],
+    esperado: 'Se abre una página atractiva con los datos de tu empresa, el desglose amigable del trabajo y botones para aceptar o consultar.',
+    journeys: ['Empleado', 'Cliente Final', 'Admin Operativa']
+  },
+{
+    id: 'cot-08', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
+    titulo: 'Cierre o archivo claro de una cotización',
+    descripcion: 'Permite marcar una cotización como aceptada o rechazada por el cliente, pidiendo confirmación para evitar cambios accidentales.',
+    pasos: [
+      'En la ficha de la cotización, selecciona cambiar el estado a "Aprobada" o "Declinada".',
+      'Confirma la acción en la ventana que aparece.'
+    ],
+    esperado: 'El estado cambia ordenadamente y se actualiza el resumen comercial de la empresa.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-09', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
+    titulo: 'Mensaje listo para compartir por WhatsApp',
+    descripcion: 'Copia con un solo clic un texto redactado con calidez y profesionalismo con el enlace de la cotización, listo para pegarlo en WhatsApp.',
+    pasos: [
+      'Presiona el botón "Copiar para WhatsApp" en la cotización.',
+      'Pega el contenido en un bloc de notas o chat de prueba.',
+      'Comprueba que el saludo, monto y enlace estén bien presentados.'
+    ],
+    esperado: 'El texto se copia al portapapeles con formato impecable facilitando la atención rápida al cliente.',
+    journeys: ['Empleado', 'Cliente Final']
+  },
+{
+    id: 'cot-10', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
+    titulo: 'Subida sin tropiezos de varias fotos del mueble',
+    descripcion: 'Permite adjuntar varias fotografías de distintos ángulos del mueble (frente, laterales, detalle de tela) simultáneamente.',
+    pasos: [
+      'Selecciona 3 o 4 imágenes del mueble al mismo tiempo.',
+      'Observa cómo se van mostrando las miniaturas de cada foto en pantalla.'
+    ],
+    esperado: 'Todas las fotos se cargan de manera ordenada y permiten eliminarlas o reorganizarlas si lo deseas.',
+    journeys: ['Empleado', 'Cliente Final']
+  },
+{
+    id: 'cot-11', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/[id]', critica: false,
+    titulo: 'Protección contra cambios cruzados entre compañeros',
+    descripcion: 'Si dos personas del equipo abren la misma cotización y una guarda cambios primero, el sistema avisa a la otra para evitar sobreescribir el trabajo.',
+    pasos: [
+      'Abre la misma cotización en dos navegadores diferentes.',
+      'Modifica el precio y guarda en el primer navegador.',
+      'En el segundo navegador intenta guardar otro cambio sin refrescar.'
+    ],
+    esperado: 'El sistema avisa amablemente que la cotización fue actualizada recientemente y ofrece ver la versión más reciente.',
+    journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    titulo: 'Seguridad al adjuntar imágenes de productos',
+    descripcion: 'Verifica que los archivos subidos sean imágenes auténticas (como JPG, PNG o WebP) y rechaza archivos dudosos para proteger la plataforma.',
+    pasos: [
+      'Intenta subir un archivo que no sea una imagen estándar.',
+      'Observa la reacción del cargador de archivos.'
+    ],
+    esperado: 'El sistema rechaza el archivo de forma segura y te solicita adjuntar una fotografía en formato de imagen habitual.',
+    journeys: ['Empleado', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════

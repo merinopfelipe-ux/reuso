@@ -490,10 +490,14 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
       setDocumentosList(prev => [nuevoDoc, ...prev])
       setUploadFile(null)
       setLoadingUpload(false)
+      // Si el plan no incluye IA, procesar-ia responde 403 y el documento
+      // se queda tal cual (pendiente) para completarse a mano — nunca se
+      // muestra un error ni un "procesando" que nunca termina.
       fetch('/api/dpp/ingesta/procesar-ia', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ documento_id: nuevoId }),
-      }).then(() => {
+      }).then(res => {
+        if (!res.ok) return
         setDocumentosList(prev => prev.map(d => d.id === nuevoId ? { ...d, estado_ocr: 'procesando' } : d))
         setPollingIds(prev => new Set([...Array.from(prev), nuevoId]))
       }).catch(() => {})

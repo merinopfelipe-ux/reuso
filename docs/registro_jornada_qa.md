@@ -410,6 +410,64 @@ Se construyó una infraestructura automatizada de siembra y eliminación de dato
   - Integración de tarjetas oficiales en `/legal` y catálogo en `legal-page-layout.tsx` (`ALL_LEGAL_PAGES`).
   - Casos de prueba `pub-18` (`/legal/ptee`) y `pub-19` (`/legal/sagrilaft`) verificados en `/admin/qa` con `npx tsc --noEmit` en 0 errores.
 
+---
+
+## 8. Jornada 10 de Septiembre de 2026: Editor de Contenidos, Tablero de QA, Footer Legal y Auditoría SEO
+
+### A. Reorganización y Carga de Beneficios en `/admin/contenido` (Precios)
+- **Diagnóstico y Corrección de Estado Vacío:**
+  - En `config_planes`, el campo `borrador_features_json` almacenaba `[]`, provocando que el operador `??` no recurriera a los datos vigentes.
+  - Se implementó un respaldo dinámico en `precios-tab.tsx` hacia `PLANS` de `src/lib/constants/pricing.ts` y se sincronizaron las columnas `features_json` y `borrador_features_json` en la base de datos Supabase.
+- **Nueva Estructura de Edición por Tarjeta de Plan:**
+  1. **Límites:** Empleados, Cálculos/mes, Informes/mes, Cotizaciones/mes y DPP/mes.
+  2. **Precios:** Entradas para COP, USD y EUR con autocalculado anual del 20% de descuento y edición manual independiente.
+  3. **Capacidades de IA:** Interruptor toggle con descripción clara (*"Activa la IA para DPP y el cotizador. Si no se activa, se crean manualmente."*).
+  4. **Beneficios (Acordeón estilo FAQ):** Plegable por defecto con badge de conteo e indicador de despliegue. Al abrir permite:
+     - Arrastrar y soltar (Drag & Drop nativo con `GripVertical`).
+     - Reordenar con botones de flechas (Subir / Bajar).
+     - Editar texto directamente en línea.
+     - Eliminar beneficios con confirmación rápida.
+     - Agregar nuevos beneficios con botón `Plus`.
+  5. **Autoguardado y Publicación:** Indicador en tiempo real (*Guardando...* / *Guardado*) con botón global para publicar a producción.
+
+### B. Reorganización del Tablero de QA (`/admin/qa`)
+- **Secuencia Canónica de Páginas Públicas y Legales:**
+  Se reestructuraron las tareas iniciales en `src/app/(admin)/admin/qa/page.tsx` para seguir estrictamente el orden:
+  1. `/` (Portada principal)
+  2. `/status` (Salud y disponibilidad)
+  3. `/verificar` (Buscador y autenticidad)
+  4. `/cot/[token]` (Propuesta comercial pública)
+  5. `/empresa/nueva` (Registro de organizaciones)
+  6. `/sistema-diseno` (Sistema de diseño y componentes)
+  7. `/legal` (Centro de transparencia)
+  8. `/legal/terminos` (Términos y condiciones)
+  9. `/legal/privacidad` (Política de privacidad)
+  10. `/legal/datos` (Tratamiento de datos personales)
+  11. `/legal/cookies` (Política de cookies)
+  12. `/legal/reglamento` (Reglamento de uso)
+  13. `/legal/confidencialidad` (Acuerdo de confidencialidad)
+  14. `/legal/medicion` (Metodología de cálculo)
+  15. `/legal/ptee` (Programa de Transparencia y Ética)
+  16. `/legal/sagrilaft` (Política SAGRILAFT)
+  17. `/legal/ia` (Transparencia en IA)
+  18. `/legal/firma/[token]` (Firma digital de convenios)
+  19. `/legal/dudas` (**Última de las páginas legales** — Buzón de dudas legales)
+- **Flujo Lógico del Journey («Por tema» y «Pantalla a pantalla»):**
+  Se alineó la navegación general para fluir de forma continua:
+  `Páginas Públicas` $\to$ `Autenticación` $\to$ `DPP / Pasaporte` $\to$ `Dashboard` $\to$ `Panel Empresa` $\to$ `Panel Admin` $\to$ `Settings` $\to$ `Alertas` $\to$ `Ayuda` $\to$ `Cotizador IA` $\to$ `Rendimiento` $\to$ `Seguridad` $\to$ `APIs & Validaciones`.
+
+### C. Automatización de la Fecha de Última Actualización en el Footer Legal
+- **Unificación de Etiqueta:** Se estandarizó de `"Actualización:"` a **`"Última actualización:"`** en `layout.tsx`, `footer-public.tsx` y `verificar/page.tsx`.
+- **Cálculo Dinámico en Servidor:** Se implementó `getFechaActualizacionLegal()` en `src/lib/legal/fecha-actualizacion.ts`:
+  - Escanea de forma recursiva el `mtime` de todos los archivos y subdirectorios de `src/app/(public)/legal`.
+  - Compara con la fecha de última edición en la base de datos `contenido_legal`.
+  - Formatea automáticamente la fecha en español (ej. *10 de septiembre de 2026*), actualizándose en vivo con cualquier edición de los textos legales.
+
+### D. Auditoría de Checklist SEO y Optimización de Sitemap
+- **Diagnóstico Integral:** Verificación de los 9 puntos fundamentales (Search Console, Sitemap, Google Analytics con Consent Mode v2, Google Business Profile, Keywords, Metadescripciones, Enlaces Internos, Compresión de Imágenes y Backlinks).
+- **Limpieza de `sitemap.xml`:** Se actualizó `src/app/sitemap.ts` para conservar únicamente las rutas públicas indexables (`https://calculadoradereuso.com`), eliminando URLs con directiva `noindex` para evitar advertencias de rastreo en Google Search Console.
+
+
 
 
 

@@ -4,6 +4,7 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Leaf, Plus, ArrowRight, AlertCircle as WarningCircle, Loader2, ExternalLink, CheckCircle, Pencil, RefreshCw } from '@/components/ui/icons'
+import { useToast } from '@/components/toast-provider'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
@@ -132,6 +133,7 @@ export default function NuevaCotizacionPage() {
 }
 
 function NuevaCotizacionContent() {
+  const { toast } = useToast()
   const router = useRouter()
   const searchParams = useSearchParams()
   const empresaIdParam = searchParams.get('empresa_id')
@@ -421,6 +423,15 @@ function NuevaCotizacionContent() {
       })
       const data = await res.json()
       if (!res.ok) {
+        // El plan no incluye IA (Circular Lab): nunca se muestra ese error,
+        // se cae directo a modo manual, una tarjeta en blanco por foto para
+        // completar a mano — como si el usuario hubiera elegido "manual".
+        if (res.status === 403) {
+          const items = grupo.fotos.map((foto, i) => construirItemStub({
+            imagenIndex: i, imagenPreview: foto.preview, imagenBase64: foto.base64,
+          }))
+          return { items, noIdentificados: [], sinMatch: [] }
+        }
         setError(data.error ?? 'Error al analizar las imágenes.')
         return null
       }
@@ -468,7 +479,10 @@ function NuevaCotizacionContent() {
       if (!id && cliente) {
         const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
         const dataCot = await resCot.json()
-        if (!resCot.ok) return { ok: false, error: dataCot.error ?? 'Error al crear la cotización.' }
+        if (!resCot.ok) {
+          if (resCot.status === 429) toast.limite(dataCot.error ?? 'Llegaste al límite de tu plan.')
+          return { ok: false, error: dataCot.error ?? 'Error al crear la cotización.' }
+        }
         id = dataCot.id as string
         setCotizacionId(id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))
@@ -721,7 +735,11 @@ function NuevaCotizacionContent() {
       if (!id && cliente) {
         const resCot = await fetch(conEmpresa('/api/cotizador/cotizaciones'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cliente_id: cliente.id }) })
         const dataCot = await resCot.json()
-        if (!resCot.ok) { setError(dataCot.error ?? 'Error al crear la cotización.'); return }
+        if (!resCot.ok) {
+          if (resCot.status === 429) toast.limite(dataCot.error ?? 'Llegaste al límite de tu plan.')
+          setError(dataCot.error ?? 'Error al crear la cotización.')
+          return
+        }
         id = dataCot.id as string
         setCotizacionId(id)
         window.history.replaceState(null, '', conEmpresa(`/empresa/cotizador/nueva?cotizacion_id=${id}`))

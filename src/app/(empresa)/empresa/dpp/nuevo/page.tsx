@@ -4,6 +4,7 @@
 import { useState, useEffect, useLayoutEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { useToast } from '@/components/toast-provider'
 import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
 import { createClient } from '@/lib/supabase/client'
@@ -137,6 +138,7 @@ function FilaMaterial({
 }
 
 export default function NuevoActivoDppPage() {
+  const { toast } = useToast()
   const [nombre, setNombre] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [peso_total_kg, setPeso] = useState('')
@@ -258,7 +260,9 @@ export default function NuevoActivoDppPage() {
 
     const data = await res.json()
     if (!res.ok) {
-      setError(data.error ?? 'Error al crear el pasaporte. Intenta de nuevo.')
+      const mensaje = data.error ?? 'Error al crear el pasaporte. Intenta de nuevo.'
+      setError(mensaje)
+      if (res.status === 429) toast.limite(mensaje)
       setLoading(false)
       return
     }

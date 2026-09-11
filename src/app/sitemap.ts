@@ -8,24 +8,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const base = 'https://calculadoradereuso.com'
   const hoy = new Date()
 
+  // Solo páginas indexables (todo el árbol /legal y rutas autenticadas son noindex)
   const paginas = [
-    { ruta: '', prioridad: 1 },
-    { ruta: '/legal', prioridad: 0.5 },
-    { ruta: '/legal/medicion', prioridad: 0.8 },
-    { ruta: '/legal/terminos', prioridad: 0.3 },
-    { ruta: '/legal/privacidad', prioridad: 0.3 },
-    { ruta: '/legal/datos', prioridad: 0.3 },
-    { ruta: '/legal/cookies', prioridad: 0.3 },
-    { ruta: '/legal/reglamento', prioridad: 0.3 },
-    { ruta: '/legal/confidencialidad', prioridad: 0.3 },
-    { ruta: '/legal/ia', prioridad: 0.3 },
-    { ruta: '/legal/dudas', prioridad: 0.3 },
+    { ruta: '', prioridad: 1.0, changeFrequency: 'weekly' as const },
   ]
 
-  return paginas.map(({ ruta, prioridad }) => ({
+  return paginas.map(({ ruta, prioridad, changeFrequency }) => ({
     url: `${base}${ruta}`,
     lastModified: hoy,
-    changeFrequency: ruta === '' ? 'weekly' : 'monthly',
+    changeFrequency,
     priority: prioridad,
   }))
 }

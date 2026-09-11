@@ -19,7 +19,7 @@ export function FooterPublic(props: FooterPublicProps) {
     <Footer
       {...props}
       ip={hideDate ? undefined : props.ip}
-      ipLabel={hideDate ? undefined : props.ipLabel}
+      ipLabel={hideDate ? undefined : (props.ipLabel || 'Última actualización:')}
       hideLegalLinks={hideLegalLinks}
     />
   )

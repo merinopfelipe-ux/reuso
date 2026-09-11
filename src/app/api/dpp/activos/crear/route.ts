@@ -77,7 +77,8 @@ export async function POST(request: NextRequest) {
     .single()
   const errorLimiteDpp = await checkLimiteDpp(targetEmpresaId, (empPlan?.plan ?? 'free') as Plan)
   if (errorLimiteDpp) {
-    return NextResponse.json({ error: errorLimiteDpp }, { status: 403 })
+    // 429: tope de plan, mismo código que el resto de límites.
+    return NextResponse.json({ error: errorLimiteDpp }, { status: 429 })
   }
 
   // El cliente, si llega, debe pertenecer a la misma empresa (nunca confiar

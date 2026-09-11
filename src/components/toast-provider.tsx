@@ -7,6 +7,10 @@ interface ToastContextValue {
   toast: {
     success: (mensaje: string) => void
     error: (mensaje: string) => void
+    // Solo para topes de plan reales (HTTP 429 de plan-limits.ts) — agrega
+    // el enlace de WhatsApp para ampliar el plan. Nunca usar para errores
+    // genéricos ni para el asistente de IA (eso cae en manual sin aviso).
+    limite: (mensaje: string) => void
   }
 }
 
@@ -19,14 +23,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
 
-  const add = useCallback((mensaje: string, variante: ToastVariant) => {
+  const add = useCallback((mensaje: string, variante: ToastVariant, conAccionPlan?: boolean) => {
     const id = `toast-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
-    setToasts((prev) => [...prev, { id, mensaje, variante }])
+    setToasts((prev) => [...prev, { id, mensaje, variante, conAccionPlan }])
   }, [])
 
   const toast = {
     success: (mensaje: string) => add(mensaje, 'success'),
     error: (mensaje: string) => add(mensaje, 'error'),
+    limite: (mensaje: string) => add(mensaje, 'error', true),
   }
 
   return (

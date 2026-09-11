@@ -3,6 +3,7 @@
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import { Leaf, Droplet as Drop, TreeDeciduous as Tree, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
 import { factorCo2PorKg, factorAguaPorKg, PARAM_EQUIV } from '@/lib/calculos/co2'
+import { useToast } from '@/components/toast-provider'
 import type { Categoria, Item, Rol } from '@/types'
 
 interface CategoriaConItems extends Categoria {
@@ -86,6 +87,7 @@ const BORDER = 'var(--border)'
 // ── Componente principal ─────────────────────────────────────────────────────
 
 export function Calculadora({ categorias, rol, onGuardado }: Props) {
+  const { toast } = useToast()
   const [tabActivo, setTabActivo] = useState(categorias[0]?.id ?? '')
   const [pesos, setPesos] = useState<Record<string, number>>({})
   const [guardando, setGuardando] = useState(false)
@@ -154,7 +156,12 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
         body: JSON.stringify({ items, descripcion_html }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Error al guardar.')
+      if (!res.ok) {
+        // 429 = tope de plan real: además del mensaje inline, un toast con
+        // el enlace de WhatsApp para ampliar el plan.
+        if (res.status === 429) toast.limite(data.error ?? 'Llegaste al límite de tu plan.')
+        throw new Error(data.error ?? 'Error al guardar.')
+      }
       setResultado(data)
       onGuardado?.()
     } catch (e) {
@@ -167,7 +174,7 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
       setGuardando(false)
       isSubmittingRef.current = false
     }
-  }, [pesos, onGuardado])
+  }, [pesos, onGuardado, toast])
 
   const handleReset = useCallback(() => {
     setPesos({})

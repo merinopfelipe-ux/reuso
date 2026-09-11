@@ -1859,15 +1859,6 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     {plan.cta}
                   </button>
                 )}
-                <a
-                  href={waLink(`Hola, quiero ampliar mi plan ${plan.name} de la Calculadora de Reúso.`, whatsappNumero)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`mt-3 flex items-center justify-center gap-1.5 text-[11px] md:text-[11px] lg:text-xs font-bold transition-colors hover:opacity-80 ${isDark ? 'text-white/70' : 'text-[#00827C]'}`}
-                >
-                  <WhatsappLogo size={13} />
-                  Escríbenos para ampliar tu plan
-                </a>
               </div>
             ))}
           </div>
