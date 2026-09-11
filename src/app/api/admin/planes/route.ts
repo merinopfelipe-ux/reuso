@@ -83,6 +83,29 @@ export async function PATCH(request: NextRequest) {
     .update({ ...borrador, tiene_borrador_sin_publicar: true, actualizado_at: new Date().toISOString() })
     .eq('id', id)
 
-  if (error) return NextResponse.json({ error: 'No se pudo guardar el borrador' }, { status: 500 })
+  if (error) {
+    // equivalente_mensual_anual_* es de sql/128 (puede no haber corrido
+    // todavía). Si falla por eso, no debe tumbar el guardado del resto del
+    // borrador — reintenta sin esos 3 campos. Bug real 2026-09-11: "1 de 1
+    // plan(es) no se pudieron publicar" porque el UPDATE entero se
+    // rechazaba por 3 columnas nuevas sin migrar.
+    if (error.message?.includes('equivalente_mensual_anual')) {
+      const camposAEliminar = new Set([
+        'borrador_equivalente_mensual_anual_cop',
+        'borrador_equivalente_mensual_anual_usd',
+        'borrador_equivalente_mensual_anual_eur',
+      ])
+      const borradorSinEquivalente = Object.fromEntries(
+        Object.entries(borrador).filter(([clave]) => !camposAEliminar.has(clave))
+      )
+      const { error: errorReintento } = await adminClient
+        .from('config_planes')
+        .update({ ...borradorSinEquivalente, tiene_borrador_sin_publicar: true, actualizado_at: new Date().toISOString() })
+        .eq('id', id)
+      if (errorReintento) return NextResponse.json({ error: 'No se pudo guardar el borrador' }, { status: 500 })
+      return NextResponse.json({ ok: true, aviso: 'Falta correr sql/128 para el equivalente mensual editable — el resto se guardó bien.' })
+    }
+    return NextResponse.json({ error: 'No se pudo guardar el borrador' }, { status: 500 })
+  }
   return NextResponse.json({ ok: true })
 }
