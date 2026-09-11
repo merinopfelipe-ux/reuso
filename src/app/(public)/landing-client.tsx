@@ -970,12 +970,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
   // El equivalente mensual del plan anual (anual / 12) casi nunca cae en un
-  // número "limpio" (ej. $1.241.667). Se redondea hacia arriba a la unidad
-  // más chica que tenga sentido mostrar en cada moneda — el precio anual en
-  // sí NUNCA cambia, solo esta cifra de referencia. COP: al millar. USD/EUR:
-  // al centavo (ya son su unidad mínima visible).
+  // número "limpio" (ej. $1.241.667). Se redondea hacia ABAJO a un número
+  // redondo sin centavos en ninguna moneda — el precio anual en sí NUNCA
+  // cambia, solo esta cifra de referencia. COP: al millar hacia abajo
+  // ($1.241.667 -> $1.240.000). USD/EUR: al entero hacia abajo, sin decimales.
   const redondearMensualDesdeAnual = (amount: number, moneda: keyof typeof CURRENCIES) =>
-    moneda === 'COP' ? Math.ceil(amount / 1000) * 1000 : Math.ceil(amount * 100) / 100
+    moneda === 'COP' ? Math.floor(amount / 1000) * 1000 : Math.floor(amount)
 
   const formatPrice = (plan: typeof PLANS[0]) => {
     if (plan.priceMonthlyCOP === 0) return 'Gratis'
@@ -984,16 +984,19 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
       const c = CURRENCIES[currency]
-      const amount = billing === 'monthly' ? mensual : redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
-      const finalAmount = currency === 'COP' ? Math.round(amount) : amount
-      return `${c.symbol}${c.format(finalAmount)}`
+      if (billing === 'annual') {
+        const redondeado = redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
+        return `${c.symbol}${redondeado.toLocaleString('es-CO')}`
+      }
+      return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
     }
     const c = CURRENCIES[currency]
-    const amount = billing === 'monthly'
-      ? plan.priceMonthlyCOP * c.rate
-      : redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
-    const finalAmount = currency === 'COP' ? Math.round(amount) : amount
-    return `${c.symbol}${c.format(finalAmount)}`
+    if (billing === 'annual') {
+      const redondeado = redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
+      return `${c.symbol}${redondeado.toLocaleString('es-CO')}`
+    }
+    const mensual = plan.priceMonthlyCOP * c.rate
+    return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
   }
 
   const getAnnualTotal = (plan: typeof PLANS[0]) => {
