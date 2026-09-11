@@ -60,6 +60,10 @@ const patchSchema = z.object({
   borrador_limite_dpp_mes: z.number().int().nonnegative().nullable(),
   // Beneficios (bullets) de la tarjeta de plan en la landing, editables.
   borrador_features_json: z.array(z.string().trim().min(1).max(140)).max(15),
+  // Equivalente mensual del plan anual, editable a mano (null = automático).
+  borrador_equivalente_mensual_anual_cop: z.number().nonnegative().nullable(),
+  borrador_equivalente_mensual_anual_usd: z.number().nonnegative().nullable(),
+  borrador_equivalente_mensual_anual_eur: z.number().nonnegative().nullable(),
 })
 
 export async function PATCH(request: NextRequest) {

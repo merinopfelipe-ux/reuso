@@ -53,6 +53,7 @@ export async function POST(
     limite_cotizaciones_mes: actual.limite_cotizaciones_mes,
     incluye_ia: actual.incluye_ia, limite_dpp_mes: actual.limite_dpp_mes,
     features_json: actual.features_json,
+    equivalente_mensual_anual_cop: actual.equivalente_mensual_anual_cop, equivalente_mensual_anual_usd: actual.equivalente_mensual_anual_usd, equivalente_mensual_anual_eur: actual.equivalente_mensual_anual_eur,
   }
   const despues = {
     precio_cop: actual.borrador_precio_cop, precio_usd: actual.borrador_precio_usd, precio_eur: actual.borrador_precio_eur,
@@ -62,6 +63,9 @@ export async function POST(
     incluye_ia: actual.borrador_incluye_ia ?? actual.incluye_ia,
     limite_dpp_mes: actual.borrador_limite_dpp_mes,
     features_json: actual.borrador_features_json ?? actual.features_json,
+    equivalente_mensual_anual_cop: actual.borrador_equivalente_mensual_anual_cop,
+    equivalente_mensual_anual_usd: actual.borrador_equivalente_mensual_anual_usd,
+    equivalente_mensual_anual_eur: actual.borrador_equivalente_mensual_anual_eur,
   }
 
   const { error } = await adminClient

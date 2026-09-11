@@ -702,6 +702,12 @@ export interface PlanPrecioReal {
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
+  // Equivalente mensual del plan anual, editable a mano desde /admin/contenido
+  // -> Precios. null = usar el cálculo automático (anual/12, redondeado hacia
+  // abajo). El precio anual real (precio_anual_*) nunca se toca por esto.
+  equivalente_mensual_anual_cop: number | null
+  equivalente_mensual_anual_usd: number | null
+  equivalente_mensual_anual_eur: number | null
   // Beneficios editables desde /admin/contenido -> Precios. null/[] = usa
   // el respaldo fijo de PLANS.
   features_json: string[] | null
@@ -970,12 +976,25 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
   // El equivalente mensual del plan anual (anual / 12) casi nunca cae en un
-  // número "limpio" (ej. $1.241.667). Se redondea hacia ABAJO a un número
-  // redondo sin centavos en ninguna moneda — el precio anual en sí NUNCA
-  // cambia, solo esta cifra de referencia. COP: al millar hacia abajo
-  // ($1.241.667 -> $1.240.000). USD/EUR: al entero hacia abajo, sin decimales.
+  // número "limpio" (ej. $1.241.667). Por defecto se redondea hacia ABAJO
+  // solo lo mínimo para no inventar un número raro: COP al diez mil
+  // ($1.241.667 -> $1.240.000), USD/EUR solo se le quitan los decimales
+  // ($999.17 -> $999, $2.665,83 -> $2.665) — no se fuerza a la decena
+  // porque no hay una sola regla que se vea bien en los 3 planes a la vez
+  // (verificado 2026-09-11: forzar a la decena rompía $999 -> $990 y
+  // $2.665 -> $2.660, que el usuario quería intactos). El precio anual en
+  // sí NUNCA cambia, solo esta cifra de referencia. El super_admin puede
+  // editarla a mano por plan y moneda desde /admin/contenido -> Precios
+  // (por ejemplo para bajar un caso puntual de $332 a $330); si no la
+  // edita, se usa este cálculo automático.
   const redondearMensualDesdeAnual = (amount: number, moneda: keyof typeof CURRENCIES) =>
-    moneda === 'COP' ? Math.floor(amount / 1000) * 1000 : Math.floor(amount)
+    moneda === 'COP' ? Math.floor(amount / 10000) * 10000 : Math.floor(amount)
+
+  const equivalenteManual = (real: PlanPrecioReal | undefined, moneda: keyof typeof CURRENCIES): number | null => {
+    if (!real) return null
+    const campo = moneda === 'COP' ? real.equivalente_mensual_anual_cop : moneda === 'USD' ? real.equivalente_mensual_anual_usd : real.equivalente_mensual_anual_eur
+    return campo ?? null
+  }
 
   const formatPrice = (plan: typeof PLANS[0]) => {
     if (plan.priceMonthlyCOP === 0) return 'Gratis'
@@ -985,15 +1004,16 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
       const c = CURRENCIES[currency]
       if (billing === 'annual') {
-        const redondeado = redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
-        return `${c.symbol}${redondeado.toLocaleString('es-CO')}`
+        const manual = equivalenteManual(real, currency)
+        const finalAmount = manual ?? redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
+        return `${c.symbol}${c.format(finalAmount)}`
       }
       return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
     }
     const c = CURRENCIES[currency]
     if (billing === 'annual') {
-      const redondeado = redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
-      return `${c.symbol}${redondeado.toLocaleString('es-CO')}`
+      const finalAmount = redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
+      return `${c.symbol}${c.format(finalAmount)}`
     }
     const mensual = plan.priceMonthlyCOP * c.rate
     return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
@@ -1786,8 +1806,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                     <div className="flex flex-col gap-0.5">
                       <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
                       {billing === 'annual' && (
-                        <p className={`text-[10px] md:text-[10px] lg:text-[11px] font-bold mt-1 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
-                          Único pago anual de {getAnnualTotal(plan)}
+                        <p className={`text-[10px] md:text-[10px] lg:text-[11px] mt-1 ${tp}`}>
+                          Único pago anual de <span className="text-sm md:text-sm lg:text-base font-bold">{getAnnualTotal(plan)}</span>
                         </p>
                       )}
                     </div>
