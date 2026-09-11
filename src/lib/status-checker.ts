@@ -50,10 +50,12 @@ async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutM
   }
 }
 
-export async function runChecks() {
-  const adminClient = await createAdminClient()
+// Cada verificación es independiente (proveedores distintos, sin dependencia
+// entre sí) — antes corrían una tras otra (await secuencial), sumando sus
+// tiempos y dejando /status esperando hasta ~15-20s en frío. Ahora corren en
+// paralelo con Promise.all, así el tiempo total es el de la más lenta, no la suma.
 
-  // 1. Verificar Base de Datos y Servidores (y su proveedor externo de forma silenciosa)
+async function verificarBaseDeDatos(adminClient: Awaited<ReturnType<typeof createAdminClient>>) {
   const dbStart = Date.now()
   let dbStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let dbDetails = 'Conexión establecida.'
@@ -98,8 +100,10 @@ export async function runChecks() {
     dbDetails = errMsg.replace(/supabase/gi, 'proveedor de base de datos')
   }
   const dbLatency = Date.now() - dbStart
+  return { dbStatus, dbDetails, dbMantenimiento, dbConexionLocalOk, dbLatency }
+}
 
-  // 2. Verificar Google Gemini API
+async function verificarGemini() {
   const geminiStart = Date.now()
   let geminiStatus: 'ok' | 'error' = 'ok'
   let geminiDetails = 'API operacional.'
@@ -113,8 +117,10 @@ export async function runChecks() {
     geminiDetails = err instanceof Error ? err.message : 'Error al consultar Gemini.'
   }
   const geminiLatency = Date.now() - geminiStart
+  return { geminiStatus, geminiDetails, geminiLatency }
+}
 
-  // 3. Verificar Groq API (groqstatus.com + ping fallback)
+async function verificarGroq() {
   const groqStart = Date.now()
   let groqStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let groqDetails = 'API operacional.'
@@ -148,8 +154,10 @@ export async function runChecks() {
     groqDetails = err instanceof Error ? err.message : 'Error al consultar Groq.'
   }
   const groqLatency = Date.now() - groqStart
+  return { groqStatus, groqDetails, groqMantenimiento, groqLatency }
+}
 
-  // 4. Verificar OpenRouter & Qwen-VL 8B
+async function verificarOpenRouter() {
   const orStart = Date.now()
   let orStatus: 'ok' | 'error' = 'ok'
   let orDetails = 'API operacional.'
@@ -170,10 +178,10 @@ export async function runChecks() {
       if (endpoints.length > 0) {
         const healthyProvider = endpoints.find(e => e.status === 0)
         qwenStatus = healthyProvider ? 'ok' : 'degradado'
-        qwenDetails = healthyProvider 
+        qwenDetails = healthyProvider
           ? `Operacional en ${endpoints.length} proveedor(es). Proveedor top: ${healthyProvider.name.split(' | ')[0]}`
           : 'Proveedores experimentando degradación temporal.'
-        
+
         const totalUptime = endpoints.reduce((sum, e) => sum + e.uptime_last_5m, 0)
         qwenUptime = totalUptime / endpoints.length
       } else {
@@ -187,8 +195,10 @@ export async function runChecks() {
     qwenDetails = 'Error al consultar OpenRouter.'
   }
   const orLatency = Date.now() - orStart
+  return { orStatus, orDetails, qwenStatus, qwenUptime, qwenDetails, orLatency }
+}
 
-  // 5. Verificar Resend (Servicio de Correo) de forma silenciosa
+async function verificarResend() {
   let resendStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let resendDetails = 'Servicio operacional.'
   let resendMantenimiento: string | undefined
@@ -210,8 +220,10 @@ export async function runChecks() {
   } catch {
     // Si falla el fetch de estado, no bloqueamos el flujo principal
   }
+  return { resendStatus, resendDetails, resendMantenimiento }
+}
 
-  // 6. Verificar Vercel (Servidor Web) de forma silenciosa
+async function verificarVercel() {
   let vercelStatus: 'ok' | 'degradado' | 'error' = 'ok'
   let vercelDetails = 'Servicio operacional.'
   let vercelMantenimiento: string | undefined
@@ -233,6 +245,27 @@ export async function runChecks() {
   } catch {
     // Si falla el fetch de estado, no bloqueamos el flujo principal
   }
+  return { vercelStatus, vercelDetails, vercelMantenimiento }
+}
+
+export async function runChecks() {
+  const adminClient = await createAdminClient()
+
+  const [
+    { dbStatus, dbDetails, dbMantenimiento, dbConexionLocalOk, dbLatency },
+    { geminiStatus, geminiDetails, geminiLatency },
+    { groqStatus, groqDetails, groqMantenimiento, groqLatency },
+    { orStatus, orDetails, qwenStatus, qwenUptime, qwenDetails, orLatency },
+    { resendStatus, resendDetails, resendMantenimiento },
+    { vercelStatus, vercelDetails, vercelMantenimiento },
+  ] = await Promise.all([
+    verificarBaseDeDatos(adminClient),
+    verificarGemini(),
+    verificarGroq(),
+    verificarOpenRouter(),
+    verificarResend(),
+    verificarVercel(),
+  ])
 
   const results = {
     supabase: { status: dbStatus, latency: dbLatency, details: dbDetails, origen: 'externo' as const, mantenimientoProgramado: dbMantenimiento },

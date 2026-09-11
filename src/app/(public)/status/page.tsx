@@ -3,7 +3,56 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { CheckCircle, AlertCircle as WarningCircle, XCircle, Cpu, Database, ShieldCheck, ArrowLeft, Clock, ChevronLeft as CaretLeft, ChevronRight as CaretRight, ChevronDown as CaretDown, ChevronUp as CaretUp, TriangleAlert as Warning, Hammer, Info, Calendar } from '@/components/ui/icons'
+import { Skeleton } from '@/components/ui/skeleton'
 import type { ChecksResult } from '@/lib/status-checker'
+
+// Mensajes rotativos mientras /api/status/check consulta los proveedores
+// externos (puede tardar unos segundos en frío) — antes solo había un texto
+// fijo "Cargando componentes...", sin ninguna señal de que algo avanzaba.
+const MENSAJES_CARGA_STATUS = [
+  'Verificando la base de datos...',
+  'Consultando Google Gemini...',
+  'Revisando Groq Cloud...',
+  'Comprobando OpenRouter...',
+  'Chequeando el proveedor de correo...',
+  'Verificando el hosting...',
+]
+
+function PanelCargaComponentes() {
+  const [indice, setIndice] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setIndice(i => (i + 1) % MENSAJES_CARGA_STATUS.length), 1400)
+    return () => clearInterval(id)
+  }, [])
+  return (
+    <div style={{ padding: '8px 0' }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes mensajeCargaStatusIn {
+          from { opacity: 0; transform: translateY(3px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .mensaje-carga-status { animation: mensajeCargaStatusIn 0.35s ease-out; }
+      `}} />
+      <p key={indice} className="mensaje-carga-status" style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 20, textAlign: 'center' }}>
+        {MENSAJES_CARGA_STATUS[indice]}
+      </p>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} style={{ padding: '20px 0', borderBottom: i < 4 ? '1px solid var(--border)' : 'none' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Skeleton style={{ width: 18, height: 18, borderRadius: '50%' }} />
+              <Skeleton style={{ width: 120 + (i % 3) * 20, height: 13 }} />
+            </div>
+            <Skeleton style={{ width: 70, height: 12 }} />
+          </div>
+          <div style={{ display: 'flex', gap: 2.5, width: '100%', height: 16 }}>
+            <Skeleton style={{ width: '100%', height: 16, borderRadius: 3 }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 
 interface StatusComponent {
   key: string
@@ -1057,9 +1106,7 @@ export default function StatusPage() {
           </div>
 
           {loading ? (
-            <div style={{ padding: '32px 0', textAlign: 'center', color: t.textSecondary }}>
-              Cargando componentes...
-            </div>
+            <PanelCargaComponentes />
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {/* 1. Componentes individuales del Sistema (sin agrupar) */}

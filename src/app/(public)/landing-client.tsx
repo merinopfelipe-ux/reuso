@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
 import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
-import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
+import { PLANS, CURRENCIES, formatearPrecioColombiano } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
 import { LeadsForm } from '@/components/leads-form'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
@@ -975,65 +975,56 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   // — la pantalla nunca se rompe por falta de datos.
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
-  // El equivalente mensual del plan anual (anual / 12) casi nunca cae en un
-  // número "limpio" (ej. $1.241.667). Por defecto se redondea hacia ABAJO
-  // solo lo mínimo para no inventar un número raro: COP al diez mil
-  // ($1.241.667 -> $1.240.000), USD/EUR solo se le quitan los decimales
-  // ($999.17 -> $999, $2.665,83 -> $2.665) — no se fuerza a la decena
-  // porque no hay una sola regla que se vea bien en los 3 planes a la vez
-  // (verificado 2026-09-11: forzar a la decena rompía $999 -> $990 y
-  // $2.665 -> $2.660, que el usuario quería intactos). El precio anual en
-  // sí NUNCA cambia, solo esta cifra de referencia. El super_admin puede
-  // editarla a mano por plan y moneda desde /admin/contenido -> Precios
-  // (por ejemplo para bajar un caso puntual de $332 a $330); si no la
-  // edita, se usa este cálculo automático.
-  const redondearMensualDesdeAnual = (amount: number, moneda: keyof typeof CURRENCIES) =>
-    moneda === 'COP' ? Math.floor(amount / 10000) * 10000 : Math.floor(amount)
-
   const equivalenteManual = (real: PlanPrecioReal | undefined, moneda: keyof typeof CURRENCIES): number | null => {
     if (!real) return null
     const campo = moneda === 'COP' ? real.equivalente_mensual_anual_cop : moneda === 'USD' ? real.equivalente_mensual_anual_usd : real.equivalente_mensual_anual_eur
     return campo ?? null
   }
 
-  // COP no tiene decimales, se muestra tal cual. USD/EUR sí, y se ven mejor
-  // con el separador + los 2 decimales en tamaño chico (patrón común de
-  // precios: "$2,415" grande y ".00" chico al lado, en vez de todo del
-  // mismo tamaño).
-  const conDecimalesChicos = (formateado: string, moneda: keyof typeof CURRENCIES) => {
-    if (moneda === 'COP') return formateado
-    const separador = moneda === 'USD' ? '.' : ','
-    const idx = formateado.lastIndexOf(separador)
-    if (idx === -1) return formateado
+  // Regla general de diseño: los decimales van en la misma línea, pero más pequeños
+  // (como en /admin/contenido), sin desfasar la altura de línea.
+  const conDecimalesChicos = (formateado: string) => {
+    if (!formateado.includes(',')) return <span>{formateado}</span>
+    const [entero, centavos] = formateado.split(',')
     return (
-      <>
-        {formateado.slice(0, idx)}
-        <span className="text-[0.55em] align-baseline">{formateado.slice(idx)}</span>
-      </>
+      <span>
+        {entero}
+        <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>,{centavos}</span>
+      </span>
     )
   }
 
+  // En la landing o cotizaciones NUNCA hay redondeo: "El redondeo solo es para /admin/contenido;
+  // de resto nunca hay redondeo. El precio que es es el que se muestra" — Regla de negocio 2026-09-11.
   const formatPrice = (plan: typeof PLANS[0]) => {
     if (plan.priceMonthlyCOP === 0) return 'Gratis'
     const real = precioReal(plan)
+    const c = CURRENCIES[currency]
+
     if (real) {
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
-      const c = CURRENCIES[currency]
+
       if (billing === 'annual') {
         const manual = equivalenteManual(real, currency)
-        const finalAmount = manual ?? redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
-        return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
+        const finalAmount = manual ?? ((anual ?? mensual * 10) / 12)
+        const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
+        return <>{c.symbol}{conDecimalesChicos(str)}</>
       }
-      return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(mensual) : mensual), currency)}</>
+
+      const str = currency === 'COP' ? formatearPrecioColombiano(mensual, true) : c.format(mensual)
+      return <>{c.symbol}{conDecimalesChicos(str)}</>
     }
-    const c = CURRENCIES[currency]
+
     if (billing === 'annual') {
-      const finalAmount = redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
-      return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
+      const finalAmount = (plan.priceMonthlyCOP * c.rate * 10) / 12
+      const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
+      return <>{c.symbol}{conDecimalesChicos(str)}</>
     }
+
     const mensual = plan.priceMonthlyCOP * c.rate
-    return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(mensual) : mensual), currency)}</>
+    const str = currency === 'COP' ? formatearPrecioColombiano(mensual, true) : c.format(mensual)
+    return <>{c.symbol}{conDecimalesChicos(str)}</>
   }
 
   // El pago anual (a diferencia del precio mensual y el equivalente
@@ -1041,7 +1032,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   // precio unitario. Se redondea al entero y se formatea sin fracción.
   const getAnnualTotal = (plan: typeof PLANS[0]) => {
     const c = CURRENCIES[currency]
-    const formatearSinDecimales = (n: number) => `${c.symbol}${Math.round(n).toLocaleString(currency === 'EUR' ? 'de-DE' : currency === 'USD' ? 'en-US' : 'es-CO')}`
+    const formatearSinDecimales = (n: number) =>
+      `${c.symbol}${currency === 'COP' ? formatearPrecioColombiano(Math.round(n), false) : Math.round(n).toLocaleString(currency === 'EUR' ? 'de-DE' : 'en-US')}`
     const real = precioReal(plan)
     if (real) {
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
@@ -1378,7 +1370,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   key={i}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-30px' }}
+                  viewport={{ once: true, margin: '100px' }}
                   transition={{ duration: 0.45, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, scale: 1.015 }}
                   className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
@@ -1738,7 +1730,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-30px' }}
+                viewport={{ once: true, margin: '100px' }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -5, scale: 1.015 }}
                 className={`group flex flex-col rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${isDark ? 'bg-white/5 border border-white/10' : 'bg-primary border border-[#00827C]/10'}`}
@@ -1883,7 +1875,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-30px' }}
+            viewport={{ once: true, margin: '100px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             style={{
               isolation: 'isolate',
@@ -2067,7 +2059,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-30px' }}
+                  viewport={{ once: true, margin: '100px' }}
                   transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -5, scale: 1.015 }}
                   className={`group relative p-6 sm:p-8 rounded-[2rem] overflow-hidden flex flex-col justify-between hover-card-interactive shadow-lg hover:shadow-2xl transition-all duration-300 border ${isDark ? col.borderColorDark : col.borderColorLight}`}
@@ -2142,7 +2134,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-20px' }}
+            viewport={{ once: true, margin: '100px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ y: -4, scale: 1.008 }}
             style={{
@@ -2261,6 +2253,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => setContactModalOpen(false)}
               className={`fixed inset-0 backdrop-blur-md transition-colors duration-300 ${
                 isDark ? 'bg-[#121212]/70' : 'bg-white/70'

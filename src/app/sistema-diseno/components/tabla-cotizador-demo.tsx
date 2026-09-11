@@ -372,7 +372,7 @@ export function TablaCotizadorDemo() {
   }
 
   return (
-    <div className="rounded-[16px] border border-[var(--border)] bg-[var(--bg-card)] p-5 shadow-sm space-y-4">
+    <div>
       {/* 1. Barra de herramientas EXACTA de /empresa/cotizador */}
       <ToolbarVistas
         busqueda={busqueda}
