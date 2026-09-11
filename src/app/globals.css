@@ -534,13 +534,16 @@ body {
    encima) — solo se le quita el fondo a las flechas mismas. */
 input[type="number"].input-numero-sutil::-webkit-inner-spin-button,
 input[type="number"].input-numero-sutil::-webkit-outer-spin-button {
-  background: transparent;
+  background: transparent !important;
+  border: none;
+  box-shadow: none;
   opacity: 0.5;
 }
 input[type="number"].input-numero-sutil:hover::-webkit-inner-spin-button,
 input[type="number"].input-numero-sutil:hover::-webkit-outer-spin-button,
 input[type="number"].input-numero-sutil:focus::-webkit-inner-spin-button,
 input[type="number"].input-numero-sutil:focus::-webkit-outer-spin-button {
+  background: transparent !important;
   opacity: 1;
 }
 

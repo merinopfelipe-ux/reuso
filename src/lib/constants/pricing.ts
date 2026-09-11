@@ -33,9 +33,9 @@ export const PLANS = [
     ],
     limits: {
       empleados: '1 persona',
-      calculos: '10 cálculos al mes',
-      informes: 'Sin informes',
-      cotizaciones: 'Sin cotizaciones',
+      calculos: '10 por mes',
+      informes: 'No incluye',
+      cotizaciones: 'No incluye',
     }
   },
   {
@@ -57,10 +57,10 @@ export const PLANS = [
       'Soporte por email.',
     ],
     limits: {
-      empleados: 'Hasta 5 miembros',
-      calculos: '200 cálculos al mes',
-      informes: '5 informes al mes',
-      cotizaciones: 'Sin cotizaciones',
+      empleados: '5 personas',
+      calculos: '200 por mes',
+      informes: '5 por mes',
+      cotizaciones: 'No incluye',
     }
   },
   {
@@ -84,10 +84,10 @@ export const PLANS = [
       'Soporte por email.',
     ],
     limits: {
-      empleados: 'Hasta 10 miembros',
-      calculos: '200 cálculos al mes',
-      informes: '5 informes al mes',
-      cotizaciones: '200 cotizaciones al mes',
+      empleados: '10 personas',
+      calculos: '200 por mes',
+      informes: '5 por mes',
+      cotizaciones: '200 por mes',
     }
   },
   {
@@ -108,10 +108,10 @@ export const PLANS = [
       'Soporte prioritario.',
     ],
     limits: {
-      empleados: 'Ilimitados',
-      calculos: 'Ilimitados',
-      informes: 'Ilimitados',
-      cotizaciones: 'Ilimitadas',
+      empleados: 'Ilimitado',
+      calculos: 'Ilimitado',
+      informes: 'Ilimitado',
+      cotizaciones: 'Ilimitado',
     }
   },
 ]

@@ -395,7 +395,7 @@ export default function DatosPage() {
 
         {/* Matriz ARCO */}
         <div className="p-4 rounded-[12px] bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20">
-          <div className="text-xs font-bold text-[var(--color-brand)] uppercase tracking-wider mb-2">
+          <div className="text-xs font-bold text-[var(--color-brand)] tracking-wider mb-2">
             {lang === 'ENG' ? 'Universal ARCO & GDPR Rights Matrix' : 'Matriz de Derechos ARCO y Soberanía Digital'}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">

@@ -117,7 +117,7 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
       </label>
 
       <div className={`rounded-2xl border p-5 mb-4 bg-[var(--bg-card)] border-[var(--border)] transition-opacity ${!aceptado ? 'opacity-50 pointer-events-none' : ''}`}>
-        <p className={`text-xs font-bold uppercase tracking-wider mb-4 ${ts}`}>Datos del firmante</p>
+        <p className={`text-xs font-bold tracking-wider mb-4 ${ts}`}>Datos del firmante</p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>

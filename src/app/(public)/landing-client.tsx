@@ -1041,24 +1041,26 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   // /admin/contenido). Si no llegó el dato real, cae al texto fijo de PLANS.
   const cuotasPlan = (plan: typeof PLANS[0]): { etiqueta: string; valor: string }[] => {
     const real = precioReal(plan)
-    const num = (v: number | null | undefined, unidad: string, cero: string): string => {
+    // Valor corto: "N por mes" para las cuotas mensuales, "N personas" para el
+    // equipo. null = "Ilimitado", 0 = el texto de "no incluye".
+    const porMes = (v: number | null | undefined, cero: string): string => {
       if (v === null || v === undefined) return 'Ilimitado'
       if (v === 0) return cero
-      return `${v.toLocaleString('es-CO')} ${unidad}`
+      return `${v.toLocaleString('es-CO')} por mes`
     }
     if (real) {
       return [
-        { etiqueta: 'Miembros del equipo', valor: num(real.limite_empleados, 'personas', '1 persona') },
-        { etiqueta: 'Cálculos por mes', valor: num(real.limite_calculos_mes, 'cálculos', 'Sin cálculos') },
-        { etiqueta: 'Informes por mes', valor: num(real.limite_informes_mes, 'informes', 'Sin informes') },
-        { etiqueta: 'Cotizaciones por mes', valor: num(real.limite_cotizaciones_mes, 'cotizaciones', 'Sin cotizaciones') },
+        { etiqueta: 'Equipo', valor: real.limite_empleados == null ? 'Ilimitado' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}` },
+        { etiqueta: 'Cálculos', valor: porMes(real.limite_calculos_mes, 'No incluye') },
+        { etiqueta: 'Informes', valor: porMes(real.limite_informes_mes, 'No incluye') },
+        { etiqueta: 'Cotizaciones', valor: porMes(real.limite_cotizaciones_mes, 'No incluye') },
       ]
     }
     return [
-      { etiqueta: 'Miembros del equipo', valor: plan.limits.empleados },
-      { etiqueta: 'Cálculos por mes', valor: plan.limits.calculos },
-      { etiqueta: 'Informes por mes', valor: plan.limits.informes },
-      { etiqueta: 'Cotizaciones por mes', valor: plan.limits.cotizaciones },
+      { etiqueta: 'Equipo', valor: plan.limits.empleados },
+      { etiqueta: 'Cálculos', valor: plan.limits.calculos },
+      { etiqueta: 'Informes', valor: plan.limits.informes },
+      { etiqueta: 'Cotizaciones', valor: plan.limits.cotizaciones },
     ]
   }
 
@@ -1763,9 +1765,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
-            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>
-              Todos los planes de pago incluyen una <strong>Tarifa de Implementación (pago único)</strong> que cubre la parametrización de tus categorías, la carga de tu catálogo histórico y la capacitación de tu equipo.
-            </p>
+            <p className={`text-xs sm:text-sm md:text-sm lg:text-base font-medium ${ts}`}>Sin ataduras. Arranca gratis para explorar y activa herramientas más potentes solo cuando estés listo.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8 lg:mb-10">
@@ -1816,7 +1816,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
                 <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/12'}`}>
                   {cuotasPlan(plan).map((c, k) => (
                     <div key={k}>
-                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold uppercase tracking-wide opacity-55 ${ts}`}>{c.etiqueta}</dt>
+                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide opacity-55 ${ts}`}>{c.etiqueta}</dt>
                       <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
                     </div>
                   ))}

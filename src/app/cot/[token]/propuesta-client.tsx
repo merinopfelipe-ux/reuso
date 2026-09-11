@@ -1190,7 +1190,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-xl font-black text-[var(--text-primary)] leading-none mb-1">{totalPesoStr}</span>
-                <span className="text-[9px] uppercase font-bold text-[var(--text-secondary)] tracking-wider">Kilos</span>
+                <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-wider">Kilos</span>
                 <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">recuperados</span>
               </div>
 
@@ -1202,7 +1202,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#00827C]/10 mb-1">
                   <Leaf size={12} className="text-[#00827C]" />
                 </div>
-                <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">Impacto</span>
+                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">Impacto</span>
                 <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">por material</span>
               </div>
 
@@ -1212,7 +1212,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-xl font-black text-[#00827C] leading-none mb-1">{totalCO2Str}</span>
-                <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">CO₂</span>
+                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">CO₂</span>
                 <span className="text-[9px] font-medium text-[#00827C] opacity-80 leading-none mt-0.5">evitado</span>
               </div>
             </div>
@@ -1347,7 +1347,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-gradient-to-br from-[#985fa1]/10 via-[#985fa1]/5 to-[var(--bg-card)] border border-[#985fa1]/20 shadow-sm relative overflow-hidden">
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-base font-bold text-[var(--text-secondary)] leading-none mb-1">{formatCOPCompact(valorNuevoTotal)}</span>
-                <span className="text-[9px] uppercase font-bold text-[var(--text-secondary)] tracking-wider">Nuevo (IA)</span>
+                <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-wider">Nuevo (IA)</span>
               </div>
 
               <div className="text-[#985fa1] opacity-50 font-black text-lg relative z-10 mb-1">
@@ -1356,7 +1356,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-base font-bold text-[var(--text-primary)] leading-none mb-1">{formatCOPCompact(valorReparacionTotal)}</span>
-                <span className="text-[9px] uppercase font-bold text-[var(--text-primary)] tracking-wider">Restaurado</span>
+                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">Restaurado</span>
               </div>
 
               <div className="text-[#985fa1] opacity-50 relative z-10 mb-1">

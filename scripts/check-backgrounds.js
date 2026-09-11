@@ -62,12 +62,28 @@ function checkDirectory(dir) {
           hasErrors = true;
         }
       }
+
+      // Regla de Oro #5 del CLAUDE.md: PROHIBIDO uppercase / text-transform:
+      // uppercase en texto visible (labels, botones, badges, headers de
+      // tabla). La única excepción es `capitalize` para nombres/roles
+      // dinámicos — `uppercase` no tiene excepción. Se revisa aquí porque
+      // es una regla que se olvida seguido en las revisiones manuales.
+      const lines = content.split('\n');
+      lines.forEach((line, i) => {
+        if (/toUpperCase|check-backgrounds/.test(line)) return;
+        const enClase = /class(Name)?=[^]*\buppercase\b/.test(line) || /\b(?:sm:|md:|lg:|xl:)?uppercase\b/.test(line);
+        const enEstilo = /text-transform:\s*uppercase/.test(line) || /textTransform:\s*['"]uppercase['"]/.test(line);
+        if (enClase || enEstilo) {
+          console.error(`\x1b[31mError: 'uppercase' en ${relativePath}:${i + 1} — prohibido por la Regla de Oro #5 (sin mayúsculas sostenidas). Usa Title Case o Sentence case; si necesitas capitalizar un nombre dinámico usa 'capitalize'.\x1b[0m`);
+          hasErrors = true;
+        }
+      });
     }
   }
   return hasErrors;
 }
 
-console.log('Checking for hardcoded backgrounds...');
+console.log('Checking for hardcoded backgrounds y mayúsculas sostenidas...');
 const errors = checkDirectory(path.join(process.cwd(), 'src'));
 
 if (errors) {

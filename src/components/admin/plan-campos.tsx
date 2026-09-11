@@ -42,8 +42,11 @@ export function CampoLimiteGrande({ icono: Icono, label, valor, onChange }: {
         <input
           type="number"
           min={0}
-          value={valor}
-          onChange={(e) => onChange(Number(e.target.value))}
+          // Vacío cuando el valor es 0 (con "0" de placeholder) — así al
+          // escribir "5" nunca queda "05". Borrar el campo vuelve a 0.
+          value={valor === 0 ? '' : valor}
+          placeholder="0"
+          onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
           onFocus={(e) => e.target.select()}
           className="input-numero-sutil"
           style={{

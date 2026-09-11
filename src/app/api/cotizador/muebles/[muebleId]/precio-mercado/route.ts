@@ -5,6 +5,8 @@ import { rateLimit } from '@/lib/rate-limit'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { buscarPrecioMercado } from '@/lib/ia/precio-mercado'
+import { planIncluyeIA } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
 
 // POST: dispara la búsqueda IA de "precio de mercado nuevo" para un mueble
 // ya cotizado (Reporte 1, dominio A). Fire-and-forget desde la UI: el alta
@@ -23,6 +25,15 @@ export async function POST(
   const { user_id, empresa_id, rol, adminClient } = auth
   const { muebleId } = params
   const ip = getIp(request)
+
+  // La búsqueda de precio de mercado usa IA — solo desde Impulso Sostenible.
+  const { data: empIA } = await adminClient.from('empresas').select('plan').eq('id', empresa_id).single()
+  if (!(await planIncluyeIA(empresa_id, (empIA?.plan ?? 'free') as Plan))) {
+    return NextResponse.json(
+      { error: 'La sugerencia de precio con IA está disponible desde el plan Impulso Sostenible.' },
+      { status: 403 }
+    )
+  }
 
   const allowed = await rateLimit(`precio_mercado:${empresa_id}`, 20, 60 * 60_000)
   if (!allowed) {
