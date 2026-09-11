@@ -2,8 +2,11 @@ import { Target, FlaskConical as Flask, Zap as Lightning, ShieldCheck, IdCard as
 
 export const CURRENCIES = {
   COP: { symbol: '$', code: 'COP', rate: 1, format: (n: number) => n.toLocaleString('es-CO') },
-  USD: { symbol: '$', code: 'USD', rate: 0.00025, format: (n: number) => n.toFixed(2) },
-  EUR: { symbol: '€', code: 'EUR', rate: 0.00023, format: (n: number) => n.toFixed(2) },
+  // toFixed(2) no separaba los miles ("2415.00") — toLocaleString con 2
+  // decimales fijos sí los separa ("2,415.00" en inglés/USD, "2.415,00"
+  // en euro), bug real encontrado 2026-09-11.
+  USD: { symbol: '$', code: 'USD', rate: 0.00025, format: (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
+  EUR: { symbol: '€', code: 'EUR', rate: 0.00023, format: (n: number) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) },
 }
 
 export const ANNUAL_DISCOUNT = 10 / 12 // 2 meses gratis
