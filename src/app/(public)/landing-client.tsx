@@ -996,6 +996,23 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
     return campo ?? null
   }
 
+  // COP no tiene decimales, se muestra tal cual. USD/EUR sí, y se ven mejor
+  // con el separador + los 2 decimales en tamaño chico (patrón común de
+  // precios: "$2,415" grande y ".00" chico al lado, en vez de todo del
+  // mismo tamaño).
+  const conDecimalesChicos = (formateado: string, moneda: keyof typeof CURRENCIES) => {
+    if (moneda === 'COP') return formateado
+    const separador = moneda === 'USD' ? '.' : ','
+    const idx = formateado.lastIndexOf(separador)
+    if (idx === -1) return formateado
+    return (
+      <>
+        {formateado.slice(0, idx)}
+        <span className="text-[0.55em] align-top">{formateado.slice(idx)}</span>
+      </>
+    )
+  }
+
   const formatPrice = (plan: typeof PLANS[0]) => {
     if (plan.priceMonthlyCOP === 0) return 'Gratis'
     const real = precioReal(plan)
@@ -1006,17 +1023,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       if (billing === 'annual') {
         const manual = equivalenteManual(real, currency)
         const finalAmount = manual ?? redondearMensualDesdeAnual((anual ?? mensual * 10) / 12, currency)
-        return `${c.symbol}${c.format(finalAmount)}`
+        return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
       }
-      return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
+      return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(mensual) : mensual), currency)}</>
     }
     const c = CURRENCIES[currency]
     if (billing === 'annual') {
       const finalAmount = redondearMensualDesdeAnual((plan.priceMonthlyCOP * c.rate * 10) / 12, currency)
-      return `${c.symbol}${c.format(finalAmount)}`
+      return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
     }
     const mensual = plan.priceMonthlyCOP * c.rate
-    return `${c.symbol}${c.format(currency === 'COP' ? Math.round(mensual) : mensual)}`
+    return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(mensual) : mensual), currency)}</>
   }
 
   const getAnnualTotal = (plan: typeof PLANS[0]) => {
@@ -1026,12 +1043,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
       const c = CURRENCIES[currency]
       const finalAmount = anual ?? (currency === 'COP' ? Math.round(mensual * 10) : mensual * 10)
-      return `${c.symbol}${c.format(currency === 'COP' ? Math.round(finalAmount) : finalAmount)}`
+      return <>{c.symbol}{conDecimalesChicos(c.format(currency === 'COP' ? Math.round(finalAmount) : finalAmount), currency)}</>
     }
     const c = CURRENCIES[currency]
     const amount = plan.priceMonthlyCOP * c.rate * 10
     const finalAmount = currency === 'COP' ? Math.round(amount) : amount
-    return `${c.symbol}${c.format(finalAmount)}`
+    return <>{c.symbol}{conDecimalesChicos(c.format(finalAmount), currency)}</>
   }
 
   // Las 4 cuotas del plan (empleados, cálculos/mes, informes/mes,
