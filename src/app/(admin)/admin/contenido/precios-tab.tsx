@@ -497,7 +497,19 @@ export function PreciosTab() {
     else setRefrescando(true)
     fetch('/api/admin/planes')
       .then(r => r.json())
-      .then(data => setPlanes(data.planes ?? []))
+      .then(data => {
+        const cargados: ConfigPlan[] = data.planes ?? []
+        setPlanes(cargados)
+        // Un plan puede llegar con un borrador sin publicar de una sesión
+        // anterior (tiene_borrador_sin_publicar = true en la base) sin que
+        // se haya editado nada en ESTA sesión — si no se seedea aquí, el
+        // botón "Publicar todo" queda deshabilitado aunque la tarjeta
+        // muestre "Cambios sin publicar". Bug real encontrado 2026-09-10.
+        const conBorrador = cargados.filter(p => p.tiene_borrador_sin_publicar).map(p => p.id)
+        if (conBorrador.length > 0) {
+          setPendientes(prev => new Set([...Array.from(prev), ...conBorrador]))
+        }
+      })
       .finally(() => { setCargando(false); setRefrescando(false) })
   }
 
