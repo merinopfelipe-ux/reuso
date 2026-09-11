@@ -23,6 +23,7 @@ import { useToast } from '@/components/toast-provider'
 import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
 import { Skeleton } from '@/components/ui/skeleton'
+import { SwitchOpciones } from '@/components/ui/switch-opciones'
 import { PLANS } from '@/lib/constants/pricing'
 
 // Skeleton con la misma forma real de una tarjeta de plan:
@@ -188,17 +189,40 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
         // se envían — el schema del servidor los rechazaría.
         body: JSON.stringify({ ...borrador, id: plan.id, borrador_features_json: borrador.borrador_features_json.filter(f => f.trim() !== '') }),
       })
-      if (!resGuardar.ok) return false
+      if (!resGuardar.ok) {
+        const errJson = await resGuardar.json().catch(() => ({}))
+        console.error(`[PreciosTab] Error al guardar borrador de ${plan.id}:`, errJson)
+        return false
+      }
       const resPublicar = await fetch(`/api/admin/planes/${plan.id}/publicar`, { method: 'POST' })
-      return resPublicar.ok
+      if (!resPublicar.ok) {
+        const errJson = await resPublicar.json().catch(() => ({}))
+        console.error(`[PreciosTab] Error al publicar ${plan.id}:`, errJson)
+        return false
+      }
+      return true
     },
   }), [borrador, plan.id])
 
   function cambiarMensual(campo: 'cop' | 'usd' | 'eur', v: number) {
+    const anual = Math.round(v * 10 * 100) / 100
+    const bruto = anual / 12
+    const equiv = campo === 'cop' ? Math.floor(bruto / 10000) * 10000 : Math.floor(bruto)
     setBorrador(b => ({
       ...b,
       [`borrador_precio_${campo}`]: v,
-      [`borrador_precio_anual_${campo}`]: Math.round(v * 10 * 100) / 100,
+      [`borrador_precio_anual_${campo}`]: anual,
+      [`borrador_equivalente_mensual_anual_${campo}`]: equiv,
+    }))
+  }
+
+  function cambiarAnual(campo: 'cop' | 'usd' | 'eur', v: number) {
+    const bruto = v / 12
+    const equiv = campo === 'cop' ? Math.floor(bruto / 10000) * 10000 : Math.floor(bruto)
+    setBorrador(b => ({
+      ...b,
+      [`borrador_precio_anual_${campo}`]: v,
+      [`borrador_equivalente_mensual_anual_${campo}`]: equiv,
     }))
   }
 
@@ -262,64 +286,12 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
             moneda={moneda}
             mensual={borrador[`borrador_precio_${moneda.codigo}`]}
             anual={borrador[`borrador_precio_anual_${moneda.codigo}`]}
+            equivalenteMensual={borrador[`borrador_equivalente_mensual_anual_${moneda.codigo}`]}
             onMensualChange={(v) => cambiarMensual(moneda.codigo, v)}
-            onAnualChange={(v) => setBorrador(b => ({ ...b, [`borrador_precio_anual_${moneda.codigo}`]: v }))}
+            onAnualChange={(v) => cambiarAnual(moneda.codigo, v)}
+            onEquivalenteMensualChange={(v) => setBorrador(b => ({ ...b, [`borrador_equivalente_mensual_anual_${moneda.codigo}`]: v }))}
           />
         ))}
-      </div>
-
-      {/* Equivalente mensual del plan anual — lo que se ve en la landing bajo
-          el precio grande al elegir "Anual". Por defecto es automático
-          (anual/12 redondeado hacia abajo); si se ve mal, se edita a mano
-          aquí, por moneda. */}
-      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>Equivalente mensual del plan anual</h4>
-      <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: '0 0 12px' }}>Se calcula solo (redondeado hacia abajo) y así se ve en la landing. Edítalo aquí solo si el número automático no se ve bien.</p>
-      <div className="grid grid-cols-1 sm:grid-cols-3" style={{ display: 'grid', gap: 20, marginBottom: 28 }}>
-        {MONEDAS.map((moneda) => {
-          const campo = `borrador_equivalente_mensual_anual_${moneda.codigo}` as const
-          const valor = borrador[campo]
-          // Mismo cálculo que la landing (anual/12, redondeado hacia abajo):
-          // COP al diez mil, USD/EUR solo sin decimales — para que el
-          // usuario vea aquí el número exacto que se usará si deja el
-          // campo vacío, en vez de solo la palabra "Automático".
-          const anualCampo = `borrador_precio_anual_${moneda.codigo}` as const
-          const mensualCampo = `borrador_precio_${moneda.codigo}` as const
-          const anual = borrador[anualCampo] ?? borrador[mensualCampo] * 10
-          const bruto = anual / 12
-          const automatico = moneda.codigo === 'cop' ? Math.floor(bruto / 10000) * 10000 : Math.floor(bruto)
-          const locale = moneda.codigo === 'eur' ? 'de-DE' : moneda.codigo === 'usd' ? 'en-US' : 'es-CO'
-          return (
-            <div key={moneda.codigo}>
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{moneda.simbolo} {moneda.label}</span>
-              <input
-                type="number"
-                min={0}
-                value={valor ?? ''}
-                placeholder={String(automatico)}
-                onChange={(e) => setBorrador(b => ({ ...b, [campo]: e.target.value === '' ? null : Number(e.target.value) }))}
-                onFocus={(e) => e.target.select()}
-                className="input-numero-sutil"
-                style={{
-                  width: '100%', fontSize: 20, fontWeight: 300, color: 'var(--text-primary)',
-                  border: 'none', borderBottom: '1px solid var(--border)', background: 'transparent',
-                  padding: '2px 0', outline: 'none',
-                }}
-              />
-              <p style={{ margin: '6px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>
-                Automático: {moneda.simbolo}{automatico.toLocaleString(locale)}
-              </p>
-              {valor != null && (
-                <button
-                  type="button"
-                  onClick={() => setBorrador(b => ({ ...b, [campo]: null }))}
-                  style={{ marginTop: 4, fontSize: 11, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-                >
-                  Volver a automático
-                </button>
-              )}
-            </div>
-          )
-        })}
       </div>
 
       {/* 3. Capacidades de IA */}
@@ -551,6 +523,225 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
   )
 })
 
+// Cuadro comparativo del popup "Ver más" de la landing (debajo de los
+// precios) — 100% editable desde aquí, guardado aparte de los planes en sí
+// (usa contenido_landing, clave 'comparativa_planes', el mismo mecanismo
+// genérico ya usado para FAQ/WhatsApp, sin borrador→publicar porque no es
+// dato sensible de precio). Empieza vacío a propósito: el contenido de
+// negocio (categorías y filas reales) lo define el super_admin, nunca se
+// inventa aquí.
+type TipoFilaComparativa = 'check' | 'texto'
+interface FilaComparativa {
+  label: string
+  tipo: TipoFilaComparativa
+  valores: Record<string, string | boolean>
+}
+interface CategoriaComparativa {
+  nombre: string
+  filas: FilaComparativa[]
+}
+
+const inputComparativaStyle: React.CSSProperties = {
+  border: '1px solid var(--border)',
+  borderRadius: 8,
+  padding: '8px 10px',
+  fontSize: 13,
+  background: 'var(--bg-input)',
+  color: 'var(--text-primary)',
+  width: '100%',
+}
+
+function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
+  const { toast } = useToast()
+  const [categorias, setCategorias] = useState<CategoriaComparativa[]>([])
+  const [cargando, setCargando] = useState(true)
+  const [guardando, setGuardando] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/contenido?clave=comparativa_planes')
+      .then(r => r.json())
+      .then(({ data }) => {
+        const fila = Array.isArray(data) ? data[0] : null
+        const cats = (fila?.valor_json?.categorias as CategoriaComparativa[] | undefined) ?? []
+        setCategorias(cats)
+      })
+      .catch(() => {})
+      .finally(() => setCargando(false))
+  }, [])
+
+  function valoresVacios(): Record<string, string | boolean> {
+    return Object.fromEntries(planes.map(p => [p.id, '']))
+  }
+
+  function agregarCategoria() {
+    setCategorias(c => [...c, { nombre: '', filas: [] }])
+  }
+  function eliminarCategoria(i: number) {
+    setCategorias(c => c.filter((_, idx) => idx !== i))
+  }
+  function cambiarNombreCategoria(i: number, nombre: string) {
+    setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, nombre } : cat))
+  }
+  function agregarFila(i: number) {
+    setCategorias(c => c.map((cat, idx) => idx === i
+      ? { ...cat, filas: [...cat.filas, { label: '', tipo: 'check' as TipoFilaComparativa, valores: valoresVacios() }] }
+      : cat))
+  }
+  function eliminarFila(i: number, j: number) {
+    setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, filas: cat.filas.filter((_, fj) => fj !== j) } : cat))
+  }
+  function cambiarFila(i: number, j: number, cambios: Partial<FilaComparativa>) {
+    setCategorias(c => c.map((cat, idx) => idx === i
+      ? { ...cat, filas: cat.filas.map((f, fj) => fj === j ? { ...f, ...cambios } : f) }
+      : cat))
+  }
+  function cambiarValor(i: number, j: number, planId: string, valor: string | boolean) {
+    setCategorias(c => c.map((cat, idx) => idx === i
+      ? { ...cat, filas: cat.filas.map((f, fj) => fj === j ? { ...f, valores: { ...f.valores, [planId]: valor } } : f) }
+      : cat))
+  }
+
+  async function guardar() {
+    setGuardando(true)
+    try {
+      const res = await fetch('/api/admin/contenido', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clave: 'comparativa_planes', valor_json: { categorias } }),
+      })
+      if (!res.ok) throw new Error()
+      toast.success('Cuadro comparativo guardado. Ya se ve así en el popup "Ver más" de la landing.')
+    } catch {
+      toast.error('No se pudo guardar el cuadro comparativo.')
+    } finally {
+      setGuardando(false)
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid var(--divider)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 20 }}>
+        <div>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Cuadro comparativo de planes</h3>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '4px 0 0', maxWidth: 640 }}>
+            Se ve en la landing al pulsar &quot;Ver más&quot; debajo de los precios. Agrupa por categorías (ej. &quot;Uso y límites&quot;, &quot;Cálculo Ambiental&quot;) y cada fila puede ser una casilla (sí/no) o un texto libre (&quot;5 al mes&quot;, &quot;Ilimitado&quot;).
+          </p>
+        </div>
+        <Button variant="primary" size="sm" onClick={guardar} loading={guardando}>
+          Guardar comparativa
+        </Button>
+      </div>
+
+      {cargando ? (
+        <Skeleton style={{ height: 160, borderRadius: 16 }} />
+      ) : (
+        <>
+          {categorias.length === 0 && (
+            <div style={{ border: '1px dashed var(--border)', borderRadius: 16, padding: 24, textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13, marginBottom: 20 }}>
+              Todavía no hay ninguna categoría. Agrega la primera para empezar a construir el cuadro comparativo.
+            </div>
+          )}
+
+          {categorias.map((categoria, i) => (
+            <div key={i} style={{ border: '1px solid var(--border)', borderRadius: 16, padding: 20, marginBottom: 16, background: 'var(--bg-card)' }}>
+              <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center' }}>
+                <input
+                  value={categoria.nombre}
+                  onChange={e => cambiarNombreCategoria(i, e.target.value)}
+                  placeholder="Nombre de la categoría (ej. Uso y límites)"
+                  style={{ ...inputComparativaStyle, fontWeight: 700, fontSize: 14, flex: 1 }}
+                />
+                <button type="button" onClick={() => eliminarCategoria(i)} style={{ color: 'var(--color-error)', flexShrink: 0 }} title="Eliminar categoría">
+                  <Trash size={16} sinAnimacion />
+                </button>
+              </div>
+
+              {categoria.filas.map((fila, j) => (
+                <div
+                  key={j}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                    alignItems: 'center',
+                    padding: '12px 0',
+                    borderTop: j > 0 ? '1px solid var(--divider)' : 'none',
+                  }}
+                >
+                  <input
+                    value={fila.label}
+                    onChange={e => cambiarFila(i, j, { label: e.target.value })}
+                    placeholder="Nombre de la fila (ej. Cálculos por mes)"
+                    style={{ ...inputComparativaStyle, flex: '1 1 200px' }}
+                  />
+                  <div style={{ width: 150, flexShrink: 0 }}>
+                    <SwitchOpciones
+                      opciones={[{ valor: 'check', label: 'Casilla' }, { valor: 'texto', label: 'Texto' }]}
+                      valor={fila.tipo}
+                      onChange={(tipo) => cambiarFila(i, j, { tipo })}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    {planes.map(plan => {
+                      const val = fila.valores[plan.id]
+                      return (
+                        <div key={plan.id} style={{ display: 'flex', flexDirection: 'column', gap: 4, width: 92 }}>
+                          <span style={{ fontSize: 10, color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {NOMBRES[plan.id] ?? plan.id}
+                          </span>
+                          {fila.tipo === 'check' ? (
+                            <button
+                              type="button"
+                              onClick={() => cambiarValor(i, j, plan.id, !val)}
+                              style={{ display: 'flex', justifyContent: 'center', padding: '6px 0', border: '1px solid var(--border)', borderRadius: 8, background: 'var(--bg-input)' }}
+                            >
+                              {val ? (
+                                <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)' }} />
+                              ) : (
+                                <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)' }} />
+                              )}
+                            </button>
+                          ) : (
+                            <input
+                              value={typeof val === 'string' ? val : ''}
+                              onChange={e => cambiarValor(i, j, plan.id, e.target.value)}
+                              placeholder="—"
+                              style={{ ...inputComparativaStyle, padding: '6px 8px', fontSize: 12, textAlign: 'center' }}
+                            />
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <button type="button" onClick={() => eliminarFila(i, j)} style={{ color: 'var(--color-error)', flexShrink: 0 }} title="Eliminar fila">
+                    <Trash size={14} sinAnimacion />
+                  </button>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => agregarFila(i)}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 12, fontSize: 12, fontWeight: 600, color: 'var(--color-brand)' }}
+              >
+                <Plus size={13} sinAnimacion /> Agregar fila
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={agregarCategoria}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--color-brand)', padding: '10px 0' }}
+          >
+            <Plus size={14} sinAnimacion /> Agregar categoría
+          </button>
+        </>
+      )}
+    </div>
+  )
+}
+
 export function PreciosTab() {
   const { toast } = useToast()
   const [planes, setPlanes] = useState<ConfigPlan[]>([])
@@ -661,6 +852,8 @@ export function PreciosTab() {
           ))}
         </div>
       )}
+
+      {!cargando && <ComparativaEditor planes={planes} />}
     </div>
   )
 }

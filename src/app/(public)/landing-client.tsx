@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus, ClipboardList } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { PLANS, CURRENCIES, formatearPrecioColombiano } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
@@ -713,16 +713,30 @@ export interface PlanPrecioReal {
   features_json: string[] | null
 }
 
+export interface FilaComparativa {
+  label: string
+  tipo: 'check' | 'texto'
+  valores: Record<string, string | boolean>
+}
+export interface CategoriaComparativa {
+  nombre: string
+  filas: FilaComparativa[]
+}
+
 interface LandingClientProps {
   planesPrecios?: PlanPrecioReal[]
   whatsappNumero?: string
   // FAQ real de /admin/contenido (sql/121) — si no llega (fila todavía sin
   // crear), se usa FAQS de más abajo como respaldo, nunca queda vacía.
   faqItems?: { pregunta: string; respuesta: string }[]
+  // Cuadro comparativo real de /admin/contenido -> Precios (clave
+  // 'comparativa_planes'). Si no llega o está vacío, el botón "Ver más"
+  // de precios ni se muestra — nunca se inventa contenido de relleno.
+  comparativaCategorias?: CategoriaComparativa[]
 }
 
 // ─── Página principal ─────────────────────────────────────────────────────────
-export default function LandingClient({ planesPrecios, whatsappNumero, faqItems }: LandingClientProps) {
+export default function LandingClient({ planesPrecios, whatsappNumero, faqItems, comparativaCategorias }: LandingClientProps) {
   const [mounted, setMounted] = useState(false)
   const [activeCategory, setActiveCategory] = useState<CatKey>('mobiliario')
   const [currency, setCurrency] = useState<keyof typeof CURRENCIES>('COP')
@@ -731,6 +745,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
   const [contactModalOpen, setContactModalOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
   const [catalogoCalculosAbierto, setCatalogoCalculosAbierto] = useState(false)
+  const [comparativaAbierta, setComparativaAbierta] = useState(false)
 
   // Cerrar modal con Escape y bloquear scroll cuando está abierto
   useEffect(() => {
@@ -1866,8 +1881,101 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems 
               </div>
             ))}
           </div>
+
+          {/* Puerta de entrada al cuadro comparativo completo — mismo patrón
+              que "Ver más" del catálogo de cálculos. Solo aparece si hay
+              contenido real editado desde /admin/contenido -> Precios, nunca
+              se inventa una comparación de relleno. */}
+          {comparativaCategorias && comparativaCategorias.length > 0 && (
+            <div className="mt-4 sm:mt-5 flex justify-center">
+              <button
+                onClick={() => setComparativaAbierta(true)}
+                className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
+              >
+                <span className="group-hover:underline">Ver cuadro comparativo</span>
+                <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Popup del cuadro comparativo completo, agrupado por categorías
+          (mismo criterio que el catálogo de cálculos: Modal ancho xl,
+          scroll interno). La tabla en sí scrollea horizontal con la columna
+          de etiquetas fija a la izquierda — mismo estándar de tabla ancha en
+          mobile que usa el resto de la plataforma, no un patrón nuevo. */}
+      {comparativaCategorias && comparativaCategorias.length > 0 && (
+        <Modal
+          abierto={comparativaAbierta}
+          onClose={() => setComparativaAbierta(false)}
+          titulo="Compara los 4 planes"
+          descripcion="Todo lo que incluye cada plan, uno al lado del otro"
+          icono={<ClipboardList size={22} />}
+          colorIcono={isDark ? '#D6F391' : '#00827C'}
+          ancho="xl"
+          sinPie
+        >
+          <div className="flex flex-col gap-8 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+            {comparativaCategorias.map((categoria, ci) => (
+              <div key={ci}>
+                {categoria.nombre && (
+                  <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
+                )}
+                <div className={`rounded-[12px] border ${isDark ? 'border-white/10 bg-white/5' : 'border-[#00827C]/10 bg-primary'}`}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr className={isDark ? 'bg-white/5' : 'bg-[#00827C]/[0.04]'}>
+                          <th
+                            className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
+                            style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#3d3d3d' : '#FAFEFE' }}
+                          >
+                            &nbsp;
+                          </th>
+                          {PLANS.map(plan => (
+                            <th key={plan.id} className={`text-center px-3 py-2.5 text-xs font-bold whitespace-nowrap ${tp}`}>
+                              {plan.name}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {categoria.filas.map((fila, fi) => (
+                          <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
+                            <td
+                              className={`text-left px-3 py-2.5 whitespace-nowrap ${tp}`}
+                              style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
+                            >
+                              {fila.label}
+                            </td>
+                            {PLANS.map(plan => {
+                              const val = fila.valores[plan.id]
+                              return (
+                                <td key={plan.id} className="text-center px-3 py-2.5">
+                                  {fila.tipo === 'check' ? (
+                                    val ? (
+                                      <Check size={16} strokeWidth={3} className="inline-block text-[#38B98E]" />
+                                    ) : (
+                                      <X size={14} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/25' : 'text-[#474747]/25'}`} />
+                                    )
+                                  ) : (
+                                    <span className={`whitespace-nowrap ${ts}`}>{(val as string) || '—'}</span>
+                                  )}
+                                </td>
+                              )
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Modal>
+      )}
 
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />

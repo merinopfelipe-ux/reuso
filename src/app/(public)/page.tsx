@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import LandingClient, { type PlanPrecioReal } from './landing-client'
+import LandingClient, { type PlanPrecioReal, type CategoriaComparativa } from './landing-client'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // ISR de 5 minutos — no force-dynamic, esta es una página pública y
@@ -16,7 +16,7 @@ export const revalidate = 300
 // real en la página pública, todo salía de constantes fijas en el código.
 async function obtenerDatosReales() {
   const adminClient = await createAdminClient()
-  const [{ data: planes }, { data: contenido }, { data: faq }] = await Promise.all([
+  const [{ data: planes }, { data: contenido }, { data: faq }, { data: comparativa }] = await Promise.all([
     adminClient
       .from('config_planes')
       .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, features_json')
@@ -30,6 +30,11 @@ async function obtenerDatosReales() {
       .from('contenido_landing')
       .select('valor_json')
       .eq('clave', 'faq')
+      .maybeSingle(),
+    adminClient
+      .from('contenido_landing')
+      .select('valor_json')
+      .eq('clave', 'comparativa_planes')
       .maybeSingle(),
   ])
 
@@ -57,6 +62,10 @@ async function obtenerDatosReales() {
   // ya mostraba la landing) — si todavía no hay fila, LandingClient cae a
   // su propio array por defecto, nunca queda vacía.
   const faqItems = (faq?.valor_json as { items?: { pregunta: string; respuesta: string }[] } | null)?.items
+  // Cuadro comparativo real de /admin/contenido -> Precios (clave
+  // 'comparativa_planes'). Sin fila todavía = sin categorías = el botón
+  // "Ver cuadro comparativo" de la landing ni se muestra.
+  const comparativaCategorias = (comparativa?.valor_json as { categorias?: CategoriaComparativa[] } | null)?.categorias
   const planesCompletos = (planes ?? []).map(p => {
     const eq = equivalentes.get(p.id)
     return {
@@ -66,7 +75,7 @@ async function obtenerDatosReales() {
       equivalente_mensual_anual_eur: eq?.eur ?? null,
     }
   })
-  return { planes: planesCompletos as PlanPrecioReal[], whatsappNumero, faqItems }
+  return { planes: planesCompletos as PlanPrecioReal[], whatsappNumero, faqItems, comparativaCategorias }
 }
 
 export const metadata: Metadata = {
@@ -215,7 +224,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
 }
 
 export default async function LandingPage() {
-  const { planes, whatsappNumero, faqItems } = await obtenerDatosReales()
+  const { planes, whatsappNumero, faqItems, comparativaCategorias } = await obtenerDatosReales()
   const schemas = construirSchemas(planes, whatsappNumero)
   return (
     <>
@@ -226,7 +235,7 @@ export default async function LandingPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      <LandingClient planesPrecios={planes} whatsappNumero={whatsappNumero} faqItems={faqItems} />
+      <LandingClient planesPrecios={planes} whatsappNumero={whatsappNumero} faqItems={faqItems} comparativaCategorias={comparativaCategorias} />
     </>
   )
 }
