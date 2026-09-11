@@ -19,7 +19,7 @@ async function obtenerDatosReales() {
   const [{ data: planes }, { data: contenido }, { data: faq }] = await Promise.all([
     adminClient
       .from('config_planes')
-      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, features_json, equivalente_mensual_anual_cop, equivalente_mensual_anual_usd, equivalente_mensual_anual_eur')
+      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, features_json')
       .order('precio_cop', { ascending: true }),
     adminClient
       .from('contenido_landing')
@@ -33,12 +33,40 @@ async function obtenerDatosReales() {
       .maybeSingle(),
   ])
 
+  // Consulta separada a propósito: equivalente_mensual_anual_* es de una
+  // migración más nueva (sql/128) que puede no estar corrida todavía en
+  // esta base. Si falla, no debe tumbar los precios reales de arriba —
+  // mismo patrón ya usado en /api/cotizador/dashboard-config. Bug real
+  // encontrado 2026-09-11: seleccionarlas junto a las demás columnas hacía
+  // fallar TODA la consulta de precios si la migración no había corrido,
+  // y la landing caía en silencio a los precios fijos de PLANS.
+  const equivalentes = new Map<string, { cop: number | null; usd: number | null; eur: number | null }>()
+  try {
+    const { data: conEquivalente } = await adminClient
+      .from('config_planes')
+      .select('id, equivalente_mensual_anual_cop, equivalente_mensual_anual_usd, equivalente_mensual_anual_eur')
+    for (const p of conEquivalente ?? []) {
+      equivalentes.set(p.id, { cop: p.equivalente_mensual_anual_cop, usd: p.equivalente_mensual_anual_usd, eur: p.equivalente_mensual_anual_eur })
+    }
+  } catch (err) {
+    console.error('[landing] equivalente_mensual_anual_* no disponible (posible migración 128 pendiente):', err)
+  }
+
   const whatsappNumero = (contenido?.valor_json as { numero?: string } | null)?.numero || undefined
   // FAQ real de /admin/contenido (sql/121 la siembra con el contenido que
   // ya mostraba la landing) — si todavía no hay fila, LandingClient cae a
   // su propio array por defecto, nunca queda vacía.
   const faqItems = (faq?.valor_json as { items?: { pregunta: string; respuesta: string }[] } | null)?.items
-  return { planes: (planes ?? []) as PlanPrecioReal[], whatsappNumero, faqItems }
+  const planesCompletos = (planes ?? []).map(p => {
+    const eq = equivalentes.get(p.id)
+    return {
+      ...p,
+      equivalente_mensual_anual_cop: eq?.cop ?? null,
+      equivalente_mensual_anual_usd: eq?.usd ?? null,
+      equivalente_mensual_anual_eur: eq?.eur ?? null,
+    }
+  })
+  return { planes: planesCompletos as PlanPrecioReal[], whatsappNumero, faqItems }
 }
 
 export const metadata: Metadata = {
