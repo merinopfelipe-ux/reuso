@@ -278,6 +278,16 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
         {MONEDAS.map((moneda) => {
           const campo = `borrador_equivalente_mensual_anual_${moneda.codigo}` as const
           const valor = borrador[campo]
+          // Mismo cálculo que la landing (anual/12, redondeado hacia abajo):
+          // COP al diez mil, USD/EUR solo sin decimales — para que el
+          // usuario vea aquí el número exacto que se usará si deja el
+          // campo vacío, en vez de solo la palabra "Automático".
+          const anualCampo = `borrador_precio_anual_${moneda.codigo}` as const
+          const mensualCampo = `borrador_precio_${moneda.codigo}` as const
+          const anual = borrador[anualCampo] ?? borrador[mensualCampo] * 10
+          const bruto = anual / 12
+          const automatico = moneda.codigo === 'cop' ? Math.floor(bruto / 10000) * 10000 : Math.floor(bruto)
+          const locale = moneda.codigo === 'eur' ? 'de-DE' : moneda.codigo === 'usd' ? 'en-US' : 'es-CO'
           return (
             <div key={moneda.codigo}>
               <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{moneda.simbolo} {moneda.label}</span>
@@ -285,7 +295,7 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
                 type="number"
                 min={0}
                 value={valor ?? ''}
-                placeholder="Automático"
+                placeholder={String(automatico)}
                 onChange={(e) => setBorrador(b => ({ ...b, [campo]: e.target.value === '' ? null : Number(e.target.value) }))}
                 onFocus={(e) => e.target.select()}
                 className="input-numero-sutil"
@@ -295,11 +305,14 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
                   padding: '2px 0', outline: 'none',
                 }}
               />
+              <p style={{ margin: '6px 0 0', fontSize: 11, color: 'var(--text-secondary)' }}>
+                Automático: {moneda.simbolo}{automatico.toLocaleString(locale)}
+              </p>
               {valor != null && (
                 <button
                   type="button"
                   onClick={() => setBorrador(b => ({ ...b, [campo]: null }))}
-                  style={{ marginTop: 6, fontSize: 11, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  style={{ marginTop: 4, fontSize: 11, color: 'var(--color-brand)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                 >
                   Volver a automático
                 </button>
