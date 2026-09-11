@@ -535,6 +535,8 @@ interface FilaComparativa {
   label: string
   tipo: TipoFilaComparativa
   valores: Record<string, string | boolean>
+  // Texto opcional del tooltip "?" junto al nombre, en la landing.
+  descripcion?: string
 }
 interface CategoriaComparativa {
   nombre: string
@@ -758,6 +760,12 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                     <span style={{ fontSize: 10, color: 'var(--text-secondary)', textAlign: 'right' }}>
                       {fila.label.length}/{MAX_CARACTERES_FILA_COMPARATIVA} — pensado para 2 líneas en la landing (si no alcanza, pasa a más, nunca se corta)
                     </span>
+                    <input
+                      value={fila.descripcion ?? ''}
+                      onChange={e => cambiarFila(i, j, { descripcion: e.target.value })}
+                      placeholder="Descripción opcional (aparece como tooltip ? junto al nombre)"
+                      style={{ ...inputComparativaStyle, fontSize: 12, padding: '6px 10px' }}
+                    />
                   </div>
                   <div style={{ width: 150, flexShrink: 0 }}>
                     <SwitchOpciones
