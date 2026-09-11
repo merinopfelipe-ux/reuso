@@ -5,9 +5,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus, ClipboardList } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
-import { PLANS, CURRENCIES, formatearPrecioColombiano } from '@/lib/constants/pricing'
+import { PLANS, CURRENCIES, formatearPrecioColombiano, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
 import { LeadsForm } from '@/components/leads-form'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
@@ -284,13 +284,6 @@ const COLOR_POR_CATEGORIA: Record<string, string> = {
   DPP: '#59A6E4',
 }
 
-// Paleta cíclica para el cuadro comparativo de planes (popup "Compara") —
-// las categorías las define el super_admin en /admin/contenido, con
-// cualquier nombre y cualquier cantidad, así que no se les asigna un color
-// fijo por nombre como arriba (COLOR_POR_CATEGORIA): se ciclan estos 6
-// acentos ya aprobados del sistema (constantes, no cambian entre temas),
-// nunca un hex nuevo sin aprobar.
-const PALETA_COMPARATIVA = ['#38B98E', '#59A6E4', '#F6BF3E', '#F3BBD3', '#8AD0B2', '#AD7C43']
 
 // ─── Datos de categorías ─────────────────────────────────────────────────────
 const CATEGORIAS = {
@@ -730,6 +723,9 @@ export interface FilaComparativa {
 export interface CategoriaComparativa {
   nombre: string
   filas: FilaComparativa[]
+  // Elegido a mano desde el editor (barra fija de PALETA_COMPARATIVA), o
+  // sin elegir todavía -> se cicla la paleta por posición.
+  color?: string
 }
 
 interface LandingClientProps {
@@ -1954,31 +1950,32 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <Modal
           abierto={comparativaAbierta}
           onClose={() => setComparativaAbierta(false)}
-          titulo="Compara los 4 planes"
-          descripcion="Todo lo que incluye cada plan, uno al lado del otro. Toca el nombre de un plan para elegirlo."
-          icono={<ClipboardList size={22} />}
-          colorIcono={isDark ? '#D6F391' : '#00827C'}
+          titulo=""
+          sinEncabezado
           ancho="xl"
           sinPie
         >
           <div className="flex flex-col gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
             {comparativaCategorias.map((categoria, ci) => {
-              const colorCategoria = PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
+              const colorCategoria = categoria.color ?? PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
               return (
                 <div key={ci}>
                   {categoria.nombre && (
-                    <div
-                      className="inline-flex items-center px-3 py-1.5 rounded-lg mb-3"
-                      style={{ background: `${colorCategoria}1F`, borderLeft: `4px solid ${colorCategoria}` }}
-                    >
-                      <span className="text-xs sm:text-sm font-black" style={{ color: colorCategoria }}>{categoria.nombre}</span>
-                    </div>
+                    <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
                   )}
                   <div className={`rounded-[12px] border-2 overflow-hidden`} style={{ borderColor: `${colorCategoria}40` }}>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+                      {/* w-full por sí solo, con tableLayout:fixed, deja que el
+                          navegador COMPRIMA las columnas para caber en el
+                          contenedor angosto del modal en mobile — el texto se
+                          encima en vez de scrollear (bug real reportado). Con
+                          minWidth = la suma exacta de las columnas del
+                          colgroup, la tabla nunca se achica más de eso: en
+                          pantallas anchas ocupa el 100% (w-full), en angostas
+                          fuerza el scroll horizontal del contenedor de arriba. */}
+                      <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
                         <colgroup>
-                          <col style={{ width: 132 }} />
+                          <col style={{ width: 150 }} />
                           {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
                         </colgroup>
                         <thead>
@@ -2011,7 +2008,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           {categoria.filas.map((fila, fi) => (
                             <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
                               <td
-                                className={`text-left px-3 py-2.5 whitespace-nowrap ${tp}`}
+                                className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug break-words ${tp}`}
                                 style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
                               >
                                 {fila.label}
@@ -2029,7 +2026,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                         <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
                                       )
                                     ) : (
-                                      <span className={`whitespace-nowrap text-xs sm:text-sm font-semibold ${tp}`}>{(val as string) || '—'}</span>
+                                      <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{(val as string) || '—'}</span>
                                     )}
                                   </td>
                                 )

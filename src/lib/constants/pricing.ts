@@ -1,7 +1,32 @@
 import { Target, FlaskConical as Flask, Zap as Lightning, ShieldCheck, IdCard as IdentificationCard } from '@/components/ui/icons'
 
+export function formatearPrecioColombiano(val: number | string | null | undefined, permitirDecimales = true): string {
+  if (val === null || val === undefined || val === '') return '0'
+  const num = typeof val === 'number' ? val : parseFloat(String(val).replace(/'/g, '').replace(/\./g, '').replace(',', '.'))
+  if (isNaN(num)) return '0'
+
+  const tieneDec = num % 1 !== 0 && permitirDecimales
+  const [enteroRaw, decRaw] = num.toFixed(tieneDec ? 2 : 0).split('.')
+  let entero = enteroRaw
+
+  // En Colombia el millón se separa con apóstrofe (') y los miles con punto (.)
+  if (entero.length > 6) {
+    const millonesRaw = entero.slice(0, -6)
+    const millones = millonesRaw.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const miles = entero.slice(-6, -3)
+    const unidades = entero.slice(-3)
+    entero = `${millones}'${miles}.${unidades}`
+  } else if (entero.length > 3) {
+    const miles = entero.slice(0, -3)
+    const unidades = entero.slice(-3)
+    entero = `${miles}.${unidades}`
+  }
+
+  return decRaw ? `${entero},${decRaw}` : entero
+}
+
 export const CURRENCIES = {
-  COP: { symbol: '$', code: 'COP', rate: 1, format: (n: number) => n.toLocaleString('es-CO') },
+  COP: { symbol: '$', code: 'COP', rate: 1, format: (n: number) => formatearPrecioColombiano(n, false) },
   // toFixed(2) no separaba los miles ("2415.00") — toLocaleString con 2
   // decimales fijos sí los separa ("2,415.00" en inglés/USD, "2.415,00"
   // en euro), bug real encontrado 2026-09-11.
@@ -10,6 +35,13 @@ export const CURRENCIES = {
 }
 
 export const ANNUAL_DISCOUNT = 10 / 12 // 2 meses gratis
+
+// Paleta fija para el color de cada categoría del cuadro comparativo de
+// planes (popup "Compara" de la landing + su editor en /admin/contenido ->
+// Precios). Compartida entre los dos archivos para que nunca puedan
+// desincronizarse — son acentos ya aprobados del sistema (constantes, no
+// cambian entre temas), nunca un hex nuevo sin aprobar.
+export const PALETA_COMPARATIVA = ['#38B98E', '#59A6E4', '#F6BF3E', '#985fa1', '#8AD0B2', '#AD7C43']
 
 // Precios y límites: deben coincidir siempre con config_planes (fuente real,
 // editable desde /admin/planes). Si cambias un precio o límite aquí sin

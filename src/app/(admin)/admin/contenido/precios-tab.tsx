@@ -24,7 +24,7 @@ import { PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { CampoLimiteGrande, BloqueMoneda, MONEDAS } from '@/components/admin/plan-campos'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SwitchOpciones } from '@/components/ui/switch-opciones'
-import { PLANS } from '@/lib/constants/pricing'
+import { PLANS, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
 
 // Skeleton con la misma forma real de una tarjeta de plan:
 // 1. Ícono + nombre
@@ -539,7 +539,17 @@ interface FilaComparativa {
 interface CategoriaComparativa {
   nombre: string
   filas: FilaComparativa[]
+  // Elegido a mano de la barra de PALETA_COMPARATIVA — sin elegir todavía,
+  // la landing cicla la paleta sola por posición.
+  color?: string
 }
+
+// Cuántos caracteres suelen caber en 2 líneas dentro de la columna de
+// etiqueta del popup de la landing (~150px, texto xs/sm) — apunta a 2
+// líneas, no es un tope duro: la landing nunca corta el texto (sin
+// line-clamp), así que si una palabra larga no acomoda, pasa a una 3ª
+// línea en vez de perderse.
+const MAX_CARACTERES_FILA_COMPARATIVA = 50
 
 const inputComparativaStyle: React.CSSProperties = {
   border: '1px solid var(--border)',
@@ -590,6 +600,9 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
   }
   function cambiarNombreCategoria(i: number, nombre: string) {
     setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, nombre } : cat))
+  }
+  function cambiarColorCategoria(i: number, color: string) {
+    setCategorias(c => c.map((cat, idx) => idx === i ? { ...cat, color } : cat))
   }
   function agregarFila(i: number) {
     setCategorias(c => c.map((cat, idx) => idx === i
@@ -695,6 +708,33 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                 </div>
               </div>
 
+              {/* Color de la categoría — barra fija de la misma paleta que
+                  usa la landing, nunca un selector de color libre. Sin
+                  elegir ninguno, la landing cicla la paleta sola. */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Color</span>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {PALETA_COMPARATIVA.map(color => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => cambiarColorCategoria(i, color)}
+                      title={color}
+                      style={{
+                        width: 22,
+                        height: 22,
+                        borderRadius: '50%',
+                        background: color,
+                        border: (categoria.color ?? PALETA_COMPARATIVA[i % PALETA_COMPARATIVA.length]) === color ? '2px solid var(--text-primary)' : '2px solid transparent',
+                        boxShadow: (categoria.color ?? PALETA_COMPARATIVA[i % PALETA_COMPARATIVA.length]) === color ? '0 0 0 2px var(--bg-card)' : 'none',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
               {categoria.filas.map((fila, j) => (
                 <div
                   key={j}
@@ -707,12 +747,18 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
                     borderTop: j > 0 ? '1px solid var(--divider)' : 'none',
                   }}
                 >
-                  <input
-                    value={fila.label}
-                    onChange={e => cambiarFila(i, j, { label: e.target.value })}
-                    placeholder="Nombre de la fila (ej. Cálculos por mes)"
-                    style={{ ...inputComparativaStyle, flex: '1 1 200px' }}
-                  />
+                  <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <input
+                      value={fila.label}
+                      onChange={e => cambiarFila(i, j, { label: e.target.value.slice(0, MAX_CARACTERES_FILA_COMPARATIVA) })}
+                      placeholder="Nombre de la fila (ej. Cálculos por mes)"
+                      maxLength={MAX_CARACTERES_FILA_COMPARATIVA}
+                      style={inputComparativaStyle}
+                    />
+                    <span style={{ fontSize: 10, color: 'var(--text-secondary)', textAlign: 'right' }}>
+                      {fila.label.length}/{MAX_CARACTERES_FILA_COMPARATIVA} — pensado para 2 líneas en la landing (si no alcanza, pasa a más, nunca se corta)
+                    </span>
+                  </div>
                   <div style={{ width: 150, flexShrink: 0 }}>
                     <SwitchOpciones
                       opciones={[{ valor: 'check', label: 'Casilla' }, { valor: 'texto', label: 'Texto' }]}

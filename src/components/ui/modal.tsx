@@ -28,6 +28,12 @@ export interface UnifiedModalProps {
   sinPie?: boolean
   // Solo botón de confirmación/entendido (sin botón cancelar redundante)
   soloBotonConfirmar?: boolean
+  // Sin ícono, título ni descripción — solo el botón "X" de cierre, con
+  // padding mínimo. Para contenido que ya trae su propio encabezado visual
+  // (ej. una tabla con sus propias categorías) donde el encabezado del
+  // Modal solo quita espacio sin aportar nada. Excepción deliberada,
+  // igual que sinPie — no usar por defecto.
+  sinEncabezado?: boolean
 }
 
 /**
@@ -54,6 +60,7 @@ export function Modal({
   tituloCentrado = false,
   sinPie = false,
   soloBotonConfirmar = false,
+  sinEncabezado = false,
 }: UnifiedModalProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -91,13 +98,14 @@ export function Modal({
         className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150`}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header Fijo */}
-        <div className="flex-shrink-0 p-5 sm:p-6 pb-2">
+        {/* Header Fijo — con sinEncabezado, solo el botón "X" con padding
+            mínimo, sin reservar el espacio del ícono/título/descripción. */}
+        <div className={sinEncabezado ? 'flex-shrink-0 p-3' : 'flex-shrink-0 p-5 sm:p-6 pb-2'}>
           {/* Botón X de cierre arriba a la derecha */}
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-colors cursor-pointer"
+            className={`absolute p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-colors cursor-pointer ${sinEncabezado ? 'top-2 right-2' : 'top-4 right-4 sm:top-5 sm:right-5'}`}
             aria-label="Cerrar modal"
           >
             <IconoX size={18} />
@@ -107,30 +115,32 @@ export function Modal({
               va centrado con el ícono (items-center), NUNCA pegado arriba.
               CON descripción (título + subtítulo apilados, más alto que el
               ícono), se alinea arriba (items-start). Nunca al revés. */}
-          <div className={`flex ${descripcion ? 'items-start' : 'items-center'} gap-3 pr-8 ${tituloCentrado ? 'justify-center w-full' : ''}`}>
-            {icono && !tituloCentrado && (
-              <div
-                className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={colorIcono ? {
-                  color: colorIcono,
-                  backgroundColor: `color-mix(in srgb, ${colorIcono} 10%, transparent)`,
-                } : {
-                  color: 'var(--color-brand)',
-                  backgroundColor: 'color-mix(in srgb, currentColor 10%, transparent)',
-                }}
-              >
-                {icono}
-              </div>
-            )}
-            <div className={`flex flex-col gap-0.5 ${tituloCentrado ? 'w-full items-center text-center' : ''}`}>
-              <h3 className={`${tituloCentrado ? 'text-lg sm:text-xl' : 'text-base'} font-bold text-[var(--text-primary)] leading-snug`}>{titulo}</h3>
-              {descripcion && (
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                  {descripcion}
-                </p>
+          {!sinEncabezado && (
+            <div className={`flex ${descripcion ? 'items-start' : 'items-center'} gap-3 pr-8 ${tituloCentrado ? 'justify-center w-full' : ''}`}>
+              {icono && !tituloCentrado && (
+                <div
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  style={colorIcono ? {
+                    color: colorIcono,
+                    backgroundColor: `color-mix(in srgb, ${colorIcono} 10%, transparent)`,
+                  } : {
+                    color: 'var(--color-brand)',
+                    backgroundColor: 'color-mix(in srgb, currentColor 10%, transparent)',
+                  }}
+                >
+                  {icono}
+                </div>
               )}
+              <div className={`flex flex-col gap-0.5 ${tituloCentrado ? 'w-full items-center text-center' : ''}`}>
+                <h3 className={`${tituloCentrado ? 'text-lg sm:text-xl' : 'text-base'} font-bold text-[var(--text-primary)] leading-snug`}>{titulo}</h3>
+                {descripcion && (
+                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                    {descripcion}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Cuerpo Scrolleable */}
