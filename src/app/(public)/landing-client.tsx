@@ -2012,7 +2012,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           {categoria.filas.map((fila, fi) => (
                             <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
                               <td
-                                className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
+                                className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${ts}`}
                                 style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#414141' : '#F6FBFB') : (isDark ? '#3d3d3d' : '#FAFEFE') }}
                               >
                                 <span className="flex items-start gap-1 min-w-0">

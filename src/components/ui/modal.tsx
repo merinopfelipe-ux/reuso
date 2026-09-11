@@ -99,8 +99,13 @@ export function Modal({
         onClick={e => e.stopPropagation()}
       >
         {/* Header Fijo — con sinEncabezado, solo el botón "X" con padding
-            mínimo, sin reservar el espacio del ícono/título/descripción. */}
-        <div className={sinEncabezado ? 'flex-shrink-0 p-3' : 'flex-shrink-0 p-5 sm:p-6 pb-2'}>
+            mínimo, sin reservar el espacio del ícono/título/descripción. El
+            botón "X" es absolute respecto al panel entero (no a este div),
+            así que este header necesita una altura mínima real — si se
+            deja en 0 contenido, el cuerpo scrolleable empieza justo debajo
+            del botón y lo tapa a medias (bug real reportado, "se ve raro"
+            con la X pegada a la esquina redondeada y a la tabla). */}
+        <div className={sinEncabezado ? 'flex-shrink-0 p-3 min-h-[44px]' : 'flex-shrink-0 p-5 sm:p-6 pb-2'}>
           {/* Botón X de cierre arriba a la derecha */}
           <button
             type="button"
