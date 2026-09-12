@@ -14,7 +14,15 @@ const schema = z.object({
   apellido: z.string().optional(),
   tipoDocumento: z.string().optional(),
   numeroIdentidad: z.string().optional(),
-})
+  // QA pub-16: el firmante puede representar a una empresa (razón social +
+  // NIT), además de sus propios datos — persona natural no envía esto.
+  esEmpresa: z.boolean().optional(),
+  razonSocial: z.string().trim().min(1).max(200).optional(),
+  nit: z.string().trim().min(1).max(30).optional(),
+}).refine(
+  d => !d.esEmpresa || (d.razonSocial && d.nit),
+  { message: 'Si firmas a nombre de una empresa, indica su razón social y NIT.' }
+)
 
 // Firma efectiva de la solicitud: valida el token server-side (nunca desde
 // el navegador con anon key, siempre con service role), genera el PDF,
@@ -75,6 +83,7 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
         indicativo: parsed.data.indicativo,
         telefono: parsed.data.telefono,
         firma: parsed.data.firma,
+        ...(parsed.data.esEmpresa ? { razonSocial: parsed.data.razonSocial, nit: parsed.data.nit } : {}),
       },
       fecha, ip, userAgent, verificationCode
     )
@@ -106,6 +115,9 @@ export async function POST(request: NextRequest, { params }: { params: { token: 
       ip_address: ip,
       user_agent: userAgent,
       pdf_path: pdfPath,
+      es_empresa: !!parsed.data.esEmpresa,
+      razon_social: parsed.data.esEmpresa ? parsed.data.razonSocial : null,
+      nit: parsed.data.esEmpresa ? parsed.data.nit : null,
     })
     .eq('id', solicitud.id)
     .eq('estado', 'pendiente') // defensa extra contra doble envío concurrente

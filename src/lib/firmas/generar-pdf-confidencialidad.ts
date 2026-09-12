@@ -15,6 +15,10 @@ export interface DatosFirmante {
   indicativo: string
   telefono: string
   firma: string // data:image/png;base64,...
+  // Presentes solo si el firmante indicó que representa a una empresa
+  // (QA pub-16) — persona natural no los envía, el PDF los omite.
+  razonSocial?: string
+  nit?: string
 }
 
 const NOMBRES_TIPO: Record<string, string> = {
@@ -197,6 +201,10 @@ export function generarPdfConfidencialidad(data: DatosFirmante, fecha: string, i
 
   doc.setFontSize(9)
   const campos: [string, string][] = [
+    ...(data.razonSocial && data.nit ? [
+      ['Empresa representada', data.razonSocial],
+      ['NIT', data.nit],
+    ] as [string, string][] : []),
     ['Nombre completo', data.nombre],
     ['Documento de identidad', data.tipoIdentidad ? `${NOMBRES_TIPO[data.tipoIdentidad] ?? data.tipoIdentidad} - N° ${data.numeroIdentidad}` : `N° ${data.numeroIdentidad}`],
     ['Correo electrónico', data.email],

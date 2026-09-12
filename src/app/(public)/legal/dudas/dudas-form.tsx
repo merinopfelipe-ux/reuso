@@ -54,7 +54,7 @@ const TF = {
     mensaje_label: 'Mensaje',
     mensaje_placeholder: 'Describe tu consulta con el mayor detalle posible...',
     error_campos: 'Completa todos los campos para continuar.',
-    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a servicio@calculadoradereuso.com.',
+    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a soporte@calculadoradereuso.com.',
     enviando: 'Enviando...',
     enviar: 'Enviar consulta',
     exito: () =>
@@ -71,7 +71,7 @@ const TF = {
     mensaje_label: 'Message',
     mensaje_placeholder: 'Describe your query in as much detail as possible...',
     error_campos: 'Please complete all fields to continue.',
-    error_envio: 'Something went wrong. Try again or email us at servicio@calculadoradereuso.com.',
+    error_envio: 'Something went wrong. Try again or email us at soporte@calculadoradereuso.com.',
     enviando: 'Sending...',
     enviar: 'Send enquiry',
     exito: () =>
@@ -135,10 +135,16 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, turnstile_token: turnstileToken || 'skip' }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        // Antes se descartaba el motivo real (límite de intentos, validación,
+        // etc.) y siempre se mostraba el mismo mensaje genérico — bug real
+        // reportado, "no llega a ninguna parte, no sé qué pasa" (QA pub-17).
+        const cuerpo = await res.json().catch(() => null)
+        throw new Error(cuerpo?.error || tf.error_envio)
+      }
       setExito(true)
-    } catch {
-      setError(tf.error_envio)
+    } catch (err) {
+      setError(err instanceof Error && err.message ? err.message : tf.error_envio)
       turnstileRef.current?.reset()
       setTurnstileToken('')
     } finally {

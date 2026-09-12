@@ -6,6 +6,7 @@ import { CheckCircle, TriangleAlert as Warning, ShieldCheck } from '@/components
 import { Button } from '@/components/ui/button'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { FirmaCanvas } from '@/components/legal/firma-canvas'
+import { SwitchOpciones } from '@/components/ui/switch-opciones'
 
 const inputSt = 'w-full px-4 py-2.5 rounded-xl border text-sm outline-none bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)] transition-colors focus:border-[#00827C]'
 
@@ -19,6 +20,9 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
     const parts = (nombre || '').trim().split(' ')
     return parts.length > 1 ? parts.slice(-1).join(' ') : ''
   })
+  const [quienFirma, setQuienFirma] = useState<'persona' | 'empresa'>('persona')
+  const [razonSocial, setRazonSocial] = useState('')
+  const [nit, setNit] = useState('')
   const [tipoDocumento, setTipoDocumento] = useState('CC')
   const [numeroIdentidad, setNumeroIdentidad] = useState('')
   const [indicativo, setIndicativo] = useState<Pais>(PAISES[0])
@@ -31,6 +35,8 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
   async function firmar() {
     setError(null)
     if (!aceptado) { setError('Debes aceptar el documento antes de firmar.'); return }
+    if (quienFirma === 'empresa' && !razonSocial.trim()) { setError('Ingresa el nombre legal de la empresa.'); return }
+    if (quienFirma === 'empresa' && !nit.trim()) { setError('Ingresa el NIT de la empresa.'); return }
     if (!nombreInput.trim()) { setError('Ingresa tu nombre.'); return }
     if (!apellidoInput.trim()) { setError('Ingresa tu apellido.'); return }
     if (!numeroIdentidad.trim()) { setError('Ingresa tu número de documento de identidad.'); return }
@@ -50,6 +56,8 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
           apellido: apellidoInput.trim(),
           tipoDocumento,
           numeroIdentidad: numeroIdentidad.trim(),
+          esEmpresa: quienFirma === 'empresa',
+          ...(quienFirma === 'empresa' ? { razonSocial: razonSocial.trim(), nit: nit.trim() } : {}),
         }),
       })
       const d = await res.json()
@@ -118,7 +126,47 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
 
       <div className={`rounded-2xl border p-5 mb-4 bg-[var(--bg-card)] border-[var(--border)] transition-opacity ${!aceptado ? 'opacity-50 pointer-events-none' : ''}`}>
         <p className={`text-xs font-bold tracking-wider mb-4 ${ts}`}>Datos del firmante</p>
-        
+
+        <div className="mb-4">
+          <SwitchOpciones
+            opciones={[
+              { valor: 'persona', label: 'Persona natural' },
+              { valor: 'empresa', label: 'Represento una empresa' },
+            ]}
+            valor={quienFirma}
+            onChange={setQuienFirma}
+          />
+        </div>
+
+        {quienFirma === 'empresa' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+            <div>
+              <label className={`text-xs font-semibold mb-1 block ${ts}`}>
+                Nombre legal de la empresa <span className="text-[#FF5E4B]">*</span>
+              </label>
+              <input
+                value={razonSocial}
+                onChange={e => setRazonSocial(e.target.value)}
+                disabled={!aceptado}
+                placeholder="Razón social"
+                className={inputSt}
+              />
+            </div>
+            <div>
+              <label className={`text-xs font-semibold mb-1 block ${ts}`}>
+                NIT <span className="text-[#FF5E4B]">*</span>
+              </label>
+              <input
+                value={nit}
+                onChange={e => setNit(e.target.value)}
+                disabled={!aceptado}
+                placeholder="Ej. 900123456-7"
+                className={inputSt}
+              />
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
           <div>
             <label className={`text-xs font-semibold mb-1 block ${ts}`}>
