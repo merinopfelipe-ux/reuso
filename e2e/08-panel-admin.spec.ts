@@ -140,7 +140,7 @@ test.describe('super_admin', () => {
     await page.getByRole('button', { name: 'Nueva alerta' }).click()
     await page.getByPlaceholder('Título *').fill(titulo)
     await page.getByPlaceholder('Mensaje *').fill('Alerta creada por la prueba automática.')
-    await page.locator('button:has-text("Crear")').first().click()
+    await page.getByRole('button', { name: 'Publicar alerta' }).click()
     await expect(page.getByText(titulo).first()).toBeVisible({ timeout: 15_000 })
 
     await supabaseAdmin.from('alertas').delete().eq('titulo', titulo)
