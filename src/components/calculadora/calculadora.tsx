@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
-import { Leaf, Droplet as Drop, TreeDeciduous as Tree, ShowerHead as Shower, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { Leaf, Droplet as Drop, Loader2 as CircleNotch, CheckCircle, RotateCcw as ArrowCounterClockwise, Image as ImageIcon } from '@/components/ui/icons'
 import { factorCo2PorKg, factorAguaPorKg, PARAM_EQUIV } from '@/lib/calculos/co2'
 import { useToast } from '@/components/toast-provider'
 import type { Categoria, Item, Rol } from '@/types'
@@ -102,7 +102,6 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
 
   const co2Anim = useAnimatedNumber(totales.co2)
   const aguaAnim = useAnimatedNumber(totales.agua)
-  const arbolesAnim = useAnimatedNumber(totales.equivalencias.arboles)
 
   const hayItems = useMemo(() => Object.values(pesos).some((v) => v > 0), [pesos])
 
@@ -376,12 +375,6 @@ export function Calculadora({ categorias, rol, onGuardado }: Props) {
             label="litros agua"
             activo={hayItems}
           />
-          <TotalCol
-            icono={<Tree size={14} color="#38B98E" />}
-            valor={String(Math.round(arbolesAnim))}
-            label="árboles"
-            activo={hayItems}
-          />
         </div>
 
         <button
@@ -447,44 +440,6 @@ function ResultadoPanel({ resultado, onReset }: {
   rol: Rol
   onReset: () => void
 }) {
-  const [showModalDpp, setShowModalDpp] = useState(false)
-  const [activosDpp, setActivosDpp] = useState<{ id: string; nombre: string; codigo_dpp: string }[]>([])
-  const [loadingDpp, setLoadingDpp] = useState(false)
-  const [activoSeleccionado, setActivoSeleccionado] = useState<string | null>(null)
-  const [asociando, setAsociando] = useState(false)
-
-  async function abrirModalDpp() {
-    setLoadingDpp(true)
-    try {
-      const res = await fetch('/api/dpp/activos?limit=50')
-      const data = await res.json() as { data?: { id: string; nombre: string; codigo_dpp: string }[] }
-      setActivosDpp(res.ok ? (data.data ?? []) : [])
-    } catch { setActivosDpp([]) }
-    setLoadingDpp(false)
-    setShowModalDpp(true)  // abre después de tener los datos
-  }
-
-  async function asociarADpp() {
-    if (!activoSeleccionado) return
-    setAsociando(true)
-    try {
-      await fetch(`/api/dpp/activos/${activoSeleccionado}/ciclo`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          operacion_realizada: 'Cálculo CO₂ eq registrado en Calculadora de Reúso',
-          fecha_inicio: new Date().toISOString().slice(0, 10),
-          distancia_transporte_km: 0,
-        }),
-      })
-    } catch { /* silencioso */ }
-    setAsociando(false)
-    setShowModalDpp(false)
-    setActivoSeleccionado(null)
-  }
-
-  const eqs = resultado.equivalencias
-
   return (
     <div style={{ padding: 24 }}>
       {/* Celebración */}
@@ -521,45 +476,9 @@ function ResultadoPanel({ resultado, onReset }: {
         </p>
       </div>
 
-      {/* Equivalencias */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 24 }}>
-        {[
-          { icono: <Tree size={20} color={BRAND} />, valor: eqs.arboles, label: 'árboles absorbiendo CO2 en 1 día' },
-          { icono: <Shower size={20} color="#59A6E4" />, valor: eqs.duchas, label: 'duchas de 5 min' },
-          { icono: <Drop size={20} color="#38B98E" />, valor: eqs.litros.toLocaleString('es-CO'), label: 'litros de agua' },
-        ].map((eq, i) => (
-          <div key={i} style={{ background: BG_LIGHT, borderRadius: 12, padding: '14px 12px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 6 }}>{eq.icono}</div>
-            <p style={{ fontSize: 20, fontWeight: 700, color: TEXT_DARK, margin: '0 0 2px' }}>
-              {typeof eq.valor === 'number' ? eq.valor.toLocaleString('es-CO') : eq.valor}
-            </p>
-            <p style={{ fontSize: 11, color: TEXT_MED, margin: 0 }}>{eq.label}</p>
-          </div>
-        ))}
-      </div>
-
-      <p style={{ fontSize: 12, color: TEXT_MED, textAlign: 'center', margin: '0 0 20px', lineHeight: 1.5 }}>
-        Esto equivale a {eqs.arboles.toLocaleString('es-CO')} árboles absorbiendo CO2 en 1 día y el equivalente a tomar {eqs.duchas.toLocaleString('es-CO')} duchas de 5 min.
-      </p>
 
       {/* Acciones */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <button
-          onClick={abrirModalDpp}
-          style={{
-            padding: '10px 20px', borderRadius: 10,
-            border: '1.5px solid rgba(0,130,124,0.40)',
-            background: 'transparent', color: '#00827C',
-            fontSize: 14, fontWeight: 600, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 8,
-            fontFamily: "'Open Sans', sans-serif",
-          }}
-          className="hover-pop hover-press"
-        >
-          <IdentificationCard size={16} />
-          Asocia a un Pasaporte DPP
-        </button>
-
         <button
           onClick={onReset}
           style={{
@@ -587,52 +506,6 @@ function ResultadoPanel({ resultado, onReset }: {
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: '@keyframes spin { to { transform: rotate(360deg); } }' }} />
-
-      {showModalDpp && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.35)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}>
-          <div style={{ background: 'var(--bg-card)', borderRadius: 16, width: '100%', maxWidth: 480, padding: 24, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', maxHeight: '80vh', overflowY: 'auto' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', fontFamily: "'Open Sans', sans-serif" }}>
-              Asocia este cálculo a un activo circular
-            </h3>
-            {loadingDpp ? (
-              <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Cargando activos...</p>
-            ) : activosDpp.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 12 }}>Primero registra un activo en Pasaportes DPP</p>
-                <a href="/empresa/dpp" style={{ color: '#00827C', fontWeight: 600, fontSize: 14 }}>Ir a Pasaportes DPP →</a>
-              </div>
-            ) : (
-              <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-                  {activosDpp.map(a => (
-                    <button key={a.id} onClick={() => setActivoSeleccionado(a.id)}
-                      style={{
-                        padding: '12px 14px', borderRadius: 10,
-                        border: `2px solid ${activoSeleccionado === a.id ? '#00827C' : 'var(--border)'}`,
-                        background: activoSeleccionado === a.id ? 'rgba(0,130,124,0.08)' : 'var(--bg-card)',
-                        cursor: 'pointer', textAlign: 'left', width: '100%',
-                        fontFamily: "'Open Sans', sans-serif",
-                      }}>
-                      <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>{a.nombre}</p>
-                      <p style={{ margin: '2px 0 0', fontSize: 11, fontFamily: 'monospace', color: 'var(--text-secondary)' }}>{a.codigo_dpp}</p>
-                    </button>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                  <button onClick={() => { setShowModalDpp(false); setActivoSeleccionado(null) }}
-                    style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: 10, padding: '10px 18px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif" }}>
-                    Cancelar
-                  </button>
-                  <button onClick={asociarADpp} disabled={!activoSeleccionado || asociando}
-                    style={{ background: '#00827C', color: '#fff', border: 'none', borderRadius: 10, padding: '10px 20px', fontSize: 14, fontWeight: 700, cursor: 'pointer', opacity: !activoSeleccionado || asociando ? 0.6 : 1, fontFamily: "'Open Sans', sans-serif" }}>
-                    {asociando ? 'Asociando...' : 'Asocia el cálculo'}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
