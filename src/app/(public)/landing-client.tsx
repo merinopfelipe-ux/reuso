@@ -16,12 +16,12 @@ import { waLink } from '@/lib/constants/contacto'
 
 // ─── Catálogo integral de cálculos (Línea 1: Ambientales / Línea 2: Financieros) ─
 const TODOS_LOS_CALCULOS = [
-  // ── DIFERENCIAL: Circularidad de Materiales (plan Impacto Ilimitado) ──
+  // ── DIFERENCIAL: Algoritmo CR (plan Impacto Ilimitado) ──
   {
     icon: Layers,
-    titulo: 'Circularidad de Materiales',
-    metrica: 'Qué tan circular es cada pieza, de 0 a 1.',
-    desc: 'Combina el material reusado que entra, el desvío de vertedero y la vida útil en una métrica integral.',
+    titulo: 'Algoritmo CR',
+    metrica: 'Desempeño circular frente al ciclo de vida estándar.',
+    desc: 'Métrica propia que combina la circularidad física de un producto con el tiempo de vida que ganas al mantenerlo en ciclos de reúso continuo.',
     tag: 'DPP',
     colorHex: '#00827C',
     bgLight: 'bg-[#00827C]/15', borderLight: 'border-transparent', bgDark: 'bg-[#00827C]/20', borderDark: 'border-transparent',
