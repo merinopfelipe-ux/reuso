@@ -19,7 +19,7 @@ async function obtenerDatosReales() {
   const [{ data: planes }, { data: contenido }, { data: faq }, { data: comparativa }] = await Promise.all([
     adminClient
       .from('config_planes')
-      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, features_json')
+      .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, limite_dpp_mes, incluye_ia, features_json')
       .order('precio_cop', { ascending: true }),
     adminClient
       .from('contenido_landing')
@@ -57,6 +57,22 @@ async function obtenerDatosReales() {
     console.error('[landing] equivalente_mensual_anual_* no disponible (posible migración 128 pendiente):', err)
   }
 
+  // Misma protección que equivalente_mensual_anual_* arriba: incluye_mci/
+  // incluye_excel_csv son de sql/131, más nueva — si esta base todavía no
+  // la corrió, la landing no debe caer, solo mostrar esas 2 capacidades
+  // como no incluidas hasta que se corra.
+  const capacidades = new Map<string, { mci: boolean; excelCsv: boolean }>()
+  try {
+    const { data: conCapacidades } = await adminClient
+      .from('config_planes')
+      .select('id, incluye_mci, incluye_excel_csv')
+    for (const p of conCapacidades ?? []) {
+      capacidades.set(p.id, { mci: Boolean(p.incluye_mci), excelCsv: Boolean(p.incluye_excel_csv) })
+    }
+  } catch (err) {
+    console.error('[landing] incluye_mci/incluye_excel_csv no disponibles (posible migración 131 pendiente):', err)
+  }
+
   const whatsappNumero = (contenido?.valor_json as { numero?: string } | null)?.numero || undefined
   // FAQ real de /admin/contenido (sql/121 la siembra con el contenido que
   // ya mostraba la landing) — si todavía no hay fila, LandingClient cae a
@@ -68,11 +84,14 @@ async function obtenerDatosReales() {
   const comparativaCategorias = (comparativa?.valor_json as { categorias?: CategoriaComparativa[] } | null)?.categorias
   const planesCompletos = (planes ?? []).map(p => {
     const eq = equivalentes.get(p.id)
+    const cap = capacidades.get(p.id)
     return {
       ...p,
       equivalente_mensual_anual_cop: eq?.cop ?? null,
       equivalente_mensual_anual_usd: eq?.usd ?? null,
       equivalente_mensual_anual_eur: eq?.eur ?? null,
+      incluye_mci: cap?.mci ?? false,
+      incluye_excel_csv: cap?.excelCsv ?? false,
     }
   })
   return { planes: planesCompletos as PlanPrecioReal[], whatsappNumero, faqItems, comparativaCategorias }
@@ -182,8 +201,8 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     operatingSystem: 'Web',
     inLanguage: 'es-CO',
     offers: [
-      { '@type': 'Offer', name: 'Explora', price: '0', priceCurrency: 'USD', description: '10 cálculos gratis al mes para evaluar RSE.' },
-      { '@type': 'Offer', name: 'Circular Lab', price: precioOffer('lab', '12'), priceCurrency: 'USD', description: 'Hasta 5 informes de mitigación de RSE al mes.' },
+      { '@type': 'Offer', name: 'Explora', price: '0', priceCurrency: 'USD', description: '5 cálculos gratis al mes para evaluar RSE.' },
+      { '@type': 'Offer', name: 'Circular Lab', price: precioOffer('lab', '12'), priceCurrency: 'USD', description: 'Hasta 5 Pasaportes Digitales de Producto e informes de impacto al mes.' },
       { '@type': 'Offer', name: 'Impulso Sostenible', price: precioOffer('impulso', '37'), priceCurrency: 'USD', description: 'Trazabilidad y Pasaporte Digital de Producto.' },
       { '@type': 'Offer', name: 'Impacto Ilimitado', price: precioOffer('ilimitado', '87'), priceCurrency: 'USD', description: 'Gestión total de RSE corporativa, sin límites.' },
     ],

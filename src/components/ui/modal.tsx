@@ -95,27 +95,26 @@ export function Modal({
   const contenidoModal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-[#474747]/60 backdrop-blur-xs animate-in fade-in duration-200" onClick={onClose}>
       <div
-        className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl bg-[var(--bg-card)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150`}
+        className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150`}
         onClick={e => e.stopPropagation()}
       >
-        {/* Header Fijo — con sinEncabezado, solo el botón "X" con padding
-            mínimo y flujo limpio para que el scrollbar nunca pase por detrás. */}
-        <div className={sinEncabezado ? 'flex-shrink-0 flex items-center justify-end p-3 sm:p-4 pb-1' : 'flex-shrink-0 p-5 sm:p-6 pb-2 relative'}>
-          {/* Botón X de cierre arriba a la derecha */}
-          <button
-            type="button"
-            onClick={onClose}
-            className={`p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-colors cursor-pointer z-10 ${sinEncabezado ? '' : 'absolute top-4 right-4 sm:top-5 sm:right-5'}`}
-            aria-label="Cerrar modal"
-          >
-            <IconoX size={18} />
-          </button>
+        {/* Botón X de cierre: flotante con backdrop cuando sinEncabezado, o en esquina del header */}
+        <button
+          type="button"
+          onClick={onClose}
+          className={`rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-all cursor-pointer z-30 ${
+            sinEncabezado
+              ? 'absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5 bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)]/50 shadow-xs'
+              : 'absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5'
+          }`}
+          aria-label="Cerrar modal"
+        >
+          <IconoX size={18} />
+        </button>
 
-          {/* Encabezado con Ícono y Descripción — SIN descripción, el título
-              va centrado con el ícono (items-center), NUNCA pegado arriba.
-              CON descripción (título + subtítulo apilados, más alto que el
-              ícono), se alinea arriba (items-start). Nunca al revés. */}
-          {!sinEncabezado && (
+        {/* Encabezado Fijo — Solo se renderiza cuando sinEncabezado es false */}
+        {!sinEncabezado && (
+          <div className="flex-shrink-0 p-5 sm:p-6 pb-2 relative">
             <div className={`flex ${descripcion ? 'items-start' : 'items-center'} gap-3 pr-8 ${tituloCentrado ? 'justify-center w-full' : ''}`}>
               {icono && !tituloCentrado && (
                 <div
@@ -140,11 +139,11 @@ export function Modal({
                 )}
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Cuerpo Scrolleable */}
-        <div className={`flex-1 overflow-y-auto min-h-0 px-5 sm:px-6 ${sinEncabezado ? 'pt-1 pb-6' : 'pb-2'}`}>
+        <div className={`flex-1 overflow-y-auto min-h-0 px-5 sm:px-6 ${sinEncabezado ? 'pt-5 pb-5' : 'pb-2'}`}>
           <div className="flex flex-col gap-4">
             {children}
           </div>

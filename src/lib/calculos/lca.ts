@@ -13,8 +13,7 @@ export interface MaterialComposicion {
 /**
  * CO2 evitado por fabricar el activo con material reusado en vez de
  * virgen — se calcula UNA SOLA VEZ al crear el DPP. Alimenta el cálculo
- * #3 del catálogo ("Huella real de Alcance 3, Categoría 1"), ver
- * calculos/00-indice.md del Vault.
+ * de "Huella de carbono" del catálogo.
  */
 export function calcularHuellaManufactura(composicion: MaterialComposicion[]): number {
   const total = composicion.reduce(

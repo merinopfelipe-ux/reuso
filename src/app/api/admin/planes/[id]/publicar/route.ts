@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
@@ -51,7 +52,10 @@ export async function POST(
     precio_anual_cop: actual.precio_anual_cop, precio_anual_usd: actual.precio_anual_usd, precio_anual_eur: actual.precio_anual_eur,
     limite_empleados: actual.limite_empleados, limite_calculos_mes: actual.limite_calculos_mes, limite_informes_mes: actual.limite_informes_mes,
     limite_cotizaciones_mes: actual.limite_cotizaciones_mes,
-    incluye_ia: actual.incluye_ia, limite_dpp_mes: actual.limite_dpp_mes,
+    incluye_ia: actual.incluye_ia,
+    incluye_mci: actual.incluye_mci,
+    incluye_excel_csv: actual.incluye_excel_csv,
+    limite_dpp_mes: actual.limite_dpp_mes,
     features_json: actual.features_json,
     equivalente_mensual_anual_cop: actual.equivalente_mensual_anual_cop, equivalente_mensual_anual_usd: actual.equivalente_mensual_anual_usd, equivalente_mensual_anual_eur: actual.equivalente_mensual_anual_eur,
   }
@@ -61,6 +65,8 @@ export async function POST(
     limite_empleados: actual.borrador_limite_empleados, limite_calculos_mes: actual.borrador_limite_calculos_mes, limite_informes_mes: actual.borrador_limite_informes_mes,
     limite_cotizaciones_mes: actual.borrador_limite_cotizaciones_mes,
     incluye_ia: actual.borrador_incluye_ia ?? actual.incluye_ia,
+    incluye_mci: actual.borrador_incluye_mci ?? actual.incluye_mci ?? (actual.id === 'ilimitado'),
+    incluye_excel_csv: actual.borrador_incluye_excel_csv ?? actual.incluye_excel_csv ?? (actual.id === 'ilimitado'),
     limite_dpp_mes: actual.borrador_limite_dpp_mes,
     features_json: actual.borrador_features_json ?? actual.features_json,
     equivalente_mensual_anual_cop: actual.borrador_equivalente_mensual_anual_cop,
@@ -83,27 +89,29 @@ export async function POST(
   let aviso: string | undefined
   if (error) {
     console.error(`[API /admin/planes/${id}/publicar] Error en update inicial:`, error)
-    // Si falla por columnas de sql/128 (equivalente_mensual_anual_* aún no migradas en Supabase),
-    // se reintenta inmediatamente sin ellas para que la publicación nunca se bloquee. Solo se
-    // reintenta cuando el error menciona esas columnas puntuales, nunca ante cualquier error,
-    // para no reportar éxito silencioso ante una falla distinta (ej. un valor de borrador inválido).
-    if (!error.message?.includes('equivalente_mensual_anual')) {
+    // Si falla por columnas de migraciones pendientes (sql/128 o sql/131 aún no migradas en Supabase),
+    // se reintenta inmediatamente sin ellas para que la publicación nunca se bloquee.
+    if (!error.message?.includes('equivalente_mensual_anual') && !error.message?.includes('incluye_mci') && !error.message?.includes('incluye_excel_csv')) {
       return NextResponse.json({ error: error.message || 'No se pudo publicar' }, { status: 500 })
     }
-    const camposSql128 = new Set([
+    const camposNuevos = new Set([
       'equivalente_mensual_anual_cop',
       'equivalente_mensual_anual_usd',
       'equivalente_mensual_anual_eur',
       'borrador_equivalente_mensual_anual_cop',
       'borrador_equivalente_mensual_anual_usd',
       'borrador_equivalente_mensual_anual_eur',
+      'incluye_mci',
+      'borrador_incluye_mci',
+      'incluye_excel_csv',
+      'borrador_incluye_excel_csv',
     ])
-    const updateSinSql128 = Object.fromEntries(
-      Object.entries(updateData).filter(([k]) => !camposSql128.has(k))
+    const updateSinNuevos = Object.fromEntries(
+      Object.entries(updateData).filter(([k]) => !camposNuevos.has(k))
     )
     const reintento = await adminClient
       .from('config_planes')
-      .update(updateSinSql128)
+      .update(updateSinNuevos)
       .eq('id', id)
 
     if (reintento.error) {
@@ -111,7 +119,7 @@ export async function POST(
       return NextResponse.json({ error: reintento.error.message || 'No se pudo publicar' }, { status: 500 })
     }
     error = null
-    aviso = 'Falta correr sql/128 para el equivalente mensual editable — el resto se publicó bien.'
+    aviso = 'Falta correr migraciones pendientes en Supabase (sql/128 o sql/131) — el resto se publicó bien.'
   }
 
   await logAuditoria(adminClient, {
@@ -120,6 +128,12 @@ export async function POST(
     detalle: { plan_id: id, antes, despues },
     ip: getIp(request),
   })
+
+  try {
+    revalidatePath('/')
+  } catch (err) {
+    console.error(`[API /admin/planes/${id}/publicar] Error al revalidar caché:`, err)
+  }
 
   return NextResponse.json({ ok: true, plan: despues, ...(aviso ? { aviso } : {}) })
 }

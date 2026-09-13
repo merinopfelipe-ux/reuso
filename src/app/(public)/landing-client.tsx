@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Layers, Flask, Plus, SlidersHorizontal } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Flask, Plus, Users } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { PLANS, CURRENCIES, formatearPrecioColombiano, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
@@ -16,12 +16,34 @@ import { waLink } from '@/lib/constants/contacto'
 
 // ─── Catálogo de los 9 cálculos técnicos de impacto ──────────────────────────
 const TODOS_LOS_CALCULOS = [
-  // ── 1. Huella de carbono ──
+  // ── 1. Índice de Flujo Lineal (MCI) ──
+  {
+    icon: Flask,
+    titulo: 'Índice de Flujo Lineal (MCI)',
+    metrica: 'Circularidad avanzada (ISO 59020).',
+    desc: 'Mide la circularidad integral según la norma ISO 59020 para pasaportes de producto avanzados.',
+    tag: 'Ambiental',
+    planes: 'Impacto Ilimitado',
+    colorHex: '#00827C',
+    bgLight: 'bg-[#00827C]/15',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#00827C]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#00827C]',
+    textDark: 'text-[#8AD0B2]',
+    hoverIconBgLight: 'group-hover:bg-[#00827C]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#00827C]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#00827C]/35 via-[#00827C]/15 to-transparent',
+    haloDark: 'from-[#00827C]/30 via-[#00827C]/15 to-transparent',
+  },
+  // ── 2. Huella de carbono ──
   {
     icon: Leaf,
     titulo: 'Huella de carbono',
     metrica: 'Emisiones de gases evitadas.',
-    desc: 'Cuantifica las emisiones de gases de efecto invernadero (CO₂ eq) evitadas al extender la vida útil de cada material frente a la extracción virgen.',
+    desc: 'Cuantifica emisiones evitadas (kg CO₂e) al extender la vida útil frente a la extracción virgen.',
     tag: 'Ambiental',
     planes: 'Explora, Lab, Impulso e Ilimitado',
     colorHex: '#8AD0B2',
@@ -38,12 +60,12 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent',
     haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
   },
-  // ── 2. Huella hídrica ──
+  // ── 3. Huella hídrica ──
   {
     icon: Drop,
     titulo: 'Huella hídrica',
     metrica: 'Litros de agua ahorrados.',
-    desc: 'Estima todo el volumen de agua potable preservado al prolongar la vida útil de los recursos en tus procesos productivos.',
+    desc: 'Estima el agua potable ahorrada al prolongar la vida útil de los recursos en tus procesos.',
     tag: 'Ambiental',
     planes: 'Explora, Lab, Impulso e Ilimitado',
     colorHex: '#59A6E4',
@@ -60,12 +82,78 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent',
     haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
   },
-  // ── 3. Desvío de vertedero ──
+  // ── 4. Ahorro en compras ──
+  {
+    icon: Coins,
+    titulo: 'Ahorro en compras',
+    metrica: 'Capital no gastado en insumos.',
+    desc: 'Calcula el capital ahorrado al reutilizar componentes frente a comprar insumos vírgenes nuevos.',
+    tag: 'Económico',
+    planes: 'Circular Lab, Impulso e Ilimitado',
+    colorHex: '#38B98E',
+    bgLight: 'bg-[#38B98E]/20',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#38B98E]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#38B98E]',
+    textDark: 'text-[#38B98E]',
+    hoverIconBgLight: 'group-hover:bg-[#38B98E]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#38B98E]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent',
+    haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
+  },
+  // ── 5. Retorno de inversión circular ──
+  {
+    icon: TrendingUp,
+    titulo: 'Retorno de inversión circular',
+    metrica: 'Rentabilidad de la recuperación.',
+    desc: 'Compara la inversión en recuperar inventario frente a los costos evitados en compras nuevas.',
+    tag: 'Económico',
+    planes: 'Impulso Sostenible e Ilimitado',
+    colorHex: '#F6BF3E',
+    bgLight: 'bg-[#F6BF3E]/20',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#F6BF3E]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#F6BF3E]',
+    textDark: 'text-[#F6BF3E]',
+    hoverIconBgLight: 'group-hover:bg-[#F6BF3E]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#F6BF3E]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#F6BF3E]/35 via-[#F6BF3E]/15 to-transparent',
+    haloDark: 'from-[#F6BF3E]/30 via-[#F6BF3E]/15 to-transparent',
+  },
+  // ── 6. Horas de trabajo local (Social) ──
+  {
+    icon: Users,
+    titulo: 'Horas de trabajo local',
+    metrica: 'Horas de mano de obra y oficios.',
+    desc: 'Cuantifica las horas de oficios técnicos y artesanos dedicadas a restaurar y valorizar cada activo.',
+    tag: 'Social',
+    planes: 'Impulso Sostenible e Ilimitado',
+    colorHex: '#985fa1',
+    bgLight: 'bg-[#985fa1]/20',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#985fa1]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#985fa1]',
+    textDark: 'text-[#985fa1]',
+    hoverIconBgLight: 'group-hover:bg-[#985fa1]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#985fa1]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#985fa1]/35 via-[#985fa1]/15 to-transparent',
+    haloDark: 'from-[#985fa1]/30 via-[#985fa1]/15 to-transparent',
+  },
+  // ── 7. Desvío de vertedero ──
   {
     icon: Trash,
     titulo: 'Desvío de vertedero',
     metrica: 'Residuos no enviados a rellenos.',
-    desc: 'Mide los kilogramos y toneladas de material rescatado que evitan terminar en rellenos sanitarios o disposición final.',
+    desc: 'Mide los kilogramos de material que evitan terminar en rellenos sanitarios o disposición final.',
     tag: 'Ambiental',
     planes: 'Circular Lab, Impulso e Ilimitado',
     colorHex: '#AD7C43',
@@ -82,13 +170,13 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent',
     haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
   },
-  // ── 4. Índice circular ──
+  // ── 8. Índice circular ──
   {
     icon: ArrowsClockwise,
     titulo: 'Índice circular',
     metrica: 'Porcentaje de material recuperado.',
-    desc: 'Determina la proporción total de insumos recuperados y renovables incorporados para sustentar compras sostenibles.',
-    tag: 'Circular',
+    desc: 'Determina el porcentaje de insumos recuperados y renovables incorporados en cada producto.',
+    tag: 'Ambiental',
     planes: 'Circular Lab, Impulso e Ilimitado',
     colorHex: '#D6F391',
     bgLight: 'bg-[#D6F391]/25',
@@ -104,57 +192,13 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#D6F391]/40 via-[#D6F391]/20 to-transparent',
     haloDark: 'from-[#D6F391]/35 via-[#D6F391]/15 to-transparent',
   },
-  // ── 5. Ahorro en compras ──
-  {
-    icon: Coins,
-    titulo: 'Ahorro en compras',
-    metrica: 'Capital no gastado en insumos.',
-    desc: 'Estima con precisión el dinero ahorrado al reutilizar componentes frente a la compra de productos vírgenes nuevos.',
-    tag: 'Financiero',
-    planes: 'Circular Lab, Impulso e Ilimitado',
-    colorHex: '#38B98E',
-    bgLight: 'bg-[#38B98E]/20',
-    borderLight: 'border-transparent',
-    bgDark: 'bg-[#38B98E]/20',
-    borderDark: 'border-transparent',
-    textLight: 'text-[#38B98E]',
-    textDark: 'text-[#38B98E]',
-    hoverIconBgLight: 'group-hover:bg-[#38B98E]',
-    hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#38B98E]',
-    hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent',
-    haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
-  },
-  // ── 6. Retorno de inversión circular ──
-  {
-    icon: TrendingUp,
-    titulo: 'Retorno de inversión circular',
-    metrica: 'Rentabilidad de la recuperación.',
-    desc: 'Compara la inversión en recuperar y transformar inventario frente a los costos evitados en compras de materias primas.',
-    tag: 'Financiero',
-    planes: 'Impulso Sostenible e Ilimitado',
-    colorHex: '#F6BF3E',
-    bgLight: 'bg-[#F6BF3E]/20',
-    borderLight: 'border-transparent',
-    bgDark: 'bg-[#F6BF3E]/20',
-    borderDark: 'border-transparent',
-    textLight: 'text-[#F6BF3E]',
-    textDark: 'text-[#F6BF3E]',
-    hoverIconBgLight: 'group-hover:bg-[#F6BF3E]',
-    hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#F6BF3E]',
-    hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#F6BF3E]/35 via-[#F6BF3E]/15 to-transparent',
-    haloDark: 'from-[#F6BF3E]/30 via-[#F6BF3E]/15 to-transparent',
-  },
-  // ── 7. Costo total de propiedad ──
+  // ── 9. Costo total de propiedad ──
   {
     icon: Receipt,
     titulo: 'Costo total de propiedad',
     metrica: 'Gasto real en el tiempo.',
-    desc: 'Compara el gasto acumulado en el tiempo para demostrar que extender la vida útil resulta notablemente más económico.',
-    tag: 'Financiero',
+    desc: 'Compara el gasto acumulado demostrando que extender la vida útil resulta mucho más económico.',
+    tag: 'Económico',
     planes: 'Impulso Sostenible e Ilimitado',
     colorHex: '#F3BBD3',
     bgLight: 'bg-[#F3BBD3]/25',
@@ -170,58 +214,12 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent',
     haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
   },
-  // ── 8. Mitigación por ciclos de vida ──
-  {
-    icon: Layers,
-    titulo: 'Mitigación por ciclos de vida',
-    metrica: 'Impacto acumulado del activo.',
-    desc: 'Suma el beneficio ambiental acumulado de un activo o material a lo largo de todas sus fases sucesivas de reúso.',
-    tag: 'DPP',
-    planes: 'Impulso Sostenible e Ilimitado',
-    colorHex: '#8AD0B2',
-    bgLight: 'bg-[#8AD0B2]/20',
-    borderLight: 'border-transparent',
-    bgDark: 'bg-[#8AD0B2]/20',
-    borderDark: 'border-transparent',
-    textLight: 'text-[#8AD0B2]',
-    textDark: 'text-[#8AD0B2]',
-    hoverIconBgLight: 'group-hover:bg-[#8AD0B2]',
-    hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#8AD0B2]',
-    hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent',
-    haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
-  },
-  // ── 9. Índice de Flujo Lineal (MCI) ──
-  {
-    icon: Flask,
-    titulo: 'Índice de Flujo Lineal (MCI)',
-    metrica: 'Circularidad avanzada (ISO 59020).',
-    desc: 'Metodología estandarizada internacional (ISO 59020) que mide qué tan lejos está un producto de un flujo lineal integrando composición y extensión del ciclo de vida.',
-    tag: 'DPP',
-    planes: 'Impacto Ilimitado',
-    colorHex: '#00827C',
-    bgLight: 'bg-[#00827C]/15',
-    borderLight: 'border-transparent',
-    bgDark: 'bg-[#00827C]/20',
-    borderDark: 'border-transparent',
-    textLight: 'text-[#00827C]',
-    textDark: 'text-[#8AD0B2]',
-    hoverIconBgLight: 'group-hover:bg-[#00827C]',
-    hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#00827C]',
-    hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#00827C]/35 via-[#00827C]/15 to-transparent',
-    haloDark: 'from-[#00827C]/30 via-[#00827C]/15 to-transparent',
-  },
 ]
 
 const COLOR_POR_CATEGORIA: Record<string, string> = {
   Ambiental: '#38B98E',
-  Circular: '#8AD0B2',
-  Financiero: '#F6BF3E',
+  Económico: '#F6BF3E',
   Social: '#F3BBD3',
-  DPP: '#59A6E4',
 }
 
 
@@ -644,6 +642,12 @@ export interface PlanPrecioReal {
   limite_calculos_mes: number | null
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
+  limite_dpp_mes: number | null
+  incluye_ia: boolean
+  // Personalización de capacidades (sql/131), editable desde /admin/contenido
+  // -> Precios: MCI/ISO 59020 y exportación de Informes en Excel/CSV.
+  incluye_mci: boolean
+  incluye_excel_csv: boolean
   // Equivalente mensual del plan anual, editable a mano desde /admin/contenido
   // -> Precios. null = usar el cálculo automático (anual/12, redondeado hacia
   // abajo). El precio anual real (precio_anual_*) nunca se toca por esto.
@@ -994,10 +998,18 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   // — la pantalla nunca se rompe por falta de datos.
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
-  const equivalenteManual = (real: PlanPrecioReal | undefined, moneda: keyof typeof CURRENCIES): number | null => {
-    if (!real) return null
-    const campo = moneda === 'COP' ? real.equivalente_mensual_anual_cop : moneda === 'USD' ? real.equivalente_mensual_anual_usd : real.equivalente_mensual_anual_eur
-    return campo ?? null
+  // Congruencia real con /admin/contenido -> Precios -> "Personalización de
+  // capacidades": si el toggle de MCI o de Excel/CSV está encendido para
+  // este plan, se agrega el beneficio automáticamente — nunca queda a
+  // criterio de un texto manual en features_json que puede desincronizarse
+  // del toggle real. Bug real encontrado y corregido 2026-09-13.
+  const bulletsPlan = (plan: typeof PLANS[0]): string[] => {
+    const real = precioReal(plan)
+    const base = real?.features_json?.length ? real.features_json : plan.features
+    const extra: string[] = []
+    if (real?.incluye_mci) extra.push('Indicador de Circularidad de Materiales (MCI, ISO 59020)')
+    if (real?.incluye_excel_csv) extra.push('Exportación de informes en Excel y CSV')
+    return [...base, ...extra]
   }
 
   // Regla general de diseño: los decimales van en la misma línea, pero más pequeños
@@ -1036,8 +1048,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
 
       if (billing === 'annual') {
-        const manual = equivalenteManual(real, currency)
-        const finalAmount = manual ?? ((anual ?? mensual * 10) / 12)
+        const finalAmount = (anual ?? mensual * 10) / 12
         const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
         return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
       }
@@ -1394,7 +1405,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
-            {TODOS_LOS_CALCULOS.map((calc, i) => {
+            {TODOS_LOS_CALCULOS.slice(0, 6).map((calc, i) => {
               const IconComponent = calc.icon
               return (
                 <motion.div
@@ -1444,8 +1455,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         <IconComponent size={20} strokeWidth={2.2} />
                       </div>
                       
-                      <span className={`text-xs sm:text-xs font-bold px-2.5 py-1 rounded-full border ${
-                        isDark ? 'bg-white/5 border-white/10 text-white/70' : 'bg-[#00827C]/5 border-[#00827C]/15 text-[#00827C]'
+                      <span className={`text-[11px] font-medium select-none ${
+                        isDark ? 'text-white/40' : 'text-[#474747]/60'
                       }`}>
                         {calc.tag}
                       </span>
@@ -1453,15 +1464,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     <h3 className={`text-sm sm:text-base font-extrabold mb-1 transition-colors duration-300 ${tp}`}>
                       {calc.titulo}
                     </h3>
-                    <p className={`text-xs font-medium leading-relaxed mb-2.5 ${ts}`}>
+                    <p className={`text-xs font-medium leading-relaxed ${ts}`}>
                       {calc.desc}
                     </p>
-                    <div className="pt-2 border-t border-dashed border-current/10 flex items-center justify-between">
-                      <span className={`text-[11px] font-semibold opacity-60 ${ts}`}>Disponible en:</span>
-                      <span className={`text-[11px] font-bold text-right ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
-                        {calc.planes}
-                      </span>
-                    </div>
                   </div>
                 </motion.div>
               )
@@ -1473,7 +1478,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               onClick={() => setCatalogoCalculosAbierto(true)}
               className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
-              <span>Ver detalle y desglose metodológico</span>
+              <span>Ver detalle</span>
               <Plus size={16} strokeWidth={2.5} className="flex-shrink-0" />
             </button>
           </div>
@@ -1483,15 +1488,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
-          titulo="Los 9 cálculos técnicos de Calculadora de Reúso"
-          descripcion="Métricas estructuradas para sustentar tu impacto ambiental, circular y financiero ante clientes, aliados y auditorías corporativas."
-          icono={<Calculator size={22} />}
-          colorIcono={isDark ? '#D6F391' : '#00827C'}
+          titulo=""
+          sinEncabezado
           ancho="xl"
           sinPie
         >
-          <div className="flex flex-col gap-6 sm:gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
-            {(['Ambiental', 'Circular', 'Financiero', 'DPP'] as const).map(grupo => {
+          <div className="flex flex-col gap-6 sm:gap-7 py-0.5">
+            {(['Ambiental', 'Económico', 'Social'] as const).map(grupo => {
               const items = TODOS_LOS_CALCULOS.filter(c => c.tag === grupo)
               if (!items.length) return null
               const color = COLOR_POR_CATEGORIA[grupo]
@@ -1576,6 +1579,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </Modal>
       </section>
+
 
       {/* ── SECCIÓN 4 - CATEGORÍAS / INDUSTRIAS (SIN STICKY SCROLL) ─── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
@@ -1870,7 +1874,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   ))}
                 </dl>
                 <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
-                  {(precioReal(plan)?.features_json?.length ? precioReal(plan)!.features_json! : plan.features).map((f, j) => (
+                  {bulletsPlan(plan).map((f, j) => (
                     <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-sm md:text-sm lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
                       <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                         isDark
@@ -1921,21 +1925,34 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* Popup del cuadro comparativo completo */}
       {(() => {
-        const listaComparativa = (comparativaCategorias && comparativaCategorias.length > 0)
+        const listaBase = (comparativaCategorias && comparativaCategorias.length > 0)
           ? comparativaCategorias
           : COMPARATIVA_DEFAULT
+        // Congruencia real: la fila del MCI (sea del cuadro por defecto o
+        // del que el admin personalizó en /admin/contenido) siempre refleja
+        // el toggle real de "Personalización de capacidades" por plan, en
+        // vez de un checkmark manual que puede desincronizarse. Bug real
+        // encontrado y corregido 2026-09-13.
+        const listaComparativa = listaBase.map(categoria => ({
+          ...categoria,
+          filas: categoria.filas.map(fila => {
+            if (!/Índice de Flujo Lineal|MCI/i.test(fila.label)) return fila
+            const valoresReales = Object.fromEntries(
+              (planesPrecios ?? []).map(p => [p.id, p.incluye_mci])
+            )
+            return { ...fila, valores: { ...fila.valores, ...valoresReales } }
+          }),
+        }))
         return (
           <Modal
             abierto={comparativaAbierta}
             onClose={() => setComparativaAbierta(false)}
-            titulo="Cuadro comparativo de planes y cálculos"
-            descripcion="Conoce al detalle qué incluye cada nivel y qué cálculos técnicos se activan en cada plan."
-            icono={<SlidersHorizontal size={22} />}
-            colorIcono={isDark ? '#D6F391' : '#00827C'}
+            titulo=""
+            sinEncabezado
             ancho="xl"
             sinPie
           >
-            <div className="flex flex-col gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+            <div className="flex flex-col gap-7 py-0.5">
               {listaComparativa.map((categoria, ci) => {
                 const colorCategoria = categoria.color ?? PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
                 return (
@@ -1943,7 +1960,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {categoria.nombre && (
                       <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
                     )}
-                    <div className={`rounded-[12px] border-2 overflow-hidden`} style={{ borderColor: `${colorCategoria}40` }}>
+                    <div className="rounded-[12px] border-2" style={{ borderColor: `${colorCategoria}40` }}>
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
                           <colgroup>
@@ -1986,7 +2003,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                 >
                                   <span className="flex items-start gap-1 min-w-0">
                                     <span className="break-words min-w-0">{fila.label}</span>
-                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} className="mt-0.5" />}
+                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} className="mt-0.5" />}
                                   </span>
                                 </td>
                                 {PLANS.map(plan => {

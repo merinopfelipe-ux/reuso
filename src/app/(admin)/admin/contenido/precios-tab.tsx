@@ -60,8 +60,10 @@ function TarjetaPlanSkeleton() {
           </div>
         ))}
       </div>
-      {/* 3. Capacidades de IA */}
-      <Skeleton style={{ width: 130, height: 14, marginBottom: 12 }} />
+      {/* 3. Personalización de capacidades */}
+      <Skeleton style={{ width: 180, height: 14, marginBottom: 12 }} />
+      <Skeleton style={{ width: '100%', height: 42, marginBottom: 8, borderRadius: 10 }} />
+      <Skeleton style={{ width: '100%', height: 42, marginBottom: 8, borderRadius: 10 }} />
       <Skeleton style={{ width: '100%', height: 42, marginBottom: 24, borderRadius: 10 }} />
       {/* 4. Beneficios */}
       <Skeleton style={{ width: '100%', height: 36, borderRadius: 8 }} />
@@ -96,12 +98,16 @@ interface ConfigPlan {
   limite_informes_mes: number | null
   limite_cotizaciones_mes: number | null
   incluye_ia: boolean
+  incluye_mci?: boolean
+  incluye_excel_csv?: boolean
   limite_dpp_mes: number | null
   features_json: string[] | null
   equivalente_mensual_anual_cop: number | null
   equivalente_mensual_anual_usd: number | null
   equivalente_mensual_anual_eur: number | null
   borrador_incluye_ia: boolean | null
+  borrador_incluye_mci?: boolean | null
+  borrador_incluye_excel_csv?: boolean | null
   borrador_limite_dpp_mes: number | null
   borrador_features_json: string[] | null
   borrador_equivalente_mensual_anual_cop: number | null
@@ -127,7 +133,9 @@ const NOMBRES: Record<string, string> = {
 export interface TarjetaPlanHandle {
   // Guarda el borrador y publica en un solo viaje al servidor — se llama
   // solo cuando el usuario pulsa "Publicar todo", nunca mientras escribe.
-  publicar: () => Promise<boolean>
+  // `aviso` llega cuando el servidor descartó en silencio algún campo por
+  // faltar una migración — debe mostrarse, no solo loguearse.
+  publicar: () => Promise<{ ok: boolean; aviso?: string }>
 }
 
 const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: (planId: string, pendiente: boolean) => void }>(function TarjetaPlan({ plan, onCambio }, ref) {
@@ -150,6 +158,8 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
     borrador_limite_informes_mes: plan.borrador_limite_informes_mes ?? plan.limite_informes_mes,
     borrador_limite_cotizaciones_mes: plan.borrador_limite_cotizaciones_mes ?? plan.limite_cotizaciones_mes,
     borrador_incluye_ia: plan.borrador_incluye_ia ?? plan.incluye_ia,
+    borrador_incluye_mci: plan.borrador_incluye_mci ?? plan.incluye_mci ?? (plan.id === 'ilimitado'),
+    borrador_incluye_excel_csv: plan.borrador_incluye_excel_csv ?? plan.incluye_excel_csv ?? (plan.id === 'ilimitado'),
     borrador_limite_dpp_mes: plan.borrador_limite_dpp_mes ?? plan.limite_dpp_mes,
     borrador_features_json: featuresIniciales,
     borrador_equivalente_mensual_anual_cop: plan.borrador_equivalente_mensual_anual_cop ?? plan.equivalente_mensual_anual_cop,
@@ -189,18 +199,24 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
         // se envían — el schema del servidor los rechazaría.
         body: JSON.stringify({ ...borrador, id: plan.id, borrador_features_json: borrador.borrador_features_json.filter(f => f.trim() !== '') }),
       })
+      const guardarJson = await resGuardar.json().catch(() => ({}))
       if (!resGuardar.ok) {
-        const errJson = await resGuardar.json().catch(() => ({}))
-        console.error(`[PreciosTab] Error al guardar borrador de ${plan.id}:`, errJson)
-        return false
+        console.error(`[PreciosTab] Error al guardar borrador de ${plan.id}:`, guardarJson)
+        return { ok: false }
       }
       const resPublicar = await fetch(`/api/admin/planes/${plan.id}/publicar`, { method: 'POST' })
+      const publicarJson = await resPublicar.json().catch(() => ({}))
       if (!resPublicar.ok) {
-        const errJson = await resPublicar.json().catch(() => ({}))
-        console.error(`[PreciosTab] Error al publicar ${plan.id}:`, errJson)
-        return false
+        console.error(`[PreciosTab] Error al publicar ${plan.id}:`, publicarJson)
+        return { ok: false }
       }
-      return true
+      // Ambos endpoints pueden guardar/publicar con éxito PERO haber
+      // descartado en silencio columnas de una migración sin correr (ver
+      // src/app/api/admin/planes/route.ts) — sin esto, "Publicar todo"
+      // reportaba éxito ciego aunque un campo no se hubiera guardado de
+      // verdad. Bug real encontrado 2026-09-13.
+      const aviso: string | undefined = guardarJson?.aviso ?? publicarJson?.aviso
+      return { ok: true, aviso }
     },
   }), [borrador, plan.id])
 
@@ -294,38 +310,99 @@ const TarjetaPlan = forwardRef<TarjetaPlanHandle, { plan: ConfigPlan; onCambio: 
         ))}
       </div>
 
-      {/* 3. Capacidades de IA */}
-      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Capacidades de IA</h4>
-      <button
-        type="button"
-        onClick={() => setBorrador(b => ({ ...b, borrador_incluye_ia: !b.borrador_incluye_ia }))}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginBottom: 28,
-          fontSize: 13,
-          color: 'var(--text-primary)',
-          background: borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.06)' : 'var(--bg-input)',
-          border: `1px solid ${borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.3)' : 'var(--border)'}`,
-          borderRadius: 10,
-          padding: '10px 14px',
-          cursor: 'pointer',
-          textAlign: 'left',
-          width: '100%',
-          transition: 'all 0.15s ease',
-        }}
-      >
-        {borrador.borrador_incluye_ia ? (
-          <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
-        ) : (
-          <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
-        )}
-        <Sparkles size={14} style={{ color: borrador.borrador_incluye_ia ? 'var(--color-brand)' : 'var(--text-secondary)', flexShrink: 0 }} />
-        <span style={{ flex: 1, lineHeight: 1.4 }}>
-          Activa la IA para DPP y el cotizador. Si no se activa, se crean manualmente.
-        </span>
-      </button>
+      {/* 3. Personalización de capacidades */}
+      <h4 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 12 }}>Personalización de capacidades</h4>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
+        <button
+          type="button"
+          onClick={() => setBorrador(b => ({ ...b, borrador_incluye_ia: !b.borrador_incluye_ia }))}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            fontSize: 13,
+            color: 'var(--text-primary)',
+            background: borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.06)' : 'var(--bg-input)',
+            border: `1px solid ${borrador.borrador_incluye_ia ? 'rgba(0,130,124,0.3)' : 'var(--border)'}`,
+            borderRadius: 10,
+            padding: '10px 14px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            width: '100%',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          {borrador.borrador_incluye_ia ? (
+            <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
+          ) : (
+            <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          )}
+          <Sparkles size={14} style={{ color: borrador.borrador_incluye_ia ? 'var(--color-brand)' : 'var(--text-secondary)', flexShrink: 0 }} />
+          <span style={{ flex: 1, lineHeight: 1.4 }}>
+            <strong>Capacidades de IA:</strong> Activa la IA para DPP y el cotizador. Si no se activa, se crean manualmente.
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setBorrador(b => ({ ...b, borrador_incluye_mci: !b.borrador_incluye_mci }))}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            fontSize: 13,
+            color: 'var(--text-primary)',
+            background: borrador.borrador_incluye_mci ? 'rgba(0,130,124,0.06)' : 'var(--bg-input)',
+            border: `1px solid ${borrador.borrador_incluye_mci ? 'rgba(0,130,124,0.3)' : 'var(--border)'}`,
+            borderRadius: 10,
+            padding: '10px 14px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            width: '100%',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          {borrador.borrador_incluye_mci ? (
+            <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
+          ) : (
+            <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          )}
+          <Calculator size={14} style={{ color: borrador.borrador_incluye_mci ? 'var(--color-brand)' : 'var(--text-secondary)', flexShrink: 0 }} />
+          <span style={{ flex: 1, lineHeight: 1.4 }}>
+            <strong>Indicador de Circularidad de Materiales:</strong> Activa el cálculo de Índice de Flujo Lineal (MCI) e ISO 59020.
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setBorrador(b => ({ ...b, borrador_incluye_excel_csv: !b.borrador_incluye_excel_csv }))}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            fontSize: 13,
+            color: 'var(--text-primary)',
+            background: borrador.borrador_incluye_excel_csv ? 'rgba(0,130,124,0.06)' : 'var(--bg-input)',
+            border: `1px solid ${borrador.borrador_incluye_excel_csv ? 'rgba(0,130,124,0.3)' : 'var(--border)'}`,
+            borderRadius: 10,
+            padding: '10px 14px',
+            cursor: 'pointer',
+            textAlign: 'left',
+            width: '100%',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          {borrador.borrador_incluye_excel_csv ? (
+            <SquareCheck size={16} sinAnimacion style={{ color: 'var(--color-brand)', flexShrink: 0 }} />
+          ) : (
+            <Square size={16} sinAnimacion style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
+          )}
+          <FileText size={14} style={{ color: borrador.borrador_incluye_excel_csv ? 'var(--color-brand)' : 'var(--text-secondary)', flexShrink: 0 }} />
+          <span style={{ flex: 1, lineHeight: 1.4 }}>
+            <strong>Informes en Excel y CSV:</strong> Habilita la descarga de informes y datos estructurados en formatos Excel y CSV.
+          </span>
+        </button>
+      </div>
 
       {/* 4. Beneficios desplegables (cerrado por defecto, reordenable estilo FAQ) */}
       <div style={{ marginBottom: 24, borderTop: '1px solid var(--border)', paddingTop: 18 }}>
@@ -909,17 +986,21 @@ export function PreciosTab() {
     // su tarjeta, que primero guarda y luego publica en una sola llamada.
     const idsAPublicar = Array.from(pendientes)
     const resultados = await Promise.all(
-      idsAPublicar.map(id => {
+      idsAPublicar.map(async id => {
         const handle = refsTarjetas.current.get(id)
         if (handle) return handle.publicar()
-        return fetch(`/api/admin/planes/${id}/publicar`, { method: 'POST' }).then(r => r.ok)
+        const res = await fetch(`/api/admin/planes/${id}/publicar`, { method: 'POST' })
+        const json = await res.json().catch(() => ({}))
+        return { ok: res.ok, aviso: json?.aviso as string | undefined }
       })
     )
-    const fallos = resultados.filter(ok => !ok).length
+    const fallos = resultados.filter(r => !r.ok).length
+    const avisos = Array.from(new Set(resultados.map(r => r.aviso).filter((a): a is string => Boolean(a))))
     setPublicandoTodo(false)
     setPendientes(new Set())
     if (fallos > 0) toast.error(`${fallos} de ${idsAPublicar.length} plan(es) no se pudieron publicar.`)
     else toast.success(`${idsAPublicar.length} plan(es) publicado(s).`)
+    avisos.forEach(aviso => toast.error(aviso))
     cargar()
   }
 

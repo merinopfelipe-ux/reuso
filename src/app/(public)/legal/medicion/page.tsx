@@ -16,6 +16,7 @@ const T = {
     ],
     secciones: [
       { id: 'que-medimos', label: '¿Qué medimos?' },
+      { id: 'huella-carbono', label: 'Huella de carbono' },
       { id: 'como-calculamos', label: '¿Cómo lo calculamos?' },
       { id: 'marcos-referencia', label: 'Marcos de referencia' },
       { id: 'marco-legal-empco', label: 'Marco legal y antifraude verde' },
@@ -29,6 +30,10 @@ const T = {
     s1Title: '¿Qué medimos?',
     s1p1: 'Medimos una estimación técnica del impacto ambiental positivo que generas cuando decides reutilizar, restaurar o prolongar la vida útil de los materiales, en lugar de extraer materias primas nuevas. Calculamos dos grandes indicadores de manera independiente: las emisiones de dióxido de carbono equivalente (CO₂ eq) y el volumen de agua preservada.',
     s1p2: 'La diferencia neta entre fabricar un bien desde cero y aprovechar los recursos existentes define tu impacto positivo proyectado.',
+    hcTitle: 'Huella de carbono',
+    hcP1: 'Presentamos el cálculo como «huella de carbono» para cuantificar de forma técnica las emisiones de gases de efecto invernadero (en kilogramos de CO₂ equivalente) que tu organización evita al extender la vida útil de los materiales existentes frente a la extracción virgen.',
+    hcP2: 'Esta medición técnica corresponde a una huella real de Alcance 3, Categoría 1 (Bienes y servicios adquiridos), según los estándares internacionales del Protocolo de Gases de Efecto Invernadero (GHG Protocol). Al restaurar, reutilizar o adquirir bienes reacondicionados, reduces directamente las emisiones incorporadas en la cadena de suministro aguas arriba de tu empresa.',
+    hcLegalNota: 'Alcance 3, Categoría 1: La cifra de huella de carbono reportada por nuestra plataforma corresponde exclusivamente a una estimación técnica del impacto evitado en la Categoría 1 de Alcance 3 (Bienes y servicios adquiridos en la cadena de valor). Este cálculo sirve como respaldo técnico para memorias de sostenibilidad corporativa y compras circulares, sin constituir una auditoría de emisiones de alcance directo (Alcance 1 y 2) ni un esquema de compensación o créditos de carbono.',
     s2Title: '¿Cómo lo calculamos?',
     s2p1: 'Construimos una matriz de datos técnica basada en estudios y referencias reconocidas de Análisis de Ciclo de Vida (ACV).',
     s2p2: 'El sistema toma como datos de entrada la categoría del objeto y el peso neto en kilogramos de cada material recuperado. Luego cruza esta información con nuestra matriz de factores de emisión y demanda hídrica para estimar las emisiones de CO₂ eq evitadas y los litros de agua preservados. Fijamos estos factores en el momento del cálculo para que los reportes conserven coherencia histórica en la plataforma.',
@@ -84,6 +89,7 @@ const T = {
     ],
     secciones: [
       { id: 'que-medimos', label: 'What we measure' },
+      { id: 'huella-carbono', label: 'Carbon footprint' },
       { id: 'como-calculamos', label: 'How we calculate it' },
       { id: 'marcos-referencia', label: 'Reference frameworks' },
       { id: 'marco-legal-empco', label: 'International legal framework' },
@@ -97,6 +103,10 @@ const T = {
     s1Title: 'What we measure',
     s1p1: 'We measure a technical estimate of the positive environmental impact you generate when you decide to reuse, restore, or extend the lifespan of materials instead of extracting new raw materials. Specifically, we calculate two major indicators independently: equivalent Carbon Dioxide emissions (CO₂ eq) and the volume of preserved water.',
     s1p2: 'The net difference between manufacturing a product from scratch and taking advantage of existing resources defines your projected positive impact.',
+    hcTitle: 'Carbon footprint',
+    hcP1: 'We present the calculation as "carbon footprint" to technically quantify the greenhouse gas emissions (in kilograms of CO₂ equivalent) that your organization avoids by extending the operational lifespan of existing materials instead of extracting virgin resources.',
+    hcP2: 'This technical calculation represents an estimate of Scope 3, Category 1 emissions (Purchased goods and services), aligned with the Greenhouse Gas Protocol (GHG Protocol) international framework. By restoring, reusing, or purchasing refurbished goods, you directly reduce embodied emissions upstream in your supply chain.',
+    hcLegalNota: 'Scope 3, Category 1: The carbon footprint reported by our platform corresponds exclusively to a technical estimate of avoided emissions within Scope 3, Category 1 (Purchased goods and services in the value chain). This metric provides technical backing for corporate sustainability reports and circular procurement, without constituting a direct emissions audit (Scopes 1 and 2) or tradable carbon credits.',
     s2Title: 'How we calculate it',
     s2p1: 'We build an internal technical data matrix based on recognized Life Cycle Assessment (LCA) studies and scientific emission factors.',
     s2p2: 'The system takes the product category and the net weight in kilograms of each recovered material as input. It then cross references this data with our matrix of emission factors and water requirements to estimate avoided CO₂ eq and preserved water. We lock in these factors at the exact moment of calculation to ensure historical consistency across the platform.',
@@ -211,6 +221,13 @@ export default function MedicionPage() {
       <h2 id="que-medimos" style={{ ...h2, marginTop: 0 }}>{t.s1Title}</h2>
       <p style={p}>{t.s1p1}</p>
       <p style={p}>{t.s1p2}</p>
+
+      <h2 id="huella-carbono" style={h2}>{t.hcTitle}</h2>
+      <p style={p}>{t.hcP1}</p>
+      <p style={p}>{t.hcP2}</p>
+      <div style={{ ...p, fontSize: 13, color: 'var(--text-secondary)', padding: '14px 18px', background: 'var(--bg-card)', borderRadius: 14, border: '1px solid var(--border)', lineHeight: 1.7 }}>
+        {t.hcLegalNota}
+      </div>
 
       <h2 id="como-calculamos" style={h2}>{t.s2Title}</h2>
       <p style={p}>{t.s2p1}</p>

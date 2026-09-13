@@ -57,6 +57,9 @@ const patchSchema = z.object({
   // (0 = no incluye, null = ilimitado). La tarifa de implementación NO va aquí
   // ni en la landing: es interna, se cotiza por cliente según lo que migra.
   borrador_incluye_ia: z.boolean(),
+  // Indicador de Circularidad de Materiales e Informes Excel/CSV (sql/131)
+  borrador_incluye_mci: z.boolean().optional(),
+  borrador_incluye_excel_csv: z.boolean().optional(),
   borrador_limite_dpp_mes: z.number().int().nonnegative().nullable(),
   // Beneficios (bullets) de la tarjeta de plan en la landing, editables.
   borrador_features_json: z.array(z.string().trim().min(1).max(140)).max(15),
@@ -85,12 +88,9 @@ export async function PATCH(request: NextRequest) {
 
   if (error) {
     console.error('[API /admin/planes PATCH] Error en primer intento de guardado de borrador:', error)
-    // equivalente_mensual_anual_* es de sql/128 (puede no haber corrido
-    // todavía). Si falla por eso, no debe tumbar el guardado del resto del
-    // borrador — reintenta sin esos campos. Solo se reintenta cuando el
-    // error menciona esas columnas puntuales, nunca ante cualquier error,
-    // para no reportar "ok" con un aviso engañoso ante una falla distinta.
-    if (error.message?.includes('equivalente_mensual_anual')) {
+    // Manejo de columnas de migraciones que pueden no haber corrido todavía (sql/128 o sql/131).
+    // Si falla por eso, no debe tumbar el guardado del resto del borrador — reintenta sin esos campos.
+    if (error.message?.includes('equivalente_mensual_anual') || error.message?.includes('incluye_mci') || error.message?.includes('incluye_excel_csv')) {
       const camposAEliminar = new Set([
         'borrador_equivalente_mensual_anual_cop',
         'borrador_equivalente_mensual_anual_usd',
@@ -98,19 +98,23 @@ export async function PATCH(request: NextRequest) {
         'equivalente_mensual_anual_cop',
         'equivalente_mensual_anual_usd',
         'equivalente_mensual_anual_eur',
+        'borrador_incluye_mci',
+        'incluye_mci',
+        'borrador_incluye_excel_csv',
+        'incluye_excel_csv',
       ])
-      const borradorSinEquivalente = Object.fromEntries(
+      const borradorSinNuevos = Object.fromEntries(
         Object.entries(borrador).filter(([clave]) => !camposAEliminar.has(clave))
       )
       const { error: errorReintento } = await adminClient
         .from('config_planes')
-        .update({ ...borradorSinEquivalente, tiene_borrador_sin_publicar: true, actualizado_at: new Date().toISOString() })
+        .update({ ...borradorSinNuevos, tiene_borrador_sin_publicar: true, actualizado_at: new Date().toISOString() })
         .eq('id', id)
       if (errorReintento) {
         console.error('[API /admin/planes PATCH] Error en reintento:', errorReintento)
         return NextResponse.json({ error: errorReintento.message || 'No se pudo guardar el borrador' }, { status: 500 })
       }
-      return NextResponse.json({ ok: true, aviso: 'Falta correr sql/128 para el equivalente mensual editable — el resto se guardó bien.' })
+      return NextResponse.json({ ok: true, aviso: 'Falta correr migraciones pendientes en Supabase (sql/128 o sql/131) — el resto se guardó bien.' })
     }
     return NextResponse.json({ error: error.message || 'No se pudo guardar el borrador' }, { status: 500 })
   }

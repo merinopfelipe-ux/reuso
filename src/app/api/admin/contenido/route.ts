@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { requireSuperAdmin } from '@/lib/admin-guard'
 import { z } from 'zod'
 
@@ -42,5 +43,12 @@ export async function PATCH(request: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: 'Error al guardar contenido.' }, { status: 500 })
+
+  try {
+    revalidatePath('/')
+  } catch (err) {
+    console.error('[API /admin/contenido PATCH] Error al revalidar caché de la landing:', err)
+  }
+
   return NextResponse.json({ data })
 }

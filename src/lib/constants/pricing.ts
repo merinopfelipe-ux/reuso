@@ -144,9 +144,8 @@ export const PLANS = [
     features: [
       'Todo lo de Impulso Sostenible, sin límites de uso',
       'Pasaportes DPP, informes y cotizaciones ilimitadas',
-      'Los 9 cálculos completos (incluye Índice de Flujo Lineal MCI / ISO 59020)',
+      'Los 9 cálculos completos de impacto',
       'Gestión multi-empresa y trazabilidad corporativa',
-      'Exportación avanzada a Excel, CSV y PDF',
       'Integración con sistemas y APIs',
       'Soporte prioritario y puesta en marcha dedicada',
     ],
