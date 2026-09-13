@@ -5,6 +5,7 @@ import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { checkLimiteDpp } from '@/lib/plan-limits'
+import { calcularHuellaManufactura } from '@/lib/calculos/lca'
 import type { Plan } from '@/types'
 
 const schema = z.object({
@@ -126,24 +127,46 @@ export async function POST(request: NextRequest) {
 
   const profileResult = await adminClient.from('profiles').select('id').eq('user_id', user_id).single()
 
-  const { data: activo, error: insertError } = await adminClient
+  const co2_manufactura_kg = calcularHuellaManufactura(composicion_json ?? [])
+
+  const nuevoActivo = {
+    empresa_id: targetEmpresaId,
+    user_id: profileResult.data?.id,
+    codigo_dpp,
+    nombre,
+    descripcion: descripcion ?? null,
+    categoria_id: categoria_id ?? null,
+    peso_total_kg: peso_total_kg ?? null,
+    composicion_json: composicion_json ?? null,
+    co2_manufactura_kg,
+    cliente_id: cliente_id ?? null,
+    imagen_url: imagen_url ?? null,
+    hash_integridad,
+    hash_previo,
+  }
+
+  let { data: activo, error: insertError } = await adminClient
     .from('dpp_activos')
-    .insert({
-      empresa_id: targetEmpresaId,
-      user_id: profileResult.data?.id,
-      codigo_dpp,
-      nombre,
-      descripcion: descripcion ?? null,
-      categoria_id: categoria_id ?? null,
-      peso_total_kg: peso_total_kg ?? null,
-      composicion_json: composicion_json ?? null,
-      cliente_id: cliente_id ?? null,
-      imagen_url: imagen_url ?? null,
-      hash_integridad,
-      hash_previo,
-    })
+    .insert(nuevoActivo)
     .select()
     .single()
+
+  // sql/130 (columna co2_manufactura_kg) puede no estar corrida todavía —
+  // si no existe, Supabase rechaza el INSERT completo, no solo esa
+  // columna. Reintentar sin ella para no tumbar la creación del activo por
+  // una migración pendiente (mismo patrón ya usado en /api/admin/planes).
+  if (insertError) {
+    console.error('[POST /api/dpp/activos/crear] Error en insert inicial:', insertError)
+    const { co2_manufactura_kg: _omitido, ...sinManufactura } = nuevoActivo
+    void _omitido
+    const reintento = await adminClient
+      .from('dpp_activos')
+      .insert(sinManufactura)
+      .select()
+      .single()
+    activo = reintento.data
+    insertError = reintento.error
+  }
 
   if (insertError || !activo) {
     return NextResponse.json({ error: 'Error al guardar el activo. Intenta de nuevo.' }, { status: 500 })
