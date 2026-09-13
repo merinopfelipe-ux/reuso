@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Question } from '@/components/ui/icons'
 
 interface Props {
@@ -10,39 +11,95 @@ interface Props {
   centrado?: boolean
 }
 
+interface Coords {
+  top?: number
+  bottom?: number
+  left: number
+}
+
 /**
- * Ícono de información con tooltip flotante interactivo (hover y click/tap).
- * Incluye fallback accesible por atributo title y control de estado para
- * dispositivos táctiles y vistas de tablas con desbordamiento.
+ * Ícono de información con tooltip flotante interactivo (hover en desktop y tap en móvil).
+ * Se renderiza mediante Portal directamente en document.body con position: fixed para
+ * garantizar que NUNCA quede recortado por tablas scrolleables, desbordamientos o modales.
  */
-export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = false }: Props) {
+export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = true }: Props) {
   const [activo, setActivo] = useState(false)
+  const [montado, setMontado] = useState(false)
+  const [coords, setCoords] = useState<Coords | null>(null)
   const containerRef = useRef<HTMLSpanElement>(null)
+  const tooltipRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    setMontado(true)
+  }, [])
+
+  const actualizarCoords = useCallback(() => {
+    if (!containerRef.current || typeof window === 'undefined') return
+    const rect = containerRef.current.getBoundingClientRect()
+    if (rect.width === 0 && rect.height === 0) {
+      setActivo(false)
+      return
+    }
+
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const tooltipWidth = Math.min(260, vw - 32)
+    const margin = 16
+
+    let left = rect.left + rect.width / 2 - tooltipWidth / 2
+    if (left < margin) left = margin
+    if (left + tooltipWidth > vw - margin) left = vw - tooltipWidth - margin
+
+    const espacioArriba = rect.top
+    const preferirAbajo = posicion === 'abajo' || espacioArriba < 90
+
+    if (preferirAbajo) {
+      setCoords({ top: rect.bottom + 6, left })
+    } else {
+      setCoords({ bottom: vh - rect.top + 6, left })
+    }
+  }, [posicion])
 
   useEffect(() => {
     if (!activo) return
+    actualizarCoords()
+
+    function handleScrollOResize() {
+      actualizarCoords()
+    }
+
     function handleClickAfuera(e: MouseEvent | TouchEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      const target = e.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        tooltipRef.current &&
+        !tooltipRef.current.contains(target)
+      ) {
         setActivo(false)
       }
     }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setActivo(false)
+    }
+
+    window.addEventListener('scroll', handleScrollOResize, true)
+    window.addEventListener('resize', handleScrollOResize)
     document.addEventListener('mousedown', handleClickAfuera)
     document.addEventListener('touchstart', handleClickAfuera)
+    window.addEventListener('keydown', handleKeyDown)
+
     return () => {
+      window.removeEventListener('scroll', handleScrollOResize, true)
+      window.removeEventListener('resize', handleScrollOResize)
       document.removeEventListener('mousedown', handleClickAfuera)
       document.removeEventListener('touchstart', handleClickAfuera)
+      window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [activo])
+  }, [activo, actualizarCoords])
 
   if (!texto) return null
-
-  const posClasses = posicion === 'abajo'
-    ? 'top-full mt-1.5'
-    : 'bottom-full mb-1.5'
-
-  const alineacionHoriz = centrado
-    ? 'left-1/2 -translate-x-1/2 text-center'
-    : 'left-0 sm:left-1/2 sm:-translate-x-1/2 text-left'
 
   return (
     <span
@@ -50,22 +107,42 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
       className={`group/tt relative inline-flex flex-shrink-0 cursor-pointer ${className ?? ''}`}
       onClick={(e) => {
         e.stopPropagation()
-        setActivo(prev => !prev)
+        setActivo(prev => {
+          const proximo = !prev
+          if (proximo) actualizarCoords()
+          return proximo
+        })
       }}
-      onMouseEnter={() => setActivo(true)}
+      onMouseEnter={() => {
+        actualizarCoords()
+        setActivo(true)
+      }}
       onMouseLeave={() => setActivo(false)}
-      title={texto}
       aria-label={texto}
     >
       <Question size={13} className="cursor-help opacity-70 hover:opacity-100 transition-opacity" sinAnimacion />
-      <span
-        role="tooltip"
-        className={`pointer-events-none absolute ${alineacionHoriz} ${posClasses} z-[100] w-48 sm:w-56 rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 text-[11px] font-normal leading-snug text-[var(--bg-primary)] shadow-xl transition-all duration-150 ${
-          activo ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
-        }`}
-      >
-        {texto}
-      </span>
+
+      {activo && montado && coords && createPortal(
+        <span
+          ref={tooltipRef}
+          role="tooltip"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: 'fixed',
+            top: coords.top !== undefined ? `${coords.top}px` : undefined,
+            bottom: coords.bottom !== undefined ? `${coords.bottom}px` : undefined,
+            left: `${coords.left}px`,
+            zIndex: 99999,
+            width: 'min(260px, calc(100vw - 32px))',
+          }}
+          className={`pointer-events-auto rounded-xl bg-[#1e1e1e] border border-white/20 text-white px-3 py-2 text-[12px] font-medium leading-snug shadow-[0_12px_32px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-150 ${
+            centrado ? 'text-center' : 'text-left'
+          }`}
+        >
+          {texto}
+        </span>,
+        document.body
+      )}
     </span>
   )
 }
