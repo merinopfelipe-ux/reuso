@@ -7,6 +7,7 @@ interface Props {
   texto: string
   className?: string
   posicion?: 'arriba' | 'abajo'
+  centrado?: boolean
 }
 
 /**
@@ -14,7 +15,7 @@ interface Props {
  * Incluye fallback accesible por atributo title y control de estado para
  * dispositivos táctiles y vistas de tablas con desbordamiento.
  */
-export function TooltipInfo({ texto, className, posicion = 'arriba' }: Props) {
+export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = false }: Props) {
   const [activo, setActivo] = useState(false)
   const containerRef = useRef<HTMLSpanElement>(null)
 
@@ -39,6 +40,10 @@ export function TooltipInfo({ texto, className, posicion = 'arriba' }: Props) {
     ? 'top-full mt-1.5'
     : 'bottom-full mb-1.5'
 
+  const alineacionHoriz = centrado
+    ? 'left-1/2 -translate-x-1/2 text-center'
+    : 'left-0 sm:left-1/2 sm:-translate-x-1/2 text-left'
+
   return (
     <span
       ref={containerRef}
@@ -55,7 +60,7 @@ export function TooltipInfo({ texto, className, posicion = 'arriba' }: Props) {
       <Question size={13} className="cursor-help opacity-70 hover:opacity-100 transition-opacity" sinAnimacion />
       <span
         role="tooltip"
-        className={`pointer-events-none absolute left-0 sm:left-1/2 sm:-translate-x-1/2 ${posClasses} z-[100] w-48 sm:w-56 rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 text-[11px] font-normal leading-snug text-[var(--bg-primary)] shadow-xl transition-all duration-150 text-left ${
+        className={`pointer-events-none absolute ${alineacionHoriz} ${posClasses} z-[100] w-48 sm:w-56 rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 text-[11px] font-normal leading-snug text-[var(--bg-primary)] shadow-xl transition-all duration-150 ${
           activo ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'
         }`}
       >

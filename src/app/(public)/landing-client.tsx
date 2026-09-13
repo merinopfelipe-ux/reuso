@@ -1839,7 +1839,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               Planes de medición y pasaportes digitales que crecen a tu ritmo
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
-              Cada plan de pago incluye una <strong>Tarifa de Implementación (pago único)</strong>, cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
+              Cada plan de pago incluye una tarifa de Implementación (pago único), cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
             </p>
           </div>
 
@@ -2035,9 +2035,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                   className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
                                   style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
                                 >
-                                  <span className="flex items-start gap-1 min-w-0">
+                                  <span className="inline-flex items-center gap-1.5 min-w-0">
                                     <span className="break-words min-w-0">{fila.label}</span>
-                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} className="mt-0.5" />}
+                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} centrado />}
                                   </span>
                                 </td>
                                 {PLANS.map(plan => {
