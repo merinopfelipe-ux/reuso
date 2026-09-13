@@ -17,6 +17,7 @@ const schema = z.object({
     material: z.string(),
     peso_kg: z.number().positive(),
     factor_co2_kg: z.number().min(0),
+    factor_agua_l_kg: z.number().min(0).optional(),
     origen_fuente: z.string().optional(),
     nivel_confianza: z.enum(['alta', 'media', 'baja']).optional(),
   })).optional(),
