@@ -108,6 +108,7 @@ Todo PDF subido se convierte a TXT estructurado antes de almacenarse (`POST /api
 
 ## IA — AHORRO DE TOKENS SIEMPRE
 Cualquier código que toque Gemini/OpenRouter/Groq minimiza tokens explícitamente: imágenes comprimidas/redimensionadas antes de enviar, prompts concisos, el modelo más barato que cumpla la tarea.
+**Búsquedas de referencia (precio de mercado, promedio sectorial CIIU/DANE, vida útil promedio por categoría) se cachean por su nivel real de variación, nunca por cálculo individual**: precio de mercado se liga al ítem del catálogo, promedio CIIU a la empresa, vida útil promedio a la categoría de producto — antes de llamar a la IA, primero verificar si ya existe un valor guardado. Nunca se dispara sola en segundo plano: siempre a petición explícita del usuario, con un botón, nunca en cada carga de pantalla.
 
 ## PRINCIPIO FINAL
 No es un proyecto sobre tecnología. Es sobre CONFIANZA. Simplicidad + velocidad + confianza = éxito en LATAM.
