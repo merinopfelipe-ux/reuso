@@ -1029,7 +1029,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       lista.push('Exportación de informes en Excel y CSV')
     }
 
-    return lista
+    // Tope máximo de 5 checks por plan, siendo el primero el que tenga menos (Explora: 3)
+    const maxChecks = plan.id === 'free' ? 3 : 5
+    return lista.slice(0, maxChecks)
   }
 
   // Regla general de diseño: los decimales van en la misma línea, pero más pequeños
