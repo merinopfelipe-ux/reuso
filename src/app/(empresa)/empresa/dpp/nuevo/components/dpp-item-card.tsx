@@ -19,6 +19,10 @@ export interface MaterialDpp {
   factor_agua_l_kg: number | null
   origen_fuente?: string | null
   nivel_confianza?: 'alta' | 'media' | 'baja'
+  // Bandera persistente para saber si mostrar el input editable en vez del
+  // span de solo lectura — nunca se puede inferir de `nombre === ''`,
+  // porque eso se rompe apenas el usuario escribe el primer carácter.
+  _esNuevo?: boolean
 }
 
 export interface ItemDppPendiente {
@@ -71,7 +75,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar 
     onChange({ ...item, materiales: item.materiales.filter((_, j) => j !== i) })
   }
   function agregarMaterial() {
-    onChange({ ...item, materiales: [...item.materiales, { nombre: '', peso_kg: 0, factor_co2_kg: 0, factor_agua_l_kg: null }] })
+    onChange({ ...item, materiales: [...item.materiales, { nombre: '', peso_kg: 0, factor_co2_kg: 0, factor_agua_l_kg: null, _esNuevo: true }] })
   }
 
   const puedeConfirmar = item.titulo.trim().length > 0 && pesoTotal > 0 && !item.creando
@@ -127,7 +131,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar 
         <p className={`flex items-center gap-2 text-xs font-bold tracking-wide ${ts}`}><Leaf size={14} className="text-[#00827C]" sinAnimacion /> Materiales</p>
         {item.materiales.map((m, i) => (
           <div key={i} className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            {m.nombre === '' ? (
+            {m._esNuevo ? (
               <input value={m.nombre} onChange={e => actualizarMaterial(i, { nombre: e.target.value })} placeholder="Ej: Hierro" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
             ) : (
               <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
