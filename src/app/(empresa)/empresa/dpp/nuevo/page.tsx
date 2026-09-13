@@ -1,181 +1,103 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState, useEffect, useLayoutEffect, FormEvent } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { useToast } from '@/components/toast-provider'
 import { Button } from '@/components/ui/button'
-import { Selector } from '@/components/ui/selector'
 import { createClient } from '@/lib/supabase/client'
-import { comprimirImagenWebP } from '@/lib/image-compress'
-import { TooltipInfo } from '@/components/ui/tooltip-info'
-import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
+import { comprimirImagenBase64, comprimirImagenWebP, recortarImagenBase64, boundingBoxEsUtil, type BoundingBox } from '@/lib/image-compress'
+import { TarjetaGrupoFotos, type GrupoPendiente, type FotoCola, type ModoAnalisis } from '@/app/(empresa)/empresa/cotizador/nueva/components/tarjeta-grupo-fotos'
+import { DppItemCard, type ItemDppPendiente, type MaterialDpp } from './components/dpp-item-card'
+import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/route'
 
-interface Material {
-  material: string
-  peso_kg: string
-  factor_co2_kg: string
-  origen_fuente: string
-  nivel_confianza: 'alta' | 'media' | 'baja'
+interface ClienteResultado { id: string; nombre: string; apellido: string | null }
+
+const MAX_FOTOS_POR_TANDA = 4
+
+function conEmpresa(url: string) { return url }
+
+function nuevoGrupoVacio(modo: ModoAnalisis = 'ia'): GrupoPendiente {
+  return { id: crypto.randomUUID(), fotos: [], modo }
 }
 
-interface ClienteResultado {
-  id: string
-  nombre: string
-  apellido: string | null
+// Recorta la miniatura del ítem detectado (o usa la foto completa si el
+// recuadro no aporta nada) — mismo patrón que `construirMiniatura` de
+// cotizador/nueva/page.tsx, reescrito acá porque ese archivo no exporta la
+// función.
+async function construirMiniatura(
+  imagenIndex: number,
+  boundingBox: BoundingBox | null,
+  fotosBase: FotoCola[]
+): Promise<{ imagenPreview: string; imagenBase64: string }> {
+  const foto = fotosBase[imagenIndex] ?? fotosBase[0]
+  if (boundingBoxEsUtil(boundingBox)) {
+    try {
+      const recorte = await recortarImagenBase64(foto.preview, boundingBox)
+      return { imagenPreview: recorte.preview, imagenBase64: recorte.base64 }
+    } catch {
+      // Si el recorte falla, se usa la foto completa — nunca rompe el flujo.
+    }
+  }
+  return { imagenPreview: foto.preview, imagenBase64: foto.base64 }
 }
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '10px 12px',
-  background: 'var(--bg-secondary)',
-  border: '1px solid var(--border)',
-  borderRadius: 8,
-  fontSize: 14,
-  color: 'var(--text-primary)',
-  fontFamily: "'Open Sans', sans-serif",
-  outline: 'none',
-  boxSizing: 'border-box',
+function itemDetectadoAPendiente(
+  d: ItemDetectadoConSnapshot,
+  miniatura: { imagenPreview: string; imagenBase64: string }
+): ItemDppPendiente {
+  return {
+    _uiKey: crypto.randomUUID(),
+    titulo: d.titulo,
+    descripcion: d.descripcion,
+    confianza: d.confianza,
+    imagenPreview: miniatura.imagenPreview,
+    imagenBase64: miniatura.imagenBase64,
+    materiales: d.materiales.map(m => ({
+      nombre: m.nombre,
+      peso_kg: m.peso_kg,
+      factor_co2_kg: m.factor_co2_kg,
+      factor_agua_l_kg: m.factor_agua_l_kg,
+      origen_fuente: m.origen_fuente,
+      nivel_confianza: m.nivel_confianza,
+    })),
+    manual: false,
+    creando: false,
+    errorCreacion: null,
+  }
 }
 
-const labelStyle: React.CSSProperties = {
-  display: 'block',
-  fontSize: 13,
-  fontWeight: 600,
-  color: 'var(--text-primary)',
-  marginBottom: 6,
-}
-
-const fieldStyle: React.CSSProperties = { marginBottom: 20 }
-
-function FilaMaterial({
-  material,
-  onChange,
-  onRemove,
-  isMobile = false,
-  descripcion = '',
-}: {
-  material: Material
-  onChange: (m: Material) => void
-  onRemove: () => void
-  isMobile?: boolean
-  descripcion?: string
-}) {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 2fr 1fr auto',
-        gap: 8,
-        marginBottom: 8,
-        alignItems: 'center',
-      }}
-    >
-      <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-        <input
-          placeholder="Material (ej: madera)"
-          value={material.material}
-          onChange={(e) => onChange({ ...material, material: e.target.value })}
-          style={inputStyle}
-        />
-        <TooltipInfo texto={descripcion} />
-      </span>
-      <input
-        type="number"
-        placeholder="Peso kg"
-        min="0"
-        step="0.001"
-        value={material.peso_kg}
-        onChange={(e) => onChange({ ...material, peso_kg: e.target.value })}
-        style={inputStyle}
-      />
-      <input
-        type="number"
-        placeholder="Factor CO₂ eq"
-        min="0"
-        step="0.0001"
-        value={material.factor_co2_kg}
-        onChange={(e) => onChange({ ...material, factor_co2_kg: e.target.value })}
-        style={inputStyle}
-      />
-      <input
-        placeholder="Fuente (ecoinvent, ELCD...)"
-        value={material.origen_fuente}
-        onChange={(e) => onChange({ ...material, origen_fuente: e.target.value })}
-        style={inputStyle}
-      />
-      <Selector
-        value={material.nivel_confianza}
-        onChange={(val) => onChange({ ...material, nivel_confianza: val as 'alta' | 'media' | 'baja' })}
-        opciones={[
-          { value: 'alta', label: 'Alta' },
-          { value: 'media', label: 'Media' },
-          { value: 'baja', label: 'Baja' },
-        ]}
-      />
-      <button
-        type="button"
-        onClick={onRemove}
-        style={{
-          width: 32,
-          height: 36,
-          borderRadius: 8,
-          border: '1px solid rgba(255,94,75,0.30)',
-          background: 'rgba(255,94,75,0.06)',
-          color: '#FF5E4B',
-          cursor: 'pointer',
-          fontSize: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        ✕
-      </button>
-    </div>
-  )
+function itemManualVacio(fotoPrincipal: FotoCola): ItemDppPendiente {
+  return {
+    _uiKey: crypto.randomUUID(),
+    titulo: '',
+    descripcion: '',
+    confianza: 1,
+    imagenPreview: fotoPrincipal.preview,
+    imagenBase64: fotoPrincipal.base64,
+    materiales: [],
+    manual: true,
+    creando: false,
+    errorCreacion: null,
+  }
 }
 
 export default function NuevoActivoDppPage() {
   const { toast } = useToast()
-  const [nombre, setNombre] = useState('')
-  const [descripcion, setDescripcion] = useState('')
-  const [peso_total_kg, setPeso] = useState('')
-  const [materiales, setMateriales] = useState<Material[]>([])
-  // El ítem nunca es de la empresa que cotiza, es del cliente dueño del
-  // mueble — siempre opcional, un DPP también puede crearse de cero sin
-  // saber todavía a quién pertenece.
+  const router = useRouter()
+
+  const [grupos, setGrupos] = useState<GrupoPendiente[]>([nuevoGrupoVacio()])
+  const [itemsPendientes, setItemsPendientes] = useState<ItemDppPendiente[]>([])
+  const [generando, setGenerando] = useState(false)
+  const [errorGeneral, setErrorGeneral] = useState<string | null>(null)
+  const [dppsCreados, setDppsCreados] = useState<{ id: string; titulo: string }[]>([])
+
   const [clienteQuery, setClienteQuery] = useState('')
   const [clienteResultados, setClienteResultados] = useState<ClienteResultado[]>([])
   const [clienteSeleccionado, setClienteSeleccionado] = useState<ClienteResultado | null>(null)
   const [buscandoCliente, setBuscandoCliente] = useState(false)
   const [clienteBusquedaHecha, setClienteBusquedaHecha] = useState(false)
-  const [imagenFile, setImagenFile] = useState<File | null>(null)
-  const [imagenPreview, setImagenPreview] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
-  const router = useRouter()
-  const descripcionesMaterial = useMaterialDescripciones((url: string) => url)
-
-  // Investigado 2026-09-02/03: en modo desarrollo, si el usuario escribe en
-  // el formulario en la fracción de segundo antes de que React termine de
-  // hidratarlo, React sobreescribe lo ya escrito con su estado inicial
-  // (vacío) — comportamiento normal de hidratación, mucho más lento en dev
-  // que en producción (confirmado: nunca se reprodujo en 2 corridas contra
-  // el build real). No hay nada mal escrito que corregir; esto solo
-  // deshabilita el envío hasta que la hidratación ya terminó, para que
-  // nunca se pueda perder lo escrito por esa carrera, ni siquiera en dev.
-  const [hidratado, setHidratado] = useState(false)
-  useEffect(() => { setHidratado(true) }, [])
-
-  useLayoutEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check, { passive: true })
-    return () => window.removeEventListener('resize', check)
-  }, [])
 
   async function buscarCliente() {
     if (!clienteQuery.trim()) return
@@ -192,386 +114,255 @@ export default function NuevoActivoDppPage() {
     }
   }
 
-  function handleImagenChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (file.size > 5 * 1024 * 1024) {
-      setError('La imagen no puede superar 5 MB.')
-      return
-    }
-    setImagenFile(file)
-    setImagenPreview(URL.createObjectURL(file))
-    setError(null)
+  function agregarFotosAGrupo(grupoId: string, files: File[]) {
+    setGrupos(prev => prev.map(g => {
+      if (g.id !== grupoId) return g
+      const disponibles = MAX_FOTOS_POR_TANDA - g.fotos.length
+      if (disponibles <= 0) return g
+      const porAgregar = files.slice(0, disponibles)
+      const nuevas = porAgregar.map(f => ({ base64: '', preview: URL.createObjectURL(f) }))
+      const offsetInicial = g.fotos.length
+      // Comprimir en segundo plano y reemplazar el placeholder
+      porAgregar.forEach(async (file, idx) => {
+        const comprimida = await comprimirImagenBase64(file, { calidad: 0.70 })
+        setGrupos(actuales => actuales.map(gg => gg.id !== grupoId ? gg : {
+          ...gg,
+          fotos: gg.fotos.map((f, i) => i === offsetInicial + idx ? comprimida : f),
+        }))
+      })
+      return { ...g, fotos: [...g.fotos, ...nuevas] }
+    }))
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!nombre.trim()) {
-      setError('Completa el nombre del activo.')
-      return
-    }
-    if (!peso_total_kg || parseFloat(peso_total_kg) <= 0) {
-      setError('El peso debe ser mayor a 0.')
-      return
-    }
+  function quitarFotoDeGrupo(grupoId: string, index: number) {
+    setGrupos(prev => prev.map(g => g.id !== grupoId ? g : { ...g, fotos: g.fotos.filter((_, i) => i !== index) }))
+  }
 
-    setError(null)
-    setLoading(true)
+  function cambiarModoGrupo(grupoId: string, modo: ModoAnalisis) {
+    setGrupos(prev => prev.map(g => g.id === grupoId ? { ...g, modo } : g))
+  }
+
+  function agregarGrupo() {
+    if (grupos.length >= MAX_FOTOS_POR_TANDA) return
+    setGrupos(prev => [...prev, nuevoGrupoVacio()])
+  }
+
+  function quitarGrupo(grupoId: string) {
+    setGrupos(prev => prev.length <= 1 ? prev : prev.filter(g => g.id !== grupoId))
+  }
+
+  async function generarPropuesta() {
+    setErrorGeneral(null)
+    const gruposConFotos = grupos.filter(g => g.fotos.length > 0)
+    if (gruposConFotos.length === 0) {
+      setErrorGeneral('Sube al menos una foto para continuar.')
+      return
+    }
+    setGenerando(true)
+    try {
+      for (const grupo of gruposConFotos) {
+        if (grupo.modo === 'manual') {
+          setItemsPendientes(prev => [...prev, itemManualVacio(grupo.fotos[0])])
+          continue
+        }
+        const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imagenes: grupo.fotos.map(f => ({ imagen_base64: f.base64, mime_type: 'image/jpeg' })),
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setErrorGeneral(data.error ?? 'Error al analizar las fotos. Intenta de nuevo.')
+          continue
+        }
+        const detectados: ItemDetectadoConSnapshot[] = data.items_detectados ?? []
+        for (const d of detectados) {
+          const miniatura = await construirMiniatura(d.imagen_index, d.bounding_box, grupo.fotos)
+          setItemsPendientes(prev => [...prev, itemDetectadoAPendiente(d, miniatura)])
+        }
+      }
+      setGrupos([nuevoGrupoVacio()])
+    } finally {
+      setGenerando(false)
+    }
+  }
+
+  function actualizarItem(uiKey: string, item: ItemDppPendiente) {
+    setItemsPendientes(prev => prev.map(it => it._uiKey === uiKey ? item : it))
+  }
+
+  function quitarItem(uiKey: string) {
+    setItemsPendientes(prev => prev.filter(it => it._uiKey !== uiKey))
+  }
+
+  async function confirmarYCrear(item: ItemDppPendiente) {
+    actualizarItem(item._uiKey, { ...item, creando: true, errorCreacion: null })
 
     let imagen_url: string | undefined
-    if (imagenFile) {
-      try {
-        const blob = await comprimirImagenWebP(imagenFile, { calidad: 0.85 })
-        const supabase = createClient()
-        const path = `dpp/imagenes/${Date.now()}.webp`
-        const { data: uploadData } = await supabase.storage
-          .from('dpp')
-          .upload(path, blob, { contentType: 'image/webp', upsert: false })
-        if (uploadData) {
-          imagen_url = uploadData.path
-        }
-      } catch {
-        // No bloquear si falla el upload de imagen
-      }
+    try {
+      const blob = await fetch(item.imagenPreview).then(r => r.blob())
+      const webp = await comprimirImagenWebP(blob, { calidad: 0.85 })
+      const supabase = createClient()
+      const path = `dpp/imagenes/${Date.now()}.webp`
+      const { data: uploadData } = await supabase.storage
+        .from('dpp')
+        .upload(path, webp, { contentType: 'image/webp', upsert: false })
+      if (uploadData) imagen_url = uploadData.path
+    } catch {
+      // No bloquea la creación del DPP si falla solo la imagen.
     }
 
-    const composicion_json = materiales
-      .filter((m) => m.material.trim())
-      .map((m) => ({
-        material: m.material.trim(),
-        peso_kg: parseFloat(m.peso_kg) || 0,
-        factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
-        origen_fuente: m.origen_fuente.trim() || undefined,
+    const composicion_json = item.materiales
+      .filter((m: MaterialDpp) => m.nombre.trim())
+      .map((m: MaterialDpp) => ({
+        material: m.nombre.trim(),
+        peso_kg: m.peso_kg,
+        factor_co2_kg: m.factor_co2_kg,
+        factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
+        origen_fuente: m.origen_fuente ?? undefined,
         nivel_confianza: m.nivel_confianza,
       }))
+    const peso_total_kg = item.materiales.reduce((s: number, m: MaterialDpp) => s + m.peso_kg, 0)
 
     const res = await fetch('/api/dpp/activos/crear', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        nombre: nombre.trim(),
-        descripcion: descripcion.trim() || undefined,
-        peso_total_kg: parseFloat(peso_total_kg),
+        nombre: item.titulo.trim(),
+        descripcion: item.descripcion.trim() || undefined,
+        peso_total_kg: peso_total_kg > 0 ? peso_total_kg : undefined,
         composicion_json: composicion_json.length > 0 ? composicion_json : undefined,
         imagen_url,
         cliente_id: clienteSeleccionado?.id,
       }),
     })
-
     const data = await res.json()
     if (!res.ok) {
       const mensaje = data.error ?? 'Error al crear el pasaporte. Intenta de nuevo.'
-      setError(mensaje)
+      actualizarItem(item._uiKey, { ...item, creando: false, errorCreacion: mensaje })
       if (res.status === 429) toast.limite(mensaje)
-      setLoading(false)
       return
     }
 
-    router.push(`/empresa/dpp/${data.data.id}`)
+    setDppsCreados(prev => [...prev, { id: data.data.id, titulo: item.titulo }])
+    quitarItem(item._uiKey)
+    toast.success(`"${item.titulo}" creado como pasaporte digital.`)
   }
 
   return (
-    <div style={{ fontFamily: "'Open Sans', sans-serif", maxWidth: 680, margin: '0 auto' }}>
+    <div style={{ fontFamily: "'Open Sans', sans-serif", maxWidth: 900, margin: '0 auto' }}>
       <AdminPageHeader
         titulo="Registra nuevo activo"
-        subtitulo="Crea el pasaporte digital de tu próximo objeto circular"
+        subtitulo="Sube una foto y la IA detecta los materiales, tú confirmas antes de crear cada pasaporte"
         showBack
       />
 
-      {error && (
-        <div
-          style={{
-            background: 'rgba(255,94,75,0.08)',
-            border: '1px solid rgba(255,94,75,0.25)',
-            borderRadius: 10,
-            padding: '12px 16px',
-            marginBottom: 20,
-            color: '#FF5E4B',
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          {error}
+      {errorGeneral && (
+        <div className="rounded-[10px] p-3 mb-5 text-sm font-semibold" style={{ background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)', color: '#FF5E4B' }}>
+          {errorGeneral}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        {/* Nombre */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Nombre del activo *</label>
-          <input
-            required
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            placeholder="Silla de madera, Mesa de oficina..."
-            style={inputStyle}
-          />
-        </div>
-
-        {/* Descripción */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Descripción</label>
-          <textarea
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="Describe brevemente el objeto y su historia..."
-            rows={3}
-            style={{ ...inputStyle, resize: 'vertical' }}
-          />
-        </div>
-
-        {/* Peso */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Peso total (kg) *</label>
-          <input
-            type="number"
-            required
-            min="0.001"
-            step="0.001"
-            value={peso_total_kg}
-            onChange={(e) => setPeso(e.target.value)}
-            placeholder="8.5"
-            style={{ ...inputStyle, maxWidth: 200 }}
-          />
-        </div>
-
-        {/* Cliente dueño del ítem — siempre opcional, el mueble nunca es de
-            la empresa que cotiza sino de su dueño real. */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Cliente dueño del ítem</label>
-          <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--text-secondary)' }}>
-            Opcional · Búscalo si ya sabes de quién es, o crea el pasaporte sin cliente todavía
-          </p>
-          {clienteSeleccionado ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '10px 12px',
-                borderRadius: 8,
-                border: '1px solid rgba(0,130,124,0.30)',
-                background: 'rgba(0,130,124,0.06)',
-              }}
-            >
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-                {clienteSeleccionado.nombre} {clienteSeleccionado.apellido ?? ''}
-              </span>
-              <button
-                type="button"
-                onClick={() => setClienteSeleccionado(null)}
-                style={{ background: 'none', border: 'none', color: '#00827C', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
-              >
-                Quitar
-              </button>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input
-                  value={clienteQuery}
-                  onChange={(e) => { setClienteQuery(e.target.value); setClienteBusquedaHecha(false) }}
-                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); buscarCliente() } }}
-                  placeholder="Busca por nombre, celular o NIT"
-                  style={{ ...inputStyle, flex: 1 }}
-                />
-                <button
-                  type="button"
-                  onClick={buscarCliente}
-                  disabled={buscandoCliente}
-                  style={{
-                    background: 'transparent',
-                    color: '#00827C',
-                    border: '1.5px solid rgba(0,130,124,0.40)',
-                    borderRadius: 8,
-                    padding: '0 16px',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: buscandoCliente ? 'not-allowed' : 'pointer',
-                    fontFamily: "'Open Sans', sans-serif",
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {buscandoCliente ? 'Buscando...' : 'Buscar'}
-                </button>
-              </div>
-              {clienteResultados.length > 0 && (
-                <div style={{ marginTop: 8, borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden' }}>
-                  {clienteResultados.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => { setClienteSeleccionado(c); setClienteResultados([]); setClienteQuery(''); setClienteBusquedaHecha(false) }}
-                      style={{
-                        display: 'block',
-                        width: '100%',
-                        textAlign: 'left',
-                        padding: '10px 12px',
-                        background: 'var(--bg-card)',
-                        border: 'none',
-                        borderTop: '1px solid var(--border)',
-                        fontSize: 14,
-                        color: 'var(--text-primary)',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {c.nombre} {c.apellido ?? ''}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {clienteBusquedaHecha && !buscandoCliente && clienteResultados.length === 0 && (
-                <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-                  No se encontraron clientes con ese término.
-                </p>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Imagen */}
-        <div style={fieldStyle}>
-          <label style={labelStyle}>Imagen del activo</label>
-          <p style={{ margin: '0 0 8px', fontSize: 12, color: 'var(--text-secondary)' }}>
-            Opcional · Máx 5 MB · Se comprime automáticamente a WebP
-          </p>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImagenChange}
-            style={{ fontSize: 13, color: 'var(--text-secondary)' }}
-          />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {imagenPreview && (
-            <img
-              src={imagenPreview}
-              alt="Vista previa"
-              style={{
-                marginTop: 10,
-                borderRadius: 12,
-                maxWidth: '100%',
-                maxHeight: 200,
-                objectFit: 'cover',
-                display: 'block',
-              }}
-            />
-          )}
-        </div>
-
-        {/* Materiales */}
-        <div style={{ marginTop: 8, marginBottom: 24 }}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 12,
-            }}
-          >
-            <div>
-              <h3
-                style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}
-              >
-                Composición de materiales
-              </h3>
-              <p style={{ margin: '2px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
-                Agrega los materiales para calcular el CO₂ eq evitado con fuentes verificables
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                setMateriales((prev) => [
-                  ...prev,
-                  { material: '', peso_kg: '', factor_co2_kg: '', origen_fuente: '', nivel_confianza: 'alta' },
-                ])
-              }
-              style={{
-                background: 'transparent',
-                color: '#00827C',
-                border: '1.5px solid rgba(0,130,124,0.40)',
-                borderRadius: 8,
-                padding: '8px 14px',
-                fontSize: 13,
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: "'Open Sans', sans-serif",
-                whiteSpace: 'nowrap',
-              }}
-            >
-              + Agrega un material
-            </button>
+      {/* Cliente dueño del ítem — opcional, un único selector para toda la tanda */}
+      <div className="mb-5">
+        <label className="text-sm font-semibold text-[var(--text-primary)] block mb-1">Cliente dueño del ítem</label>
+        <p className="text-xs text-[var(--text-secondary)] mb-2">Opcional, búscalo si ya sabes de quién es, o crea el pasaporte sin cliente todavía</p>
+        {clienteSeleccionado ? (
+          <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border" style={{ borderColor: 'rgba(0,130,124,0.30)', background: 'rgba(0,130,124,0.06)' }}>
+            <span className="text-sm font-semibold text-[var(--text-primary)]">{clienteSeleccionado.nombre} {clienteSeleccionado.apellido ?? ''}</span>
+            <button type="button" onClick={() => setClienteSeleccionado(null)} className="text-[#00827C] text-sm font-semibold">Quitar</button>
           </div>
-
-          {materiales.length === 0 && (
-            <p
-              style={{
-                fontSize: 13,
-                color: 'var(--text-secondary)',
-                fontStyle: 'italic',
-                margin: 0,
-              }}
-            >
-              Puedes agregar materiales ahora o después de crear el pasaporte.
-            </p>
-          )}
-
-          {materiales.length > 0 && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 2fr 1fr auto',
-                gap: 8,
-                marginBottom: 4,
-              }}
-            >
-              {['Material', 'Peso kg', 'CO₂ eq/kg', 'Fuente', 'Confianza', ''].map((h) => (
-                <span
-                  key={h}
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  {h}
-                </span>
-              ))}
+        ) : (
+          <>
+            <div className="flex gap-2">
+              <input
+                value={clienteQuery}
+                onChange={e => { setClienteQuery(e.target.value); setClienteBusquedaHecha(false) }}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); buscarCliente() } }}
+                placeholder="Busca por nombre, celular o NIT"
+                className="flex-1 px-3 py-2 rounded-lg border text-sm bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-primary)]"
+              />
+              <Button type="button" variant="secondary" onClick={buscarCliente} loading={buscandoCliente}>Buscar</Button>
             </div>
-          )}
+            {clienteResultados.length > 0 && (
+              <div className="mt-2 rounded-lg border border-[var(--border)] overflow-hidden">
+                {clienteResultados.map(c => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => { setClienteSeleccionado(c); setClienteResultados([]); setClienteQuery(''); setClienteBusquedaHecha(false) }}
+                    className="block w-full text-left px-3 py-2.5 text-sm text-[var(--text-primary)] border-t border-[var(--border)] bg-[var(--bg-card)]"
+                  >
+                    {c.nombre} {c.apellido ?? ''}
+                  </button>
+                ))}
+              </div>
+            )}
+            {clienteBusquedaHecha && !buscandoCliente && clienteResultados.length === 0 && (
+              <p className="mt-2 text-xs text-[var(--text-secondary)]">No se encontraron clientes con ese término.</p>
+            )}
+          </>
+        )}
+      </div>
 
-          {materiales.map((m, i) => (
-            <FilaMaterial
-              key={i}
-              material={m}
-              isMobile={isMobile}
-              descripcion={descripcionesMaterial[m.material] ?? ''}
-              onChange={(updated) =>
-                setMateriales((prev) => prev.map((x, j) => (j === i ? updated : x)))
-              }
-              onRemove={() => setMateriales((prev) => prev.filter((_, j) => j !== i))}
+      {/* Cascada de fotos, mismo componente que usa el Cotizador */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {grupos.map((grupo, i) => (
+          <TarjetaGrupoFotos
+            key={grupo.id}
+            grupo={grupo}
+            numero={i + 1}
+            esPrimero={i === 0}
+            maxFotos={MAX_FOTOS_POR_TANDA}
+            error={null}
+            onCambiarModo={modo => cambiarModoGrupo(grupo.id, modo)}
+            onAgregarFotos={files => agregarFotosAGrupo(grupo.id, files)}
+            onQuitarFoto={idx => quitarFotoDeGrupo(grupo.id, idx)}
+            onQuitarGrupo={grupos.length > 1 ? () => quitarGrupo(grupo.id) : undefined}
+          />
+        ))}
+      </div>
+
+      <div className="flex gap-3 items-center mb-8">
+        {grupos.length < MAX_FOTOS_POR_TANDA && (
+          <Button type="button" variant="secondary" onClick={agregarGrupo}>+ Agregar otro ítem</Button>
+        )}
+        <Button type="button" onClick={generarPropuesta} loading={generando}>Generar propuesta</Button>
+      </div>
+
+      {itemsPendientes.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {itemsPendientes.map(item => (
+            <DppItemCard
+              key={item._uiKey}
+              item={item}
+              conEmpresa={conEmpresa}
+              onChange={i => actualizarItem(item._uiKey, i)}
+              onQuitar={() => quitarItem(item._uiKey)}
+              onConfirmar={() => confirmarYCrear(item)}
             />
           ))}
         </div>
+      )}
 
-        {/* Submit */}
-        <div
-          style={{
-            display: 'flex',
-            gap: 12,
-            alignItems: 'center',
-            paddingTop: 8,
-            borderTop: '1px solid var(--border)',
-          }}
-        >
-          <Button type="submit" loading={loading} disabled={!hidratado}>
-            Crea el pasaporte
-          </Button>
-          <Button type="button" variant="secondary" onClick={() => router.back()}>
-            Cancelar
-          </Button>
+      {dppsCreados.length > 0 && (
+        <div className="rounded-2xl border p-4 mb-8" style={{ borderColor: 'rgba(0,130,124,0.30)', background: 'rgba(0,130,124,0.06)' }}>
+          <p className="text-sm font-bold text-[var(--text-primary)] mb-2">Pasaportes creados en esta tanda</p>
+          <div className="flex flex-col gap-1">
+            {dppsCreados.map(d => (
+              <button key={d.id} onClick={() => router.push(`/empresa/dpp/${d.id}`)} className="text-left text-sm text-[#00827C] font-semibold hover:underline">
+                {d.titulo} →
+              </button>
+            ))}
+          </div>
         </div>
-      </form>
+      )}
+
+      <Button type="button" variant="secondary" onClick={() => router.push('/empresa/dpp')}>
+        {dppsCreados.length > 0 ? 'Terminar e ir a Pasaportes' : 'Cancelar'}
+      </Button>
     </div>
   )
 }
