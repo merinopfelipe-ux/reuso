@@ -16,6 +16,10 @@ interface ClienteResultado { id: string; nombre: string; apellido: string | null
 
 const MAX_FOTOS_POR_TANDA = 4
 
+// Placeholder intencional: hoy no agrega nada (a diferencia del `conEmpresa`
+// del Cotizador, que sí anexa `empresa_id`) — queda listo para cuando
+// super_admin pueda crear un DPP a nombre de una empresa, mismo criterio que
+// ya usa el Cotizador para eso. `DppItemCard` lo requiere como prop.
 function conEmpresa(url: string) { return url }
 
 function nuevoGrupoVacio(modo: ModoAnalisis = 'ia'): GrupoPendiente {
@@ -91,6 +95,9 @@ export default function NuevoActivoDppPage() {
   const [itemsPendientes, setItemsPendientes] = useState<ItemDppPendiente[]>([])
   const [generando, setGenerando] = useState(false)
   const [errorGeneral, setErrorGeneral] = useState<string | null>(null)
+  // Error por grupo (grupoId -> mensaje) — cada `TarjetaGrupoFotos` muestra
+  // el suyo, nunca un mensaje global que se pisa entre grupos.
+  const [erroresGrupos, setErroresGrupos] = useState<Record<string, string>>({})
   const [dppsCreados, setDppsCreados] = useState<{ id: string; titulo: string }[]>([])
 
   const [clienteQuery, setClienteQuery] = useState('')
@@ -114,28 +121,36 @@ export default function NuevoActivoDppPage() {
     }
   }
 
-  function agregarFotosAGrupo(grupoId: string, files: File[]) {
-    setGrupos(prev => prev.map(g => {
-      if (g.id !== grupoId) return g
-      const disponibles = MAX_FOTOS_POR_TANDA - g.fotos.length
-      if (disponibles <= 0) return g
-      const porAgregar = files.slice(0, disponibles)
-      const nuevas = porAgregar.map(f => ({ base64: '', preview: URL.createObjectURL(f) }))
-      const offsetInicial = g.fotos.length
-      // Comprimir en segundo plano y reemplazar el placeholder
-      porAgregar.forEach(async (file, idx) => {
-        const comprimida = await comprimirImagenBase64(file, { calidad: 0.70 })
-        setGrupos(actuales => actuales.map(gg => gg.id !== grupoId ? gg : {
-          ...gg,
-          fotos: gg.fotos.map((f, i) => i === offsetInicial + idx ? comprimida : f),
-        }))
-      })
-      return { ...g, fotos: [...g.fotos, ...nuevas] }
-    }))
+  // Espera TODAS las compresiones antes de tocar el estado del grupo — nunca
+  // expone una foto con `base64: ''` (mismo patrón que `agregarFotosAlActivo`
+  // en cotizador/nueva/page.tsx). Sin esto, avanzar a "Generar propuesta" o a
+  // modo Manual antes de que termine la compresión en segundo plano mandaba
+  // una foto vacía.
+  async function agregarFotosAGrupo(grupoId: string, files: File[]) {
+    const grupoActual = grupos.find(g => g.id === grupoId)
+    if (!grupoActual) return
+    const disponibles = MAX_FOTOS_POR_TANDA - grupoActual.fotos.length
+    if (disponibles <= 0) return
+    const aProcesar = files.slice(0, disponibles)
+    const resultados = await Promise.allSettled(aProcesar.map(f => comprimirImagenBase64(f, { calidad: 0.70 })))
+    const comprimidas: FotoCola[] = []
+    for (const r of resultados) {
+      if (r.status === 'fulfilled') comprimidas.push(r.value)
+    }
+    if (comprimidas.length === 0) return
+    setGrupos(prev => prev.map(g => g.id === grupoId ? { ...g, fotos: [...g.fotos, ...comprimidas] } : g))
   }
 
   function quitarFotoDeGrupo(grupoId: string, index: number) {
-    setGrupos(prev => prev.map(g => g.id !== grupoId ? g : { ...g, fotos: g.fotos.filter((_, i) => i !== index) }))
+    setGrupos(prev => prev.map(g => {
+      if (g.id !== grupoId) return g
+      // Defensivo: si alguna vez una `preview` llega a ser un blob URL
+      // temporal (hoy son data URLs, `comprimirImagenBase64` no crea
+      // blobs), se libera para no dejar fugas de memoria.
+      const foto = g.fotos[index]
+      if (foto?.preview.startsWith('blob:')) URL.revokeObjectURL(foto.preview)
+      return { ...g, fotos: g.fotos.filter((_, i) => i !== index) }
+    }))
   }
 
   function cambiarModoGrupo(grupoId: string, modo: ModoAnalisis) {
@@ -159,31 +174,48 @@ export default function NuevoActivoDppPage() {
       return
     }
     setGenerando(true)
+    // Grupos que sí terminaron con éxito (IA sin error, o manual) — solo
+    // esos se limpian al final. Un grupo con error se queda con sus fotos
+    // intactas para que el usuario pueda reintentar sin volver a subirlas.
+    const idsExitosos = new Set<string>()
+    const erroresNuevos: Record<string, string> = {}
     try {
       for (const grupo of gruposConFotos) {
         if (grupo.modo === 'manual') {
           setItemsPendientes(prev => [...prev, itemManualVacio(grupo.fotos[0])])
+          idsExitosos.add(grupo.id)
           continue
         }
-        const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            imagenes: grupo.fotos.map(f => ({ imagen_base64: f.base64, mime_type: 'image/jpeg' })),
-          }),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          setErrorGeneral(data.error ?? 'Error al analizar las fotos. Intenta de nuevo.')
-          continue
-        }
-        const detectados: ItemDetectadoConSnapshot[] = data.items_detectados ?? []
-        for (const d of detectados) {
-          const miniatura = await construirMiniatura(d.imagen_index, d.bounding_box, grupo.fotos)
-          setItemsPendientes(prev => [...prev, itemDetectadoAPendiente(d, miniatura)])
+        try {
+          const res = await fetch(conEmpresa('/api/cotizador/diagnostico'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              imagenes: grupo.fotos.map(f => ({ imagen_base64: f.base64, mime_type: 'image/webp' })),
+            }),
+          })
+          const data = await res.json()
+          if (!res.ok) {
+            erroresNuevos[grupo.id] = data.error ?? 'Error al analizar las fotos. Intenta de nuevo.'
+            continue
+          }
+          const detectados: ItemDetectadoConSnapshot[] = data.items_detectados ?? []
+          for (const d of detectados) {
+            const miniatura = await construirMiniatura(d.imagen_index, d.bounding_box, grupo.fotos)
+            setItemsPendientes(prev => [...prev, itemDetectadoAPendiente(d, miniatura)])
+          }
+          idsExitosos.add(grupo.id)
+        } catch {
+          // Fallo de red/parseo en ESTE grupo — se registra su error y se
+          // sigue con el resto de la tanda, nunca se corta todo el ciclo.
+          erroresNuevos[grupo.id] = 'No se pudo analizar esta foto. Revisa tu conexión e intenta de nuevo.'
         }
       }
-      setGrupos([nuevoGrupoVacio()])
+      setErroresGrupos(erroresNuevos)
+      setGrupos(prev => {
+        const restantes = prev.filter(g => !idsExitosos.has(g.id))
+        return restantes.length > 0 ? restantes : [nuevoGrupoVacio()]
+      })
     } finally {
       setGenerando(false)
     }
@@ -201,30 +233,37 @@ export default function NuevoActivoDppPage() {
     actualizarItem(item._uiKey, { ...item, creando: true, errorCreacion: null })
 
     let imagen_url: string | undefined
+    let fallóImagen = false
     try {
       const blob = await fetch(item.imagenPreview).then(r => r.blob())
       const webp = await comprimirImagenWebP(blob, { calidad: 0.85 })
       const supabase = createClient()
-      const path = `dpp/imagenes/${Date.now()}.webp`
+      // `item._uiKey` en el path evita colisiones si dos confirmaciones caen
+      // en el mismo milisegundo (doble clic, dos pestañas) — con
+      // `upsert: false` una colisión haría fallar el upload en silencio.
+      const path = `dpp/imagenes/${item._uiKey}-${Date.now()}.webp`
       const { data: uploadData } = await supabase.storage
         .from('dpp')
         .upload(path, webp, { contentType: 'image/webp', upsert: false })
       if (uploadData) imagen_url = uploadData.path
+      else fallóImagen = true
     } catch {
       // No bloquea la creación del DPP si falla solo la imagen.
+      fallóImagen = true
     }
 
-    const composicion_json = item.materiales
-      .filter((m: MaterialDpp) => m.nombre.trim())
-      .map((m: MaterialDpp) => ({
-        material: m.nombre.trim(),
-        peso_kg: m.peso_kg,
-        factor_co2_kg: m.factor_co2_kg,
-        factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
-        origen_fuente: m.origen_fuente ?? undefined,
-        nivel_confianza: m.nivel_confianza,
-      }))
-    const peso_total_kg = item.materiales.reduce((s: number, m: MaterialDpp) => s + m.peso_kg, 0)
+    // Mismo filtro que `composicion_json` (nombre vacío = fila descartada) —
+    // si no coinciden, el peso guardado no representa la composición real.
+    const materialesConNombre = item.materiales.filter((m: MaterialDpp) => m.nombre.trim())
+    const composicion_json = materialesConNombre.map((m: MaterialDpp) => ({
+      material: m.nombre.trim(),
+      peso_kg: m.peso_kg,
+      factor_co2_kg: m.factor_co2_kg,
+      factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
+      origen_fuente: m.origen_fuente ?? undefined,
+      nivel_confianza: m.nivel_confianza,
+    }))
+    const peso_total_kg = materialesConNombre.reduce((s: number, m: MaterialDpp) => s + m.peso_kg, 0)
 
     const res = await fetch('/api/dpp/activos/crear', {
       method: 'POST',
@@ -249,6 +288,9 @@ export default function NuevoActivoDppPage() {
     setDppsCreados(prev => [...prev, { id: data.data.id, titulo: item.titulo }])
     quitarItem(item._uiKey)
     toast.success(`"${item.titulo}" creado como pasaporte digital.`)
+    if (fallóImagen && item.imagenBase64) {
+      toast.error('El pasaporte se creó, pero no se pudo guardar la foto.')
+    }
   }
 
   return (
@@ -316,7 +358,7 @@ export default function NuevoActivoDppPage() {
             numero={i + 1}
             esPrimero={i === 0}
             maxFotos={MAX_FOTOS_POR_TANDA}
-            error={null}
+            error={erroresGrupos[grupo.id] ?? null}
             onCambiarModo={modo => cambiarModoGrupo(grupo.id, modo)}
             onAgregarFotos={files => agregarFotosAGrupo(grupo.id, files)}
             onQuitarFoto={idx => quitarFotoDeGrupo(grupo.id, idx)}
