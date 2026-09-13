@@ -51,6 +51,13 @@ export async function GET(
     ? activo.composicion_json as MaterialComposicion[]
     : []
 
+  // Regla de Objetividad (CLAUDE.md): un activo sin composicion_json
+  // todavía (nadie ha confirmado materiales) da 0 en co2_manufactura_kg
+  // por el DEFAULT de la columna — pero ese 0 no es un resultado real, es
+  // "todavía no hay nada que calcular". `calculado` deja que quien
+  // consuma este endpoint distinga los dos casos en vez de mostrar un
+  // 0 como si fuera un dato verificado.
+  const calculado = composicion.length > 0
   const co2_manufactura_kg = activo.co2_manufactura_kg ?? 0
   const agua_total_l = calcularHuellaHidrica(composicion)
   const equivalencias = calcularEquivalenciasNarrativas(co2_manufactura_kg, agua_total_l)
@@ -77,6 +84,7 @@ export async function GET(
 
   return NextResponse.json({
     data: {
+      calculado,
       huella_carbono_kg: co2_manufactura_kg,
       huella_hidrica_l: agua_total_l,
       arboles_preservados: equivalencias.arboles,
