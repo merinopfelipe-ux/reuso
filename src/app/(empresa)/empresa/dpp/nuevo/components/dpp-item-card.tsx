@@ -8,6 +8,7 @@ import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { Button } from '@/components/ui/button'
+import { inputSt, rowInputSt } from '@/lib/ui/estilos-formulario'
 
 // Mismo shape que `Material` de src/lib/cotizador/plantillas-base.ts — se
 // redeclara acá (sin importarlo) porque ese archivo trae también los tipos
@@ -51,9 +52,6 @@ interface Props {
   clienteVinculado: string | null
 }
 
-const inputSt = 'px-3 py-2 rounded-xl border text-sm bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-primary)] w-full focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]/20 transition-all'
-const rowInputSt = 'bg-transparent border-none p-0 outline-none focus:ring-0 text-sm font-medium text-[var(--text-primary)] min-w-[80px]'
-
 // Umbral de "revisa con atención" — nunca bloquea, solo avisa (diseño
 // aprobado 2026-09-12: la IA siempre infiere, el humano siempre confirma).
 const UMBRAL_CONFIANZA_BAJA = 0.5
@@ -95,7 +93,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
             <Warning size={12} sinAnimacion /> Revisa este ítem con atención
           </span>
         ) : <span />}
-        <button onClick={onQuitar} className="hover-pop hover-press p-1.5" title="Quitar este ítem">
+        <button type="button" onClick={onQuitar} aria-label="Quitar este ítem" className="hover-pop hover-press p-1.5" title="Quitar este ítem">
           <Trash size={15} className="text-[#FF5E4B]" />
         </button>
       </div>
@@ -133,7 +131,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
       </div>
 
       <div className="flex flex-col gap-3">
-        <p className={`flex items-center gap-2 text-xs font-bold tracking-wide ${ts}`}><Leaf size={14} className="text-[#00827C]" sinAnimacion /> Materiales</p>
+        <p className={`flex items-center gap-2 text-xs font-bold tracking-wide ${ts}`}><Leaf size={14} className="text-[#00827C]" /> Materiales</p>
         {item.materiales.map((m, i) => (
           <div key={i} className="flex items-center gap-2 sm:gap-3 flex-wrap">
             {m._esNuevo ? (
@@ -148,12 +146,12 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
               <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseFloat(e.target.value) || 0 })} className="w-16 text-right text-sm outline-none border-none p-0 bg-transparent" />
               <span className={`text-xs ${ts}`}>kg</span>
             </div>
-            <button type="button" onClick={() => quitarMaterial(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
+            <button type="button" onClick={() => quitarMaterial(i)} aria-label="Quitar material" className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
           </div>
         ))}
         {item.materiales.length === 0 && <p className={`text-xs italic py-1 ${ts}`}>Sin materiales asignados todavía.</p>}
         <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
-          <Plus size={13} sinAnimacion /> Añadir material
+          <Plus size={13} /> Añadir material
         </button>
       </div>
 
