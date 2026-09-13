@@ -62,6 +62,11 @@ export async function GET(
   const ciclosParaLogistica: CicloLogistica[] = (ciclosDb ?? []).map(c => ({
     id: c.id,
     distancia_transporte_km: c.distancia_transporte_km ?? 0,
+    // 0 a propósito: este endpoint solo usa tasa_desvio_vertedero_pct de
+    // calcularLogistica (depende únicamente de los pesos de residuo, nunca
+    // de este campo). Si en el futuro se necesita co2_logistica_total_kg
+    // de este mismo resultado, primero hay que traer el peso real
+    // transportado por ciclo — con 0 aquí, ese número saldría mal.
     peso_transportado_kg: 0,
     tipo_vehiculo_transporte: c.tipo_vehiculo_transporte,
     peso_residuo_taller_kg: c.peso_residuo_taller_kg ?? 0,
