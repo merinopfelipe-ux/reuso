@@ -36,7 +36,7 @@ interface LimitesEfectivos {
 
 const aInfinito = (v: number | null | undefined): number => (v === null || v === undefined ? Infinity : v)
 
-async function obtenerLimitesEfectivos(empresaId: string, plan: Plan): Promise<LimitesEfectivos> {
+export async function obtenerLimitesEfectivos(empresaId: string, plan: Plan): Promise<LimitesEfectivos> {
   try {
     const adminClient = await createAdminClient()
     const [{ data: negociacion }, { data: config }] = await Promise.all([

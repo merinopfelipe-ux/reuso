@@ -5,12 +5,13 @@ import type { Plan } from '@/types'
 
 interface Props {
   plan: Plan
+  incluyeExcelCSV?: boolean
 }
 
 const BRAND = 'var(--color-brand)'
 
-export default function BotonExportarCSV({ plan }: Props) {
-  const habilitado = plan === 'ilimitado'
+export default function BotonExportarCSV({ plan, incluyeExcelCSV }: Props) {
+  const habilitado = incluyeExcelCSV !== undefined ? incluyeExcelCSV : plan === 'ilimitado'
 
   function handleClick() {
     if (!habilitado) return
@@ -22,7 +23,7 @@ export default function BotonExportarCSV({ plan }: Props) {
       <button
         onClick={handleClick}
         disabled={!habilitado}
-        title={habilitado ? 'Exportar cálculos a CSV' : 'Solo disponible en plan Impacto Ilimitado'}
+        title={habilitado ? 'Exportar cálculos a CSV' : 'No incluido en tu plan actual'}
         style={{
           display: 'flex',
           alignItems: 'center',

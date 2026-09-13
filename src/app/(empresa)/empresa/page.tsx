@@ -15,6 +15,7 @@ const GraficaCO2Mensual = dynamic(() => import('@/components/empresa/grafica-co2
 const DonutCategorias = dynamic(() => import('@/components/empresa/donut-categorias'), {
   ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: '#EBF5F4' }} />, })
 import BotonExportarCSV from '@/components/empresa/boton-exportar-csv'
+import { obtenerLimitesEfectivos } from '@/lib/plan-limits'
 import { ListaMetas } from '@/components/empresa/lista-metas'
 import { Leaf, Drop, Users, Medal } from '@/components/ui/icons'
 import type { Rol, Plan } from '@/types'
@@ -190,6 +191,7 @@ export default async function EmpresaPage() {
   const co2Total = (co2Data ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
   const aguaTotal = (co2Data ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
   const plan = (empresaData?.plan ?? 'free') as Plan
+  const limites = await obtenerLimitesEfectivos(empresaId, plan)
 
   const categorias = (categoriasData ?? []).map((cat) => ({
     ...cat,
@@ -294,7 +296,7 @@ export default async function EmpresaPage() {
 
       {/* Exportar CSV */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12, marginBottom: 32 }}>
-        <BotonExportarCSV plan={plan} />
+        <BotonExportarCSV plan={plan} incluyeExcelCSV={limites.incluye_excel_csv} />
       </div>
       </div>
     </div>

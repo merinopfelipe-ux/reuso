@@ -7,7 +7,8 @@ const formatoSchema = z.enum(['csv', 'xlsx', 'pdf'])
 import { utils, write } from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
-import type { Rol } from '@/types'
+import type { Rol, Plan } from '@/types'
+import { planIncluyeExcelCSV } from '@/lib/plan-limits'
 
 type Formato = 'csv' | 'xlsx' | 'pdf'
 
@@ -101,6 +102,28 @@ export async function GET(request: NextRequest) {
   const empresaIdFiltro = params.get('empresa_id') ?? null
 
   const adminClient = await createAdminClient()
+
+  if (rol !== 'super_admin' && (formato === 'xlsx' || formato === 'csv')) {
+    if (!empresaId) {
+      return NextResponse.json(
+        { error: 'La exportación en Excel y CSV solo está disponible para cuentas empresariales con esta capacidad activa.' },
+        { status: 403 }
+      )
+    }
+    const { data: emp } = await adminClient
+      .from('empresas')
+      .select('plan')
+      .eq('id', empresaId)
+      .maybeSingle()
+    const planEmpresa = (emp?.plan ?? 'free') as Plan
+    const incluye = await planIncluyeExcelCSV(empresaId, planEmpresa)
+    if (!incluye) {
+      return NextResponse.json(
+        { error: 'La exportación en Excel y CSV no está incluida en el plan de tu empresa.' },
+        { status: 403 }
+      )
+    }
+  }
 
   let query = adminClient
     .from('calculos')

@@ -999,17 +999,37 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
   // Congruencia real con /admin/contenido -> Precios -> "Personalización de
-  // capacidades": si el toggle de MCI o de Excel/CSV está encendido para
-  // este plan, se agrega el beneficio automáticamente — nunca queda a
-  // criterio de un texto manual en features_json que puede desincronizarse
-  // del toggle real. Bug real encontrado y corregido 2026-09-13.
+  // capacidades": sincroniza los beneficios de IA, MCI y Excel/CSV con los
+  // toggles reales de cada plan, sin duplicados ni textos huérfanos.
   const bulletsPlan = (plan: typeof PLANS[0]): string[] => {
     const real = precioReal(plan)
-    const base = real?.features_json?.length ? real.features_json : plan.features
-    const extra: string[] = []
-    if (real?.incluye_mci) extra.push('Indicador de Circularidad de Materiales (MCI, ISO 59020)')
-    if (real?.incluye_excel_csv) extra.push('Exportación de informes en Excel y CSV')
-    return [...base, ...extra]
+    let lista = [...(real?.features_json?.length ? real.features_json : plan.features)]
+
+    // Capacidades de IA:
+    const tieneIA = real ? Boolean(real.incluye_ia) : (plan.id === 'impulso' || plan.id === 'ilimitado')
+    if (!tieneIA) {
+      lista = lista.filter(b => !/asistente.*ia|inteligencia artificial/i.test(b))
+    } else if (!lista.some(b => /asistente.*ia|inteligencia artificial/i.test(b))) {
+      lista.push('Asistente de IA: sube fotos o fichas y extrae datos')
+    }
+
+    // Indicador de Circularidad de Materiales (MCI, ISO 59020):
+    const tieneMCI = real ? Boolean(real.incluye_mci) : (plan.id === 'ilimitado')
+    if (!tieneMCI) {
+      lista = lista.filter(b => !/mci|iso 59020|circularidad de materiales/i.test(b))
+    } else if (!lista.some(b => /mci|iso 59020|circularidad de materiales/i.test(b))) {
+      lista.push('Indicador de Circularidad de Materiales (MCI, ISO 59020)')
+    }
+
+    // Informes en Excel y CSV:
+    const tieneExcel = real ? Boolean(real.incluye_excel_csv) : (plan.id === 'ilimitado')
+    if (!tieneExcel) {
+      lista = lista.filter(b => !/excel y csv|csv y excel|informes en excel/i.test(b))
+    } else if (!lista.some(b => /excel y csv|csv y excel|informes en excel/i.test(b))) {
+      lista.push('Exportación de informes en Excel y CSV')
+    }
+
+    return lista
   }
 
   // Regla general de diseño: los decimales van en la misma línea, pero más pequeños
@@ -1100,16 +1120,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     if (plan.id === 'free') {
       const empleadosValor = real?.limite_empleados == null ? '1 persona' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}`
       const calculosValor = real?.limite_calculos_mes != null ? porMes(real.limite_calculos_mes, '5 por mes') : '5 por mes'
+      const dppValor = real?.limite_dpp_mes != null ? porMes(real.limite_dpp_mes, 'No incluye') : 'No incluye'
       return [
         { etiqueta: 'Equipo', valor: empleadosValor },
         { etiqueta: 'Cálculos', valor: calculosValor },
-        { etiqueta: 'Pasaporte DPP', valor: 'No incluye' },
+        { etiqueta: 'Pasaporte DPP', valor: dppValor },
         { etiqueta: 'Informes', valor: 'No incluye' },
       ]
     }
 
     const empleadosValor = real ? (real.limite_empleados == null ? 'Ilimitado' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}`) : plan.limits.empleados
-    const dppValor = plan.id === 'ilimitado' ? 'Ilimitado' : (plan.id === 'impulso' ? '200 por mes' : '5 por mes')
+    const dppValor = real ? porMes(real.limite_dpp_mes, 'No incluye') : (plan.id === 'ilimitado' ? 'Ilimitado' : (plan.id === 'impulso' ? '200 por mes' : '5 por mes'))
     const informesValor = real ? porMes(real.limite_informes_mes, 'No incluye') : plan.limits.informes
     const cotizacionesValor = real ? porMes(real.limite_cotizaciones_mes, 'No incluye') : plan.limits.cotizaciones
 
@@ -1928,19 +1949,32 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         const listaBase = (comparativaCategorias && comparativaCategorias.length > 0)
           ? comparativaCategorias
           : COMPARATIVA_DEFAULT
-        // Congruencia real: la fila del MCI (sea del cuadro por defecto o
-        // del que el admin personalizó en /admin/contenido) siempre refleja
-        // el toggle real de "Personalización de capacidades" por plan, en
-        // vez de un checkmark manual que puede desincronizarse. Bug real
-        // encontrado y corregido 2026-09-13.
+        // Congruencia real: las filas de MCI, IA y Excel/CSV (sea del cuadro
+        // por defecto o del personalizado en /admin/contenido) siempre reflejan
+        // los toggles reales de "Personalización de capacidades" por plan, en
+        // vez de un checkmark manual que puede desincronizarse.
         const listaComparativa = listaBase.map(categoria => ({
           ...categoria,
           filas: categoria.filas.map(fila => {
-            if (!/Índice de Flujo Lineal|MCI/i.test(fila.label)) return fila
-            const valoresReales = Object.fromEntries(
-              (planesPrecios ?? []).map(p => [p.id, p.incluye_mci])
-            )
-            return { ...fila, valores: { ...fila.valores, ...valoresReales } }
+            if (/Índice de Flujo Lineal|MCI/i.test(fila.label)) {
+              const valoresReales = Object.fromEntries(
+                (planesPrecios ?? []).map(p => [p.id, Boolean(p.incluye_mci)])
+              )
+              return { ...fila, valores: { ...fila.valores, ...valoresReales } }
+            }
+            if (/Inteligencia Artificial|Asistente.*IA/i.test(fila.label) && fila.tipo === 'check') {
+              const valoresReales = Object.fromEntries(
+                (planesPrecios ?? []).map(p => [p.id, Boolean(p.incluye_ia)])
+              )
+              return { ...fila, valores: { ...fila.valores, ...valoresReales } }
+            }
+            if (/Excel.*CSV|CSV.*Excel|Exportación.*Excel/i.test(fila.label) && fila.tipo === 'check') {
+              const valoresReales = Object.fromEntries(
+                (planesPrecios ?? []).map(p => [p.id, Boolean(p.incluye_excel_csv)])
+              )
+              return { ...fila, valores: { ...fila.valores, ...valoresReales } }
+            }
+            return fila
           }),
         }))
         return (

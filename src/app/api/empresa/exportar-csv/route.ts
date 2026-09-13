@@ -3,6 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PARAM_EQUIV } from '@/lib/calculos/co2'
 
+import { planIncluyeExcelCSV } from '@/lib/plan-limits'
+import type { Plan } from '@/types'
+
 export async function GET() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -24,16 +27,17 @@ export async function GET() {
 
   const adminClient = await createAdminClient()
 
-  // Verificar plan ilimitado
+  // Verificar si el plan incluye exportación Excel y CSV
   const { data: empresa } = await adminClient
     .from('empresas')
     .select('plan, nombre')
     .eq('id', perfil.empresa_id)
     .single()
 
-  if (empresa?.plan !== 'ilimitado') {
+  const incluye = await planIncluyeExcelCSV(perfil.empresa_id, (empresa?.plan ?? 'free') as Plan)
+  if (!incluye) {
     return NextResponse.json(
-      { error: 'La exportación CSV solo está disponible en el plan Impacto Ilimitado.' },
+      { error: 'La exportación CSV no está incluida en el plan de tu empresa.' },
       { status: 403 }
     )
   }
@@ -77,7 +81,8 @@ export async function GET() {
   })
 
   const csvContent = [cabeceras.join(','), ...filas].join('\n')
-  const nombreArchivo = `reuso-calculos-${empresa.nombre.toLowerCase().replace(/\s+/g, '-').slice(0, 20)}.csv`
+  const slugEmpresa = (empresa?.nombre ?? 'empresa').toLowerCase().replace(/\s+/g, '-').slice(0, 20)
+  const nombreArchivo = `reuso-calculos-${slugEmpresa}.csv`
 
   return new NextResponse(csvContent, {
     headers: {
