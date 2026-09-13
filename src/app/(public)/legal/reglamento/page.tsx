@@ -9,7 +9,7 @@ const T = {
     titulo: 'Reglamento de Uso',
     breadcrumbLabel: 'Reglamento de Uso',
     resumen:
-      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y medir el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
+      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y estimar el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Prohibimos el uso de estos informes para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo bajo tu propia responsabilidad. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
     secciones: [
       { id: 'definiciones', label: 'Definiciones' },
       { id: 'aceptacion', label: 'Aceptación' },
@@ -21,7 +21,7 @@ const T = {
       { id: 'propiedad', label: 'Propiedad intelectual' },
       { id: 'responsabilidad', label: 'Responsabilidad' },
       { id: 'ley', label: 'Ley aplicable' },
-      { id: 'seguridad-inalterable', label: 'Seguridad Inalterable' },
+      { id: 'seguridad-inalterable', label: 'Seguridad y Trazabilidad' },
     ],
     leeTabien: [
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -54,8 +54,11 @@ const T = {
     h_servicio: 'Servicio y funcionamiento',
     servicio_p1:
       'La Calculadora de Reúso es una plataforma en línea que te permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en la plataforma.',
-    servicio_p2:
-      'Las estimaciones se basan en factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Constituyen una herramienta de comunicación ambiental y difieren de una auditoría ambiental oficial.',
+    servicio_p2_pre: 'Entregamos todos los resultados de la plataforma bajo una ',
+    servicio_p2_bold1: 'estimación',
+    servicio_p2_mid: ' técnica referencial basada en factores de emisión reconocidos internacionalmente. Cada informe posee alcance ',
+    servicio_p2_bold2: 'estimativo',
+    servicio_p2_post: ' para orientar tu comunicación ambiental. Este reglamento prohíbe expresamente emplear los cálculos e informes para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo que el usuario los utilice bajo su propia y exclusiva responsabilidad.',
     h_cuenta: 'Creación de cuenta',
     cuenta_p:
       'Puedes registrarte como persona natural o como organización. Las organizaciones designan un administrador que puede invitar a otros usuarios mediante enlace de invitación. Asumes la responsabilidad sobre la veracidad de la información suministrada y sobre la confidencialidad de tus credenciales.',
@@ -82,6 +85,8 @@ const T = {
     restriccion_7: 'Vender, ceder o transferir tu cuenta a terceros.',
     restriccion_8:
       'Realizar capturas de pantalla masivas, enlazamiento (linking) o reproducción de contenidos sin autorización escrita de Grupo MLP S.A.S.',
+    restriccion_9:
+      'Emplear los cálculos o reportes de la plataforma para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo bajo tu propia y exclusiva responsabilidad.',
     h_licencia: 'Licencia de uso',
     licencia_p:
       'Grupo MLP S.A.S. te otorga una licencia limitada, personal, intransferible y revocable para acceder y usar la plataforma conforme a este reglamento. No adquieres ningún derecho sobre el código fuente, diseño, metodología de cálculo, marcas ni ningún otro elemento de la plataforma.',
@@ -91,8 +96,11 @@ const T = {
     propiedad_link: 'acuerdo de confidencialidad',
     propiedad_p_post: '.',
     h_responsabilidad: 'Limitación de responsabilidad',
-    responsabilidad_p:
-      'Grupo MLP S.A.S. declina toda responsabilidad por daños directos, indirectos o consecuentes derivados del uso o la imposibilidad de uso de la plataforma. Los valores de CO₂e son estimados con base en factores reconocidos internacionalmente y difieren de una auditoría ambiental oficial. Asumes de forma exclusiva el riesgo de tu uso.',
+    responsabilidad_p_pre: 'Grupo MLP S.A.S. declina toda responsabilidad por daños directos, indirectos o consecuentes derivados del uso o la imposibilidad de uso de la plataforma. Presentamos cada cálculo de impacto ambiental como una ',
+    responsabilidad_p_bold1: 'estimación',
+    responsabilidad_p_mid: ' técnica basada en factores reconocidos internacionalmente. Entregamos todos los resultados con carácter ',
+    responsabilidad_p_bold2: 'estimativo',
+    responsabilidad_p_post: ' referencial. Prohibimos expresamente su empleo en auditorías ambientales formales o certificaciones de carbono obligatorias. Si decides utilizarlos para tales fines, asumes de forma personal y exclusiva la totalidad del riesgo, exonerando a Grupo MLP S.A.S. de cualquier responsabilidad.',
     h_ley: 'Ley aplicable y resolución de controversias',
     ley_p1:
       'Este reglamento se rige por las leyes de la República de Colombia. Cumple también con el Reglamento General de Protección de Datos (RGPD) de la Unión Europea, la Ley de Privacidad del Consumidor de California (CCPA) y la Ley 1581 de 2012 de Colombia. Ante cualquier controversia, las partes agotan primero una instancia de negociación directa y, de persistir la controversia, se someten al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
@@ -100,13 +108,13 @@ const T = {
     ley_p2_o: 'o usa el formulario de',
     ley_p2_link: 'consultas legales',
     ley_p2_post: '.',
-    h_seguridad: 'Seguridad Inalterable y Protección de Datos',
+    h_seguridad: 'Seguridad y Trazabilidad de Datos',
     seguridad_p1_pre: 'Grupo MLP S.A.S. protege los datos de la plataforma con una tecnología de',
     seguridad_notaria: 'Notaría Digital Permanente',
     seguridad_p1_post:
-      '. El sistema crea un sello de seguridad único para cada cálculo y lo conecta con el registro inmediatamente anterior. Si alguien intentara alterar un registro del pasado, el sello se rompe de inmediato y el sistema alerta sobre la falta de integridad.',
+      '. El sistema crea un sello de seguridad único para cada cálculo (cadena de hash criptográfico) y lo conecta con el registro inmediatamente anterior. Si alguien intentara alterar un registro del pasado, el sello se rompe de inmediato y el sistema alerta sobre la falta de integridad.',
     seguridad_p2:
-      'Para los planes Impulso Sostenible e Impacto Ilimitado, la plataforma ofrece un respaldo adicional en redes de registro públicas externas (Blockchain). Este proceso funciona como un sello notarial externo que demuestra la existencia de los ahorros ambientales de forma independiente y permanente, incluso por fuera de la plataforma.',
+      'Estamos evaluando sumar, en un horizonte no muy lejano, un respaldo adicional en redes de registro públicas externas (Blockchain) para los planes Impulso Sostenible e Impacto Ilimitado. Hoy esta funcionalidad no está disponible: la Notaría Digital Permanente descrita arriba ya opera dentro de la plataforma con esa misma cadena de verificación criptográfica.',
     transparencia: {
       texto: 'La plataforma usa inteligencia artificial como asistente en la construcción del código, la estructuración de los factores de cálculo y la generación de informes. La IA no toma decisiones autónomas, no entrena con tus datos y todo output pasa por revisión humana antes de producción.',
       link: 'Lee nuestra política de uso de IA →',
@@ -116,7 +124,7 @@ const T = {
     titulo: 'Terms of Use',
     breadcrumbLabel: 'Terms of Use',
     resumen:
-      'By using the calculator you accept these terms. Most importantly: you may only use the platform to calculate and certify the CO₂ you avoid by reusing objects. You may not copy, replicate, or extract the methodology. Your data is protected. If you violate these terms, Grupo MLP S.A.S. may suspend your access immediately.',
+      'By using the calculator you accept these terms. Most importantly: you may only use the platform to calculate and estimate the CO₂ you avoid by reusing objects. You may not copy, replicate, or extract the methodology. Your data is protected. We prohibit using these reports for formal environmental audits or mandatory carbon certifications, except under your own responsibility. If you violate these terms, Grupo MLP S.A.S. may suspend your access immediately.',
     secciones: [
       { id: 'definiciones', label: 'Definitions' },
       { id: 'aceptacion', label: 'Acceptance' },
@@ -128,7 +136,7 @@ const T = {
       { id: 'propiedad', label: 'Intellectual Property' },
       { id: 'responsabilidad', label: 'Liability' },
       { id: 'ley', label: 'Applicable Law' },
-      { id: 'seguridad-inalterable', label: 'Immutable Security' },
+      { id: 'seguridad-inalterable', label: 'Security and Traceability' },
     ],
     leeTabien: [
       { href: '/legal/terminos', label: 'Terms & Conditions' },
@@ -161,8 +169,11 @@ const T = {
     h_servicio: 'Service and operation',
     servicio_p1:
       'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the equivalent CO₂ avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable on the platform.',
-    servicio_p2:
-      'Estimates are based on internationally recognised emission factors and expressed in kilograms of CO₂ equivalent (kg CO₂e). They serve as an environmental communication tool and differ from an official environmental audit.',
+    servicio_p2_pre: 'We deliver all platform results as a technical reference ',
+    servicio_p2_bold1: 'estimation',
+    servicio_p2_mid: ' based on internationally recognised emission factors. Each report carries an ',
+    servicio_p2_bold2: 'estimative',
+    servicio_p2_post: ' scope to guide your environmental communication. These regulations strictly prohibit using these calculations and reports for formal environmental audits or mandatory carbon certifications, unless the user does so under their own sole responsibility.',
     h_cuenta: 'Account creation',
     cuenta_p:
       'You can register as an individual or as an organisation. Organisations designate an administrator who can invite other users via an invitation link. You are responsible for the accuracy of the information you provide and for keeping your credentials confidential.',
@@ -188,6 +199,8 @@ const T = {
     restriccion_7: 'Selling, assigning, or transferring your account to third parties.',
     restriccion_8:
       'Taking mass screenshots, linking, or reproducing content without written authorisation from Grupo MLP S.A.S.',
+    restriccion_9:
+      'Using platform calculations or reports for formal environmental audits or mandatory carbon certifications, except under the user’s sole and exclusive responsibility.',
     h_licencia: 'Use license',
     licencia_p:
       'Grupo MLP S.A.S. grants you a limited, personal, non-transferable, and revocable licence to access and use the platform in accordance with these terms. You do not acquire any rights over the source code, design, calculation methodology, trademarks, or any other element of the platform.',
@@ -197,8 +210,11 @@ const T = {
     propiedad_link: 'confidentiality agreement',
     propiedad_p_post: '.',
     h_responsabilidad: 'Limitation of liability',
-    responsabilidad_p:
-      'Grupo MLP S.A.S. disclaims all liability for direct, indirect, or consequential damages arising from the use or inability to use the platform. CO₂e values are estimates based on internationally recognised factors and differ from an official environmental audit. You assume sole risk of your use.',
+    responsabilidad_p_pre: 'Grupo MLP S.A.S. disclaims all liability for direct, indirect, or consequential damages arising from the use or inability to use the platform. We present each environmental calculation as a technical reference ',
+    responsabilidad_p_bold1: 'estimation',
+    responsabilidad_p_mid: ' based on international factors. We deliver all results with an ',
+    responsabilidad_p_bold2: 'estimative',
+    responsabilidad_p_post: ' character. We explicitly prohibit their use in official environmental audits or mandatory carbon certifications. If you decide to use them for such purposes, you assume total risk exclusively, releasing Grupo MLP S.A.S. from any liability.',
     h_ley: 'Applicable law and dispute resolution',
     ley_p1:
       'These terms are governed by the laws of the Republic of Colombia. They also comply with the General Data Protection Regulation (GDPR) of the European Union, the California Consumer Privacy Act (CCPA), and Law 1581 of 2012 of Colombia. In the event of a dispute, the parties shall first attempt direct negotiation and, if unresolved, submit to the Arbitration Tribunal of the Medellín Conciliation, Arbitration and Mediation Centre.',
@@ -206,13 +222,13 @@ const T = {
     ley_p2_o: 'or use the',
     ley_p2_link: 'legal enquiry form',
     ley_p2_post: '.',
-    h_seguridad: 'Immutable Security and Data Protection',
+    h_seguridad: 'Data Security and Traceability',
     seguridad_p1_pre: 'Grupo MLP S.A.S. protects platform data with a',
     seguridad_notaria: 'Permanent Digital Notary',
     seguridad_p1_post:
-      ' technology. The system creates a unique security seal for each calculation and links it to the immediately preceding record. If anyone attempted to alter a past record, the seal would break immediately and the system would flag the integrity failure.',
+      ' technology. The system creates a unique security seal (cryptographic hash chain) for each calculation and links it to the immediately preceding record. If anyone attempted to alter a past record, the seal would break immediately and the system would flag the integrity failure.',
     seguridad_p2:
-      'For the Impulso Sostenible and Impacto Ilimitado plans, the platform offers additional backup on external public ledger networks (Blockchain). This process acts as an external notarial seal that proves the existence of environmental savings independently and permanently, even outside the platform.',
+      'We are evaluating adding, in a not too distant horizon, additional backup on external public ledger networks (Blockchain) for the Impulso Sostenible and Impacto Ilimitado plans. This feature is not available today: the Permanent Digital Notary described above already operates within the platform with that same cryptographic verification chain.',
     transparencia: {
       texto: 'The platform uses artificial intelligence as an assistant in code development, structuring calculation factors and generating reports. AI makes no autonomous decisions, does not train on your data, and all output goes through human review before production.',
       link: 'Read our AI usage policy →',
@@ -308,7 +324,13 @@ export default function ReglamentoPage() {
 
       <h2 id="servicio" style={h2}>{t.h_servicio}</h2>
       <p style={p}>{t.servicio_p1}</p>
-      <p style={p}>{t.servicio_p2}</p>
+      <p style={p}>
+        {t.servicio_p2_pre}
+        <strong>{t.servicio_p2_bold1}</strong>
+        {t.servicio_p2_mid}
+        <strong>{t.servicio_p2_bold2}</strong>
+        {t.servicio_p2_post}
+      </p>
 
       <h2 id="cuenta" style={h2}>{t.h_cuenta}</h2>
       <p style={p}>{t.cuenta_p}</p>
@@ -342,6 +364,7 @@ export default function ReglamentoPage() {
         <li style={li}>{t.restriccion_6}</li>
         <li style={li}>{t.restriccion_7}</li>
         <li style={li}>{t.restriccion_8}</li>
+        <li style={li}>{t.restriccion_9}</li>
       </ul>
 
       <h2 id="licencia" style={h2}>{t.h_licencia}</h2>
@@ -360,7 +383,13 @@ export default function ReglamentoPage() {
       </p>
 
       <h2 id="responsabilidad" style={h2}>{t.h_responsabilidad}</h2>
-      <p style={p}>{t.responsabilidad_p}</p>
+      <p style={p}>
+        {t.responsabilidad_p_pre}
+        <strong>{t.responsabilidad_p_bold1}</strong>
+        {t.responsabilidad_p_mid}
+        <strong>{t.responsabilidad_p_bold2}</strong>
+        {t.responsabilidad_p_post}
+      </p>
 
       <h2 id="ley" style={h2}>{t.h_ley}</h2>
       <p style={p}>{t.ley_p1}</p>

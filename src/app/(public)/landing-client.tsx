@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, TreePine, Bath, Layers, Hammer, Flask, Users, History, Plus } from '@/components/ui/icons'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Layers, Flask, Plus, SlidersHorizontal } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { PLANS, CURRENCIES, formatearPrecioColombiano, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
@@ -14,29 +14,16 @@ import { LeadsForm } from '@/components/leads-form'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { waLink } from '@/lib/constants/contacto'
 
-// ─── Catálogo integral de cálculos (Línea 1: Ambientales / Línea 2: Financieros) ─
+// ─── Catálogo de los 9 cálculos técnicos de impacto ──────────────────────────
 const TODOS_LOS_CALCULOS = [
-  // ── DIFERENCIAL: Índice de Flujo Lineal / MCI (plan Impacto Ilimitado, próximamente) ──
-  {
-    icon: Layers,
-    titulo: 'Índice de Flujo Lineal (MCI)',
-    metrica: 'Circularidad de materiales y tiempo de vida frente al ciclo estándar.',
-    desc: 'Metodología pública (Ellen MacArthur Foundation, ISO 59020) que mide qué tan lejos está un producto de un flujo lineal, combinando composición de materiales con el tiempo de vida real que ganas al mantenerlo en reúso.',
-    tag: 'DPP',
-    colorHex: '#00827C',
-    bgLight: 'bg-[#00827C]/15', borderLight: 'border-transparent', bgDark: 'bg-[#00827C]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#00827C]', textDark: 'text-[#8AD0B2]',
-    hoverIconBgLight: 'group-hover:bg-[#00827C]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#00827C]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#00827C]/35 via-[#00827C]/15 to-transparent', haloDark: 'from-[#00827C]/30 via-[#00827C]/15 to-transparent',
-  },
-  // ── LÍNEA 1: 4 CÁLCULOS AMBIENTALES Y CIRCULARES ──
+  // ── 1. Huella de carbono ──
   {
     icon: Leaf,
     titulo: 'Huella de carbono',
     metrica: 'Emisiones de gases evitadas.',
-    desc: 'Cuantifica las emisiones de gases de efecto invernadero evitadas al extender la vida útil de cada material.',
+    desc: 'Cuantifica las emisiones de gases de efecto invernadero (CO₂ eq) evitadas al extender la vida útil de cada material frente a la extracción virgen.',
     tag: 'Ambiental',
+    planes: 'Explora, Lab, Impulso e Ilimitado',
     colorHex: '#8AD0B2',
     bgLight: 'bg-[#8AD0B2]/20',
     borderLight: 'border-transparent',
@@ -51,12 +38,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent',
     haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
   },
+  // ── 2. Huella hídrica ──
   {
     icon: Drop,
     titulo: 'Huella hídrica',
     metrica: 'Litros de agua ahorrados.',
-    desc: 'Estima todo el volumen de agua potable que dejas de gastar al prolongar la vida útil de tus materiales.',
+    desc: 'Estima todo el volumen de agua potable preservado al prolongar la vida útil de los recursos en tus procesos productivos.',
     tag: 'Ambiental',
+    planes: 'Explora, Lab, Impulso e Ilimitado',
     colorHex: '#59A6E4',
     bgLight: 'bg-[#59A6E4]/20',
     borderLight: 'border-transparent',
@@ -71,12 +60,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent',
     haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
   },
+  // ── 3. Desvío de vertedero ──
   {
     icon: Trash,
     titulo: 'Desvío de vertedero',
-    metrica: 'Basura evitada en rellenos.',
-    desc: 'Mide los kilogramos y toneladas de material rescatado que evitan terminar tirados en rellenos sanitarios.',
+    metrica: 'Residuos no enviados a rellenos.',
+    desc: 'Mide los kilogramos y toneladas de material rescatado que evitan terminar en rellenos sanitarios o disposición final.',
     tag: 'Ambiental',
+    planes: 'Circular Lab, Impulso e Ilimitado',
     colorHex: '#AD7C43',
     bgLight: 'bg-[#AD7C43]/20',
     borderLight: 'border-transparent',
@@ -91,12 +82,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent',
     haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
   },
+  // ── 4. Índice circular ──
   {
     icon: ArrowsClockwise,
     titulo: 'Índice circular',
-    metrica: 'Porcentaje de material reciclado.',
-    desc: 'Determina el porcentaje total de insumos recuperados y renovables para respaldar tus compras sostenibles.',
-    tag: 'Ambiental',
+    metrica: 'Porcentaje de material recuperado.',
+    desc: 'Determina la proporción total de insumos recuperados y renovables incorporados para sustentar compras sostenibles.',
+    tag: 'Circular',
+    planes: 'Circular Lab, Impulso e Ilimitado',
     colorHex: '#D6F391',
     bgLight: 'bg-[#D6F391]/25',
     borderLight: 'border-transparent',
@@ -111,14 +104,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#D6F391]/40 via-[#D6F391]/20 to-transparent',
     haloDark: 'from-[#D6F391]/35 via-[#D6F391]/15 to-transparent',
   },
-
-  // ── LÍNEA 2: 4 CÁLCULOS FINANCIEROS Y COMERCIALES ──
+  // ── 5. Ahorro en compras ──
   {
     icon: Coins,
     titulo: 'Ahorro en compras',
-    metrica: 'Dinero no gastado en insumos.',
-    desc: 'Estima con precisión el dinero que ahorras al reutilizar materiales frente a la compra de productos nuevos.',
+    metrica: 'Capital no gastado en insumos.',
+    desc: 'Estima con precisión el dinero ahorrado al reutilizar componentes frente a la compra de productos vírgenes nuevos.',
     tag: 'Financiero',
+    planes: 'Circular Lab, Impulso e Ilimitado',
     colorHex: '#38B98E',
     bgLight: 'bg-[#38B98E]/20',
     borderLight: 'border-transparent',
@@ -133,12 +126,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent',
     haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
   },
+  // ── 6. Retorno de inversión circular ──
   {
     icon: TrendingUp,
     titulo: 'Retorno de inversión circular',
-    metrica: 'Ahorros al recuperar materiales.',
-    desc: 'Compara tu inversión en recuperar y transformar inventario frente a los costos evitados en compras vírgenes.',
+    metrica: 'Rentabilidad de la recuperación.',
+    desc: 'Compara la inversión en recuperar y transformar inventario frente a los costos evitados en compras de materias primas.',
     tag: 'Financiero',
+    planes: 'Impulso Sostenible e Ilimitado',
     colorHex: '#F6BF3E',
     bgLight: 'bg-[#F6BF3E]/20',
     borderLight: 'border-transparent',
@@ -153,12 +148,14 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#F6BF3E]/35 via-[#F6BF3E]/15 to-transparent',
     haloDark: 'from-[#F6BF3E]/30 via-[#F6BF3E]/15 to-transparent',
   },
+  // ── 7. Costo total de propiedad ──
   {
     icon: Receipt,
-    titulo: 'Costo de propiedad',
-    metrica: 'Gasto real a lo largo del tiempo.',
-    desc: 'Compara el gasto total en el tiempo para demostrar que extender la vida útil resulta mucho más económico.',
+    titulo: 'Costo total de propiedad',
+    metrica: 'Gasto real en el tiempo.',
+    desc: 'Compara el gasto acumulado en el tiempo para demostrar que extender la vida útil resulta notablemente más económico.',
     tag: 'Financiero',
+    planes: 'Impulso Sostenible e Ilimitado',
     colorHex: '#F3BBD3',
     bgLight: 'bg-[#F3BBD3]/25',
     borderLight: 'border-transparent',
@@ -173,113 +170,55 @@ const TODOS_LOS_CALCULOS = [
     haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent',
     haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
   },
-  // ── LÍNEA 3: EQUIVALENCIAS Y CATÁLOGO AMPLIADO ──
-  {
-    icon: TreePine,
-    titulo: 'Árboles preservados',
-    metrica: 'Equivalencia diaria en árboles.',
-    desc: 'Traduce el CO₂ evitado a la cantidad equivalente de árboles necesarios absorbiendo esa emisión en un día.',
-    tag: 'Ambiental',
-    estado: 'construido' as const,
-    colorHex: '#38B98E',
-    bgLight: 'bg-[#38B98E]/20', borderLight: 'border-transparent', bgDark: 'bg-[#38B98E]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#38B98E]', textDark: 'text-[#38B98E]',
-    hoverIconBgLight: 'group-hover:bg-[#38B98E]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#38B98E]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#38B98E]/35 via-[#38B98E]/15 to-transparent', haloDark: 'from-[#38B98E]/30 via-[#38B98E]/15 to-transparent',
-  },
-  {
-    icon: Bath,
-    titulo: 'Duchas ahorradas',
-    metrica: 'Equivalencia en duchas de 5 min.',
-    desc: 'Traduce el agua preservada a duchas domésticas ahorradas, ofreciendo una métrica cotidiana del ahorro.',
-    tag: 'Ambiental',
-    estado: 'construido' as const,
-    colorHex: '#59A6E4',
-    bgLight: 'bg-[#59A6E4]/20', borderLight: 'border-transparent', bgDark: 'bg-[#59A6E4]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#59A6E4]', textDark: 'text-[#59A6E4]',
-    hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
-  },
+  // ── 8. Mitigación por ciclos de vida ──
   {
     icon: Layers,
     titulo: 'Mitigación por ciclos de vida',
     metrica: 'Impacto acumulado del activo.',
-    desc: 'Suma el beneficio ambiental acumulado de un activo a lo largo de todas sus fases sucesivas de reúso.',
+    desc: 'Suma el beneficio ambiental acumulado de un activo o material a lo largo de todas sus fases sucesivas de reúso.',
     tag: 'DPP',
-    estado: 'planteado' as const,
+    planes: 'Impulso Sostenible e Ilimitado',
     colorHex: '#8AD0B2',
-    bgLight: 'bg-[#8AD0B2]/20', borderLight: 'border-transparent', bgDark: 'bg-[#8AD0B2]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#8AD0B2]', textDark: 'text-[#8AD0B2]',
-    hoverIconBgLight: 'group-hover:bg-[#8AD0B2]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#8AD0B2]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent', haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
+    bgLight: 'bg-[#8AD0B2]/20',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#8AD0B2]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#8AD0B2]',
+    textDark: 'text-[#8AD0B2]',
+    hoverIconBgLight: 'group-hover:bg-[#8AD0B2]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#8AD0B2]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#8AD0B2]/35 via-[#8AD0B2]/15 to-transparent',
+    haloDark: 'from-[#8AD0B2]/30 via-[#8AD0B2]/15 to-transparent',
   },
-  {
-    icon: Hammer,
-    titulo: 'Costo de restauración',
-    metrica: 'Mano de obra e insumos del taller.',
-    desc: 'Desglosa lo que cuesta reacondicionar un mueble, entre servicios de mano de obra técnica e insumos circulares.',
-    tag: 'Financiero',
-    estado: 'construido' as const,
-    colorHex: '#AD7C43',
-    bgLight: 'bg-[#AD7C43]/20', borderLight: 'border-transparent', bgDark: 'bg-[#AD7C43]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#AD7C43]', textDark: 'text-[#AD7C43]',
-    hoverIconBgLight: 'group-hover:bg-[#AD7C43]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#AD7C43]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent', haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
-  },
+  // ── 9. Índice de Flujo Lineal (MCI) ──
   {
     icon: Flask,
-    titulo: 'Análisis de ciclo de vida',
-    metrica: 'Extensión de vida útil del activo.',
-    desc: 'Cuantifica cuánto se extiende la vida útil de un activo mediante sus reúsos bajo estándares internacionales.',
+    titulo: 'Índice de Flujo Lineal (MCI)',
+    metrica: 'Circularidad avanzada (ISO 59020).',
+    desc: 'Metodología estandarizada internacional (ISO 59020) que mide qué tan lejos está un producto de un flujo lineal integrando composición y extensión del ciclo de vida.',
     tag: 'DPP',
-    estado: 'planteado' as const,
-    colorHex: '#59A6E4',
-    bgLight: 'bg-[#59A6E4]/20', borderLight: 'border-transparent', bgDark: 'bg-[#59A6E4]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#59A6E4]', textDark: 'text-[#59A6E4]',
-    hoverIconBgLight: 'group-hover:bg-[#59A6E4]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#59A6E4]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#59A6E4]/35 via-[#59A6E4]/15 to-transparent', haloDark: 'from-[#59A6E4]/30 via-[#59A6E4]/15 to-transparent',
-  },
-  {
-    icon: Users,
-    titulo: 'Artesanos y personas',
-    metrica: 'Quién intervino en cada pieza.',
-    desc: 'Registra a los artesanos y técnicos que intervienen un activo, visibilizando el trabajo humano detrás.',
-    tag: 'DPP',
-    estado: 'planteado' as const,
-    colorHex: '#AD7C43',
-    bgLight: 'bg-[#AD7C43]/20', borderLight: 'border-transparent', bgDark: 'bg-[#AD7C43]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#AD7C43]', textDark: 'text-[#AD7C43]',
-    hoverIconBgLight: 'group-hover:bg-[#AD7C43]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#AD7C43]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#AD7C43]/35 via-[#AD7C43]/15 to-transparent', haloDark: 'from-[#AD7C43]/30 via-[#AD7C43]/15 to-transparent',
-  },
-  {
-    icon: History,
-    titulo: 'Historia y valor sentimental',
-    metrica: 'La trayectoria de cada pieza.',
-    desc: 'Guarda la trayectoria y el valor sentimental de un activo a lo largo de todos sus ciclos de reutilización.',
-    tag: 'DPP',
-    estado: 'planteado' as const,
-    colorHex: '#F3BBD3',
-    bgLight: 'bg-[#F3BBD3]/25', borderLight: 'border-transparent', bgDark: 'bg-[#F3BBD3]/20', borderDark: 'border-transparent',
-    textLight: 'text-[#F3BBD3]', textDark: 'text-[#F3BBD3]',
-    hoverIconBgLight: 'group-hover:bg-[#F3BBD3]', hoverIconTextLight: 'group-hover:text-white',
-    hoverIconBgDark: 'group-hover:bg-[#F3BBD3]', hoverIconTextDark: 'group-hover:text-white',
-    haloLight: 'from-[#F3BBD3]/35 via-[#F3BBD3]/15 to-transparent', haloDark: 'from-[#F3BBD3]/30 via-[#F3BBD3]/15 to-transparent',
+    planes: 'Impacto Ilimitado',
+    colorHex: '#00827C',
+    bgLight: 'bg-[#00827C]/15',
+    borderLight: 'border-transparent',
+    bgDark: 'bg-[#00827C]/20',
+    borderDark: 'border-transparent',
+    textLight: 'text-[#00827C]',
+    textDark: 'text-[#8AD0B2]',
+    hoverIconBgLight: 'group-hover:bg-[#00827C]',
+    hoverIconTextLight: 'group-hover:text-white',
+    hoverIconBgDark: 'group-hover:bg-[#00827C]',
+    hoverIconTextDark: 'group-hover:text-white',
+    haloLight: 'from-[#00827C]/35 via-[#00827C]/15 to-transparent',
+    haloDark: 'from-[#00827C]/30 via-[#00827C]/15 to-transparent',
   },
 ]
 
-// Un solo color por categoría para el catálogo completo (popup "Ver los 19
-// cálculos") — a diferencia de las 8 tarjetas destacadas, que conservan su
-// color individual de siempre. Verde para Ambiental (ejemplo dado por el
-// usuario), dorado para Financiero, rosa para Social, azul para DPP.
 const COLOR_POR_CATEGORIA: Record<string, string> = {
   Ambiental: '#38B98E',
+  Circular: '#8AD0B2',
   Financiero: '#F6BF3E',
   Social: '#F3BBD3',
   DPP: '#59A6E4',
@@ -296,9 +235,9 @@ const CATEGORIAS = {
     ejemplo: '50 escritorios y piezas restauradas.',
     desc: 'Valoriza mobiliario corporativo, piezas reacondicionadas y materiales de diseño interior. Estructura proyectos a medida demostrando el desvío de vertedero y la mitigación de huella ante clientes corporativos y licitaciones.',
     imgUrl: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1200',
-    planetaNum: 15,
-    planetaUnit: ' árboles',
-    planeta: { valor: '15 árboles', detalle: 'preservados · 85 kg CO₂ mitigados.' },
+    planetaNum: 85,
+    planetaUnit: ' kg CO₂e',
+    planeta: { valor: '85 kg CO₂e', detalle: 'mitigados · 120 kg desvío de vertedero.' },
     bolsilloNum: 32,
     bolsilloUnit: '%',
     bolsillo: { valor: '32%', detalle: 'reducción en costo de insumos y estructura.' },
@@ -726,21 +665,54 @@ export interface FilaComparativa {
 }
 export interface CategoriaComparativa {
   nombre: string
+  color: string
   filas: FilaComparativa[]
-  // Elegido a mano desde el editor (barra fija de PALETA_COMPARATIVA), o
-  // sin elegir todavía -> se cicla la paleta por posición.
-  color?: string
 }
+export const COMPARATIVA_DEFAULT: CategoriaComparativa[] = [
+  {
+    nombre: 'Capacidad y equipo',
+    color: '#38B98E',
+    filas: [
+      { label: 'Personas en el equipo', tipo: 'texto', valores: { free: '1 persona', lab: '5 personas', impulso: '10 personas', ilimitado: 'Ilimitado' }, descripcion: 'Usuarios con acceso simultáneo a la plataforma' },
+      { label: 'Puesta en marcha guiada', tipo: 'check', valores: { free: true, lab: true, impulso: true, ilimitado: true }, descripcion: 'Acompañamiento inicial para configurar tu cuenta' },
+      { label: 'Canal de soporte', tipo: 'texto', valores: { free: 'Email', lab: 'Email', impulso: 'Email', ilimitado: 'Prioritario 24/7' } },
+    ]
+  },
+  {
+    nombre: 'Módulos y funciones operativas',
+    color: '#59A6E4',
+    filas: [
+      { label: 'Calculadora rápida de impacto', tipo: 'texto', valores: { free: '5 al mes', lab: 'En DPP', impulso: 'En DPP', ilimitado: 'En DPP' }, descripcion: 'Estimación inmediata de huella de carbono y agua' },
+      { label: 'Pasaporte Digital de Producto (DPP)', tipo: 'texto', valores: { free: false, lab: '5 al mes', impulso: '200 al mes', ilimitado: 'Ilimitado' }, descripcion: 'Ficha pública interactiva con código QR verificable' },
+      { label: 'Informes de impacto con sello QR', tipo: 'texto', valores: { free: false, lab: '5 al mes', impulso: '5 al mes', ilimitado: 'Ilimitado' }, descripcion: 'Informes ejecutivos con hash criptográfico de trazabilidad' },
+      { label: 'Cotizador con CRM y embudo', tipo: 'texto', valores: { free: false, lab: false, impulso: '200 al mes', ilimitado: 'Ilimitado' }, descripcion: 'Gestión comercial de propuestas y clientes circulares' },
+      { label: 'Asistente de Inteligencia Artificial', tipo: 'check', valores: { free: false, lab: false, impulso: true, ilimitado: true }, descripcion: 'Extracción automática de datos desde fotos y documentos' },
+      { label: 'Catálogo y materiales propios', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true }, descripcion: 'Crea tus propias categorías y factores personalizados' },
+      { label: 'Logo corporativo en documentos', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true } },
+      { label: 'Exportación de datos', tipo: 'texto', valores: { free: false, lab: 'PDF con QR', impulso: 'PDF corporativo', ilimitado: 'Excel, CSV y PDF' } },
+    ]
+  },
+  {
+    nombre: 'Los 9 cálculos técnicos de impacto',
+    color: '#00827C',
+    filas: [
+      { label: '1. Huella de carbono (CO₂ eq)', tipo: 'check', valores: { free: true, lab: true, impulso: true, ilimitado: true }, descripcion: 'Emisiones de gases de efecto invernadero evitadas' },
+      { label: '2. Huella hídrica (Agua preservada)', tipo: 'check', valores: { free: true, lab: true, impulso: true, ilimitado: true }, descripcion: 'Litros de agua potable preservados' },
+      { label: '3. Desvío de vertedero', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true }, descripcion: 'Kilogramos y toneladas no enviadas a relleno' },
+      { label: '4. Índice circular (% circularidad)', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true }, descripcion: 'Porcentaje de material recuperado y renovable' },
+      { label: '5. Ahorro en compras', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true }, descripcion: 'Capital preservado frente a insumos vírgenes' },
+      { label: '6. Retorno de inversión circular (ROI)', tipo: 'check', valores: { free: false, lab: false, impulso: true, ilimitado: true }, descripcion: 'Beneficio neto frente al costo de reacondicionamiento' },
+      { label: '7. Costo total de propiedad (TCO)', tipo: 'check', valores: { free: false, lab: false, impulso: true, ilimitado: true }, descripcion: 'Gasto real a lo largo de la vida útil' },
+      { label: '8. Mitigación acumulada por ciclos', tipo: 'check', valores: { free: false, lab: false, impulso: true, ilimitado: true }, descripcion: 'Impacto acumulado en sucesivos reúsos' },
+      { label: '9. Índice de Flujo Lineal (MCI - ISO 59020)', tipo: 'check', valores: { free: false, lab: false, impulso: false, ilimitado: true }, descripcion: 'Medición de circularidad estandarizada internacional' },
+    ]
+  },
+]
 
 interface LandingClientProps {
   planesPrecios?: PlanPrecioReal[]
   whatsappNumero?: string
-  // FAQ real de /admin/contenido (sql/121) — si no llega (fila todavía sin
-  // crear), se usa FAQS de más abajo como respaldo, nunca queda vacía.
   faqItems?: { pregunta: string; respuesta: string }[]
-  // Cuadro comparativo real de /admin/contenido -> Precios (clave
-  // 'comparativa_planes'). Si no llega o está vacío, el botón "Ver más"
-  // de precios ni se muestra — nunca se inventa contenido de relleno.
   comparativaCategorias?: CategoriaComparativa[]
 }
 
@@ -968,7 +940,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       link: '#calculos',
       items: [
         { name: 'Comparativa de Impacto', link: '#comparativa' },
-        { name: '15 Cálculos de impacto', link: '#calculos' },
+        { name: '9 Cálculos de impacto', link: '#calculos' },
       ]
     },
     {
@@ -999,7 +971,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
-    { title: '15 Cálculos ambientales, sociales y financieros', link: '#calculos' },
+    { title: '9 Cálculos ambientales, circulares y financieros', link: '#calculos' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -1102,31 +1074,39 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     return formatearSinDecimales(amount)
   }
 
-  // Las 4 cuotas del plan (empleados, cálculos/mes, informes/mes,
+  // Las 4 cuotas del plan (equipo, cálculos/dpp, informes/mes,
   // cotizaciones/mes), tomadas de config_planes (reemplazables desde
-  // /admin/contenido). Si no llegó el dato real, cae al texto fijo de PLANS.
+  // /admin/contenido). Explora muestra 'Cálculos' (5 por mes) y los demás
+  // muestran 'Pasaporte DPP' (5, 200 o Ilimitado por mes) que absorbe los cálculos.
   const cuotasPlan = (plan: typeof PLANS[0]): { etiqueta: string; valor: string }[] => {
     const real = precioReal(plan)
-    // Valor corto: "N por mes" para las cuotas mensuales, "N personas" para el
-    // equipo. null = "Ilimitado", 0 = el texto de "no incluye".
     const porMes = (v: number | null | undefined, cero: string): string => {
       if (v === null || v === undefined) return 'Ilimitado'
       if (v === 0) return cero
       return `${v.toLocaleString('es-CO')} por mes`
     }
-    if (real) {
+
+    if (plan.id === 'free') {
+      const empleadosValor = real?.limite_empleados == null ? '1 persona' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}`
+      const calculosValor = real?.limite_calculos_mes != null ? porMes(real.limite_calculos_mes, '5 por mes') : '5 por mes'
       return [
-        { etiqueta: 'Equipo', valor: real.limite_empleados == null ? 'Ilimitado' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}` },
-        { etiqueta: 'Cálculos', valor: porMes(real.limite_calculos_mes, 'No incluye') },
-        { etiqueta: 'Informes', valor: porMes(real.limite_informes_mes, 'No incluye') },
-        { etiqueta: 'Cotizaciones', valor: porMes(real.limite_cotizaciones_mes, 'No incluye') },
+        { etiqueta: 'Equipo', valor: empleadosValor },
+        { etiqueta: 'Cálculos', valor: calculosValor },
+        { etiqueta: 'Pasaporte DPP', valor: 'No incluye' },
+        { etiqueta: 'Informes', valor: 'No incluye' },
       ]
     }
+
+    const empleadosValor = real ? (real.limite_empleados == null ? 'Ilimitado' : `${real.limite_empleados} ${real.limite_empleados === 1 ? 'persona' : 'personas'}`) : plan.limits.empleados
+    const dppValor = plan.id === 'ilimitado' ? 'Ilimitado' : (plan.id === 'impulso' ? '200 por mes' : '5 por mes')
+    const informesValor = real ? porMes(real.limite_informes_mes, 'No incluye') : plan.limits.informes
+    const cotizacionesValor = real ? porMes(real.limite_cotizaciones_mes, 'No incluye') : plan.limits.cotizaciones
+
     return [
-      { etiqueta: 'Equipo', valor: plan.limits.empleados },
-      { etiqueta: 'Cálculos', valor: plan.limits.calculos },
-      { etiqueta: 'Informes', valor: plan.limits.informes },
-      { etiqueta: 'Cotizaciones', valor: plan.limits.cotizaciones },
+      { etiqueta: 'Equipo', valor: empleadosValor },
+      { etiqueta: 'Pasaporte DPP', valor: dppValor },
+      { etiqueta: 'Informes', valor: informesValor },
+      { etiqueta: 'Cotizaciones', valor: cotizacionesValor },
     ]
   }
 
@@ -1406,15 +1386,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 15 cálculos ambientales, sociales y financieros
+              Descubre los 9 cálculos ambientales, circulares y financieros
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Descubre cómo medir tu impacto y transforma descartes en oportunidades de oro, adaptándose a lo que necesite tu industria.
+              Desde la estimación rápida de huella hasta la trazabilidad en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-4 lg:gap-6">
-            {TODOS_LOS_CALCULOS.slice(0, 8).map((calc, i) => {
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6">
+            {TODOS_LOS_CALCULOS.map((calc, i) => {
               const IconComponent = calc.icon
               return (
                 <motion.div
@@ -1424,7 +1404,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   viewport={{ once: true, margin: '100px' }}
                   transition={{ duration: 0.45, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -6, scale: 1.015 }}
-                  className={`group relative p-4 sm:p-5 md:p-4 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
+                  className={`group relative p-4 sm:p-5 md:p-5 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
                     isDark
                       ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)]'
                       : 'bg-primary border-[#00827C]/10 hover:border-transparent shadow-[0_4px_20px_rgba(0,130,124,0.04)] hover:shadow-[0_20px_40px_-10px_rgba(0,130,124,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
@@ -1440,7 +1420,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     }}
                   />
 
-                  {/* Reborde Liquid Glass Disímil: bisel cristalino superior-izquierdo, tinte cromático y desvanecimiento suave asimétrico */}
+                  {/* Reborde Liquid Glass Disímil */}
                   <div 
                     className="absolute inset-0 rounded-2xl md:rounded-3xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"
                     style={{
@@ -1456,7 +1436,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
                   <div className="relative z-20">
                     <div className="flex items-center justify-between mb-3.5 md:mb-4">
-                      <div className={`w-9 h-9 sm:w-10 sm:h-10 md:w-9 md:h-9 lg:w-11 lg:h-11 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${
+                      <div className={`w-9 h-9 sm:w-10 sm:h-10 md:w-10 md:h-10 rounded-xl md:rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 ${
                         isDark
                           ? `${calc.bgDark} ${calc.textDark} ${calc.hoverIconBgDark} ${calc.hoverIconTextDark}`
                           : `${calc.bgLight} ${calc.textLight} ${calc.hoverIconBgLight} ${calc.hoverIconTextLight}`
@@ -1464,54 +1444,54 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         <IconComponent size={20} strokeWidth={2.2} />
                       </div>
                       
-                      <span className={`text-xs sm:text-sm font-semibold ${
-                        isDark ? 'text-white/60' : 'text-[#474747]/70'
+                      <span className={`text-xs sm:text-xs font-bold px-2.5 py-1 rounded-full border ${
+                        isDark ? 'bg-white/5 border-white/10 text-white/70' : 'bg-[#00827C]/5 border-[#00827C]/15 text-[#00827C]'
                       }`}>
                         {calc.tag}
                       </span>
                     </div>
-                    <h3 className={`text-sm sm:text-base md:text-sm lg:text-base font-extrabold mb-1 transition-colors duration-300 ${tp}`}>
+                    <h3 className={`text-sm sm:text-base font-extrabold mb-1 transition-colors duration-300 ${tp}`}>
                       {calc.titulo}
                     </h3>
-                    <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium leading-relaxed ${ts}`}>
+                    <p className={`text-xs font-medium leading-relaxed mb-2.5 ${ts}`}>
                       {calc.desc}
                     </p>
+                    <div className="pt-2 border-t border-dashed border-current/10 flex items-center justify-between">
+                      <span className={`text-[11px] font-semibold opacity-60 ${ts}`}>Disponible en:</span>
+                      <span className={`text-[11px] font-bold text-right ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+                        {calc.planes}
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               )
             })}
           </div>
 
-          {/* Puerta de entrada al catálogo completo — mismo patrón de link
-              que "Conoce nuestro marco ético..." en la sección de IA, solo
-              centrado en este contexto. */}
-          <div className="mt-4 sm:mt-5 flex justify-center">
+          <div className="mt-6 sm:mt-8 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
-              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
+              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
-              <span className="group-hover:underline">Ver más</span>
-              <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
+              <span>Ver detalle y desglose metodológico</span>
+              <Plus size={16} strokeWidth={2.5} className="flex-shrink-0" />
             </button>
           </div>
         </div>
 
-        {/* Catálogo completo de los 15 cálculos, agrupado por categoría — mismo
-            lenguaje visual (halo + reborde Liquid Glass) que las 8 tarjetas
-            destacadas de arriba, un solo color por categoría en vez de uno
-            por cálculo. Solo texto general, nunca fórmulas ni metodología. */}
+        {/* Catálogo detallado de los 9 cálculos */}
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
-          titulo="Los 15 cálculos de Calculadora de Reúso"
-          descripcion="Así de a fondo vas a poder demostrarle tu impacto a clientes, aliados y auditores, desde tu primer cálculo"
+          titulo="Los 9 cálculos técnicos de Calculadora de Reúso"
+          descripcion="Métricas estructuradas para sustentar tu impacto ambiental, circular y financiero ante clientes, aliados y auditorías corporativas."
           icono={<Calculator size={22} />}
           colorIcono={isDark ? '#D6F391' : '#00827C'}
           ancho="xl"
           sinPie
         >
-          <div className="flex flex-col gap-6 sm:gap-8 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
-            {(['Ambiental', 'Financiero', 'Social', 'DPP'] as const).map(grupo => {
+          <div className="flex flex-col gap-6 sm:gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+            {(['Ambiental', 'Circular', 'Financiero', 'DPP'] as const).map(grupo => {
               const items = TODOS_LOS_CALCULOS.filter(c => c.tag === grupo)
               if (!items.length) return null
               const color = COLOR_POR_CATEGORIA[grupo]
@@ -1775,7 +1755,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 herramienta: 'Generar DPP',
                 Icon: FileText,
                 titulo: 'Pasaporte digital y transparencia',
-                desc: 'Genera pasaportes digitales con código QR respaldados en blockchain, garantizando datos únicos, inmutables y de total confianza.',
+                desc: 'Genera pasaportes digitales con código QR, respaldados con una cadena de hash criptográfico que estructura y da trazabilidad a cada dato.',
                 image: 'https://images.unsplash.com/photo-1626682561113-d1db402cc866?auto=format&fit=crop&q=80&w=800',
               },
               {
@@ -1926,140 +1906,122 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             ))}
           </div>
 
-          {/* Puerta de entrada al cuadro comparativo completo — mismo patrón
-              que "Ver más" del catálogo de cálculos. Solo aparece si hay
-              contenido real editado desde /admin/contenido -> Precios, nunca
-              se inventa una comparación de relleno. */}
-          {comparativaCategorias && comparativaCategorias.length > 0 && (
-            <div className="mt-4 sm:mt-5 flex justify-center">
-              <button
-                onClick={() => setComparativaAbierta(true)}
-                className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-normal transition-colors duration-200 ${isDark ? 'text-white/50 hover:text-[#00827C]' : 'text-[#474747]/55 hover:text-[#00827C]'}`}
-              >
-                <span className="group-hover:underline">Compara</span>
-                <Plus size={14} strokeWidth={2.5} className="flex-shrink-0" />
-              </button>
-            </div>
-          )}
+          {/* Puerta de entrada al cuadro comparativo completo */}
+          <div className="mt-5 sm:mt-6 flex justify-center">
+            <button
+              onClick={() => setComparativaAbierta(true)}
+              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
+            >
+              <span>Comparar todos los planes y cálculos</span>
+              <Plus size={16} strokeWidth={2.5} className="flex-shrink-0" />
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Popup del cuadro comparativo completo, agrupado por categorías
-          (mismo criterio que el catálogo de cálculos: Modal ancho xl,
-          scroll interno). Cada categoría es su propia tabla, pero TODAS
-          comparten el mismo <colgroup> de anchos fijos en píxeles — si cada
-          tabla dejara que el navegador calculara el ancho de columna según
-          su propio contenido, la columna de "Explora" de una categoría
-          quedaba más ancha o angosta que la de otra, y las columnas no
-          alineaban verticalmente al bajar (bug real reportado). La columna
-          de etiquetas queda fija a la izquierda al scrollear horizontal en
-          mobile, mismo estándar de tabla ancha del resto de la plataforma.
-          Un color de acento distinto por categoría (ciclando la paleta de
-          acentos ya aprobada del sistema, nunca un hex nuevo) para que se
-          distinga cada bloque de un vistazo. El nombre de cada plan, en el
-          encabezado, dispara la misma acción de "elegir este plan" que ya
-          usan las tarjetas de precios de arriba. */}
-      {comparativaCategorias && comparativaCategorias.length > 0 && (
-        <Modal
-          abierto={comparativaAbierta}
-          onClose={() => setComparativaAbierta(false)}
-          titulo=""
-          sinEncabezado
-          ancho="xl"
-          sinPie
-        >
-          <div className="flex flex-col gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
-            {comparativaCategorias.map((categoria, ci) => {
-              const colorCategoria = categoria.color ?? PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
-              return (
-                <div key={ci}>
-                  {categoria.nombre && (
-                    <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
-                  )}
-                  <div className={`rounded-[12px] border-2 overflow-hidden`} style={{ borderColor: `${colorCategoria}40` }}>
-                    <div className="overflow-x-auto">
-                      {/* w-full por sí solo, con tableLayout:fixed, deja que el
-                          navegador COMPRIMA las columnas para caber en el
-                          contenedor angosto del modal en mobile — el texto se
-                          encima en vez de scrollear (bug real reportado). Con
-                          minWidth = la suma exacta de las columnas del
-                          colgroup, la tabla nunca se achica más de eso: en
-                          pantallas anchas ocupa el 100% (w-full), en angostas
-                          fuerza el scroll horizontal del contenedor de arriba. */}
-                      <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
-                        <colgroup>
-                          <col style={{ width: 150 }} />
-                          {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
-                        </colgroup>
-                        <thead>
-                          <tr style={{ background: `${colorCategoria}14` }}>
-                            <th
-                              className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
-                              style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#525252' : '#FFFFFF' }}
-                            >
-                              &nbsp;
-                            </th>
-                            {PLANS.map(plan => (
-                              <th key={plan.id} className="text-center px-2 py-2">
-                                <button
-                                  type="button"
-                                  onClick={() => irAPlan(plan)}
-                                  className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
-                                  style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
-                                >
-                                  <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-categoria)] ${tp}`}>
-                                    {plan.name}
-                                  </span>
-                                  <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-categoria)] ${ts}`}>
-                                    Elegir →
-                                  </span>
-                                </button>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {categoria.filas.map((fila, fi) => (
-                            <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
-                              <td
-                                className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
-                                style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
+      {/* Popup del cuadro comparativo completo */}
+      {(() => {
+        const listaComparativa = (comparativaCategorias && comparativaCategorias.length > 0)
+          ? comparativaCategorias
+          : COMPARATIVA_DEFAULT
+        return (
+          <Modal
+            abierto={comparativaAbierta}
+            onClose={() => setComparativaAbierta(false)}
+            titulo="Cuadro comparativo de planes y cálculos"
+            descripcion="Conoce al detalle qué incluye cada nivel y qué cálculos técnicos se activan en cada plan."
+            icono={<SlidersHorizontal size={22} />}
+            colorIcono={isDark ? '#D6F391' : '#00827C'}
+            ancho="xl"
+            sinPie
+          >
+            <div className="flex flex-col gap-7 max-h-[72vh] sm:max-h-[62vh] overflow-y-auto pr-1 -mr-1 py-0.5">
+              {listaComparativa.map((categoria, ci) => {
+                const colorCategoria = categoria.color ?? PALETA_COMPARATIVA[ci % PALETA_COMPARATIVA.length]
+                return (
+                  <div key={ci}>
+                    {categoria.nombre && (
+                      <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
+                    )}
+                    <div className={`rounded-[12px] border-2 overflow-hidden`} style={{ borderColor: `${colorCategoria}40` }}>
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
+                          <colgroup>
+                            <col style={{ width: 150 }} />
+                            {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
+                          </colgroup>
+                          <thead>
+                            <tr style={{ background: `${colorCategoria}14` }}>
+                              <th
+                                className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
+                                style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#525252' : '#FFFFFF' }}
                               >
-                                <span className="flex items-start gap-1 min-w-0">
-                                  <span className="break-words min-w-0">{fila.label}</span>
-                                  {fila.descripcion && <TooltipInfo texto={fila.descripcion} className="mt-0.5" />}
-                                </span>
-                              </td>
-                              {PLANS.map(plan => {
-                                const val = fila.valores[plan.id]
-                                return (
-                                  <td key={plan.id} className="text-center px-2 py-2.5">
-                                    {fila.tipo === 'check' ? (
-                                      val ? (
-                                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
-                                          <Check size={14} strokeWidth={3} style={{ color: colorCategoria }} />
-                                        </span>
+                                &nbsp;
+                              </th>
+                              {PLANS.map(plan => (
+                                <th key={plan.id} className="text-center px-2 py-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => irAPlan(plan)}
+                                    className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
+                                    style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
+                                  >
+                                    <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-categoria)] ${tp}`}>
+                                      {plan.name}
+                                    </span>
+                                    <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-categoria)] ${ts}`}>
+                                      Elegir →
+                                    </span>
+                                  </button>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {categoria.filas.map((fila, fi) => (
+                              <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
+                                <td
+                                  className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
+                                  style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
+                                >
+                                  <span className="flex items-start gap-1 min-w-0">
+                                    <span className="break-words min-w-0">{fila.label}</span>
+                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} className="mt-0.5" />}
+                                  </span>
+                                </td>
+                                {PLANS.map(plan => {
+                                  const val = fila.valores[plan.id]
+                                  return (
+                                    <td key={plan.id} className="text-center px-2 py-2.5">
+                                      {fila.tipo === 'check' ? (
+                                        val ? (
+                                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
+                                            <Check size={14} strokeWidth={3} style={{ color: colorCategoria }} />
+                                          </span>
+                                        ) : (
+                                          <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
+                                        )
+                                      ) : val ? (
+                                        <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{val as string}</span>
                                       ) : (
                                         <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
-                                      )
-                                    ) : (
-                                      <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{(val as string) || '—'}</span>
-                                    )}
-                                  </td>
-                                )
-                              })}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                                      )}
+                                    </td>
+                                  )
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        </Modal>
-      )}
+                )
+              })}
+            </div>
+          </Modal>
+        )
+      })()}
 
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />

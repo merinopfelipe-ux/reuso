@@ -21,7 +21,7 @@ const T = {
       { id: 'consecuencias', label: 'Sanciones' },
     ],
     resumen:
-      'En la Calculadora de Reúso no aceptamos tramposos ni jugadas sucias. Trabajamos con total honestidad y aplicamos al pie de la letra el Programa de Transparencia y Ética Empresarial (PTEE) de Grupo MLP S.A.S. Cumplimos las leyes colombianas (Ley 1778 de 2016 y Ley 2195 de 2022) y los lineamientos de la Superintendencia de Sociedades para garantizar que cada contrato y cada kg de CO₂ evitado sea 100% real y auditable.',
+      'En la Calculadora de Reúso no aceptamos tramposos ni jugadas sucias. Trabajamos con total honestidad y aplicamos al pie de la letra el Programa de Transparencia y Ética Empresarial (PTEE) de Grupo MLP S.A.S. Cumplimos las leyes colombianas (Ley 1778 de 2016 y Ley 2195 de 2022) y los lineamientos de la Superintendencia de Sociedades para que cada contrato y cada kg de CO₂ evitado sea real y auditable.',
     leeTabien: [
       { href: '/legal/sagrilaft', label: 'Política SAGRILAFT' },
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -66,11 +66,11 @@ const T = {
       'No recibimos ni damos plata en efectivo, tarjetas de regalo ni obsequios valiosos. Solo aceptamos o entregamos detalles institucionales sencillos (como cuadernos o pocillos de la marca) que no comprometan la independencia de nadie.',
     regalos2:
       'Las invitaciones a eventos o almuerzos de trabajo deben ser transparentes, razonables y contar con la aprobación previa de la empresa.',
-    integridadTitle: 'Cálculos de impacto 100% honestos',
+    integridadTitle: 'Cálculos de impacto honestos y transparentes',
     integridad1:
-      'El corazón de la Calculadora de Reúso es la verdad matemática. Prohibimos simular datos, inventar objetos reutilizados o cambiar las fórmulas para inflar los resultados ambientales de una empresa.',
+      'El corazón de la Calculadora de Reúso es la verdad metodológica. Prohibimos simular datos o alterar fórmulas para distorsionar la estimación del impacto ambiental de una empresa. Entregamos cada cálculo con carácter estimativo referencial y protegemos su autenticidad.',
     integridad2:
-      'Protegemos cada informe con sellos de seguridad inalterables y códigos QR verificables en tiempo real en calculadoradereuso.com/verificar.',
+      'Protegemos cada informe con sellos de seguridad de cadena criptográfica y códigos QR verificables en tiempo real en calculadoradereuso.com/verificar.',
     debidaTitle: 'Conozcamos bien a las empresas con las que trabajamos',
     debida1:
       'Antes de cerrar alianzas o contratos con una empresa, investigamos sus antecedentes en listas oficiales de control (como ONU, OFAC, Procuraduría y Contraloría) para confirmar que sea una organización limpia.',
@@ -148,9 +148,9 @@ const T = {
       'We do not accept or give cash gifts, gift cards, or valuable items. We only accept or offer modest branded promotional items (like notebooks or mugs) that do not influence decision-making.',
     regalos2:
       'Invitations to industry events or meals must remain reasonable, transparent, and approved in advance.',
-    integridadTitle: '100% honest impact calculations',
+    integridadTitle: 'Honest and transparent impact calculations',
     integridad1:
-      'Mathematical truth is the core of Calculadora de Reúso. We forbid fake data, fabricated waste items, or altering emission formulas to boost environmental scores.',
+      'Methodological truth is the core of Calculadora de Reúso. We forbid altering formulas or fake data to distort a company’s environmental impact estimation. We deliver every calculation with an estimative reference scope and protect its authenticity.',
     integridad2:
       'We secure every report with tamper-proof digital seals and real-time QR verification at calculadoradereuso.com/verificar.',
     debidaTitle: 'Getting to know our business partners',
@@ -234,7 +234,15 @@ export default function PteeLegalPage() {
       <p style={p}>{t.regalos2}</p>
 
       <h2 id="integridad-calculos" style={h2}>{t.integridadTitle}</h2>
-      <p style={p}>{t.integridad1}</p>
+      <p style={p}>
+        {t.integridad1.split(/(estimación|estimativo|estimation|estimative)/gi).map((part, pi) =>
+          /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+            <strong key={pi}>{part}</strong>
+          ) : (
+            part
+          )
+        )}
+      </p>
       <p style={p}>{t.integridad2}</p>
 
       <h2 id="debida-diligencia" style={h2}>{t.debidaTitle}</h2>

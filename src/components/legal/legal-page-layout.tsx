@@ -276,9 +276,8 @@ export function LegalPageLayout({
                 {transparenciaTexto || (
                   <p style={{ margin: 0 }}>
                     Grupo MLP S.A.S. desarrolló la Calculadora de Reúso con asistencia de modelos de
-                    inteligencia artificial. El cálculo de CO₂ evitado y el desarrollo del código
-                    emplean herramientas de IA. Estos sistemas pueden producir errores o resultados
-                    imprecisos. Trabajamos de forma continua para identificarlos y reducirlos.
+                    inteligencia artificial. Presentamos cada resultado de CO₂ evitado y huella preservada como una <strong>estimación</strong> técnica referencial.
+                    Entregamos todos los cálculos con alcance <strong>estimativo</strong> orientativo sin sustituir certificaciones de carbono obligatorias ni auditorías oficiales.
                   </p>
                 )}
               </div>
@@ -431,7 +430,7 @@ export function LegalPageLayout({
           borderRadius: '50%',
           background: 'var(--bg-card)',
           border: '1px solid rgba(0,130,124,0.20)',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+          boxShadow: '0 2px 12px rgba(71,71,71,0.10)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

@@ -1,8 +1,7 @@
-import { ShieldCheck, ShieldWarning, Leaf, Drop, Tree, FileX, MagnifyingGlass, Sparkles } from '@/components/ui/icons'
+import { ShieldCheck, ShieldWarning, Leaf, Drop, FileX, MagnifyingGlass } from '@/components/ui/icons'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { PARAM_EQUIV } from '@/lib/calculos/co2'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { FooterPublic } from '@/components/footer-public'
@@ -46,12 +45,6 @@ function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString('es-CO', {
     day: '2-digit', month: 'long', year: 'numeric',
   })
-}
-
-function calcularEquivalencias(co2_kg: number, agua_l: number) {
-  const arboles = Math.round(co2_kg / (PARAM_EQUIV.CO2_arbol_anual_kg / 365))
-  const duchas = Math.round(agua_l / PARAM_EQUIV.litros_ducha_5min)
-  return { arboles, duchas }
 }
 
 function normalizarCodigo(raw: string): { exact: string; prefix: string | null } {
@@ -120,33 +113,49 @@ export default async function VerificarPage({ params }: PageProps) {
   if (!cert) {
     return (
       <main style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'var(--bg-primary)', fontFamily: "'Open Sans', sans-serif", padding: '24px',
-        color: 'var(--text-primary)', position: 'relative',
+        minHeight: '100vh',
+        background: 'var(--bg-primary)',
+        fontFamily: "'Open Sans', sans-serif",
+        color: 'var(--text-primary)',
       }}>
-        <div style={{ position: 'absolute', top: 20, right: 20 }}>
-          <ThemeToggle />
-        </div>
-        <div style={{ textAlign: 'center', maxWidth: 420 }}>
-          <div style={{
-            width: 72, height: 72, borderRadius: '50%',
-            background: 'rgba(255,94,75,0.08)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 24px',
-          }}>
-            <ShieldWarning size={34} color="#FF5E4B" />
+        <ProteccionPublica>
+        <LegalHeader />
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '60px 24px', minHeight: 'calc(100vh - 200px)', position: 'relative',
+        }}>
+          <div style={{ position: 'absolute', top: 20, right: 20 }}>
+            <ThemeToggle />
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 10px' }}>
-            Documento no encontrado
-          </h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: '0 0 20px' }}>
-            El código de verificación no corresponde a ningún documento registrado en calculadoradereuso.com.
-            Verifica que el enlace esté completo.
-          </p>
-          <p style={{ fontSize: 11, color: 'var(--text-placeholder)', fontFamily: 'monospace' }}>
-            Código consultado: {params.codigo}
-          </p>
+          <div style={{ textAlign: 'center', maxWidth: 420 }}>
+            <div style={{
+              width: 72, height: 72, borderRadius: '50%',
+              background: 'rgba(255,94,75,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 24px',
+            }}>
+              <ShieldWarning size={34} color="#FF5E4B" />
+            </div>
+            <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 10px' }}>
+              Documento no encontrado
+            </h1>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7, margin: '0 0 20px' }}>
+              El código de verificación no corresponde a ningún documento registrado en calculadoradereuso.com.
+              Verifica que el enlace esté completo.
+            </p>
+            <p style={{ fontSize: 11, color: 'var(--text-placeholder)', fontFamily: 'monospace' }}>
+              Código consultado: {params.codigo}
+            </p>
+          </div>
         </div>
+        <FooterPublic
+          ip={FECHA_ACTUALIZACION_LEGAL}
+          lastVisit={EMAIL_CONTACTO_LEGAL}
+          ipLabel="Última actualización:"
+          lastVisitLabel="Contacto:"
+          lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
+        />
+        </ProteccionPublica>
       </main>
     )
   }
@@ -184,7 +193,6 @@ export default async function VerificarPage({ params }: PageProps) {
   const revocado = cert.revocado ?? false
   const motivoRevocacion = cert.motivo_revocacion ?? 'Decisión administrativa'
 
-  const eq = calcularEquivalencias(cert.co2_total, cert.agua_total)
   const meta = cert.metadata_json as { desglose?: Array<{ categoria: string; cantidad: number; co2_kg: number }> } | null
   const desglose = meta?.desglose ?? []
 
@@ -205,22 +213,23 @@ export default async function VerificarPage({ params }: PageProps) {
 
         {/* Título */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <p style={{
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '6px 16px',
+            borderRadius: 100,
+            background: revocado ? 'rgba(239,68,68,0.1)' : 'var(--color-brand-light)',
             fontSize: 12,
             fontWeight: 700,
-            letterSpacing: '0.05em',
             color: revocado ? '#EF4444' : 'var(--color-brand)',
-            marginBottom: 8,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 6
+            marginBottom: 12,
           }}>
             {revocado ? <FileX size={14} color="#EF4444" /> : <ShieldCheck size={14} color="var(--color-brand)" />}
-            {revocado ? 'DOCUMENTO REVOCADO' : 'Documento auténtico · calculadoradereuso.com'}
-          </p>
+            {revocado ? 'Documento revocado' : 'Documento verificado · calculadoradereuso.com'}
+          </span>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: revocado ? '#B91C1C' : 'var(--text-primary)', margin: '0 0 8px', lineHeight: 1.25 }}>
-            {revocado ? 'Informe Revocado' : titulo}
+            {revocado ? 'Informe revocado' : titulo}
           </h1>
           {revocado ? (
             <p style={{ fontSize: 15, color: '#EF4444', fontWeight: 600, margin: 0 }}>
@@ -314,38 +323,6 @@ export default async function VerificarPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Equivalencias */}
-            <div style={{ marginBottom: 24 }}>
-              <p style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-placeholder)', margin: '0 0 10px' }}>
-                Equivale a...
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
-                {[
-                  { icon: <Tree size={18} color="var(--color-brand)" />, value: String(eq.arboles), label: 'árboles absorbiendo CO2 en 1 día' },
-                  { icon: <Drop size={18} color="var(--color-info-content)" />, value: cert.agua_total.toLocaleString('es-CO'), label: 'litros de agua equivalentes' },
-                  { icon: <Leaf size={18} color="var(--color-success-content)" />, value: String(eq.duchas), label: 'duchas de 5 minutos' },
-                ].map((item, i) => (
-                  <div key={i} style={{
-                    background: 'var(--bg-active)', borderRadius: 10,
-                    padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12,
-                  }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 8, background: 'var(--bg-card)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                    }}>
-                      {item.icon}
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0, lineHeight: 1.1 }}>
-                        {item.value}
-                      </p>
-                      <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: 0 }}>{item.label}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Desglose */}
             {desglose.length > 0 && (
               <div>
@@ -433,175 +410,42 @@ export default async function VerificarPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* ── Resumen de los 15 Cálculos Certificados ────────────────── */}
+        {/* ── Cómo se calculó este informe ────────────────────────── */}
         <div style={{
           background: 'var(--bg-card)',
           border: '1px solid var(--border)',
           borderRadius: 16,
           padding: '28px',
-          marginBottom: 28,
+          marginBottom: 20,
           boxShadow: 'var(--shadow)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(138,208,178,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <Leaf size={20} color="#8AD0B2" />
+            </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-brand)' }} />
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                  Certificación de los 15 Cálculos de Impacto
-                </h3>
-              </div>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
-                Auditoría algorítmica de indicadores ambientales, financieros, sociales y pasaporte digital (DPP).
-              </p>
-            </div>
-            <span style={{
-              fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 100,
-              background: 'var(--color-brand-light)', color: 'var(--color-brand)'
-            }}>
-              19 Métricas Verificadas
-            </span>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16 }}>
-            {/* 1. Ambiental */}
-            <div style={{ background: 'var(--bg-active)', borderRadius: 12, padding: '16px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'rgba(138,208,178,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Leaf size={16} color="#8AD0B2" />
-                </div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Ambiental y Circular</p>
-                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0 }}>7 cálculos directos</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>1. Huella de carbono evitada</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-brand)' }}>{cert.co2_total.toFixed(2)} kg CO₂ eq</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>2. Huella hídrica preservada</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-brand)' }}>{cert.agua_total.toLocaleString('es-CO')} L agua</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>3. Desvío de vertedero</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{(cert.co2_total * 0.45).toFixed(1)} kg rescatados</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>4. Índice circular del material</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>94.2% circularidad</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>5. Energía embebida conservada</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{Math.round(cert.co2_total * 3.8)} kWh eq</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>6. Suelo fértil preservado</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{(cert.co2_total * 0.12).toFixed(2)} m² suelo</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>7. Huella de transporte evitada</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{(cert.co2_total * 0.28).toFixed(1)} kg CO₂</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Financiero */}
-            <div style={{ background: 'var(--bg-active)', borderRadius: 12, padding: '16px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'rgba(56,185,142,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Sparkles size={16} color="#38B98E" />
-                </div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Financiero y Eficiencia</p>
-                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0 }}>4 cálculos económicos</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>8. Ahorro frente a comprar nuevo</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-success-content)' }}>68% ahorro promedio</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>9. Retorno de inversión circular (ROI)</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>3.4x s/ mantenimiento</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>10. Valor residual recuperado</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Activo operativo</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>11. Costo de disposición evitado</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>$0 aranceles vertedero</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. Social */}
-            <div style={{ background: 'var(--bg-active)', borderRadius: 12, padding: '16px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'rgba(246,191,62,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Tree size={16} color="#F6BF3E" />
-                </div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Social y Comunitario</p>
-                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0 }}>4 cálculos de impacto</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>12. Equivalencia en árboles</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-brand)' }}>{eq.arboles} árboles / día</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>13. Equivalencia en duchas</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-brand)' }}>{eq.duchas} duchas (5 min)</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>14. Trabajo local circular</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Mano de obra restauradora</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>15. Salud ambiental urbana</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Mitigación PM2.5</span>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. DPP */}
-            <div style={{ background: 'var(--bg-active)', borderRadius: 12, padding: '16px', border: '1px solid var(--border-light)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-                <div style={{ width: 28, height: 28, borderRadius: 6, background: 'rgba(0,130,124,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ShieldCheck size={16} color="var(--color-brand)" />
-                </div>
-                <div>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Pasaporte Digital (DPP)</p>
-                  <p style={{ fontSize: 10, color: 'var(--text-placeholder)', margin: 0 }}>4 métricas normativas</p>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 11 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>16. Trazabilidad inmutable</span>
-                  <span style={{ fontWeight: 700, color: 'var(--color-brand)' }}>{codigoFormateado}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>17. Sello criptográfico SHA-256</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Verificado</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>18. Vida útil extendida</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>+3 a +5 años</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>19. Estándar DPP Europeo</span>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>ESPR / Circular Lab</span>
-                </div>
-              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Cómo se calculó este informe</h3>
+              <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>Metodología y fuentes usadas para llegar a estos números</p>
             </div>
           </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              'Los kilogramos de CO₂ eq y los litros de agua de este informe son la suma de los cálculos registrados por el titular durante el período indicado.',
+              'Los factores de emisión provienen de fuentes públicas y trazables como ecoinvent, DEFRA y la Comisión Europea, detalladas en nuestra página de metodología.',
+              'Son resultados de carácter estimativo, no un reemplazo de auditorías ambientales formales ni de certificaciones de carbono obligatorias.',
+            ].map((texto, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-brand)', marginTop: 6, flexShrink: 0 }} />
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0, lineHeight: 1.6 }}>{texto}</p>
+              </div>
+            ))}
+          </div>
+          <a href="/legal/medicion" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 16, fontSize: 12, fontWeight: 700, color: 'var(--color-brand)', textDecoration: 'none' }}>
+            Ver la metodología completa →
+          </a>
         </div>
 
-        {/* Prueba de Seguridad Permanente */}
+        {/* Sello de integridad */}
         <div style={{
           background: 'var(--color-brand-light)',
           border: '1px dashed var(--border)',
@@ -614,8 +458,8 @@ export default async function VerificarPage({ params }: PageProps) {
               <ShieldCheck size={20} color="var(--text-on-brand)" />
             </div>
             <div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Protección de Seguridad Permanente</h3>
-              <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>Nosotros garantizamos que nadie ha alterado los datos originales de este registro.</p>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>Sello de integridad del registro</h3>
+              <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>Una cadena de hash criptográfico permite detectar si alguien altera este registro.</p>
             </div>
           </div>
 
@@ -626,17 +470,17 @@ export default async function VerificarPage({ params }: PageProps) {
                 <div style={{ width: 2, flex: 1, background: 'linear-gradient(to bottom, var(--color-brand), transparent)', margin: '4px 0' }} />
               </div>
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Código de Seguridad del Registro</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Hash del registro</p>
                 <code style={{ fontSize: 11, color: 'var(--text-primary)', wordBreak: 'break-all' }}>{cert.hash_integridad}</code>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12 }}>
               <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-success)' }} />
               <div style={{ flex: 1 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Estado de Autenticidad</p>
+                <p style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-placeholder)', marginBottom: 2 }}>Estado</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-success)' }} />
-                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-success-content)' }}>Nosotros confirmamos que este registro es auténtico</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-success-content)' }}>El hash coincide con el registro original</span>
                 </div>
               </div>
             </div>
@@ -645,16 +489,18 @@ export default async function VerificarPage({ params }: PageProps) {
           {cert.empresa_id && (
             <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid var(--border)' }}>
               <p style={{ fontSize: 11, color: 'var(--text-secondary)', margin: 0 }}>
-                Este documento forma parte de un registro protegido para <strong>{empresaNombre}</strong>. 
-                Nosotros anclamos cada registro matemáticamente, lo cual impide cualquier cambio o falsificación en el futuro.
+                Este documento forma parte de un registro estructurado para <strong>{empresaNombre}</strong>.
+                Cada registro se enlaza matemáticamente con el anterior, lo que hace evidente cualquier cambio posterior.
               </p>
             </div>
           )}
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-placeholder)', lineHeight: 1.7, maxWidth: 560, margin: '0 auto 40px' }}>
-          Factores de emisión basados en ecoinvent, Humana PPP, DEFRA 2023, Comisión Europea.
-          Nosotros protegemos este documento con sellos de seguridad digitales que impiden cualquier modificación.
+        <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-placeholder)', lineHeight: 1.7, maxWidth: 640, margin: '0 auto 40px' }}>
+          Factores de emisión basados en ecoinvent, Humana PPP, DEFRA 2023 y la Comisión Europea.
+          Presentamos todos los cálculos de la plataforma como una <strong>estimación</strong> técnica orientativa sobre el beneficio del reúso.
+          Cada resultado posee carácter <strong>estimativo</strong> y no reemplaza auditorías ambientales formales ni certificaciones de carbono obligatorias.
+          Protegemos este documento con un sello de seguridad digital que permite detectar cualquier modificación posterior.
           Verificable de forma independiente en <strong style={{ color: 'var(--text-secondary)' }}>calculadoradereuso.com/verificar</strong>.
         </p>
 

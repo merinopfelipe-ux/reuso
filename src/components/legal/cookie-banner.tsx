@@ -181,7 +181,7 @@ export function CookieBanner() {
         maxWidth: 700,
         borderRadius: 20,
         overflow: 'hidden',
-        boxShadow: '0 8px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08)',
+        boxShadow: '0 8px 40px rgba(71,71,71,0.14), 0 2px 8px rgba(71,71,71,0.08)',
         border: '1px solid var(--border)',
         background: 'var(--bg-card)',
       }}
@@ -351,7 +351,7 @@ function ToggleRow({
             borderRadius: '50%',
             background: '#fff',
             transition: 'left 0.2s',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            boxShadow: '0 1px 3px rgba(71,71,71,0.2)',
           }}
         />
       </button>

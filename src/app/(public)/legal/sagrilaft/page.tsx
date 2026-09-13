@@ -21,7 +21,7 @@ const T = {
       { id: 'canales-reporte', label: 'Canal de alertas' },
     ],
     resumen:
-      'En Grupo MLP S.A.S. blindamos la Calculadora de Reúso para garantizar que nuestros servicios, facturación y certificados ambientales nunca se usen para lavar dinero ni financiar actividades ilegales. Ejecutamos al pie de la letra nuestra Política SAGRILAFT conforme al Capítulo X de la Circular Básica Jurídica de la Superintendencia de Sociedades y los estándares internacionales del GAFI.',
+      'En Grupo MLP S.A.S. blindamos la Calculadora de Reúso para que nuestros servicios, facturación y certificados ambientales nunca se usen para lavar dinero ni financiar actividades ilegales. Ejecutamos al pie de la letra nuestra Política SAGRILAFT conforme al Capítulo X de la Circular Básica Jurídica de la Superintendencia de Sociedades y los estándares internacionales del GAFI.',
     leeTabien: [
       { href: '/legal/ptee', label: 'Programa de Ética (PTEE)' },
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -53,7 +53,7 @@ const T = {
     identificacion1:
       'Revisamos permanentemente 4 factores clave: (i) Quiénes son nuestros clientes y proveedores, (ii) Qué servicios compran, (iii) Por qué canales pagan (bancos y pasarelas oficiales), y (iv) De qué ciudades o países vienen los fondos.',
     identificacion2:
-      'Investigamos de inmediato pagos fraccionados extraños, transferencias no acordes con la actividad de la empresa o intentos de simular mediciones ambientales para mover plata de origen desconocido.',
+      'Investigamos de inmediato pagos fraccionados extraños, transferencias no acordes con la actividad de la empresa o intentos de simular la estimación ambiental para mover dinero de origen desconocido. Entregamos todos los cálculos con propósito estimativo referencial y protegemos la transparencia de cada informe.',
     debidaTitle: 'Debida diligencia: conocer muy bien a cada parte (KYC / KYB)',
     debida1:
       'Antes de firmar un contrato o activar un plan corporativo, hacemos una verificación exhaustiva:',
@@ -135,7 +135,7 @@ const T = {
     identificacion1:
       'We monitor 4 key factors: (i) Client and vendor reputation, (ii) Services purchased, (iii) Official payment channels used, and (iv) Geographic origin of funds.',
     identificacion2:
-      'We investigate unusual split payments, unexpected account transfers, or attempts to fabricate environmental metrics to move unjustified funds.',
+      'We investigate unusual split payments, unexpected account transfers, or attempts to fabricate an environmental estimation to move unjustified funds. We deliver all calculations with an estimative reference purpose and protect the transparency of every report.',
     debidaTitle: 'Due diligence: knowing our partners (KYC / KYB)',
     debida1:
       'Before signing agreements or enabling corporate plans, we execute thorough background checks:',
@@ -222,7 +222,15 @@ export default function SagrilaftLegalPage() {
 
       <h2 id="identificacion-riesgos" style={h2}>{t.identificacionTitle}</h2>
       <p style={p}>{t.identificacion1}</p>
-      <p style={p}>{t.identificacion2}</p>
+      <p style={p}>
+        {t.identificacion2.split(/(estimación|estimativo|estimation|estimative)/gi).map((part, pi) =>
+          /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+            <strong key={pi}>{part}</strong>
+          ) : (
+            part
+          )
+        )}
+      </p>
 
       <h2 id="debida-diligencia" style={h2}>{t.debidaTitle}</h2>
       <p style={p}>{t.debida1}</p>

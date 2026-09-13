@@ -161,7 +161,7 @@ function ToggleRow({
             borderRadius: '50%',
             background: '#fff',
             transition: 'left 0.2s',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+            boxShadow: '0 1px 3px rgba(71,71,71,0.2)',
           }}
         />
       </button>
@@ -190,8 +190,8 @@ function ImpactoRow({
         alignItems: 'flex-start',
         padding: '12px 14px',
         borderRadius: 10,
-        background: isOn ? 'rgba(0,130,124,0.04)' : 'rgba(0,0,0,0.02)',
-        border: `1px solid ${isOn ? 'rgba(0,130,124,0.16)' : 'rgba(0,0,0,0.08)'}`,
+        background: isOn ? 'rgba(0,130,124,0.04)' : 'rgba(71,71,71,0.02)',
+        border: `1px solid ${isOn ? 'rgba(0,130,124,0.16)' : 'rgba(71,71,71,0.08)'}`,
       }}
     >
       <div style={{ marginTop: 2, flexShrink: 0 }}>

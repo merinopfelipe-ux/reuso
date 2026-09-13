@@ -102,7 +102,7 @@ function VerificarForm() {
             }}>
               <ShieldCheck size={16} color="var(--color-brand)" />
               <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-brand)' }}>
-                Verificación de autenticidad inalterable
+                Verificación de autenticidad estructurada
               </span>
             </div>
 
@@ -239,15 +239,13 @@ function VerificarForm() {
             </div>
 
           </div>
-        </ProteccionPublica>
-      </main>
 
-      {/* Modal / Alerta de Código No Encontrado */}
-      {errorModal?.abierto && (
+          {/* Modal / Alerta de Código No Encontrado */}
+          {errorModal?.abierto && (
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: 'rgba(71,71,71,0.6)',
           backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
@@ -263,7 +261,7 @@ function VerificarForm() {
             width: '100%',
             padding: '28px 24px 24px',
             textAlign: 'center',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+            boxShadow: '0 20px 40px rgba(71,71,71,0.25)',
             position: 'relative',
           }}>
             <button
@@ -336,7 +334,9 @@ function VerificarForm() {
             </button>
           </div>
         </div>
-      )}
+          )}
+        </ProteccionPublica>
+      </main>
 
       {/* Footer Público */}
       <FooterPublic

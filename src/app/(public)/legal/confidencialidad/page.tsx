@@ -22,7 +22,7 @@ const T = {
       texto: 'El presente Acuerdo de Confidencialidad integra plenamente el uso de Inteligencia Artificial. Operamos modelos de IA avanzados para optimizar la gestión de información confidencial. Estas herramientas cumplen rigurosamente con nuestros estándares de seguridad, complementando los controles establecidos para resguardar tus datos estratégicos en cada fase del servicio.',
       link: 'Lee nuestra política de uso de IA →',
     },
-    resumen: 'Al usar la Calculadora de Reúso aceptas no reproducir, distribuir ni replicar la metodología de cálculo, los factores de emisión ni el diseño de la plataforma. La información que obtienes en la plataforma es confidencial y solo puedes usarla para los fines del servicio. El incumplimiento puede generar responsabilidad legal.',
+    resumen: 'Al usar la Calculadora de Reúso aceptas no reproducir, distribuir ni replicar la metodología de cálculo, los factores de emisión ni el diseño de la plataforma. La información que obtienes en la plataforma es confidencial y solo puedes usarla para los fines del servicio. Aseguras no emplear estos cálculos en auditorías ambientales formales o certificaciones obligatorias de carbono, asumiendo cualquier uso bajo tu exclusiva responsabilidad y exonerando a Grupo MLP S.A.S. El incumplimiento genera responsabilidad legal.',
     intro: 'Usar la Calculadora de Reúso implica la aceptación de este acuerdo de confidencialidad. Compartimos contigo información técnica, metodológica y de negocio que tiene carácter confidencial. Te comprometes a conservarla en reserva y a no revelarla a terceros.',
     objeto: {
       titulo: 'Objeto',
@@ -51,6 +51,7 @@ const T = {
         'Abstenerte de copiar, reproducir, distribuir o elaborar resúmenes o extractos de la información confidencial sin autorización escrita.',
         'No utilizar la información para fines comerciales propios ni para construir productos o servicios competidores o similares a la Calculadora de Reúso.',
         'Cumplir con el análisis de tráfico, detección de intrusos y medidas de seguridad cuando uses medios electrónicos en el contexto del servicio.',
+        'Comprometerte a no emplear la información confidencial, los factores de cálculo ni los reportes emitidos en auditorías ambientales formales o certificaciones de carbono obligatorias, salvo bajo tu exclusiva y personal responsabilidad, exonerando a Grupo MLP S.A.S. de cualquier perjuicio o reclamo.',
       ],
       cierre: 'El tratamiento de los datos personales que recopilamos en el marco de estas obligaciones se rige por nuestra',
       cierreLinkPrivacidad: 'Política de Privacidad',
@@ -76,7 +77,7 @@ const T = {
       titulo: 'Uso de la información confidencial',
       parrafo1: 'No puedes utilizar la información confidencial con fines comerciales propios ni para obtener beneficio de un tercero, aunque ese acto no nos cause perjuicio directo. Solo puedes usar la información en el contexto de los fines para los cuales se te proporciona el servicio.',
       parrafo2: 'El incumplimiento de este acuerdo constituye violación de secreto comercial y genera responsabilidad legal. El perjuicio causado por cada violación lo determina la parte afectada conforme a la legislación colombiana y a la normativa de la Comunidad Andina de Naciones (CAN) sobre propiedad industrial.',
-      parrafo3Intro: 'Los cálculos y reportes generados en la plataforma están sujetos además al',
+      parrafo3Intro: 'Los cálculos y reportes generados en la plataforma constituyen una estimación técnica referencial con carácter estimativo. Te comprometes a no emplear dicha información en auditorías ambientales formales ni en certificaciones obligatorias de carbono, asumiendo cualquier uso bajo tu propia y exclusiva responsabilidad, lo cual exonera a Grupo MLP S.A.S. de toda reclamación. Su utilización se sujeta además al',
       parrafo3LinkReglamento: 'Reglamento de Uso',
       parrafo3Mid: ', que establece las condiciones técnicas y los límites de responsabilidad. La recopilación y almacenamiento de los datos que procesas está regulada por nuestra',
       parrafo3LinkDatos: 'Política de Tratamiento de Datos',
@@ -116,7 +117,7 @@ const T = {
       texto: 'This Non-Disclosure Agreement fully integrates the use of Artificial Intelligence. We operate advanced AI models to optimize the management of confidential information. These tools strictly comply with our security standards, complementing the established controls to safeguard your strategic data at every stage of the service.',
       link: 'Read our AI usage policy →',
     },
-    resumen: 'By using Calculadora de Reúso you agree not to reproduce, distribute or replicate the calculation methodology, emission factors or platform design. The information you access on the platform is confidential and may only be used for the purposes of the service. Non-compliance may result in legal liability.',
+    resumen: 'By using Calculadora de Reúso you agree not to reproduce, distribute or replicate the calculation methodology, emission factors or platform design. The information you access on the platform is confidential and may only be used for the purposes of the service. You assure not to use these calculations in formal environmental audits or mandatory carbon certifications, assuming any use under your sole responsibility and releasing Grupo MLP S.A.S. from liability. Non-compliance may result in legal liability.',
     intro: 'Using Calculadora de Reúso implies acceptance of this non-disclosure agreement. We share with you technical, methodological and business information of a confidential nature. You agree to keep it confidential and not to disclose it to third parties.',
     objeto: {
       titulo: 'Purpose',
@@ -145,6 +146,7 @@ const T = {
         'Refrain from copying, reproducing, distributing or creating summaries or extracts of the confidential information without written authorization.',
         'Not use the information for your own commercial purposes or to build products or services that compete with or are similar to Calculadora de Reúso.',
         'Comply with traffic analysis, intrusion detection and security measures when using electronic means in the context of the service.',
+        'Commit to not using confidential information, calculation factors, or issued reports in formal environmental audits or mandatory carbon certifications, except under your sole and exclusive responsibility, releasing Grupo MLP S.A.S. from any damage or claim.',
       ],
       cierre: 'The handling of personal data we collect under these obligations is governed by our',
       cierreLinkPrivacidad: 'Privacy Policy',
@@ -170,7 +172,7 @@ const T = {
       titulo: 'Use of confidential information',
       parrafo1: 'You may not use the confidential information for your own commercial purposes or to obtain benefit for a third party, even if that act does not directly harm us. You may only use the information in the context of the purposes for which the service is provided.',
       parrafo2: 'Breach of this agreement constitutes a violation of trade secrets and gives rise to legal liability. The harm caused by each violation shall be determined by the affected party in accordance with Colombian law and the Andean Community of Nations (CAN) regulations on industrial property.',
-      parrafo3Intro: 'The calculations and reports generated on the platform are also subject to the',
+      parrafo3Intro: 'Calculations and reports generated on the platform constitute a technical reference estimation with an estimative scope. You commit to not using such information in formal environmental audits or mandatory carbon certifications, assuming any unauthorized use under your own sole responsibility, which completely releases Grupo MLP S.A.S. from any claim. Its use remains further subject to the',
       parrafo3LinkReglamento: 'Usage Rules',
       parrafo3Mid: ', which establish the technical conditions and liability limits. The collection and storage of the data you process is governed by our',
       parrafo3LinkDatos: 'Data Processing Policy',
@@ -270,8 +272,8 @@ export default function ConfidencialidadPage() {
         {t.obligaciones.cierre}{' '}
         <Link href="/legal/privacidad" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
           {t.obligaciones.cierreLinkPrivacidad}
-        </Link>
-        {' '}{t.obligaciones.cierreMid}{' '}
+        </Link>{' '}
+        {t.obligaciones.cierreMid}{' '}
         <Link href="/legal/cookies" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
           {t.obligaciones.cierreLinkCookies}
         </Link>

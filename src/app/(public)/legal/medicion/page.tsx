@@ -8,7 +8,7 @@ const T = {
   ES: {
     titulo: '¿Cómo medimos tu impacto?',
     breadcrumb: 'Metodología de cálculo',
-    resumen: 'Medimos una estimación rigurosa del impacto ambiental que evitas al reutilizar, restaurar o prolongar la vida de los materiales, en lugar de extraer materias primas nuevas. Calculamos dos indicadores de forma independiente: las emisiones de CO₂ equivalente y la huella hídrica. Los resultados son inmutables y verificables con un sello digital único. Esta metodología es propiedad intelectual de Grupo MLP S.A.S. y no puedes reproducirla sin autorización.',
+    resumen: 'Medimos una estimación técnica del impacto ambiental que evitas al reutilizar, restaurar o prolongar la vida útil de los materiales frente a la extracción de materias primas nuevas. Calculamos dos indicadores de forma independiente: las emisiones de CO₂ equivalente y el agua preservada. Los resultados formales cuentan con un sello digital único verificable. Esta metodología constituye propiedad intelectual de Grupo MLP S.A.S. y no puedes reproducirla sin autorización.',
     leeTabien: [
       { href: '/legal/ia', label: 'Uso de IA', descripcion: 'Transparencia sobre modelos y procesamiento de datos.' },
       { href: '/legal/reglamento', label: 'Reglamento de Uso', descripcion: 'Términos de servicio y normas de la plataforma.' },
@@ -17,53 +17,66 @@ const T = {
     secciones: [
       { id: 'que-medimos', label: '¿Qué medimos?' },
       { id: 'como-calculamos', label: '¿Cómo lo calculamos?' },
-      { id: 'algoritmo-cr', label: 'El Algoritmo CR' },
-      { id: 'equivalencias', label: 'Nuestras equivalencias' },
+      { id: 'marcos-referencia', label: 'Marcos de referencia' },
+      { id: 'marco-legal-empco', label: 'Marco legal y antifraude verde' },
+      { id: 'equivalencias', label: 'Equivalencias ilustrativas' },
       { id: 'seguridad', label: 'Seguridad digital' },
       { id: 'por-que-importa', label: '¿Por qué importa?' },
       { id: 'limitaciones', label: 'Limitaciones' },
-      { id: 'ia-transparencia', label: 'IA y transparencia' },
     ],
-    ipNoticePre: 'El contenido de esta página, nuestra matriz de cálculo y la metodología empleada constituyen propiedad intelectual y "know-how" exclusivo de Grupo MLP S.A.S. Queda prohibida su reproducción, extracción o uso sin autorización expresa y escrita. Para más detalles, consulta el',
+    ipNoticePre: 'El contenido de esta página, nuestra matriz de cálculo y la metodología empleada constituyen propiedad intelectual y conocimiento exclusivo de Grupo MLP S.A.S. Queda prohibida su reproducción, extracción o uso sin autorización expresa y escrita. Para más detalles, consulta el',
     ipNoticeLink: 'acuerdo de confidencialidad',
     s1Title: '¿Qué medimos?',
-    s1p1: 'Medimos una estimación rigurosa del impacto ambiental que evitas cuando decides reutilizar, restaurar o prolongar la vida de los materiales, en lugar de extraer materias primas nuevas. Específicamente, calculamos dos grandes indicadores de forma independiente: las emisiones de Dióxido de Carbono equivalente (CO₂ eq) y la huella hídrica (litros de agua ahorrados).',
-    s1p2: 'Esa diferencia entre hacer algo desde cero y aprovechar lo existente constituye tu impacto positivo.',
+    s1p1: 'Medimos una estimación técnica del impacto ambiental positivo que generas cuando decides reutilizar, restaurar o prolongar la vida útil de los materiales, en lugar de extraer materias primas nuevas. Calculamos dos grandes indicadores de manera independiente: las emisiones de dióxido de carbono equivalente (CO₂ eq) y el volumen de agua preservada.',
+    s1p2: 'La diferencia neta entre fabricar un bien desde cero y aprovechar los recursos existentes define tu impacto positivo proyectado.',
     s2Title: '¿Cómo lo calculamos?',
-    s2p1: 'Hemos desarrollado una matriz de datos interna basada en referencias y estudios de Análisis de Ciclo de Vida (ACV) reconocidos internacionalmente.',
-    s2p2: 'El cálculo toma como dato de entrada la categoría y el peso (kg) del material principal de tu proyecto. Luego, el sistema cruza esta información con nuestra matriz de factores de emisión y requerimientos hídricos para estimar el CO₂ eq y los litros de agua evitados. Estos factores internos se fijan en el momento del cálculo, permitiendo que los informes históricos sean consistentes y verificables dentro de nuestra plataforma.',
-    algoritmoTitle: 'El Algoritmo CR',
-    algoritmoP1: 'El Algoritmo CR de la Calculadora de Reúso es un modelo de evaluación desarrollado por el Grupo MLP. Su cálculo toma como referencia académica marcos metodológicos fiables como el estándar ISO 59020 y el Material Circularity Indicator (MCI) de la Ellen MacArthur Foundation.',
-    algoritmoP2: 'Esta herramienta es un proyecto exclusivo del Grupo MLP y no está afiliada, respaldada ni certificada por dichas organizaciones.',
-    algoritmoP3: 'Los resultados generados son estimaciones referenciales para visibilizar el beneficio de los ciclos de reúso continuo y no constituyen una garantía exacta, absoluta o certificación legal sobre el impacto ambiental.',
-    algoritmoP4: 'Algunos indicadores financieros dependen de datos internos de tu empresa (como el costo de operación o la inversión en economía circular) que se solicitan al registrar tu organización. Si tu plan incluye asistencia de inteligencia artificial y no conoces alguno de estos valores, el sistema puede sugerir uno de referencia a partir de promedios sectoriales publicados por fuentes oficiales de Colombia (Departamento Administrativo Nacional de Estadística, DANE, según el código CIIU de tu actividad económica) — este mecanismo aplica únicamente a empresas registradas en Colombia. Ese valor sugerido queda siempre señalado como una estimación editable, nunca como tu dato real, y puedes reemplazarlo en cualquier momento por el valor exacto de tu empresa. Si tu plan no incluye inteligencia artificial, este campo se completa siempre de forma manual.',
-    s3Title: 'Nuestras equivalencias',
-    s3Intro: 'Para comunicar los resultados técnicos de manera clara y cotidiana, traducimos los totales ambientales utilizando dos constantes matemáticas estándar de ilustración.',
+    s2p1: 'Construimos una matriz de datos técnica basada en estudios y referencias reconocidas de Análisis de Ciclo de Vida (ACV).',
+    s2p2: 'El sistema toma como datos de entrada la categoría del objeto y el peso neto en kilogramos de cada material recuperado. Luego cruza esta información con nuestra matriz de factores de emisión y demanda hídrica para estimar las emisiones de CO₂ eq evitadas y los litros de agua preservados. Fijamos estos factores en el momento del cálculo para que los reportes conserven coherencia histórica en la plataforma.',
+    s2p3: 'Diferenciamos de manera estricta los cálculos de ingeniería ambiental frente a cualquier recurso gráfico o pedagógico. Las emisiones y el ahorro de agua provienen exclusivamente de factores de masa y ciclo de vida de los materiales. Ninguna figura narrativa modifica las fórmulas matemáticas del balance ambiental.',
+    marcosTitle: 'Marcos de referencia y modelos de evaluación',
+    marcosP1: 'Los modelos de cálculo de la plataforma toman como referencia académica marcos metodológicos fiables como el estándar ISO 59020 sobre medición de circularidad y el Material Circularity Indicator (MCI) de la Ellen MacArthur Foundation.',
+    marcosP2: 'Grupo MLP desarrolla y gestiona esta herramienta como un proyecto exclusivo. Las organizaciones mencionadas no avalan, certifican ni auditan de manera directa la plataforma.',
+    marcosP3: 'Todos los resultados numéricos emitidos constituyen estimaciones referenciales para visibilizar el beneficio de los ciclos continuos de reúso. No configuran una garantía exacta, absoluta o certificación legal sobre el impacto ambiental.',
+    marcosP4: 'Algunos indicadores financieros requieren datos internos de tu empresa, como el costo de operación o la inversión en circularidad. Si tu plan incluye asistencia de inteligencia artificial y desconoces alguno de estos valores, el sistema puede sugerir una cifra de referencia basada en promedios sectoriales oficiales de Colombia (DANE según código CIIU). La plataforma presenta siempre este valor como una estimación editable que puedes sustituir en cualquier momento por tus datos contables reales. Si tu plan prescinde de inteligencia artificial, completas este campo manualmente.',
+    marcoLegalTitle: 'Marco regulatorio internacional y prevención del greenwashing',
+    marcoLegalP1: 'La ley específica que transforma radicalmente la comunicación de estos datos es la Directiva sobre el Empoderamiento de los Consumidores para la Transición Ecológica (conocida como EmpCo por sus siglas en inglés), o Directiva (UE) 2024/825.',
+    marcoLegalP2: 'Esta directiva entró en vigor en 2024 y exige cumplimiento y ejecución obligatoria a partir del 27 de septiembre de 2026. La norma modifica las leyes de protección al consumidor para prohibir de forma explícita el greenwashing o lavado verde.',
+    marcoLegalP3: 'Bajo esta ley, métricas como "árboles preservados" o "duchas ahorradas" califican como afirmaciones ambientales genéricas e infundadas. La directiva prohíbe totalmente estas afirmaciones porque no se basan en un desempeño ambiental excelente y verificado para ese producto específico. Asimismo, la normativa prohíbe usar un "índice circular" o algoritmos propios si se presentan como una etiqueta de sostenibilidad creada por la propia empresa sin un esquema de certificación transparente e independiente verificado por terceros.',
+    marcoLegalP4: 'En cuanto a su aplicación geográfica, focalizamos tres ámbitos clave:',
+    marcoLegalItems: [
+      'Unión Europea (UE): La Directiva EmpCo rige como ley en toda la Unión Europea. Su alcance es extraterritorial y aplica a cualquier empresa del mundo que comercialice u ofrezca productos o servicios a consumidores dentro de la Unión Europea, sin importar su tamaño o país de origen. Las sanciones por incumplimiento alcanzan hasta el 4% de la facturación anual de la empresa.',
+      'Estados Unidos: La directiva europea EmpCo no rige como ley nacional en Estados Unidos, pero el país aplica su propio instrumento regulatorio estricto mediante las Guías Verdes (Green Guides) de la Comisión Federal de Comercio (FTC). Las directrices de la FTC persiguen el mismo fin y prohíben afirmaciones ambientales amplias o vagas (como "ecológico" o equivalencias sin base científica), exigiendo que cualquier beneficio ambiental publicitado cuente con respaldo de evidencia científica rigurosa, específica y demostrable.',
+      'Colombia: Si una empresa de recuperación o mantenimiento en Colombia solo comercializa sus servicios o bienes a nivel nacional, la directiva EmpCo y las normas de la FTC no ejercen jurisdicción legal directa. Sin embargo, rigen dos factores determinantes: Primero, al exportar productos, activos o componentes recuperados a clientes en Europa o Estados Unidos, la empresa debe cumplir obligatoriamente con EmpCo y las reglas de la FTC. Segundo, opera el efecto dominó como estándar global corporativo, pues las filiales colombianas de multinacionales europeas o estadounidenses exigen a sus proveedores locales que los informes de circularidad cumplan estos estándares internacionales para evitar riesgos de auditoría en sus casas matrices.',
+    ],
+    marcoLegalCierre: 'Aunque EmpCo constituye una directiva europea, opera en la práctica como el nuevo estándar global corporativo. Mantener métricas lúdicas o no verificadas como los árboles salvados excluye a las empresas de licitaciones corporativas modernas en Estados Unidos y Colombia debido al alto riesgo reputacional que generan.',
+    s3Title: 'Equivalencias ilustrativas y exclusión de métricas oficiales',
+    s3Intro: 'Para comunicar los resultados técnicos de forma comprensible en la cotización comercial preliminar, traducimos los totales de impacto usando dos constantes matemáticas ilustrativas:',
     s3Items: [
-      'Árboles: tomamos como referencia que un árbol promedio en crecimiento puede absorber unos 25 kg de CO₂ eq al año.',
+      'Árboles: tomamos como referencia que un árbol promedio en crecimiento absorbe cerca de 25 kg de CO₂ eq al año.',
       'Duchas: tomamos como referencia que una ducha estándar de 5 minutos consume un promedio de 100 litros de agua.',
     ],
-    s3Nota: 'El cálculo del ahorro de agua es independiente de las emisiones de carbono.',
+    s3ReglaEstricta: 'Establecemos una regla tajante en nuestra plataforma: las equivalencias de árboles preservados y duchas ahorradas nunca constituyen un cálculo verificado ni una alegación técnica oficial. Como norma estricta del sistema, estos dos datos nunca tocan un Pasaporte Digital de Producto (DPP), ni un informe de auditoría, ni ningún archivo importante. Solo ilustran la cotización preliminar.',
+    s3Nota: 'El cálculo técnico del agua preservada opera de forma totalmente independiente a las emisiones de carbono.',
     s4Title: 'Seguridad y sellos digitales',
-    s4p1: 'La plataforma asigna un sello digital único (hash criptográfico) a cada registro. Este sello funciona como una huella dactilar que identifica el cálculo y lo conecta matemáticamente con el registro anterior. Si alguien intentara alterar un dato histórico, la cadena se rompe de inmediato, invalidando la verificación pública.',
+    s4p1: 'La plataforma asigna un sello digital único (hash criptográfico) a cada registro formal. Este sello funciona como una huella digital que identifica el cálculo y lo conecta matemáticamente con el registro anterior. Si alguien intenta alterar un dato histórico, la cadena se invalida de inmediato.',
     s5Title: '¿Por qué importa?',
-    s5p1: 'El respeto por la materia prima y su ciclo natural es la esencia artesanal que nos define. Cada material que reutilizas, cada madera que tocas, sientes y disfrutas en lugar de desechar, evita procesos industriales innecesarios. Al medir este impacto, te entregamos un lenguaje común y estructurado para comunicar tu compromiso real con el planeta.',
+    s5p1: 'El aprovechamiento de la materia prima y su ciclo de vida prolongado evita procesos industriales extractivos. Al medir este impacto mediante metodologías rigurosas, entregamos a tu organización un sustento técnico estructurado para comunicar tu compromiso ambiental sin incurrir en riesgos regulatorios.',
     s6Title: 'Limitaciones de la estimación',
-    s6Intro: 'Para promover la mayor transparencia y evitar el greenwashing, aclaramos lo que este cálculo no incluye.',
+    s6Intro: 'Para promover la mayor transparencia y erradicar cualquier práctica de greenwashing, aclaramos el alcance de nuestras estimaciones:',
     s6Items: [
-      'Los datos son estimaciones sectoriales y pueden diferir de la huella exacta de un fabricante externo en particular.',
-      'El cálculo excluye el impacto logístico de transporte o almacenamiento de los objetos.',
-      'Los informes generados son una herramienta de comunicación y educación ambiental de Grupo MLP S.A.S. No equivalen a créditos de carbono transables emitidos por organismos internacionales.',
-      'Nuestra matriz interna puede actualizarse conforme avanza la ciencia ambiental, pero los cálculos históricos conservan su valor original.',
+      'Los datos son estimaciones sectoriales y pueden diferir de la huella puntual de un fabricante específico.',
+      'El cálculo excluye el impacto logístico de transporte o almacenamiento salvo en los módulos que miden específicamente la logística.',
+      'Los informes generados respaldan la gestión interna y la educación ambiental de Grupo MLP S.A.S. No equivalen a créditos de carbono negociables en mercados financieros.',
+      'Actualizamos nuestra matriz técnica conforme evoluciona la ciencia ambiental, pero los registros históricos mantienen inalterado su valor original.',
     ],
     s6CierrePre: 'Para conocer las condiciones completas de uso, consulta el',
     s6CierreLink: 'reglamento de uso',
-    transparenciaIA: 'Desarrollamos esta Calculadora con asistencia de modelos de inteligencia artificial para la estructuración del código. Trabajamos de forma continua auditando las fórmulas para mantener la coherencia técnica de la herramienta.',
+    transparenciaIA: 'Desarrollamos esta plataforma con asistencia de modelos de inteligencia artificial para la estructuración del código y la verificación algorítmica. Auditamos de forma continua las fórmulas para mantener la congruencia técnica del sistema.',
   },
   ENG: {
     titulo: 'How we measure your impact',
     breadcrumb: 'Calculation methodology',
-    resumen: 'We measure a rigorous estimate of the environmental impact you avoid by reusing, restoring, or extending the life of materials instead of extracting new raw materials. We calculate two indicators independently: CO₂ equivalent emissions and the water footprint. Results are immutable and verifiable with a unique digital seal. This methodology is the intellectual property of Grupo MLP S.A.S. and you cannot reproduce it without authorization.',
+    resumen: 'We measure a technical estimate of the environmental impact you avoid by reusing, restoring, or extending the life of materials instead of extracting virgin raw materials. We calculate two indicators independently: CO₂ equivalent emissions and preserved water. Formal platform records include a unique verifiable cryptographic seal. This methodology constitutes intellectual property of Grupo MLP S.A.S. and you cannot reproduce it without authorization.',
     leeTabien: [
       { href: '/legal/ia', label: 'AI Use', descripcion: 'Transparency on models and data processing.' },
       { href: '/legal/reglamento', label: 'Usage Rules', descripcion: 'Terms of service and platform standards.' },
@@ -72,49 +85,62 @@ const T = {
     secciones: [
       { id: 'que-medimos', label: 'What we measure' },
       { id: 'como-calculamos', label: 'How we calculate it' },
-      { id: 'algoritmo-cr', label: 'The CR Algorithm' },
-      { id: 'equivalencias', label: 'Our equivalences' },
+      { id: 'marcos-referencia', label: 'Reference frameworks' },
+      { id: 'marco-legal-empco', label: 'International legal framework' },
+      { id: 'equivalencias', label: 'Illustrative equivalences' },
       { id: 'seguridad', label: 'Digital security' },
       { id: 'por-que-importa', label: 'Why it matters' },
       { id: 'limitaciones', label: 'Limitations' },
-      { id: 'ia-transparencia', label: 'AI and transparency' },
     ],
-    ipNoticePre: 'The content of this page, our calculation matrix and the methodology used constitute exclusive intellectual property and "know-how" of Grupo MLP S.A.S. Its reproduction, extraction or use without express written authorization is prohibited. For more details, see the',
-    ipNoticeLink: 'non-disclosure agreement',
+    ipNoticePre: 'The content of this page, our calculation matrix and the methodology used constitute exclusive intellectual property and know how of Grupo MLP S.A.S. Its reproduction, extraction or use without express written authorization is prohibited. For more details, see the',
+    ipNoticeLink: 'non disclosure agreement',
     s1Title: 'What we measure',
-    s1p1: 'We measure a rigorous estimate of the environmental impact you avoid when you decide to reuse, restore, or extend the life of materials, instead of extracting new raw materials. Specifically, we calculate two major indicators independently: equivalent Carbon Dioxide emissions (CO₂ eq) and the water footprint (liters of water saved).',
-    s1p2: 'That difference between starting from scratch and making use of what already exists constitutes your positive impact.',
+    s1p1: 'We measure a technical estimate of the positive environmental impact you generate when you decide to reuse, restore, or extend the lifespan of materials instead of extracting new raw materials. Specifically, we calculate two major indicators independently: equivalent Carbon Dioxide emissions (CO₂ eq) and the volume of preserved water.',
+    s1p2: 'The net difference between manufacturing a product from scratch and taking advantage of existing resources defines your projected positive impact.',
     s2Title: 'How we calculate it',
-    s2p1: 'We have developed an internal data matrix based on internationally recognized Life Cycle Assessment (LCA) references and studies.',
-    s2p2: 'The calculation takes the category and weight (kg) of your project’s main material as input. The system then cross-references this information with our matrix of emission factors and water requirements to estimate the avoided CO₂ eq and liters of water. These internal factors are locked in at the moment of calculation, guaranteeing that historical reports remain always consistent and verifiable within our platform.',
-    algoritmoTitle: 'The CR Algorithm',
-    algoritmoP1: 'The CR Algorithm of the Reuse Calculator is an evaluation model developed by Grupo MLP. Its calculation takes as an academic reference reliable methodological frameworks such as the ISO 59020 standard and the Material Circularity Indicator (MCI) from the Ellen MacArthur Foundation.',
-    algoritmoP2: 'This tool is an exclusive project of Grupo MLP and is not affiliated with, endorsed by, or certified by these organizations.',
-    algoritmoP3: 'The generated results are referential estimates to highlight the benefit of continuous reuse cycles and do not constitute an exact, absolute guarantee or legal certification of environmental impact.',
-    algoritmoP4: 'Some financial indicators depend on internal data from your company (such as operating cost or investment in circular economy) that are requested when you register your organization. If your plan includes AI assistance and you don\'t know one of these values, the system may suggest a reference value from sector averages published by official Colombian sources (National Administrative Department of Statistics, DANE, based on your economic activity\'s CIIU code) — this mechanism only applies to companies registered in Colombia. That suggested value is always flagged as an editable estimate, never as your real data, and you can replace it at any time with your company\'s exact figure. If your plan does not include artificial intelligence, this field is always completed manually.',
-    s3Title: 'Our equivalences',
-    s3Intro: 'To communicate technical results clearly and in everyday terms, we translate the environmental totals using two standard illustrative mathematical constants.',
+    s2p1: 'We build an internal technical data matrix based on recognized Life Cycle Assessment (LCA) studies and scientific emission factors.',
+    s2p2: 'The system takes the product category and the net weight in kilograms of each recovered material as input. It then cross references this data with our matrix of emission factors and water requirements to estimate avoided CO₂ eq and preserved water. We lock in these factors at the exact moment of calculation to ensure historical consistency across the platform.',
+    s2p3: 'We strictly separate environmental engineering calculations from any pedagogical or graphic figures. Carbon emissions and water savings derive exclusively from material mass and life cycle factors. No narrative equivalence alters the mathematical balance of environmental metrics.',
+    marcosTitle: 'Reference frameworks and evaluation models',
+    marcosP1: 'Platform calculation models draw academic reference from dependable standards such as ISO 59020 on circularity measurement and the Material Circularity Indicator (MCI) guidelines from the Ellen MacArthur Foundation.',
+    marcosP2: 'Grupo MLP develops and operates this tool as an exclusive project. The mentioned organizations do not directly endorse, certify, or audit this platform.',
+    marcosP3: 'All numerical results represent referential estimates to showcase the benefits of continuous reuse cycles. They do not constitute an exact guarantee or legal certification of environmental impact.',
+    marcosP4: 'Certain financial indicators require internal company data such as operating costs or circularity investments. If your plan includes artificial intelligence assistance and you lack one of these values, the system can suggest a sector reference average based on official Colombian public statistics (DANE under CIIU codes). The platform always marks this figure as an editable estimate that you can replace with your verified accounting records. If your plan does not include artificial intelligence, you complete this field manually.',
+    marcoLegalTitle: 'International regulatory framework and greenwashing prevention',
+    marcoLegalP1: 'The specific legislation transforming environmental communication is the Directive on Empowering Consumers for the Green Transition (known as EmpCo), Directive (EU) 2024/825.',
+    marcoLegalP2: 'This directive entered into force in 2024 and requires mandatory enforcement starting September 27, 2026. The legislation updates consumer protection laws to explicitly prohibit greenwashing.',
+    marcoLegalP3: 'Under this law, metrics such as "preserved trees" or "saved showers" count as generic, unsubstantiated environmental claims. The directive strictly prohibits these claims because they do not rest on verified excellent environmental performance for that specific product. Furthermore, the regulation bans presenting circular indices or proprietary algorithms as sustainability labels unless an independent, third party verified certification scheme backs them.',
+    marcoLegalP4: 'Regarding geographic reach, we highlight three critical arenas:',
+    marcoLegalItems: [
+      'European Union (EU): The EmpCo Directive is binding law across the European Union. Its extraterritorial jurisdiction applies to any company worldwide that markets or delivers products or services to consumers within the EU, regardless of company size or location. Fines for non compliance can reach up to 4% of total annual corporate turnover.',
+      'United States: While the European EmpCo Directive does not apply as federal law in the United States, the Federal Trade Commission (FTC) enforces strict regulatory oversight through its Green Guides. FTC guidelines pursue the same objective by prohibiting broad or vague environmental claims and requiring rigorous, specific, verifiable scientific evidence for any advertised ecological benefit.',
+      'Colombia and regional markets: Colombian circular maintenance and recovery companies experience this regulatory impact through two clear channels. First, if a company exports recovered products, physical assets, or components to Europe or the United States, it must comply directly with EmpCo and FTC Green Guides. Second, a corporate domino effect occurs because Colombian subsidiaries of multinational companies require their local suppliers to provide circularity reports aligned with these global standards to protect parent organizations during audits.',
+    ],
+    marcoLegalCierre: 'Although EmpCo originated in Europe, it now operates as the new global corporate benchmark. Relying on playful or unverified metrics such as saved trees excludes companies from modern corporate tenders in both the United States and Colombia due to significant reputational risk.',
+    s3Title: 'Illustrative equivalences and exclusion from formal metrics',
+    s3Intro: 'To make technical quantities intuitive in preliminary commercial proposals, we provide everyday analogies based on standard illustrative factors:',
     s3Items: [
-      'Trees: we use as a reference that an average growing tree can absorb about 25 kg of CO₂ eq per year.',
-      'Showers: we use as a reference that a standard 5 minute shower consumes an average of 100 liters of water.',
+      'Trees: we reference a theoretical benchmark where an average growing tree absorbs approximately 25 kg of CO₂ eq per year.',
+      'Showers: we reference a theoretical benchmark where an average 5 minute shower consumes roughly 100 liters of water.',
     ],
-    s3Nota: 'The water savings calculation is independent of carbon emissions.',
+    s3ReglaEstricta: 'We uphold a strict rule across our platform: tree and shower analogies never constitute verified calculations or official environmental claims. By rule, these two figures never enter a Digital Product Passport (DPP), an audit report, or any formal document. They solely illustrate initial commercial proposals.',
+    s3Nota: 'Technical calculations for preserved water operate independently from carbon emission calculations.',
     s4Title: 'Security and digital seals',
-    s4p1: 'The platform assigns a unique digital seal (cryptographic hash) to each record. This seal works like a fingerprint that identifies the calculation and mathematically connects it to the previous record. If someone were to try to alter a historical data point, the chain breaks immediately, invalidating the public verification.',
+    s4p1: 'The platform assigns a unique cryptographic hash seal to every formal record. This seal acts as a digital fingerprint linking the calculation mathematically with the preceding block. Any attempt to alter historical records breaks the verification sequence instantly.',
     s5Title: 'Why it matters',
-    s5p1: 'Respect for raw materials and their natural cycle is the artisanal essence that defines us. Every material you reuse, every piece of wood you touch, feel, and enjoy instead of discarding, avoids unnecessary industrial processes. By certifying this impact, we give you a common, structured language to communicate your real commitment to the planet.',
+    s5p1: 'Extending material lifespan avoids industrial extraction and relieves pressure on natural ecosystems. By delivering structured data with methodological rigor, we equip your organization to demonstrate environmental responsibility while staying shielded against legal risks.',
     s6Title: 'Limitations of the estimate',
-    s6Intro: 'To guarantee maximum transparency and avoid greenwashing, we clarify what this calculation does not include.',
+    s6Intro: 'To promote maximum transparency and eliminate any risk of greenwashing, we delineate the boundaries of our models:',
     s6Items: [
-      'The data are sector averages and may differ from the exact footprint of a particular external manufacturer.',
-      'The calculation excludes the logistical impact of transporting or storing the objects.',
-      'The reports generated are an environmental communication and education tool from Grupo MLP S.A.S. They are not equivalent to tradable carbon credits issued by international bodies.',
-      'Our internal matrix may be updated as environmental science advances, but historical calculations retain their original value.',
+      'Data points reflect sector estimates and can vary from individual manufacturer footprints.',
+      'The baseline calculation excludes transportation logistics and storage except within specialized logistics modules.',
+      'Platform reports support internal management and environmental education for Grupo MLP S.A.S. They do not constitute tradable carbon credits in financial markets.',
+      'We update our technical matrices as environmental science advances, while preserving original values in historical records.',
     ],
-    s6CierrePre: 'To review the full terms of use, see the',
+    s6CierrePre: 'To review complete platform terms of service, see the',
     s6CierreLink: 'usage rules',
-    transparenciaIA: 'We developed this Calculator with the assistance of artificial intelligence models for structuring the code. We continuously work on auditing the formulas to guarantee the tool’s technical accuracy.',
-  }
+    transparenciaIA: 'We developed this platform with artificial intelligence assistance for code structuring and algorithmic verification. We continuously audit our numerical factors to uphold technical accuracy.',
+  },
 }
 
 const h2: React.CSSProperties = {
@@ -189,12 +215,25 @@ export default function MedicionPage() {
       <h2 id="como-calculamos" style={h2}>{t.s2Title}</h2>
       <p style={p}>{t.s2p1}</p>
       <p style={p}>{t.s2p2}</p>
+      <p style={p}>{t.s2p3}</p>
 
-      <h2 id="algoritmo-cr" style={h2}>{t.algoritmoTitle}</h2>
-      <p style={p}>{t.algoritmoP1}</p>
-      <p style={p}>{t.algoritmoP2}</p>
-      <p style={p}>{t.algoritmoP3}</p>
-      <p style={p}>{t.algoritmoP4}</p>
+      <h2 id="marcos-referencia" style={h2}>{t.marcosTitle}</h2>
+      <p style={p}>{t.marcosP1}</p>
+      <p style={p}>{t.marcosP2}</p>
+      <p style={p}>{t.marcosP3}</p>
+      <p style={p}>{t.marcosP4}</p>
+
+      <h2 id="marco-legal-empco" style={h2}>{t.marcoLegalTitle}</h2>
+      <p style={p}>{t.marcoLegalP1}</p>
+      <p style={p}>{t.marcoLegalP2}</p>
+      <p style={p}>{t.marcoLegalP3}</p>
+      <p style={p}>{t.marcoLegalP4}</p>
+      <ul style={ul}>
+        {t.marcoLegalItems.map((item, i) => (
+          <li key={i} style={li}>{item}</li>
+        ))}
+      </ul>
+      <p style={p}>{t.marcoLegalCierre}</p>
 
       <h2 id="equivalencias" style={h2}>{t.s3Title}</h2>
       <p style={p}>{t.s3Intro}</p>
@@ -203,6 +242,7 @@ export default function MedicionPage() {
           <li key={i} style={li}>{item}</li>
         ))}
       </ul>
+      <p style={{ ...p, fontWeight: 600, color: 'var(--text-primary)' }}>{t.s3ReglaEstricta}</p>
       <p style={{ ...p, fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic' }}>{t.s3Nota}</p>
 
       <h2 id="seguridad" style={h2}>{t.s4Title}</h2>
@@ -224,14 +264,6 @@ export default function MedicionPage() {
           {t.s6CierreLink}
         </Link>
         .
-      </p>
-
-      <h2 id="ia-transparencia" style={h2}>{lang === 'ENG' ? 'AI and Transparency' : 'IA y Transparencia'}</h2>
-      <p style={p}>{t.transparenciaIA}</p>
-      <p style={p}>
-        <Link href="/legal/ia" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
-          {lang === 'ENG' ? 'Learn more in our AI policy →' : 'Conoce todos los detalles en nuestra política de uso de IA →'}
-        </Link>
       </p>
     </LegalPageLayout>
   )

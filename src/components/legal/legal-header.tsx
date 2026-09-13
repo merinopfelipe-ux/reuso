@@ -83,7 +83,7 @@ export function LegalHeader() {
           align-items: center;
           justify-content: center;
           transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-          box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+          box-shadow: 0 1px 2px rgba(71,71,71,0.05);
           border: 1px solid var(--border);
           background: var(--bg-card);
           color: var(--text-primary);

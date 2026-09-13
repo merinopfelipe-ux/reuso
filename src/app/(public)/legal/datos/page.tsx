@@ -34,7 +34,7 @@ const T = {
       'Grupo MLP S.A.S. establece los criterios para el tratamiento de datos personales, que comprende toda operación sobre datos: recolección, almacenamiento, uso, circulación y supresión. La empresa puede actuar como responsable o encargado del tratamiento según el caso.',
     alcanceTitle: 'Alcance',
     alcance:
-      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de medición de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso.',
+      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de medición de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso, bajo una estimación técnica con carácter estimativo referencial.',
     destinatariosTitle: 'Destinatarios',
     destinatariosIntro: 'Esta política aplica a quienes mantienen cualquier relación con Grupo MLP S.A.S.:',
     destinatarios: [
@@ -89,6 +89,7 @@ const T = {
     finalidades: [
       'Celebración y ejecución de contratos de servicio.',
       'Creación y gestión de accesos en la plataforma.',
+      'Elaboración y emisión de reportes ambientales bajo una estimación técnica con alcance estimativo.',
       'Elaboración y envío de facturas y documentos comerciales.',
       'Realización de encuestas y seguimiento de calidad del servicio.',
       'Envío de comunicaciones relacionadas con el servicio contratado.',
@@ -141,7 +142,7 @@ const T = {
     vigencia:
       'Esta política entra en vigencia desde su publicación. Las bases de datos tienen una vigencia de 10 años, prorrogables por períodos iguales. Podemos revisar y modificar esta política en cualquier momento. Los cambios rigen desde su publicación en la plataforma.',
     transparenciaTexto:
-      'En el Tratamiento de Datos Personales garantizamos la máxima protección de tu privacidad. Los modelos de Inteligencia Artificial que operan en la plataforma NO utilizan tus datos personales para entrenarse ni los transfieren a sistemas externos. Procesamos tu información exclusivamente bajo tu autorización y para los fines técnicos del servicio.',
+      'En el Tratamiento de Datos Personales protegemos tu privacidad de forma rigurosa y estructurada. Los modelos de Inteligencia Artificial que operan en la plataforma NO utilizan tus datos personales para entrenarse ni los transfieren a sistemas externos. Procesamos tu información exclusivamente bajo tu autorización y para los fines técnicos del servicio.',
     transparenciaLink: 'Lee nuestra política de uso de IA →',
   },
   ENG: {
@@ -172,7 +173,7 @@ const T = {
       'Grupo MLP S.A.S. establishes the criteria for personal data processing, which covers all data operations: collection, storage, use, circulation and deletion. The company may act as data controller or data processor depending on the case.',
     alcanceTitle: 'Scope',
     alcance:
-      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact measurement services for object reuse through the Reuse Calculator platform.',
+      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact measurement services for object reuse through the Reuse Calculator platform under a technical estimation with an estimative reference scope.',
     destinatariosTitle: 'Recipients',
     destinatariosIntro: 'This policy applies to anyone who has any relationship with Grupo MLP S.A.S.:',
     destinatarios: [
@@ -227,6 +228,7 @@ const T = {
     finalidades: [
       'Entering into and performing service contracts.',
       'Creating and managing platform access.',
+      'Preparing and issuing environmental reports under a technical estimation with an estimative scope.',
       'Preparing and sending invoices and commercial documents.',
       'Conducting surveys and monitoring service quality.',
       'Sending communications related to the contracted service.',
@@ -340,8 +342,8 @@ export default function DatosPage() {
         </h3>
         <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
           {lang === 'ENG'
-            ? 'Visual overview of how your information is collected, safeguarded, and how you exercise full ownership over your data at every step.'
-            : 'Resumen visual de cómo recolectamos, protegemos y garantizamos el control total de tu información en cada etapa.'}
+            ? 'Visual overview of how your information is collected, safeguarded, and how we support your control over your data at every step.'
+            : 'Resumen visual de cómo recolectamos, protegemos y promovemos tu control sobre la información en cada etapa.'}
         </p>
 
         {/* 4 Fases del Ciclo */}
@@ -423,7 +425,15 @@ export default function DatosPage() {
       <p style={p}>{t.objetivos}</p>
 
       <h2 id="alcance" style={h2}>{t.alcanceTitle}</h2>
-      <p style={p}>{t.alcance}</p>
+      <p style={p}>
+        {t.alcance.split(/(estimación|estimativo|estimation|estimative)/gi).map((part, pi) =>
+          /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+            <strong key={pi}>{part}</strong>
+          ) : (
+            part
+          )
+        )}
+      </p>
 
       <h2 id="destinatarios" style={h2}>{t.destinatariosTitle}</h2>
       <p style={p}>{t.destinatariosIntro}</p>
@@ -445,9 +455,20 @@ export default function DatosPage() {
       <h2 id="finalidades" style={h2}>{t.finalidadesTitle}</h2>
       <p style={p}>{t.finalidadesIntro}</p>
       <ul style={ul}>
-        {t.finalidades.map((item, i) => (
-          <li key={i} style={li}>{item}</li>
-        ))}
+        {t.finalidades.map((item, i) => {
+          const parts = item.split(/(estimación|estimativo|estimation|estimative)/gi)
+          return (
+            <li key={i} style={li}>
+              {parts.map((part, pi) =>
+                /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+                  <strong key={pi}>{part}</strong>
+                ) : (
+                  part
+                )
+              )}
+            </li>
+          )
+        })}
       </ul>
       <p style={p}>{t.finalidadesCierre}</p>
 
