@@ -16,12 +16,12 @@ import { waLink } from '@/lib/constants/contacto'
 
 // ─── Catálogo integral de cálculos (Línea 1: Ambientales / Línea 2: Financieros) ─
 const TODOS_LOS_CALCULOS = [
-  // ── DIFERENCIAL: Algoritmo CR (plan Impacto Ilimitado) ──
+  // ── DIFERENCIAL: Índice de Flujo Lineal / MCI (plan Impacto Ilimitado, próximamente) ──
   {
     icon: Layers,
-    titulo: 'Algoritmo CR',
-    metrica: 'Desempeño circular frente al ciclo de vida estándar.',
-    desc: 'Métrica propia que combina la circularidad física de un producto con el tiempo de vida que ganas al mantenerlo en ciclos de reúso continuo.',
+    titulo: 'Índice de Flujo Lineal (MCI)',
+    metrica: 'Circularidad de materiales y tiempo de vida frente al ciclo estándar.',
+    desc: 'Metodología pública (Ellen MacArthur Foundation, ISO 59020) que mide qué tan lejos está un producto de un flujo lineal, combinando composición de materiales con el tiempo de vida real que ganas al mantenerlo en reúso.',
     tag: 'DPP',
     colorHex: '#00827C',
     bgLight: 'bg-[#00827C]/15', borderLight: 'border-transparent', bgDark: 'bg-[#00827C]/20', borderDark: 'border-transparent',
@@ -1584,6 +1584,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
               )
             })}
+
+            {/* Aviso legal de carácter estimativo */}
+            <div className={`mt-2 p-3.5 sm:p-4 rounded-xl border text-[11px] sm:text-xs leading-relaxed ${
+              isDark ? 'bg-white/[0.03] border-white/10 text-white/70' : 'bg-[#00827C]/[0.03] border-[#00827C]/15 text-[#474747]/80'
+            }`}>
+              <p className="m-0">
+                Presentamos todos los cálculos como una <strong>estimación</strong> técnica orientativa del impacto positivo del reúso. Entregamos estas métricas con carácter <strong>estimativo</strong> referencial para respaldar la toma de decisiones sostenibles sin reemplazar auditorías ambientales obligatorias.
+              </p>
+            </div>
           </div>
         </Modal>
       </section>

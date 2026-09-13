@@ -34,7 +34,7 @@ Ver la tabla de referencia (nombres, IDs en BD, cálculos/informes/cotizaciones/
 | **Explora** (`free`) | No | 0 (no incluye) | Solo lectura del compartido | 0 | Prueba del cálculo de CO2/agua |
 | **Circular Lab** (`lab`) | **No** | Ilimitado, **manual** | Limitado, **no crea los propios** | 0 | Cálculo automatizado con factores estándar, pymes que inician |
 | **Impulso Sostenible** (`impulso`) | **Sí** | Ilimitado (con IA) | Puede crear los propios | Según `limite_cotizaciones_mes` | Asistente de IA + DPP + Cotizador |
-| **Impacto Ilimitado** (`ilimitado`) | Sí | Ilimitado | Puede crear los propios | Ilimitado | **Algoritmo CR (métrica propia de desempeño circular)** — va destacado y primero en la landing, se cobra más |
+| **Impacto Ilimitado** (`ilimitado`) | Sí | Ilimitado | Puede crear los propios | Ilimitado | **Índice de Flujo Lineal / MCI (próximamente, diseño cerrado sin código, ver `calculos/05-indice-flujo-lineal-mci.md` del Vault)** — va destacado y primero en la landing, se cobra más. "Algoritmo CR" es el nombre de marca de todo el sistema de 9 cálculos, no de este cálculo en particular. |
 
 - **`incluye_ia`** gatea: ingesta de DPP con IA (`/api/dpp/ingesta/procesar-ia`) y diagnóstico del Cotizador (`/api/cotizador/diagnostico`). Helper: `planIncluyeIA()` en `plan-limits.ts`.
 - **`limite_dpp_mes`**: `NULL` = ilimitado, `0` = no incluye. Helper: `checkLimiteDpp()`.

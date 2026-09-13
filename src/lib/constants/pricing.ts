@@ -136,7 +136,7 @@ export const PLANS = [
     priceMonthlyCOP: 349000,
     features: [
       'Todo lo de Impulso Sostenible, sin límites de uso',
-      'Indicador exclusivo del Algoritmo CR',
+      'Índice de Flujo Lineal, MCI (próximamente)',
       'Exportación a Excel y CSV',
       'Integración con tus sistemas',
       'Soporte prioritario',
