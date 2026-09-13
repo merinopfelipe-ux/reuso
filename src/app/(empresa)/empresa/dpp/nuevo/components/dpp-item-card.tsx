@@ -44,6 +44,11 @@ interface Props {
   onChange: (item: ItemDppPendiente) => void
   onQuitar: () => void
   onConfirmar: () => void
+  // Nombre del cliente que el selector único de la página tiene
+  // seleccionado en este momento (o null si no hay ninguno) — se muestra
+  // antes de confirmar para que quede claro a quién queda vinculado este
+  // DPP en particular, ya que el selector es compartido por toda la tanda.
+  clienteVinculado: string | null
 }
 
 const inputSt = 'px-3 py-2 rounded-xl border text-sm bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-primary)] w-full focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]/20 transition-all'
@@ -53,7 +58,7 @@ const rowInputSt = 'bg-transparent border-none p-0 outline-none focus:ring-0 tex
 // aprobado 2026-09-12: la IA siempre infiere, el humano siempre confirma).
 const UMBRAL_CONFIANZA_BAJA = 0.5
 
-export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar }: Props) {
+export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar, clienteVinculado }: Props) {
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
   const ts = 'text-[var(--text-secondary)]'
   const tp = 'text-[var(--text-primary)]'
@@ -156,6 +161,10 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar 
         <span className={`text-sm font-bold ${tp}`}>Huella de manufactura</span>
         <span className="text-sm font-bold text-[#00827C]">{formatNumero(co2Total, { unidad: 'kg CO₂ eq' })}</span>
       </div>
+
+      <p className={`text-xs ${ts}`}>
+        {clienteVinculado ? <>Se vinculará a <span className={`font-semibold ${tp}`}>{clienteVinculado}</span></> : 'Sin cliente vinculado'}
+      </p>
 
       {item.errorCreacion && (
         <p className="text-sm text-[#FF5E4B] flex items-center gap-1"><Warning size={14} sinAnimacion /> {item.errorCreacion}</p>

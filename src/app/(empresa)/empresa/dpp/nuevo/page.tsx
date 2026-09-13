@@ -384,6 +384,7 @@ export default function NuevoActivoDppPage() {
               onChange={i => actualizarItem(item._uiKey, i)}
               onQuitar={() => quitarItem(item._uiKey)}
               onConfirmar={() => confirmarYCrear(item)}
+              clienteVinculado={clienteSeleccionado ? `${clienteSeleccionado.nombre} ${clienteSeleccionado.apellido ?? ''}`.trim() : null}
             />
           ))}
         </div>
