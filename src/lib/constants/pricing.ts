@@ -60,9 +60,8 @@ export const PLANS = [
     popular: false,
     priceMonthlyCOP: 0,
     features: [
-      'Estimación rápida de huella de carbono y agua',
-      'Historial y trazabilidad de cálculos',
-      'Soporte por correo electrónico',
+      'Estimación de huella de carbono y agua',
+      'Historial y trazabilidad de mediciones',
     ],
     limits: {
       empleados: '1 persona',
@@ -83,10 +82,10 @@ export const PLANS = [
     popular: false,
     priceMonthlyCOP: 49000,
     features: [
-      'Pasaportes Digitales (DPP) con código QR público',
-      'Informes de impacto con verificación digital',
-      'Catálogo de materiales y factores de emisión',
-      'Personalización con el logo de tu empresa',
+      'Ficha interactiva con código QR público',
+      'Sello de verificación digital en reportes',
+      'Personalización con logo corporativo',
+      'Catálogo de factores de emisión de referencia',
     ],
     limits: {
       empleados: '5 personas',
@@ -108,10 +107,9 @@ export const PLANS = [
     priceMonthlyCOP: 149000,
     isFuture: false,
     features: [
-      'Todo lo incluido en Circular Lab',
-      'Cotizador comercial con CRM y embudo',
+      'Cotizador comercial con CRM y embudo de ventas',
       'Asistente de Inteligencia Artificial para documentos',
-      '8 cálculos de impacto ambiental, circular y ROI',
+      'Métricas de retorno de inversión (ROI) y ahorro',
       'Categorías y materiales propios personalizados',
     ],
     limits: {
@@ -133,11 +131,11 @@ export const PLANS = [
     popular: false,
     priceMonthlyCOP: 349000,
     features: [
-      'Todo lo de Impulso Sostenible sin límites de uso',
-      'Los 9 cálculos completos (incluye MCI e ISO 59020)',
-      'Exportación de informes y datos en Excel y CSV',
-      'Integración técnica mediante API y soporte prioritario',
-      'Gestión multisede y trazabilidad corporativa',
+      'Indicador de Circularidad de Materiales (MCI e ISO 59020)',
+      'Exportación masiva de datos en Excel y CSV',
+      'Integración técnica mediante API corporativa',
+      'Gestión multisede con roles y permisos avanzados',
+      'Acompañamiento técnico y soporte prioritario',
     ],
     limits: {
       empleados: 'Ilimitado',

@@ -975,7 +975,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
-    { title: '9 Cálculos ambientales, circulares y financieros', link: '#calculos' },
+    { title: '9 Cálculos ambientales, económicos y sociales', link: '#calculos' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -998,19 +998,26 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   // — la pantalla nunca se rompe por falta de datos.
   const precioReal = (plan: typeof PLANS[0]) => planesPrecios?.find(p => p.id === plan.id)
 
-  // Congruencia real con /admin/contenido -> Precios -> "Personalización de
-  // capacidades": sincroniza los beneficios de IA, MCI y Excel/CSV con los
-  // toggles reales de cada plan, sin duplicados ni textos huérfanos.
+  // Beneficios de valor nuevos (sin repetir las cuotas de arriba: equipo, DPP, informes, cotizaciones)
   const bulletsPlan = (plan: typeof PLANS[0]): string[] => {
     const real = precioReal(plan)
-    let lista = [...(real?.features_json?.length ? real.features_json : plan.features)]
+    const raw = (real?.features_json?.length ? real.features_json : plan.features)
+
+    // Filtra textos repetitivos que dupliquen las cajas superiores o incluyan cuotas de volumen
+    let lista = raw.filter(b => {
+      const texto = b.trim().toLowerCase()
+      if (/^\d+\s*(pasaportes?|informes?|cálculos?|personas?|cotizaciones?)/i.test(texto)) return false
+      if (/al mes|por mes|en cada dpp/i.test(texto)) return false
+      return true
+    })
+    if (lista.length < 2) lista = [...plan.features]
 
     // Capacidades de IA:
     const tieneIA = real ? Boolean(real.incluye_ia) : (plan.id === 'impulso' || plan.id === 'ilimitado')
     if (!tieneIA) {
       lista = lista.filter(b => !/asistente.*ia|inteligencia artificial/i.test(b))
     } else if (!lista.some(b => /asistente.*ia|inteligencia artificial/i.test(b))) {
-      lista.push('Asistente de IA: sube fotos o fichas y extrae datos')
+      lista.push('Asistente de Inteligencia Artificial para documentos')
     }
 
     // Indicador de Circularidad de Materiales (MCI, ISO 59020):
@@ -1018,7 +1025,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     if (!tieneMCI) {
       lista = lista.filter(b => !/mci|iso 59020|circularidad de materiales/i.test(b))
     } else if (!lista.some(b => /mci|iso 59020|circularidad de materiales/i.test(b))) {
-      lista.push('Indicador de Circularidad de Materiales (MCI, ISO 59020)')
+      lista.push('Indicador de Circularidad de Materiales (MCI e ISO 59020)')
     }
 
     // Informes en Excel y CSV:
@@ -1029,8 +1036,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       lista.push('Exportación de informes en Excel y CSV')
     }
 
-    // Tope máximo de 5 checks por plan, siendo el primero el que tenga menos (Explora: 3)
-    const maxChecks = plan.id === 'free' ? 3 : 5
+    // Tope máximo de 5 checks por plan, siendo el primero el que tenga menos
+    const maxChecks = plan.id === 'free' ? 2 : 5
     return lista.slice(0, maxChecks)
   }
 
@@ -1420,7 +1427,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 9 cálculos ambientales, circulares y financieros
+              Descubre los 9 cálculos ambientales, económicos y sociales
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Desde la estimación rápida de huella hasta la trazabilidad en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
