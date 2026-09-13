@@ -693,6 +693,7 @@ export const COMPARATIVA_DEFAULT: CategoriaComparativa[] = [
       { label: 'Asistente de Inteligencia Artificial', tipo: 'check', valores: { free: false, lab: false, impulso: true, ilimitado: true }, descripcion: 'Extracción automática de datos desde fotos y documentos' },
       { label: 'Catálogo y materiales propios', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true }, descripcion: 'Crea tus propias categorías y factores personalizados' },
       { label: 'Logo corporativo en documentos', tipo: 'check', valores: { free: false, lab: true, impulso: true, ilimitado: true } },
+      { label: 'Exportación de informes en Excel y CSV', tipo: 'check', valores: { free: false, lab: false, impulso: false, ilimitado: true } },
       { label: 'Exportación de datos', tipo: 'texto', valores: { free: false, lab: 'PDF con QR', impulso: 'PDF corporativo', ilimitado: 'Excel, CSV y PDF' } },
     ]
   },
@@ -1075,9 +1076,20 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     if (real) {
       const mensual = currency === 'COP' ? real.precio_cop : currency === 'USD' ? real.precio_usd : real.precio_eur
       const anual = currency === 'COP' ? real.precio_anual_cop : currency === 'USD' ? real.precio_anual_usd : real.precio_anual_eur
+      const equivalenteGuardado = currency === 'COP' ? real.equivalente_mensual_anual_cop : currency === 'USD' ? real.equivalente_mensual_anual_usd : real.equivalente_mensual_anual_eur
 
       if (billing === 'annual') {
-        const finalAmount = (anual ?? mensual * 10) / 12
+        // Si el equivalente mensual está editado a mano desde /admin/contenido
+        // -> Precios, se respeta tal cual. Si no, se calcula igual que el
+        // valor por defecto que ya ve el admin en esa pantalla (piso, sin
+        // decimales sueltos) — antes esto SIEMPRE recalculaba anual/12 en
+        // crudo e ignoraba el campo editable por completo, mostrando
+        // decimales que nunca coincidían con lo publicado. Bug real
+        // encontrado 2026-09-13.
+        const bruto = (anual ?? mensual * 10) / 12
+        const finalAmount = equivalenteGuardado ?? (
+          currency === 'COP' ? Math.floor(bruto / 10000) * 10000 : Math.floor(bruto)
+        )
         const str = currency === 'COP' ? formatearPrecioColombiano(finalAmount, true) : c.format(finalAmount)
         return <>{c.symbol}{conDecimalesChicos(str, currency)}</>
       }
