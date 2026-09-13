@@ -17,6 +17,7 @@ const T = {
     secciones: [
       { id: 'que-medimos', label: '¿Qué medimos?' },
       { id: 'como-calculamos', label: '¿Cómo lo calculamos?' },
+      { id: 'algoritmo-cr', label: 'El Algoritmo CR' },
       { id: 'equivalencias', label: 'Nuestras equivalencias' },
       { id: 'seguridad', label: 'Seguridad digital' },
       { id: 'por-que-importa', label: '¿Por qué importa?' },
@@ -31,6 +32,11 @@ const T = {
     s2Title: '¿Cómo lo calculamos?',
     s2p1: 'Hemos desarrollado una matriz de datos interna basada en referencias y estudios de Análisis de Ciclo de Vida (ACV) reconocidos internacionalmente.',
     s2p2: 'El cálculo toma como dato de entrada la categoría y el peso (kg) del material principal de tu proyecto. Luego, el sistema cruza esta información con nuestra matriz de factores de emisión y requerimientos hídricos para estimar el CO₂ eq y los litros de agua evitados. Estos factores internos se fijan en el momento del cálculo, permitiendo que los informes históricos sean consistentes y verificables dentro de nuestra plataforma.',
+    algoritmoTitle: 'El Algoritmo CR',
+    algoritmoP1: 'El Algoritmo CR de la Calculadora de Reúso es un modelo de evaluación desarrollado por el Grupo MLP. Su cálculo toma como referencia académica marcos metodológicos fiables como el estándar ISO 59020 y el Material Circularity Indicator (MCI) de la Ellen MacArthur Foundation.',
+    algoritmoP2: 'Esta herramienta es un proyecto exclusivo del Grupo MLP y no está afiliada, respaldada ni certificada por dichas organizaciones.',
+    algoritmoP3: 'Los resultados generados son estimaciones referenciales para visibilizar el beneficio de los ciclos de reúso continuo y no constituyen una garantía exacta, absoluta o certificación legal sobre el impacto ambiental.',
+    algoritmoP4: 'Algunos indicadores financieros dependen de datos internos de tu empresa (como el costo de operación o la inversión en economía circular) que se solicitan al registrar tu organización. Si tu plan incluye asistencia de inteligencia artificial y no conoces alguno de estos valores, el sistema puede sugerir uno de referencia a partir de promedios sectoriales publicados por fuentes oficiales de Colombia (Departamento Administrativo Nacional de Estadística, DANE, según el código CIIU de tu actividad económica) — este mecanismo aplica únicamente a empresas registradas en Colombia. Ese valor sugerido queda siempre señalado como una estimación editable, nunca como tu dato real, y puedes reemplazarlo en cualquier momento por el valor exacto de tu empresa. Si tu plan no incluye inteligencia artificial, este campo se completa siempre de forma manual.',
     s3Title: 'Nuestras equivalencias',
     s3Intro: 'Para comunicar los resultados técnicos de manera clara y cotidiana, traducimos los totales ambientales utilizando dos constantes matemáticas estándar de ilustración.',
     s3Items: [
@@ -66,6 +72,7 @@ const T = {
     secciones: [
       { id: 'que-medimos', label: 'What we measure' },
       { id: 'como-calculamos', label: 'How we calculate it' },
+      { id: 'algoritmo-cr', label: 'The CR Algorithm' },
       { id: 'equivalencias', label: 'Our equivalences' },
       { id: 'seguridad', label: 'Digital security' },
       { id: 'por-que-importa', label: 'Why it matters' },
@@ -80,6 +87,11 @@ const T = {
     s2Title: 'How we calculate it',
     s2p1: 'We have developed an internal data matrix based on internationally recognized Life Cycle Assessment (LCA) references and studies.',
     s2p2: 'The calculation takes the category and weight (kg) of your project’s main material as input. The system then cross-references this information with our matrix of emission factors and water requirements to estimate the avoided CO₂ eq and liters of water. These internal factors are locked in at the moment of calculation, guaranteeing that historical reports remain always consistent and verifiable within our platform.',
+    algoritmoTitle: 'The CR Algorithm',
+    algoritmoP1: 'The CR Algorithm of the Reuse Calculator is an evaluation model developed by Grupo MLP. Its calculation takes as an academic reference reliable methodological frameworks such as the ISO 59020 standard and the Material Circularity Indicator (MCI) from the Ellen MacArthur Foundation.',
+    algoritmoP2: 'This tool is an exclusive project of Grupo MLP and is not affiliated with, endorsed by, or certified by these organizations.',
+    algoritmoP3: 'The generated results are referential estimates to highlight the benefit of continuous reuse cycles and do not constitute an exact, absolute guarantee or legal certification of environmental impact.',
+    algoritmoP4: 'Some financial indicators depend on internal data from your company (such as operating cost or investment in circular economy) that are requested when you register your organization. If your plan includes AI assistance and you don\'t know one of these values, the system may suggest a reference value from sector averages published by official Colombian sources (National Administrative Department of Statistics, DANE, based on your economic activity\'s CIIU code) — this mechanism only applies to companies registered in Colombia. That suggested value is always flagged as an editable estimate, never as your real data, and you can replace it at any time with your company\'s exact figure. If your plan does not include artificial intelligence, this field is always completed manually.',
     s3Title: 'Our equivalences',
     s3Intro: 'To communicate technical results clearly and in everyday terms, we translate the environmental totals using two standard illustrative mathematical constants.',
     s3Items: [
@@ -177,6 +189,12 @@ export default function MedicionPage() {
       <h2 id="como-calculamos" style={h2}>{t.s2Title}</h2>
       <p style={p}>{t.s2p1}</p>
       <p style={p}>{t.s2p2}</p>
+
+      <h2 id="algoritmo-cr" style={h2}>{t.algoritmoTitle}</h2>
+      <p style={p}>{t.algoritmoP1}</p>
+      <p style={p}>{t.algoritmoP2}</p>
+      <p style={p}>{t.algoritmoP3}</p>
+      <p style={p}>{t.algoritmoP4}</p>
 
       <h2 id="equivalencias" style={h2}>{t.s3Title}</h2>
       <p style={p}>{t.s3Intro}</p>
