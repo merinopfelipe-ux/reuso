@@ -440,7 +440,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     doc.text(`TCO (costo total de propiedad): ${formatMoneda(resultados.tco, moneda)}`, 20, 94)
     doc.text(`Costo evitado: ${formatMoneda(resultados.costo_evitado, moneda)}`, 20, 108)
     doc.text(`E-ROI: ${resultados.e_roi} %`, 20, 122)
-    doc.text(`Índice de circularidad (Inflow): ${resultados.inflow_circular_pct} %`, 20, 136)
+    doc.text(`Circularidad de entrada: ${resultados.inflow_circular_pct} %`, 20, 136)
     doc.setFont('helvetica', 'bolditalic')
     doc.setFontSize(12)
     doc.setTextColor(0, 130, 124)
@@ -937,7 +937,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 <KpiCard titulo="Costo total (TCO)" valor={formatMoneda(resultados.tco, moneda)} icono={CreditCard} color="#00827C" />
                 <KpiCard titulo="Costo evitado" valor={formatMoneda(resultados.costo_evitado, moneda)} icono={Leaf} color="#38B98E" />
                 <KpiCard titulo="E-ROI" valor={`${resultados.e_roi} %`} icono={TrendUp} color="#59A6E4" subtitulo="Retorno sobre inversión circular" />
-                <KpiCard titulo="Inflow circular" valor={`${resultados.inflow_circular_pct} %`} icono={Target} color="#F6BF3E" subtitulo="Índice y tasa de circularidad" />
+                <KpiCard titulo="Circularidad de entrada" valor={`${resultados.inflow_circular_pct} %`} icono={Target} color="#F6BF3E" subtitulo="Material secundario/renovable sobre el total" />
               </div>
               <GraficaMetricas resultados={resultados} moneda={moneda} />
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -961,7 +961,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">TCO</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Costo evitado</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">E-ROI</th>
-                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Inflow</th>
+                        <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Circularidad</th>
                         <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Versión</th>
                       </tr>
                     </thead>
