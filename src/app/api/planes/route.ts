@@ -15,7 +15,14 @@ export async function GET() {
   const adminClient = await createAdminClient()
   const { data, error } = await adminClient
     .from('config_planes')
-    .select('id, precio_cop, precio_usd, precio_eur, precio_anual_cop, precio_anual_usd, precio_anual_eur, limite_empleados, limite_calculos_mes, limite_informes_mes')
+    .select(`
+      id, precio_cop, precio_usd, precio_eur,
+      precio_anual_cop, precio_anual_usd, precio_anual_eur,
+      equivalente_mensual_anual_cop, equivalente_mensual_anual_usd, equivalente_mensual_anual_eur,
+      limite_empleados, limite_calculos_mes, limite_informes_mes, limite_cotizaciones_mes, limite_dpp_mes,
+      incluye_ia, tarifa_implementacion_cop, tarifa_implementacion_usd, tarifa_implementacion_eur,
+      features_json
+    `)
     .order('precio_cop', { ascending: true })
 
   if (error || !data) {

@@ -301,7 +301,7 @@ export async function POST(request: NextRequest) {
     .single()
   if (!(await planIncluyeIA(auth.empresa_id, (empDiag?.plan ?? 'free') as Plan))) {
     return NextResponse.json(
-      { error: 'El asistente de IA está disponible desde el plan Impulso Sostenible. Contacta a calculadoradereuso.com para ampliar tu plan.' },
+      { error: 'El asistente de IA está disponible desde el plan Impulso Sostenible. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.' },
       { status: 403 }
     )
   }

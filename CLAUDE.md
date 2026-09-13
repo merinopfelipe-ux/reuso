@@ -81,12 +81,14 @@ Antes de asumir el nombre o las columnas de una tabla, verifica con `grep` en `s
 - **Roles (RBAC)**: `super_admin` (/admin, sin empresa_id), `empresa_admin` (/empresa, una empresa), `empleado` (/dashboard, invitado), `usuario_libre` (/dashboard, plan Explora).
 - **Planes: editables desde `/admin/planes`, NO fijos en código** (desde `sql/115`/`117`/`118`, 2026-09). La tabla `config_planes` es la fuente real (precio mensual y anual por COP/USD/EUR, límites) — el super_admin los cambia con flujo borrador→publicar, sin tocar código ni redesplegar. `src/lib/plan-limits.ts` solo aplica esos límites y trae un respaldo fijo por si la base no responde — nunca asumas que esos números son los reales sin consultar `config_planes`. Una empresa con fila en `empresas_negociaciones` ignora el plan global por completo. Valores de referencia (los del respaldo, pueden no ser los publicados hoy):
 
-  | Display name | ID | Cálculos/mes | Informes/mes | Cotizaciones/mes | Empleados |
-  |---|---|---|---|---|---|
-  | Explora | `free` | 10 | 0 | 0 | 1 |
-  | Circular Lab | `lab` | 200 | 5 | 0 | 5 |
-  | Impulso Sostenible | `impulso` | 200 | 5 | 200 | 10 |
-  | Impacto Ilimitado | `ilimitado` | ∞ | ∞ | ∞ | ∞ |
+  | Display name | ID | Cálculos/mes | Informes/mes | Cotizaciones/mes | DPP/mes | Empleados |
+  |---|---|---|---|---|---|---|
+  | Explora | `free` | 5 | 0 | 0 | 0 | 1 |
+  | Circular Lab | `lab` | 0 | 5 | 0 | 5 | 5 |
+  | Impulso Sostenible | `impulso` | 0 | 5 | 200 | 200 | 10 |
+  | Impacto Ilimitado | `ilimitado` | ∞ | ∞ | ∞ | ∞ | ∞ |
+
+  Desde este cambio, Cálculo suelto queda exclusivo de Explora (muestra gratis); los planes pagos usan DPP.
 - **Invitaciones**: libre→crea empresa→empresa_admin | admin→invita por email→token | invitado abre link→empleado.
 - **Documentos**: Informe (rango de fechas), código `RCO2-XXXX-YYYY` + QR.
 

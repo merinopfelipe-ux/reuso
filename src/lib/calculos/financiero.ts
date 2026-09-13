@@ -1,4 +1,5 @@
 import type { InputsFinancieros, ResultadosFinancieros } from '@/types'
+import { formatCOP } from '@/lib/format'
 
 export type { InputsFinancieros, ResultadosFinancieros }
 
@@ -13,8 +14,10 @@ function generarNarrativa(
   res: Omit<ResultadosFinancieros, 'narrativa' | 'snapshot'>
 ): string {
   const moneda = inputs.moneda ?? 'COP'
-  const fmt = (n: number) =>
-    n.toLocaleString('es-CO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 })
+  const fmt = (n: number) => {
+    if (moneda === 'COP') return formatCOP(n)
+    return n.toLocaleString('es-CO', { style: 'currency', currency: moneda, maximumFractionDigits: 0 })
+  }
 
   const partes: string[] = []
 

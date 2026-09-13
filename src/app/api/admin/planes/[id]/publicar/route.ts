@@ -68,17 +68,51 @@ export async function POST(
     equivalente_mensual_anual_eur: actual.borrador_equivalente_mensual_anual_eur,
   }
 
-  const { error } = await adminClient
+  const updateData: Record<string, unknown> = {
+    ...despues,
+    tiene_borrador_sin_publicar: false,
+    publicado_at: new Date().toISOString(),
+    actualizado_at: new Date().toISOString(),
+  }
+
+  let { error } = await adminClient
     .from('config_planes')
-    .update({
-      ...despues,
-      tiene_borrador_sin_publicar: false,
-      publicado_at: new Date().toISOString(),
-      actualizado_at: new Date().toISOString(),
-    })
+    .update(updateData)
     .eq('id', id)
 
-  if (error) return NextResponse.json({ error: 'No se pudo publicar' }, { status: 500 })
+  let aviso: string | undefined
+  if (error) {
+    console.error(`[API /admin/planes/${id}/publicar] Error en update inicial:`, error)
+    // Si falla por columnas de sql/128 (equivalente_mensual_anual_* aún no migradas en Supabase),
+    // se reintenta inmediatamente sin ellas para que la publicación nunca se bloquee. Solo se
+    // reintenta cuando el error menciona esas columnas puntuales, nunca ante cualquier error,
+    // para no reportar éxito silencioso ante una falla distinta (ej. un valor de borrador inválido).
+    if (!error.message?.includes('equivalente_mensual_anual')) {
+      return NextResponse.json({ error: error.message || 'No se pudo publicar' }, { status: 500 })
+    }
+    const camposSql128 = new Set([
+      'equivalente_mensual_anual_cop',
+      'equivalente_mensual_anual_usd',
+      'equivalente_mensual_anual_eur',
+      'borrador_equivalente_mensual_anual_cop',
+      'borrador_equivalente_mensual_anual_usd',
+      'borrador_equivalente_mensual_anual_eur',
+    ])
+    const updateSinSql128 = Object.fromEntries(
+      Object.entries(updateData).filter(([k]) => !camposSql128.has(k))
+    )
+    const reintento = await adminClient
+      .from('config_planes')
+      .update(updateSinSql128)
+      .eq('id', id)
+
+    if (reintento.error) {
+      console.error(`[API /admin/planes/${id}/publicar] Error crítico en reintento:`, reintento.error)
+      return NextResponse.json({ error: reintento.error.message || 'No se pudo publicar' }, { status: 500 })
+    }
+    error = null
+    aviso = 'Falta correr sql/128 para el equivalente mensual editable — el resto se publicó bien.'
+  }
 
   await logAuditoria(adminClient, {
     user_id: user.id,
@@ -87,5 +121,5 @@ export async function POST(
     ip: getIp(request),
   })
 
-  return NextResponse.json({ ok: true, plan: despues })
+  return NextResponse.json({ ok: true, plan: despues, ...(aviso ? { aviso } : {}) })
 }

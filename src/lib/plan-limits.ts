@@ -17,9 +17,9 @@ export const NOMBRES_PLAN: Record<Plan, string> = {
 // a los límites históricos fijos para no dejar el sistema sin límite por
 // un error de red.
 const LIMITES_RESPALDO: Record<Plan, { empleados: number; calculos_mes: number; informes_mes: number; cotizaciones_mes: number; dpp_mes: number; incluye_ia: boolean }> = {
-  free:     { empleados: 1,        calculos_mes: 10,       informes_mes: 0,        cotizaciones_mes: 0,        dpp_mes: 0,        incluye_ia: false },
-  lab:      { empleados: 5,        calculos_mes: 200,      informes_mes: 5,        cotizaciones_mes: 0,        dpp_mes: Infinity, incluye_ia: false },
-  impulso:  { empleados: 10,       calculos_mes: 200,      informes_mes: 5,        cotizaciones_mes: 200,      dpp_mes: Infinity, incluye_ia: true },
+  free:     { empleados: 1,        calculos_mes: 5,        informes_mes: 0,        cotizaciones_mes: 0,        dpp_mes: 0,        incluye_ia: false },
+  lab:      { empleados: 5,        calculos_mes: 0,        informes_mes: 5,        cotizaciones_mes: 0,        dpp_mes: 5,        incluye_ia: false },
+  impulso:  { empleados: 10,       calculos_mes: 0,        informes_mes: 5,        cotizaciones_mes: 200,      dpp_mes: 200,      incluye_ia: true },
   ilimitado: { empleados: Infinity, calculos_mes: Infinity, informes_mes: Infinity, cotizaciones_mes: Infinity, dpp_mes: Infinity, incluye_ia: true },
 }
 
@@ -77,7 +77,7 @@ export async function checkLimiteEmpleados(empresaId: string, plan: Plan): Promi
     .eq('empresa_id', empresaId)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} empleado. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} empleado. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
   return null
 }
@@ -96,7 +96,7 @@ export async function checkLimiteCalculos(empresaId: string, plan: Plan): Promis
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cálculos por mes. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cálculos por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
   return null
 }
@@ -105,7 +105,7 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
   const { informes_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye generación de informes. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye generación de informes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -118,7 +118,7 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} informes por mes. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} informes por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
   return null
 }
@@ -127,7 +127,7 @@ export async function checkLimiteCotizaciones(empresaId: string, plan: Plan): Pr
   const { cotizaciones_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Cotizador. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Cotizador. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -140,7 +140,7 @@ export async function checkLimiteCotizaciones(empresaId: string, plan: Plan): Pr
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cotizaciones por mes. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cotizaciones por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
   return null
 }
@@ -149,7 +149,7 @@ export async function checkLimiteDpp(empresaId: string, plan: Plan): Promise<str
   const { dpp_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Pasaporte Digital de Producto. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Pasaporte Digital de Producto. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -162,7 +162,7 @@ export async function checkLimiteDpp(empresaId: string, plan: Plan): Promise<str
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} pasaportes por mes. Contacta a calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} pasaportes por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
   }
   return null
 }
