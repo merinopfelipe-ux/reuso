@@ -252,6 +252,7 @@ interface Activo {
   n_ciclos: number
   peso_total_kg: number | null
   composicion_json: unknown
+  co2_manufactura_kg: number | null
   hash_integridad: string | null
   imagen_url: string | null
   qr_url: string | null
@@ -592,6 +593,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               {activo.peso_total_kg != null && (
                 <span style={{ background: 'rgba(0,130,124,0.08)', color: 'var(--text-secondary)', padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600 }}>
                   {activo.peso_total_kg} kg
+                </span>
+              )}
+              {activo.co2_manufactura_kg != null && activo.co2_manufactura_kg > 0 && (
+                <span style={{ background: 'rgba(56,185,142,0.12)', color: '#38B98E', padding: '3px 10px', borderRadius: 8, fontSize: 12, fontWeight: 700 }}>
+                  {formatNumero(activo.co2_manufactura_kg, { unidad: 'kg CO₂ eq evitados' })}
                 </span>
               )}
             </div>

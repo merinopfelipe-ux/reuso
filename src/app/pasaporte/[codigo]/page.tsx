@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { IdCard as IdentificationCard, Leaf, Droplet as Drop, TreeDeciduous as Tree, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
+import { IdCard as IdentificationCard, Leaf, ShieldCheck, RotateCcw as ArrowCounterClockwise, Dumbbell as Barbell, AlertCircle as WarningCircle } from '@/components/ui/icons'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { EmptyState } from '@/components/empty-state'
 import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { CollapseSection, ShareWhatsApp } from './collapse-section'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { formatNumero } from '@/lib/format'
-import { PARAM_EQUIV } from '@/lib/calculos/co2'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export const revalidate = 3600
@@ -43,20 +42,7 @@ function formatFecha(iso: string | null) {
   return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
-// Bug real corregido 2026-09-04: esta página seguía usando el árbol viejo
-// (8 kg CO2/año), explícitamente reemplazado en todo el sistema desde
-// 2026-07-30 ("no coexisten" con el nuevo valor) — nunca se actualizó aquí.
-// "duchas" queda igual (derivada de CO2, no de litros reales) porque el DPP
-// hoy no trackea agua evitada, solo CO2 (dpp_ciclos.co2_evitado_kg) — a
-// diferencia de calculadora.tsx/verificar, que sí tienen el litro real.
-// Pendiente real: o se agrega agua evitada al DPP, o se documenta esta
-// aproximación explícitamente en el Vault, no dejarla como si fuera exacta.
-function calcEquivalencias(co2_kg: number) {
-  return {
-    arboles: Math.round(co2_kg / (PARAM_EQUIV.CO2_arbol_anual_kg / 365)),
-    duchas: Math.round(co2_kg / 2.0),
-  }
-}
+
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const adminClient = await createAdminClient()
@@ -91,7 +77,7 @@ export default async function PasaportePage({ params }: PageProps) {
 
   const { data: activo } = await adminClient
     .from('dpp_activos')
-    .select('id, codigo_dpp, nombre, descripcion, estado, n_ciclos, peso_total_kg, composicion_json, hash_integridad, imagen_url, created_at, empresa_id')
+    .select('id, codigo_dpp, nombre, descripcion, estado, n_ciclos, peso_total_kg, composicion_json, co2_manufactura_kg, hash_integridad, imagen_url, created_at, empresa_id')
     .eq('codigo_dpp', codigo)
     .single()
 
@@ -130,8 +116,11 @@ export default async function PasaportePage({ params }: PageProps) {
   const ciclos = ciclosRes.data ?? []
   const empresa = empresaRes.data
   const composicion = Array.isArray(activo.composicion_json) ? activo.composicion_json as ComposicionItem[] : []
-  const co2_evitado_total = ciclos.reduce((s, c) => s + (c.co2_evitado_kg ?? 0), 0)
-  const eq = calcEquivalencias(co2_evitado_total)
+  // co2_evitado_kg por ciclo quedó hardcodeado en 0 desde el 2026-09-12 (para
+  // no contar la manufactura dos veces, ver dpp/activos/[id]/ciclo/route.ts) —
+  // el CO2 evitado real es co2_manufactura_kg, calculado una sola vez al crear
+  // el activo, nunca la suma de los ciclos.
+  const co2_evitado_total = activo.co2_manufactura_kg ?? 0
   const estadoConf = ESTADO_CONFIG[activo.estado ?? 'activo'] ?? ESTADO_CONFIG['activo']
 
   return (
@@ -347,13 +336,11 @@ export default async function PasaportePage({ params }: PageProps) {
           <CollapseSection titulo="Impacto ambiental" defaultOpen={true}>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
+              gridTemplateColumns: 'repeat(1, 1fr)',
               gap: 10,
             }}>
               {[
                 { icon: Leaf, color: '#38B98E', value: co2_evitado_total.toFixed(1), label: 'kg CO₂e evitados' },
-                { icon: Tree, color: '#00827C', value: eq.arboles, label: 'árboles protegidos' },
-                { icon: Drop, color: '#59A6E4', value: eq.duchas, label: 'duchas de 10 min' },
               ].map(({ icon: Icon, color, value, label }, i) => (
                 <div key={i} style={{
                   background: 'var(--bg-card)', border: '1px solid var(--border)',
@@ -373,7 +360,7 @@ export default async function PasaportePage({ params }: PageProps) {
               ))}
             </div>
             <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.5 }}>
-              El CO₂ evitado se calcula a partir de la composición de materiales y los factores de emisión de cada ciclo.
+              Calculamos la huella evitada como una <strong>estimación</strong> técnica basada en la composición de materiales y los ciclos de reúso. Cada cifra posee carácter <strong>estimativo</strong> y respalda la trazabilidad de la pieza.
             </p>
           </CollapseSection>
         )}

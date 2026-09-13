@@ -30,7 +30,7 @@ export default async function DppDetallePage({ params }: PageProps) {
   const [activoRes, ciclosRes, metricasRes, documentosRes] = await Promise.all([
     adminClient
       .from('dpp_activos')
-      .select('id, codigo_dpp, nombre, descripcion, estado, n_ciclos, peso_total_kg, composicion_json, hash_integridad, imagen_url, qr_url, created_at, updated_at, empresa_id')
+      .select('id, codigo_dpp, nombre, descripcion, estado, n_ciclos, peso_total_kg, composicion_json, co2_manufactura_kg, hash_integridad, imagen_url, qr_url, created_at, updated_at, empresa_id')
       .eq('id', params.id)
       .single(),
     adminClient
