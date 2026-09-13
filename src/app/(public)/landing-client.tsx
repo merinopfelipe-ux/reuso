@@ -2003,9 +2003,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {categoria.nombre && (
                       <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
                     )}
-                    <div className="rounded-[12px] border-2" style={{ borderColor: `${colorCategoria}40` }}>
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-sm" style={{ borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
+                    <div className="rounded-[12px] border-2 overflow-hidden" style={{ borderColor: `${colorCategoria}40`, isolation: 'isolate' }}>
+                      <div className="overflow-x-auto rounded-[10px]">
+                        <table className="w-full text-sm" style={{ borderCollapse: 'separate', borderSpacing: 0, tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
                           <colgroup>
                             <col style={{ width: 150 }} />
                             {PLANS.map(plan => <col key={plan.id} style={{ width: 108 }} />)}
@@ -2013,13 +2013,16 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           <thead>
                             <tr style={{ background: `${colorCategoria}14` }}>
                               <th
-                                className={`text-left px-3 py-2.5 text-xs font-bold ${ts}`}
-                                style={{ position: 'sticky', left: 0, zIndex: 1, background: isDark ? '#525252' : '#FFFFFF' }}
+                                className={`text-left px-3 py-2.5 text-xs font-bold rounded-tl-[10px] ${ts}`}
+                                style={{ position: 'sticky', left: 0, zIndex: 2, background: isDark ? '#525252' : '#FFFFFF' }}
                               >
                                 &nbsp;
                               </th>
-                              {PLANS.map(plan => (
-                                <th key={plan.id} className="text-center px-2 py-2">
+                              {PLANS.map((plan, planIdx) => (
+                                <th
+                                  key={plan.id}
+                                  className={`text-center px-2 py-2 ${planIdx === PLANS.length - 1 ? 'rounded-tr-[10px]' : ''}`}
+                                >
                                   <button
                                     type="button"
                                     onClick={() => irAPlan(plan)}
@@ -2038,39 +2041,43 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                             </tr>
                           </thead>
                           <tbody>
-                            {categoria.filas.map((fila, fi) => (
-                              <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
-                                <td
-                                  className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${tp}`}
-                                  style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
-                                >
-                                  <span className="inline-flex items-center gap-1.5 min-w-0">
-                                    <span className="break-words min-w-0">{fila.label}</span>
-                                    {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} centrado />}
-                                  </span>
-                                </td>
-                                {PLANS.map(plan => {
-                                  const val = fila.valores[plan.id]
-                                  return (
-                                    <td key={plan.id} className="text-center px-2 py-2.5">
-                                      {fila.tipo === 'check' ? (
-                                        val ? (
-                                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
-                                            <Check size={14} strokeWidth={3} style={{ color: colorCategoria }} />
-                                          </span>
+                            {categoria.filas.map((fila, fi) => {
+                              const isUltimaFila = fi === categoria.filas.length - 1
+                              return (
+                                <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
+                                  <td
+                                    className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${isUltimaFila ? 'rounded-bl-[10px]' : ''} ${tp}`}
+                                    style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
+                                  >
+                                    <span className="inline-flex items-center gap-1.5 min-w-0">
+                                      <span className="break-words min-w-0">{fila.label}</span>
+                                      {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} centrado />}
+                                    </span>
+                                  </td>
+                                  {PLANS.map((plan, planIdx) => {
+                                    const val = fila.valores[plan.id]
+                                    const isUltimaCelda = isUltimaFila && planIdx === PLANS.length - 1
+                                    return (
+                                      <td key={plan.id} className={`text-center px-2 py-2.5 ${isUltimaCelda ? 'rounded-br-[10px]' : ''}`}>
+                                        {fila.tipo === 'check' ? (
+                                          val ? (
+                                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
+                                              <Check size={14} strokeWidth={3} style={{ color: colorCategoria }} />
+                                            </span>
+                                          ) : (
+                                            <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
+                                          )
+                                        ) : val ? (
+                                          <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{val as string}</span>
                                         ) : (
                                           <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
-                                        )
-                                      ) : val ? (
-                                        <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{val as string}</span>
-                                      ) : (
-                                        <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
-                                      )}
-                                    </td>
-                                  )
-                                })}
-                              </tr>
-                            ))}
+                                        )}
+                                      </td>
+                                    )
+                                  })}
+                                </tr>
+                              )
+                            })}
                           </tbody>
                         </table>
                       </div>
@@ -2401,7 +2408,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               >
                 Crear mi cuenta y calcular mi primer diagnóstico <ArrowRight size={18} strokeWidth={2.5} />
               </Link>
-              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Sin tarjeta de crédito. Plan Explora con 10 cálculos gratis al mes.</p>
+              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Sin tarjeta de crédito. Plan Explora con 5 cálculos gratis al mes.</p>
             </div>
           </motion.div>
         </div>
