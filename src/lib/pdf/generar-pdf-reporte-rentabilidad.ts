@@ -1,15 +1,12 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { ResultadoRentabilidad } from '@/lib/reportes/rentabilidad'
+import { formatCOP } from '@/lib/format'
 import { dibujarMarcaEmpresa } from './pdf-shared'
 
 const BRAND: [number, number, number] = [0, 130, 124]
 const NEGRO: [number, number, number] = [71, 71, 71]
 const GRIS: [number, number, number] = [153, 153, 153]
-
-function formatCOP(n: number): string {
-  return '$ ' + Math.round(n).toLocaleString('es-CO')
-}
 
 export interface DatosPdfRentabilidad {
   empresa_nombre: string

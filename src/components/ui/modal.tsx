@@ -99,13 +99,13 @@ export function Modal({
         onClick={e => e.stopPropagation()}
       >
         {/* Header Fijo — con sinEncabezado, solo el botón "X" con padding
-            mínimo, sin reservar el espacio del ícono/título/descripción. */}
-        <div className={sinEncabezado ? 'flex-shrink-0 p-3' : 'flex-shrink-0 p-5 sm:p-6 pb-2'}>
+            mínimo y flujo limpio para que el scrollbar nunca pase por detrás. */}
+        <div className={sinEncabezado ? 'flex-shrink-0 flex items-center justify-end p-3 sm:p-4 pb-1' : 'flex-shrink-0 p-5 sm:p-6 pb-2 relative'}>
           {/* Botón X de cierre arriba a la derecha */}
           <button
             type="button"
             onClick={onClose}
-            className={`absolute p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-colors cursor-pointer ${sinEncabezado ? 'top-2 right-2' : 'top-4 right-4 sm:top-5 sm:right-5'}`}
+            className={`p-1.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-colors cursor-pointer z-10 ${sinEncabezado ? '' : 'absolute top-4 right-4 sm:top-5 sm:right-5'}`}
             aria-label="Cerrar modal"
           >
             <IconoX size={18} />
@@ -144,7 +144,7 @@ export function Modal({
         </div>
 
         {/* Cuerpo Scrolleable */}
-        <div className="flex-1 overflow-y-auto min-h-0 px-5 sm:px-6 pb-2">
+        <div className={`flex-1 overflow-y-auto min-h-0 px-5 sm:px-6 ${sinEncabezado ? 'pt-1 pb-6' : 'pb-2'}`}>
           <div className="flex flex-col gap-4">
             {children}
           </div>

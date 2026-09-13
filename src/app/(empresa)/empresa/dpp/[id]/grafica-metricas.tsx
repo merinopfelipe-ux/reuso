@@ -3,6 +3,7 @@
 import {
   AreaChart, Area, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
+import { formatCOP } from '@/lib/format'
 import type { ResultadosFinancieros } from '@/types'
 
 interface Props {
@@ -56,7 +57,12 @@ export function GraficaMetricas({ resultados, moneda }: Props) {
             <YAxis tick={{ fontSize: 10, fill: 'var(--text-placeholder)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${moneda} ${formatK(v)}`} />
             <Tooltip
               contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
-              formatter={(value) => [`${moneda} ${Math.round(Number(value ?? 0)).toLocaleString('es-CO')}`, '']}
+              formatter={(value) => [
+                moneda === 'COP'
+                  ? formatCOP(Number(value ?? 0))
+                  : `${moneda} ${Math.round(Number(value ?? 0)).toLocaleString('es-CO')}`,
+                '',
+              ]}
             />
             <Area type="monotone" dataKey="valor" stroke="#00827C" strokeWidth={2} fill="url(#gradCostos)" />
           </AreaChart>

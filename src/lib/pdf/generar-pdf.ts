@@ -311,7 +311,7 @@ export async function generarPDF(datos: DatosDocumento): Promise<Buffer> {
   doc.setTextColor(TEXT_LIGHT)
 
   const pieLegal = plantilla?.pie_legal
-    ?? 'Por favor, considera el medio ambiente antes de imprimir este informe. Mantenlo digital.'
+    ?? 'Los valores reportados corresponden a una estimación técnica de impacto. Entregamos todos los cálculos con alcance estimativo referencial para visibilizar el beneficio del reúso continuo.'
 
   doc.text(pieLegal, W / 2, footerY + 2, { align: 'center', maxWidth: W - 30 })
   doc.setFontSize(6)

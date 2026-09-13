@@ -72,6 +72,24 @@ function formatCOPCompact(n: number): string {
   return '$' + formatEnteroMillones(Math.round(n))
 }
 
+// En la cotización pública: solo si el IVA está activo Y tiene decimales,
+// el subtotal, IVA y total muestran decimales (en la misma línea, más pequeños).
+// De resto, NUNCA se ponen decimales — Regla institucional 2026-09-11.
+function formatCOPConDecimalesOpcionales(n: number, permitirDecimales: boolean): React.ReactNode {
+  if (permitirDecimales && n % 1 !== 0) {
+    const val = n.toFixed(2)
+    const [enteroStr, decStr] = val.split('.')
+    const enteroFormateado = formatEnteroMillones(parseInt(enteroStr, 10))
+    return (
+      <span>
+        ${enteroFormateado}
+        <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>,{decStr}</span>
+      </span>
+    )
+  }
+  return <span>${formatEnteroMillones(Math.round(n))}</span>
+}
+
 
 
 /**
@@ -254,30 +272,37 @@ export function VistaCot({
       {/* Totales: Subtotal / Descuento / IVA (solo si IVA o Descuento están activos) -> Total */}
       <div className="flex justify-end mb-8">
         <div className="w-[260px] sm:w-[300px] space-y-2">
-          {(ivaActivo || desglose.descuentoMonto > 0) && (
-            <>
-              <div className="flex justify-between text-sm">
-                <span className={`font-bold tracking-wide text-xs ${ts}`}>Subtotal</span>
-                <span className="font-bold">{formatCOPCompact(desglose.subtotal + desglose.transporte)}</span>
-              </div>
-              {desglose.descuentoMonto > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className={ts}>Descuento{descuentoTipo === 'porcentaje' ? ` (${descuento} %)` : ''}</span>
-                  <span>- {formatCOPCompact(desglose.descuentoMonto)}</span>
+          {(() => {
+            const tieneDecimalesIva = Boolean(ivaActivo && (desglose.ivaMonto % 1 !== 0))
+            return (
+              <>
+                {(ivaActivo || desglose.descuentoMonto > 0) && (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className={`font-bold tracking-wide text-xs ${ts}`}>Subtotal</span>
+                      <span className="font-bold">{formatCOPConDecimalesOpcionales(desglose.subtotal + desglose.transporte, tieneDecimalesIva)}</span>
+                    </div>
+                    {desglose.descuentoMonto > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className={ts}>Descuento{descuentoTipo === 'porcentaje' ? ` (${descuento} %)` : ''}</span>
+                        <span>- {formatCOPConDecimalesOpcionales(desglose.descuentoMonto, tieneDecimalesIva)}</span>
+                      </div>
+                    )}
+                    {ivaActivo && (
+                      <div className="flex justify-between text-sm">
+                        <span className={ts}>IVA ({ivaPorcentaje} %)</span>
+                        <span>{formatCOPConDecimalesOpcionales(desglose.ivaMonto, tieneDecimalesIva)}</span>
+                      </div>
+                    )}
+                  </>
+                )}
+                <div className={`${(ivaActivo || desglose.descuentoMonto > 0) ? `border-t pt-2 ${border}` : ''} flex justify-between items-center`}>
+                  <span className="text-base font-bold">Total</span>
+                  <span className="text-lg font-bold">{formatCOPConDecimalesOpcionales(total, tieneDecimalesIva)}</span>
                 </div>
-              )}
-              {ivaActivo && (
-                <div className="flex justify-between text-sm">
-                  <span className={ts}>IVA ({ivaPorcentaje} %)</span>
-                  <span>{formatCOPCompact(desglose.ivaMonto)}</span>
-                </div>
-              )}
-            </>
-          )}
-          <div className={`${(ivaActivo || desglose.descuentoMonto > 0) ? `border-t pt-2 ${border}` : ''} flex justify-between items-center`}>
-            <span className="text-base font-bold">Total</span>
-            <span className="text-lg font-bold">{formatCOPCompact(total)}</span>
-          </div>
+              </>
+            )
+          })()}
         </div>
       </div>
 

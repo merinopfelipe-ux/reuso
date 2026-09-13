@@ -71,6 +71,15 @@ function formatCOP(n: number): string {
   return '$' + formatEnteroMillones(Math.round(n))
 }
 
+function formatCOPOpcional(n: number, conDecimales: boolean): string {
+  if (conDecimales && n % 1 !== 0) {
+    const val = n.toFixed(2)
+    const [enteroStr, decStr] = val.split('.')
+    return '$' + formatEnteroMillones(parseInt(enteroStr, 10)) + ',' + decStr
+  }
+  return '$' + formatEnteroMillones(Math.round(n))
+}
+
 const NEGRO = '#1a1a1a'
 const GRIS_TEXTO = '#666666'
 const BORDE = '#e5e5e5'
@@ -268,6 +277,7 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
   addPageIfNeeded(60)
   
   const desglose = calcularDesglose(datos)
+  const tieneDecimalesIva = Boolean(datos.iva_activo && (desglose.ivaMonto % 1 !== 0))
   const colX = 140
 
   doc.setFont('helvetica', 'normal')
@@ -275,21 +285,21 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
   doc.setTextColor(GRIS_TEXTO)
   doc.text('Subtotal', colX, y)
   doc.setTextColor(NEGRO)
-  doc.text(formatCOP(desglose.subtotal + desglose.transporte), W - MARGIN_X, y, { align: 'right' })
+  doc.text(formatCOPOpcional(desglose.subtotal + desglose.transporte, tieneDecimalesIva), W - MARGIN_X, y, { align: 'right' })
   y += 6
 
   if (desglose.descuentoMonto > 0) {
     doc.setTextColor(GRIS_TEXTO)
     doc.text(`Descuento${datos.descuento_tipo === 'porcentaje' ? ` (${datos.descuento} %)` : ''}`, colX, y)
     doc.setTextColor(NEGRO)
-    doc.text(`- ${formatCOP(desglose.descuentoMonto)}`, W - MARGIN_X, y, { align: 'right' })
+    doc.text(`- ${formatCOPOpcional(desglose.descuentoMonto, tieneDecimalesIva)}`, W - MARGIN_X, y, { align: 'right' })
     y += 6
   }
   if (datos.iva_activo) {
     doc.setTextColor(GRIS_TEXTO)
     doc.text(`IVA (${datos.iva_porcentaje} %)`, colX, y)
     doc.setTextColor(NEGRO)
-    doc.text(formatCOP(desglose.ivaMonto), W - MARGIN_X, y, { align: 'right' })
+    doc.text(formatCOPOpcional(desglose.ivaMonto, tieneDecimalesIva), W - MARGIN_X, y, { align: 'right' })
     y += 6
   }
 
@@ -301,7 +311,7 @@ export function generarPDFCotizacion(datos: DatosCotizacionPDF): Buffer {
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(14)
   doc.text('Total', colX, y)
-  doc.text(formatCOP(desglose.total), W - MARGIN_X, y, { align: 'right' })
+  doc.text(formatCOPOpcional(desglose.total, tieneDecimalesIva), W - MARGIN_X, y, { align: 'right' })
   y += 12
 
   // --- MÓDULOS COMERCIALES ---

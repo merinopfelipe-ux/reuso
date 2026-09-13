@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
+import { enviarNotificacionTicket } from '@/lib/email'
 
 const schema = z.object({
   nombre: z.string().min(2).max(100),
@@ -52,6 +53,33 @@ export async function POST(req: NextRequest) {
   if (error) {
     console.error('Error insertando consulta legal:', error)
     return NextResponse.json({ error: 'No pudimos guardar tu consulta. Inténtalo de nuevo.' }, { status: 500 })
+  }
+
+  try {
+    const { data: config } = await supabase
+      .from('config_sistema')
+      .select('email_notificaciones')
+      .eq('id', 'default')
+      .single()
+
+    const { data: admins } = await supabase
+      .from('profiles')
+      .select('email')
+      .eq('rol', 'super_admin')
+
+    const destinatarios = [
+      config?.email_notificaciones ?? 'servicio@calculadoradereuso.com',
+      ...((admins ?? []).map((a: { email: string }) => a.email)),
+    ].filter((v, i, arr): v is string => Boolean(v) && arr.indexOf(v) === i)
+
+    await enviarNotificacionTicket(destinatarios, {
+      nombre,
+      email,
+      categoria: `Duda Legal: ${tipo}`,
+      mensaje,
+    })
+  } catch (err) {
+    console.error('Error enviando notificación de duda legal:', err)
   }
 
   return NextResponse.json({ ok: true })

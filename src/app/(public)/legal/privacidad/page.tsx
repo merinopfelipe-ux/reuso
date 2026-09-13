@@ -72,7 +72,7 @@ const T = {
     comoUsamos: {
       titulo: 'Cómo usamos tus datos',
       items: [
-        'Prestar el servicio de estimación y medición de CO₂ evitado.',
+        'Prestar el servicio de estimación y medición referencial de CO₂ evitado con carácter estimativo.',
         'Gestionar tu cuenta y tus accesos a la plataforma.',
         'Generar informes con código de verificación único.',
         'Enviarte notificaciones relacionadas con el servicio contratado.',
@@ -100,8 +100,8 @@ const T = {
         { fuerte: 'Rectificación:', texto: ' actualiza o corrige tu información.' },
         { fuerte: 'Supresión:', texto: ' solicita la eliminación de tus datos cuando no exista obligación legal de conservarlos.' },
         { fuerte: 'Revocatoria:', texto: ' retira el consentimiento para el tratamiento de tus datos.' },
-        { fuerte: 'Portabilidad (RGPD - UE):', texto: ' si eres de la Unión Europea, recibe tus datos en formato estructurado y legible por máquina.' },
-        { fuerte: 'Opt-out (CCPA - EE. UU.):', texto: ' si eres residente de California, puedes oponerte a la venta de tu información (no la realizamos, pero te reconocemos el derecho).' },
+        { fuerte: 'Portabilidad (RGPD UE):', texto: ' si eres de la Unión Europea, recibe tus datos en formato estructurado y legible por máquina.' },
+        { fuerte: 'Opt out (CCPA EE. UU.):', texto: ' si eres residente de California, puedes oponerte a la venta de tu información (no la realizamos, pero te reconocemos el derecho).' },
         { fuerte: 'Ley 1581 (Colombia):', texto: ' como titular tienes derecho a conocer, actualizar, rectificar y suprimir tus datos personales.' },
       ],
       contacto: 'Ejerce estos derechos en',
@@ -182,7 +182,7 @@ const T = {
     comoUsamos: {
       titulo: 'How we use your data',
       items: [
-        'Provide the CO₂ avoided estimation and measurement service.',
+        'Provide the CO₂ avoided estimation and measurement service with an estimative reference scope.',
         'Manage your account and your access to the platform.',
         'Generate reports with a unique verification code.',
         'Send you notifications related to the contracted service.',
@@ -210,8 +210,8 @@ const T = {
         { fuerte: 'Rectification:', texto: ' update or correct your information.' },
         { fuerte: 'Erasure:', texto: ' request deletion of your data when there is no legal obligation to keep it.' },
         { fuerte: 'Withdrawal of consent:', texto: ' revoke consent for the processing of your data.' },
-        { fuerte: 'Portability (GDPR - EU):', texto: ' if you are in the European Union, receive your data in a structured, machine-readable format.' },
-        { fuerte: 'Opt-out (CCPA - US):', texto: ' if you are a California resident, you may opt out of the sale of your information (we do not sell it, but we recognize this right).' },
+        { fuerte: 'Portability (GDPR EU):', texto: ' if you are in the European Union, receive your data in a structured, machine-readable format.' },
+        { fuerte: 'Opt out (CCPA US):', texto: ' if you are a California resident, you may opt out of the sale of your information (we do not sell it, but we recognize this right).' },
         { fuerte: 'Law 1581 (Colombia):', texto: ' as a data subject you have the right to know, update, correct and delete your personal data.' },
       ],
       contacto: 'Exercise these rights at',
@@ -326,9 +326,20 @@ export default function PrivacidadPage() {
 
       <h2 id="como-usamos" style={h2}>{t.comoUsamos.titulo}</h2>
       <ul style={ul}>
-        {t.comoUsamos.items.map((item, i) => (
-          <li key={i} style={li}>{item}</li>
-        ))}
+        {t.comoUsamos.items.map((item, i) => {
+          const parts = item.split(/(estimación|estimativo|estimation|estimative)/gi)
+          return (
+            <li key={i} style={li}>
+              {parts.map((part, pi) =>
+                /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+                  <strong key={pi}>{part}</strong>
+                ) : (
+                  part
+                )
+              )}
+            </li>
+          )
+        })}
       </ul>
 
       <h2 id="con-quien" style={h2}>{t.conQuien.titulo}</h2>

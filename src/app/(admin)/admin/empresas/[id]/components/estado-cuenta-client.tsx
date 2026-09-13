@@ -6,6 +6,7 @@ import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power
 import { Button } from '@/components/ui/button'
 import { PlanBadge, PLAN_CONFIG } from '@/components/admin/plan-badge'
 import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
+import { formatCOP } from '@/lib/format'
 import type { Empresa, Plan } from '@/types'
 
 interface HistorialPlanEntry {
@@ -378,9 +379,9 @@ export function EstadoCuentaClient({
               ))}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: 'var(--text-primary)' }}>
                 <Sparkles size={13} style={{ color: 'var(--text-secondary)', flexShrink: 0 }} />
-                <strong>${planReal.precio_cop.toLocaleString('es-CO')} COP</strong> / mes
+                <strong>{formatCOP(planReal.precio_cop)} COP</strong> / mes
                 {planReal.precio_anual_cop != null && (
-                  <span style={{ color: 'var(--text-secondary)' }}>(≈${planReal.precio_anual_cop.toLocaleString('es-CO')}/año)</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>(≈{formatCOP(planReal.precio_anual_cop)}/año)</span>
                 )}
               </div>
             </div>

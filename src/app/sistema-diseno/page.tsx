@@ -53,6 +53,8 @@ import { Pagination } from '@/components/ui/pagination'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
 import { PAISES } from '@/components/ui/selector-pais'
 import { TablaCotizadorDemo } from './components/tabla-cotizador-demo'
+import { formatearPrecioColombiano } from '@/lib/constants/pricing'
+import { InputPrecio } from '@/components/ui/formatted-number-input'
 
 const PRICING_PLANS = PLANS;
 
@@ -186,6 +188,7 @@ export default function ManualDisenoPage() {
   const [demoPagina, setDemoPagina] = useState(1)
   const [demoPorPagina, setDemoPorPagina] = useState(25)
   const [demoBotonCargando, setDemoBotonCargando] = useState(false)
+  const [demoPrecioCOP, setDemoPrecioCOP] = useState('1490000')
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -904,6 +907,18 @@ export default function ManualDisenoPage() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
                 <span><strong>Microanimaciones táctiles:</strong> Todos los elementos interactivos deben incluir clases de transición suave (<code>hover-pop</code>, <code>hover-press</code>, microescalas de 1.05x).</span>
               </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Formato de números en Colombia:</strong> En COP y números de plataforma, los millones se separan con apóstrofo (<code>&apos;</code>), ej. <code>$1&apos;490.000</code> o <code>$14&apos;900.000</code>. Los miles con punto (<code>.</code>), ej. <code>$49.000</code>. Los decimales/centavos con coma (<code>,</code>), ej. <code>,67</code>, ubicados <strong>en la misma línea horizontal</strong> pero visualmente más pequeños (como en <code>/admin/contenido</code>, tamaño aprox. <code>0.8em</code>, <strong>heredando siempre el mismo peso tipográfico del número, nunca en negrita</strong>). Prohibido usar comas anglosajonas para miles (<code>$1,490,000</code>) o puntos para millones (<code>$1.490.000</code>).</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Regla de redondeo:</strong> El redondeo solo existe como sugerencia editable en <code>/admin/contenido</code>. De resto, en ninguna pantalla pública ni cotización hay redondeo: el precio real que es es el que se muestra.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span><strong>Alineación y edición monetaria:</strong> Todo número o precio va alineado a la derecha en tablas y reportes, con el símbolo de moneda <code>$</code> a la izquierda. Los inputs deben formatear en vivo sin alterar el cursor ni duplicar cajas de texto.</span>
+              </li>
             </ul>
           </div>
 
@@ -1390,14 +1405,35 @@ export default function ManualDisenoPage() {
               const displayPrice = isYearly ? finalMonthly * 12 : finalMonthly;
               
               const formattedPrice = plan.id === 'free' ? 'Gratis' : `${currency.symbol}${currency.format(displayPrice)}`;
+              const finalMonthlyFormatted = plan.id === 'free' ? '0' : `${currency.symbol}${currency.format(finalMonthly)}`;
 
               return (
                 <div key={plan.id} className={`relative p-8 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-2 flex flex-col h-full ${plan.popular ? (isDark ? 'bg-white/10 border-[#D6F391]/40 shadow-[0_20px_50px_rgba(214,243,145,0.1)]' : 'bg-primary border-[#00827C]/30 shadow-[0_20px_50px_rgba(0,130,124,0.1)]') : (isDark ? 'bg-[#D6F391]/05 border-white/10' : 'bg-white/80 border-[#00827C]/10 backdrop-blur-md')}`}>
                   {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#474747] text-[#D6F391] text-[9px] font-bold tracking-[0.3em] rounded-full shadow-lg whitespace-nowrap">LO MÁS BUSCADO</div>}
                   <div className="mb-8">
                     <span className={`text-[10px] font-black tracking-widest opacity-40 text-primary`}>{plan.tagline}</span>
-                    <h3 className={`text-3xl font-black mt-2 text-primary`}>{formattedPrice}</h3>
-                    {plan.id !== 'free' && <div className={`text-[10px] mt-1 font-bold ${isDark ? 'text-white/30' : 'text-[#00827C]/40'}`}>{isYearly ? 'al año' : 'mensual'}</div>}
+                    <h3 className={`text-3xl font-black mt-2 text-primary flex items-baseline`}>
+                      {plan.id === 'free' ? 'Gratis' : (
+                        <>
+                          {formattedPrice.split(',')[0]}
+                          {formattedPrice.includes(',') && (
+                            <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>
+                              ,{formattedPrice.split(',')[1]}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </h3>
+                    {plan.id !== 'free' && (
+                      <div className={`text-[10px] mt-1 font-bold ${isDark ? 'text-white/40' : 'text-[#00827C]/60'}`}>
+                        {isYearly ? (
+                          <>
+                            <span>al año</span>
+                            <span className="block text-[11px] font-medium opacity-80 mt-0.5">equivale a {finalMonthlyFormatted}/mes</span>
+                          </>
+                        ) : 'mensual'}
+                      </div>
+                    )}
                   </div>
                   <p className={`text-sm leading-relaxed mb-8 font-medium ${isDark ? 'text-white/60' : 'text-[#474747]'}`}>{plan.id === 'free' ? 'Para individuos que inician su viaje circular.' : plan.tagline}</p>
                   <div className={`w-full h-px mb-8 bg-active`} />
@@ -1652,6 +1688,81 @@ export default function ManualDisenoPage() {
               </Modal>
               <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-3 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
                 {'<Modal abierto={open} onClose={...} titulo="..." varianteConfirmar="error" textoConfirmar="Eliminar" onConfirmar={...}>{children}</Modal>'}
+              </div>
+            </div>
+
+            {/* H. FORMATO NUMÉRICO Y MONEDA EN COLOMBIA */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>H. Formato Numérico y Moneda en Colombia</h3>
+                <code className="text-[9px] font-mono opacity-40">src/lib/format.ts · src/lib/constants/pricing.ts</code>
+              </div>
+              <p className={`text-xs mb-3 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+                <strong>Estándar visual colombiano obligatorio en toda la plataforma:</strong> Millones con apóstrofo (<code>&apos;</code>), miles con punto (<code>.</code>), centavos con coma (<code>,</code>) en tamaño reducido, y símbolo monetario <code>$</code> a la izquierda. En inputs interactivos, el formato se aplica en vivo en una sola línea limpia sin alterar el cursor.
+              </p>
+
+              {/* Demo interactivo */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl border mb-4" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,130,124,0.03)', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,130,124,0.12)' }}>
+                {/* Input interactivo */}
+                <div className="space-y-3">
+                  <label className="text-xs font-bold block text-[var(--text-primary)]">
+                    Prueba el autoformato en tiempo real (escribe cualquier cifra):
+                  </label>
+                  <InputPrecio
+                    value={demoPrecioCOP}
+                    onChange={(v) => setDemoPrecioCOP(v)}
+                    className="w-full"
+                  />
+                  <div className="flex gap-2 flex-wrap text-[11px] items-center pt-1">
+                    <span className="text-[var(--text-secondary)] font-medium">Ejemplos rápidos:</span>
+                    <button type="button" onClick={() => setDemoPrecioCOP('49000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 49.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('349000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 349.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('1490000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 1&apos;490.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('14900000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 14&apos;900.000</button>
+                  </div>
+                </div>
+
+                {/* Renderizado de Display con jerarquía */}
+                <div className="flex flex-col justify-center rounded-xl p-4 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1">
+                    Visualización en tarjeta / encabezado de precio:
+                  </span>
+                  <div className="text-3xl font-black text-primary flex items-baseline">
+                    ${formatearPrecioColombiano(demoPrecioCOP, false)}
+                  </div>
+                  <span className="text-[11px] text-[var(--text-secondary)] mt-2">
+                    Con centavos reducidos: ${formatearPrecioColombiano(Number(demoPrecioCOP || 0) / 12, true).split(',')[0]}
+                    {formatearPrecioColombiano(Number(demoPrecioCOP || 0) / 12, true).includes(',') && (
+                      <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>
+                        ,{formatearPrecioColombiano(Number(demoPrecioCOP || 0) / 12, true).split(',')[1]}
+                      </span>
+                    )}
+                    <span className="text-[10px] opacity-60 ml-1">/mes (cálculo anual/12)</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Comparador de Reglas visuales */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
+                  <div className="text-[10px] font-black tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">✓ CORRECTO (COLOMBIA)</div>
+                  <div className="text-base font-bold text-[var(--text-primary)]">$ 1&apos;490.000</div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">Apóstrofo (&apos;) en millones, punto (.) en miles.</p>
+                </div>
+                <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5">
+                  <div className="text-[10px] font-black tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ PROHIBIDO (PUNTOS DOBLES)</div>
+                  <div className="text-base font-bold text-rose-600 dark:text-rose-400 line-through">$ 1.490.000</div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">No usar punto para millones; confunde millones con miles.</p>
+                </div>
+                <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5">
+                  <div className="text-[10px] font-black tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ PROHIBIDO (ANGLOSAJÓN)</div>
+                  <div className="text-base font-bold text-rose-600 dark:text-rose-400 line-through">$ 1,490,000</div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">No usar comas para miles o millones en moneda local.</p>
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-3 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'import { formatCOP, formatEnteroMillones } from \'@/lib/format\'\nimport { formatearPrecioColombiano } from \'@/lib/constants/pricing\'\n// Ejemplo: formatCOP(1490000) -> "$ 1\'490.000"'}
               </div>
             </div>
 

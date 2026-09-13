@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { CheckCircle, TriangleAlert as Warning, ShieldCheck } from '@/components/ui/icons'
+import { TriangleAlert as Warning, ShieldCheck } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { FirmaCanvas } from '@/components/legal/firma-canvas'
@@ -77,9 +77,12 @@ export function FirmaTokenClient({ token, documentoLabel, nombre }: { token: str
     return (
       <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ maxWidth: 440, textAlign: 'center' }}>
-          <CheckCircle size={40} className="text-[#38B98E] mx-auto mb-3" />
-          <p className={`text-lg font-bold mb-2 ${tp}`}>Documento firmado exitosamente</p>
-          <p className={`text-sm ${ts}`}>Te enviamos una copia en PDF con el sello digital a tu correo. Ya puedes cerrar esta pestaña.</p>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#38B98E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 12px' }}>
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <p style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Documento firmado exitosamente</p>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Te enviamos una copia en PDF con el sello digital a tu correo. Ya puedes cerrar esta pestaña.</p>
         </div>
       </div>
     )

@@ -401,7 +401,7 @@ export async function enviarInvitacionFirma(
     to,
     subject: `Firma tu ${documentoLabel} en Calculadora de Reúso`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'servicio@calculadoradereuso.com',
   })
 }
 
@@ -448,7 +448,7 @@ export async function enviarConfirmacionFirma(
     to,
     subject: `Tu ${documentoLabel} está firmado`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'servicio@calculadoradereuso.com',
     attachments: [
       { filename: `${documentoLabel.toLowerCase().replace(/\s+/g, '-')}-reuso.pdf`, content: pdfBuffer },
     ],
@@ -511,7 +511,7 @@ export async function enviarPropuestaCotizacion(
     to,
     subject: `Tu propuesta de ${empresaNombre} ya está lista`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'servicio@calculadoradereuso.com',
     attachments: [
       { filename: `cotizacion-${codigoCotizacion.replace(/\s+/g, '-')}.pdf`, content: pdfBuffer },
     ],

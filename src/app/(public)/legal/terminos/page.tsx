@@ -60,6 +60,12 @@ const T = {
     servicio3:
       'El alcance del servicio disponible varía según el plan contratado (Explora, Circular Lab, Impulso Sostenible o Impacto Ilimitado). Para conocer los límites de cada plan, consulta el',
     servicioLinkLabel: 'Reglamento de Uso',
+    servicio4Title: 'Independencia y fuentes:',
+    servicio4:
+      'Los cálculos son desarrollos basados en metodologías globales fiables. La calculadora es totalmente autónoma y no cuenta con afiliación, patrocinio ni aval oficial por parte de las fuentes.',
+    servicio5Title: 'Carácter estimativo:',
+    servicio5:
+      'Los puntajes e indicadores son aproximaciones matemáticas basadas en los datos ingresados. Sirven como guía para evaluar el desempeño circular en múltiples ciclos de uso y no se garantizan como cifras exactas, certificaciones ambientales ni auditorías vinculantes.',
     cuentaTitle: 'Creación de cuenta',
     cuenta1:
       'Puedes registrarte como persona natural o como organización. Las organizaciones designan un administrador que puede invitar a otros usuarios mediante enlace de invitación. El registro requiere nombre completo, correo electrónico y contraseña. Las organizaciones deben proporcionar además razón social y NIT.',
@@ -161,6 +167,12 @@ const T = {
     servicio3:
       'The scope of the available service varies according to the contracted plan (Explora, Circular Lab, Impulso Sostenible or Impacto Ilimitado). To learn the limits of each plan, see the',
     servicioLinkLabel: 'Usage Rules',
+    servicio4Title: 'Independence and sources:',
+    servicio4:
+      'The calculations are developments based on reliable global methodologies. The calculator is completely autonomous and has no affiliation, sponsorship or official endorsement from the sources.',
+    servicio5Title: 'Estimative nature:',
+    servicio5:
+      'The scores and indicators are mathematical approximations based on the entered data. They serve as a guide to evaluate circular performance across multiple reuse cycles and are not guaranteed as exact figures, environmental certifications or binding audits.',
     cuentaTitle: 'Account creation',
     cuenta1:
       'You can register as an individual or as an organization. Organizations designate an administrator who can invite other users via an invitation link. Registration requires full name, email address and password. Organizations must also provide legal name and tax ID.',
@@ -290,6 +302,12 @@ export default function TerminosPage() {
       <h2 id="servicio" style={h2}>{t.servicioTitle}</h2>
       <p style={p}>{t.servicio1}</p>
       <p style={p}>{t.servicio2}</p>
+      <p style={p}>
+        <strong>{t.servicio4Title}</strong> {t.servicio4}
+      </p>
+      <p style={p}>
+        <strong>{t.servicio5Title}</strong> {t.servicio5}
+      </p>
       <p style={p}>
         {t.servicio3}{' '}
         <Link href="/legal/reglamento" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

@@ -50,9 +50,9 @@ const T = {
     s5bPost: '. Revisamos todos los reportes y actuamos en consecuencia.',
     s6Title: 'Limitaciones y responsabilidad',
     s6: [
-      'Los sistemas de IA pueden generar imprecisiones, inconsistencias o resultados inesperados. Ningún sistema automatizado es infalible.',
-      'Los cálculos de CO₂e que ofrece Reúso son estimaciones basadas en factores internacionalmente reconocidos. No constituyen una auditoría ambiental oficial y no deben usarse como tal sin validación adicional por parte de un experto independiente.',
-      'Grupo MLP S.A.S. monitorea continuamente la plataforma para detectar y corregir errores. Al usar Reúso aceptas que los resultados son orientativos y que la responsabilidad de su interpretación recae en el usuario.',
+      'Los sistemas de IA pueden generar imprecisiones o resultados inesperados. Ningún sistema automatizado es infalible.',
+      'Los cálculos de impacto ambiental que ofrece la plataforma constituyen una estimación técnica referencial basada en factores internacionales. Entregamos todos los resultados con carácter estimativo y no reemplazan auditorías ambientales oficiales ni certificaciones obligatorias.',
+      'Grupo MLP S.A.S. monitorea continuamente la plataforma para detectar y corregir errores. Al usar la plataforma aceptas que los resultados son orientativos y que la responsabilidad de su interpretación recae en el usuario.',
     ],
     s7Title: 'Tus derechos y cómo contactarnos',
     s7Intro: 'Si tienes preguntas sobre cómo usamos la IA en Reúso, cómo afecta al tratamiento de tus datos o quieres ejercer cualquier derecho reconocido por el RGPD (UE), la CCPA (California) o la Ley 1581 de 2012 (Colombia), escríbenos:',
@@ -112,9 +112,9 @@ const T = {
     s5bPost: '. We review all reports and act accordingly.',
     s6Title: 'Limitations and responsibility',
     s6: [
-      'AI systems can produce inaccuracies, inconsistencies, or unexpected results. No automated system is infallible.',
-      'The CO₂e calculations provided by Reúso are estimates based on internationally recognized factors. They do not constitute an official environmental audit and should not be used as such without additional validation by an independent expert.',
-      'Grupo MLP S.A.S. continuously monitors the platform to detect and correct errors. By using Reúso you accept that results are indicative and that responsibility for their interpretation rests with the user.',
+      'AI systems can produce inaccuracies or unexpected results. No automated system is infallible.',
+      'The environmental impact calculations provided by the platform represent a technical reference estimation based on international factors. We deliver all results with an estimative character and they do not replace official environmental audits or mandatory certifications.',
+      'Grupo MLP S.A.S. continuously monitors the platform to detect and correct errors. By using the platform you accept that results are indicative and that responsibility for their interpretation rests with the user.',
     ],
     s7Title: 'Your rights and how to contact us',
     s7Intro: 'If you have questions about how we use AI at Reúso, how it affects the processing of your data, or you wish to exercise any right recognized by the GDPR (EU), the CCPA (California), or Law 1581 of 2012 (Colombia), write to us:',
@@ -196,7 +196,20 @@ export default function LegalIAPage() {
       {/* 6. Limitaciones */}
       <section id="limitaciones">
         <h2 style={h2}>{t.s6Title}</h2>
-        {t.s6.map((txt, i) => <p key={i} style={p}>{txt}</p>)}
+        {t.s6.map((txt, i) => {
+          const parts = txt.split(/(estimación|estimativo|estimation|estimative)/gi)
+          return (
+            <p key={i} style={p}>
+              {parts.map((part, pi) =>
+                /^(estimación|estimativo|estimation|estimative)$/i.test(part) ? (
+                  <strong key={pi}>{part}</strong>
+                ) : (
+                  part
+                )
+              )}
+            </p>
+          )
+        })}
       </section>
 
       {/* 7. Derechos y contacto */}

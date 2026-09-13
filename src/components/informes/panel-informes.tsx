@@ -297,7 +297,11 @@ export function PanelInformes({ informes, empresaId, modo }: PanelInformesProps)
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+            <div style={{ marginTop: 14, padding: '10px 12px', background: 'var(--bg-primary)', borderRadius: 8, border: '1px solid var(--border)', fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Generamos cada informe como una <strong>estimación</strong> técnica del impacto circular acumulado. Entregamos todos los cálculos con alcance <strong>estimativo</strong> referencial.
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
               <button
                 onClick={generar}
                 disabled={generando || !fechaInicio || !fechaFin}

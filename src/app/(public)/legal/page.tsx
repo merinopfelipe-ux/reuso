@@ -19,7 +19,7 @@ const T = {
       { href: '/legal/cookies', titulo: 'Política de Cookies', descripcion: 'Qué cookies usamos, para qué y cómo puedes gestionarlas.' },
       { href: '/legal/reglamento', titulo: 'Reglamento de Uso', descripcion: 'Condiciones y políticas de uso de los informes.' },
       { href: '/legal/confidencialidad', titulo: 'Acuerdo de Confidencialidad', descripcion: 'Garantía de confidencialidad para usuarios y empresas registradas.' },
-      { href: '/legal/medicion', titulo: 'Metodología de Medición', descripcion: 'Cómo calculamos el CO₂ eq evitado y la huella hídrica de cada reúso.' },
+      { href: '/legal/medicion', titulo: 'Metodología de Medición', descripcion: 'Cómo entregamos la estimación de CO₂ eq evitado y la huella hídrica de cada reúso.' },
       { href: '/legal/ptee', titulo: 'Programa de Ética (PTEE)', descripcion: 'Programa anticorrupción, antisoborno transnacional y código ético de Grupo MLP S.A.S.' },
       { href: '/legal/sagrilaft', titulo: 'Política SAGRILAFT', descripcion: 'Autocontrol y gestión del riesgo integral de LA/FT/FPADM y debida diligencia.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
@@ -37,7 +37,7 @@ const T = {
       { href: '/legal/cookies', titulo: 'Cookie Policy', descripcion: 'What cookies we use, why, and how you can manage them.' },
       { href: '/legal/reglamento', titulo: 'Usage Regulations', descripcion: 'Terms and policies for reports usage.' },
       { href: '/legal/confidencialidad', titulo: 'Confidentiality Agreement', descripcion: 'Confidentiality guarantee for registered users and companies.' },
-      { href: '/legal/medicion', titulo: 'Measurement Methodology', descripcion: 'How we calculate CO₂ eq avoided and the water footprint of each reuse.' },
+      { href: '/legal/medicion', titulo: 'Measurement Methodology', descripcion: 'How we provide the estimation of avoided CO₂ eq and the water footprint of each reuse.' },
       { href: '/legal/ptee', titulo: 'Ethics Program (PTEE)', descripcion: 'Anti-corruption, anti-bribery program, and corporate code of conduct.' },
       { href: '/legal/sagrilaft', titulo: 'SAGRILAFT Policy', descripcion: 'Prevention and control of money laundering and terrorist financing risks.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
@@ -88,7 +88,7 @@ export default function LegalIndexPage() {
         </nav>
 
         {/* Título */}
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: 34, fontWeight: 700, margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
             {t.titulo}
           </h1>

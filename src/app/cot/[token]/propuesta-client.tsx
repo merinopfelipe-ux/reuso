@@ -120,11 +120,27 @@ interface Props {
   descripcionesMateriales: Record<string, string>
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
 function formatCOPCompact(n: number): string {
   // "$2'420.000" — apóstrofo en el corte de millones, regla de src/lib/format.ts
   return '$' + formatEnteroMillones(Math.round(n))
+}
+
+// En la cotización pública: solo si el IVA está activo Y tiene decimales,
+// el subtotal, IVA y total muestran decimales (en la misma línea, más pequeños).
+// De resto, NUNCA se ponen decimales — Regla institucional 2026-09-11.
+function formatCOPConDecimalesOpcionales(n: number, permitirDecimales: boolean): React.ReactNode {
+  if (permitirDecimales && n % 1 !== 0) {
+    const val = n.toFixed(2)
+    const [enteroStr, decStr] = val.split('.')
+    const enteroFormateado = formatEnteroMillones(parseInt(enteroStr, 10))
+    return (
+      <span>
+        ${enteroFormateado}
+        <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>,{decStr}</span>
+      </span>
+    )
+  }
+  return <span>${formatEnteroMillones(Math.round(n))}</span>
 }
 
 // Imagen de "¿Por qué elegirnos?" con placeholder estético — nunca deja el
@@ -726,18 +742,19 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               iva_porcentaje: Number(cotizacion.iva_porcentaje),
             })
             const hayDesglose = desglose.descuentoMonto > 0 || cotizacion.iva_activo
+            const tieneDecimalesIva = Boolean(cotizacion.iva_activo && (desglose.ivaMonto % 1 !== 0))
             return (
               <>
                 {hayDesglose && (
                   <div className={`text-sm mb-1 space-y-0.5 ${ts60}`}>
-                    <p>Subtotal: {formatCOPCompact(desglose.subtotal + desglose.transporte)}</p>
+                    <p>Subtotal: {formatCOPConDecimalesOpcionales(desglose.subtotal + desglose.transporte, tieneDecimalesIva)}</p>
                     {desglose.descuentoMonto > 0 && (
-                      <p>Descuento{cotizacion.descuento_tipo === 'porcentaje' ? ` (${cotizacion.descuento} %)` : ''}: - {formatCOPCompact(desglose.descuentoMonto)}</p>
+                      <p>Descuento{cotizacion.descuento_tipo === 'porcentaje' ? ` (${cotizacion.descuento} %)` : ''}: - {formatCOPConDecimalesOpcionales(desglose.descuentoMonto, tieneDecimalesIva)}</p>
                     )}
-                    {cotizacion.iva_activo && <p>IVA ({cotizacion.iva_porcentaje} %): {formatCOPCompact(desglose.ivaMonto)}</p>}
+                    {cotizacion.iva_activo && <p>IVA ({cotizacion.iva_porcentaje} %): {formatCOPConDecimalesOpcionales(desglose.ivaMonto, tieneDecimalesIva)}</p>}
                   </div>
                 )}
-                <p className={`text-4xl font-bold ${tp}`}>{formatCOPCompact(Number(cotizacion.total))}</p>
+                <p className={`text-4xl font-bold ${tp}`}>{formatCOPConDecimalesOpcionales(Number(cotizacion.total), tieneDecimalesIva)}</p>
               </>
             )
           })()}
@@ -784,16 +801,17 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <div className="flex items-center justify-center gap-10 text-center">
                   {(() => {
                     const { anticipo, restante } = calcularAnticipo(Number(cotizacion.total), Number(cotizacion.anticipo_porcentaje))
+                    const tieneDecimalesIva = Boolean(cotizacion.iva_activo && (anticipo % 1 !== 0 || restante % 1 !== 0))
                     return (
                       <>
                         <div>
                           <p className={`text-xs ${ts50}`}>Anticipo · {cotizacion.anticipo_porcentaje} %</p>
-                          <p className={`text-2xl font-bold mt-0.5 ${tp}`}>{formatCOPCompact(anticipo)}</p>
+                          <p className={`text-2xl font-bold mt-0.5 ${tp}`}>{formatCOPConDecimalesOpcionales(anticipo, tieneDecimalesIva)}</p>
                         </div>
                         <div className={`w-px h-10 ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
                         <div>
                           <p className={`text-xs ${ts50}`}>A la entrega</p>
-                          <p className={`text-2xl font-bold mt-0.5 ${tp}`}>{formatCOPCompact(restante)}</p>
+                          <p className={`text-2xl font-bold mt-0.5 ${tp}`}>{formatCOPConDecimalesOpcionales(restante, tieneDecimalesIva)}</p>
                         </div>
                       </>
                     )
@@ -1265,14 +1283,14 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                     3. Rigor metodológico con análisis de ciclo de vida
                   </span>
                   <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
-                    Aplicamos matrices técnicas de huella ambiental para sustentar cada cifra de impacto ecológico.
+                    Aplicamos matrices técnicas de huella ambiental para sustentar cada cifra de impacto ecológico. Excluimos las equivalencias cotidianas de cualquier certificación formal para respaldar la veracidad científica.
                   </span>
                 </div>
               </div>
             </div>
 
             <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-[var(--border)] opacity-70 px-2 sm:px-4">
-              Valores de referencia para evidenciar tu aporte al planeta. Conoce más sobre nuestras fuentes en la metodología.
+              El balance ecológico de esta cotización constituye una <strong>estimación</strong> técnica preliminar. Conforme a la Directiva EmpCo de la Unión Europea y las Guías Verdes de la FTC contra el lavado verde, las equivalencias de árboles o duchas cumplen una función pedagógica e ilustrativa. Nunca las tratamos como cálculos verificados ni forman parte del Pasaporte Digital de Producto (DPP) o de documentos oficiales.
             </p>
           </div>
         </div>
@@ -1426,6 +1444,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 </div>
               </div>
             </div>
+
+            <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-[var(--border)] opacity-70 px-2 sm:px-4">
+              Los valores económicos comparativos reflejan una <strong>estimación</strong> referencial de mercado. Presentamos cada cifra con carácter <strong>estimativo</strong> para ilustrar tu ahorro proyectado.
+            </p>
           </div>
         </div>
       </Modal>
