@@ -42,7 +42,10 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     }
   })
 
-  test('03 - El footer de legales incluye el selector de idioma y funciona reactivamente', async ({ page }) => {
+  // El selector de idioma se escondió a propósito del footer legal hasta V3
+  // (multiidioma), a pedido del usuario 2026-09-07 — no es un bug, no
+  // reactivar esta prueba hasta que el selector vuelva a estar visible.
+  test.skip('03 - El footer de legales incluye el selector de idioma y funciona reactivamente', async ({ page }) => {
     await page.goto('/legal')
     await page.waitForLoadState('load')
 
@@ -85,7 +88,9 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     expect(contentSub).toBe('noindex, nofollow')
   })
 
-  test('05 - El banner de cookies es bilingüe y reactivo al selector del footer', async ({ page }) => {
+  // Misma razón que la prueba 03: depende del selector de idioma del
+  // footer, escondido a propósito hasta V3.
+  test.skip('05 - El banner de cookies es bilingüe y reactivo al selector del footer', async ({ page }) => {
     // Abrimos una pestaña en blanco (limpiando almacenamiento de cookies para ver el banner de nuevo)
     await page.goto('/legal')
     await page.waitForLoadState('load')

@@ -57,7 +57,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await expect(page.getByText('Credenciales incorrectas. Verifica tu email y contraseña.')).toBeVisible()
   })
 
-  test('auth-03 - Selector de idioma ES / ENG', async ({ page }) => {
+  // El selector de idioma se escondió a propósito hasta V3 (multiidioma),
+  // a pedido del usuario 2026-09-07 — no es un bug.
+  test.skip('auth-03 - Selector de idioma ES / ENG', async ({ page }) => {
     await page.goto('/login')
     await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
     
@@ -106,15 +108,18 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page.getByPlaceholder('María Estefanía').fill('Test')
     await page.getByPlaceholder('Pérez').fill('Test')
     await page.getByPlaceholder('tu@correo.com').fill(email)
-    await page.getByPlaceholder('300 000 0000').fill('3000000000')
+    await page.getByPlaceholder('(300) 123 4567').fill('3000000000')
     await page.getByRole('button', { name: /siguiente/i }).click()
     
-    // Paso 2
-    await page.getByPlaceholder('Ej. Mobiliario de oficina').fill('QA Testing')
+    // Paso 2 — el sector ahora es SelectorCiiu (dropdown de búsqueda), ya
+    // no un campo de texto libre con el placeholder viejo.
+    await page.getByRole('button', { name: 'Selecciona una actividad (CIIU)' }).click()
+    await page.getByPlaceholder('Busca por código o palabra clave...').fill('informática')
+    await page.locator('button', { hasText: 'informática' }).first().click()
     await page.getByRole('button', { name: 'Mensual' }).click()
     await page.getByRole('button', { name: 'Reducir costos' }).click()
     await page.getByRole('button', { name: /siguiente/i }).click()
-    
+
     // Paso 3
     await page.getByPlaceholder('Mín. 8 caracteres, 1 mayúscula, 1 número').fill('Test1234*')
     await page.getByPlaceholder('Repite tu contraseña').fill('Test1234*')
@@ -201,14 +206,16 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page.getByPlaceholder('María Estefanía').fill('Turnstile')
     await page.getByPlaceholder('Pérez').fill('Test')
     await page.getByPlaceholder('tu@correo.com').fill(`turnstile_${rnd}@test.com`)
-    await page.getByPlaceholder('300 000 0000').fill('3000000000')
+    await page.getByPlaceholder('(300) 123 4567').fill('3000000000')
     await page.getByRole('button', { name: /siguiente/i }).click()
     
-    await page.getByPlaceholder('Ej. Mobiliario de oficina').fill('QA Testing')
+    await page.getByRole('button', { name: 'Selecciona una actividad (CIIU)' }).click()
+    await page.getByPlaceholder('Busca por código o palabra clave...').fill('informática')
+    await page.locator('button', { hasText: 'informática' }).first().click()
     await page.getByRole('button', { name: 'Mensual' }).click()
     await page.getByRole('button', { name: 'Reducir costos' }).click()
     await page.getByRole('button', { name: /siguiente/i }).click()
-    
+
     await page.getByPlaceholder('Mín. 8 caracteres, 1 mayúscula, 1 número').fill('Test1234*')
     await page.getByPlaceholder('Repite tu contraseña').fill('Test1234*')
     await page.getByRole('button', { name: /siguiente/i }).click()

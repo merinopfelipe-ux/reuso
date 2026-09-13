@@ -98,19 +98,44 @@ test.describe('Aislamiento de Usuarios (Test A/B)', () => {
     await registrarUsuarioConAdmin(emailA, 'usuario.a')
     
     console.log(`Registrando Usuario B: ${emailB}`)
-    await registrarUsuarioConAdmin(emailB, 'usuario.b')
+    const usuarioB = await registrarUsuarioConAdmin(emailB, 'usuario.b')
 
     // 2. Iniciar sesión con Usuario B
     console.log('Iniciando sesión con Usuario B')
     await iniciarSesion(page, emailB)
 
-    // 3. Crear empresa para Usuario B (requerido para acceder a /empresa y crear DPP)
+    // 3. Crear empresa para Usuario B directo en la base (requerido para
+    // acceder a /empresa y crear DPP) — mismo patrón que auth.setup.ts. El
+    // formulario real de /empresa/nueva (NIT, teléfono, país/región/ciudad,
+    // sitio web) ya no tiene un <select name="sector"> nativo (es
+    // SelectorCiiu, un dropdown de búsqueda) y no es el objeto de esta
+    // prueba de aislamiento, así que se evita del todo en vez de simularlo.
     console.log('Creando empresa para Usuario B')
-    await page.goto('/empresa/nueva')
-    await page.waitForLoadState('load')
-    await page.locator('input[name="nombre"]').fill(`Empresa Prueba B ${Date.now()}`)
-    await page.locator('select[name="sector"]').selectOption('Tecnología')
-    await page.locator('button[type="submit"]').click()
+    const slugB = `e2e-empresa-b-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+    const { data: empresaB, error: errorEmpresaB } = await supabaseAdmin
+      .from('empresas')
+      .insert({ nombre: `Empresa Prueba B ${Date.now()}`, slug: slugB, plan: 'lab', activa: true })
+      .select('id')
+      .single()
+    if (errorEmpresaB || !empresaB) throw new Error(`No se pudo crear la empresa de Usuario B: ${errorEmpresaB?.message}`)
+
+    const { error: errorPerfilB } = await supabaseAdmin
+      .from('profiles')
+      .update({ rol: 'empresa_admin', empresa_id: empresaB.id })
+      .eq('user_id', usuarioB.id)
+    if (errorPerfilB) throw new Error(`No se pudo vincular empresa_id al perfil de Usuario B: ${errorPerfilB.message}`)
+
+    const { data: modulosB } = await supabaseAdmin.from('modulos').select('id')
+    if (modulosB && modulosB.length > 0) {
+      await supabaseAdmin.from('modulos_empresas').insert(
+        modulosB.map(m => ({ modulo_id: m.id, empresa_id: empresaB.id, activo: true }))
+      )
+    }
+
+    // El perfil cambió de rol/empresa en la base mientras la sesión del
+    // navegador ya estaba abierta — recarga para que el middleware/servidor
+    // lean el perfil actualizado antes de navegar a /empresa.
+    await page.goto('/empresa')
     await page.waitForURL(/\/empresa$/, { timeout: 15_000 })
 
     // 4. Crear un recurso privado (Pasaporte Digital - DPP)

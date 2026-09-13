@@ -135,7 +135,10 @@ test.describe('super_admin', () => {
     test.setTimeout(150_000)
     const titulo = `E2E Alerta admin ${Date.now()}`
     await page.goto('/admin/alertas', { waitUntil: 'domcontentloaded', timeout: 120_000 })
-        await page.getByPlaceholder('Título *').fill(titulo)
+    // El formulario está escondido detrás del botón "Nueva alerta"
+    // (mostrarForm arranca en false) — sin este clic, "Título *" nunca aparece.
+    await page.getByRole('button', { name: 'Nueva alerta' }).click()
+    await page.getByPlaceholder('Título *').fill(titulo)
     await page.getByPlaceholder('Mensaje *').fill('Alerta creada por la prueba automática.')
     await page.locator('button:has-text("Crear")').first().click()
     await expect(page.getByText(titulo).first()).toBeVisible({ timeout: 15_000 })
@@ -244,21 +247,28 @@ test.describe('super_admin', () => {
         await expect(page.getByPlaceholder('Ej. Latencia en Gemini 2.0')).toBeVisible({ timeout: 15_000 })
   })
 
-  test('adm-24 - planes: el borrador no se ve fuera de /admin/planes', async ({ page }) => {
+  // /admin/planes se absorbió en la pestaña Precios de /admin/contenido
+  // (2026-09-04) — ya no existe como página propia. El autoguardado
+  // reemplazó "Guardar borrador"/"Publicar" por plan con un único botón
+  // "Publicar todo" para los 4 planes.
+  test('adm-24 - planes: el borrador se autoguarda y "Publicar todo" existe', async ({ page }) => {
     test.setTimeout(90_000)
-    await page.goto('/admin/planes', { waitUntil: 'domcontentloaded', timeout: 60_000 })
-        // Hay un juego de botones por plan (4 planes), no uno solo en la página.
-    await expect(page.getByRole('button', { name: 'Guardar borrador' }).first()).toBeVisible({ timeout: 30_000 })
-    await expect(page.getByRole('button', { name: 'Publicar' }).first()).toBeVisible({ timeout: 10_000 })
+    await page.goto('/admin/contenido', { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await page.getByRole('button', { name: 'Precios' }).click()
+    await expect(page.getByRole('button', { name: /Publicar todo/ }).first()).toBeVisible({ timeout: 30_000 })
   })
 
-  test('adm-25 - planes: la sección de negociación por empresa existe', async ({ page }) => {
+  // La negociación por empresa se movió a la ficha de cada empresa
+  // (2026-09-04) — ya no hay un buscador de empresa en /admin/planes,
+  // porque ahora se abre directo desde /admin/empresas/[id].
+  test('adm-25 - planes: la sección de negociación por empresa existe en la ficha', async ({ page }) => {
     test.setTimeout(90_000)
-    await page.goto('/admin/planes', { waitUntil: 'domcontentloaded', timeout: 60_000 })
-        await expect(page.getByText('Negociaciones por empresa')).toBeVisible({ timeout: 30_000 })
-    // SelectorEmpresa no es un <input>: pinta el texto guía dentro de un
-    // <span> en su botón, así que no hay placeholder que buscar.
-    await expect(page.getByText('Busca una empresa...')).toBeVisible({ timeout: 10_000 })
+    await page.goto('/admin/empresas', { waitUntil: 'domcontentloaded' })
+    await page.getByPlaceholder('Buscar empresa...').fill('E2E Empresa de Prueba')
+    await page.waitForTimeout(700)
+    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 })
+    await page.locator('table tbody tr').first().click()
+    await expect(page.getByText('Negociación de plan')).toBeVisible({ timeout: 15_000 })
   })
 
   // adm-17/adm-18 de /admin/correos/[id] y /admin/correos/nuevo se

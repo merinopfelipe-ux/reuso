@@ -206,14 +206,26 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
 {
     id: 'pub-03', categoria: 'Páginas Públicas', ruta: '/verificar', critica: true,
-    titulo: 'Búsqueda y validación de autenticidad de informes',
-    descripcion: 'Buscador público donde cualquier persona puede ingresar el código impreso en un certificado o informe para validar su veracidad criptográfica.',
+    titulo: 'Buscador de validación de informes',
+    descripcion: 'Formulario público donde cualquier persona ingresa el código impreso en un certificado o informe para saltar a su ficha de autenticidad.',
     pasos: [
       'Ve a la página principal de verificación.',
-      'Usa el código de demostración: RCO2-DEMO-0001 (o abre directamente /verificar/RCO2-DEMO-0001).',
-      'Presiona consultar y examina la ficha de autenticidad con los 15 cálculos certificados.'
+      'Escribe un código inválido y confirma el mensaje de error del modal.',
+      'Escribe el código de demostración RCO2-DEMO-0001 y confirma que redirige a la ficha correcta.'
     ],
-    esperado: 'El sistema confirma si el informe es auténtico, mostrando la empresa emisora, fecha y resumen de impacto certificado.',
+    esperado: 'El buscador redirige sin fricción a un código válido, y explica con claridad cuando el código no existe.',
+    journeys: ['Cliente Final', 'Directivo']
+  },
+{
+    id: 'pub-23', categoria: 'Páginas Públicas', ruta: '/verificar/[codigo]', critica: true,
+    titulo: 'Ficha pública de autenticidad de un informe',
+    descripcion: 'Certificado público con los datos reales del informe (CO₂/agua, período, desglose), su metodología y el sello de integridad criptográfico.',
+    pasos: [
+      'Abre directamente /verificar/RCO2-DEMO-0001.',
+      'Revisa beneficiario, período, métricas de CO₂/agua y desglose por categoría.',
+      'Abre el panel de metodología y el de sello de integridad (hash), y prueba un código inexistente para ver el mensaje de "no encontrado".'
+    ],
+    esperado: 'Todo lo mostrado corresponde a datos reales del informe, sin cifras inventadas ni equivalencias narrativas (árboles/duchas), y el hash se ve completo.',
     journeys: ['Cliente Final', 'Directivo']
   },
 {
@@ -311,6 +323,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'La tabla es comprensible y el usuario puede gestionar sus consentimientos con un clic.',
     journeys: ['Cliente Final', 'Admin Operativa']
+  },
+{
+    id: 'pub-22', categoria: 'Páginas Públicas', ruta: '/legal/cookies/preferencias', critica: false,
+    titulo: 'Panel de gestión de preferencias de cookies',
+    descripcion: 'Panel donde el visitante activa o desactiva cada categoría de cookies (esenciales, funcionales, analíticas) sin necesidad de sesión.',
+    pasos: [
+      'Entra desde el enlace "Panel de Preferencias" en la política de cookies.',
+      'Cambia el estado de las cookies funcionales y analíticas.',
+      'Guarda y recarga la página para confirmar que la elección persiste.'
+    ],
+    esperado: 'Las cookies esenciales aparecen siempre activas y bloqueadas. Los cambios en funcionales/analíticas se guardan y persisten tras recargar.',
+    journeys: ['Cliente Final']
   },
 {
     id: 'pub-14', categoria: 'Páginas Públicas', ruta: '/legal/reglamento', critica: false,
@@ -1130,14 +1154,14 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
 {
     id: 'adm-19', categoria: 'Panel Admin', ruta: '/admin/contenido', critica: false,
-    titulo: 'Actualización sencilla de textos de la página web',
-    descripcion: 'Permite actualizar titulares, testimonios o preguntas frecuentes de la web pública sin necesidad de tocar código.',
+    titulo: 'Actualización de contenido, precios y capacidades de la web pública',
+    descripcion: 'Permite actualizar el WhatsApp de contacto, las preguntas frecuentes, y en la pestaña Precios: los 4 planes (precios por moneda, límites, personalización de capacidades de IA/MCI/Excel-CSV, beneficios) y el cuadro comparativo, sin tocar código.',
     pasos: [
       'Ingresa al editor de contenido de la página principal.',
-      'Modifica un título o texto destacado en el borrador.',
-      'Previsualiza el resultado y publica los cambios.'
+      'Modifica un título o texto destacado en el borrador y publica.',
+      'Ve a la pestaña Precios: cambia un precio o apaga/enciende una capacidad de un plan, publica, y confirma que la landing muestra exactamente ese cambio.'
     ],
-    esperado: 'La página pública refleja los nuevos textos con el formato y estilo adecuados.',
+    esperado: 'La página pública refleja con exactitud lo publicado, tanto en textos como en precios, límites y capacidades de cada plan.',
     journeys: ['Admin Operativa', 'Cliente Final']
   },
 {
@@ -2324,6 +2348,14 @@ export default function QAPage() {
 
   // Pantallas del recorrido: una por ruta única, en el orden en que aparecen
   // las pruebas. El Map conserva ese orden de inserción.
+  // Las tareas de "APIs & Validaciones" documentan rutas de API (POST/PATCH,
+  // con auth o body requerido) — abrirlas como enlace hace una petición GET
+  // sin body ni sesión, que siempre falla y no prueba nada real. Solo se
+  // ofrece "Abrir"/"Copiar URL" para rutas de página de verdad.
+  function esRutaAbrible(ruta: string): boolean {
+    return ruta.startsWith('/') && !ruta.startsWith('/api/') && ruta !== '/middleware'
+  }
+
   function resolverRutaDemo(ruta: string): string {
     if (ruta === '/empresa/nueva') return '/empresa/nueva?preview=true'
     if (!ruta.includes('[')) return ruta
@@ -2331,6 +2363,10 @@ export default function QAPage() {
     if (ruta.includes('/legal/firma/[token]')) return '/legal/firma/demo-token-firma-001'
     if (ruta.includes('/pasaporte/[codigo]')) return '/pasaporte/DPP-DEMO-001'
     if (ruta.includes('/verificar/[codigo]')) return '/verificar/RCO2-DEMO-0001'
+    // Un token de invitación es de un solo uso y expira en 7 días (hasheado
+    // en BD, ver seguridad-reuso) — nunca puede haber un "demo" permanente
+    // como en cot/pasaporte/firma. Lleva directo a donde se genera uno real.
+    if (ruta.includes('/invitacion/[')) return '/empresa/equipo'
     if (ruta.includes('/empresa/dpp/[')) return '/empresa/dpp'
     if (ruta.includes('/empresa/cotizador/[')) return '/empresa/cotizador'
     if (ruta.includes('/verificar/[')) return '/verificar'
@@ -3122,7 +3158,7 @@ export default function QAPage() {
                             <span className={`text-xs sm:text-sm font-mono font-semibold ${theme.textPrimary} break-all`}>
                               {paginaActual.ruta}
                             </span>
-                            {paginaActual.ruta.startsWith('/') && (
+                            {esRutaAbrible(paginaActual.ruta) && (
                               <a
                                 href={resolverRutaDemo(paginaActual.ruta)}
                                 target="_blank"
@@ -3342,7 +3378,7 @@ export default function QAPage() {
                               >
                                 {copiadoRutaId === tarea.id ? <CheckCircle size={11} /> : <Copy size={11} />}
                               </button>
-                              {tarea.ruta.startsWith('/') && (
+                              {esRutaAbrible(tarea.ruta) && (
                                 <a
                                   href={resolverRutaDemo(tarea.ruta)}
                                   target="_blank"

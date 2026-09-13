@@ -29,7 +29,13 @@ test.describe('empresa_admin', () => {
   // existe un "filtro de empleados", los filtros reales son fecha y
   // categoría. Bug real corregido 2026-09-02, la prueba vieja asumía un
   // flujo de "calcular" que no existe en este rol/ruta.
-  test('emp-02 - filtro de fechas y descarga CSV del historial de la empresa', async ({ page }) => {
+  // La exportación en Excel/CSV ahora depende de la "Personalización de
+  // capacidades" real del plan de la empresa (2026-09-13, commit 35d6a10)
+  // — la empresa efímera de este test usa el plan 'lab', que no la incluye,
+  // así que /api/calculos/exportar responde 403 a propósito para csv/xlsx.
+  // PDF nunca está gateado por esa capacidad, así que sigue sirviendo para
+  // probar el filtro de fechas + descarga real sin chocar con esa regla.
+  test('emp-02 - filtro de fechas y descarga PDF del historial de la empresa', async ({ page }) => {
     await page.goto('/empresa/calculos')
     await page.waitForLoadState('load')
 
@@ -45,9 +51,20 @@ test.describe('empresa_admin', () => {
 
     await page.getByRole('button', { name: 'Descargar' }).click()
     const responsePromise = page.waitForResponse(/\/api\/calculos\/exportar/, { timeout: 15_000 })
-    await page.getByText('CSV (.csv)').click()
+    await page.getByText('PDF (.pdf)').click()
     const response = await responsePromise
     expect(response.status()).toBe(200)
+  })
+
+  test('emp-02b - la exportación CSV respeta la personalización de capacidades del plan', async ({ page }) => {
+    await page.goto('/empresa/calculos')
+    await page.waitForLoadState('load')
+
+    await page.getByRole('button', { name: 'Descargar' }).click()
+    const responsePromise = page.waitForResponse(/\/api\/calculos\/exportar/, { timeout: 15_000 })
+    await page.getByText('CSV (.csv)').click()
+    const response = await responsePromise
+    expect(response.status()).toBe(403)
   })
 
   // El módulo "certificados" ya no existe (renombrado por completo a

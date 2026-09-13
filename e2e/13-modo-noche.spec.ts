@@ -1,12 +1,12 @@
 import { test, expect, Page } from '@playwright/test'
 
 // El toggle real es <ThemeToggle> (src/components/theme-toggle.tsx),
-// aria-label "Cambiar a tema oscuro" / "Cambiar a tema claro" — igual en
+// aria-label "Cambiar a modo noche" / "Cambiar a modo día" — igual en
 // todas las páginas autenticadas. Nunca usar
 // document.documentElement.setAttribute a mano: no dispara el mismo efecto
 // que un clic real (lección ya aprendida hoy con landing-header).
 async function activarTemaOscuro(page: Page) {
-  await page.getByLabel('Cambiar a tema oscuro').click()
+  await page.getByLabel('Cambiar a modo noche').click()
   await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'dark', { timeout: 5_000 })
 }
 
@@ -107,7 +107,7 @@ test.describe('Modo Noche', () => {
       const errores: string[] = []
       page.on('pageerror', (e) => errores.push(e.message))
 
-      const boton = page.locator('button[aria-label^="Cambiar a tema"]')
+      const boton = page.locator('button[aria-label^="Cambiar a modo"]')
       for (let i = 0; i < 10; i++) {
         await boton.click()
         await page.waitForTimeout(80)

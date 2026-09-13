@@ -35,12 +35,18 @@ async function crearCuentaEfimera(rol: 'usuario_libre' | 'empleado' | 'empresa_a
     email,
     password,
     email_confirm: true,
-    user_metadata: { nombre },
+    // telefono también va en user_metadata: el trigger que crea la fila en
+    // profiles al insertar en auth.users lee de aquí (ver sql/014), y pisa
+    // cualquier upsert posterior que no incluya el mismo valor.
+    user_metadata: { nombre, telefono: '573001234567' },
   })
   if (error || !nuevo.user) throw new Error(`No se pudo crear cuenta efímera ${rol}: ${error?.message}`)
 
+  // telefono real (no null) es necesario para que /settings muestre el
+  // bloque de "Cambiar teléfono" (set-03) — está condicionado a
+  // telefonoMasked !== null, y sin esto la cuenta efímera nunca lo tiene.
   await supabaseAdmin.from('profiles').upsert(
-    { user_id: nuevo.user.id, email, nombre, rol },
+    { user_id: nuevo.user.id, email, nombre, rol, telefono: '573001234567' },
     { onConflict: 'user_id' }
   )
 
