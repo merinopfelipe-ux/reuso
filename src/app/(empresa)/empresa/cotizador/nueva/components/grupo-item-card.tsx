@@ -10,6 +10,7 @@ import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
+import { inputSt, rowInputSt } from '@/lib/ui/estilos-formulario'
 
 export interface ItemConImagen extends ItemDetectadoConSnapshot {
   // Miniatura para mostrar (recorte si el recuadro fue útil, si no la foto
@@ -49,9 +50,6 @@ interface Props {
   // elegir todavía — pinta el botón "Elegir este ítem" en el encabezado.
   onElegir?: () => void
 }
-
-const inputSt = 'px-3 py-2 rounded-xl border text-sm bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-primary)] w-full focus:outline-none focus:ring-2 focus:ring-[var(--color-brand)]/20 transition-all'
-const rowInputSt = 'bg-transparent border-none p-0 outline-none focus:ring-0 text-sm font-medium text-[var(--text-primary)] min-w-[80px]'
 
 /**
  * Tarjeta del "escritorio de cotización" para un ítem recién detectado por
