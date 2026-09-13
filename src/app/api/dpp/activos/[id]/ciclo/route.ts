@@ -75,11 +75,10 @@ export async function POST(
 
   // co2_evitado_kg por ciclo se retira del cálculo (bug real corregido,
   // 2026-09-12): antes recontaba la manufactura completa en CADA ciclo.
-  // Esa huella ahora se congela una sola vez en dpp_activos.co2_manufactura_kg
-  // (calculada al crear el activo) y se combina con el transporte de todos
-  // los ciclos vía calcularMitigacionPorCiclos/calcularAnalisisCicloVida —
-  // nunca se vuelve a sumar aquí. La columna dpp_ciclos.co2_evitado_kg queda
-  // en 0 para ciclos nuevos (no se borra la columna, regla expandir-contraer).
+  // Esa huella se congela una sola vez en dpp_activos.co2_manufactura_kg
+  // (calculada al crear el activo, src/lib/calculos/lca.ts) y nunca se
+  // vuelve a sumar aquí. La columna dpp_ciclos.co2_evitado_kg queda en 0
+  // para ciclos nuevos (no se borra la columna, regla expandir-contraer).
   const co2_evitado_kg = 0
 
   // Validar límite de ciclos
