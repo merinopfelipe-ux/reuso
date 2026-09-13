@@ -38,7 +38,7 @@ export async function POST(
 
   const { data: activo, error: activoError } = await adminClient
     .from('dpp_activos')
-    .select('id, empresa_id, n_ciclos, peso_total_kg, composicion_json')
+    .select('id, empresa_id, n_ciclos, peso_total_kg')
     .eq('id', id)
     .single()
 
@@ -73,11 +73,14 @@ export async function POST(
   )
   const co2_ciclo_kg = co2_logistica_kg
 
-  // CO2 evitado = lo que se habría emitido fabricando el activo desde cero
-  const composicion = Array.isArray(activo.composicion_json) ? activo.composicion_json as { peso_kg: number; factor_co2_kg: number }[] : []
-  const co2_evitado_kg = Math.round(
-    composicion.reduce((sum, m) => sum + (m.peso_kg ?? 0) * (m.factor_co2_kg ?? 0), 0) * 10000
-  ) / 10000
+  // co2_evitado_kg por ciclo se retira del cálculo (bug real corregido,
+  // 2026-09-12): antes recontaba la manufactura completa en CADA ciclo.
+  // Esa huella ahora se congela una sola vez en dpp_activos.co2_manufactura_kg
+  // (calculada al crear el activo) y se combina con el transporte de todos
+  // los ciclos vía calcularMitigacionPorCiclos/calcularAnalisisCicloVida —
+  // nunca se vuelve a sumar aquí. La columna dpp_ciclos.co2_evitado_kg queda
+  // en 0 para ciclos nuevos (no se borra la columna, regla expandir-contraer).
+  const co2_evitado_kg = 0
 
   // Validar límite de ciclos
   if ((activo.n_ciclos ?? 0) >= 999) {
