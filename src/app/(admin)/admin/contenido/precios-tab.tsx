@@ -643,6 +643,7 @@ const inputComparativaStyle: React.CSSProperties = {
 function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
   const { toast } = useToast()
   const [categorias, setCategorias] = useState<CategoriaComparativa[]>([])
+  const [baseline, setBaseline] = useState<string>('')
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(false)
 
@@ -653,6 +654,7 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
         const fila = Array.isArray(data) ? data[0] : null
         const cats = (fila?.valor_json?.categorias as CategoriaComparativa[] | undefined) ?? []
         setCategorias(cats)
+        setBaseline(JSON.stringify(cats))
       })
       .catch(() => {})
       .finally(() => setCargando(false))
@@ -721,6 +723,7 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
         body: JSON.stringify({ clave: 'comparativa_planes', valor_json: { categorias } }),
       })
       if (!res.ok) throw new Error()
+      setBaseline(JSON.stringify(categorias))
       toast.success('Cuadro comparativo guardado. Ya se ve así en el popup "Ver más" de la landing.')
     } catch {
       toast.error('No se pudo guardar el cuadro comparativo.')
@@ -728,6 +731,8 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
       setGuardando(false)
     }
   }
+
+  const hayCambios = JSON.stringify(categorias) !== baseline
 
   return (
     <div style={{ marginTop: 40, paddingTop: 32, borderTop: '1px solid var(--divider)' }}>
@@ -738,7 +743,13 @@ function ComparativaEditor({ planes }: { planes: ConfigPlan[] }) {
             Se ve en la landing al pulsar &quot;Ver más&quot; debajo de los precios. Agrupa por categorías (ej. &quot;Uso y límites&quot;, &quot;Cálculo Ambiental&quot;) y cada fila puede ser una casilla (sí/no) o un texto libre (&quot;5 al mes&quot;, &quot;Ilimitado&quot;).
           </p>
         </div>
-        <Button variant="primary" size="sm" onClick={guardar} loading={guardando}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={guardar}
+          loading={guardando}
+          disabled={!hayCambios || cargando || guardando}
+        >
           Guardar comparativa
         </Button>
       </div>
