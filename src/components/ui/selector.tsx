@@ -102,7 +102,16 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
       <button
         type="button"
         disabled={disabled}
-        onClick={() => (abierto ? setAbierto(false) : abrir())}
+        onClick={e => {
+          // Safari no enfoca un <button> al hacer clic por defecto (a
+          // diferencia de Chrome/Firefox) — sin este .focus() explícito, la
+          // flecha de teclado nunca llegaba a onKeyDownTrigger y el
+          // navegador hacía scroll normal de página (bug real reportado,
+          // QA pub-17: "se movía todo, me marea").
+          e.currentTarget.focus()
+          if (abierto) setAbierto(false)
+          else abrir()
+        }}
         onKeyDown={onKeyDownTrigger}
         className="flex w-full items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg border text-sm font-medium transition-colors"
         style={{
