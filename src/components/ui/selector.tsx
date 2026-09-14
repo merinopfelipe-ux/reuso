@@ -41,8 +41,21 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
     setAbierto(true)
   }
 
+  // Desplaza SOLO la lista interna del panel, nunca la página — el
+  // scrollIntoView() del navegador puede escaparse al scroll de la página
+  // completa si no reconoce bien el contenedor con overflow como el
+  // "ancestro con scroll más cercano" (bug real reportado, QA pub-17: "se
+  // movía todo, me marea"). Cálculo manual, encerrado en el propio panel.
   useEffect(() => {
-    if (abierto) opcionRefs.current[resaltado]?.scrollIntoView({ block: 'nearest' })
+    if (!abierto) return
+    const opcion = opcionRefs.current[resaltado]
+    const lista = opcion?.parentElement
+    if (!opcion || !lista) return
+    if (opcion.offsetTop < lista.scrollTop) {
+      lista.scrollTop = opcion.offsetTop
+    } else if (opcion.offsetTop + opcion.offsetHeight > lista.scrollTop + lista.clientHeight) {
+      lista.scrollTop = opcion.offsetTop + opcion.offsetHeight - lista.clientHeight
+    }
   }, [abierto, resaltado])
 
   // Teclado tipo <select> nativo — antes este botón no respondía a ninguna
