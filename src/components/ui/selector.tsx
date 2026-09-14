@@ -22,9 +22,7 @@ export interface SelectorProps {
 // SelectorCiudad/SelectorEmpresa: botón + panel propio.
 export function Selector({ opciones, value, onChange, placeholder = 'Selecciona', disabled, className = '' }: SelectorProps) {
   const [abierto, setAbierto] = useState(false)
-  const [resaltado, setResaltado] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
-  const opcionRefs = useRef<(HTMLButtonElement | null)[]>([])
   const seleccionada = opciones.find(o => o.value === value)
 
   useEffect(() => {
@@ -35,65 +33,16 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  function abrir() {
-    const indiceActual = opciones.findIndex(o => o.value === value)
-    setResaltado(indiceActual >= 0 ? indiceActual : 0)
-    setAbierto(true)
-  }
-
-  // Desplaza SOLO la lista interna del panel, nunca la página — el
-  // scrollIntoView() del navegador puede escaparse al scroll de la página
-  // completa si no reconoce bien el contenedor con overflow como el
-  // "ancestro con scroll más cercano" (bug real reportado, QA pub-17: "se
-  // movía todo, me marea"). Cálculo manual, encerrado en el propio panel.
-  useEffect(() => {
-    if (!abierto) return
-    const opcion = opcionRefs.current[resaltado]
-    const lista = opcion?.parentElement
-    if (!opcion || !lista) return
-    if (opcion.offsetTop < lista.scrollTop) {
-      lista.scrollTop = opcion.offsetTop
-    } else if (opcion.offsetTop + opcion.offsetHeight > lista.scrollTop + lista.clientHeight) {
-      lista.scrollTop = opcion.offsetTop + opcion.offsetHeight - lista.clientHeight
-    }
-  }, [abierto, resaltado])
-
-  // Teclado tipo <select> nativo — antes este botón no respondía a ninguna
-  // tecla salvo Enter/Espacio (comportamiento por defecto de <button>), sin
-  // forma de navegar las opciones sin usar el mouse (bug real reportado,
-  // QA pub-17: "presioné la flecha hacia abajo... no pasó nada"). El foco
-  // se queda siempre en el botón disparador (el panel nunca lo recibe), así
-  // que TODO el manejo de teclado vive acá, no en el panel — si se abriera
-  // solo al abrir y se dejara la navegación en el panel, las flechas
-  // siguientes nunca llegarían a ningún listener.
+  // Sin navegación por teclado a propósito: un intento de agregarla (abrir/
+  // resaltar/seleccionar con flechas) causó que la página se moviera de
+  // forma rara en el navegador real del usuario, sin poder reproducirlo ni
+  // diagnosticarlo pese a varios intentos — se revirtió por completo
+  // (2026-09-14). Lo único que queda es bloquear el scroll nativo de
+  // página que el navegador hace por defecto con las flechas cuando el
+  // botón tiene foco, para que quede en cero efecto, no en un efecto raro.
   function onKeyDownTrigger(e: React.KeyboardEvent) {
-    if (disabled) return
-    if (!abierto) {
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        abrir()
-      }
-      return
-    }
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault()
-      setResaltado(i => Math.min(i + 1, opciones.length - 1))
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setResaltado(i => Math.max(i - 1, 0))
-    } else if (e.key === 'Enter') {
-      e.preventDefault()
-      const opcion = opciones[resaltado]
-      if (opcion) { onChange(opcion.value); setAbierto(false) }
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      setAbierto(false)
-    } else if (e.key === 'Home') {
-      e.preventDefault()
-      setResaltado(0)
-    } else if (e.key === 'End') {
-      e.preventDefault()
-      setResaltado(opciones.length - 1)
     }
   }
 
@@ -102,16 +51,7 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
       <button
         type="button"
         disabled={disabled}
-        onClick={e => {
-          // Safari no enfoca un <button> al hacer clic por defecto (a
-          // diferencia de Chrome/Firefox) — sin este .focus() explícito, la
-          // flecha de teclado nunca llegaba a onKeyDownTrigger y el
-          // navegador hacía scroll normal de página (bug real reportado,
-          // QA pub-17: "se movía todo, me marea").
-          e.currentTarget.focus()
-          if (abierto) setAbierto(false)
-          else abrir()
-        }}
+        onClick={() => setAbierto(!abierto)}
         onKeyDown={onKeyDownTrigger}
         className="flex w-full items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg border text-sm font-medium transition-colors"
         style={{
@@ -134,14 +74,12 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
             style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', maxHeight: '300px' }}
           >
             <div className="overflow-y-auto flex-1 p-1">
-              {opciones.map((o, i) => (
+              {opciones.map(o => (
                 <button
                   key={o.value}
-                  ref={el => { opcionRefs.current[i] = el }}
                   type="button"
                   onClick={() => { onChange(o.value); setAbierto(false) }}
-                  onMouseEnter={() => setResaltado(i)}
-                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === o.value ? 'font-semibold' : ''} ${i === resaltado ? 'bg-[var(--bg-hover)]' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {o.label}
