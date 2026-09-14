@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { useToast } from '@/components/toast-provider'
@@ -158,6 +158,28 @@ export default function NuevoActivoDppPage() {
   function cambiarModoGrupo(grupoId: string, modo: ModoAnalisis) {
     setGrupos(prev => prev.map(g => g.id === grupoId ? { ...g, modo } : g))
   }
+
+  // Pegar una imagen desde el portapapeles (Cmd+V) — mismo patrón que
+  // cotizador/nueva/page.tsx, adaptado porque acá hay varios grupos a la vez
+  // en vez de uno solo activo: va al primer grupo que todavía tenga espacio.
+  useEffect(() => {
+    if (generando) return
+    function onPaste(e: ClipboardEvent) {
+      const items = Array.from(e.clipboardData?.items ?? []).filter(i => i.kind === 'file')
+      if (items.length === 0) return
+      const grupoConEspacio = grupos.find(g => g.fotos.length < MAX_FOTOS_POR_TANDA)
+      if (!grupoConEspacio) return
+      e.preventDefault()
+      const archivos = items.map(i => i.getAsFile()).filter((f): f is File => !!f)
+      if (archivos.length > 0) agregarFotosAGrupo(grupoConEspacio.id, archivos)
+    }
+    window.addEventListener('paste', onPaste)
+    return () => window.removeEventListener('paste', onPaste)
+    // agregarFotosAGrupo se recrea en cada render y ya lee `grupos` fresco
+    // del cierre — incluirla forzaría reenganchar el listener en cada
+    // tecleo sin ganar nada.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grupos, generando])
 
   function agregarGrupo() {
     if (grupos.length >= MAX_FOTOS_POR_TANDA) return
