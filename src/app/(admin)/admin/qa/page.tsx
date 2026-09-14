@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
-import { CheckCircle, XCircle, Circle, Square, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle, Clock, Copy, ExternalLink } from '@/components/ui/icons'
+import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import { CheckCircle, XCircle, Circle, Square, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle, Clock, Copy, ExternalLink, Upload, ClipboardPaste } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -1873,12 +1874,10 @@ function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar
   }, [paths])
 
   // Pegar una captura en cualquier parte de la pantalla mientras esta tarea
-  // está expandida — el texto de la caja ("Pegar o subir captura") lo
-  // prometía, pero antes solo funcionaba dentro del textarea de notas de
-  // arriba porque un <label> no recibe eventos de pegado por sí solo. Como
-  // `expandida` solo permite una tarea abierta a la vez, este componente
-  // nunca está montado dos veces al mismo tiempo — seguro sin ambigüedad de
-  // a cuál tarea le llega la captura.
+  // está expandida (atajo Cmd+V/Ctrl+V, si el navegador dispara el evento).
+  // Como `expandida` solo permite una tarea abierta a la vez, este
+  // componente nunca está montado dos veces al mismo tiempo — seguro sin
+  // ambigüedad de a cuál tarea le llega la captura.
   useEffect(() => {
     function onPaste(e: ClipboardEvent) {
       const img = Array.from(e.clipboardData?.items ?? []).find(i => i.type.startsWith('image/'))
@@ -1891,49 +1890,122 @@ function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar
     return () => window.removeEventListener('paste', onPaste)
   }, [onElegirArchivo])
 
+  const [erroPegar, setErrorPegar] = useState<string | null>(null)
+
+  // Botón explícito de pegar — más confiable que solo el atajo de teclado:
+  // usa la API de Portapapeles con un clic real del usuario (requisito de
+  // seguridad del navegador para leer el portapapeles por código), en vez
+  // de depender de que el evento 'paste' del teclado llegue como se espera.
+  async function pegarDesdePortapapeles() {
+    setErrorPegar(null)
+    if (!navigator.clipboard?.read) {
+      setErrorPegar('Tu navegador no permite leer el portapapeles por botón. Usa Cmd+V o "Subir archivo".')
+      return
+    }
+    try {
+      const items = await navigator.clipboard.read()
+      for (const item of items) {
+        const tipoImagen = item.types.find(t => t.startsWith('image/'))
+        if (tipoImagen) {
+          const blob = await item.getType(tipoImagen)
+          const ext = tipoImagen.split('/')[1] || 'png'
+          onElegirArchivo(new File([blob], `captura.${ext}`, { type: tipoImagen }))
+          return
+        }
+      }
+      setErrorPegar('No hay ninguna imagen copiada todavía. Copia una captura primero y vuelve a intentar.')
+    } catch {
+      setErrorPegar('El navegador bloqueó leer el portapapeles. Copia la captura de nuevo y vuelve a intentar, o usa "Subir archivo".')
+    }
+  }
+
   const borde = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.15)'
+  const [zoomUrl, setZoomUrl] = useState<string | null>(null)
 
   return (
     <div className="mt-2 flex flex-wrap items-center gap-2" onClick={e => e.stopPropagation()}>
       {paths.map(p => (
         <div key={p} className="relative">
           {urls[p] ? (
-            <a href={urls[p]} target="_blank" rel="noopener noreferrer">
+            <button
+              type="button"
+              onClick={() => setZoomUrl(urls[p])}
+              className="group relative block overflow-hidden rounded-lg cursor-zoom-in"
+              title="Ampliar imagen"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={urls[p]} alt="captura de la prueba" className="h-16 w-16 rounded-lg object-cover border" style={{ borderColor: borde }} />
-            </a>
+              <span className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150">
+                <span className="w-6 h-6 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
+                  <MagnifyingGlass size={12} className="text-[#474747]" sinAnimacion />
+                </span>
+              </span>
+            </button>
           ) : (
             <div className="h-16 w-16 rounded-lg skeleton-shimmer" />
           )}
           <button
+            type="button"
             onClick={() => onQuitar(p)}
-            className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full text-white text-xs flex items-center justify-center"
-            style={{ background: '#FF5E4B' }}
+            className={`absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center shadow-md hover-pop hover-press ${isDark ? 'bg-[#474747] text-white' : 'bg-white text-[#474747]'}`}
             title="Quitar captura"
           >
-            ×
+            <X size={11} strokeWidth={2.5} sinAnimacion />
           </button>
         </div>
       ))}
-      <label
-        className="h-16 min-w-16 px-2 rounded-lg border border-dashed flex items-center justify-center cursor-pointer text-[10px] text-center leading-tight"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,130,124,0.25)',
-          color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,130,124,0.7)',
-        }}
-      >
-        {subiendo ? 'Subiendo captura.' : 'Pegar o subir captura'}
-        <input
-          type="file"
-          accept="image/png,image/jpeg,image/webp"
-          className="hidden"
-          onChange={e => {
-            const f = e.target.files?.[0]
-            if (f) onElegirArchivo(f)
-            e.target.value = ''
+      <ModalImagenZoom imagenUrl={zoomUrl} onClose={() => setZoomUrl(null)} />
+      {subiendo ? (
+        <div
+          className="h-16 min-w-16 px-2 rounded-lg border border-dashed flex items-center justify-center text-[10px] text-center leading-tight"
+          style={{
+            borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,130,124,0.25)',
+            color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,130,124,0.7)',
           }}
-        />
-      </label>
+        >
+          Subiendo captura.
+        </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            onClick={pegarDesdePortapapeles}
+            className="h-16 w-16 rounded-lg border border-dashed flex flex-col items-center justify-center gap-1 text-[10px] text-center leading-tight cursor-pointer"
+            style={{
+              borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,130,124,0.25)',
+              color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,130,124,0.7)',
+            }}
+            title="Pegar imagen copiada"
+          >
+            <ClipboardPaste size={16} sinAnimacion />
+            Pegar
+          </button>
+          <label
+            className="h-16 w-16 rounded-lg border border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer text-[10px] text-center leading-tight"
+            style={{
+              borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,130,124,0.25)',
+              color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,130,124,0.7)',
+            }}
+            title="Subir archivo de imagen"
+          >
+            <Upload size={16} sinAnimacion />
+            Subir
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={e => {
+                const f = e.target.files?.[0]
+                if (f) onElegirArchivo(f)
+                e.target.value = ''
+              }}
+            />
+          </label>
+        </>
+      )}
+      {erroPegar && (
+        <p className="basis-full text-[11px] font-semibold" style={{ color: '#FF5E4B' }}>{erroPegar}</p>
+      )}
     </div>
   )
 }
@@ -2312,6 +2384,32 @@ export default function QAPage() {
       const escapado = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const updated = prev.map(t => t.id === taskId
         ? { ...t, notas: t.notas.replace(new RegExp(`\\n?\\[captura: ${escapado}\\]`), '') }
+        : t)
+      guardar(updated)
+      return updated
+    })
+  }
+
+  // Una vez una tarea queda en "OK" ya no hace falta guardar evidencia de
+  // ella — las capturas eran para diagnosticar fallas, no un archivo
+  // permanente. Se borran del bucket y de las notas para no cargar con
+  // basura acumulada (directriz explícita del usuario, 2026-09-13).
+  const limpiarCapturasDeTarea = (id: string, notasActuales: string) => {
+    const re = /\[captura: ([^\]]+)\]/g
+    const paths: string[] = []
+    let m: RegExpExecArray | null
+    while ((m = re.exec(notasActuales))) paths.push(m[1])
+    if (paths.length === 0) return
+    paths.forEach(path => {
+      fetch('/api/admin/qa/evidencia', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      }).catch(() => {})
+    })
+    setTareas(prev => {
+      const updated = prev.map(t => t.id === id
+        ? { ...t, notas: t.notas.replace(/\n?\[captura: [^\]]+\]/g, '') }
         : t)
       guardar(updated)
       return updated
@@ -3690,7 +3788,11 @@ export default function QAPage() {
                             return (
                               <button
                                 key={est}
-                                onClick={() => { actualizar(tarea.id, 'estado', est); if (est === 'ok') setExpandida(null) }}
+                                onClick={() => {
+                                  actualizar(tarea.id, 'estado', est)
+                                  if (est === 'ok' && tarea.estado !== 'ok') limpiarCapturasDeTarea(tarea.id, tarea.notas)
+                                  if (est === 'ok') setExpandida(null)
+                                }}
                                 className="py-2.5 sm:py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-105 active:scale-95"
                                 style={{
                                   background: activo ? cfg.color : `${cfg.color}15`,
