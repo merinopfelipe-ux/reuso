@@ -58,7 +58,7 @@ const TF = {
     enviando: 'Enviando...',
     enviar: 'Enviar consulta',
     exito: () =>
-      `Recibimos tu consulta y generamos el ticket de soporte legal correspondiente. Te responderemos en un plazo máximo de 10 días hábiles a`,
+      `Recibimos tu consulta y generamos el ticket de soporte legal correspondiente. Te responderemos en un plazo de 10 a 15 días hábiles a`,
     exitoPost: '.',
   },
   ENG: {
@@ -75,7 +75,7 @@ const TF = {
     enviando: 'Sending...',
     enviar: 'Send enquiry',
     exito: () =>
-      `We received your query and created a legal support ticket. We will respond within a maximum of 10 business days to`,
+      `We received your query and created a legal support ticket. We will respond within 10 to 15 business days to`,
     exitoPost: '.',
   },
 }
@@ -95,6 +95,7 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
   })
   const [enviando, setEnviando] = useState(false)
   const [exito, setExito] = useState(false)
+  const [numeroCaso, setNumeroCaso] = useState('')
   const [error, setError] = useState('')
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileRef = useRef<TurnstileInstance | null>(null)
@@ -135,12 +136,12 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...form, turnstile_token: turnstileToken || 'skip' }),
       })
+      const cuerpo = await res.json().catch(() => null)
       if (!res.ok) {
-        // Antes se descartaba el motivo real (límite de intentos, validación,
-        // etc.) y siempre se mostraba el mismo mensaje genérico — bug real
-        // reportado, "no llega a ninguna parte, no sé qué pasa" (QA pub-17).
-        const cuerpo = await res.json().catch(() => null)
         throw new Error(cuerpo?.error || tf.error_envio)
+      }
+      if (cuerpo?.numero_caso) {
+        setNumeroCaso(cuerpo.numero_caso)
       }
       setExito(true)
     } catch (err) {
@@ -166,6 +167,24 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
           lineHeight: 1.6,
         }}
       >
+        {numeroCaso && (
+          <div style={{ marginBottom: 12 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '4px 10px',
+                borderRadius: 6,
+                background: 'var(--color-brand-light)',
+                color: 'var(--color-brand)',
+                fontSize: 13,
+                fontFamily: 'monospace',
+                fontWeight: 700,
+              }}
+            >
+              Caso {numeroCaso}
+            </span>
+          </div>
+        )}
         {tf.exito()}{' '}
         <strong>{form.email}</strong>
         {tf.exitoPost}

@@ -12,7 +12,7 @@ const T = {
     breadcrumb: 'Duda legal',
     titulo: 'Tengo una duda legal',
     descripcion:
-      'Escríbenos con tu consulta o comentario. Al enviar este formulario se genera automáticamente un ticket de consulta en el buzón oficial de soporte legal de Grupo MLP S.A.S. (servicio@calculadoradereuso.com), con un tiempo de respuesta de máximo 10 días hábiles. Si tu duda trata sobre cálculos de emisiones o métricas ambientales, recuerda que todos los resultados de la plataforma constituyen una estimación técnica orientativa con alcance estimativo referencial.',
+      'Escríbenos con tu consulta o comentario. Al enviar este formulario se genera automáticamente un ticket de consulta en el buzón oficial de soporte legal de Grupo MLP S.A.S. (servicio@calculadoradereuso.com), con un tiempo de respuesta de 10 a 15 días hábiles. Si tu duda trata sobre cálculos de emisiones o métricas ambientales, recuerda que todos los resultados de la plataforma constituyen una estimación técnica orientativa con alcance estimativo referencial.',
     leeTabien: 'Lee también',
     links: [
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -26,7 +26,7 @@ const T = {
     breadcrumb: 'Legal enquiry',
     titulo: 'I have a legal question',
     descripcion:
-      'Send us your query or comment. Submitting this form automatically creates a consultation ticket in the official legal support inbox of Grupo MLP S.A.S. (servicio@calculadoradereuso.com), with a maximum response time of 10 business days. If your inquiry concerns emission calculations or environmental metrics, remember that all platform results constitute a technical reference estimation with an estimative guidance scope.',
+      'Send us your query or comment. Submitting this form automatically creates a consultation ticket in the official legal support inbox of Grupo MLP S.A.S. (servicio@calculadoradereuso.com), with a response time of 10 to 15 business days. If your inquiry concerns emission calculations or environmental metrics, remember that all platform results constitute a technical reference estimation with an estimative guidance scope.',
     leeTabien: 'See also',
     links: [
       { href: '/legal/terminos', label: 'Terms & Conditions' },

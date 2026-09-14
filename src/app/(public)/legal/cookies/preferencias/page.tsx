@@ -122,14 +122,14 @@ function ToggleRow({
         gap: 14,
         padding: '14px 16px',
         borderRadius: 12,
-        border: '1px solid rgba(0,130,124,0.14)',
-        background: locked ? 'rgba(0,130,124,0.04)' : 'var(--bg-card, #fff)',
+        border: '1px solid var(--border)',
+        background: locked ? 'var(--color-brand-light)' : 'var(--bg-card, #fff)',
       }}
     >
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
           <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary, #1A3A38)' }}>{label}</span>
-          {locked && <Lock size={13} color="#00827C" />}
+          {locked && <Lock size={13} color="var(--color-brand)" />}
         </div>
         <span style={{ fontSize: 13, color: 'var(--text-secondary, #4D7C79)', lineHeight: 1.6 }}>{desc}</span>
       </div>
@@ -144,7 +144,7 @@ function ToggleRow({
           height: 22,
           borderRadius: 11,
           border: 'none',
-          background: checked ? '#00827C' : '#ddd',
+          background: checked ? 'var(--color-brand)' : 'var(--bg-input)',
           cursor: locked ? 'not-allowed' : 'pointer',
           position: 'relative',
           transition: 'background 0.2s',
@@ -190,14 +190,14 @@ function ImpactoRow({
         alignItems: 'flex-start',
         padding: '12px 14px',
         borderRadius: 10,
-        background: isOn ? 'rgba(0,130,124,0.04)' : 'rgba(71,71,71,0.02)',
-        border: `1px solid ${isOn ? 'rgba(0,130,124,0.16)' : 'rgba(71,71,71,0.08)'}`,
+        background: isOn ? 'var(--color-brand-light)' : 'var(--bg-integrated)',
+        border: `1px solid ${isOn ? 'var(--border)' : 'var(--border-light)'}`,
       }}
     >
       <div style={{ marginTop: 2, flexShrink: 0 }}>
         {isOn
-          ? <CheckCircle size={16} color="#00827C" />
-          : <XCircle size={16} color="#aaa" />
+          ? <CheckCircle size={16} color="var(--color-brand)" />
+          : <XCircle size={16} color="var(--text-placeholder)" />
         }
       </div>
       <div>
@@ -209,8 +209,8 @@ function ImpactoRow({
             <span style={{
               fontSize: 10,
               fontWeight: 700,
-              color: '#00827C',
-              background: 'rgba(0,130,124,0.10)',
+              color: 'var(--color-brand)',
+              background: 'var(--color-brand-light)',
               borderRadius: 6,
               padding: '1px 7px',
               letterSpacing: '0.04em',
@@ -308,8 +308,8 @@ export default function CookiesPreferenciasPage() {
             onClick={guardarPreferencias}
             className="hover-pop hover-press"
             style={{
-              background: '#00827C',
-              color: '#fff',
+              background: 'var(--color-brand)',
+              color: 'var(--text-on-brand)',
               borderRadius: 10,
               padding: '10px 24px',
               border: 'none',
@@ -319,7 +319,7 @@ export default function CookiesPreferenciasPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: 8,
-              boxShadow: '0 2px 8px rgba(0,130,124,0.25)',
+              boxShadow: '0 2px 8px var(--color-brand-light)',
               transition: 'opacity 0.2s',
             }}
           >
