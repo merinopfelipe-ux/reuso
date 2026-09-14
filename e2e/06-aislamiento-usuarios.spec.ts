@@ -75,8 +75,9 @@ async function iniciarSesion(page: Page, email: string) {
   
   await page.locator('button[type="submit"]').click()
   
-  // Dado que es una cuenta libre nueva, debería ir a /dashboard (o /empresa/nueva si redirige directamente)
-  await page.waitForURL(/\/(dashboard|empresa\/nueva)/, { timeout: 15_000 })
+  // Dado que es una cuenta libre nueva, debería ir a /dashboard (o /empresa/nueva si redirige directamente).
+  // Timeout generoso: en dev, la primera compilación de la ruta de destino puede tardar bastante más que 15s.
+  await page.waitForURL(/\/(dashboard|empresa\/nueva)/, { timeout: 45_000 })
 }
 
 test.describe('Aislamiento de Usuarios (Test A/B)', () => {
@@ -138,20 +139,30 @@ test.describe('Aislamiento de Usuarios (Test A/B)', () => {
     await page.goto('/empresa')
     await page.waitForURL(/\/empresa$/, { timeout: 15_000 })
 
-    // 4. Crear un recurso privado (Pasaporte Digital - DPP)
+    // 4. Crear un recurso privado (Pasaporte Digital - DPP), directo en la
+    // base. `/empresa/dpp/nuevo` hoy es un flujo de foto + detección por IA
+    // (ver dpp-item-card.tsx) — no es el objeto de esta prueba de
+    // aislamiento, así que se evita del todo, mismo criterio que la empresa
+    // de Usuario B arriba.
     console.log('Creando activo DPP privado')
-    await page.goto('/empresa/dpp/nuevo')
-    await page.waitForLoadState('load')
-    await page.locator('input[placeholder="Silla de madera, Mesa de oficina..."]').fill('Mesa de Seguridad Privada B')
-    await page.locator('input[placeholder="8.5"]').fill('15.5')
-    await page.locator('textarea[placeholder="Describe brevemente el objeto y su historia..."]').fill('Este es un activo confidencial de la Empresa B')
-    
-    await page.locator('button[type="submit"]').click()
-    
-    // Debería redirigir a /empresa/dpp/[id]
-    await page.waitForURL(/\/empresa\/dpp\/[0-9a-fA-F-]{36}/, { timeout: 15_000 })
-    const urlRecursoPrivado = page.url()
+    const codigoDppB = `RCO2-B${Date.now()}`
+    const { data: dppB, error: errorDppB } = await supabaseAdmin
+      .from('dpp_activos')
+      .insert({
+        empresa_id: empresaB.id,
+        codigo_dpp: codigoDppB,
+        nombre: 'Mesa de Seguridad Privada B',
+        descripcion: 'Este es un activo confidencial de la Empresa B',
+        peso_total_kg: 15.5,
+      })
+      .select('id')
+      .single()
+    if (errorDppB || !dppB) throw new Error(`No se pudo crear el DPP de Usuario B: ${errorDppB?.message}`)
+
+    const urlRecursoPrivado = `/empresa/dpp/${dppB.id}`
     console.log(`Recurso privado creado en la URL: ${urlRecursoPrivado}`)
+    await page.goto(urlRecursoPrivado)
+    await page.waitForLoadState('load')
 
     // 5. Cerrar la sesión del Usuario B
     console.log('Cerrando sesión de Usuario B')
