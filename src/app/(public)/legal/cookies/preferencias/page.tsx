@@ -395,10 +395,10 @@ export default function CookiesPreferenciasPage() {
             padding: '10px 20px',
             borderRadius: 10,
             background: 'transparent',
-            color: '#FF5E4B',
+            color: 'var(--color-error-content)',
             fontSize: 14,
             fontWeight: 600,
-            border: '1.5px solid rgba(255,94,75,0.40)',
+            border: '1.5px solid var(--color-error-content)',
             cursor: 'pointer',
             transition: 'background 0.2s',
           }}

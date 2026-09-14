@@ -22,7 +22,9 @@ export interface SelectorProps {
 // SelectorCiudad/SelectorEmpresa: botón + panel propio.
 export function Selector({ opciones, value, onChange, placeholder = 'Selecciona', disabled, className = '' }: SelectorProps) {
   const [abierto, setAbierto] = useState(false)
+  const [resaltado, setResaltado] = useState(0)
   const containerRef = useRef<HTMLDivElement>(null)
+  const opcionRefs = useRef<(HTMLButtonElement | null)[]>([])
   const seleccionada = opciones.find(o => o.value === value)
 
   useEffect(() => {
@@ -33,12 +35,62 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  function abrir() {
+    const indiceActual = opciones.findIndex(o => o.value === value)
+    setResaltado(indiceActual >= 0 ? indiceActual : 0)
+    setAbierto(true)
+  }
+
+  useEffect(() => {
+    if (abierto) opcionRefs.current[resaltado]?.scrollIntoView({ block: 'nearest' })
+  }, [abierto, resaltado])
+
+  // Teclado tipo <select> nativo — antes este botón no respondía a ninguna
+  // tecla salvo Enter/Espacio (comportamiento por defecto de <button>), sin
+  // forma de navegar las opciones sin usar el mouse (bug real reportado,
+  // QA pub-17: "presioné la flecha hacia abajo... no pasó nada"). El foco
+  // se queda siempre en el botón disparador (el panel nunca lo recibe), así
+  // que TODO el manejo de teclado vive acá, no en el panel — si se abriera
+  // solo al abrir y se dejara la navegación en el panel, las flechas
+  // siguientes nunca llegarían a ningún listener.
+  function onKeyDownTrigger(e: React.KeyboardEvent) {
+    if (disabled) return
+    if (!abierto) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        abrir()
+      }
+      return
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setResaltado(i => Math.min(i + 1, opciones.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setResaltado(i => Math.max(i - 1, 0))
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      const opcion = opciones[resaltado]
+      if (opcion) { onChange(opcion.value); setAbierto(false) }
+    } else if (e.key === 'Escape') {
+      e.preventDefault()
+      setAbierto(false)
+    } else if (e.key === 'Home') {
+      e.preventDefault()
+      setResaltado(0)
+    } else if (e.key === 'End') {
+      e.preventDefault()
+      setResaltado(opciones.length - 1)
+    }
+  }
+
   return (
     <div className={`relative w-full ${className}`} ref={containerRef}>
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setAbierto(!abierto)}
+        onClick={() => (abierto ? setAbierto(false) : abrir())}
+        onKeyDown={onKeyDownTrigger}
         className="flex w-full items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg border text-sm font-medium transition-colors"
         style={{
           background: 'var(--surface, var(--bg-input))',
@@ -60,12 +112,14 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
             style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', maxHeight: '300px' }}
           >
             <div className="overflow-y-auto flex-1 p-1">
-              {opciones.map(o => (
+              {opciones.map((o, i) => (
                 <button
                   key={o.value}
+                  ref={el => { opcionRefs.current[i] = el }}
                   type="button"
                   onClick={() => { onChange(o.value); setAbierto(false) }}
-                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                  onMouseEnter={() => setResaltado(i)}
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === o.value ? 'font-semibold' : ''} ${i === resaltado ? 'bg-[var(--bg-hover)]' : ''}`}
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {o.label}
