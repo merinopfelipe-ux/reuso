@@ -63,6 +63,9 @@ h3 {
   --color-warning-content: #AD7C43;
   --color-info-content: #2B7FBF;
   --scrollbar-thumb-hover: rgba(0, 130, 124, 0.25);
+  /* Overlay de modales de imagen ampliada (ModalImagenZoom): blanco en
+     día, deja ver algo del fondo detrás en vez de taparlo por completo. */
+  --overlay-zoom: rgba(255, 255, 255, 0.55);
 }
 
 /* ─── Tema oscuro (Protocolo Lurdes V12.3) ─── */
@@ -115,6 +118,7 @@ h3 {
 
   --btn-error-text: #474747;
   --scrollbar-thumb-hover: rgba(214, 243, 145, 0.3);
+  --overlay-zoom: rgba(71, 71, 71, 0.55);
 }
 
 [data-theme="dark"] .logo-dark-invert {

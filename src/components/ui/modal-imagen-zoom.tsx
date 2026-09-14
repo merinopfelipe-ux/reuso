@@ -11,7 +11,10 @@ interface Props {
 
 // Visor de imagen ampliada, reutilizable en cualquier pantalla — antes vivía
 // solo como función local en propuesta-client.tsx. Nunca usar bg-black/NN
-// puro (regla CLAUDE.md): el overlay usa Negro Lurdes #474747 con opacidad.
+// puro (regla CLAUDE.md): el overlay usa la variable --overlay-zoom, que
+// cambia por tema (blanco translúcido en día, Negro Lurdes translúcido en
+// noche) en vez de un color fijo — así siempre se alcanza a distinguir algo
+// del fondo detrás, nunca se ve como un bloque opaco.
 export function ModalImagenZoom({ imagenUrl, onClose }: Props) {
   const [mounted, setMounted] = useState(false)
 
@@ -32,7 +35,8 @@ export function ModalImagenZoom({ imagenUrl, onClose }: Props) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 bg-[#474747]/85 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 backdrop-blur-sm animate-in fade-in duration-200"
+      style={{ background: 'var(--overlay-zoom)' }}
       onClick={onClose}
     >
       <div

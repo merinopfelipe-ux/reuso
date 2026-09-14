@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import { comprimirImagenWebP } from '@/lib/image-compress'
 import { CheckCircle, XCircle, Circle, Square, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle, Clock, Copy, ExternalLink, Upload, ClipboardPaste } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
@@ -2345,11 +2346,16 @@ export default function QAPage() {
     if (file.size > 5_242_880) { alert('La imagen supera los 5 MB.'); return }
     setCapturaSubiendo(taskId)
     try {
+      // Redimensionar + comprimir antes de subir — sin esto, una captura de
+      // pantalla Retina (varios MB) se sube y guarda tal cual, haciendo lenta
+      // tanto la subida como cada carga posterior de la miniatura. Mismo
+      // patrón ya usado en Cotizador/DPP (comprimirImagenWebP).
+      const comprimida = await comprimirImagenWebP(file, { maxLado: 1000, calidad: 0.75 })
       const dataUrl = await new Promise<string>((res, rej) => {
         const r = new FileReader()
         r.onload = () => res(r.result as string)
         r.onerror = () => rej(new Error('lectura'))
-        r.readAsDataURL(file)
+        r.readAsDataURL(comprimida)
       })
       const resp = await fetch('/api/admin/qa/evidencia', {
         method: 'POST',
