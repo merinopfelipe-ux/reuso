@@ -1872,6 +1872,25 @@ function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar
     return () => { cancel = true }
   }, [paths])
 
+  // Pegar una captura en cualquier parte de la pantalla mientras esta tarea
+  // está expandida — el texto de la caja ("Pegar o subir captura") lo
+  // prometía, pero antes solo funcionaba dentro del textarea de notas de
+  // arriba porque un <label> no recibe eventos de pegado por sí solo. Como
+  // `expandida` solo permite una tarea abierta a la vez, este componente
+  // nunca está montado dos veces al mismo tiempo — seguro sin ambigüedad de
+  // a cuál tarea le llega la captura.
+  useEffect(() => {
+    function onPaste(e: ClipboardEvent) {
+      const img = Array.from(e.clipboardData?.items ?? []).find(i => i.type.startsWith('image/'))
+      if (!img) return
+      e.preventDefault()
+      const file = img.getAsFile()
+      if (file) onElegirArchivo(file)
+    }
+    window.addEventListener('paste', onPaste)
+    return () => window.removeEventListener('paste', onPaste)
+  }, [onElegirArchivo])
+
   const borde = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.15)'
 
   return (
@@ -3637,13 +3656,6 @@ export default function QAPage() {
                             if (tarea.notas.trim() === '') {
                               actualizar(tarea.id, 'notas', 'Hice: \nEsperaba ver: \nEn su lugar pasó: ')
                             }
-                          }}
-                          onPaste={e => {
-                            const img = Array.from(e.clipboardData.items).find(i => i.type.startsWith('image/'))
-                            if (!img) return
-                            e.preventDefault()
-                            const file = img.getAsFile()
-                            if (file) subirCaptura(tarea.id, file)
                           }}
                           placeholder={'Hice: abrí X y pulsé Y\nEsperaba ver: Z\nEn su lugar pasó: W\n(pega una captura con Cmd+V)'}
                           rows={5}
