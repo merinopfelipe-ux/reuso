@@ -102,7 +102,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
     
     const rnd = crypto.randomBytes(4).toString('hex')
-    const email = `qa_${rnd}@reuso.com`
+    // mailinator.com acepta cualquier correo sin rebotar (evita el aviso de abuso de envío de Supabase)
+    const email = `qa_${rnd}@mailinator.com`
     
     // Paso 1
     await page.getByPlaceholder('María Estefanía').fill('Test')
@@ -205,7 +206,9 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     const rnd = crypto.randomBytes(4).toString('hex')
     await page.getByPlaceholder('María Estefanía').fill('Turnstile')
     await page.getByPlaceholder('Pérez').fill('Test')
-    await page.getByPlaceholder('tu@correo.com').fill(`turnstile_${rnd}@test.com`)
+    // mailinator.com acepta cualquier correo sin rebotar (buzón público real) — test.com
+    // no tiene buzón real y generaba rebotes que Supabase reporta como abuso de envío.
+    await page.getByPlaceholder('tu@correo.com').fill(`turnstile_${rnd}@mailinator.com`)
     await page.getByPlaceholder('(300) 123 4567').fill('3000000000')
     await page.getByRole('button', { name: /siguiente/i }).click()
     
