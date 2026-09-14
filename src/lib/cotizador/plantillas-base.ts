@@ -20,6 +20,10 @@ export interface Material {
   origen_fuente?: string | null
   detalle_fuente?: string | null
   nivel_confianza?: 'alta' | 'media' | 'baja'
+  // % de esa masa que se puede reciclar/recuperar al final de su vida —
+  // usado para estimar residuo reciclable y R_out sin que el taller mida
+  // cada ciclo a mano. Estimación de catálogo, no una certificación.
+  porcentaje_reciclable?: number | null
 }
 
 export const BASE_SERVICIOS = ['Pintor', 'Tapicero', 'Teñido', 'Carpintero']
