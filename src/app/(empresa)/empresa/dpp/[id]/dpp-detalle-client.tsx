@@ -13,6 +13,8 @@ import {
   ArrowCounterClockwise, CheckCircle, ZoomIn,
 } from '@/components/ui/icons'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import { desglosarMasaCircular, estimarResiduoReciclableKg, type MaterialConCategoria, type MaterialReciclable } from '@/lib/calculos/circularidad'
+import { calcularTiempoUsoEnPlataformaDias } from '@/lib/calculos/tiempo-uso'
 import type { ResultadosFinancieros } from '@/types'
 
 const GraficaMetricas = dynamic(() => import('./grafica-metricas').then(m => ({ default: m.GraficaMetricas })), { ssr: false })
@@ -304,6 +306,35 @@ interface Props {
 
 export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props) {
   const router = useRouter()
+
+  // Composición con metadata de circularidad (categoria_material,
+  // porcentaje_reciclable) cuando el material viene del catálogo — base
+  // para las sugerencias de Técnica B (ver src/lib/calculos/circularidad.ts).
+  // Derivada directo de la prop, no de estado: no cambia hasta refrescar.
+  const composicion = Array.isArray(activo.composicion_json)
+    ? activo.composicion_json as {
+        material: string
+        peso_kg: number
+        factor_co2_kg: number
+        origen_fuente?: string
+        nivel_confianza?: string
+        categoria_material?: string | null
+        porcentaje_reciclable?: number | null
+      }[]
+    : []
+  const desgloseCircularSugerido = desglosarMasaCircular(
+    composicion.map((m): MaterialConCategoria => ({ peso_kg: m.peso_kg, categoria_material: m.categoria_material }))
+  )
+  const materialesReciclables: MaterialReciclable[] = composicion.map(m => ({
+    peso_kg: m.peso_kg,
+    porcentaje_reciclable: m.porcentaje_reciclable,
+  }))
+  // Técnica C (0% error): suma exacta de fechas de ciclos ya guardados,
+  // solo informativo por ahora, no alimenta ningún input todavía.
+  const tiempoUsoEnPlataformaDias = calcularTiempoUsoEnPlataformaDias(
+    ciclos.map(c => ({ fecha_inicio: c.fecha_inicio ?? '', fecha_fin: c.fecha_fin })).filter(c => c.fecha_inicio)
+  )
+
   const [tabActivo, setTabActivo] = useState<'pasaporte' | 'ciclos' | 'metricas' | 'documentos'>('pasaporte')
   const [zoomAbierto, setZoomAbierto] = useState(false)
 
@@ -333,11 +364,16 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
     }
   }, [])
   type MetricaKey = 'p_virgin_usd_kg' | 'q_circular_kg' | 'c_adquisicion' | 'c_operacion' | 'c_mantenimiento' | 'c_disposicion' | 'v_reventa' | 'm_secundario_kg' | 'm_renovable_kg' | 'm_total_input_kg' | 'ahorro_operativo' | 'inversion_ce' | 'fp_ce' | 'fp_lineal' | 'c_impuesto_evitado'
+  // Valores sugeridos (Técnica B) desde la composición del activo, cuando
+  // hay datos para calcularlos — siempre editables, nunca autoguardados,
+  // el humano confirma al hacer clic en "Calcula" (Directriz 4 CLAUDE.md).
+  const tieneComposicion = composicion.length > 0
   const [metricaInputs, setMetricaInputs] = useState<Record<MetricaKey, string>>({
-    p_virgin_usd_kg: '', q_circular_kg: '',
+    p_virgin_usd_kg: '', q_circular_kg: tieneComposicion ? String(desgloseCircularSugerido.q_circular_kg) : '',
     c_adquisicion: '', c_operacion: '', c_mantenimiento: '', c_disposicion: '', v_reventa: '',
-    m_secundario_kg: '', m_renovable_kg: '',
-    m_total_input_kg: activo.peso_total_kg != null ? String(activo.peso_total_kg) : '',
+    m_secundario_kg: tieneComposicion ? String(desgloseCircularSugerido.m_secundario_kg) : '',
+    m_renovable_kg: tieneComposicion ? String(desgloseCircularSugerido.m_renovable_kg) : '',
+    m_total_input_kg: tieneComposicion ? String(desgloseCircularSugerido.m_total_input_kg) : (activo.peso_total_kg != null ? String(activo.peso_total_kg) : ''),
     ahorro_operativo: '', inversion_ce: '', fp_ce: '', fp_lineal: '', c_impuesto_evitado: '',
   })
   const [resultados, setResultados] = useState<ResultadosFinancieros | null>(null)
@@ -519,9 +555,6 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
   }
 
   const estadoConf = ESTADO_CONFIG[activo.estado ?? 'activo'] ?? ESTADO_CONFIG['activo']
-  const composicion = Array.isArray(activo.composicion_json)
-    ? activo.composicion_json as { material: string; peso_kg: number; factor_co2_kg: number; origen_fuente?: string; nivel_confianza?: string }[]
-    : []
   const co2Total = ciclos.reduce((s, c) => s + (c.co2_evitado_kg ?? 0), 0)
 
   return (
@@ -685,6 +718,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               <p style={{ margin: 0, fontSize: 14, color: 'var(--text-secondary)' }}>
                 {ciclos.length > 0 ? `${ciclos.length} ciclo${ciclos.length > 1 ? 's' : ''} registrado${ciclos.length > 1 ? 's' : ''} · ${co2Total.toFixed(2)} kg CO₂ eq evitados en total` : 'Sin ciclos registrados aún'}
               </p>
+              {tiempoUsoEnPlataformaDias > 0 && (
+                <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>
+                  Tiempo en la plataforma (calculado de las fechas de ciclos): {tiempoUsoEnPlataformaDias} días
+                </p>
+              )}
             </div>
             <button onClick={() => setShowModalCiclo(true)} style={btnPrimaryStyle}>
               Registra un ciclo
@@ -770,7 +808,16 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
                   <div style={fieldStyle}>
                     <label style={labelStyle}>Residuo retirado en taller (kg)</label>
-                    <input type="number" min="0" step="0.1" value={cicloForm.peso_residuo_taller_kg} onChange={(e) => setCicloForm((p) => ({ ...p, peso_residuo_taller_kg: e.target.value }))} style={inputStyle} />
+                    <input type="number" min="0" step="0.1" value={cicloForm.peso_residuo_taller_kg} onChange={(e) => {
+                      const nuevoResiduo = e.target.value
+                      // Sugerencia (Técnica B): % reciclable ponderado por la
+                      // composición del activo, aplicado al residuo que se
+                      // acaba de escribir — el campo sigue 100% editable.
+                      const sugerido = materialesReciclables.length > 0
+                        ? String(estimarResiduoReciclableKg(materialesReciclables, parseFloat(nuevoResiduo) || 0))
+                        : cicloForm.peso_residuo_reciclado_kg
+                      setCicloForm((p) => ({ ...p, peso_residuo_taller_kg: nuevoResiduo, peso_residuo_reciclado_kg: sugerido }))
+                    }} style={inputStyle} />
                   </div>
                   <div style={fieldStyle}>
                     <label style={labelStyle}>De eso, cuánto reciclaste (kg)</label>

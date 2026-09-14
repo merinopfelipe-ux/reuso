@@ -374,7 +374,7 @@ git commit -m "feat: desglose de masa circular (secundario/renovable) derivado d
 **Files:**
 - Modify: `src/app/api/dpp/activos/[id]/calculos-ambientales/route.ts`
 
-- [ ] **Step 1: Agregar los nuevos campos a la respuesta**
+- [x] **Step 1: Agregar los nuevos campos a la respuesta** (adaptado: `calculos-ambientales/route.ts` no existe en el repo real — se conectó en `dpp-detalle-client.tsx`, ver nota abajo)
 
 Extender el `select` de `dpp_ciclos` (línea 42 actual) para incluir `fecha_inicio, fecha_fin` (si no están ya) y `peso_residuo_taller_kg` (ya está). Después del bloque de `logistica` (línea 83 actual), agregar:
 
@@ -390,12 +390,12 @@ Extender el `select` de `dpp_ciclos` (línea 42 actual) para incluir `fecha_inic
 
 Y agregarlos al `data` de la respuesta final (`m_secundario_kg`, `m_renovable_kg`, `m_total_input_kg`, `q_circular_kg`, `r_out_estimado_pct`, `tiempo_uso_en_plataforma_dias`), con los imports correspondientes al inicio del archivo.
 
-- [ ] **Step 2: Verificar tipos y lint**
+- [x] **Step 2: Verificar tipos y lint**
 
 Run: `npx tsc --noEmit && npx eslint "src/app/api/dpp/activos/[id]/calculos-ambientales/route.ts"`
 Expected: sin errores.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add "src/app/api/dpp/activos/[id]/calculos-ambientales/route.ts"
@@ -403,6 +403,37 @@ git commit -m "feat: expone desglose circular y tiempo de uso en el endpoint de 
 ```
 
 ---
+
+## Nota de ejecución — Tarea 5 adaptada (2026-09-13)
+
+El archivo `src/app/api/dpp/activos/[id]/calculos-ambientales/route.ts` que
+este plan asumía **no existe** en el repo real (el endpoint de cálculo
+financiero es `src/app/api/dpp/activos/[id]/metricas/route.ts`, que recibe
+los valores ya confirmados por el humano, no calcula sugerencias). La
+conexión real de las Técnicas B y C se hizo del lado del cliente, en
+`src/app/(empresa)/empresa/dpp/[id]/dpp-detalle-client.tsx`, que ya tiene
+`composicion_json` y `ciclos` disponibles como props:
+
+- `m_secundario_kg` / `m_renovable_kg` / `m_total_input_kg` / `q_circular_kg`
+  llegan pre-rellenados (editables) en el formulario de métricas usando
+  `desglosarMasaCircular`.
+- El campo "De eso, cuánto reciclaste (kg)" del modal de ciclo se sugiere
+  automáticamente con `estimarResiduoReciclableKg` cuando el usuario escribe
+  el residuo retirado en taller, sin bloquear la edición manual.
+- El tiempo en la plataforma (`tiempo-uso.ts`, Técnica C) se muestra como dato
+  informativo en el tab de ciclos, sumado desde las fechas ya guardadas.
+
+Para que `m_renovable_kg` y el residuo reciclable tengan datos reales (no
+solo `0`), `categoria_material` y `porcentaje_reciclable` ahora viajan desde
+el catálogo hasta `composicion_json` en la creación del DPP: se agregaron a
+`MaterialDpp` (`dpp-item-card.tsx`), al mapeo de la IA y a la construcción de
+`composicion_json` en `nuevo/page.tsx`, al schema Zod de
+`api/dpp/activos/crear/route.ts`, y al `select` de `item_materiales` en
+`api/cotizador/diagnostico/route.ts` (agrega `porcentaje_reciclable`). Este
+último `select` depende de que `sql/133` ya esté corrido — si no, esa
+columna simplemente no existe y Supabase devuelve error 42703 en ese
+`select`, hay que correr `sql/133` antes de probar el flujo de creación de
+DPP con IA.
 
 ## Verificación final
 

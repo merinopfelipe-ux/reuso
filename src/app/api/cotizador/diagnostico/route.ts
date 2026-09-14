@@ -459,7 +459,7 @@ export async function POST(request: NextRequest) {
     ? await Promise.all([
         auth.adminClient.from('item_servicios').select('item_id, nombre, precio').in('item_id', itemIds),
         auth.adminClient.from('item_insumos').select('item_id, nombre, cantidad, unidad, precio_unitario').in('item_id', itemIds),
-        auth.adminClient.from('item_materiales').select('item_id, nombre, peso_kg, factor_co2_kg, factor_agua_l_kg, categoria_material, origen_fuente, detalle_fuente, nivel_confianza').in('item_id', itemIds),
+        auth.adminClient.from('item_materiales').select('item_id, nombre, peso_kg, factor_co2_kg, factor_agua_l_kg, categoria_material, porcentaje_reciclable, origen_fuente, detalle_fuente, nivel_confianza').in('item_id', itemIds),
       ])
     : [{ data: [] }, { data: [] }, { data: [] }]
 

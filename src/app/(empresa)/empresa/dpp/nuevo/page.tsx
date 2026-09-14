@@ -65,6 +65,8 @@ function itemDetectadoAPendiente(
       factor_agua_l_kg: m.factor_agua_l_kg,
       origen_fuente: m.origen_fuente,
       nivel_confianza: m.nivel_confianza,
+      categoria_material: m.categoria_material,
+      porcentaje_reciclable: m.porcentaje_reciclable,
     })),
     manual: false,
     creando: false,
@@ -262,6 +264,8 @@ export default function NuevoActivoDppPage() {
       factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
       origen_fuente: m.origen_fuente ?? undefined,
       nivel_confianza: m.nivel_confianza,
+      categoria_material: m.categoria_material ?? undefined,
+      porcentaje_reciclable: m.porcentaje_reciclable ?? undefined,
     }))
     const peso_total_kg = materialesConNombre.reduce((s: number, m: MaterialDpp) => s + m.peso_kg, 0)
 

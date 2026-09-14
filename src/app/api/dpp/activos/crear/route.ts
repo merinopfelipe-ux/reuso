@@ -20,6 +20,12 @@ const schema = z.object({
     factor_agua_l_kg: z.number().min(0).optional(),
     origen_fuente: z.string().optional(),
     nivel_confianza: z.enum(['alta', 'media', 'baja']).optional(),
+    // No editables por el usuario en este formulario — viajan solo si el
+    // material viene del catálogo (match por IA). Alimentan las sugerencias
+    // de circularidad en el detalle del activo (Técnica B), nunca un
+    // cálculo ya confirmado.
+    categoria_material: z.string().nullish(),
+    porcentaje_reciclable: z.number().min(0).max(100).nullish(),
   })).optional(),
   // El item nunca es de la empresa que cotiza, es del cliente dueño del
   // mueble — vínculo siempre opcional (el DPP puede crearse de cero, sin

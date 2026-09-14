@@ -20,6 +20,12 @@ export interface MaterialDpp {
   factor_agua_l_kg: number | null
   origen_fuente?: string | null
   nivel_confianza?: 'alta' | 'media' | 'baja'
+  // No editables en esta pantalla, solo viajan si el material viene del
+  // catálogo (match por IA) — alimentan las sugerencias de circularidad
+  // (m_renovable_kg, residuo reciclable) en el detalle del activo, nunca
+  // un cálculo financiero/ambiental ya confirmado.
+  categoria_material?: string | null
+  porcentaje_reciclable?: number | null
   // Bandera persistente para saber si mostrar el input editable en vez del
   // span de solo lectura — nunca se puede inferir de `nombre === ''`,
   // porque eso se rompe apenas el usuario escribe el primer carácter.
