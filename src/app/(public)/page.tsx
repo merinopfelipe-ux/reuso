@@ -199,7 +199,8 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
       'https://www.youtube.com/@calculadoradereuso',
       'https://www.tiktok.com/@calculadorareuso',
       'https://www.facebook.com/calculadoradereuso',
-      'https://www.threads.com/@calculadoradereuso'
+      'https://www.threads.com/@calculadoradereuso',
+      'https://co.pinterest.com/calculadoradereuso/'
     ],
     contactPoint: {
       '@type': 'ContactPoint',
