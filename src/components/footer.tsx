@@ -608,7 +608,7 @@ export function Footer({
         </div>
       </div>
 
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         /* Título con animación continua de TODOS los colores oficiales de la marca al hover */
         .footer-rainbow-title {
           font-size: ${isMobile ? '22px' : '26px'};
@@ -791,7 +791,7 @@ export function Footer({
           text-decoration: none !important;
           outline: none;
         }
-      `}</style>
+      ` }} />
     </footer>
   )
 }
