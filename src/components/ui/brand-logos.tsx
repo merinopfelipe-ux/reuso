@@ -67,9 +67,12 @@ WhatsappLogo.displayName = 'WhatsappLogo'
 
 // Export official brand and social logos from Phosphor Icons, wrapped for visual compatibility
 // Usando nombres *Icon (nombres canónicos en Phosphor v2) para evitar hints de deprecación
-// LinkedIn: #0A66C2, Instagram: #E1306C, Facebook: #1877F2, X: #474747, YouTube: #FF0000
+// LinkedIn: #0A66C2, Instagram: #E1306C, Facebook: #1877F2, X: #474747, YouTube: #FF0000, TikTok: #000000
 export const LinkedinLogo = wrapPhosphorIcon(Phosphor.LinkedinLogoIcon, '#0A66C2')
 export const InstagramLogo = wrapPhosphorIcon(Phosphor.InstagramLogoIcon, '#E1306C')
 export const FacebookLogo = wrapPhosphorIcon(Phosphor.FacebookLogoIcon, '#1877F2')
 export const XLogo = wrapPhosphorIcon(Phosphor.XLogoIcon, '#474747')
 export const YoutubeLogo = wrapPhosphorIcon(Phosphor.YoutubeLogoIcon, '#FF0000')
+
+export const TiktokLogo = wrapPhosphorIcon(Phosphor.TiktokLogoIcon, '#000000')
+

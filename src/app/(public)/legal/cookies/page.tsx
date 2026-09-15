@@ -35,9 +35,9 @@ const T = {
     },
     prefBtnText: 'Cambiar mis preferencias de cookies',
     s1Title: 'Qué son las cookies y ámbito de aplicación',
-    s1: 'Las cookies son pequeños archivos de texto que un sitio web almacena en tu dispositivo al visitarlo. Permiten que el sitio recuerde información entre páginas y sesiones: que estás autenticado, tus preferencias de interfaz o si ya tomaste una decisión sobre el uso de cookies. Esta política aplica tanto al dominio principal calculadoradereuso.com como a los dominios oficiales de redirección creuso.app y reuso.lurdes.co, los cuales enrutan de forma segura a la plataforma y comparten idénticos estándares técnicos y de privacidad.',
+    s1: 'Las cookies son pequeños archivos de texto que un sitio web almacena en tu dispositivo al visitarlo. Permiten que el sitio recuerde información entre páginas y sesiones: que estás autenticado, tus preferencias de interfaz o si ya tomaste una decisión sobre el uso de cookies. Esta política aplica tanto al dominio principal calculadoradereuso.com como a los dominios oficiales de redirección creuso.app, los cuales enrutan de forma segura a la plataforma y comparten idénticos estándares técnicos y de privacidad.',
     s2Title: '1. Cookies esenciales',
-    s2Desc: 'Estas cookies son necesarias para que el sitio funcione. Se activan automáticamente cuando usas la plataforma. No puedes desactivarlas sin que el sitio deje de funcionar. No requieren tu consentimiento (RGPD Art. 5(3) / Directiva ePrivacy). Aplican a calculadoradereuso.com y a sus dominios de redirección autorizados (creuso.app y reuso.lurdes.co).',
+    s2Desc: 'Estas cookies son necesarias para que el sitio funcione. Se activan automáticamente cuando usas la plataforma. No puedes desactivarlas sin que el sitio deje de funcionar. No requieren tu consentimiento (RGPD Art. 5(3) / Directiva ePrivacy). Aplican a calculadoradereuso.com y a sus dominios de redirección autorizados (creuso.app).',
     s2Rows: [
       { nombre: 'sb-* (Autenticación de sesión)', dominio: 'calculadoradereuso.com (y dominios redirigidos)', duracion: 'Sesión / 1 año', finalidad: 'Gestión de sesión autenticada. Identifica que estás conectado.' },
       { nombre: 'reuso_cookies_consent', dominio: 'calculadoradereuso.com (y dominios redirigidos)', duracion: '1 año', finalidad: 'Guarda tu elección sobre cookies (esenciales / funcionales / analíticas).' },
@@ -82,7 +82,7 @@ const T = {
       { ley: 'CCPA (California, EE. UU.)', texto: 'Los residentes de California tienen derecho a saber qué datos se recopilan, a oponerse a su venta (no vendemos datos) y a solicitar su eliminación.' },
       { ley: 'Ley 1581 de 2012 y Decreto 1377/2013 (Colombia)', texto: 'Rige el tratamiento de datos personales en Colombia. Incluye el derecho a conocer, actualizar, rectificar y suprimir la información. Aplica a todos nuestros usuarios colombianos.' },
     ],
-    resumen: 'Usamos tres tipos de cookies: esenciales (siempre activas, imprescindibles), funcionales (opcionales, mejoran tu experiencia) y analíticas (opcionales, estadísticas anónimas). Aplica al dominio calculadoradereuso.com y a sus accesos redirigidos (creuso.app y reuso.lurdes.co). No vendemos datos ni rastreamos tu actividad fuera de Reúso. Puedes gestionar tus preferencias en cualquier momento.',
+    resumen: 'Usamos tres tipos de cookies: esenciales (siempre activas, imprescindibles), funcionales (opcionales, mejoran tu experiencia) y analíticas (opcionales, estadísticas anónimas). Aplica al dominio calculadoradereuso.com y a sus accesos redirigidos (creuso.app). No vendemos datos ni rastreamos tu actividad fuera de Reúso. Puedes gestionar tus preferencias en cualquier momento.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Política de Privacidad', descripcion: 'Qué datos recopilamos y cómo los protegemos.' },
       { href: '/legal/ia', label: 'Uso de IA', descripcion: 'Cómo usamos inteligencia artificial en la plataforma.' },
@@ -113,9 +113,9 @@ const T = {
     },
     prefBtnText: 'Change my cookie preferences',
     s1Title: 'What are cookies and scope of application',
-    s1: 'Cookies are small text files that a website stores on your device when you visit it. They allow the site to remember information between pages and sessions: that you are logged in, your interface preferences, or whether you have already made a choice about cookie use. This policy applies to our main domain calculadoradereuso.com as well as official redirecting domains creuso.app and reuso.lurdes.co, which securely route to the platform and share identical technical and privacy standards.',
+    s1: 'Cookies are small text files that a website stores on your device when you visit it. They allow the site to remember information between pages and sessions: that you are logged in, your interface preferences, or whether you have already made a choice about cookie use. This policy applies to our main domain calculadoradereuso.com as well as official redirecting domains creuso.app, which securely route to the platform and share identical technical and privacy standards.',
     s2Title: '1. Essential cookies',
-    s2Desc: 'These cookies are necessary for the site to function. They are activated automatically when you use the platform. You cannot disable them without causing the site to stop working. They do not require your consent (GDPR Art. 5(3) / ePrivacy Directive). They apply to calculadoradereuso.com and its authorized redirecting domains (creuso.app and reuso.lurdes.co).',
+    s2Desc: 'These cookies are necessary for the site to function. They are activated automatically when you use the platform. You cannot disable them without causing the site to stop working. They do not require your consent (GDPR Art. 5(3) / ePrivacy Directive). They apply to calculadoradereuso.com and its authorized redirecting domains (creuso.app).',
     s2Rows: [
       { nombre: 'sb-* (Session authentication)', dominio: 'calculadoradereuso.com (and redirecting domains)', duracion: 'Session / 1 year', finalidad: 'Authenticated session management. Identifies that you are logged in.' },
       { nombre: 'reuso_cookies_consent', dominio: 'calculadoradereuso.com (and redirecting domains)', duracion: '1 year', finalidad: 'Stores your choice regarding cookies (essential / functional / analytics).' },
@@ -160,7 +160,7 @@ const T = {
       { ley: 'CCPA (California, USA)', texto: 'California residents have the right to know what data is collected, to opt out of its sale (we do not sell data), and to request its deletion.' },
       { ley: 'Law 1581 of 2012 and Decree 1377/2013 (Colombia)', texto: 'Governs personal data processing in Colombia. Includes the right to know, update, correct and delete information. Applies to all our Colombian users.' },
     ],
-    resumen: 'We use three types of cookies: essential (always active, indispensable), functional (optional, improve your experience) and analytics (optional, anonymous statistics). Applies to calculadoradereuso.com and its redirecting entry points (creuso.app and reuso.lurdes.co). We do not sell data or track your activity outside Reúso. You can manage your preferences at any time.',
+    resumen: 'We use three types of cookies: essential (always active, indispensable), functional (optional, improve your experience) and analytics (optional, anonymous statistics). Applies to calculadoradereuso.com and its redirecting entry points (creuso.app). We do not sell data or track your activity outside Reúso. You can manage your preferences at any time.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'What data we collect and how we protect it.' },
       { href: '/legal/ia', label: 'AI Use', descripcion: 'How we use artificial intelligence in the platform.' },

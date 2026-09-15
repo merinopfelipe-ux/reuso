@@ -37,20 +37,22 @@ export const PAISES: Pais[] = [
   { nombre: 'Venezuela', dial: '+58', codigo: 'VE', bandera: '🇻🇪' }
 ]
 
-export interface SelectorPaisProps<T extends Pais | string = Pais | string> {
+export interface SelectorPaisProps<T extends Pais | string | null = Pais | string | null> {
   value: T
   onChange: (val: T) => void
   disabled?: boolean
   modo?: 'pais' | 'indicativo'
 }
 
-export function SelectorPais<T extends Pais | string>({ value, onChange, disabled, modo = 'pais' }: SelectorPaisProps<T>) {
+export function SelectorPais<T extends Pais | string | null>({ value, onChange, disabled, modo = 'pais' }: SelectorPaisProps<T>) {
   const [abierto, setAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
 
   const isStringValue = typeof value === 'string'
-  const currentPaisObj = isStringValue ? PAISES.find(p => p.nombre === value) : (value as Pais)
+  const currentPaisObj: Pais | undefined = isStringValue
+    ? PAISES.find(p => p.nombre === value)
+    : (value as Pais | null) ?? undefined
   
   const currentBandera = currentPaisObj ? (
     <Bandera codigo={currentPaisObj.codigo || ''} alt={currentPaisObj.nombre} className="mr-1.5 align-middle" />

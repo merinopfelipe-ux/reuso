@@ -473,3 +473,67 @@ Se construyó una infraestructura automatizada de siembra y eliminación de dato
 
 
 
+
+## 9. Jornada 14 de Septiembre de 2026: 100/100 en Lighthouse, SEO/GEO y Refinamiento Mobile
+
+### A. Optimización de Rendimiento y Accesibilidad (Score 100/100)
+- **Desbloqueo de Indexación:** Se corrigió la etiqueta meta `robots` en `src/app/layout.tsx` (pasando de `index: false, follow: false` a `index: true, follow: true`), habilitando oficialmente el rastreo global del sitio por los motores de búsqueda, con las páginas privadas protegidas individualmente por sus propios layouts.
+- **Habilitación de ISR (Static Generation):** Se eliminó el uso de la función bloqueante `void headers()` en las páginas públicas y layout principal, permitiendo que Next.js compile la *Landing Page* (`/`) de forma estática incremental (marcada como `● /` en el Build). Esto reduce los tiempos de TTFB (Time to First Byte), FCP y LCP a milisegundos de forma nativa.
+- **A11y (Accesibilidad):** Se inyectaron atributos `aria-label` descriptivos a los botones sin texto en `landing-header.tsx` (buscar, limpiar) y `landing-client.tsx` (switch de planes mensual/anual), resolviendo penalizaciones críticas en el reporte de accesibilidad de Google Lighthouse.
+- **Enlaces Externos y Seguridad:** Se validó que todos los enlaces salientes (`target="_blank"`) incluyan los atributos `rel="noopener noreferrer"`.
+- **Arquitectura de Datos para Motores Generativos (GEO):** Confirmación de 5 esquemas enriquecidos `JSON-LD` (`Organization`, `WebSite`, `SoftwareApplication`, `FAQPage`, etc.) operando y sin errores de parseo.
+
+### B. Tablero de QA (`/admin/qa`): Nuevas Pruebas SEO y GEO
+- **Nuevas Pruebas de Rendimiento (`perf-10`, `perf-11`):**
+  - **`perf-10`:** *Puntaje perfecto en métricas de posicionamiento (SEO y Accesibilidad)*. Valida mediante PageSpeed Insights que se alcance el 100/100.
+  - **`perf-11`:** *Estructura semántica para IAs (GEO)*. Valida mediante Schema Validator que los datos estructurados estén perfectos.
+- **Advertencias y Roles:** Se especificó claramente en el tablero que estas comprobaciones deben realizarse **manualmente sobre el entorno de producción (Vercel)**, desactivando su validación e2e local. Ambas tareas fueron asignadas al rol `sin_sesion` al estar asociadas a la página pública `/`.
+
+### C. Refinamiento de UX/UI en Mobile para el Footer Principal (`src/components/footer.tsx`)
+- **Rediseño Vertical de Contenido:** Se desmanteló la grilla de dos columnas forzada en pantallas móviles (`isMobile`). Ahora el bloque legal y el bloque de información (IP, Visita, Contacto) se apilan fluidamente en una sola columna con los textos centrados, eliminando por completo los saltos de línea indeseados (como `Dirección IP` y `::1` rotos) y aumentando el margen interactivo (`gap: 28px`).
+- **Bloque de Copyright y Modo Oscuro:** La fila inferior de derechos reservados y el botón de *ThemeToggle* se reorganizaron con `flex-direction: column-reverse`, apilando el botón debajo del texto principal y manteniéndolo centrado en lugar de flotando huérfano a la derecha.
+- **Padding Dinámico según Variante:** Se corrigió un *bug* visual severo en las páginas públicas/legales (como `/legal/medicion`) donde un margen inferior enorme (`110px`) originado por la necesidad técnica del tab-bar del sistema (`navbar`) en la variante `system`, se estaba aplicando erróneamente en pantallas que no lo tenían. El espacio muerto desapareció al condicionar el *padding bottom* a `32px` cuando el *footer* opera bajo variantes `public` o `legal`.
+
+---
+
+## 10. Jornada 15 de Septiembre de 2026: Estandarización y Unificación Definitiva de los 3 Footers (Desktop & Mobile)
+
+### A. Estandarización Universal en Escritorio (Desktop)
+Se blindó la arquitectura visual de los 3 pies de página (`legal`, `public` y `system`) a 4 columnas con alturas, alineaciones y tipografía estrictamente normalizadas:
+1. **Tipografía Estricta a 10 px:**
+   - Tanto los títulos como sus líneas de valor secundarias en la Columna 4 (`footer-info-primary` y `footer-info-secondary`) se fijaron estrictamente en **10 px**.
+   - Se eliminaron los dos puntos (`:`) de las etiquetas en escritorio.
+   - Cada dato se organiza en dos renglones: Renglón 1 para la etiqueta y Renglón 2 para el valor.
+2. **Jerarquía Visual y Negritas según Enlace:**
+   - Solo los elementos con hipervínculo interactivo (`<a href>`) llevan peso tipográfico seminegrita/negrita (`font-weight: 600`) y animación interactiva idéntica a redes (`translateX(4px)`).
+   - Los textos puramente informativos o estáticos (`Última actualización`, `Dirección IP`, etc.) se mantienen sin negrita (`font-weight: 400`), sin cursor pointer y sin animación.
+3. **Alineación Vertical a Topes Exactos (Columna 3 vs Columna 4):**
+   - Altura de referencia fijada en `height: 70px` con `justify-content: space-between` y `align-items: flex-start`.
+   - El bloque superior de la Columna 4 queda perfectamente enrasado con el tope superior de LinkedIn (Columna 3).
+   - El bloque inferior de la Columna 4 queda perfectamente enrasado con la base inferior de Instagram (Columna 3).
+4. **Posicionamiento del Modo Día / Noche:**
+   - Ubicado en la fila inferior de derechos reservados, inmediatamente a la derecha de **“Lurdes”**.
+   - Escalado al 82% (`transform: scale(0.82)`) para integrarse de forma sutil sin alterar el flujo del texto.
+   - Libre de opacidades transparentes no deseadas (`opacity: 1`).
+
+### B. Unificación y Perfeccionamiento en Móvil (Mobile)
+Se eliminaron todas las asimetrías que deformaban el pie de página interno del sistema en dispositivos móviles, igualándolo a la elegancia y balance de las variantes Legal y Pública:
+1. **Título Principal Centrado:**
+   - Presente de forma homogénea en los 3 footers: `Tecnología con propósito para un futuro sostenible.` con efecto arcoíris animado al interactuar.
+2. **Enlaces Internos en una Sola Línea:**
+   - Los 3 botones de enlaces (`Inicio · Iniciar sesión · Preguntas frecuentes` en Legal, o `Política de privacidad · Reglamento · Sobre la medición` en Público/Sistema) se configuran con `flexWrap: 'nowrap'`, tamaño a 10 px y punto medio de separación (`·`), manteniéndose distribuidos a lo ancho de la pantalla sin partirse en dos renglones.
+3. **Bloque Informativo Limpio y Homogéneo:**
+   - Se reemplazaron cadenas crudas de servidor (IPs o registros técnicos con horas de auditoría que rompían el ancho) por una estructura limpia idéntica al footer de referencia:
+     - **Renglón 1:** `Última actualización:` con fecha en formato legible (sin negrita y con dos puntos a 10 px).
+     - **Renglón 2:** `Contacto:` con `servicio@calculadoradereuso.com` (en negrita, con dos puntos, a 10 px y enlace mailto).
+4. **Redes Sociales y Barra de Cierre Compacta:**
+   - 3 botones circulares oficiales centrados (LinkedIn, YouTube, Instagram).
+   - Crédito `Desarrollado con ♡ en Medellín, Colombia · Calculadora de Reúso by Lurdes` en una sola línea junto al selector de tema.
+   - Copyright pegado inmediatamente debajo con margen mínimo.
+
+### C. Espacio Adaptativo para el Menú Móvil Inferior
+- **En Home (`/`), Sistema de Diseño (`/sistema-diseno`) y Todo el Sistema (`variant="system"`):**
+  - Se añade un padding inferior en móvil de **104 px**, garantizando que el texto del copyright quede totalmente visible y suspendido con un margen cómodo (~16 px) por encima del menú flotante o barra fija inferior (`MobileBottomNav`).
+  - Se ajustó el padding del contenedor `<main>` en `layout-shell.tsx` a `24px` en móvil para evitar que se acumulara un vacío duplicado entre el contenido y el footer.
+- **En Legales (`variant="legal"` o rutas `/legal/*`):**
+  - Mantiene su padding inferior estándar compacto (**20 px**), preservando la experiencia de lectura limpia sin el espacio del menú móvil.

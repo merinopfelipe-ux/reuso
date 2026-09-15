@@ -1,94 +1,75 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useRef, type PointerEvent } from 'react'
 
 /**
  * Pad de firma digital a trazo — reutilizable en cualquier documento
  * firmable (Confidencialidad hoy, otros documentos legales después).
- * Extraído del flujo público abierto original sin cambios de comportamiento.
+ * Usa Pointer Events para que el mismo trazado funcione con mouse, touch y
+ * lápiz. El flujo anterior mezclaba listeners de mouse y touch; en algunos
+ * navegadores táctiles nunca llegaba a guardar la imagen resultante.
  */
 export function FirmaCanvas({ onChange, disabled = false }: { onChange: (v: string | null) => void; disabled?: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const onChangeRef = useRef(onChange)
   onChangeRef.current = onChange
-  const disabledRef = useRef(disabled)
-  disabledRef.current = disabled
+  const dibujandoRef = useRef(false)
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+  const punto = (canvas: HTMLCanvasElement, event: PointerEvent<HTMLCanvasElement>) => {
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: (event.clientX - rect.left) * (canvas.width / rect.width),
+      y: (event.clientY - rect.top) * (canvas.height / rect.height),
+    }
+  }
+
+  const configurarTrazo = (ctx: CanvasRenderingContext2D) => {
+    ctx.strokeStyle = '#1a1a1a'
+    ctx.fillStyle = '#1a1a1a'
+    ctx.lineWidth = 5
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+  }
+
+  const iniciar = (event: PointerEvent<HTMLCanvasElement>) => {
+    if (disabled) return
+    const canvas = event.currentTarget
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const rect = canvas.getBoundingClientRect()
-    canvas.width = rect.width || 480
-    canvas.height = rect.height || 150
-    ctx.strokeStyle = '#1a1a1a'
-    ctx.lineWidth = 2.5
-    ctx.lineCap = 'round'
-    ctx.lineJoin = 'round'
+    event.preventDefault()
+    canvas.setPointerCapture(event.pointerId)
+    const { x, y } = punto(canvas, event)
+    configurarTrazo(ctx)
+    // Deja una marca incluso con un toque corto, y hace que la firma se
+    // conserve cuando el usuario levanta el dedo sin generar pointermove.
+    ctx.beginPath()
+    ctx.arc(x, y, ctx.lineWidth / 2, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.moveTo(x, y)
+    dibujandoRef.current = true
+  }
 
-    let drawing = false
+  const trazar = (event: PointerEvent<HTMLCanvasElement>) => {
+    if (disabled || !dibujandoRef.current) return
+    const canvas = event.currentTarget
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
 
-    const rel = (clientX: number, clientY: number) => {
-      const r = canvas.getBoundingClientRect()
-      return { x: clientX - r.left, y: clientY - r.top }
-    }
+    event.preventDefault()
+    const { x, y } = punto(canvas, event)
+    ctx.lineTo(x, y)
+    ctx.stroke()
+  }
 
-    const md = (e: MouseEvent) => {
-      if (disabledRef.current) return
-      drawing = true
-      const { x, y } = rel(e.clientX, e.clientY)
-      ctx.beginPath()
-      ctx.moveTo(x, y)
-    }
-    const mm = (e: MouseEvent) => {
-      if (disabledRef.current) return
-      if (!drawing) return
-      const { x, y } = rel(e.clientX, e.clientY)
-      ctx.lineTo(x, y)
-      ctx.stroke()
-      onChangeRef.current(canvas.toDataURL('image/png'))
-    }
-    const mu = () => { drawing = false }
-
-    const ts = (e: TouchEvent) => {
-      if (disabledRef.current) return
-      e.preventDefault()
-      drawing = true
-      const { x, y } = rel(e.touches[0].clientX, e.touches[0].clientY)
-      ctx.beginPath()
-      ctx.moveTo(x, y)
-    }
-    const tm = (e: TouchEvent) => {
-      if (disabledRef.current) return
-      e.preventDefault()
-      if (!drawing) return
-      const { x, y } = rel(e.touches[0].clientX, e.touches[0].clientY)
-      ctx.lineTo(x, y)
-      ctx.stroke()
-      onChangeRef.current(canvas.toDataURL('image/png'))
-    }
-    const te = () => { drawing = false }
-
-    canvas.addEventListener('mousedown', md)
-    canvas.addEventListener('mousemove', mm)
-    canvas.addEventListener('mouseup', mu)
-    canvas.addEventListener('mouseleave', mu)
-    canvas.addEventListener('touchstart', ts, { passive: false })
-    canvas.addEventListener('touchmove', tm, { passive: false })
-    canvas.addEventListener('touchend', te)
-
-    return () => {
-      canvas.removeEventListener('mousedown', md)
-      canvas.removeEventListener('mousemove', mm)
-      canvas.removeEventListener('mouseup', mu)
-      canvas.removeEventListener('mouseleave', mu)
-      canvas.removeEventListener('touchstart', ts)
-      canvas.removeEventListener('touchmove', tm)
-      canvas.removeEventListener('touchend', te)
-    }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  const finalizar = (event: PointerEvent<HTMLCanvasElement>) => {
+    if (!dibujandoRef.current) return
+    const canvas = event.currentTarget
+    dibujandoRef.current = false
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId)
+    onChangeRef.current(canvas.toDataURL('image/png'))
+  }
 
   const clear = () => {
     if (disabled) return
@@ -97,6 +78,7 @@ export function FirmaCanvas({ onChange, disabled = false }: { onChange: (v: stri
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     ctx.clearRect(0, 0, canvas.width, canvas.height)
+    dibujandoRef.current = false
     onChangeRef.current(null)
   }
 
@@ -104,6 +86,13 @@ export function FirmaCanvas({ onChange, disabled = false }: { onChange: (v: stri
     <div>
       <canvas
         ref={canvasRef}
+        width={960}
+        height={300}
+        aria-label="Área para dibujar la firma"
+        onPointerDown={iniciar}
+        onPointerMove={trazar}
+        onPointerUp={finalizar}
+        onPointerCancel={finalizar}
         style={{
           display: 'block',
           width: '100%',

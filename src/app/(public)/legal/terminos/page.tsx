@@ -107,7 +107,7 @@ const T = {
     ley1:
       'Estos términos se rigen por las leyes de la República de Colombia, incluyendo la Ley 1266 de 2008, la Ley 1480 de 2011 (Estatuto del Consumidor) y la Ley 1581 de 2012 (protección de datos personales). Para usuarios en la Unión Europea, aplica también el Reglamento General de Protección de Datos (RGPD). Para residentes en California (EE. UU.), aplica la California Consumer Privacy Act (CCPA). Ante cualquier controversia, las partes agotan primero una instancia de negociación directa y, de persistir la controversia, se someten al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
     ley2: 'Ante cualquier duda, comunícate con nosotros en',
-    ley3: '. Respondemos en un plazo máximo de 15 días hábiles.',
+    ley3: '. Respondemos en un plazo de 10 a 15 días hábiles.',
     transparenciaTexto:
       'Grupo MLP S.A.S. construyó la Calculadora de Reúso mediante modelos de Inteligencia Artificial. Utilizamos herramientas de IA para optimizar el código y procesar los factores de emisión. Dado que estos sistemas pueden generar imprecisiones técnicas, monitoreamos constantemente la plataforma para mejorar la calidad de los cálculos ambientales.',
     transparenciaLink: 'Lee nuestra política de uso de IA →',
@@ -214,7 +214,7 @@ const T = {
     ley1:
       'These terms are governed by the laws of the Republic of Colombia, including Law 1266 of 2008, Law 1480 of 2011 (Consumer Statute) and Law 1581 of 2012 (personal data protection). For users in the European Union, the General Data Protection Regulation (GDPR) also applies. For residents of California (USA), the California Consumer Privacy Act (CCPA) applies. In the event of any dispute, the parties shall first exhaust a direct negotiation stage and, if the dispute persists, submit to the Arbitration Tribunal of the Conciliation, Arbitration and Friendly Composition Center of Medellín.',
     ley2: 'For any questions, contact us at',
-    ley3: '. We respond within a maximum of 15 business days.',
+    ley3: '. We respond within 10 to 15 business days.',
     transparenciaTexto:
       'Grupo MLP S.A.S. built the Reuse Calculator using Artificial Intelligence models. We use AI tools to optimize code and process emission factors. Since these systems may generate technical inaccuracies, we constantly monitor the platform to ensure the accuracy of environmental calculations.',
     transparenciaLink: 'Read our AI use policy →',

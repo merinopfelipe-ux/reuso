@@ -145,6 +145,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@calreuso',
+    creator: '@calreuso',
     title: 'Software RSE y Economía Circular | Mide tu Impacto Ambiental',
     description: 'Gestiona la Responsabilidad Social Empresarial (RSE). Trazabilidad y estimaciones ambientales sustentadas con Pasaporte Digital.',
     images: ['/og-image.png'],

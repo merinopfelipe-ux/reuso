@@ -86,7 +86,7 @@ const TODOS_LOS_CALCULOS = [
   {
     icon: Coins,
     titulo: 'Ahorro en compras',
-    metrica: 'Capital no gastado en insumos.',
+    metrica: 'Ahorro neto en insumos.',
     desc: 'Calcula el capital ahorrado al reutilizar componentes frente a comprar insumos vírgenes nuevos.',
     tag: 'Económico',
     planes: 'Circular Lab, Impulso e Ilimitado',
@@ -152,7 +152,7 @@ const TODOS_LOS_CALCULOS = [
   {
     icon: Trash,
     titulo: 'Desvío de vertedero',
-    metrica: 'Residuos no enviados a rellenos.',
+    metrica: 'Kilogramos desviados de vertedero.',
     desc: 'Mide los kilogramos de material que evitan terminar en rellenos sanitarios o disposición final.',
     tag: 'Ambiental',
     planes: 'Circular Lab, Impulso e Ilimitado',
@@ -231,7 +231,7 @@ const CATEGORIAS = {
     icon: Sofa,
     h3: 'Mobiliario y diseño interior',
     ejemplo: '50 escritorios y piezas restauradas.',
-    desc: 'Valoriza mobiliario corporativo, piezas reacondicionadas y materiales de diseño interior. Estructura proyectos a medida demostrando el desvío de vertedero y la mitigación de huella ante clientes corporativos y licitaciones.',
+    desc: 'Valoriza mobiliario corporativo, piezas reacondicionadas y materiales de diseño interior. Estructura proyectos a medida demostrando el desvío de vertedero y la mitigación de huella ante clientes corporativos y comités de sostenibilidad.',
     imgUrl: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1200',
     planetaNum: 85,
     planetaUnit: ' kg CO₂e',
@@ -297,7 +297,7 @@ const FAQS = [
   },
   {
     q: '¿Qué significa la responsabilidad social empresarial para una pyme en Colombia?',
-    a: 'Para una pyme en Colombia significa competir con transparencia y abrir puertas a nuevos contratos corporativos. Con la Calculadora de Reúso transformas tus esfuerzos de reciclaje y reuso en métricas claras de agua, CO₂ y residuos evitados, permitiéndote presentar informes confiables y participar en licitaciones que exigen criterios de sostenibilidad comprobables.',
+    a: 'Para una pyme en Colombia significa competir con transparencia y abrir puertas a nuevos contratos corporativos. Con la Calculadora de Reúso transformas tus esfuerzos de reciclaje y reuso en métricas claras de agua, CO₂ y residuos evitados, permitiéndote presentar informes confiables y cerrar acuerdos comerciales que exigen criterios de sostenibilidad comprobables.',
   },
   {
     q: '¿Qué es la economía circular y cómo impacta mi consumo diario?',
@@ -1289,17 +1289,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              La plataforma ideal para darle seguimiento a tu RSE.
+              Software de GreenTech para la economía circular.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
               <span className="block">Mide, gestiona y comparte</span>
-              <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental{' '}(RSE)</span>
+              <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental</span>
               <span className="block">desde la economía circular</span>
             </h1>
             
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Nuestra calculadora te ayuda a ver el impacto real de integrar la economía circular en tu empresa. Hazle seguimiento fácil a tus ideas y crea reportes claros, libres de greenwashing, para cumplir tus metas con confianza.
+              Mide el impacto real de tu economía circular en 3 minutos y genera reportes de Responsabilidad Empresarial (RSE) para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1345,10 +1345,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               El valor de medir tu impacto: <br className="hidden sm:block" />
-              de buenas intenciones a resultados reales
+              de buenas intenciones a resultados
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              No basta con hacer las cosas bien, ¡hay que contarlo! La Calculadora de Reúso te da los datos reales que respaldan tu esfuerzo ante tus clientes, tu equipo y el mundo entero.
+              Potencia tus esfuerzos circulares con datos tangibles. Entrega a tus clientes corporativos y comités de compras métricas técnicas auditables que respaldan cada propuesta.
             </p>
           </div>
 
@@ -1366,10 +1366,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </div>
               <ul className="space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4">
                 {[
-                  'Tener buenas ideas, pero sin una herramienta fácil para seguirlas.',
-                  'Quedarte a ciegas al no saber el impacto real de cada paso que das.',
-                  'Correr el riesgo de hablar de sostenibilidad sin tener los datos a la mano.',
-                  'Perder grandes oportunidades por no tener cómo mostrar tus buenos resultados.',
+                  'Depender de estimaciones informales y ceder terreno comercial ante competidores con métricas estructuradas.',
+                  'Gestionar activos a ciegas sin cuantificar el ahorro económico real de la recuperación.',
+                  'Exponer la reputación de marca al comunicar sostenibilidad sin respaldo técnico auditable.',
+                  'Amortizar inventario a pérdida por falta de trazabilidad en el ciclo de vida del producto.',
                 ].map((item, i) => (
                   <li key={i} className="group/item flex gap-2.5 md:gap-3 items-start transition-all duration-200 hover:translate-x-1">
                     <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
@@ -1411,10 +1411,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </div>
               <ul className="relative z-10 space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4 mt-4 md:mt-6">
                 {[
-                  'Cálculos apoyados en estándares globales para medir de forma rigurosa cuánto CO₂ evitas.',
-                  'Herramientas automáticas que te hacen la vida más fácil al gestionar todos tus proyectos sostenibles.',
-                  'Crea Pasaportes Digitales (DPP) para mostrar de dónde viene cada material y el impacto que generas.',
-                  'Datos claros y organizados que respaldan tus metas y hacen brillar tus informes de sostenibilidad.',
+                  'Cálculos de huella de carbono e hídrica respaldados en factores de emisión oficiales (IPCC y GHG Protocol).',
+                  'Pasaportes Digitales de Producto (DPP) con código QR y trazabilidad criptográfica para tus clientes.',
+                  'Cotizaciones comerciales de alto impacto que demuestran el ahorro económico y ambiental en minutos.',
+                  'Informes de sostenibilidad y RSE listos para descargar en PDF y presentar ante clientes, juntas y auditorías.',
                 ].map((item, i) => (
                   <li key={i} className="group/item flex gap-2.5 md:gap-3 items-start transition-all duration-200 hover:translate-x-1">
                     <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
@@ -1719,8 +1719,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       />
                     )}
                     <span className="relative z-10 flex items-center gap-2.5 lg:gap-3">
-                      <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className="transition-transform duration-200 group-hover:rotate-6" />
-                      <span>{c.label}</span>
+                      <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className="transition-transform duration-200 group-hover:rotate-6 flex-shrink-0" />
+                      <span>{c.id === 'mobiliario' ? <>Mobiliario <br />y diseño interior</> : c.label}</span>
                     </span>
                   </button>
                 )
@@ -1779,12 +1779,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Soluciones que te ayudan a mostrar tu RSE
+              Soluciones para medir, gestionar
               <br />
-              de forma cercana y amable
+              y respaldar tu impacto circular
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Herramientas pensadas para que tu equipo pueda medir, validar y contarle al mundo el impacto real de todo lo que hacen.
+              Herramientas para cuantificar tus recursos, emitir pasaportes digitales y generar reportes con datos claros.
             </p>
           </div>
 
@@ -1794,21 +1794,21 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 herramienta: 'Empezar cálculo',
                 Icon: Calculator,
                 titulo: 'Mide tu impacto ambiental',
-                desc: 'Mide tus programas de RSE desde la economía circular. Descubre cuánto CO₂ y cuántos residuos evitas, usando estimaciones.',
+                desc: 'Calcula tus iniciativas de RSE desde la economía circular. Estima cuánto CO₂ y cuántos residuos evitas con bases técnicas.',
                 image: 'https://images.unsplash.com/photo-1679110667877-408593fab0f6?auto=format&fit=crop&q=80&w=800',
               },
               {
                 herramienta: 'Generar DPP',
                 Icon: FileText,
-                titulo: 'Pasaporte digital y transparencia',
-                desc: 'Genera pasaportes digitales con código QR, respaldados con una cadena de hash criptográfico que estructura y da trazabilidad a cada dato.',
+                titulo: 'Pasaporte digital y trazabilidad',
+                desc: 'Genera pasaportes digitales con código QR y registro de seguridad para dar trazabilidad a cada producto.',
                 image: 'https://images.unsplash.com/photo-1626682561113-d1db402cc866?auto=format&fit=crop&q=80&w=800',
               },
               {
                 herramienta: 'Gestionar impacto',
                 Icon: Receipt,
                 titulo: 'Reportes claros de circularidad',
-                desc: 'Muestra el ahorro que logras frente a comprar cosas nuevas, armando reportes con datos que te respaldan.',
+                desc: 'Documenta el ahorro frente a comprar insumos nuevos y genera reportes técnicos con datos que sustentan tu gestión.',
                 image: 'https://images.unsplash.com/photo-1499914485622-a88fac536970?auto=format&fit=crop&q=80&w=800',
               },
             ].map((paso, i) => (
@@ -1872,7 +1872,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </div>
             <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-[40px] border-[#00827C]/10'}`}>
               <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts} opacity-50`}`}>Mensual</span>
-              <button onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
+              <button aria-label="Cambiar entre cobro mensual y anual" onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${billing === 'annual' ? 'translate-x-4 lg:translate-x-5' : 'translate-x-0.5'}`} />
               </button>
               <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts} opacity-50`}`}>Anual</span>
@@ -2155,8 +2155,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <ShieldCheck size={14} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Estimaciones con base científica</h4>
-                      <p className={`text-xs sm:text-sm font-medium ${ts}`}>Usamos bases de datos que todo el mundo respeta para que tus cálculos sean sólidos y respaldados.</p>
+                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Estimaciones con fundamentos técnicos</h4>
+                      <p className={`text-xs sm:text-sm font-medium ${ts}`}>Usamos bases de datos internacionales reconocidas para que tus estimaciones tengan respaldo técnico sólido.</p>
                     </div>
                   </div>
                 </div>
@@ -2250,7 +2250,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 tag: 'El Propósito',
                 titulo: 'Compromiso genuino con la economía circular',
                 desc: 'Demuestra coherencia entre lo que prometes y lo que ejecutas. Facilitamos la transición a modelos regenerativos donde cada material recuperado cuenta una historia de impacto sustentado.',
-                puntos: ['Menos insumos nuevos.', 'Menos basura en los vertederos.'],
+                puntos: ['Máxima eficiencia de insumos.', 'Mayor desvío de vertedero.'],
                 Icon: Leaf,
                 textColor: 'text-[#38B98E]',
                 bgGradientLight: 'from-white via-white/95 to-[#38B98E]/15',
@@ -2277,7 +2277,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               {
                 tag: 'El Impacto',
                 titulo: 'Resultados comprobables en cada reporte RSE',
-                desc: 'Presenta balances claros que fortalecen licitaciones, sustentan memorias de sostenibilidad y blindan la reputación de tu marca con evidencia libre de cualquier sospecha de greenwashing.',
+                desc: 'Presenta balances claros que fortalecen propuestas comerciales, sustentan memorias de sostenibilidad y blindan la reputación de tu marca con evidencia libre de cualquier sospecha de greenwashing.',
                 puntos: ['Estructuración de reportes RSE.', 'Transparencia de datos sustentada.'],
                 Icon: TrendingUp,
                 textColor: 'text-[#59A6E4]',
@@ -2405,22 +2405,22 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             <div className="relative z-10 max-w-xl mx-auto">
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-                Rentabilidad para tu negocio + impacto positivo.
+                Medición y trazabilidad para tu empresa.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
-                Gestionar la RSE ya no es opcional. <br className="hidden sm:block" />
-                Destaca con trazabilidad
+                Estructura tus reportes de RSE y economía circular <br className="hidden sm:block" />
+                con datos claros
               </h2>
               <p className={`text-xs sm:text-base md:text-sm lg:text-base font-medium mb-6 md:mb-8 lg:mb-10 max-w-lg mx-auto glass-subtitle ${ts}`}>
-                Realiza estimaciones ambientales, implementa prácticas de economía circular y emite tus reportes RSE con Pasaportes Digitales de Producto (DPP) hoy mismo.
+                Calcula tus estimaciones ambientales, genera Pasaportes Digitales con código QR y respalda tus iniciativas de sostenibilidad con fundamentos técnicos.
               </p>
               <Link
                 href="/registro"
                 className={`inline-flex items-center justify-center gap-2.5 md:gap-3 w-full sm:w-auto px-6 py-3.5 md:px-7 md:py-4 lg:px-10 lg:py-5 rounded-full font-black text-sm sm:text-base md:text-base lg:text-base transition-all hover:-translate-y-1 hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_12px_40px_rgba(214,243,145,0.25)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_12px_40px_rgba(0,130,124,0.35)]'}`}
               >
-                Crear mi cuenta y calcular mi primer diagnóstico <ArrowRight size={18} strokeWidth={2.5} />
+                Crear cuenta y comenzar gratis <ArrowRight size={18} strokeWidth={2.5} />
               </Link>
-              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Sin tarjeta de crédito. Plan Explora con 5 cálculos gratis al mes.</p>
+              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Plan Explora con 5 cálculos al mes sin costo · Sin tarjeta de crédito.</p>
             </div>
           </motion.div>
         </div>

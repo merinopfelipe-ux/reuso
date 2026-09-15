@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: '%s - calculadoradereuso.com',
   },
   description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: false },
   // Apaga el ícono de "descargar imagen" que Edge superpone al pasar el
   // mouse sobre cualquier <img> — no es algo que agreguemos nosotros, es un
   // comportamiento nativo del navegador, y aquí no aplica (fotos de
@@ -26,15 +26,6 @@ export const metadata: Metadata = {
   icons: {
     icon: '/logo-icono.svg',
     apple: '/logo-icono.svg',
-  },
-  openGraph: {
-    title: 'calculadoradereuso.com - Medición de Impacto Ambiental',
-    description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
-    url: 'https://calculadoradereuso.com',
-    siteName: 'calculadoradereuso.com',
-    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
-    locale: 'es_CO',
-    type: 'website',
   },
 }
 

@@ -88,6 +88,8 @@ const cliente = new pg.Client({
   user: decodeURIComponent(url.username),
   password: decodeURIComponent(url.password),
   database: url.pathname.replace(/^\//, '') || 'postgres',
+  // Conexión administrativa directa a staging sin CA de sistema instalada localmente
+  // nosemgrep: problem-based-packs.insecure-transport.js-node.bypass-tls-verification.bypass-tls-verification
   ssl: { rejectUnauthorized: false, servername: url.hostname },
   statement_timeout: 120_000,
 })

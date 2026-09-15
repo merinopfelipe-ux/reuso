@@ -237,7 +237,7 @@ export default async function EmpresaPage() {
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)', margin: '0 0 4px' }}>
           Hola, {saludo}
         </h1>
-        <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: 0 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
           ¡Juntos recuperamos el planeta!
         </p>
       </div>

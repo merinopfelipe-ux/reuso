@@ -332,7 +332,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
           Hola, {saludo}
         </h1>
-        <p style={{ margin: '4px 0 0', fontSize: 14, color: 'var(--text-secondary)' }}>
+        <p style={{ margin: '4px 0 0', fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>
           ¡Juntos recuperamos el planeta!
         </p>
       </div>

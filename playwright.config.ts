@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
+try {
+  ;(process as unknown as { loadEnvFile?: (path: string) => void }).loadEnvFile?.('.env.local')
+} catch {}
+
 export default defineConfig({
   testDir: './e2e',
   globalTeardown: './e2e/global-teardown.ts',

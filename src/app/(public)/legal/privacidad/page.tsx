@@ -106,7 +106,7 @@ const T = {
       ],
       contacto: 'Ejerce estos derechos en',
       link: 'consultas legales',
-      respuesta: 'Respondemos en un máximo de 10 días hábiles.',
+      respuesta: 'Respondemos en un plazo de 10 a 15 días hábiles.',
     },
     menores: {
       titulo: 'Menores de edad',
@@ -216,7 +216,7 @@ const T = {
       ],
       contacto: 'Exercise these rights at',
       link: 'legal inquiries',
-      respuesta: 'We respond within a maximum of 10 business days.',
+      respuesta: 'We respond within 10 to 15 business days.',
     },
     menores: {
       titulo: 'Minors',

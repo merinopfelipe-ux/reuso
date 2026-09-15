@@ -31,7 +31,7 @@ export default async function FirmaTokenPage({ params }: Props) {
 
     const { data } = await adminClient
       .from('firmas_solicitudes')
-      .select('id, tipo_documento, nombre, estado, expira_at')
+      .select('id, tipo_documento, nombre, numero_identidad, email, estado, expira_at')
       .eq('token_hash', tokenHash)
       .single()
 
@@ -45,7 +45,6 @@ export default async function FirmaTokenPage({ params }: Props) {
     solicitud = {
       id: 'demo-solicitud-001',
       tipo_documento: 'confidencialidad',
-      nombre: 'Usuario de Prueba',
       estado: 'pendiente',
       expira_at: new Date(Date.now() + 86400000 * 365).toISOString()
     }
@@ -75,7 +74,11 @@ export default async function FirmaTokenPage({ params }: Props) {
           <FirmaTokenClient
             token={params.token}
             documentoLabel={documentoLabel(solicitud.tipo_documento)}
-            nombre={solicitud.nombre}
+            invitacion={isDemo ? undefined : {
+              nombre: solicitud.nombre,
+              numeroIdentidad: solicitud.numero_identidad,
+              email: solicitud.email,
+            }}
           />
         )}
       </main>

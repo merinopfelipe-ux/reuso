@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
-import { enviarNotificacionTicket } from '@/lib/email'
+import { enviarNotificacionTicket, enviarConfirmacionConsultaLegal } from '@/lib/email'
+import DOMPurify from 'isomorphic-dompurify'
 
 const schema = z.object({
   nombre: z.string().min(2).max(100),
@@ -42,27 +44,85 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const supabase = await createAdminClient()
-  const { error } = await supabase.from('leads').insert({
-    nombre,
-    email,
-    interes: `Consulta legal (${tipo})`,
-    mensaje: `[${tipo}] ${mensaje}`,
-  })
+  const adminClient = await createAdminClient()
+  const userClient = createClient()
+  const { data: { user } } = await userClient.auth.getUser()
 
-  if (error) {
-    console.error('Error insertando consulta legal:', error)
+  // 1. Crear el ticket oficial de soporte en la base de datos
+  const { data: ticket, error: ticketError } = await adminClient
+    .from('tickets')
+    .insert({
+      titulo: `[Consulta Legal] ${tipo} - ${nombre}`,
+      tipo: 'duda',
+      prioridad: 'media',
+      estado: 'abierto',
+      user_id: user?.id ?? null,
+      empresa_id: null,
+      origen: 'usuario',
+    })
+    .select('id')
+    .single()
+
+  if (ticketError || !ticket) {
+    console.error('Error insertando ticket legal:', ticketError)
     return NextResponse.json({ error: 'No pudimos guardar tu consulta. Inténtalo de nuevo.' }, { status: 500 })
   }
 
+  const numeroCaso = `LEG-${ticket.id.slice(0, 8).toUpperCase()}`
+
+  // 2. Insertar mensaje inicial en el hilo del ticket
+  const nombreSafe = nombre.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
+  const emailSafe = email.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
+  const tipoSafe = tipo.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
+  const mensajeHtml = DOMPurify.sanitize(
+    `<p><strong>Caso asignado:</strong> ${numeroCaso}</p>` +
+    `<p><strong>Remitente:</strong> ${nombreSafe} (&lt;<a href="mailto:${emailSafe}">${emailSafe}</a>&gt;)</p>` +
+    `<p><strong>Tipo de consulta:</strong> ${tipoSafe}</p>` +
+    `<p>${mensaje.replace(/\n/g, '<br/>')}</p>`
+  )
+
+  const { error: msgError } = await adminClient
+    .from('tickets_mensajes')
+    .insert({
+      ticket_id: ticket.id,
+      user_id: user?.id ?? null,
+      mensaje_html: mensajeHtml,
+      es_admin: false,
+    })
+
+  if (msgError) {
+    console.error('Error insertando mensaje en ticket legal:', msgError)
+  }
+
+  // 3. Registrar también en leads para trazabilidad CRM comercial
+  await adminClient.from('leads').insert({
+    nombre,
+    email,
+    interes: `Consulta legal (${tipo})`,
+    mensaje: `[${numeroCaso}][${tipo}] ${mensaje}`,
+  })
+
+  // 4. Enviar correo de confirmación al usuario que hizo la consulta
   try {
-    const { data: config } = await supabase
+    await enviarConfirmacionConsultaLegal(email, {
+      nombre,
+      numeroCaso,
+      tipo,
+      mensaje,
+    })
+  } catch (err) {
+    console.error('Error enviando confirmación de consulta legal al cliente:', err)
+  }
+
+  // 5. Notificar a los administradores del sistema
+  try {
+    const { data: config } = await adminClient
       .from('config_sistema')
       .select('email_notificaciones')
       .eq('id', 'default')
       .single()
 
-    const { data: admins } = await supabase
+    const { data: admins } = await adminClient
       .from('profiles')
       .select('email')
       .eq('rol', 'super_admin')
@@ -77,10 +137,11 @@ export async function POST(req: NextRequest) {
       email,
       categoria: `Duda Legal: ${tipo}`,
       mensaje,
+      numeroCaso,
     })
   } catch (err) {
-    console.error('Error enviando notificación de duda legal:', err)
+    console.error('Error enviando notificación interna de duda legal:', err)
   }
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, ticket_id: ticket.id, numero_caso: numeroCaso })
 }

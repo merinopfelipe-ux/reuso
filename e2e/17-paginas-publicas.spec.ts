@@ -153,7 +153,7 @@ test.describe('Páginas Públicas', () => {
     const tokenValido = `e2e-firma-valido-${base}`
     const tokenFirmado = `e2e-firma-firmado-${base}`
     const tokenExpirado = `e2e-firma-expirado-${base}`
-    const comun = { tipo_documento: 'confidencialidad', nombre: 'Prueba E2E', numero_identidad: '123', email: 'e2e@ejemplo.com' }
+    const comun = { tipo_documento: 'confidencialidad', nombre: 'Ana Prueba', numero_identidad: 'CC 123', email: 'e2e@ejemplo.com' }
 
     const { error } = await supabaseAdmin.from('firmas_solicitudes').insert([
       { ...comun, token_hash: hash(tokenValido), estado: 'pendiente', expira_at: enUnaSemana },
@@ -174,6 +174,63 @@ test.describe('Páginas Públicas', () => {
     // El válido sí carga el documento real para firmar.
     await cargaSinError(page, `/legal/firma/${tokenValido}`)
     await expect(page.getByText(/Documento ya firmado|Enlace expirado/)).toHaveCount(0)
+
+    // Solo se completan los datos que estaban explícitamente en la invitación.
+    await expect(page.getByPlaceholder('Ej. Ana')).toHaveValue('Ana')
+    await expect(page.getByPlaceholder('Ej. Gómez')).toHaveValue('Prueba')
+    await expect(page.locator('select')).toHaveValue('CC')
+    await expect(page.getByPlaceholder('Ej. 1020304050')).toHaveValue('123')
+    await expect(page.getByRole('button', { name: 'Seleccionar' })).toBeVisible()
+
+    await page.getByRole('checkbox').check()
+    await page.getByRole('button', { name: 'Represento una empresa' }).click()
+    await expect(page.getByText('Razón social')).toBeVisible()
+    await expect(page.getByText('Nombre del representante')).toBeVisible()
+    await expect(page.getByText('Apellido del representante')).toBeVisible()
+    await expect(page.getByText('Cargo').first()).toBeVisible()
+
+    // El navegador dibuja en el canvas y la petición contiene la firma y los
+    // datos empresariales completos. Se intercepta para no consumir el token
+    // de prueba ni enviar un correo durante esta verificación de interfaz.
+    await page.route(`**/api/legal/firma/${tokenValido}`, async route => {
+      const payload = route.request().postDataJSON() as Record<string, unknown>
+      expect(payload).toMatchObject({
+        esEmpresa: true,
+        razonSocial: 'Empresa E2E S.A.S.',
+        nit: '900123456-7',
+        nombre: 'Lucía',
+        apellido: 'Prueba',
+        cargo: 'Representante legal',
+        tipoDocumento: 'CC',
+        numeroIdentidad: '1020304050',
+        indicativo: '+57',
+        telefono: '3001234567',
+      })
+      expect(payload.firma).toEqual(expect.stringMatching(/^data:image\/png;base64,/))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) })
+    })
+
+    await page.getByPlaceholder('Ej. Empresa Circular S.A.S.').fill('Empresa E2E S.A.S.')
+    await page.getByPlaceholder('Ej. 900123456-7').fill('900123456-7')
+    await page.getByPlaceholder('Ej. Ana').fill('Lucía')
+    await page.getByPlaceholder('Ej. Gómez').fill('Prueba')
+    await page.getByPlaceholder('Cargo del representante').fill('Representante legal')
+    await page.locator('select').selectOption('CC')
+    await page.getByPlaceholder('Ej. 1020304050').fill('1020304050')
+    await page.getByRole('button', { name: 'Seleccionar' }).click()
+    await page.getByRole('button', { name: /Colombia/ }).click()
+    await page.getByPlaceholder('Número de celular').fill('3001234567')
+
+    const firma = page.locator('canvas')
+    const box = await firma.boundingBox()
+    if (!box) throw new Error('No se encontró el lienzo de firma')
+    await page.mouse.move(box.x + 30, box.y + 70)
+    await page.mouse.down()
+    await page.mouse.move(box.x + 120, box.y + 45)
+    await page.mouse.move(box.x + 210, box.y + 85)
+    await page.mouse.up()
+    await page.getByRole('button', { name: 'Firmar y recibir mi copia' }).click()
+    await expect(page.getByText('Tu documento quedó firmado')).toBeVisible()
 
     for (const t of [tokenValido, tokenFirmado, tokenExpirado]) {
       await supabaseAdmin.from('firmas_solicitudes').delete().eq('token_hash', hash(t))

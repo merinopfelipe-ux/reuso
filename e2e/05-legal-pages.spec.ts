@@ -143,4 +143,47 @@ test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
     expect(privacyHtml).not.toContain('⚖️')
     expect(privacyHtml).not.toContain('🙋')
   })
+
+  test('07 - En todos los legales, antes de la línea de "Lee también", en gris está "Última actualización"', async ({ page }) => {
+    // 1. En subpágina con LegalPageLayout (/legal/privacidad)
+    await page.goto('/legal/privacidad', { waitUntil: 'domcontentloaded' })
+    const fechaPrivacidad = page.getByText(/Última actualización:/i).first()
+    await expect(fechaPrivacidad).toBeVisible()
+    await expect(fechaPrivacidad).toContainText('13 de septiembre de 2026')
+
+    // 2. En /legal/dudas
+    await page.goto('/legal/dudas', { waitUntil: 'domcontentloaded' })
+    const fechaDudas = page.getByText(/Última actualización:/i).first()
+    await expect(fechaDudas).toBeVisible()
+    await expect(fechaDudas).toContainText('13 de septiembre de 2026')
+  })
+
+  test('08 - Botón scroll flotante navega al footer, rota 180° y permite subir al inicio', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto('/legal/privacidad', { waitUntil: 'domcontentloaded' })
+
+    const scrollBtn = page.locator('.legal-scroll-bottom-btn')
+    await expect(scrollBtn).toBeVisible()
+    await expect(scrollBtn).toHaveAttribute('title', 'Ir al final')
+
+    // Click para ir al final (hasta el footer)
+    await scrollBtn.click()
+    await page.waitForTimeout(1000)
+
+    // Al llegar abajo, debe tener título "Ir al inicio"
+    await expect(scrollBtn).toHaveAttribute('title', 'Ir al inicio')
+
+    // Click para subir al inicio
+    await scrollBtn.click()
+    await page.waitForTimeout(1000)
+    await expect(scrollBtn).toHaveAttribute('title', 'Ir al final')
+  })
+
+  test('09 - La flecha de scroll NO se usa en el envío de preguntas legales (/legal/dudas)', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto('/legal/dudas', { waitUntil: 'domcontentloaded' })
+
+    const scrollBtn = page.locator('.legal-scroll-bottom-btn')
+    await expect(scrollBtn).toHaveCount(0)
+  })
 })

@@ -32,7 +32,7 @@ npx playwright test e2e/12-dpp--pasaporte.spec.ts
 
 # Fase 7: Páginas Públicas
 echo "✅ Ejecutando Fase 7 (Páginas Públicas)..."
-npx playwright test e2e/17-paginas-publicas.spec.ts
+npx playwright test e2e/17-paginas-publicas.spec.ts e2e/20-footers.spec.ts
 
 # Fase 8: Modo Noche
 echo "✅ Ejecutando Fase 8 (Modo Noche)..."

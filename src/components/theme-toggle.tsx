@@ -81,7 +81,11 @@ function SpinIcon({ toggled, duration = 400, size = 20 }: SpinIconProps) {
   )
 }
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  size?: 'sm' | 'md'
+}
+
+export function ThemeToggle({ size = 'md' }: ThemeToggleProps) {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -101,12 +105,15 @@ export function ThemeToggle() {
     localStorage.setItem('theme', siguiente ? 'dark' : 'light')
   }
 
+  const dimension = size === 'sm' ? 26 : 32
+  const iconSize = size === 'sm' ? 16 : 20
+
   if (!mounted) {
     return (
       <div
         style={{
-          width: 32,
-          height: 32,
+          width: dimension,
+          height: dimension,
           borderRadius: '50%',
           border: '1px solid var(--border-light)',
           background: 'rgba(0, 130, 124, 0.06)',
@@ -126,8 +133,8 @@ export function ThemeToggle() {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 32,
-        height: 32,
+        width: dimension,
+        height: dimension,
         borderRadius: '50%',
         border: '1px solid var(--border-light)',
         background: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 130, 124, 0.06)',
@@ -135,10 +142,11 @@ export function ThemeToggle() {
         cursor: 'pointer',
         transition: 'all 0.2s',
         flexShrink: 0,
+        opacity: 1,
       }}
       className="hover-press"
     >
-      <SpinIcon toggled={isDark} duration={400} size={20} />
+      <SpinIcon toggled={isDark} duration={400} size={iconSize} />
     </button>
   )
 }

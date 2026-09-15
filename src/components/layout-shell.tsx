@@ -88,7 +88,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
               className="animate-page-enter"
               style={{
                 width: '100%',
-                padding: isMobile ? '32px 24px 104px' : '40px 60px',
+                padding: isMobile ? '32px 24px 24px' : '40px 60px',
                 boxSizing: 'border-box' as const,
                 maxWidth: '1600px', // Limitar ancho para legibilidad
                 margin: '0 auto'
@@ -98,9 +98,14 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
             </div>
           </main>
 
-          {/* Footer Institucional (Margen inferior en móvil para no solapar V13.52) */}
-          <div style={{ flexShrink: 0, paddingBottom: isMobile ? 72 : 0 }}>
-            <Footer ip={ip} lastVisit={lastVisit} />
+          {/* Footer Institucional */}
+          <div style={{ flexShrink: 0 }}>
+            <Footer
+              ip={ip}
+              lastVisit={lastVisit}
+              lastVisitLabel="Última visita"
+              variant="system"
+            />
           </div>
         </div>
       </div>

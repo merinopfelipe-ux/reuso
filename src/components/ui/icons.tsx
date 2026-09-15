@@ -740,6 +740,7 @@ export const Moon = wrapIcon(Lucide.Moon)
 export const Monitor = wrapIcon(Lucide.Monitor)
 export const ArrowLeft = wrapIcon(Lucide.ArrowLeft)
 export const ArrowRight = wrapIcon(Lucide.ArrowRight)
+export const ArrowUpRight = wrapIcon(Lucide.ArrowUpRight)
 export const Medal = wrapIcon(Lucide.Medal)
 export const Bell = wrapIcon(Lucide.Bell)
 export const Question = wrapIcon(Lucide.CircleHelp)
@@ -967,4 +968,6 @@ export {
   FacebookLogo,
   XLogo,
   YoutubeLogo,
+  TiktokLogo,
 } from './brand-logos'
+

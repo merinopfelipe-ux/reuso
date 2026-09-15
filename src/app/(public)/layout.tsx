@@ -1,11 +1,9 @@
-import { headers } from 'next/headers'
 import { FooterPublic } from '@/components/footer-public'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { getFechaActualizacionLegal } from '@/lib/legal/fecha-actualizacion'
 import { EMAIL_CONTACTO_LEGAL } from '@/lib/constants/contacto'
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
-  void headers()
   const fechaActualizacion = await getFechaActualizacionLegal()
 
   return (
@@ -18,8 +16,8 @@ export default async function PublicLayout({ children }: { children: React.React
       <FooterPublic
         ip={fechaActualizacion}
         lastVisit={EMAIL_CONTACTO_LEGAL}
-        ipLabel="Última actualización:"
-        lastVisitLabel="Contacto:"
+        ipLabel="Última actualización"
+        lastVisitLabel="Contacto"
         lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
       />
     </div>

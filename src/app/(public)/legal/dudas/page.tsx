@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { DudasForm } from './dudas-form'
+import { FECHA_ACTUALIZACION_LEGAL } from '@/lib/constants/contacto'
 
 const T = {
   ES: {
@@ -11,8 +12,6 @@ const T = {
     legal: 'Legal',
     breadcrumb: 'Duda legal',
     titulo: 'Tengo una duda legal',
-    descripcion:
-      'Escríbenos con tu consulta o comentario. Al enviar este formulario se genera automáticamente un ticket de consulta en el buzón oficial de soporte legal de Grupo MLP S.A.S. (servicio@calculadoradereuso.com), con un tiempo de respuesta de 10 a 15 días hábiles. Si tu duda trata sobre cálculos de emisiones o métricas ambientales, recuerda que todos los resultados de la plataforma constituyen una estimación técnica orientativa con alcance estimativo referencial.',
     leeTabien: 'Lee también',
     links: [
       { href: '/legal/terminos', label: 'Términos y Condiciones' },
@@ -25,8 +24,6 @@ const T = {
     legal: 'Legal',
     breadcrumb: 'Legal enquiry',
     titulo: 'I have a legal question',
-    descripcion:
-      'Send us your query or comment. Submitting this form automatically creates a consultation ticket in the official legal support inbox of Grupo MLP S.A.S. (servicio@calculadoradereuso.com), with a response time of 10 to 15 business days. If your inquiry concerns emission calculations or environmental metrics, remember that all platform results constitute a technical reference estimation with an estimative guidance scope.',
     leeTabien: 'See also',
     links: [
       { href: '/legal/terminos', label: 'Terms & Conditions' },
@@ -93,30 +90,33 @@ export default function DudasPage() {
           style={{
             fontSize: 28,
             fontWeight: 700,
-            marginBottom: 8,
+            marginBottom: 28,
             color: 'var(--text-primary)',
             lineHeight: 1.2,
           }}
         >
           {t.titulo}
         </h1>
-        <p
-          style={{
-            fontSize: 15,
-            color: 'var(--text-secondary)',
-            lineHeight: 1.7,
-            marginBottom: 40,
-          }}
-        >
-          {t.descripcion}
-        </p>
 
         <DudasForm lang={lang} />
+
+        {/* Última actualización */}
+        <div
+          style={{
+            marginTop: 36,
+            marginBottom: 16,
+            fontSize: 12,
+            color: 'var(--text-secondary)',
+          }}
+        >
+          {lang === 'ENG' ? 'Last updated: ' : 'Última actualización: '}
+          <span style={{ fontWeight: 500 }}>{FECHA_ACTUALIZACION_LEGAL}</span>
+        </div>
 
         {/* Lee también */}
         <div
           style={{
-            marginTop: 40,
+            marginTop: 16,
             paddingTop: 28,
             borderTop: '1px solid var(--border)',
           }}

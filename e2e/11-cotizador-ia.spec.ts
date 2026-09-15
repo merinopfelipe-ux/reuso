@@ -321,8 +321,11 @@ test.describe('Cotizador IA', () => {
     const input = page.locator('input[type="file"]').first()
     await expect(input).toBeAttached({ timeout: 30_000 })
 
+    // Prueba de seguridad: verifica que un SVG con script malicioso sea bloqueado
+    // nosemgrep: javascript.lang.security.audit.unknown-value-with-script-tag.unknown-value-with-script-tag
     const svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'
     const ruta = path.join(os.tmpdir(), `e2e-malicioso-${Date.now()}.svg`)
+    // nosemgrep: javascript.lang.security.audit.unknown-value-with-script-tag.unknown-value-with-script-tag
     fs.writeFileSync(ruta, svg)
 
     let seEjecuto = false

@@ -6,7 +6,7 @@ export const WA_NUMBER = '573147265212'
 
 export const WA_MENSAJE_DEFAULT = 'Hola, quiero más información sobre la Calculadora de Reúso.'
 
-export const FECHA_ACTUALIZACION_LEGAL = '10 de septiembre de 2026'
+export const FECHA_ACTUALIZACION_LEGAL = '13 de septiembre de 2026'
 export const EMAIL_CONTACTO_LEGAL = 'servicio@calculadoradereuso.com'
 
 export function waLink(mensaje: string = WA_MENSAJE_DEFAULT, numero: string = WA_NUMBER): string {

@@ -8,7 +8,7 @@ export interface OpcionSwitch<T extends string> {
 
 interface SwitchOpcionesProps<T extends string> {
   opciones: OpcionSwitch<T>[]
-  valor: T
+  valor: T | null
   onChange: (val: T) => void
   className?: string
 }
@@ -20,18 +20,20 @@ interface SwitchOpcionesProps<T extends string> {
  * uno nuevo ad-hoc por pantalla, extender este si falta algo.
  */
 export function SwitchOpciones<T extends string>({ opciones, valor, onChange, className = '' }: SwitchOpcionesProps<T>) {
-  const idx = Math.max(0, opciones.findIndex(o => o.valor === valor))
+  const idx = opciones.findIndex(o => o.valor === valor)
   const n = opciones.length
 
   return (
     <div className={`relative flex w-full p-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] ${className}`}>
-      <div
-        className="absolute inset-y-1 rounded-full bg-[var(--color-brand)] shadow-sm transition-[left] duration-300 ease-out"
-        style={{
-          width: `calc((100% - 8px) / ${n})`,
-          left: `calc(4px + ${idx} * (100% - 8px) / ${n})`,
-        }}
-      />
+      {idx >= 0 && (
+        <div
+          className="absolute inset-y-1 rounded-full bg-[var(--color-brand)] shadow-sm transition-[left] duration-300 ease-out"
+          style={{
+            width: `calc((100% - 8px) / ${n})`,
+            left: `calc(4px + ${idx} * (100% - 8px) / ${n})`,
+          }}
+        />
+      )}
       {opciones.map(o => (
         <button
           key={o.valor}

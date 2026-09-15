@@ -9,18 +9,21 @@ interface FooterPublicProps {
   ipLabel?: string
   lastVisitLabel?: string
   lastVisitHref?: string
+  showSocialLinks?: boolean
+  hasMobileNav?: boolean
 }
 
 export function FooterPublic(props: FooterPublicProps) {
   const pathname = usePathname()
-  const hideLegalLinks = pathname.startsWith('/legal')
+  const isLegal = pathname.startsWith('/legal')
   const hideDate = pathname === '/' || pathname.startsWith('/status')
   return (
     <Footer
       {...props}
       ip={hideDate ? undefined : props.ip}
-      ipLabel={hideDate ? undefined : (props.ipLabel || 'Última actualización:')}
-      hideLegalLinks={hideLegalLinks}
+      ipLabel={hideDate ? undefined : (props.ipLabel || 'Última actualización')}
+      hideLegalLinks={false}
+      variant={isLegal ? 'legal' : 'public'}
     />
   )
 }

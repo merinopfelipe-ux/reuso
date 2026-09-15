@@ -33,8 +33,11 @@ const DARK_MODE_CSS = `
       .eh p { color: #474747 !important; }
       .eh p + p { color: rgba(71,71,71,0.65) !important; }
       a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-      .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-      .ef p, .ef a { color: #E0E0E0 !important; }
+      .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
+      .ef p { color: #A1A1AA !important; }
+      .ef strong { color: #D6F391 !important; }
+      .ef a { color: #D6F391 !important; text-decoration: none !important; }
+      .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
       .ea td { background-color: rgba(246,191,62,0.10) !important; }
       .ea p { color: #F6BF3E !important; }
       .ek td { background-color: rgba(214,243,145,0.10) !important; }
@@ -52,8 +55,11 @@ const DARK_MODE_CSS = `
     [data-ogsc] .eh p { color: #474747 !important; }
     [data-ogsc] .eh p + p { color: rgba(71,71,71,0.65) !important; }
     [data-ogsc] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsc] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsc] .ef p, [data-ogsc] .ef a { color: #E0E0E0 !important; }
+    [data-ogsc] .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
+    [data-ogsc] .ef p { color: #A1A1AA !important; }
+    [data-ogsc] .ef strong { color: #D6F391 !important; }
+    [data-ogsc] .ef a { color: #D6F391 !important; text-decoration: none !important; }
+    [data-ogsc] .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
     [data-ogsc] .ea td { background-color: rgba(246,191,62,0.10) !important; }
     [data-ogsc] .ea p { color: #F6BF3E !important; }
     [data-ogsc] .ek td { background-color: rgba(214,243,145,0.10) !important; }
@@ -70,8 +76,11 @@ const DARK_MODE_CSS = `
     [data-ogsb] .eh p { color: #474747 !important; }
     [data-ogsb] .eh p + p { color: rgba(71,71,71,0.65) !important; }
     [data-ogsb] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsb] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsb] .ef p, [data-ogsb] .ef a { color: #E0E0E0 !important; }
+    [data-ogsb] .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
+    [data-ogsb] .ef p { color: #A1A1AA !important; }
+    [data-ogsb] .ef strong { color: #D6F391 !important; }
+    [data-ogsb] .ef a { color: #D6F391 !important; text-decoration: none !important; }
+    [data-ogsb] .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
     [data-ogsb] .ea td { background-color: rgba(246,191,62,0.10) !important; }
     [data-ogsb] .ea p { color: #F6BF3E !important; }
     [data-ogsb] .ek td { background-color: rgba(214,243,145,0.10) !important; }
@@ -80,6 +89,16 @@ const DARK_MODE_CSS = `
     [data-ogsb] .et { background-color: rgba(214,243,145,0.08) !important; }
     [data-ogsb] .et td { color: #E0E0E0 !important; }
   </style>`
+
+function escaparHtml(valor: string): string {
+  return valor.replace(/[&<>'"]/g, caracter => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  }[caracter] ?? caracter))
+}
 
 // ── Bloque de alerta de seguridad ────────────────────────────────────────────
 const ALERTA_SEGURIDAD = (accion: string) => `
@@ -161,13 +180,18 @@ function emailPlantilla({
 
           <!-- Footer -->
           <tr>
-            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
-              ${avisoPie ?? `<p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
-                Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
-              </p>`}
-              <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
+            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+              ${avisoPie
+                ? (avisoPie.startsWith('<p')
+                    ? avisoPie
+                    : `<p style="margin:0 0 16px;font-size:11px;color:#71717A;line-height:1.65;">${avisoPie}</p>`)
+                : `<p style="margin:0 0 16px;font-size:11px;color:#71717A;line-height:1.65;">
+                    Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
+                  </p>`}
+              <div class="div-sep" style="border-top:1px solid #E5E7EB;margin:0 auto 16px;width:64px;"></div>
+              <p style="margin:0;font-size:11px;color:#8E8E93;line-height:1.7;">
                 © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://calculadoradereuso.com" style="color:#474747;text-decoration:underline;">calculadoradereuso.com</a>
+                <a href="https://calculadoradereuso.com" style="color:#00827C;text-decoration:none;font-weight:600;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>
@@ -297,7 +321,7 @@ export async function enviarInvitacion(
 // ── Notificación de ticket de soporte ────────────────────────────────────────
 export async function enviarNotificacionTicket(
   destinatarios: string[],
-  datos: { nombre?: string | null; email?: string | null; categoria: string; mensaje: string }
+  datos: { nombre?: string | null; email?: string | null; categoria: string; mensaje: string; numeroCaso?: string }
 ): Promise<void> {
   // Bug real 2026-09-02: las pruebas e2e crean tickets de soporte reales
   // (varias veces, en cada corrida) y este correo se le manda de verdad al
@@ -312,6 +336,7 @@ export async function enviarNotificacionTicket(
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filasInfo = [
+    ...(datos.numeroCaso ? [{ label: 'Caso', valor: `<strong style="font-family:monospace;color:#00827C;font-size:14px;">${datos.numeroCaso}</strong>` }] : []),
     { label: 'Usuario',   valor: datos.nombre ?? 'Sin nombre' },
     { label: 'Correo',    valor: datos.email ? `<a href="mailto:${datos.email}" style="color:#00827C;">${datos.email}</a>` : 'No indicado' },
     { label: 'Categoría', valor: datos.categoria },
@@ -329,8 +354,10 @@ export async function enviarNotificacionTicket(
 <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#474747;">Mensaje:</p>
 <p style="margin:0;font-size:14px;color:#474747;line-height:1.75;white-space:pre-wrap;">${datos.mensaje}</p>`
 
+  const casoPrefijo = datos.numeroCaso ? `[${datos.numeroCaso}] ` : ''
+
   const html = emailPlantilla({
-    preheader: `Nuevo ticket. ${datos.categoria}. Responde desde el panel admin`,
+    preheader: `${casoPrefijo}Nuevo ticket. ${datos.categoria}. Responde desde el panel admin`,
     subtituloHeader: 'Nuevo ticket de soporte',
     saludo: '📬 Alguien necesita ayuda',
     cuerpo: 'Llegó un mensaje desde el formulario de soporte. Aquí están los detalles:',
@@ -341,10 +368,87 @@ export async function enviarNotificacionTicket(
   await resend.emails.send({
     from: FROM,
     to: destinatarios,
-    subject: `Nuevo ticket de soporte. ${datos.categoria}`,
+    subject: `${casoPrefijo}Nuevo ticket de soporte: ${datos.categoria}`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: datos.email ?? 'soporte@calculadoradereuso.com',
   })
+}
+
+// ── Confirmación de consulta legal al cliente con número de caso ─────────────
+export async function enviarConfirmacionConsultaLegal(
+  to: string,
+  datos: {
+    nombre: string
+    numeroCaso: string
+    tipo: string
+    mensaje: string
+  }
+): Promise<{ resendEmailId: string | null }> {
+  if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
+  if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+
+  const nombreSeguro = escaparHtml(datos.nombre)
+  const tipoSeguro = escaparHtml(datos.tipo)
+  const mensajeSeguro = escaparHtml(datos.mensaje).replace(/\n/g, '<br/>')
+  const casoSeguro = escaparHtml(datos.numeroCaso)
+
+  const fecha = new Date().toLocaleDateString('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
+  const contenidoCentral = `
+<div style="margin:0 0 24px;text-align:center;">
+  <span style="display:inline-block;padding:5px 14px;background-color:rgba(0,130,124,0.1);color:#00827C;font-size:12px;font-weight:700;border-radius:20px;letter-spacing:0.5px;">
+    Número de caso asignado
+  </span>
+  <div style="margin:10px 0 0;font-size:24px;font-weight:800;color:#00827C;font-family:monospace;letter-spacing:1.5px;">
+    ${casoSeguro}
+  </div>
+</div>
+
+<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Asunto</td>
+    <td style="padding:6px 0;color:#474747;font-size:13px;">${tipoSeguro}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Fecha</td>
+    <td style="padding:6px 0;color:#474747;font-size:13px;">${fecha}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Plazo estimado</td>
+    <td style="padding:6px 0;color:#00827C;font-weight:700;font-size:13px;">10 a 15 días hábiles</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#474747;">Tu consulta:</p>
+<div style="margin:0;padding:14px;background-color:#FAFAFA;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;color:#474747;line-height:1.6;">${mensajeSeguro}</div>
+`
+
+  const html = emailPlantilla({
+    preheader: `Caso ${casoSeguro} registrado. Confirmación de tu consulta legal.`,
+    subtituloHeader: 'Consulta legal recibida',
+    saludo: `Hola ${nombreSeguro}`,
+    cuerpo: `Hemos recibido tu consulta con éxito. Se ha generado un ticket de seguimiento oficial para nuestro equipo jurídico:`,
+    contenidoCentral,
+    mostrarAlerta: false,
+    avisoPie: `Este es un mensaje de confirmación automático. Para agregar información a tu caso, responde directamente a este correo citando el identificador <strong style="font-family:monospace;color:#00827C;">${casoSeguro}</strong>.`,
+  })
+
+  const { data } = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Caso ${casoSeguro}: Confirmación de consulta legal`,
+    html,
+    replyTo: 'servicio@calculadoradereuso.com',
+  })
+
+  return { resendEmailId: data?.id ?? null }
 }
 
 // ── Firmas de documentos legales (invitación cerrada, un solo uso) ──────────
@@ -361,45 +465,57 @@ export async function enviarInvitacionFirma(
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/legal/firma/${rawToken}`
+  const nombreSeguro = escaparHtml(nombreDestinatario)
+  const documentoSeguro = escaparHtml(documentoLabel)
+  const linkSeguro = escaparHtml(link)
 
   const boton = `
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
   <tr>
     <td align="center">
-      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Firmar documento
+      <a class="eb" href="${linkSeguro}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        Revisar y firmar
       </a>
     </td>
   </tr>
   <tr>
     <td align="center" style="padding-top:12px;">
       <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
+        <a href="${linkSeguro}" style="color:#00827C;word-break:break-all;font-size:11px;">${linkSeguro}</a>
       </p>
     </td>
   </tr>
 </table>`
 
-  const bloqueExpiracion = `
+  const bloqueInformacion = `
+<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+  <tr><td style="padding:4px 0;font-size:13px;color:#474747;"><strong>Documento:</strong> ${documentoSeguro}</td></tr>
+  <tr><td style="padding:4px 0;font-size:13px;color:#474747;"><strong>Vigencia:</strong> 7 días · un solo uso</td></tr>
+</table>
+<p style="margin:0 0 12px;font-size:14px;font-weight:700;color:#474747;">Solo necesitas tres pasos:</p>
+<ol style="margin:0;padding-left:20px;font-size:13px;color:#474747;line-height:1.8;">
+  <li>Lee el acuerdo completo.</li>
+  <li>Confirma tus datos y dibuja tu firma.</li>
+  <li>Recibe automáticamente una copia en PDF.</li>
+</ol>
 <p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
-  <strong>Recuerda:</strong> Este enlace es de un solo uso y expira en <strong>7 días</strong>.
-  Si ya venció, pídele a quien te lo envió que genere uno nuevo.
+  Por seguridad, esta invitación no contiene archivos adjuntos y nunca te pediremos contraseña, códigos de acceso ni pagos.
 </p>`
 
   const html = emailPlantilla({
     preheader: `Tienes un ${documentoLabel} pendiente de firma en Calculadora de Reúso`,
     subtituloHeader: 'Solicitud de firma',
-    saludo: `¡Hola, ${nombreDestinatario}! 👋`,
-    cuerpo: `Calculadora de Reúso te invita a firmar el <strong>${documentoLabel}</strong>. Usa el enlace para revisarlo y firmarlo digitalmente. En cuanto lo firmes, recibirás tu copia en PDF.`,
-    contenidoCentral: boton + bloqueExpiracion,
-    alertaAccion: 'firmes el documento',
+    saludo: `Hola, ${nombreSeguro}.`,
+    cuerpo: `Tienes una invitación personal para revisar y firmar el <strong>${documentoSeguro}</strong>. El enlace te lleva directamente a calculadoradereuso.com y, al finalizar, recibirás una copia en PDF.`,
+    contenidoCentral: bloqueInformacion + boton,
+    alertaAccion: 'abras ni firmes el documento',
     mostrarAlerta: true,
   })
 
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Firma tu ${documentoLabel} en Calculadora de Reúso`,
+    subject: `Invitación para firmar: ${documentoLabel}`,
     html,
     replyTo: 'servicio@calculadoradereuso.com',
   })
@@ -522,4 +638,3 @@ export async function enviarPropuestaCotizacion(
 // admin con su propio tracking de apertura/clic) se eliminaron junto con
 // /admin/correos (2026-09-06) — esa función pasa a Loops.so. Ver
 // conceptos/arquitectura-correos-2026-09-06 en el Vault.
-

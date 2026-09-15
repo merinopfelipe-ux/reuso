@@ -67,6 +67,8 @@ const nextConfig = {
   },
 
   images: {
+    // Blindaje contra GHSA-2xp9-vwfh-vxw4: solo procesar WebP, nunca AVIF
+    formats: ['image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

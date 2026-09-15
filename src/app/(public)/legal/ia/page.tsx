@@ -58,7 +58,7 @@ const T = {
     s7Intro: 'Si tienes preguntas sobre cómo usamos la IA en Reúso, cómo afecta al tratamiento de tus datos o quieres ejercer cualquier derecho reconocido por el RGPD (UE), la CCPA (California) o la Ley 1581 de 2012 (Colombia), escríbenos:',
     s7Correo: 'servicio@calculadoradereuso.com',
     s7FormLabel: 'Formulario de consultas',
-    s7Respuesta: 'Respondemos en un plazo máximo de 10 días hábiles.',
+    s7Respuesta: 'Respondemos en un plazo de 10 a 15 días hábiles.',
     resumen: 'Usamos IA para construir la plataforma y estructurar los factores de cálculo. Nunca para entrenar modelos con tus datos ni para tomar decisiones automáticas sobre ti. Todo output de IA pasa por revisión humana antes de llegar a producción.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Política de Privacidad', descripcion: 'Qué datos recopilamos y cómo los protegemos.' },
@@ -120,7 +120,7 @@ const T = {
     s7Intro: 'If you have questions about how we use AI at Reúso, how it affects the processing of your data, or you wish to exercise any right recognized by the GDPR (EU), the CCPA (California), or Law 1581 of 2012 (Colombia), write to us:',
     s7Correo: 'servicio@calculadoradereuso.com',
     s7FormLabel: 'Legal enquiry form',
-    s7Respuesta: 'We respond within a maximum of 10 business days.',
+    s7Respuesta: 'We respond within 10 to 15 business days.',
     resumen: 'We use AI to build the platform and structure the calculation factors. Never to train models with your data or to make automated decisions about you. All AI output goes through human review before reaching production.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'What data we collect and how we protect it.' },

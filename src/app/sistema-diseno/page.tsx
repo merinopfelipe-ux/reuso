@@ -39,7 +39,6 @@ import {
   Check,
   ShieldCheck,
 } from '@/components/ui/icons'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
@@ -48,6 +47,7 @@ import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { SwitchOpciones } from '@/components/ui/switch-opciones'
 import { Selector } from '@/components/ui/selector'
+import { FooterPublic } from '@/components/footer-public'
 import { InputTelefono } from '@/components/ui/input-telefono'
 import { Pagination } from '@/components/ui/pagination'
 import { Skeleton, SkeletonCard } from '@/components/ui/skeleton'
@@ -717,7 +717,7 @@ export default function ManualDisenoPage() {
                 { title: 'Usuarios registrados', val: '4', icon: Users, c: 'bg-[#00827C]' },
                 { title: 'Empresas activas', val: '1', icon: Buildings, c: 'bg-[#59A6E4]' },
                 { title: 'Cálculos realizados', val: '33', icon: Calculator, c: 'bg-[#F6BF3E]' },
-                { title: 'CO₂ total evitado', val: '0.60 t', icon: Leaf, c: 'bg-[#38B98E]', extra: 'toneladas de CO₂-eq' },
+                { title: 'Total evitado', val: '0.60 t CO₂ eq', icon: Leaf, c: 'bg-[#38B98E]', extra: undefined },
               ].map((k, i) => (
                 <div key={i} className={`p-6 rounded-[1.5rem] flex items-start gap-4 transition-all hover:-translate-y-2 hover:shadow-xl ${liquidGlassClass}`}>
                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0`}>
@@ -1772,68 +1772,7 @@ export default function ManualDisenoPage() {
       </main>
 
       {/* FOOTER EXTERNO - Para páginas públicas (Sistema de Diseño, Landing, Legales, etc.) */}
-      <footer style={{
-        padding: '40px 48px',
-        background: `linear-gradient(0deg, rgba(214, 243, 145, ${isDark ? '0.05' : '0.15'}) 0%, transparent 100%)`,
-        color: isDark ? 'rgba(255,255,255,0.5)' : '#474747',
-        fontSize: 12,
-        width: '100%',
-      }}>
-        <div style={{
-          maxWidth: '1400px',
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 32,
-          flexWrap: 'wrap' as const,
-        }}>
-        <div className="footer-left-container" style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img 
-              src="/diseno/logo_gurpomlp.svg" 
-              alt="Grupo MLP" 
-              width={180} 
-              height={54}
-              style={{ 
-                opacity: isDark ? 0.9 : 1,
-                filter: isDark ? 'brightness(0) invert(1)' : undefined
-              }}
-            />
-            <div className="footer-divider" style={{ width: 1, height: 20, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' }} />
-            <div style={{ lineHeight: 1.5 }}>
-              <p style={{ margin: 0, opacity: 0.7, fontSize: 11, fontWeight: 500 }}>
-                &copy; {new Date().getFullYear()} &middot; Todos los derechos reservados.
-              </p>
-              <p style={{ margin: 0, opacity: 0.6, fontSize: 11 }}>
-                Tecnología con propósito para un futuro sostenible.
-              </p>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 24, fontWeight: 500, fontSize: 12, alignItems: 'center' }}>
-            <a href="/legal/medicion" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Sobre la medición</a>
-            <span style={{ opacity: 0.3 }}>&bull;</span>
-            <a href="/legal/reglamento" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Reglamento</a>
-            <span style={{ opacity: 0.3 }}>&bull;</span>
-            <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>Política de privacidad</a>
-            <div className="ml-3 flex items-center">
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-        <style>{`
-          @media (max-width: 1150px) and (min-width: 769px) {
-            .footer-left-container {
-              flex-direction: column !important;
-              align-items: flex-start !important;
-              gap: 8px !important;
-            }
-            .footer-divider {
-              display: none !important;
-            }
-          }
-        `}</style>
-      </footer>
+      <FooterPublic showSocialLinks={true} hasMobileNav={true} />
 
       <style jsx global>{`
         .allow-select {

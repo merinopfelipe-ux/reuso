@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { ArrowDown } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'
+import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
+import { FECHA_ACTUALIZACION_LEGAL } from '@/lib/constants/contacto'
 
 interface LeeTabienItem {
   href: string
@@ -26,6 +27,7 @@ interface LegalPageLayoutProps {
   secciones: SeccionItem[]
   resumen: string
   leeTabien?: LeeTabienItem[]
+  fechaActualizacion?: string
   children: React.ReactNode
   requiresAccept?: React.ReactNode
   transparenciaTexto?: React.ReactNode | null
@@ -67,6 +69,7 @@ export function LegalPageLayout({
   secciones,
   resumen,
   leeTabien = [],
+  fechaActualizacion = FECHA_ACTUALIZACION_LEGAL,
   children,
   requiresAccept,
   transparenciaTexto,
@@ -127,7 +130,7 @@ export function LegalPageLayout({
         style={{
           maxWidth: 1100,
           margin: '0 auto',
-          padding: '0 32px 80px',
+          padding: '0 32px 48px',
           display: 'flex',
           gap: 56,
           alignItems: 'flex-start',
@@ -319,11 +322,24 @@ export function LegalPageLayout({
             </div>
           )}
 
+          {/* ── ÚLTIMA ACTUALIZACIÓN ─────────────────────────────── */}
+          <div
+            style={{
+              marginTop: 40,
+              marginBottom: 16,
+              fontSize: 12,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            {lang === 'ENG' ? 'Last updated: ' : 'Última actualización: '}
+            <span style={{ fontWeight: 500 }}>{fechaActualizacion}</span>
+          </div>
+
           {/* ── LEE TAMBIÉN ────────────────────────────────────────── */}
           {!hideLeeTambien && (
             <div
               style={{
-                marginTop: 48,
+                marginTop: 16,
                 paddingTop: 32,
                 borderTop: '1px solid var(--border)',
               }}
@@ -416,32 +432,8 @@ export function LegalPageLayout({
         </div>
       </div>
 
-      {/* ── BOTÓN SCROLL AL FINAL ─────────────────────────────────── */}
-      <button
-        onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
-        title="Ir al final"
-        style={{
-          position: 'fixed',
-          bottom: 28,
-          left: 28,
-          zIndex: 200,
-          width: 40,
-          height: 40,
-          borderRadius: '50%',
-          background: 'var(--bg-card)',
-          border: '1px solid rgba(0,130,124,0.20)',
-          boxShadow: '0 2px 12px rgba(71,71,71,0.10)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          color: 'var(--color-brand)',
-          transition: 'box-shadow 0.2s, transform 0.2s',
-        }}
-        className="legal-scroll-bottom-btn hover-slide-d"
-      >
-        <ArrowDown size={18} />
-      </button>
+      {/* ── BOTÓN SCROLL AL FINAL / INICIO ───────────────────────── */}
+      <LegalScrollButton />
 
       <style dangerouslySetInnerHTML={{ __html: `
         /* Anclas: offset para no quedar ocultas bajo header sticky + h1 sticky */
@@ -477,26 +469,19 @@ export function LegalPageLayout({
           border-color: rgba(214, 243, 145, 0.35) !important;
         }
 
-        /* Botón scroll al final */
-        .legal-scroll-bottom-btn:hover {
-          box-shadow: 0 4px 16px rgba(0,130,124,0.20);
-          transform: translateY(2px);
-        }
-        @media (max-width: 768px) {
-          .legal-scroll-bottom-btn { display: none; }
-        }
+
 
         /* ── RESPONSIVE ───────────────────────────────────────── */
         @media (max-width: 768px) {
           .legal-sidebar { display: none; }
-          .legal-outer { padding: 0 16px 60px !important; }
+          .legal-outer { padding: 0 16px 40px !important; }
           .legal-lee-tambien-grid { grid-template-columns: 1fr !important; }
           .legal-h1 { font-size: 22px !important; }
           .legal-trust-grid { grid-template-columns: 1fr !important; }
           .legal-cookie-table { font-size: 11px !important; }
         }
         @media (min-width: 769px) and (max-width: 1024px) {
-          .legal-outer { padding: 0 24px 80px !important; }
+          .legal-outer { padding: 0 24px 48px !important; }
           .legal-lee-tambien-grid { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}} />

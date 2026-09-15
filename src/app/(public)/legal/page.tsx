@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
+import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
 import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
@@ -11,7 +12,7 @@ const T = {
     titulo: 'Documentos legales',
     inicio: 'Inicio',
     duda: 'Tengo una duda legal',
-    dudaDesc: 'Escríbenos directamente. El equipo de Grupo MLP S.A.S. responde en un máximo de 10 días hábiles.',
+    dudaDesc: 'Escríbenos directamente. El equipo de Grupo MLP S.A.S. responde en un plazo de 10 a 15 días hábiles.',
     docs: [
       { href: '/legal/terminos', titulo: 'Términos y Condiciones', descripcion: 'Reglas de uso de la plataforma, derechos y obligaciones de ambas partes.' },
       { href: '/legal/privacidad', titulo: 'Política de Privacidad', descripcion: 'Cómo protegemos y tratamos la información de los usuarios.' },
@@ -29,7 +30,7 @@ const T = {
     titulo: 'Legal Documents',
     inicio: 'Home',
     duda: 'Legal inquiries',
-    dudaDesc: 'Write to us directly. The Grupo MLP S.A.S. team will reply within 10 business days.',
+    dudaDesc: 'Write to us directly. The Grupo MLP S.A.S. team will reply within 10 to 15 business days.',
     docs: [
       { href: '/legal/terminos', titulo: 'Terms and Conditions', descripcion: 'Platform usage rules, rights and obligations of both parties.' },
       { href: '/legal/privacidad', titulo: 'Privacy Policy', descripcion: 'How we protect and process user information.' },
@@ -182,6 +183,8 @@ export default function LegalIndexPage() {
           <span style={{ fontSize: 20, color: 'var(--color-brand)', opacity: 0.5, flexShrink: 0 }}>→</span>
         </Link>
       </div>
+
+      <LegalScrollButton />
 
       <style dangerouslySetInnerHTML={{ __html: `
         .legal-card:hover {

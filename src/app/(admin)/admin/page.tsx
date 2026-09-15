@@ -92,7 +92,7 @@ export default async function AdminPage() {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
             Hola, {saludo}
           </h1>
-          <p className="mt-1 text-sm text-[var(--color-brand)]">
+          <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
             ¡Juntos recuperamos el planeta!
           </p>
         </div>
@@ -129,9 +129,9 @@ export default async function AdminPage() {
           color="var(--color-warning)"
         />
         <KpiCard
-          titulo="CO₂ eq total evitado"
-          valor={`${co2Ton} t`}
-          subtitulo="toneladas de CO₂ eq"
+          titulo="Total evitado"
+          valor={co2Ton}
+          unidad="t CO₂ eq"
           icono={Leaf}
           color="var(--color-success)"
         />

@@ -1,14 +1,16 @@
+import type { ReactNode } from 'react'
 import type { Icon } from '@/components/ui/icons'
 
 interface KpiCardProps {
   titulo: string
-  valor: string | number
+  valor: ReactNode
+  unidad?: string
   subtitulo?: string
   icono: Icon
   color?: string
 }
 
-export function KpiCard({ titulo, valor, subtitulo, icono: Icono, color = 'var(--color-brand)' }: KpiCardProps) {
+export function KpiCard({ titulo, valor, unidad, subtitulo, icono: Icono, color = 'var(--color-brand)' }: KpiCardProps) {
   return (
     <div
       style={{
@@ -40,8 +42,13 @@ export function KpiCard({ titulo, valor, subtitulo, icono: Icono, color = 'var(-
         <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 400 }}>
           {titulo}
         </p>
-        <p style={{ margin: '4px 0 0', fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1 }}>
-          {valor}
+        <p style={{ margin: '4px 0 0', fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1, display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+          <span>{valor}</span>
+          {unidad && (
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
+              {unidad}
+            </span>
+          )}
         </p>
         {subtitulo && (
           <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--text-secondary)' }}>

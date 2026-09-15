@@ -29,10 +29,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: 'Informe verificado · calculadoradereuso.com',
     description: desc || 'Informe de impacto ambiental verificado en calculadoradereuso.com',
-    openGraph: {
-      title: titular ? `Informe de ${titular} - calculadoradereuso.com` : 'Informe verificado - calculadoradereuso.com',
-      description: desc || 'Informe de impacto ambiental por reúso de objetos',
-      images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    robots: {
+      index: false,
+      follow: false,
     },
   }
 }
@@ -151,8 +150,8 @@ export default async function VerificarPage({ params }: PageProps) {
         <FooterPublic
           ip={FECHA_ACTUALIZACION_LEGAL}
           lastVisit={EMAIL_CONTACTO_LEGAL}
-          ipLabel="Última actualización:"
-          lastVisitLabel="Contacto:"
+          ipLabel="Última actualización"
+          lastVisitLabel="Contacto"
           lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
         />
         </ProteccionPublica>
@@ -534,8 +533,8 @@ export default async function VerificarPage({ params }: PageProps) {
       <FooterPublic
         ip={FECHA_ACTUALIZACION_LEGAL}
         lastVisit={EMAIL_CONTACTO_LEGAL}
-        ipLabel="Última actualización:"
-        lastVisitLabel="Contacto:"
+        ipLabel="Última actualización"
+        lastVisitLabel="Contacto"
         lastVisitHref={`mailto:${EMAIL_CONTACTO_LEGAL}`}
       />
       </ProteccionPublica>

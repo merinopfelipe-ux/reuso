@@ -133,7 +133,7 @@ const T = {
     peticiones1:
       'Tienes derecho a realizar de forma gratuita consultas, solicitudes y reclamos sobre el tratamiento de tus datos. La solicitud debe incluir nombre completo, descripción de la consulta, dirección, teléfono y correo electrónico.',
     peticiones2:
-      'Respondemos en un plazo máximo de 10 días hábiles contados desde la fecha de radicación. Cuando no sea posible responder en ese plazo, te informamos los motivos de la demora y la fecha en que atenderemos la solicitud, que no puede superar los cinco días hábiles adicionales.',
+      'Respondemos en un plazo de 10 a 15 días hábiles contados desde la fecha de radicación. Cuando no sea posible responder en ese plazo, te informamos los motivos de la demora y la fecha en que atenderemos la solicitud, que no puede superar los cinco días hábiles adicionales.',
     peticiones3a: 'Envía tu solicitud a:',
     peticiones3b: '. También puedes usar el formulario de',
     peticiones3c: 'consultas legales',
@@ -272,7 +272,7 @@ const T = {
     peticiones1:
       'You have the right to submit free-of-charge queries, requests and complaints about the processing of your data. The request must include your full name, a description of the query, your address, phone number and email address.',
     peticiones2:
-      'We respond within a maximum of 10 business days from the date of receipt. When it is not possible to respond within that period, we will inform you of the reasons for the delay and the date on which we will address the request, which may not exceed five additional business days.',
+      'We respond within 10 to 15 business days from the date of receipt. When it is not possible to respond within that period, we will inform you of the reasons for the delay and the date on which we will address the request, which may not exceed five additional business days.',
     peticiones3a: 'Send your request to:',
     peticiones3b: '. You can also use the',
     peticiones3c: 'legal queries form',
