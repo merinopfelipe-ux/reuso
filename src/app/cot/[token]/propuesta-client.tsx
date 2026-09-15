@@ -1119,7 +1119,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 href="https://calculadoradereuso.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline font-medium text-inherit"
+                className="font-medium text-inherit footer-marca-link"
               >
                 Calculadora de Reúso
               </a>
@@ -1470,6 +1470,20 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
       />
 
       <style dangerouslySetInnerHTML={{ __html: `
+        /* "Calculadora de Reúso" en el footer de la propuesta pública: en
+           reposo hereda el tono translúcido del texto que lo rodea, en
+           hover siempre pasa al color sólido sin opacidad (mismo criterio
+           que Lurdes/Grupo MLP del footer general, unificado 2026-09-15).
+           Negro Lurdes en día; blanco en noche — #474747 sobre el fondo
+           #474747 de noche quedaría invisible. */
+        [data-theme="light"] .footer-marca-link:hover {
+          color: #474747 !important;
+          opacity: 1 !important;
+        }
+        [data-theme="dark"] .footer-marca-link:hover {
+          color: #FFFFFF !important;
+          opacity: 1 !important;
+        }
         .legal-header-btn {
           width: 40px;
           height: 40px;

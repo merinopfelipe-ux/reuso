@@ -549,7 +549,7 @@ export function Footer({
                 fontSize: 10,
                 textAlign: 'center',
               }}>
-                <span style={{ fontWeight: 300, opacity: 0.45 }}>
+                <span style={{ fontWeight: 300, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)' }}>
                   Desarrollado con ♡ en Medellín, Colombia · Calculadora de Reúso by{' '}
                   <a href="https://lurdes.co/" target="_blank" rel="noopener noreferrer" className="footer-discreet-link">
                     Lurdes
@@ -563,7 +563,7 @@ export function Footer({
               {/* Mobile: Cierra Copyright con muy poco espacio de la línea anterior */}
               <div style={{
                 fontWeight: 300,
-                opacity: 0.45,
+                color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)',
                 fontSize: 10,
                 textAlign: 'center',
                 marginTop: 0,
@@ -578,7 +578,7 @@ export function Footer({
           ) : (
             <>
               {/* Escritorio: Copyright a la izquierda */}
-              <div style={{ fontWeight: 300, opacity: 0.45, lineHeight: 1.2, textAlign: 'left' }}>
+              <div style={{ fontWeight: 300, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)', lineHeight: 1.2, textAlign: 'left' }}>
                 © {currentYear}{' '}
                 <a href="https://lurdes.co/" target="_blank" rel="noopener noreferrer" className="footer-discreet-link">
                   Grupo MLP S.A.S.
@@ -593,7 +593,7 @@ export function Footer({
                 alignItems: 'center',
                 gap: 10,
               }}>
-                <span style={{ fontWeight: 300, opacity: 0.45, textAlign: 'right' }}>
+                <span style={{ fontWeight: 300, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)', textAlign: 'right' }}>
                   Desarrollado con ♡ en Medellín, Colombia · Calculadora de Reúso by{' '}
                   <a href="https://lurdes.co/" target="_blank" rel="noopener noreferrer" className="footer-discreet-link">
                     Lurdes
@@ -763,17 +763,31 @@ export function Footer({
           text-decoration: underline;
         }
 
-        /* Enlaces discretos sin ningún resaltado ni subrayado */
+        /* Enlaces discretos (Lurdes / Grupo MLP S.A.S.): en reposo heredan
+           el tono translúcido del texto que los rodea, en hover siempre
+           pasan al color sólido sin opacidad (uniformado 2026-09-15,
+           mismo criterio que la propuesta pública). Negro Lurdes en día;
+           en noche pasa a blanco (mismo patrón ya usado en este archivo
+           para íconos, línea ~434) — #474747 sobre el fondo #474747 de
+           noche quedaría invisible, nunca lo pidió el usuario a propósito.
+        */
         .footer-discreet-link {
           color: inherit !important;
           text-decoration: none !important;
           cursor: pointer;
-          transition: opacity 0.2s ease;
+          transition: color 0.2s ease;
         }
-        .footer-discreet-link:hover,
-        .footer-discreet-link:focus,
-        .footer-discreet-link:active {
-          color: inherit !important;
+        [data-theme="light"] .footer-discreet-link:hover,
+        [data-theme="light"] .footer-discreet-link:focus,
+        [data-theme="light"] .footer-discreet-link:active {
+          color: #474747 !important;
+          text-decoration: none !important;
+          outline: none;
+        }
+        [data-theme="dark"] .footer-discreet-link:hover,
+        [data-theme="dark"] .footer-discreet-link:focus,
+        [data-theme="dark"] .footer-discreet-link:active {
+          color: #FFFFFF !important;
           text-decoration: none !important;
           outline: none;
         }
