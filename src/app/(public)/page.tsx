@@ -170,8 +170,28 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@type': 'Organization',
     name: 'Reúso',
     legalName: 'Grupo MLP',
+    description: 'Calculadora de Reúso es una plataforma digital que ayuda a empresas de restauración, diseño interior y producto a estimar el impacto ambiental de reutilizar materiales y objetos, con informes estructurados y códigos de verificación pública.',
     url: 'https://calculadoradereuso.com',
     logo: 'https://calculadoradereuso.com/logo-completo.svg',
+    foundingDate: '2025',
+    taxID: '901460030',
+    numberOfEmployees: {
+      '@type': 'QuantitativeValue',
+      minValue: 1,
+      maxValue: 10
+    },
+    address: [
+      {
+        '@type': 'PostalAddress',
+        addressLocality: 'Medellín',
+        addressCountry: 'CO'
+      },
+      {
+        '@type': 'PostalAddress',
+        addressLocality: 'Bogotá',
+        addressCountry: 'CO'
+      }
+    ],
     sameAs: [
       'https://www.linkedin.com/company/calculadoradereuso/',
       'https://www.instagram.com/calculadoradereuso',
@@ -184,6 +204,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: telefonoFormato,
+      email: 'servicio@calculadoradereuso.com',
       contactType: 'customer support',
       availableLanguage: ['es', 'en']
     }
