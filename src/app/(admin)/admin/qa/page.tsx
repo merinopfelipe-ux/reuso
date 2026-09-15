@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react'
 import { createPortal } from 'react-dom'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { comprimirImagenWebP } from '@/lib/image-compress'
@@ -2039,7 +2040,10 @@ function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar
 
 // ── Componente ─────────────────────────────────────────────────────────────────
 
-export default function QAPage() {
+function QAContenido() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [tareas, setTareas] = useState<Tarea[]>(() =>
@@ -2121,10 +2125,28 @@ export default function QAPage() {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [mostrarInforme, mostrarHistorial, mostrarProgresoModal, modalNuevoIntento])
-  const [categoriaActiva, setCategoriaActiva] = useState(CATEGORIAS[0].key)
-  const [modo, setModo] = useState<'modulo' | 'pagina'>('modulo')
-  const [rutaActiva, setRutaActiva] = useState<string | null>(null)
-  
+  // Recuerda en la URL en cuál categoría/página/modo estaba el usuario —
+  // mismo patrón ya usado en categorias-client.tsx (?nodo=/?item=) — sin
+  // esto, refrescar la pantalla siempre volvía a la primera categoría
+  // (Páginas Públicas), perdiendo dónde estaba (bug real reportado,
+  // 2026-09-15).
+  const modoUrl = searchParams.get('modo')
+  const [modo, setModo] = useState<'modulo' | 'pagina'>(modoUrl === 'pagina' ? 'pagina' : 'modulo')
+  const categoriaUrl = searchParams.get('categoria')
+  const [categoriaActiva, setCategoriaActiva] = useState(
+    categoriaUrl && CATEGORIAS.some(c => c.key === categoriaUrl) ? categoriaUrl : CATEGORIAS[0].key
+  )
+  const [rutaActiva, setRutaActiva] = useState<string | null>(searchParams.get('ruta'))
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+    params.set('modo', modo)
+    if (modo === 'modulo') params.set('categoria', categoriaActiva)
+    else if (rutaActiva) params.set('ruta', rutaActiva)
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modo, categoriaActiva, rutaActiva])
+
   const categoriasReactivas = useMemo(() => CATEGORIAS.map(cat => {
     if (cat.key === 'Modo Noche') return { ...cat, color: isDark ? '#D6F391' : '#6C8E24' }
     if (cat.key === 'Páginas Públicas') return { ...cat, color: isDark ? '#F3BBD3' : '#C44D7C' }
@@ -4754,5 +4776,13 @@ export default function QAPage() {
         document.body
       )}
     </div>
+  )
+}
+
+export default function QAPage() {
+  return (
+    <Suspense fallback={<LogoSpinner />}>
+      <QAContenido />
+    </Suspense>
   )
 }
