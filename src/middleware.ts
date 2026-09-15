@@ -52,7 +52,7 @@ async function verificarAccesoModulo(
   return mu.activo === true
 }
 
-const PUBLIC_ROUTES = ['/', '/login', '/registro', '/confirmar-email', '/recuperar', '/unsubscribe']
+const PUBLIC_ROUTES = ['/', '/login', '/registro', '/confirmar-email', '/recuperar']
 const REDIRECT_BY_ROL: Record<Rol, string> = {
   super_admin: '/admin',
   empresa_admin: '/empresa',

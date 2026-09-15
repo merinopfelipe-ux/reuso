@@ -26,7 +26,7 @@ export default function robots(): MetadataRoute.Robots {
         '/pasaporte/',
         '/propuesta/',
         '/invitacion/',
-        '/unsubscribe',
+        '/sistema-diseno',
       ],
     },
     sitemap: 'https://calculadoradereuso.com/sitemap.xml',

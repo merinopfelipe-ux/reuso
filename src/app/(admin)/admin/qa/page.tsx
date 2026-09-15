@@ -111,7 +111,7 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
   
   // Páginas Públicas
   if (categoria === 'Páginas Públicas' || id.startsWith('pub-')) {
-    if (id === 'pub-01') return ['sin_sesion', 'super_admin']
+    if (id === 'pub-01' || id === 'pub-24') return ['sin_sesion', 'super_admin']
     if (id === 'pub-05') return ['usuario_libre']
     return ['sin_sesion']
   }
@@ -119,7 +119,7 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
   // Rendimiento
   if (categoria === 'Rendimiento' || id.startsWith('perf-')) {
     if (id === 'perf-01') return ['empleado']
-    if (id === 'perf-05') return ['sin_sesion']
+    if (id === 'perf-05' || id === 'perf-10' || id === 'perf-11') return ['sin_sesion']
     return ['empresa_admin']
   }
   
@@ -434,6 +434,19 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'La pantalla agradece tu mensaje y confirma que el equipo de soporte legal te responderá pronto.',
     journeys: ['Cliente Final', 'Admin Operativa']
   },
+{
+    id: 'pub-24', categoria: 'Páginas Públicas', ruta: '/ | /legal | /admin', critica: true,
+    titulo: 'Consistencia y reglas de los 3 tipos de footer (Escritorio y Móvil)',
+    descripcion: 'Verificación de las 3 variantes de pie de página de la plataforma (Público, Legal y Sistema Interno), asegurando en escritorio su estructura a 4 columnas, límites y pesos tipográficos a 10px, y en móvil su estructura vertical unificada, enlaces en una sola línea y espaciado adaptativo para el menú inferior.',
+    pasos: [
+      '1. Reglas en Escritorio (4 Columnas estandarizadas a 10px): Col 1 (Título arcoíris al hover), Col 2 (Enlaces internos/legales de 70px), Col 3 (Redes sociales con altura 70px alineadas a LinkedIn e Instagram), Col 4 (Límites superior e inferior estrictos: bloque 1 arriba en línea con LinkedIn, bloque 2 abajo en línea con Instagram; tipografía estricta a 10px siempre, dos renglones sin dos puntos; negrita 600 solo si es enlace interactivo con animación suave idéntica a redes; modo día/noche escalado a 0.82 a la derecha tras "Lurdes").',
+      '2. Footer Legal (/legal y subpáginas): En escritorio Col 2 muestra "Inicio", "Iniciar sesión", "Preguntas frecuentes"; Col 4 muestra "Última actualización" (arriba, sin negrita) y "Contacto" (abajo, con negrita). En móvil: estructura unificada vertical con los 3 enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: servicio@calculadoradereuso.com", redes sociales, Lurdes con theme-toggle al lado sin opacidad, copyright pegado, y padding inferior compacto (20px, sin espacio para menú móvil).',
+      '3. Footer Público (/ y /sistema-diseno): En escritorio Col 2 muestra enlaces legales; Col 4 muestra "Inicia ahora" (arriba, con negrita) y "Contacto" (abajo, con negrita). En móvil: estructura unificada vertical idéntica, enlaces en una sola línea, y padding inferior de 104px (espacio estético para el menú o elementos flotantes de navegación inferior).',
+      '4. Footer Sistema Interno (/dashboard, /empresa, /admin, con LayoutShell): En escritorio Col 4 muestra "Dirección IP" (arriba, sin negrita) y "Última visita" o "Contacto" (abajo, 10px). En móvil: estructura unificada idéntica a los otros dos (título centrado, enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: servicio@calculadoradereuso.com" sin cadenas técnicas de auditoría crudas), y padding inferior de 104px para despejar el menú inferior fijo (MobileBottomNav).'
+    ],
+    esperado: 'Los 3 footers son idénticos y estéticos en diseño tanto en escritorio (4 columnas a 10px, alturas de 70px y ThemeToggle tras Lurdes) como en móvil (diseño vertical compacto, enlaces en una sola línea, información a 10px con dos puntos, negrita sólo en enlaces y separación justa). El padding inferior en móvil es de 104px en Home, Sistema de diseño y Todo el sistema para librar el menú, y compacto (20px) en Legales.',
+    journeys: ['Cliente Final', 'Admin Operativa', 'Directivo']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // AUTENTICACIÓN
@@ -509,12 +522,12 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Empleado']
   },
 {
-    id: 'auth-08', categoria: 'Autenticación', ruta: '/middleware', critica: true,
+    id: 'auth-08', categoria: 'Autenticación', ruta: '/dashboard', critica: true,
     titulo: 'Privacidad de la información y rutas protegidas',
     descripcion: 'Asegura que ninguna persona sin iniciar sesión pueda entrar a ver los reportes, cotizaciones o datos de tu empresa, ni siquiera escribiendo enlaces directos.',
     pasos: [
       'Cierra tu sesión por completo.',
-      'Intenta escribir en la barra de direcciones las rutas privadas, por ejemplo: /dashboard, /empresa o /admin.'
+      'Intenta escribir en la barra de direcciones o abrir una ruta privada (como /dashboard, /empresa o /admin).'
     ],
     esperado: 'El sistema no permite el ingreso a zonas privadas y te redirige de inmediato a la pantalla de inicio de sesión.',
     journeys: ['Admin Operativa', 'Directivo']
@@ -578,17 +591,6 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'El enlace confirma tu correo exitosamente y te da la bienvenida directa a la plataforma.',
     journeys: ['Admin Operativa', 'Empleado', 'Cliente Final']
-  },
-{
-    id: 'auth-14', categoria: 'Autenticación', ruta: '/unsubscribe', critica: false,
-    titulo: 'Preferencia para dejar de recibir correos',
-    descripcion: 'Respeta la decisión de cualquier usuario que desee darse de baja de correos informativos con un solo clic.',
-    pasos: [
-      'Abre el pie de página de cualquier notificación por correo y haz clic en "Darme de baja" o "Unsubscribe".',
-      'Observa el mensaje de confirmación en la página que se abre.'
-    ],
-    esperado: 'La pantalla confirma de forma clara que tu preferencia ha sido guardada y que no recibirás más correos de esa lista.',
-    journeys: ['Admin Operativa', 'Empleado', 'Directivo', 'Cliente Final']
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1590,6 +1592,30 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'Los elementos se ajustan con armonía y de forma continua sin descuadres visuales.',
     journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
+  },
+{
+    id: 'perf-10', categoria: 'Rendimiento', ruta: '/', critica: true,
+    titulo: 'Puntaje perfecto en métricas de posicionamiento (SEO y Accesibilidad)',
+    descripcion: 'Prueba manual en Google PageSpeed Insights sobre el entorno de producción (Vercel) para validar que el SEO alcanza 100/100.',
+    pasos: [
+      'Entra a Google PageSpeed Insights sobre el dominio de producción, no en local.',
+      'Verifica que el reporte final marque 100 en SEO y Accesibilidad.',
+      'Comprueba que las etiquetas aria-label y meta tags son leídas sin error.'
+    ],
+    esperado: 'Se obtiene el puntaje máximo. Nota: Esta prueba es manual y post-despliegue, no incluye automatización e2e.',
+    journeys: ['Directivo', 'Admin Operativa']
+  },
+{
+    id: 'perf-11', categoria: 'Rendimiento', ruta: '/', critica: true,
+    titulo: 'Estructura semántica para IAs (GEO - Generative Engine Optimization)',
+    descripcion: 'Validar la riqueza semántica para Motores Generativos verificando los esquemas JSON-LD de la Landing Page.',
+    pasos: [
+      'En producción, utiliza el Validador de Schema de Google (Schema Markup Validator).',
+      'Ingresa la URL y verifica que los esquemas (Organization, WebSite, SoftwareApplication, FAQPage) se detecten completos.',
+      'Revisa que no marque errores en el parseo.'
+    ],
+    esperado: 'Los motores de inteligencia artificial pueden absorber la propuesta de valor sin fallos. Prueba exclusivamente manual y post-despliegue.',
+    journeys: ['Directivo', 'Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
