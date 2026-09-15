@@ -16,12 +16,12 @@ export const metadata: Metadata = {
     template: '%s - calculadoradereuso.com',
   },
   description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
-  robots: { index: false, follow: false },
+  robots: { index: true, follow: true },
   // Apaga el ícono de "descargar imagen" que Edge superpone al pasar el
   // mouse sobre cualquier <img> — no es algo que agreguemos nosotros, es un
   // comportamiento nativo del navegador, y aquí no aplica (fotos de
   // cotización dentro de la app autenticada, no contenido para descargar).
-  other: { edge: 'no-image-actions' },
+  other: { edge: 'no-image-actions', 'p:domain_verify': '2bbca349f7127cd43464aa3906c5b72b' },
   icons: {
     icon: '/logo-icono.svg',
     apple: '/logo-icono.svg',
