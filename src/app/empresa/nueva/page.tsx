@@ -52,8 +52,8 @@ export default async function NuevaEmpresaPage({
           <img
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
-            className="logo-dark-invert"
-            style={{ height: 32, margin: '0 auto 20px', display: 'block' }}
+            className="logo-dark-invert h-[35px] sm:h-[39px] w-auto"
+            style={{ margin: '0 auto 20px', display: 'block' }}
           />
         </div>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>

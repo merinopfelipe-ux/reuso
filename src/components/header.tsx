@@ -271,11 +271,11 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
           <Image
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
-            width={isMobile ? 110 : 135}
-            height={isMobile ? 28 : 34}
+            width={isMobile ? 125 : 140}
+            height={isMobile ? 35 : 39}
             priority
             className="logo-dark-invert"
-            style={{ width: isMobile ? 110 : 135, height: isMobile ? 28 : 34, objectFit: 'contain' }}
+            style={{ width: isMobile ? 125 : 140, height: isMobile ? 35 : 39, objectFit: 'contain' }}
           />
         </div>
       </div>

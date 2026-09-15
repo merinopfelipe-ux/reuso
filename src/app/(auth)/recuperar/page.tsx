@@ -313,7 +313,8 @@ function Wrapper({ children, isDark }: { children: React.ReactNode; isDark: bool
           <img
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
-            style={{ height: 36, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+            className="h-[35px] sm:h-[39px] w-auto"
+            style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
           />
         </div>
         {children}

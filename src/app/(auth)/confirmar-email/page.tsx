@@ -237,7 +237,7 @@ export default function ConfirmarEmailPage() {
           <img
             src="/logo-completo.svg"
             alt="Calculadora de Reúso"
-            style={{ height: 36 }}
+            className="h-[35px] sm:h-[39px] w-auto"
           />
         </div>
         <Suspense fallback={

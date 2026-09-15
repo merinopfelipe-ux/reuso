@@ -294,9 +294,9 @@ export default function LoginPage() {
               src="/logo-completo.svg"
               alt="Calculadora de Reúso"
               width={140}
-              height={44}
-              className="object-contain"
-              style={{ width: 140, height: 44, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+              height={39}
+              className="object-contain h-[35px] sm:h-[39px] w-auto"
+              style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
             />
           </Link>
           <p className="text-sm text-secondary font-medium hidden sm:block text-right ml-auto pl-4">

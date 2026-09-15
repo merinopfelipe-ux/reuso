@@ -714,9 +714,8 @@ export default function StatusPage() {
             <img
               src="/logo-completo.svg"
               alt="Calculadora de Reúso"
+              className="h-[35px] sm:h-[39px] w-auto"
               style={{
-                height: 34,
-                width: 'auto',
                 filter: isDark ? 'brightness(0) invert(1)' : 'none',
                 transition: 'filter 0.3s'
               }}

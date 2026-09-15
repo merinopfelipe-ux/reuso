@@ -135,13 +135,13 @@ export function LandingHeader({
           <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto flex-shrink-0">
 
             <Link href={logoHref} className="flex items-center flex-shrink-0">
-              <Image 
-                src="/logo-completo.svg" 
-                alt="Reuso" 
-                width={140} 
-                height={36} 
-                className={`h-7 sm:h-8 w-auto flex-shrink-0 transition-all duration-300 ${isDark ? 'brightness-0 invert' : ''}`} 
-                priority 
+              <Image
+                src="/logo-completo.svg"
+                alt="Reuso"
+                width={140}
+                height={39}
+                className={`h-[35px] sm:h-[39px] w-auto flex-shrink-0 transition-all duration-300 ${isDark ? 'brightness-0 invert' : ''}`}
+                priority
               />
             </Link>
           </div>
@@ -217,6 +217,7 @@ export function LandingHeader({
             )}
             {showSearch && (
               <button
+                aria-label={searchOpen ? "Cerrar búsqueda" : "Abrir búsqueda"}
                 onClick={(e) => {
                   e.stopPropagation();
                   const newState = !searchOpen;
@@ -249,7 +250,7 @@ export function LandingHeader({
                className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#00827C]/30'}`}
              />
              {searchQuery && (
-               <button onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
+               <button aria-label="Limpiar búsqueda" onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
                  <X size={16} className="opacity-40" />
                </button>
              )}

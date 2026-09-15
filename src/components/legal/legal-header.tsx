@@ -55,11 +55,10 @@ export function LegalHeader() {
           src="/logo-completo.svg"
           alt="Calculadora de Reúso"
           width={140}
-          height={40}
+          height={39}
           priority
+          className="h-[35px] sm:h-[39px] w-auto"
           style={{
-            width: 140,
-            height: 40,
             objectFit: 'contain',
             filter: mounted && isDark ? 'brightness(0) invert(1)' : 'none'
           }}

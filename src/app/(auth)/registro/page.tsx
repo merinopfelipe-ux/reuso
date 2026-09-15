@@ -330,9 +330,10 @@ export default function RegistroPage() {
           src="/logo-completo.svg"
           alt="Calculadora de Reúso"
           width={140}
-          height={44}
+          height={39}
           priority
-          style={{ width: 140, height: 44, filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
+          className="h-[35px] sm:h-[39px] w-auto"
+          style={{ filter: isDark ? 'brightness(0) invert(1)' : 'none' }}
         />
       </div>
 

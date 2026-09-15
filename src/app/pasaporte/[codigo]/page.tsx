@@ -142,7 +142,7 @@ export default async function PasaportePage({ params }: PageProps) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <Image src="/logo-completo.svg" alt="Calculadora de Reúso" width={130} height={26} className="logo-dark-invert" />
+            <Image src="/logo-completo.svg" alt="Calculadora de Reúso" width={140} height={39} className="logo-dark-invert h-[35px] sm:h-[39px] w-auto" />
           </Link>
           <span style={{ fontSize: 11, color: 'var(--text-placeholder)', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
             {activo.codigo_dpp}
