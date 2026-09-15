@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition, useRef, useEffect } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Save as FloppyDisk, CircleHelp as Question, Tag, Plus, Trash, Pencil, GripVertical, X } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
@@ -53,7 +54,22 @@ function TextareaAutoAjustable({ value, onChange, style }: {
 }
 
 export function ContenidoClient({ contenido }: Props) {
-  const [tab, setTab] = useState('whatsapp')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  // Recuerda la pestaña en la URL (?tab=) — mismo fix ya aplicado en
+  // /admin/qa, /empresa/reportes y /admin/legal (2026-09-15): sin esto,
+  // refrescar mientras se edita Precios volvía siempre a WhatsApp.
+  const tabUrl = searchParams.get('tab')
+  const [tab, setTab] = useState(
+    tabUrl && TABS.some(t => t.id === tabUrl) ? tabUrl : 'whatsapp'
+  )
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('tab', tab)
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
   const [, startTransition] = useTransition()
   const [toast, setToast] = useState<string | null>(null)
 

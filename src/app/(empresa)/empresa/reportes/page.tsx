@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -40,10 +41,12 @@ export default async function EmpresaReportesPage() {
     <div style={{ width: '100%' }}>
       <AdminPageHeader titulo="Reportes" subtitulo="Rentabilidad, mitigación ecológica, logística y gobernanza de tu empresa." showBack />
 
-      <ReportesClient
-        empresaNombre={empresa?.nombre ?? 'Tu empresa'}
-        cotizadorActivo={cotizadorActivo}
-      />
+      <Suspense fallback={<div style={{ height: 400, borderRadius: 12, background: 'var(--bg-hover)' }} />}>
+        <ReportesClient
+          empresaNombre={empresa?.nombre ?? 'Tu empresa'}
+          cotizadorActivo={cotizadorActivo}
+        />
+      </Suspense>
     </div>
   )
 }

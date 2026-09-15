@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTopLoader } from 'nextjs-toploader'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import {
@@ -144,7 +145,22 @@ function BotonesExportar({ tipo, params, csvData, csvNombre }: { tipo: TabReport
 }
 
 export function ReportesClient({ empresaNombre, cotizadorActivo }: Props) {
-  const [tab, setTab] = useState<TabReporte>('mitigacion')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  // Recuerda la pestaña en la URL (?tab=) — sin esto, refrescar la pantalla
+  // siempre volvía a "Mitigación GRI/ESG", perdiendo en cuál pestaña
+  // estaba el usuario (mismo bug ya corregido en /admin/qa, 2026-09-15).
+  const tabUrl = searchParams.get('tab') as TabReporte | null
+  const [tab, setTab] = useState<TabReporte>(
+    tabUrl && TABS.some(t => t.id === tabUrl) ? tabUrl : 'mitigacion'
+  )
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('tab', tab)
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
   const [desde, setDesde] = useState('')
   const [hasta, setHasta] = useState('')
 

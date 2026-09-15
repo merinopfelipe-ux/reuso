@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 const DOCUMENTOS = [
   { clave: 'terminos', titulo: 'Términos y Condiciones', href: '/legal/terminos' },
@@ -19,7 +20,22 @@ interface ContenidoLegal {
 }
 
 export function LegalAdminClient() {
-  const [tab, setTab] = useState('terminos')
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  // Recuerda el documento en la URL (?tab=) — mismo fix ya aplicado en
+  // /admin/qa y /empresa/reportes (2026-09-15): sin esto, refrescar
+  // siempre volvía a "Términos y Condiciones".
+  const tabUrl = searchParams.get('tab')
+  const [tab, setTab] = useState(
+    tabUrl && DOCUMENTOS.some(d => d.clave === tabUrl) ? tabUrl : 'terminos'
+  )
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('tab', tab)
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
   const [contenidos, setContenidos] = useState<Record<string, ContenidoLegal>>({})
   const [editando, setEditando] = useState<Record<string, string>>({})
   const [guardando, setGuardando] = useState(false)

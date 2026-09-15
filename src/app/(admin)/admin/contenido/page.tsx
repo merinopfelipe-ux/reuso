@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: 'Contenido Landing' }
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -37,7 +38,9 @@ export default async function AdminContenidoPage() {
         subtitulo="WhatsApp de contacto, precios de los 4 planes y preguntas frecuentes de la página pública"
         showBack
       />
-      <ContenidoClient contenido={contenido ?? []} />
+      <Suspense fallback={null}>
+        <ContenidoClient contenido={contenido ?? []} />
+      </Suspense>
     </div>
   )
 }
