@@ -1,14 +1,19 @@
 #!/usr/bin/env sh
-# Proteccion real de header/sidebar/footer (Regla de Oro #2 del CLAUDE.md),
+# Proteccion real de header/sidebar/footers (Regla de Oro #2 del CLAUDE.md),
 # a nivel de tu computador, no de GitHub. Reemplaza la proteccion de rama
 # de GitHub (que era todo-o-nada, exigia PR hasta para cambios que no
 # tocaban nada protegido) por un candado que solo se activa cuando el push
-# de verdad toca uno de esos 3 archivos.
+# de verdad toca uno de esos archivos.
+#
+# Los "footers" cubren TODO lugar donde vive un footer real, no solo
+# footer.tsx: footer-public.tsx (paginas publicas/legales) y los 3 bloques
+# de copyright escritos a mano en login/registro y en la propuesta publica
+# de cotizacion (2026-09-15, a pedido explicito del usuario).
 #
 # Uso normal: nada cambia, el push sale directo.
-# Si el push toca header.tsx/sidebar.tsx/footer.tsx: se bloquea, y solo tu
-# (nunca un script ni un agente) puedes desbloquearlo escribiendo la
-# variable en tu propia terminal:
+# Si el push toca alguno de los protegidos: se bloquea, y solo tu (nunca
+# un script ni un agente) puedes desbloquearlo escribiendo la variable en
+# tu propia terminal:
 #   DESBLOQUEAR_PROTEGIDOS=1 git push
 
 # husky corre este script con "sh -e" (aborta ante cualquier comando que
@@ -27,7 +32,7 @@ else
 fi
 
 ARCHIVOS=$(git diff --name-only "$BASE"...HEAD 2>/dev/null || true)
-PROTEGIDOS=$(echo "$ARCHIVOS" | grep -E "^src/components/(header|sidebar|footer)\.tsx$" || true)
+PROTEGIDOS=$(echo "$ARCHIVOS" | grep -E "^src/components/(header|sidebar|footer|footer-public)\.tsx$|^src/app/\(auth\)/(login|registro)/page\.tsx$|^src/app/cot/\[token\]/propuesta-client\.tsx$" || true)
 
 if [ -n "$PROTEGIDOS" ]; then
   if [ "$DESBLOQUEAR_PROTEGIDOS" != "1" ]; then
@@ -35,7 +40,9 @@ if [ -n "$PROTEGIDOS" ]; then
     echo "Este push toca un archivo protegido:"
     echo "$PROTEGIDOS"
     echo ""
-    echo "header.tsx, sidebar.tsx y footer.tsx requieren tu autorizacion explicita."
+    echo "header, sidebar y los footers (footer.tsx, footer-public.tsx,"
+    echo "login/registro, propuesta publica de cotizacion) requieren tu"
+    echo "autorizacion explicita."
     echo "Para continuar, corre en tu propia terminal:"
     echo "  DESBLOQUEAR_PROTEGIDOS=1 git push"
     echo ""

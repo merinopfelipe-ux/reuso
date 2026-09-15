@@ -53,7 +53,7 @@ Empresas o personas con negocio en **restauración**, **diseño interior** o **p
 
 ## REGLAS DE ORO
 1. **Prohibido modificar lo que el usuario no pida específicamente.** Sin cambios colaterales.
-2. **Zona protegida (hook local, no una clave hablada)**: `src/components/header.tsx`, `sidebar.tsx`, `footer.tsx` están protegidos por `.husky/pre-push` — bloquea cualquier push cuyo diff toque uno de esos 3 archivos, salvo que el usuario mismo escriba `DESBLOQUEAR_PROTEGIDOS=1 git push` en su propia terminal. El resto del repo NO requiere PR ni revisión ajena, se trabaja directo entre el usuario y Claude.
+2. **Zona protegida (hook local, no una clave hablada)**: `src/components/header.tsx`, `sidebar.tsx` y TODOS los footers (`footer.tsx`, `footer-public.tsx`, y los bloques de copyright en `login/page.tsx`, `registro/page.tsx`, `cot/[token]/propuesta-client.tsx`) están protegidos por `.husky/pre-push` — bloquea cualquier push cuyo diff toque uno de esos archivos, salvo que el usuario mismo escriba `DESBLOQUEAR_PROTEGIDOS=1 git push` en su propia terminal. El resto del repo NO requiere PR ni revisión ajena, se trabaja directo entre el usuario y Claude.
 3. **Obsidian Vault** (`/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/`): al iniciar, lee `STATE.md` + diarios recientes. Al terminar, registra `diario/YYYY-MM-DD.md`, actualiza `STATE.md` y conceptos nuevos. **Aquí va la historia/changelog, no en este archivo.**
 4. **Skeleton de carga obligatorio, nunca texto plano ni spinner improvisado.** Toda pantalla o sección con su propio `fetch` usa `<Skeleton>`/`<SkeletonCard>`/`<SkeletonLista>` (detalle completo y ejemplos en skill `design-system`).
 
