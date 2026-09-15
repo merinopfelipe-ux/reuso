@@ -172,6 +172,15 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     legalName: 'Grupo MLP',
     url: 'https://calculadoradereuso.com',
     logo: 'https://calculadoradereuso.com/logo-completo.svg',
+    sameAs: [
+      'https://www.linkedin.com/company/calculadoradereuso/',
+      'https://www.instagram.com/calculadoradereuso',
+      'https://x.com/calreuso',
+      'https://www.youtube.com/@calculadoradereuso',
+      'https://www.tiktok.com/@calculadorareuso',
+      'https://www.facebook.com/calculadoradereuso',
+      'https://www.threads.com/@calculadoradereuso'
+    ],
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: telefonoFormato,
