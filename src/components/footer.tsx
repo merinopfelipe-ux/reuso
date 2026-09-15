@@ -362,9 +362,9 @@ export function Footer({
           }}>
             {/* 1. Título principal en móvil (Presente e idéntico en los 3 footers) */}
             <div style={{ textAlign: 'center', width: '100%', maxWidth: '320px', marginBottom: 2 }}>
-              <h2 className="footer-rainbow-title" style={{ textAlign: 'center', fontSize: 18, margin: '0 auto', lineHeight: 1.25 }}>
+              <p className="footer-rainbow-title" style={{ textAlign: 'center', fontSize: 21, margin: '0 auto', lineHeight: 1.25 }}>
                 Tecnología con propósito<br />para un futuro sostenible.
-              </h2>
+              </p>
             </div>
 
             {/* Bloque Superior: Enlaces de navegación con punto medio de separación (una sola línea) */}
@@ -450,9 +450,9 @@ export function Footer({
           }}>
             {/* Columna 1: Tecnología con propósito para un futuro sostenible */}
             <div style={{ flex: '1 1 360px', maxWidth: 420 }}>
-              <h2 className="footer-rainbow-title" style={{ textAlign: 'left' }}>
+              <p className="footer-rainbow-title" style={{ textAlign: 'left' }}>
                 Tecnología con propósito<br />para un futuro sostenible.
-              </h2>
+              </p>
             </div>
 
             {/* Columna 2: Enlaces de navegación */}
