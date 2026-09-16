@@ -235,3 +235,57 @@ test.describe('Dashboard (empleado)', () => {
     expect(duracion).toBeLessThan(15_000)
   })
 })
+
+// dash-08 vive fuera del describe de arriba a propósito: NO reusa la cuenta
+// efímera compartida 'empleado.json' (usada por dash-01..07). Esa cuenta
+// nunca tuvo empresa_id — se intentó corregirlo en e2e/auth.setup.ts
+// vinculándola a una empresa plan 'lab', pero 'lab' tiene calculos_mes: 0
+// (Cálculo suelto es exclusivo del plan Explora, ver CLAUDE.md), así que
+// eso rompía dash-01/dash-07 (que sí necesitan Cálculo activo). En vez de
+// tocar la cuenta compartida, esta prueba crea su propia cuenta+empresa
+// desechable, igual que auth-12/auth-14 en 07-auth.spec.ts.
+test('dash-08 - un empleado completa los datos de su empresa en /dashboard/empresa', async ({ page }) => {
+  const { createClient } = await import('@supabase/supabase-js')
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  const email = `e2e_dash08_${Date.now()}@calculadoradereuso.com`
+  const password = 'Dash08Prueba!Aa1'
+  const { data: cuenta, error } = await supabaseAdmin.auth.admin.createUser({ email, password, email_confirm: true })
+  if (error || !cuenta.user) throw new Error(`No se pudo crear la cuenta desechable de dash-08: ${error?.message}`)
+
+  const { data: empresa, error: errorEmpresa } = await supabaseAdmin
+    .from('empresas')
+    .insert({ nombre: 'E2E Empresa dash-08', slug: `e2e-dash08-${Date.now()}`, plan: 'lab', activa: true })
+    .select('id')
+    .single()
+  if (errorEmpresa || !empresa) throw new Error(`No se pudo crear la empresa desechable de dash-08: ${errorEmpresa?.message}`)
+
+  await supabaseAdmin.from('profiles').update({ rol: 'empleado', empresa_id: empresa.id }).eq('user_id', cuenta.user.id)
+
+  await page.goto('/login')
+  await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
+  await page.locator('#email').fill(email)
+  await page.locator('#password').fill(password)
+  await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+  await page.getByRole('button', { name: /ingresar|sign in/i }).click()
+  await page.waitForURL(/\/dashboard/, { timeout: 60_000 })
+
+  await page.goto('/dashboard/empresa', { waitUntil: 'domcontentloaded' })
+  // Nunca debe rebotar a /dashboard (eso pasaría si perfil.empresa_id
+  // faltara) ni a /login.
+  await expect(page).not.toHaveURL(/\/login/)
+  await expect(page).toHaveURL(/\/dashboard\/empresa/)
+
+  const telefono = page.locator('input[name="telefono"]')
+  await expect(telefono).toBeVisible({ timeout: 15_000 })
+  await telefono.click({ clickCount: 3 })
+  await page.keyboard.type('3009999999')
+  await page.locator('button:has-text("Guardar cambios")').click()
+  await expect(page.getByText(/guardado/i)).toBeVisible({ timeout: 10_000 })
+
+  await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)
+  await supabaseAdmin.from('empresas').delete().eq('id', empresa.id)
+})

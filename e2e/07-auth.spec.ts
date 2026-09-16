@@ -275,4 +275,47 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)
   })
 
+  test('auth-14 - Invitación abierta (empresa pagada sin nombre) crea la empresa al aceptar', async ({ page }) => {
+    // La invitación se crea directo por service role (mismo mecanismo de
+    // token/hash que /api/admin/empresas/invitar) en vez de pasar por la UI
+    // de super_admin — así la prueba no depende de tener sesión de admin ni
+    // de recibir un correo real, igual que hace auth-12 con su cuenta
+    // desechable propia.
+    const rawToken = crypto.randomBytes(32).toString('hex')
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex')
+    const email = `e2e_auth14_${Date.now()}@calculadoradereuso.com`
+
+    const { data: invitacion, error: errorInv } = await supabaseAdmin
+      .from('invitaciones')
+      .insert({ empresa_id: null, email, token_hash: tokenHash, rol_asignado: 'empresa_admin', plan_invitado: 'lab' })
+      .select('id')
+      .single()
+    if (errorInv || !invitacion) throw new Error(`No se pudo crear la invitación de prueba: ${errorInv?.message}`)
+
+    await page.goto(`/invitacion/${rawToken}`)
+    await expect(page.getByText(/activa tu cuenta/i).first()).toBeVisible({ timeout: 10_000 })
+
+    const nombreEmpresa = `E2E Empresa Abierta ${Date.now()}`
+    await page.locator('input[name="nombre_empresa"]').fill(nombreEmpresa)
+    await page.locator('input[name="nit"]').fill('900123456')
+    await page.locator('input[name="telefono"]').fill('3001234567')
+    await page.locator('input[name="pais"]').fill('Colombia')
+    await page.locator('input[name="ciudad"]').fill('Medellín')
+    await page.locator('input[name="nombre"]').fill('E2E Dueño Nuevo')
+    await page.locator('input[name="password"]').fill('Auth14Prueba!Aa1')
+    await page.locator('input[name="password_confirm"]').fill('Auth14Prueba!Aa1')
+    await page.locator('input[name="acepta_terminos"]').check()
+    await page.locator('button[type="submit"]').click()
+
+    await expect(page.getByText(/cuenta creada/i)).toBeVisible({ timeout: 15_000 })
+
+    // Limpieza: la cuenta y la empresa creadas son efímeras de esta prueba.
+    const { data: perfil } = await supabaseAdmin.from('profiles').select('user_id, empresa_id').eq('email', email).single()
+    if (perfil) {
+      await supabaseAdmin.auth.admin.deleteUser(perfil.user_id)
+      if (perfil.empresa_id) await supabaseAdmin.from('empresas').delete().eq('id', perfil.empresa_id)
+    }
+    await supabaseAdmin.from('invitaciones').delete().eq('id', invitacion.id)
+  })
+
 })

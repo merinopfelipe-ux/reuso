@@ -285,6 +285,31 @@ test.describe('super_admin', () => {
     await page.goto('/admin/qa', { waitUntil: 'domcontentloaded' })
     await expect(page.getByText(/Panel de Pruebas/i)).toBeVisible({ timeout: 15_000 })
   })
+
+  test('adm-27 - invitar una empresa nueva (Camino B: sin nombre) genera un enlace', async ({ page }) => {
+    await page.goto('/admin/empresas', { waitUntil: 'domcontentloaded' })
+    await page.locator('button', { hasText: 'Invitar empresa nueva' }).click()
+    // "Invitar empresa nueva" también es el texto del botón que dispara el
+    // modal — esperar por ESE texto de nuevo (aunque sea .last()) no
+    // garantiza que el modal ya esté abierto, solo que el botón sigue
+    // visible. "Correo del dueño" es una etiqueta que solo existe dentro
+    // del modal, así que sí confirma que terminó de montarse (bug real:
+    // sin este fix la prueba fallaba bajo carga, cuando el modal tardaba
+    // más de lo normal en aparecer).
+    await expect(page.getByText('Correo del dueño')).toBeVisible({ timeout: 15_000 })
+
+    const email = `e2e_adm27_${Date.now()}@calculadoradereuso.com`
+    // El plan por defecto ya es "Circular Lab" y el nombre se deja vacío a
+    // propósito (Camino B) — no hace falta tocar el selector de plan.
+    await page.locator('input[type="email"]').fill(email)
+    await page.locator('button', { hasText: 'Enviar invitación' }).click()
+
+    await expect(page.getByText(/invitación enviada/i)).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText(/\/invitacion\//)).toBeVisible()
+
+    // Limpieza: borrar la invitación efímera creada por esta prueba.
+    await supabaseAdmin.from('invitaciones').delete().eq('email', email)
+  })
 })
 
 test('adm-api - la API de admin rechaza a quien no tiene sesión', async ({ browser }) => {
