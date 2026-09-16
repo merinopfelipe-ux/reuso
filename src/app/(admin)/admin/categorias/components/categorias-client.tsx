@@ -58,15 +58,11 @@ function filasAMateriales(rows: MaterialRow[], pesoPorDefecto = 1) {
   return rows.filter(m => m.nombre && m.factor_co2_kg)
     .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(m.peso_kg) || pesoPorDefecto, factor_co2_kg: parseFloat(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, categoria_material: m.categoria_material || undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const }))
 }
-// Los precios del catálogo (/admin/categorias) nunca llevan centavos — el
-// decimal solo tiene sentido en una cotización puntual (ej. con IVA), nunca
-// en la definición base de un servicio/insumo. Se redondea siempre al
-// convertir de texto a número, en cada punto donde se arma el payload.
 function filasAServicios(rows: ServicioRow[]) {
-  return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: Math.round(parseFloat(s.precio)) }))
+  return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: parseFloat(s.precio) }))
 }
 function filasAInsumos(rows: InsumoRow[]) {
-  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: Math.round(parseFloat(i.precio_unitario)) }))
+  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: parseFloat(i.precio_unitario) }))
 }
 
 // ── Helpers de navegación sobre listas planas (soporta profundidad libre) ──
@@ -928,14 +924,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const servicios = [
       ...esquemaServVisibles
         .filter(s => s.nombre.trim() && (parseFloat(precios[s.nombre]) || 0) > 0)
-        .map(s => ({ nombre: s.nombre.trim(), precio: Math.round(parseFloat(precios[s.nombre])) })),
+        .map(s => ({ nombre: s.nombre.trim(), precio: parseFloat(precios[s.nombre]) })),
       ...extraServiciosValidos,
     ]
 
     const insumos = [
       ...esquemaInsVisibles
         .filter(i => i.nombre.trim() && (parseFloat(preciosUnitarios[i.nombre]) || 0) > 0)
-        .map(i => ({ nombre: i.nombre.trim(), cantidad: 1, unidad: i.unidad, precio_unitario: Math.round(parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0) })),
+        .map(i => ({ nombre: i.nombre.trim(), cantidad: 1, unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0 })),
       ...extraInsumosValidos,
     ]
 
@@ -1000,12 +996,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       if (servCambio) {
         cuerpo.servicios_base = esquemaServVisibles
           .filter(f => f.nombre.trim())
-          .map(f => ({ nombre: f.nombre.trim(), precio: Math.round(parseFloat(f.precio) || 0) }))
+          .map(f => ({ nombre: f.nombre.trim(), precio: parseFloat(f.precio) || 0 }))
       }
       if (insCambio) {
         cuerpo.insumos_base = esquemaInsVisibles
           .filter(f => f.nombre.trim())
-          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: Math.round(parseFloat(f.precio_unitario) || 0) }))
+          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: parseFloat(f.precio_unitario) || 0 }))
       }
       const resCat = await fetch(`/api/admin/categorias/${categoria.id}`, {
         method: 'PATCH',
