@@ -593,6 +593,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'El enlace confirma tu correo exitosamente y te da la bienvenida directa a la plataforma.',
     journeys: ['Admin Operativa', 'Empleado', 'Cliente Final']
   },
+{
+    id: 'auth-14', categoria: 'Autenticación', ruta: '/invitacion/[token]', critica: true,
+    titulo: 'Activar cuenta de una empresa que ya compró un plan (invitación abierta)',
+    descripcion: 'Cuando el equipo de Calculadora de Reúso invita a un cliente que ya pagó un plan sin haberle puesto nombre a su empresa todavía, el dueño debe poder crear su empresa y su cuenta desde el mismo enlace.',
+    pasos: [
+      'Como superadmin, ve a Empresas y usa "Invitar empresa nueva", eligiendo un plan pero dejando el nombre en blanco.',
+      'Abre el enlace de la invitación en una ventana sin sesión.',
+      'Completa nombre de la empresa, NIT, teléfono, país, ciudad, tu nombre y una contraseña.'
+    ],
+    esperado: 'La cuenta queda creada como administrador de una empresa nueva, ya con el plan que se le asignó al invitarla.',
+    journeys: ['Admin Operativa', 'Directivo']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // DPP / PASAPORTE
@@ -766,6 +778,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'La confirmación aparece casi de inmediato y la pantalla queda limpia y lista para tu siguiente cálculo.',
     journeys: ['Empleado', 'Admin Operativa']
+  },
+{
+    id: 'dash-08', categoria: 'Dashboard', ruta: '/dashboard/empresa', critica: false,
+    titulo: 'Un colaborador completa los datos de su empresa',
+    descripcion: 'Un empleado invitado (no el administrador) puede ayudar a completar el NIT, teléfono, país, ciudad y demás datos de su empresa, sin necesitar permisos de administrador.',
+    pasos: [
+      'Con la sesión de un empleado (no administrador), entra directamente a /dashboard/empresa.',
+      'Completa o edita teléfono, país o ciudad, y guarda.',
+      'Si el NIT ya estaba guardado antes, intenta editarlo.'
+    ],
+    esperado: 'Puede editar y guardar los demás campos sin problema. El campo de NIT aparece deshabilitado si ya tenía un valor guardado.',
+    journeys: ['Empleado']
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1252,6 +1276,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'El proceso se genera con un enlace seguro y trazabilidad de recepción.',
     journeys: ['Admin Operativa', 'Directivo']
+  },
+{
+    id: 'adm-27', categoria: 'Panel Admin', ruta: '/admin/empresas', critica: true,
+    titulo: 'Dar de alta a un cliente que ya compró un plan pago',
+    descripcion: 'Permite invitar directamente a un cliente que ya pagó un plan, sin que pase por el registro gratuito — con o sin conocer todavía el nombre de su empresa.',
+    pasos: [
+      'En el listado de empresas, usa "Invitar empresa nueva".',
+      'Primero pruébalo poniéndole nombre a la empresa desde ya (queda creada de inmediato en el listado).',
+      'Luego pruébalo dejando el nombre en blanco (queda pendiente hasta que el propio cliente la nombre al aceptar).'
+    ],
+    esperado: 'En ambos casos llega un correo de invitación al plan elegido, nunca al plan gratuito.',
+    journeys: ['Admin Operativa']
   },
 
   // ══════════════════════════════════════════════════════════════════
