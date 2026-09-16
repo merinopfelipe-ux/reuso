@@ -1,3 +1,9 @@
+-- =====================================================================
+-- Migración 134 — Onboarding directo de empresas pagas (invitaciones abiertas + CIIU)
+-- Calculadora de Reúso | 2026-09-15
+-- Ejecutar en Supabase → SQL Editor (staging y producción)
+-- =====================================================================
+
 -- Onboarding directo de empresas que ya pagaron un plan (super_admin invita
 -- antes de que la empresa exista). Ver
 -- docs/superpowers/specs/2026-09-15-onboarding-empresas-pagas-design.md
@@ -5,8 +11,15 @@
 -- invitaciones: empresa_id pasa a ser opcional (token "abierto", Camino B del
 -- diseño) + columna nueva para el plan comprado, solo se llena cuando
 -- empresa_id es nulo (en Camino A el plan ya vive en empresas.plan).
-ALTER TABLE invitaciones
-  ALTER COLUMN empresa_id DROP NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'invitaciones' AND column_name = 'empresa_id' AND is_nullable = 'NO'
+  ) THEN
+    ALTER TABLE invitaciones ALTER COLUMN empresa_id DROP NOT NULL;
+  END IF;
+END $$;
 
 ALTER TABLE invitaciones
   ADD COLUMN IF NOT EXISTS plan_invitado text
