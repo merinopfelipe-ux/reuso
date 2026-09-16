@@ -623,7 +623,7 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
   )
 }
 
-import { ModalConfirmarSalida } from '@/components/ui/modal'
+import { ModalConfirmarSalida, Modal } from '@/components/ui/modal'
 
 // ── Formulario crear/editar nodo — incluye el esquema base fusionado ───────
 
@@ -651,6 +651,13 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
   )
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  // Si el super_admin cambió el precio de referencia de un insumo que ya
+  // existía, se pregunta aparte si ese cambio también debe aplicarse a los
+  // ítems de esta categoría que ya tienen su propia copia del precio —
+  // nunca se propaga solo (ver /api/admin/categorias/[id]/aplicar-precios-insumos).
+  const [cambiosPrecioInsumo, setCambiosPrecioInsumo] = useState<{ nombre: string; precio_unitario: number }[]>([])
+  const [mostrarAplicarPrecios, setMostrarAplicarPrecios] = useState(false)
+  const [aplicandoPrecios, setAplicandoPrecios] = useState(false)
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -662,13 +669,14 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
     setGuardando(true); setError('')
     const url = modo === 'crear' ? '/api/admin/categorias' : `/api/admin/categorias/${nodo!.id}`
     const method = modo === 'crear' ? 'POST' : 'PATCH'
+    const insumosValidos = filasAInsumos(insumos)
     const body = {
       nombre, icono_lucide: iconoLucide,
       descripcion: descripcion || (modo === 'crear' ? undefined : null),
       ...(modo === 'crear' ? { parent_id: parentId ?? undefined, modulo_id: moduloId || undefined } : { modulo_id: moduloId || null }),
       materiales_base: materialesValidos,
       servicios_base: filasAServicios(servicios),
-      insumos_base: filasAInsumos(insumos),
+      insumos_base: insumosValidos,
     }
     const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     if (!res.ok) {
@@ -677,10 +685,42 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
       setGuardando(false)
       return
     }
+
+    if (modo === 'editar' && nodo) {
+      const cambios = insumosValidos
+        .map(ins => {
+          const original = nodo.categoria_insumos_base.find(o => o.nombre === ins.nombre)
+          if (!original || original.precio_unitario === ins.precio_unitario) return null
+          return { nombre: ins.nombre, precio_unitario: ins.precio_unitario }
+        })
+        .filter((x): x is { nombre: string; precio_unitario: number } => x !== null)
+
+      if (cambios.length > 0) {
+        setCambiosPrecioInsumo(cambios)
+        setMostrarAplicarPrecios(true)
+        setGuardando(false)
+        return
+      }
+    }
+
+    onListo()
+  }
+
+  async function aplicarPreciosAExistentes() {
+    if (!nodo) return
+    setAplicandoPrecios(true)
+    await fetch(`/api/admin/categorias/${nodo.id}/aplicar-precios-insumos`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cambios: cambiosPrecioInsumo }),
+    }).catch(() => {})
+    setAplicandoPrecios(false)
+    setMostrarAplicarPrecios(false)
     onListo()
   }
 
   return (
+    <>
     <form onSubmit={guardar} className="flex flex-col gap-4">
       <div className={`rounded-2xl p-4 flex flex-col gap-3 ${cardBg}`}>
         <div>
@@ -727,6 +767,27 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         </button>
       </div>
     </form>
+    <Modal
+      abierto={mostrarAplicarPrecios}
+      onClose={() => { setMostrarAplicarPrecios(false); onListo() }}
+      titulo="¿Aplicar el nuevo precio a los ítems existentes?"
+      descripcion="Solo a los insumos que cambiaron, solo en esta categoría."
+      varianteConfirmar="brand"
+      textoConfirmar={aplicandoPrecios ? 'Aplicando...' : 'Sí, aplicar'}
+      onConfirmar={aplicarPreciosAExistentes}
+    >
+      <div className="flex flex-col gap-1.5">
+        {cambiosPrecioInsumo.map(c => (
+          <p key={c.nombre} className="text-sm text-[var(--text-secondary)]">
+            <strong className="text-[var(--text-primary)]">{c.nombre}</strong>: nuevo precio {formatCOP(c.precio_unitario)}
+          </p>
+        ))}
+        <p className="text-xs text-[var(--text-secondary)] mt-1">
+          Los ítems de esta categoría que ya usan estos insumos guardaron su propio precio — si no aplicas el cambio, seguirán con el precio anterior.
+        </p>
+      </div>
+    </Modal>
+    </>
   )
 }
 
