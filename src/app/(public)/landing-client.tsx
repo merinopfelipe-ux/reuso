@@ -1289,7 +1289,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Software de GreenTech para la economía circular.
+              Software de ClimaTech para la economía circular.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
