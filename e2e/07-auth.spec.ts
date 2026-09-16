@@ -275,6 +275,47 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)
   })
 
+  test('auth-13 - Confirmar email: pantalla real + código inválido muestra el error correcto', async ({ page }) => {
+    // /confirmar-email pide el código de 6 dígitos que Supabase Auth envía
+    // por correo real al registrarse — este proyecto no tiene bandeja de
+    // prueba para leerlo, así que el camino feliz completo (código
+    // correcto → cuenta activada) no se puede automatizar sin inventar un
+    // código, lo cual sería una prueba falsa. Investigado (2026-09-16):
+    // `supabaseAdmin.auth.admin.generateLink({ type: 'signup' })` SÍ crea
+    // la cuenta sin confirmar como un registro real, pero su
+    // `email_otp` devuelve 8 dígitos (verificado 3 veces), no los 6 que
+    // espera la UI real (OTPInput, length=6) ni el código de 6 dígitos que
+    // de verdad llega en el correo — son mecanismos distintos de Supabase,
+    // confirmado que NO es intercambiable. Esta prueba cubre lo que sí se
+    // puede verificar de forma honesta: la pantalla real carga con el
+    // correo correcto, y un código inválido muestra el mensaje de error
+    // esperado (sin gastar ningún código real).
+    const email = `e2e_auth13_${Date.now()}@calculadoradereuso.com`
+    const password = 'Auth13Prueba!Aa1'
+    const { data: cuenta, error } = await supabaseAdmin.auth.admin.createUser({
+      email, password, email_confirm: false,
+    })
+    if (error || !cuenta.user) throw new Error(`No se pudo crear la cuenta desechable de auth-13: ${error?.message}`)
+
+    try {
+      await page.goto(`/confirmar-email?email=${encodeURIComponent(email)}`)
+      await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
+
+      await expect(page.getByText('Confirma tu correo')).toBeVisible({ timeout: 10_000 })
+      await expect(page.getByText(email)).toBeVisible()
+
+      // Las 6 casillas de OTPInput tienen maxLength={6} cada una (no 1) y su
+      // onChange reparte cualquier valor de más de un caracter entre las 6
+      // (ver src/components/otp-input.tsx, distribuirDesde) — llenar la
+      // primera casilla con fill() dispara ese reparto igual que pegar un
+      // código, sin simular tecla por tecla.
+      await page.locator('input').first().fill('000000')
+      await expect(page.getByText(/no es válido o ya expiró/i)).toBeVisible({ timeout: 10_000 })
+    } finally {
+      await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)
+    }
+  })
+
   test('auth-14 - Invitación abierta (empresa pagada sin nombre) crea la empresa al aceptar', async ({ page }) => {
     // La invitación se crea directo por service role (mismo mecanismo de
     // token/hash que /api/admin/empresas/invitar) en vez de pasar por la UI
