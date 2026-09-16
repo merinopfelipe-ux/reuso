@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import * as Lucide from 'lucide-react'
 import { Search as MagnifyingGlass, X } from '@/components/ui/icons'
+import { normalizar } from '@/lib/normalizar-busqueda-icono'
 
 // Selector visual de íconos Lucide — como el picker de emojis de Mac: buscas
 // por nombre (en español o inglés) y ves el ícono antes de elegirlo.
@@ -24,7 +25,11 @@ const SINONIMOS: Record<string, string[]> = {
   sofá: ['sofa', 'couch', 'armchair'],
   cama: ['bed'],
   armario: ['closet', 'cabinet', 'wardrobe'],
-  estante: ['shelf', 'shelves', 'bookshelf'],
+  estante: ['shelf', 'shelves', 'bookshelf', 'shelving'],
+  // La búsqueda ya normaliza tildes antes de mirar este diccionario (ver
+  // normalizar() en src/lib/normalizar-busqueda-icono.ts), así que la clave
+  // siempre debe ir SIN tilde — "estantería" nunca haría match aquí.
+  estanteria: ['shelf', 'shelves', 'bookshelf', 'shelving'],
   libro: ['book'],
   biblioteca: ['library', 'bookshelf', 'book'],
   espejo: ['mirror'],
@@ -93,10 +98,6 @@ const SINONIMOS: Record<string, string[]> = {
   carro: ['car'],
   moto: ['bike'],
   bicicleta: ['bike'],
-}
-
-function normalizar(s: string): string {
-  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
 // Todos los nombres exportados por lucide-react que son componentes de ícono,
