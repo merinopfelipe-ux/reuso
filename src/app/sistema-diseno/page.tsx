@@ -1171,6 +1171,16 @@ export default function ManualDisenoPage() {
               </p>
             </div>
 
+            <div className={`p-8 rounded-[2rem] border border-[#00827C]/30 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/[0.03]'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Regla de Importación Centralizada Única</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/70' : 'text-[#474747]/85'} mb-3`}>
+                <strong>Queda estrictamente prohibido importar íconos directamente desde <code>lucide-react</code> o <code>@phosphor-icons/react</code> en las vistas del sistema.</strong>
+              </p>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                Todos los íconos deben ser importados exclusivamente desde el Hub Central <code>@/components/ui/icons</code>. Esto garantiza la inyección automática del envoltorio <code>wrapIcon</code>, la calibración estricta de grosor (1.3 para Lucide, <code>regular</code> para Phosphor) y evita inconsistencias en pesos tipográficos, tamaños o animaciones a lo largo de todo el ecosistema.
+              </p>
+            </div>
+
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
