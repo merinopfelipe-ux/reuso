@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Upload, Save as FloppyDisk, CheckCircle } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
+import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 
 const BRAND = 'var(--color-brand)'
 const BORDER = 'var(--border)'
@@ -22,6 +23,17 @@ interface Props {
   nombre: string
   sector: string | null
   logoUrl: string | null
+  plan: string
+  nit: string | null
+  telefono: string | null
+  pais: string | null
+  region: string | null
+  ciudad: string | null
+  direccion: string | null
+  sitioWeb: string | null
+  sectorCiiuPrincipal: string | null
+  sectorCiiuSecundarios: string[]
+  nitBloqueado: boolean
 }
 
 const inputStyle: React.CSSProperties = {
@@ -37,9 +49,21 @@ const inputStyle: React.CSSProperties = {
   boxSizing: 'border-box',
 }
 
-export default function ConfiguracionClient({ nombre: nombreInicial, sector: sectorInicial, logoUrl: logoUrlInicial }: Props) {
+export default function ConfiguracionClient({
+  nombre: nombreInicial, sector: sectorInicial, logoUrl: logoUrlInicial, plan,
+  nit: nitInicial, telefono: telefonoInicial, pais: paisInicial, region: regionInicial,
+  ciudad: ciudadInicial, direccion: direccionInicial, sitioWeb: sitioWebInicial,
+  sectorCiiuPrincipal, sectorCiiuSecundarios, nitBloqueado,
+}: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
-  const [form, setForm] = useState({ nombre: nombreInicial, sector: sectorInicial ?? '' })
+  const [form, setForm] = useState({
+    nombre: nombreInicial, sector: sectorInicial ?? '',
+    nit: nitInicial ?? '', telefono: telefonoInicial ?? '', pais: paisInicial ?? '',
+    region: regionInicial ?? '', ciudad: ciudadInicial ?? '', direccion: direccionInicial ?? '',
+    sitio_web: sitioWebInicial ?? '',
+  })
+  const [ciiuPrincipal, setCiiuPrincipal] = useState(sectorCiiuPrincipal ?? '')
+  const [ciiuSecundarios, setCiiuSecundarios] = useState<string[]>(sectorCiiuSecundarios)
   const [logoUrl, setLogoUrl] = useState<string | null>(logoUrlInicial)
   const [logoPreview, setLogoPreview] = useState<string | null>(logoUrlInicial)
   const [logoFile, setLogoFile] = useState<File | null>(null)
@@ -95,6 +119,15 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
         nombre: form.nombre,
         sector: form.sector || null,
         logo_url: nuevoLogoUrl,
+        nit: form.nit || null,
+        telefono: form.telefono || null,
+        pais: form.pais || null,
+        region: form.region || null,
+        ciudad: form.ciudad || null,
+        direccion: form.direccion || null,
+        sitio_web: form.sitio_web || null,
+        sector_ciiu_principal: ciiuPrincipal || null,
+        sector_ciiu_secundarios: ciiuSecundarios.filter(Boolean),
       }),
     })
     const data = await res.json()
@@ -114,6 +147,7 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       {/* Logo */}
+      {plan !== 'free' && (
       <div>
         <label style={{ display: 'block', marginBottom: 10, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
           Logo de la empresa
@@ -151,6 +185,7 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} />
         </div>
       </div>
+      )}
 
       <div>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
@@ -176,6 +211,77 @@ export default function ConfiguracionClient({ nombre: nombreInicial, sector: sec
             { value: '', label: 'Sin sector especificado' },
             ...SECTORES.map((s) => ({ value: s, label: s })),
           ]}
+        />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
+          NIT{nitBloqueado ? ' (solo el equipo de Calculadora de Reúso puede cambiarlo)' : ''}
+        </label>
+        <input
+          name="nit"
+          value={form.nit}
+          onChange={handleChange}
+          disabled={nitBloqueado}
+          style={{ ...inputStyle, opacity: nitBloqueado ? 0.6 : 1, cursor: nitBloqueado ? 'not-allowed' : 'text' }}
+        />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>Teléfono</label>
+        <input name="telefono" value={form.telefono} onChange={handleChange} style={inputStyle} />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div>
+          <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>País</label>
+          <input name="pais" value={form.pais} onChange={handleChange} style={inputStyle} />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>Ciudad</label>
+          <input name="ciudad" value={form.ciudad} onChange={handleChange} style={inputStyle} />
+        </div>
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>Región (opcional)</label>
+        <input name="region" value={form.region} onChange={handleChange} style={inputStyle} />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>Dirección (opcional)</label>
+        <input name="direccion" value={form.direccion} onChange={handleChange} style={inputStyle} />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>Sitio web (opcional)</label>
+        <input name="sitio_web" value={form.sitio_web} onChange={handleChange} style={inputStyle} placeholder="https://" />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
+          Actividad CIIU principal (opcional)
+        </label>
+        <SelectorCiiu value={ciiuPrincipal} onChange={setCiiuPrincipal} />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
+          Actividad CIIU complementaria 1 (opcional)
+        </label>
+        <SelectorCiiu
+          value={ciiuSecundarios[0] ?? ''}
+          onChange={val => setCiiuSecundarios(prev => [val, prev[1] ?? ''].filter((v, i) => v || i === 0))}
+        />
+      </div>
+
+      <div>
+        <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14, color: TEXT_DARK }}>
+          Actividad CIIU complementaria 2 (opcional)
+        </label>
+        <SelectorCiiu
+          value={ciiuSecundarios[1] ?? ''}
+          onChange={val => setCiiuSecundarios(prev => [prev[0] ?? '', val])}
         />
       </div>
 
