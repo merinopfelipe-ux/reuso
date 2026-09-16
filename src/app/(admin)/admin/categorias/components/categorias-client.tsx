@@ -323,10 +323,15 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
   return content
 }
 
-function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos }: {
+function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos, mostrarAplicarExistentes, aplicarExistentes, setAplicarExistentes }: {
   titulo?: string
   servicios: ServicioRow[]; setServicios: React.Dispatch<React.SetStateAction<ServicioRow[]>>
   insumos: InsumoRow[]; setInsumos: React.Dispatch<React.SetStateAction<InsumoRow[]>>
+  // Solo se pasa al editar una categoría existente — decisión por insumo,
+  // nunca una casilla que aplique a todos los costos de una vez.
+  mostrarAplicarExistentes?: boolean
+  aplicarExistentes?: Record<string, boolean>
+  setAplicarExistentes?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }) {
   const content = (
     <>
@@ -346,11 +351,25 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <label className={`${labelSeccion} mt-4`}>Insumos</label>
       <div className="flex flex-col gap-2 mb-2">
         {insumos.map((ins, i) => (
-          <div key={i} className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
-            <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-            <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
-            <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-            <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+          <div key={i} className="flex flex-col gap-1">
+            <div className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
+              <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+              <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+              <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+              <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+            </div>
+            {mostrarAplicarExistentes && ins.nombre.trim() && (
+              <label className="flex items-center gap-1.5 cursor-pointer pl-1">
+                <input
+                  type="checkbox"
+                  checked={aplicarExistentes?.[ins.nombre] ?? false}
+                  onChange={e => setAplicarExistentes?.(prev => ({ ...prev, [ins.nombre]: e.target.checked }))}
+                  style={{ accentColor: 'var(--color-brand)' }}
+                />
+                <span className="text-[11px] font-semibold text-[var(--text-secondary)]">Guardar global</span>
+                <TooltipInfo texto="Al guardar, aplica el precio de este insumo también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propia copia, no se actualiza solo)." />
+              </label>
+            )}
           </div>
         ))}
       </div>
@@ -651,12 +670,12 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
   )
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
-  // Casilla simple, en la misma página, sin modal aparte: si está marcada,
-  // el precio de los insumos también se aplica a los ítems que ya existen
-  // en esta categoría y sus subcategorías (cada una guarda su propia copia
-  // del precio, así que un cambio en la matriz no les llega solo — ver
-  // /api/admin/categorias/[id]/aplicar-precios-insumos).
-  const [aplicarAExistentes, setAplicarAExistentes] = useState(false)
+  // Decisión por insumo, en la misma página, sin modal aparte: cada insumo
+  // tiene su propia casilla "Guardar global" — solo los marcados aplican su
+  // precio a los ítems que ya existen en esta categoría y sus subcategorías
+  // (cada uno guarda su propia copia del precio, así que un cambio en la
+  // matriz no les llega solo — ver /api/admin/categorias/[id]/aplicar-precios-insumos).
+  const [aplicarExistentesPorInsumo, setAplicarExistentesPorInsumo] = useState<Record<string, boolean>>({})
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -685,12 +704,17 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
       return
     }
 
-    if (modo === 'editar' && nodo && aplicarAExistentes && insumosValidos.length > 0) {
-      await fetch(`/api/admin/categorias/${nodo.id}/aplicar-precios-insumos`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cambios: insumosValidos.map(i => ({ nombre: i.nombre, precio_unitario: i.precio_unitario })) }),
-      }).catch(() => {})
+    if (modo === 'editar' && nodo) {
+      const cambios = insumosValidos
+        .filter(i => aplicarExistentesPorInsumo[i.nombre])
+        .map(i => ({ nombre: i.nombre, precio_unitario: i.precio_unitario }))
+      if (cambios.length > 0) {
+        await fetch(`/api/admin/categorias/${nodo.id}/aplicar-precios-insumos`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ cambios }),
+        }).catch(() => {})
+      }
     }
 
     onListo()
@@ -724,21 +748,14 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         <p className="text-xs text-[var(--text-secondary)] px-1">Esquema base pre-llenado desde &ldquo;{nodoPadre.nombre}&rdquo; — ajústalo antes de guardar.</p>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-3">
-          <EditorFinanciero titulo="Costos" servicios={servicios} setServicios={setServicios} insumos={insumos} setInsumos={setInsumos} />
-          {modo === 'editar' && insumos.some(i => i.nombre.trim()) && (
-            <label className={`flex items-center gap-2 cursor-pointer rounded-2xl p-3 ${cardBg}`}>
-              <input
-                type="checkbox"
-                checked={aplicarAExistentes}
-                onChange={e => setAplicarAExistentes(e.target.checked)}
-                style={{ accentColor: 'var(--color-brand)' }}
-              />
-              <span className="text-xs font-semibold text-[var(--text-primary)]">Guardar global</span>
-              <TooltipInfo texto="Al guardar, aplica estos precios de insumos también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propio precio, no se actualiza solo)." />
-            </label>
-          )}
-        </div>
+        <EditorFinanciero
+          titulo="Costos"
+          servicios={servicios} setServicios={setServicios}
+          insumos={insumos} setInsumos={setInsumos}
+          mostrarAplicarExistentes={modo === 'editar'}
+          aplicarExistentes={aplicarExistentesPorInsumo}
+          setAplicarExistentes={setAplicarExistentesPorInsumo}
+        />
         <EditorMateriales titulo="Cálculo ambiental (obligatorio)" materiales={materiales} setMateriales={setMateriales} conEmpresa={(url: string) => url} />
       </div>
 
