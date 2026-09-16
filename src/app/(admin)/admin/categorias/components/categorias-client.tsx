@@ -623,7 +623,7 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
   )
 }
 
-import { ModalConfirmarSalida, Modal } from '@/components/ui/modal'
+import { ModalConfirmarSalida } from '@/components/ui/modal'
 
 // ── Formulario crear/editar nodo — incluye el esquema base fusionado ───────
 
@@ -651,13 +651,12 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
   )
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
-  // Si el super_admin cambió el precio de referencia de un insumo que ya
-  // existía, se pregunta aparte si ese cambio también debe aplicarse a los
-  // ítems de esta categoría que ya tienen su propia copia del precio —
-  // nunca se propaga solo (ver /api/admin/categorias/[id]/aplicar-precios-insumos).
-  const [cambiosPrecioInsumo, setCambiosPrecioInsumo] = useState<{ nombre: string; precio_unitario: number }[]>([])
-  const [mostrarAplicarPrecios, setMostrarAplicarPrecios] = useState(false)
-  const [aplicandoPrecios, setAplicandoPrecios] = useState(false)
+  // Casilla simple, en la misma página, sin modal aparte: si está marcada,
+  // el precio de los insumos también se aplica a los ítems que ya existen
+  // en esta categoría y sus subcategorías (cada una guarda su propia copia
+  // del precio, así que un cambio en la matriz no les llega solo — ver
+  // /api/admin/categorias/[id]/aplicar-precios-insumos).
+  const [aplicarAExistentes, setAplicarAExistentes] = useState(false)
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault()
@@ -686,41 +685,18 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
       return
     }
 
-    if (modo === 'editar' && nodo) {
-      const cambios = insumosValidos
-        .map(ins => {
-          const original = nodo.categoria_insumos_base.find(o => o.nombre === ins.nombre)
-          if (!original || original.precio_unitario === ins.precio_unitario) return null
-          return { nombre: ins.nombre, precio_unitario: ins.precio_unitario }
-        })
-        .filter((x): x is { nombre: string; precio_unitario: number } => x !== null)
-
-      if (cambios.length > 0) {
-        setCambiosPrecioInsumo(cambios)
-        setMostrarAplicarPrecios(true)
-        setGuardando(false)
-        return
-      }
+    if (modo === 'editar' && nodo && aplicarAExistentes && insumosValidos.length > 0) {
+      await fetch(`/api/admin/categorias/${nodo.id}/aplicar-precios-insumos`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cambios: insumosValidos.map(i => ({ nombre: i.nombre, precio_unitario: i.precio_unitario })) }),
+      }).catch(() => {})
     }
 
     onListo()
   }
 
-  async function aplicarPreciosAExistentes() {
-    if (!nodo) return
-    setAplicandoPrecios(true)
-    await fetch(`/api/admin/categorias/${nodo.id}/aplicar-precios-insumos`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cambios: cambiosPrecioInsumo }),
-    }).catch(() => {})
-    setAplicandoPrecios(false)
-    setMostrarAplicarPrecios(false)
-    onListo()
-  }
-
   return (
-    <>
     <form onSubmit={guardar} className="flex flex-col gap-4">
       <div className={`rounded-2xl p-4 flex flex-col gap-3 ${cardBg}`}>
         <div>
@@ -748,7 +724,22 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         <p className="text-xs text-[var(--text-secondary)] px-1">Esquema base pre-llenado desde &ldquo;{nodoPadre.nombre}&rdquo; — ajústalo antes de guardar.</p>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <EditorFinanciero titulo="Costos" servicios={servicios} setServicios={setServicios} insumos={insumos} setInsumos={setInsumos} />
+        <div className="flex flex-col gap-3">
+          <EditorFinanciero titulo="Costos" servicios={servicios} setServicios={setServicios} insumos={insumos} setInsumos={setInsumos} />
+          {modo === 'editar' && insumos.some(i => i.nombre.trim()) && (
+            <label className={`flex items-start gap-2 cursor-pointer rounded-2xl p-3 ${cardBg}`}>
+              <input
+                type="checkbox"
+                checked={aplicarAExistentes}
+                onChange={e => setAplicarAExistentes(e.target.checked)}
+                style={{ marginTop: 2, accentColor: 'var(--color-brand)' }}
+              />
+              <span className="text-xs text-[var(--text-secondary)]">
+                Al guardar, aplicar estos precios de insumos también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propio precio, no se actualiza solo).
+              </span>
+            </label>
+          )}
+        </div>
         <EditorMateriales titulo="Cálculo ambiental (obligatorio)" materiales={materiales} setMateriales={setMateriales} conEmpresa={(url: string) => url} />
       </div>
 
@@ -767,27 +758,6 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         </button>
       </div>
     </form>
-    <Modal
-      abierto={mostrarAplicarPrecios}
-      onClose={() => { setMostrarAplicarPrecios(false); onListo() }}
-      titulo="¿Aplicar el nuevo precio a los ítems existentes?"
-      descripcion="A los ítems de esta categoría y sus subcategorías."
-      varianteConfirmar="brand"
-      textoConfirmar={aplicandoPrecios ? 'Aplicando...' : 'Sí, aplicar'}
-      onConfirmar={aplicarPreciosAExistentes}
-    >
-      <div className="flex flex-col gap-1.5">
-        {cambiosPrecioInsumo.map(c => (
-          <p key={c.nombre} className="text-sm text-[var(--text-secondary)]">
-            <strong className="text-[var(--text-primary)]">{c.nombre}</strong>: nuevo precio {formatCOP(c.precio_unitario)}
-          </p>
-        ))}
-        <p className="text-xs text-[var(--text-secondary)] mt-1">
-          Los ítems de esta categoría y de sus subcategorías que ya usan estos insumos guardaron su propio precio — si no aplicas el cambio, seguirán con el precio anterior.
-        </p>
-      </div>
-    </Modal>
-    </>
   )
 }
 
