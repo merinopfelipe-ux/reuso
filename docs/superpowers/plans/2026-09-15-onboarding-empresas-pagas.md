@@ -38,7 +38,7 @@ Todo esto ya se verificó línea por línea contra el código real durante el br
 **Files:**
 - Create: `sql/134_onboarding_empresas_pagas.sql`
 
-- [ ] **Step 1: Escribir la migración**
+- [x] **Step 1: Escribir la migración**
 
 ```sql
 -- Onboarding directo de empresas que ya pagaron un plan (super_admin invita
@@ -63,11 +63,11 @@ ALTER TABLE empresas
   ADD COLUMN IF NOT EXISTS sector_ciiu_secundarios text[] NOT NULL DEFAULT '{}';
 ```
 
-- [ ] **Step 2: Avisar al usuario que la corra a mano**
+- [x] **Step 2: Avisar al usuario que la corra a mano**
 
 No se ejecuta desde este plan. El usuario la corre en el SQL Editor de Supabase, primero en staging (`rjcfqcqgqxoblisuyapq`), después en producción (`nxnjjncjpqckewwacgoj`) — como todas las migraciones de este proyecto.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add sql/134_onboarding_empresas_pagas.sql
@@ -84,7 +84,7 @@ git commit -m "feat: migración para onboarding directo de empresas pagas (invit
 
 `generarSlug` hoy vive solo dentro de `crear/route.ts`. El registro de invitación abierta (Task 6) también necesita generar un slug al crear la empresa — se extrae a un módulo compartido en vez de copiar la función dos veces.
 
-- [ ] **Step 1: Crear el módulo compartido**
+- [x] **Step 1: Crear el módulo compartido**
 
 ```ts
 // src/lib/generar-slug.ts
@@ -99,7 +99,7 @@ export function generarSlugEmpresa(nombre: string): string {
 }
 ```
 
-- [ ] **Step 2: Usarlo en `crear/route.ts`**
+- [x] **Step 2: Usarlo en `crear/route.ts`**
 
 En `src/app/api/empresa/crear/route.ts`, quitar la función local `generarSlug` (líneas 23-31) y su uso (línea 59), reemplazando por:
 
@@ -109,14 +109,14 @@ import { generarSlugEmpresa } from '@/lib/generar-slug'
 let slug = generarSlugEmpresa(nombre)
 ```
 
-- [ ] **Step 3: Verificar que compila**
+- [x] **Step 3: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 Esperado: sin errores nuevos relacionados a `generarSlug`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/lib/generar-slug.ts src/app/api/empresa/crear/route.ts
@@ -130,7 +130,7 @@ git commit -m "refactor: extraer generarSlugEmpresa a módulo compartido"
 **Files:**
 - Modify: `src/lib/schemas/empresa.schema.ts`
 
-- [ ] **Step 1: Agregar los campos CIIU al esquema que ya usa el super_admin**
+- [x] **Step 1: Agregar los campos CIIU al esquema que ya usa el super_admin**
 
 En `src/lib/schemas/empresa.schema.ts`, dentro de `patchEmpresaSchema`, después de la línea de `tamano_empresa`:
 
@@ -139,7 +139,7 @@ En `src/lib/schemas/empresa.schema.ts`, dentro de `patchEmpresaSchema`, después
   sector_ciiu_secundarios: z.array(z.string().max(255)).max(2).optional(),
 ```
 
-- [ ] **Step 2: Agregar el esquema del nuevo endpoint de invitación de empresa**
+- [x] **Step 2: Agregar el esquema del nuevo endpoint de invitación de empresa**
 
 En el mismo archivo, al final:
 
@@ -153,13 +153,13 @@ export const invitarEmpresaSchema = z.object({
 export type InvitarEmpresa = z.infer<typeof invitarEmpresaSchema>
 ```
 
-- [ ] **Step 3: Verificar que compila**
+- [x] **Step 3: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/lib/schemas/empresa.schema.ts
@@ -175,7 +175,7 @@ git commit -m "feat: esquemas Zod para CIIU y para invitar una empresa nueva"
 
 `enviarInvitacion` (línea 244) asume que ya hay `empresaNombre` (aparece en subject/preheader/cuerpo). Para el Camino B (token abierto) se necesita una variante que hable del plan comprado, no de una empresa que todavía no existe.
 
-- [ ] **Step 1: Escribir `enviarInvitacionEmpresaAbierta`**
+- [x] **Step 1: Escribir `enviarInvitacionEmpresaAbierta`**
 
 Agregar después de la función `enviarInvitacion` (después de la línea 315, antes de `enviarInvitacionFirma`):
 
@@ -245,13 +245,13 @@ export async function enviarInvitacionEmpresaAbierta(
 }
 ```
 
-- [ ] **Step 2: Verificar que compila**
+- [x] **Step 2: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/lib/email.ts
@@ -267,7 +267,7 @@ git commit -m "feat: correo de invitación abierta para empresas sin nombre toda
 
 Un solo endpoint para los 2 caminos del diseño: si `nombre` viene en el body, crea la empresa de inmediato (Camino A); si no, deja `empresa_id` nulo y guarda el plan en `plan_invitado` (Camino B).
 
-- [ ] **Step 1: Escribir el endpoint**
+- [x] **Step 1: Escribir el endpoint**
 
 ```ts
 import { NextRequest, NextResponse } from 'next/server'
@@ -370,14 +370,14 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 2: Verificar que compila**
+- [x] **Step 2: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 (`resend_email_id` ya existe como columna de `invitaciones`, agregada en `sql/124_invitaciones_tracking_email.sql` — el `update` de la Step 1 no necesita ninguna migración adicional.)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add src/app/api/admin/empresas/invitar/route.ts
@@ -393,7 +393,7 @@ git commit -m "feat: endpoint para que el super_admin invite una empresa nueva (
 
 **Nota importante**: `Modal` (`src/components/ui/modal.tsx`) es el único componente permitido para este formulario corto, per skill `design-system`. `Selector` (`src/components/ui/selector.tsx`) es el único permitido para el campo de plan, nunca un `<select>` nativo.
 
-- [ ] **Step 1: Agregar el estado y el formulario**
+- [x] **Step 1: Agregar el estado y el formulario**
 
 En `src/app/(admin)/admin/empresas/components/empresas-client.tsx`, agregar los imports:
 
@@ -441,7 +441,7 @@ function cerrarModalInvitar() {
 }
 ```
 
-- [ ] **Step 2: Agregar el botón junto al de Exportar**
+- [x] **Step 2: Agregar el botón junto al de Exportar**
 
 Reemplazar el bloque del botón Exportar (líneas 123-128) por:
 
@@ -463,7 +463,7 @@ Reemplazar el bloque del botón Exportar (líneas 123-128) por:
 </div>
 ```
 
-- [ ] **Step 3: Agregar el Modal, al final del `return`, antes del cierre del `<div>` raíz**
+- [x] **Step 3: Agregar el Modal, al final del `return`, antes del cierre del `<div>` raíz**
 
 ```tsx
 <Modal
@@ -532,13 +532,13 @@ Reemplazar el bloque del botón Exportar (líneas 123-128) por:
 </Modal>
 ```
 
-- [ ] **Step 4: Verificar en el navegador**
+- [x] **Step 4: Verificar en el navegador**
 
 Reiniciar el servidor de desarrollo (`npx pm2 restart reuso`), abrir `/admin/empresas` como `super_admin`, hacer clic en "Invitar empresa nueva":
 - Con nombre vacío → confirmar que llega el link `/invitacion/<token>` y que `SELECT empresa_id, plan_invitado FROM invitaciones ORDER BY created_at DESC LIMIT 1` muestra `empresa_id NULL` y `plan_invitado` con el plan elegido.
 - Con nombre puesto → confirmar que la empresa aparece de inmediato en la lista de `/admin/empresas` con el plan correcto, y que `modulos_empresas` para esa empresa ya tiene los módulos del plan activos.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "src/app/(admin)/admin/empresas/components/empresas-client.tsx"
@@ -552,7 +552,7 @@ git commit -m "feat: botón para invitar una empresa nueva desde /admin/empresas
 **Files:**
 - Modify: `src/app/(auth)/invitacion/[token]/page.tsx`
 
-- [ ] **Step 1: Leer el archivo completo para ubicar el bloque exacto a cambiar**
+- [x] **Step 1: Leer el archivo completo para ubicar el bloque exacto a cambiar**
 
 El bloque que busca el nombre de la empresa (alrededor de las líneas 82-88) hace `.eq('id', invitacion.empresa_id)` sin comprobar que no sea nulo. Reemplazarlo por:
 
@@ -570,7 +570,7 @@ if (invitacion.empresa_id) {
 
 (Usar el nombre real de las variables ya presentes en el archivo — `adminClient`/`invitacion` — confirmar los nombres exactos al editar, no inventarlos.)
 
-- [ ] **Step 2: Pasar el caso "sin empresa" al formulario**
+- [x] **Step 2: Pasar el caso "sin empresa" al formulario**
 
 Donde el archivo renderiza `<InvitacionForm ... empresaNombre={...} .../>`, cambiar para pasar también si es una invitación abierta:
 
@@ -584,7 +584,7 @@ Donde el archivo renderiza `<InvitacionForm ... empresaNombre={...} .../>`, camb
 />
 ```
 
-- [ ] **Step 3: Ajustar el título/copy de la página cuando no hay empresa todavía**
+- [x] **Step 3: Ajustar el título/copy de la página cuando no hay empresa todavía**
 
 Donde el archivo hoy construye el título/subtítulo con `empresaNombre` (buscar el texto tipo "te invitó a unirte"), agregar una rama:
 
@@ -594,13 +594,13 @@ Donde el archivo hoy construye el título/subtítulo con `empresaNombre` (buscar
 
 Adaptar la redacción exacta al bloque JSX real del archivo — mantener el mismo estilo visual, solo condicionar el texto.
 
-- [ ] **Step 4: Verificar que compila**
+- [x] **Step 4: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "src/app/(auth)/invitacion/[token]/page.tsx"
@@ -614,7 +614,7 @@ git commit -m "fix: la página de aceptar invitación soporta empresa_id nulo (i
 **Files:**
 - Modify: `src/app/(auth)/invitacion/[token]/components/invitacion-form.tsx`
 
-- [ ] **Step 1: Agregar los campos condicionales al estado del formulario**
+- [x] **Step 1: Agregar los campos condicionales al estado del formulario**
 
 En `invitacion-form.tsx`, agregar la prop nueva a la interfaz de props:
 
@@ -638,7 +638,7 @@ const [pais, setPais] = useState('')
 const [ciudad, setCiudad] = useState('')
 ```
 
-- [ ] **Step 2: Renderizar los campos extra cuando `esEmpresaNueva` es `true`**
+- [x] **Step 2: Renderizar los campos extra cuando `esEmpresaNueva` es `true`**
 
 Antes del campo `nombre` (el de la persona), agregar:
 
@@ -671,7 +671,7 @@ Antes del campo `nombre` (el de la persona), agregar:
 
 Usar los estilos (`labelStyle`/`inputStyle` o el nombre real que ya use el archivo) ya definidos en el propio componente — confirmar el nombre exacto al editar, no inventar uno nuevo.
 
-- [ ] **Step 3: Incluir los campos nuevos en el `fetch` de submit**
+- [x] **Step 3: Incluir los campos nuevos en el `fetch` de submit**
 
 En el `handleSubmit` existente, donde se construye el `body` del `fetch('/api/auth/registro-invitacion', ...)`, agregar:
 
@@ -689,11 +689,11 @@ body: JSON.stringify({
 
 (Mantener el resto de los campos exactamente como ya los envía el archivo — solo agregar el spread condicional al final.)
 
-- [ ] **Step 4: Verificar en el navegador**
+- [x] **Step 4: Verificar en el navegador**
 
 Abrir el link `/invitacion/<token>` de una invitación abierta (creada en la Task 6) sin iniciar sesión: confirmar que aparecen los 5 campos nuevos antes de nombre/contraseña.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add "src/app/(auth)/invitacion/[token]/components/invitacion-form.tsx"
@@ -709,7 +709,7 @@ git commit -m "feat: formulario de aceptar invitación pide datos de empresa cua
 
 Este es el paso más delicado: si la invitación no tiene `empresa_id`, hay que crear la empresa ANTES de crear el usuario (para no dejar un usuario sin empresa si la creación de empresa falla), y hacer rollback de la empresa si el paso de usuario falla después.
 
-- [ ] **Step 1: Extender el `bodySchema`**
+- [x] **Step 1: Extender el `bodySchema`**
 
 ```ts
 const bodySchema = z
@@ -732,7 +732,7 @@ const bodySchema = z
   })
 ```
 
-- [ ] **Step 2: Agregar los imports necesarios**
+- [x] **Step 2: Agregar los imports necesarios**
 
 ```ts
 import { generarSlugEmpresa } from '@/lib/generar-slug'
@@ -742,7 +742,7 @@ import { randomBytes } from 'crypto'
 
 (`randomBytes` ya se importa para el hash del token — confirmar si ya está y no duplicar el import.)
 
-- [ ] **Step 3: Traer `plan_invitado` en el `select` de la invitación**
+- [x] **Step 3: Traer `plan_invitado` en el `select` de la invitación**
 
 El `select` existente (`id, email, empresa_id, rol_asignado, estado, expires_at`) no trae la columna nueva de la Task 1 — sin esto, `invitacion.plan_invitado` sería `undefined` en runtime aunque el tipo lo permita. Cambiarlo a:
 
@@ -754,7 +754,7 @@ El `select` existente (`id, email, empresa_id, rol_asignado, estado, expires_at`
     .single()
 ```
 
-- [ ] **Step 4: Insertar la creación de empresa después de validar la invitación, antes de crear el usuario**
+- [x] **Step 4: Insertar la creación de empresa después de validar la invitación, antes de crear el usuario**
 
 Justo después del bloque que valida `invitacion.expires_at` (antes de la línea `// Crear usuario`), agregar:
 
@@ -795,11 +795,11 @@ Justo después del bloque que valida `invitacion.expires_at` (antes de la línea
   }
 ```
 
-- [ ] **Step 5: Usar `empresaIdFinal` en vez de `invitacion.empresa_id` en el resto del archivo**
+- [x] **Step 5: Usar `empresaIdFinal` en vez de `invitacion.empresa_id` en el resto del archivo**
 
 Reemplazar las 2 apariciones siguientes de `invitacion.empresa_id` (asignación del perfil y `logAuditoria`) por `empresaIdFinal`.
 
-- [ ] **Step 6: Rollback de la empresa si falla la creación del usuario o del perfil**
+- [x] **Step 6: Rollback de la empresa si falla la creación del usuario o del perfil**
 
 En el bloque que ya existe para `createError`:
 
@@ -823,13 +823,13 @@ Y en el bloque que ya existe para `profileError`:
   }
 ```
 
-- [ ] **Step 7: Verificar que compila**
+- [x] **Step 7: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 8: Verificar en el navegador**
+- [x] **Step 8: Verificar en el navegador**
 
 Con el link de una invitación abierta (Task 6), llenar el formulario completo (Task 8) y enviarlo:
 - Confirmar que se crea la empresa en `empresas` con el plan correcto y `nit/telefono/pais/ciudad` guardados.
@@ -837,7 +837,7 @@ Con el link de una invitación abierta (Task 6), llenar el formulario completo (
 - Confirmar que `modulos_empresas` tiene los módulos del plan activos.
 - Probar el caso de fallo (ej. contraseña débil) y confirmar que NO queda una empresa huérfana en la tabla (`SELECT COUNT(*) FROM empresas` antes y después del intento fallido).
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add "src/app/api/auth/registro-invitacion/route.ts"
@@ -854,7 +854,7 @@ git commit -m "feat: crear la empresa al aceptar una invitación abierta, con ro
 
 **Decisión de mecanismo para el NIT** (la única parte del diseño que quedaba abierta a esta fase): no se necesita una columna nueva ni un flag — se compara el valor de NIT que YA tiene la empresa en la base contra quién está pidiendo el cambio. Si ya tiene un NIT guardado (no nulo, no vacío) y quien edita no es `super_admin`, se rechaza. Esto reproduce exactamente la regla ("lo escribe quien complete los datos por primera vez, después solo el super_admin") sin estado adicional que mantener sincronizado.
 
-- [ ] **Step 1: Escribir la función pura de la regla (con test)**
+- [x] **Step 1: Escribir la función pura de la regla (con test)**
 
 ```ts
 // src/lib/empresa/nit-lock.ts
@@ -888,14 +888,14 @@ describe('puedeEditarNit', () => {
 })
 ```
 
-- [ ] **Step 2: Correr el test**
+- [x] **Step 2: Correr el test**
 
 ```bash
 npx vitest run src/lib/empresa/nit-lock.test.ts
 ```
 Esperado: 3 tests pasan.
 
-- [ ] **Step 3: Reescribir el endpoint**
+- [x] **Step 3: Reescribir el endpoint**
 
 Reemplazar el contenido completo de `src/app/api/empresa/config/route.ts`:
 
@@ -991,13 +991,13 @@ export async function PATCH(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 4: Verificar que compila**
+- [x] **Step 4: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/empresa/nit-lock.ts src/lib/empresa/nit-lock.test.ts src/app/api/empresa/config/route.ts
@@ -1011,7 +1011,7 @@ git commit -m "feat: cualquier empleado puede editar los datos de su empresa, co
 **Files:**
 - Modify: `src/app/(empresa)/empresa/configuracion/components/configuracion-client.tsx`
 
-- [ ] **Step 1: Extender las props y el estado**
+- [x] **Step 1: Extender las props y el estado**
 
 Cambiar la interfaz `Props` y la firma del componente:
 
@@ -1055,13 +1055,13 @@ const [ciiuPrincipal, setCiiuPrincipal] = useState(sectorCiiuPrincipal ?? '')
 const [ciiuSecundarios, setCiiuSecundarios] = useState<string[]>(sectorCiiuSecundarios)
 ```
 
-- [ ] **Step 2: Agregar el import de `SelectorCiiu`**
+- [x] **Step 2: Agregar el import de `SelectorCiiu`**
 
 ```ts
 import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 ```
 
-- [ ] **Step 3: Agregar los campos nuevos al JSX, después del campo Sector existente**
+- [x] **Step 3: Agregar los campos nuevos al JSX, después del campo Sector existente**
 
 ```tsx
 <div>
@@ -1136,7 +1136,7 @@ import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 </div>
 ```
 
-- [ ] **Step 4: Ocultar el bloque de logo cuando el plan es Free**
+- [x] **Step 4: Ocultar el bloque de logo cuando el plan es Free**
 
 Envolver el bloque existente `{/* Logo */}` (líneas 116-153) con la condición:
 
@@ -1148,7 +1148,7 @@ Envolver el bloque existente `{/* Logo */}` (líneas 116-153) con la condición:
 )}
 ```
 
-- [ ] **Step 5: Incluir los campos nuevos en el `fetch` de guardado**
+- [x] **Step 5: Incluir los campos nuevos en el `fetch` de guardado**
 
 En `handleSubmit`, extender el `body` del `fetch('/api/empresa/config', ...)`:
 
@@ -1169,13 +1169,13 @@ body: JSON.stringify({
 }),
 ```
 
-- [ ] **Step 6: Verificar que compila**
+- [x] **Step 6: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add "src/app/(empresa)/empresa/configuracion/components/configuracion-client.tsx"
@@ -1189,7 +1189,7 @@ git commit -m "feat: formulario de empresa con NIT/teléfono/país/ciudad/CIIU, 
 **Files:**
 - Modify: `src/app/(empresa)/empresa/configuracion/page.tsx`
 
-- [ ] **Step 1: Ampliar el `select` de la empresa**
+- [x] **Step 1: Ampliar el `select` de la empresa**
 
 Cambiar la línea del `select`:
 
@@ -1197,7 +1197,7 @@ Cambiar la línea del `select`:
 .select('id, nombre, slug, plan, activa, sector, logo_url, created_at, codigo_registro, nit, telefono, pais, region, ciudad, direccion, sitio_web, sector_ciiu_principal, sector_ciiu_secundarios')
 ```
 
-- [ ] **Step 2: Calcular `nitBloqueado` y pasar todas las props nuevas**
+- [x] **Step 2: Calcular `nitBloqueado` y pasar todas las props nuevas**
 
 Antes del `return`, agregar:
 
@@ -1237,13 +1237,13 @@ Reemplazar el bloque `esAdmin && <ConfiguracionClient .../>` — el formulario d
 
 Quitar el `{esAdmin && (...)}` que envolvía este bloque (dejar el `<CodigoRegistroClient>` de arriba con su propio `esAdmin &&`, ese no cambia).
 
-- [ ] **Step 3: Verificar que compila**
+- [x] **Step 3: Verificar que compila**
 
 ```bash
 npx tsc --noEmit
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add "src/app/(empresa)/empresa/configuracion/page.tsx"
@@ -1259,7 +1259,7 @@ git commit -m "feat: /empresa/configuracion pasa los datos operativos completos 
 
 `empleado` nunca llega a `/empresa/*` (ver nota de contexto arriba) — esta página nueva, bajo su propio grupo de rutas (`(dashboard)`, que sí lo deja pasar), reutiliza el MISMO componente `ConfiguracionClient` de la Task 11/12 para no duplicar el formulario.
 
-- [ ] **Step 1: Escribir la página**
+- [x] **Step 1: Escribir la página**
 
 ```tsx
 import { redirect } from 'next/navigation'
@@ -1323,7 +1323,7 @@ export default async function DashboardEmpresaPage() {
 }
 ```
 
-- [ ] **Step 2: Agregar el `loading.tsx` de esta subruta (regla obligatoria del `CLAUDE.md`, skeleton, no spinner genérico)**
+- [x] **Step 2: Agregar el `loading.tsx` de esta subruta (regla obligatoria del `CLAUDE.md`, skeleton, no spinner genérico)**
 
 ```tsx
 // src/app/(dashboard)/dashboard/empresa/loading.tsx
@@ -1337,11 +1337,11 @@ export default function Loading() {
 }
 ```
 
-- [ ] **Step 3: Verificar en el navegador**
+- [x] **Step 3: Verificar en el navegador**
 
 Con un usuario `empleado` real (no `empresa_admin`), navegar directo a `/dashboard/empresa`: confirmar que carga (el layout de `(dashboard)` no lo bloquea) y que el formulario guarda igual que en `/empresa/configuracion`.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add "src/app/(dashboard)/dashboard/empresa/page.tsx" "src/app/(dashboard)/dashboard/empresa/loading.tsx"
@@ -1359,7 +1359,7 @@ git commit -m "feat: página en /dashboard/empresa para que un empleado también
 
 Por diseño (sección 2 del spec aprobado): solo NIT, teléfono, país y ciudad disparan el banner. Nunca bloquea, nunca es un popup — banner fijo, siempre visible mientras falte alguno.
 
-- [ ] **Step 1: Escribir el componente**
+- [x] **Step 1: Escribir el componente**
 
 ```tsx
 // src/components/empresa/banner-datos-pendientes.tsx
@@ -1404,7 +1404,7 @@ export function BannerDatosPendientes({ nit, telefono, pais, ciudad, hrefComplet
 }
 ```
 
-- [ ] **Step 2: Insertarlo en `/empresa/page.tsx`**
+- [x] **Step 2: Insertarlo en `/empresa/page.tsx`**
 
 En la consulta que hoy es `adminClient.from('empresas').select('plan, nombre').eq('id', empresaId).single()` (línea 186), ampliar el `select`:
 
@@ -1428,7 +1428,7 @@ import { BannerDatosPendientes } from '@/components/empresa/banner-datos-pendien
 
 (Usar el nombre real de la variable que guarda el resultado de esa consulta en el archivo — confirmar al editar, no asumir `empresaInfo` si el archivo usa otro nombre.)
 
-- [ ] **Step 3: Insertarlo en `/empresa/configuracion/page.tsx`**
+- [x] **Step 3: Insertarlo en `/empresa/configuracion/page.tsx`**
 
 Justo debajo de `<AdminPageHeader .../>`:
 
@@ -1444,11 +1444,11 @@ Justo debajo de `<AdminPageHeader .../>`:
 
 (Aquí el link "Completar ahora" simplemente hace scroll a un formulario que ya está en la misma página — sigue siendo válido como recordatorio visual aunque no navegue a otro lado.)
 
-- [ ] **Step 4: Verificar en el navegador**
+- [x] **Step 4: Verificar en el navegador**
 
 Con una empresa a la que le falte NIT (ej. una creada por Camino A sin completar nada), abrir `/empresa`: confirmar que el banner aparece con el texto correcto. Completar los 4 campos desde `/empresa/configuracion`, recargar `/empresa`: confirmar que el banner desaparece.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/empresa/banner-datos-pendientes.tsx "src/app/(empresa)/empresa/page.tsx" "src/app/(empresa)/empresa/configuracion/page.tsx"
@@ -1461,14 +1461,14 @@ git commit -m "feat: banner no bloqueante en /empresa y /empresa/configuracion c
 
 **Files:** ninguno (solo verificación)
 
-- [ ] **Step 1: Tipos y lint limpios en todo lo tocado**
+- [x] **Step 1: Tipos y lint limpios en todo lo tocado**
 
 ```bash
 npx tsc --noEmit
 npx eslint src/app/api/admin/empresas/invitar/route.ts src/app/api/empresa/config/route.ts src/app/api/auth/registro-invitacion/route.ts "src/app/(auth)/invitacion/[token]/page.tsx" "src/app/(auth)/invitacion/[token]/components/invitacion-form.tsx" "src/app/(empresa)/empresa/configuracion/components/configuracion-client.tsx" "src/app/(empresa)/empresa/configuracion/page.tsx" "src/app/(empresa)/empresa/page.tsx" "src/app/(dashboard)/dashboard/empresa/page.tsx" "src/app/(admin)/admin/empresas/components/empresas-client.tsx" src/lib/empresa/nit-lock.ts src/lib/generar-slug.ts src/lib/email.ts src/lib/schemas/empresa.schema.ts
 ```
 
-- [ ] **Step 2: Unit tests**
+- [x] **Step 2: Unit tests**
 
 ```bash
 npx vitest run src/lib/empresa/nit-lock.test.ts
@@ -1491,6 +1491,6 @@ Recorrido completo (avisar al usuario que refresque con Cmd+Shift+R):
 8. Como `super_admin`, editar el NIT de esa empresa desde `/admin/empresas/[id]` y confirmar que sí se permite pese a ya tener valor.
 9. Revisar ambas páginas (`/empresa`, `/empresa/configuracion`, `/dashboard/empresa`) en 375px y en modo noche — sin texto blanco sobre pistacho, sin `#000000`, fondo siempre plano.
 
-- [ ] **Step 4: Registrar en el Vault**
+- [x] **Step 4: Registrar en el Vault**
 
 Agregar la entrada del día en `/Users/merinop/Documents/Automatizaciones/Bobedas/Reuso/diario/2026-09-15.md` describiendo el onboarding implementado (per directiva de memoria: documentar sin que lo pidan).
