@@ -501,7 +501,7 @@ function NuevaCotizacionContent() {
           titulo: item.titulo || item.item_nombre,
           descripcion: item.descripcion || undefined,
           servicios_json: item.servicios.filter(s => s.nombre.trim()),
-          insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
+          insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad >= 0),
           materiales_json: item.materiales.filter(m => m.nombre.trim() && m.peso_kg > 0 && m.factor_co2_kg > 0),
           factor_rentabilidad: item.factor_rentabilidad,
         }),

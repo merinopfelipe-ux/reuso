@@ -856,7 +856,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const inicial: Record<string, string> = {}
     for (const ins of categoria.categoria_insumos_base) {
       const existente = item?.item_insumos.find(ii => ii.nombre === ins.nombre)
-      inicial[ins.nombre] = String(existente?.cantidad ?? 1)
+      inicial[ins.nombre] = String(existente?.cantidad ?? ins.cantidad ?? 0)
     }
     return inicial
   })

@@ -5,6 +5,7 @@ import { Modal } from '@/components/ui/modal'
 import { Selector } from '@/components/ui/selector'
 import { Trash2 as Trash, Leaf, Plus, CircleDollarSign, Pencil as PencilSimple, Camera, ClipboardPaste as Clipboard } from '@/components/ui/icons'
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
+import { InputCantidadInsumo } from '@/components/ui/formatted-number-input'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 import { comprimirImagenBase64 } from '@/lib/image-compress'
@@ -229,7 +230,7 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
           cantidad,
           item_id: itemId ?? undefined,
           servicios_json: servicios.filter(s => s.nombre.trim()),
-          insumos_json: insumos.filter(i => i.nombre.trim() && i.cantidad > 0),
+          insumos_json: insumos.filter(i => i.nombre.trim() && i.cantidad >= 0),
           materiales_json: materiales.filter(m => m.nombre.trim() && m.peso_kg > 0),
           factor_rentabilidad: factorRentabilidad,
           ...(fotoBase64 ? { imagen_base64: fotoBase64, mime_type: 'image/webp' } : {}),
@@ -387,10 +388,11 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
                 <div key={i} className="flex items-center gap-3 flex-wrap">
                   <input value={ins.nombre} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} placeholder="Ej: Tela" className="flex-1 bg-transparent border-none p-0 outline-none focus:ring-0 text-sm font-medium text-[var(--text-primary)] min-w-[80px]" />
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent">
-                      <input type="number" min={0} step="0.01" value={ins.cantidad} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, cantidad: parseNumero(e.target.value) } : x))} className="w-12 text-right text-sm outline-none border-none p-0 bg-transparent" />
-                      <span className={`text-xs ${ts}`}>{ins.unidad || 'und'}</span>
-                    </div>
+                    <InputCantidadInsumo
+                      value={ins.cantidad}
+                      onChange={cantidad => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, cantidad } : x))}
+                      unidad={ins.unidad || 'und'}
+                    />
                     <span className={`text-sm font-medium ${ts}`}>$</span>
                     <input type="number" min={0} value={ins.precio_unitario} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, precio_unitario: parseNumero(e.target.value) } : x))} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
                   </div>

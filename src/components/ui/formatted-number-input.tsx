@@ -140,8 +140,8 @@ export function InputConUnidad({
             })
           }
 
-          // Permitir dígitos y UNA sola coma
-          let raw = e.target.value.replace(/[^0-9,]/g, '')
+          // Permitir dígitos y UNA sola coma o punto (lo convierte a coma)
+          let raw = e.target.value.replace('.', ',').replace(/[^0-9,]/g, '')
           const parts = raw.split(',')
           if (parts.length > 2) {
             raw = parts[0] + ',' + parts.slice(1).join('')
@@ -178,6 +178,95 @@ export function InputConUnidad({
         style={{ textAlign: 'right', padding: '10px 2px', border: 'none', background: 'transparent', outline: 'none', color: 'var(--text-primary)', fontSize: 14, width: '100%', minWidth: 0, flex: 1, fontWeight: 600 }}
       />
       <span className="text-xs text-[var(--text-secondary)] flex-shrink-0 font-medium">{unidad}</span>
+    </div>
+  )
+}
+
+/**
+ * Componente especializado para cantidad de insumos (ej. 0 metros, 1,5 metros, 0,3 metros):
+ * - Permite escribir 0 o cualquier número sin forzar 1 ni borrarlo.
+ * - Permite escribir decimales con coma (,) o punto (.), mostrándolos en formato estándar con coma.
+ * - Permite dejar el campo vacío mientras se escribe sin auto-reemplazar a 0 en medio de la edición.
+ * - Enfoque y salida suaves que normalizan a número válido (0 si quedó vacío).
+ * - Acepta value numérico o string y notifica onChange(number).
+ */
+export function InputCantidadInsumo({
+  value,
+  onChange,
+  unidad,
+  className = '',
+}: {
+  value: number | string
+  onChange: (v: number) => void
+  unidad?: string
+  className?: string
+}) {
+  const [focused, setFocused] = useState(false)
+  const [texto, setTexto] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const numToStr = (n: number | string | undefined | null) => {
+    if (n === null || n === undefined || n === '') return '0'
+    const num = typeof n === 'string' ? parseFloat(n.replace(',', '.')) : n
+    if (isNaN(num)) return '0'
+    return String(num).replace('.', ',')
+  }
+
+  useEffect(() => {
+    if (!focused) {
+      setTexto(numToStr(value))
+    }
+  }, [value, focused])
+
+  return (
+    <div
+      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent transition-colors focus-within:border-[#00827C] ${className}`}
+    >
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="decimal"
+        value={focused ? texto : numToStr(value)}
+        onFocus={() => {
+          setFocused(true)
+          setTexto(numToStr(value))
+        }}
+        onChange={e => {
+          // Aceptar dígitos y una sola coma o punto (convertido a coma)
+          let raw = e.target.value.replace('.', ',').replace(/[^0-9,]/g, '')
+          const parts = raw.split(',')
+          if (parts.length > 2) {
+            raw = parts[0] + ',' + parts.slice(1).join('')
+          }
+
+          setTexto(raw)
+
+          if (raw === '' || raw === ',') {
+            onChange(0)
+            return
+          }
+
+          const parsed = parseFloat(raw.replace(',', '.'))
+          if (!isNaN(parsed)) {
+            onChange(parsed)
+          }
+        }}
+        onBlur={() => {
+          setFocused(false)
+          if (texto === '' || texto === ',') {
+            setTexto('0')
+            onChange(0)
+          } else {
+            const parsed = parseFloat(texto.replace(',', '.'))
+            const finalNum = isNaN(parsed) ? 0 : parsed
+            setTexto(numToStr(finalNum))
+            onChange(finalNum)
+          }
+        }}
+        placeholder="0"
+        className="w-14 text-right text-sm font-medium text-[var(--text-primary)] outline-none border-none p-0 bg-transparent"
+      />
+      {unidad && <span className="text-xs text-[var(--text-secondary)] font-normal flex-shrink-0">{unidad}</span>}
     </div>
   )
 }
