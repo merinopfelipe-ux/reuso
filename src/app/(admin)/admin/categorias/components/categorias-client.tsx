@@ -771,7 +771,7 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
       abierto={mostrarAplicarPrecios}
       onClose={() => { setMostrarAplicarPrecios(false); onListo() }}
       titulo="¿Aplicar el nuevo precio a los ítems existentes?"
-      descripcion="Solo a los insumos que cambiaron, solo en esta categoría."
+      descripcion="A los ítems de esta categoría y sus subcategorías."
       varianteConfirmar="brand"
       textoConfirmar={aplicandoPrecios ? 'Aplicando...' : 'Sí, aplicar'}
       onConfirmar={aplicarPreciosAExistentes}
@@ -783,7 +783,7 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
           </p>
         ))}
         <p className="text-xs text-[var(--text-secondary)] mt-1">
-          Los ítems de esta categoría que ya usan estos insumos guardaron su propio precio — si no aplicas el cambio, seguirán con el precio anterior.
+          Los ítems de esta categoría y de sus subcategorías que ya usan estos insumos guardaron su propio precio — si no aplicas el cambio, seguirán con el precio anterior.
         </p>
       </div>
     </Modal>
