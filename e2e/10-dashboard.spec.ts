@@ -96,8 +96,14 @@ test.describe('usuario_libre', () => {
     await fechaInicio.fill('2024-01-01')
     await page.locator('input[type="date"]').nth(1).fill('2024-12-31')
     await page.locator('button:has-text("Generar informe")').last().click()
+    // El mismo mensaje aparece a propósito 2 veces al topar el límite del
+    // plan (429): un toast temporal (arriba a la derecha, con el enlace
+    // para ampliar el plan) y un párrafo inline dentro del modal, que
+    // queda visible aunque el toast ya se haya desvanecido (ver
+    // panel-informes.tsx). Escopar a "main" evita el "strict mode
+    // violation" sin depender de cuál de los dos elementos aparece primero.
     await expect(
-      page.getByText('El plan Explora no incluye generación de informes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.')
+      page.getByRole('main').getByText('El plan Explora no incluye generación de informes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.')
     ).toBeVisible({ timeout: 10_000 })
   })
 
