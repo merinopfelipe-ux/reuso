@@ -5,6 +5,7 @@ import { Buildings, CreditCard, Calendar, Info } from '@/components/ui/icons'
 import ConfiguracionClient from './components/configuracion-client'
 import { CodigoRegistroClient } from './components/codigo-registro-client'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { BannerDatosPendientes } from '@/components/empresa/banner-datos-pendientes'
 
 const PLAN_LABELS: Record<string, string> = {
   free: 'Explora',
@@ -59,6 +60,14 @@ export default async function EmpresaConfiguracionPage() {
   return (
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
       <AdminPageHeader titulo="Configuración" subtitulo={`Información y ajustes de ${empresa.nombre}.`} showBack />
+
+      <BannerDatosPendientes
+        nit={empresa.nit ?? null}
+        telefono={empresa.telefono ?? null}
+        pais={empresa.pais ?? null}
+        ciudad={empresa.ciudad ?? null}
+        hrefCompletar="/empresa/configuracion"
+      />
 
       {/* Datos de solo lectura (plan, estado, slug) */}
       <div style={{

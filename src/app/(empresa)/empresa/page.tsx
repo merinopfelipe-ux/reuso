@@ -9,6 +9,7 @@ import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
 import { PanelInformes } from '@/components/informes/panel-informes'
 import dynamic from 'next/dynamic'
 import RankingEmpleados from '@/components/empresa/ranking-empleados'
+import { BannerDatosPendientes } from '@/components/empresa/banner-datos-pendientes'
 
 const GraficaCO2Mensual = dynamic(() => import('@/components/empresa/grafica-co2-mensual'), {
   ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: '#EBF5F4' }} />, })
@@ -183,7 +184,7 @@ export default async function EmpresaPage() {
       .eq('empresa_id', empresaId)
       .order('fecha', { ascending: false })
       .range(0, 14),
-    adminClient.from('empresas').select('plan, nombre').eq('id', empresaId).single(),
+    adminClient.from('empresas').select('plan, nombre, nit, telefono, pais, ciudad').eq('id', empresaId).single(),
     adminClient.from('calculos').select('fecha, total_co2, user_id, detalle_json').eq('empresa_id', empresaId).order('fecha', { ascending: true }),
     adminClient.from('profiles').select('user_id, nombre').eq('empresa_id', empresaId),
   ])
@@ -241,6 +242,14 @@ export default async function EmpresaPage() {
           ¡Juntos recuperamos el planeta!
         </p>
       </div>
+
+      <BannerDatosPendientes
+        nit={empresaData?.nit ?? null}
+        telefono={empresaData?.telefono ?? null}
+        pais={empresaData?.pais ?? null}
+        ciudad={empresaData?.ciudad ?? null}
+        hrefCompletar="/empresa/configuracion"
+      />
 
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 28 }}>
