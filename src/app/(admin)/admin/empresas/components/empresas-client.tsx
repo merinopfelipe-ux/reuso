@@ -2,12 +2,14 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronDown } from '@/components/ui/icons'
+import { ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronDown, UserPlus as UsersPlus } from '@/components/ui/icons'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import { Pagination } from '@/components/ui/pagination'
+import { Modal } from '@/components/ui/modal'
+import { Selector } from '@/components/ui/selector'
 import { formatNumero } from '@/lib/format'
 import type { Plan } from '@/types'
 
@@ -35,6 +37,40 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
   const [abiertoPlan, setAbiertoPlan] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>()
   const { sorted: empresasOrdenadas, sort, toggleSort } = useSortable(empresas as unknown as Record<string, unknown>[])
+
+  const [modalInvitar, setModalInvitar] = useState(false)
+  const [invitarForm, setInvitarForm] = useState({ email: '', plan: 'lab' as 'lab' | 'impulso' | 'ilimitado', nombre: '' })
+  const [invitando, setInvitando] = useState(false)
+  const [invitarError, setInvitarError] = useState('')
+  const [invitarLink, setInvitarLink] = useState<string | null>(null)
+
+  async function handleInvitarEmpresa() {
+    setInvitando(true)
+    setInvitarError('')
+    const res = await fetch('/api/admin/empresas/invitar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: invitarForm.email,
+        plan: invitarForm.plan,
+        nombre: invitarForm.nombre.trim() || undefined,
+      }),
+    })
+    const data = await res.json()
+    setInvitando(false)
+    if (!res.ok) {
+      setInvitarError(data.error ?? 'Error al enviar la invitación.')
+      return
+    }
+    setInvitarLink(`${window.location.origin}/invitacion/${data.rawToken}`)
+  }
+
+  function cerrarModalInvitar() {
+    setModalInvitar(false)
+    setInvitarForm({ email: '', plan: 'lab', nombre: '' })
+    setInvitarError('')
+    setInvitarLink(null)
+  }
 
   const totalPages = Math.ceil(total / pageSize)
 
@@ -120,8 +156,17 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
 
         </div>
 
-        {/* Botón Exportar */}
-        <div className="w-full sm:w-auto sm:ml-auto flex">
+        {/* Botones */}
+        <div className="w-full sm:w-auto sm:ml-auto flex gap-2">
+          <button
+            type="button"
+            onClick={() => setModalInvitar(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap"
+            style={{ background: 'var(--color-brand)', color: 'var(--text-on-brand)' }}
+          >
+            <UsersPlus size={14} sinAnimacion />
+            Invitar empresa nueva
+          </button>
           <div className="w-full sm:w-auto">
             <BotonDescargar endpoint="/api/admin/empresas/exportar" queryParams={queryParams.toString()} label="Exportar" />
           </div>
@@ -211,6 +256,71 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
           </div>
         </div>
       </div>
+
+      <Modal
+        abierto={modalInvitar}
+        onClose={cerrarModalInvitar}
+        titulo="Invitar empresa nueva"
+        descripcion="Para un cliente que ya compró un plan pago."
+        varianteConfirmar="brand"
+        textoConfirmar={invitando ? 'Enviando...' : 'Enviar invitación'}
+        onConfirmar={handleInvitarEmpresa}
+      >
+        {invitarLink ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
+              Invitación enviada. Si el correo no llega, comparte este enlace manualmente:
+            </p>
+            <p style={{ fontSize: 11, wordBreak: 'break-all', color: 'var(--color-brand)', margin: 0 }}>
+              {invitarLink}
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+                Correo del dueño
+              </label>
+              <input
+                type="email"
+                value={invitarForm.email}
+                onChange={e => setInvitarForm(p => ({ ...p, email: e.target.value }))}
+                className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                required
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+                Plan comprado
+              </label>
+              <Selector
+                value={invitarForm.plan}
+                onChange={val => setInvitarForm(p => ({ ...p, plan: val as 'lab' | 'impulso' | 'ilimitado' }))}
+                opciones={[
+                  { value: 'lab', label: 'Circular Lab' },
+                  { value: 'impulso', label: 'Impulso Sostenible' },
+                  { value: 'ilimitado', label: 'Impacto Ilimitado' },
+                ]}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: 6, fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
+                Nombre de la empresa (opcional)
+              </label>
+              <input
+                type="text"
+                value={invitarForm.nombre}
+                onChange={e => setInvitarForm(p => ({ ...p, nombre: e.target.value }))}
+                placeholder="Déjalo vacío para que el dueño lo escriba al aceptar"
+                className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+              />
+            </div>
+            {invitarError && (
+              <p style={{ color: 'var(--color-error)', fontSize: 13, margin: 0 }}>{invitarError}</p>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
