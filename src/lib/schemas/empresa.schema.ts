@@ -31,9 +31,19 @@ export const patchEmpresaSchema = z.object({
   direccion: z.string().max(500).nullable().optional(),
   sitio_web: z.string().url('URL inválida').or(z.literal('')).nullable().optional(),
   tamano_empresa: z.string().max(100).nullable().optional(),
+  sector_ciiu_principal: z.string().max(255).nullable().optional(),
+  sector_ciiu_secundarios: z.array(z.string().max(255)).max(2).optional(),
   // Ciclo de facturación (sql/119) — dato manual, ver nota en la migración.
   ciclo_facturacion: z.enum(['mensual', 'anual']).nullable().optional(),
   proxima_renovacion: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Fecha inválida').nullable().optional(),
 })
 
 export type PatchEmpresa = z.infer<typeof patchEmpresaSchema>
+
+export const invitarEmpresaSchema = z.object({
+  email: z.string().email('Correo inválido.'),
+  plan: z.enum(['lab', 'impulso', 'ilimitado']),
+  nombre: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.').max(120).optional(),
+})
+
+export type InvitarEmpresa = z.infer<typeof invitarEmpresaSchema>
