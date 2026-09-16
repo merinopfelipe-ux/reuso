@@ -8,6 +8,7 @@ import { mergeServicios, mergeInsumos, mergeMateriales } from '@/lib/cotizador/p
 import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/route'
 import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 import { inputSt, rowInputSt } from '@/lib/ui/estilos-formulario'
@@ -63,6 +64,10 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
   const [categoriaSel, setCategoriaSel] = useState('')
   const [cargandoMatch, setCargandoMatch] = useState(false)
   const [zoomMiniaturaUrl, setZoomMiniaturaUrl] = useState<string | null>(null)
+  // Índice del insumo cuya cantidad se llevó a 0 — en vez de dejarlo en 0
+  // en silencio (un insumo con cantidad 0 no aporta nada al costo pero
+  // sigue en la lista, confuso), se pregunta si el usuario quiere quitarlo.
+  const [insumoAEliminarIdx, setInsumoAEliminarIdx] = useState<number | null>(null)
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
 
   const ts = 'text-[var(--text-secondary)]'
@@ -130,6 +135,12 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
   }
 
   function actualizarInsumo(i: number, patch: Partial<{ nombre: string; cantidad: number; precio_unitario: number }>) {
+    // Bajar la cantidad a 0 nunca se guarda en silencio — se pregunta si el
+    // insumo debe quitarse en vez de dejarlo en la lista sin aportar nada.
+    if (patch.cantidad === 0) {
+      setInsumoAEliminarIdx(i)
+      return
+    }
     onChange({ ...item, insumos: insumos.map((x, j) => j === i ? { ...x, ...patch } : x) })
   }
   function quitarInsumo(i: number) { onChange({ ...item, insumos: insumos.filter((_, j) => j !== i) }) }
@@ -332,6 +343,22 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
           <button type="button" onClick={agregarInsumo} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
             <Plus size={13} /> Añadir insumo
           </button>
+          <Modal
+            abierto={insumoAEliminarIdx !== null}
+            onClose={() => setInsumoAEliminarIdx(null)}
+            titulo="Quitar insumo"
+            descripcion="La cantidad no puede ser 0."
+            varianteConfirmar="error"
+            textoConfirmar="Quitar"
+            onConfirmar={() => {
+              if (insumoAEliminarIdx !== null) quitarInsumo(insumoAEliminarIdx)
+              setInsumoAEliminarIdx(null)
+            }}
+          >
+            <p className="text-sm text-[var(--text-secondary)]">
+              {insumoAEliminarIdx !== null ? `¿Quitar "${insumos[insumoAEliminarIdx]?.nombre || 'este insumo'}" de la lista?` : ''}
+            </p>
+          </Modal>
         </div>
 
         <div className="flex flex-col gap-3 mt-2">

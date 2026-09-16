@@ -58,11 +58,15 @@ function filasAMateriales(rows: MaterialRow[], pesoPorDefecto = 1) {
   return rows.filter(m => m.nombre && m.factor_co2_kg)
     .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(m.peso_kg) || pesoPorDefecto, factor_co2_kg: parseFloat(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, categoria_material: m.categoria_material || undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const }))
 }
+// Los precios del catálogo (/admin/categorias) nunca llevan centavos — el
+// decimal solo tiene sentido en una cotización puntual (ej. con IVA), nunca
+// en la definición base de un servicio/insumo. Se redondea siempre al
+// convertir de texto a número, en cada punto donde se arma el payload.
 function filasAServicios(rows: ServicioRow[]) {
-  return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: parseFloat(s.precio) }))
+  return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: Math.round(parseFloat(s.precio)) }))
 }
 function filasAInsumos(rows: InsumoRow[]) {
-  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: parseFloat(i.precio_unitario) }))
+  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: Math.round(parseFloat(i.precio_unitario)) }))
 }
 
 // ── Helpers de navegación sobre listas planas (soporta profundidad libre) ──
@@ -761,14 +765,9 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     }
     return inicial
   })
-  const [cantidades, setCantidades] = useState<Record<string, string>>(() => {
-    const inicial: Record<string, string> = {}
-    for (const ins of categoria.categoria_insumos_base) {
-      const existente = item?.item_insumos.find(ii => ii.nombre === ins.nombre)
-      inicial[ins.nombre] = existente ? String(existente.cantidad) : ''
-    }
-    return inicial
-  })
+  // La cantidad de un insumo (cuánto se usó) solo tiene sentido al armar una
+  // cotización puntual — en el catálogo (aquí) un insumo es solo nombre +
+  // unidad + precio de referencia, cantidad siempre 1 al guardar, oculta.
   const [preciosUnitarios, setPreciosUnitarios] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
     for (const ins of categoria.categoria_insumos_base) {
@@ -848,7 +847,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     setEsquemaIns(prev => prev.map(x => {
       if (x.id !== id) return x
       if (patch.nombre !== undefined && patch.nombre !== x.nombre) {
-        moverClave(setCantidades, x.nombre, patch.nombre)
         moverClave(setPreciosUnitarios, x.nombre, patch.nombre)
       }
       return { ...x, ...patch }
@@ -905,11 +903,11 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
   const subtotal = useMemo(() => {
     const servBase = esquemaServVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
-    const insBase = esquemaInsVisibles.reduce((s, x) => s + (parseFloat(cantidades[x.nombre]) || 0) * (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
+    const insBase = esquemaInsVisibles.reduce((s, x) => s + (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
     const servExtra = extraServiciosValidos.reduce((s, x) => s + x.precio, 0)
     const insExtra = extraInsumosValidos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
     return servBase + insBase + servExtra + insExtra
-  }, [precios, cantidades, preciosUnitarios, esquemaServVisibles, esquemaInsVisibles, extraServiciosValidos, extraInsumosValidos])
+  }, [precios, preciosUnitarios, esquemaServVisibles, esquemaInsVisibles, extraServiciosValidos, extraInsumosValidos])
 
   const factor = parseFloat(factorRentabilidad) || 1
   const totalPrecio = subtotal * factor
@@ -930,14 +928,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const servicios = [
       ...esquemaServVisibles
         .filter(s => s.nombre.trim() && (parseFloat(precios[s.nombre]) || 0) > 0)
-        .map(s => ({ nombre: s.nombre.trim(), precio: parseFloat(precios[s.nombre]) })),
+        .map(s => ({ nombre: s.nombre.trim(), precio: Math.round(parseFloat(precios[s.nombre])) })),
       ...extraServiciosValidos,
     ]
 
     const insumos = [
       ...esquemaInsVisibles
-        .filter(i => i.nombre.trim() && (parseFloat(cantidades[i.nombre]) || 0) > 0)
-        .map(i => ({ nombre: i.nombre.trim(), cantidad: parseFloat(cantidades[i.nombre]), unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0 })),
+        .filter(i => i.nombre.trim() && (parseFloat(preciosUnitarios[i.nombre]) || 0) > 0)
+        .map(i => ({ nombre: i.nombre.trim(), cantidad: 1, unidad: i.unidad, precio_unitario: Math.round(parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0) })),
       ...extraInsumosValidos,
     ]
 
@@ -1002,12 +1000,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       if (servCambio) {
         cuerpo.servicios_base = esquemaServVisibles
           .filter(f => f.nombre.trim())
-          .map(f => ({ nombre: f.nombre.trim(), precio: parseFloat(f.precio) || 0 }))
+          .map(f => ({ nombre: f.nombre.trim(), precio: Math.round(parseFloat(f.precio) || 0) }))
       }
       if (insCambio) {
         cuerpo.insumos_base = esquemaInsVisibles
           .filter(f => f.nombre.trim())
-          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: parseFloat(f.precio_unitario) || 0 }))
+          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: Math.round(parseFloat(f.precio_unitario) || 0) }))
       }
       const resCat = await fetch(`/api/admin/categorias/${categoria.id}`, {
         method: 'PATCH',
@@ -1141,9 +1139,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     <span className="truncate">{fila.nombre}</span>
                     <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                   </p>
-                  <div className="w-24 flex-shrink-0">
-                    <InputConUnidad value={cantidades[fila.nombre] ?? ''} onChange={v => setCantidades(c => ({ ...c, [fila.nombre]: v }))} unidad={fila.unidad || 'unidad'} paso="0.01" />
-                  </div>
                   <div className="w-28 flex-shrink-0">
                     <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
                   </div>
@@ -1156,7 +1151,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     type="button"
                     onClick={() => {
                       setInsumosEliminados(prev => new Set(prev).add(fila.id))
-                      setCantidades(c => ({ ...c, [fila.nombre]: '' }))
                     }}
                     className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
                     title="Eliminar insumo"
@@ -1188,7 +1182,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <div className="flex flex-col gap-2 mb-2">
                 {extraInsumos.map((ins, i) => (
                   <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className={labelSt}>Insumo</label>
                         <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
@@ -1196,10 +1190,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       <div>
                         <label className={labelSt}>Unidad</label>
                         <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
-                      </div>
-                      <div>
-                        <label className={labelSt}>Cantidad</label>
-                        <InputConUnidad value={ins.cantidad} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: v } : x))} unidad={ins.unidad || 'unidad'} paso="0.01" />
                       </div>
                       <div>
                         <label className={labelSt}>Precio unitario</label>

@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { formatEnteroMillones, formatNumero } from '@/lib/format'
+import { contarDigitosAntes, posicionParaNDigitos } from '@/lib/formatted-input-cursor'
 
 /**
  * Componente de entrada para precios con formato numérico del proyecto:
@@ -21,6 +22,7 @@ export function InputPrecio({
 }) {
   const [focused, setFocused] = useState(false)
   const [tempVal, setTempVal] = useState(value)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!focused) setTempVal(value)
@@ -32,16 +34,20 @@ export function InputPrecio({
     <div className={`flex items-center gap-1 rounded-lg px-2 ${className}`} style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
       <span className="text-xs text-[var(--text-secondary)] flex-shrink-0 font-medium">$ </span>
       <input
+        ref={inputRef}
         type="text"
         inputMode="decimal"
         value={displayVal}
-        onFocus={() => { 
+        onFocus={() => {
           setFocused(true)
           if (value) {
             setTempVal(formatEnteroMillones(Math.floor(parseFloat(value) || 0)))
           }
         }}
         onChange={e => {
+          const cursorPos = e.target.selectionStart ?? e.target.value.length
+          const digitosAntes = contarDigitosAntes(e.target.value, cursorPos)
+
           const digits = e.target.value.replace(/\D/g, '')
           if (!digits) {
             setTempVal('')
@@ -51,6 +57,13 @@ export function InputPrecio({
           const formatted = formatEnteroMillones(parseInt(digits, 10))
           setTempVal(formatted)
           onChange(digits)
+
+          requestAnimationFrame(() => {
+            const el = inputRef.current
+            if (!el) return
+            const pos = posicionParaNDigitos(formatted, digitosAntes)
+            el.setSelectionRange(pos, pos)
+          })
         }}
         onBlur={() => setFocused(false)}
         placeholder="0"
@@ -82,6 +95,7 @@ export function InputConUnidad({
 }) {
   const [focused, setFocused] = useState(false)
   const [tempVal, setTempVal] = useState(value)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!focused) setTempVal(value)
@@ -92,6 +106,7 @@ export function InputConUnidad({
   return (
     <div className={`flex items-center gap-1.5 rounded-lg pl-2 pr-2.5 ${className}`} style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
       <input
+        ref={inputRef}
         type="text"
         inputMode="decimal"
         value={displayVal}
@@ -102,13 +117,25 @@ export function InputConUnidad({
           }
         }}
         onChange={e => {
+          const cursorPos = e.target.selectionStart ?? e.target.value.length
+          const digitosAntes = contarDigitosAntes(e.target.value, cursorPos)
+
+          function restaurarCursor(formateado: string) {
+            requestAnimationFrame(() => {
+              const el = inputRef.current
+              if (!el) return
+              const pos = posicionParaNDigitos(formateado, digitosAntes)
+              el.setSelectionRange(pos, pos)
+            })
+          }
+
           // Permitir dígitos y UNA sola coma
           let raw = e.target.value.replace(/[^0-9,]/g, '')
           const parts = raw.split(',')
           if (parts.length > 2) {
             raw = parts[0] + ',' + parts.slice(1).join('')
           }
-          
+
           if (!raw) {
             setTempVal('')
             onChange('')
@@ -118,18 +145,21 @@ export function InputConUnidad({
           if (raw.endsWith(',')) {
             // Si el usuario acaba de escribir una coma, la dejamos en el UI pero no actualizamos el padre todavía
             const intPart = parseInt(raw.slice(0, -1) || '0', 10)
-            setTempVal(formatNumero(intPart) + ',')
+            const formateado = formatNumero(intPart) + ','
+            setTempVal(formateado)
+            restaurarCursor(formateado)
             return
           }
 
           // Convertir "1,5" a float
           const cleanNum = raw.replace(',', '.')
           const num = parseFloat(cleanNum)
-          
+
           // Formatear en el UI pero respetando si el usuario está escribiendo el decimal
           const formatted = formatNumero(num)
           setTempVal(formatted)
           onChange(cleanNum)
+          restaurarCursor(formatted)
         }}
         onBlur={() => setFocused(false)}
         placeholder="0"
