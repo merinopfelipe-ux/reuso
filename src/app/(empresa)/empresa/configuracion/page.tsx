@@ -40,7 +40,7 @@ export default async function EmpresaConfiguracionPage() {
 
   const { data: empresa } = await adminClient
     .from('empresas')
-    .select('id, nombre, slug, plan, activa, sector, logo_url, created_at, codigo_registro')
+    .select('id, nombre, slug, plan, activa, sector, logo_url, created_at, codigo_registro, nit, telefono, pais, region, ciudad, direccion, sitio_web, sector_ciiu_principal, sector_ciiu_secundarios')
     .eq('id', perfil.empresa_id)
     .single()
 
@@ -154,23 +154,32 @@ export default async function EmpresaConfiguracionPage() {
         <CodigoRegistroClient codigoInicial={empresa.codigo_registro ?? null} />
       )}
 
-      {/* Formulario editable - solo empresa_admin */}
-      {esAdmin && (
-        <div style={{
-          background: 'var(--bg-card)', borderRadius: 16, border: `1px solid ${BORDER}`,
-          padding: '24px',
-        }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 20px' }}>
-            Editar información
-          </h3>
-          <ConfiguracionClient
-            empresaId={empresa.id}
-            nombre={empresa.nombre}
-            sector={empresa.sector ?? null}
-            logoUrl={empresa.logo_url ?? null}
-          />
-        </div>
-      )}
+      {/* Formulario editable */}
+      <div style={{
+        background: 'var(--bg-card)', borderRadius: 16, border: `1px solid ${BORDER}`,
+        padding: '24px',
+      }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 20px' }}>
+          Editar información
+        </h3>
+        <ConfiguracionClient
+          empresaId={empresa.id}
+          nombre={empresa.nombre}
+          sector={empresa.sector ?? null}
+          logoUrl={empresa.logo_url ?? null}
+          plan={empresa.plan}
+          nit={empresa.nit ?? null}
+          telefono={empresa.telefono ?? null}
+          pais={empresa.pais ?? null}
+          region={empresa.region ?? null}
+          ciudad={empresa.ciudad ?? null}
+          direccion={empresa.direccion ?? null}
+          sitioWeb={empresa.sitio_web ?? null}
+          sectorCiiuPrincipal={empresa.sector_ciiu_principal ?? null}
+          sectorCiiuSecundarios={empresa.sector_ciiu_secundarios ?? []}
+          nitBloqueado={Boolean(empresa.nit?.trim()) && perfil.rol !== 'super_admin'}
+        />
+      </div>
     </div>
   )
 }
