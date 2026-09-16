@@ -318,6 +318,70 @@ export async function enviarInvitacion(
   return { resendEmailId: data?.id ?? null }
 }
 
+const PLAN_LABELS_EMAIL: Record<string, string> = {
+  lab: 'Circular Lab',
+  impulso: 'Impulso Sostenible',
+  ilimitado: 'Impacto Ilimitado',
+}
+
+export async function enviarInvitacionEmpresaAbierta(
+  to: string,
+  rawToken: string,
+  plan: 'lab' | 'impulso' | 'ilimitado',
+): Promise<{ resendEmailId: string | null }> {
+  if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
+  const link = `${APP_URL}/invitacion/${rawToken}`
+  const planLabel = PLAN_LABELS_EMAIL[plan] ?? plan
+
+  const boton = `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        Activar mi cuenta
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
+        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
+      </p>
+    </td>
+  </tr>
+</table>`
+
+  const bloqueExpiracion = `
+<p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
+  <strong>Recuerda:</strong> Este enlace expira en <strong>7 días</strong>.
+  Si no alcanzas a usarlo, pídele a tu contacto en Calculadora de Reúso que genere uno nuevo.
+</p>`
+
+  const html = emailPlantilla({
+    preheader: `Activa tu cuenta en el plan ${planLabel} y registra el impacto de tu empresa`,
+    subtituloHeader: 'Bienvenido a Calculadora de Reúso',
+    saludo: '¡Hola! 👋',
+    cuerpo: `Te dimos acceso al plan <strong>${planLabel}</strong> en la Calculadora de Reúso. Activa tu cuenta, crea tu empresa y empieza a registrar el impacto ambiental de tu organización.`,
+    contenidoCentral: boton + bloqueExpiracion,
+    alertaAccion: 'actives tu cuenta',
+    mostrarAlerta: true,
+  })
+
+  const { data } = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Activa tu cuenta en la Calculadora de Reúso (plan ${planLabel})`,
+    html,
+    replyTo: 'soporte@calculadoradereuso.com',
+  })
+
+  return { resendEmailId: data?.id ?? null }
+}
+
 // ── Notificación de ticket de soporte ────────────────────────────────────────
 export async function enviarNotificacionTicket(
   destinatarios: string[],
