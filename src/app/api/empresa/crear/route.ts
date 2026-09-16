@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { sincronizarContactoLoops } from '@/lib/loops'
+import { generarSlugEmpresa } from '@/lib/generar-slug'
 import { randomBytes } from 'crypto'
 
 const bodySchema = z.object({
@@ -19,16 +20,6 @@ const bodySchema = z.object({
   direccion: z.string().max(500).optional().or(z.literal('')),
   sitio_web: z.string().min(1, 'El sitio web es obligatorio.').max(255),
 })
-
-function generarSlug(nombre: string): string {
-  return nombre
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .slice(0, 60)
-}
 
 export async function POST(request: NextRequest) {
   const supabase = createClient()
@@ -56,7 +47,7 @@ export async function POST(request: NextRequest) {
   const ip = getIp(request)
 
   // Generar slug único
-  let slug = generarSlug(nombre)
+  let slug = generarSlugEmpresa(nombre)
   const { data: existing } = await adminClient
     .from('empresas')
     .select('id')
