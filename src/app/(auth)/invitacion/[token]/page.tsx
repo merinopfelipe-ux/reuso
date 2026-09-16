@@ -16,7 +16,7 @@ export default async function InvitacionPage({ params }: Props) {
 
   const { data: invitacion } = await adminClient
     .from('invitaciones')
-    .select('id, email, empresa_id, rol_asignado, estado, expires_at')
+    .select('id, email, empresa_id, rol_asignado, estado, expires_at, plan_invitado')
     .eq('token_hash', tokenHash)
     .single()
 
@@ -79,13 +79,15 @@ export default async function InvitacionPage({ params }: Props) {
   }
 
   // Obtener nombre de empresa
-  const { data: empresa } = await adminClient
-    .from('empresas')
-    .select('nombre')
-    .eq('id', invitacion.empresa_id)
-    .single()
-
-  const empresaNombre = empresa?.nombre ?? 'tu empresa'
+  let empresaNombre: string | null = null
+  if (invitacion.empresa_id) {
+    const { data: empresa } = await adminClient
+      .from('empresas')
+      .select('nombre')
+      .eq('id', invitacion.empresa_id)
+      .single()
+    empresaNombre = empresa?.nombre ?? null
+  }
 
   return (
     <div style={{
@@ -118,10 +120,10 @@ export default async function InvitacionPage({ params }: Props) {
             <Leaf size={28} color={BRAND} />
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 6px' }}>
-            Únete a {empresaNombre}
+            {empresaNombre ? `Únete a ${empresaNombre}` : 'Activa tu cuenta en la Calculadora de Reúso'}
           </h1>
           <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: 14 }}>
-            Crea tu cuenta para empezar a medir tu impacto ambiental
+            {empresaNombre ? 'Crea tu cuenta para empezar a medir tu impacto ambiental' : 'Crea tu empresa y tu cuenta para empezar a medir tu impacto ambiental'}
           </p>
         </div>
 
@@ -130,6 +132,7 @@ export default async function InvitacionPage({ params }: Props) {
           email={invitacion.email}
           empresaNombre={empresaNombre}
           rolAsignado={invitacion.rol_asignado}
+          esEmpresaNueva={!invitacion.empresa_id}
         />
       </div>
     </div>
