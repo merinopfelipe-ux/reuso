@@ -42,6 +42,7 @@ export const insumoSchema = z.object({
   cantidad: z.number().nonnegative(),
   unidad: z.string().min(1).max(30),
   precio_unitario: z.number().nonnegative(),
+  peso_kg: z.number().nonnegative().nullish(),
 })
 
 // Un material con impacto real (peso × factor > 0) — usado para exigir que
