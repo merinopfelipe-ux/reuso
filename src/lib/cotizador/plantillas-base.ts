@@ -8,7 +8,7 @@
 // por tercera vez.
 
 export interface Servicio { nombre: string; precio: number }
-export interface Insumo { nombre: string; cantidad: number; unidad: string; precio_unitario: number }
+export interface Insumo { nombre: string; cantidad: number; unidad: string; precio_unitario: number; peso_kg?: number | null }
 export interface Material {
   nombre: string
   peso_kg: number

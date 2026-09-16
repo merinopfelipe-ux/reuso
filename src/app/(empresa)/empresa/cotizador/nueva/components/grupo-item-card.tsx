@@ -2,7 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Trash2 as Trash, Leaf, CircleDollarSign, Plus, Copy, ZoomIn } from '@/components/ui/icons'
+import { Trash2 as Trash, Leaf, CircleDollarSign, Plus, Copy, ZoomIn, Sparkles } from '@/components/ui/icons'
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
 import { InputCantidadInsumo } from '@/components/ui/formatted-number-input'
 import { mergeServicios, mergeInsumos, mergeMateriales } from '@/lib/cotizador/plantillas-base'
@@ -51,6 +51,9 @@ interface Props {
   // Presente SOLO cuando hay más de 1 candidato detectado por la IA sin
   // elegir todavía — pinta el botón "Elegir este ítem" en el encabezado.
   onElegir?: () => void
+  // Gatea el botón "Sugerir peso con IA" de los insumos — mismo criterio que
+  // ya usa el precio de mercado (Impulso Sostenible en adelante).
+  incluyeIA: boolean
 }
 
 /**
@@ -61,7 +64,7 @@ interface Props {
  * la lista base aunque esté en cero) que ya usa EditarMuebleModal para una
  * línea ya guardada — ver `src/lib/cotizador/plantillas-base.ts`.
  */
-export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, onDuplicar, fotosGrupo, onElegir }: Props) {
+export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, onDuplicar, fotosGrupo, onElegir, incluyeIA }: Props) {
   const [categoriaSel, setCategoriaSel] = useState('')
   const [cargandoMatch, setCargandoMatch] = useState(false)
   const [zoomMiniaturaUrl, setZoomMiniaturaUrl] = useState<string | null>(null)
@@ -132,7 +135,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
     onChange({ ...item, servicios: [...servicios, { nombre: '', precio: 0, _esNuevo: true } as unknown as (typeof servicios)[number]] })
   }
 
-  function actualizarInsumo(i: number, patch: Partial<{ nombre: string; cantidad: number; precio_unitario: number }>) {
+  function actualizarInsumo(i: number, patch: Partial<{ nombre: string; cantidad: number; precio_unitario: number; peso_kg: number }>) {
     onChange({ ...item, insumos: insumos.map((x, j) => j === i ? { ...x, ...patch } : x) })
   }
   function quitarInsumo(i: number) { onChange({ ...item, insumos: insumos.filter((_, j) => j !== i) }) }
@@ -326,6 +329,29 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                   onChange={cantidad => actualizarInsumo(i, { cantidad })}
                   unidad={ins.unidad || 'und'}
                 />
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent">
+                  <input type="number" min={0} step="0.001" value={ins.peso_kg ?? ''} onChange={e => actualizarInsumo(i, { peso_kg: parseNumero(e.target.value) })} className="w-14 text-right text-sm outline-none border-none p-0 bg-transparent" placeholder="peso" />
+                  <span className={`text-xs ${ts}`}>kg</span>
+                </div>
+                {incluyeIA && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!ins.nombre.trim()) return
+                      const res = await fetch(conEmpresa('/api/cotizador/insumos/peso-sugerido'), {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nombre: ins.nombre.trim(), unidad: ins.unidad || 'unidad' }),
+                      })
+                      const data = await res.json()
+                      if (res.ok && data.ok) actualizarInsumo(i, { peso_kg: data.peso_kg })
+                    }}
+                    className="p-1.5 rounded-lg text-[#00827C] hover:opacity-70 flex-shrink-0"
+                    title="Sugerir peso con IA"
+                  >
+                    <Sparkles size={16} />
+                  </button>
+                )}
                 <span className={`text-sm font-medium ${ts}`}>$</span>
                 <input type="number" min={0} value={ins.precio_unitario} onChange={e => actualizarInsumo(i, { precio_unitario: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
               </div>

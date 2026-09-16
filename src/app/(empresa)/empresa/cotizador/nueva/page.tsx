@@ -146,6 +146,16 @@ function NuevaCotizacionContent() {
   const [error, setError] = useState<string | null>(null)
   const [analizandoMsgIndex, setAnalizandoMsgIndex] = useState(0)
 
+  // Gatea el botón "Sugerir peso con IA" de los insumos — mismo criterio que
+  // ya usa el precio de mercado (Impulso Sostenible en adelante).
+  const [incluyeIA, setIncluyeIA] = useState(false)
+  useEffect(() => {
+    fetch(conEmpresa('/api/cotizador/empresa/incluye-ia'))
+      .then(res => res.json())
+      .then(data => setIncluyeIA(!!data.incluyeIA))
+      .catch(() => {})
+  }, [conEmpresa])
+
   // Cliente identificado — obligatorio antes de subir cualquier foto (ver Fase 2)
   const [cliente, setCliente] = useState<ClienteIdentificado | null>(null)
 
@@ -964,6 +974,7 @@ function NuevaCotizacionContent() {
                       onChange={(nuevo) => actualizarItemPendiente(item._uiKey, nuevo)}
                       onQuitar={() => quitarItemPendiente(item._uiKey)}
                       onDuplicar={() => {}}
+                      incluyeIA={incluyeIA}
                     />
                     {item._errorGuardado && (
                       <p className="text-sm text-[#FF5E4B] flex items-center gap-1">
