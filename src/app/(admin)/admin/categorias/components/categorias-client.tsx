@@ -727,16 +727,15 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         <div className="flex flex-col gap-3">
           <EditorFinanciero titulo="Costos" servicios={servicios} setServicios={setServicios} insumos={insumos} setInsumos={setInsumos} />
           {modo === 'editar' && insumos.some(i => i.nombre.trim()) && (
-            <label className={`flex items-start gap-2 cursor-pointer rounded-2xl p-3 ${cardBg}`}>
+            <label className={`flex items-center gap-2 cursor-pointer rounded-2xl p-3 ${cardBg}`}>
               <input
                 type="checkbox"
                 checked={aplicarAExistentes}
                 onChange={e => setAplicarAExistentes(e.target.checked)}
-                style={{ marginTop: 2, accentColor: 'var(--color-brand)' }}
+                style={{ accentColor: 'var(--color-brand)' }}
               />
-              <span className="text-xs text-[var(--text-secondary)]">
-                Al guardar, aplicar estos precios de insumos también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propio precio, no se actualiza solo).
-              </span>
+              <span className="text-xs font-semibold text-[var(--text-primary)]">Guardar global</span>
+              <TooltipInfo texto="Al guardar, aplica estos precios de insumos también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propio precio, no se actualiza solo)." />
             </label>
           )}
         </div>
