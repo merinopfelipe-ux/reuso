@@ -4,6 +4,25 @@ import React, { useEffect, useRef } from 'react'
 import * as Lucide from 'lucide-react'
 import { motion, useAnimation, type Variants, type Transition } from 'motion/react'
 
+/**
+ * SISTEMA DE DISEÑO — HUB CENTRAL DE ICONOGRAFÍA UNIFICADA
+ * 
+ * 1. UNIFICACIÓN DE GROSOR:
+ *    Para que todos los íconos del sistema se perciban uniformes e integrados
+ *    (sin diferencias visuales entre librerías ni sensaciones de "manchas pesadas"),
+ *    el estándar global de trazo para Lucide es `strokeWidth={1.3}`.
+ *    Este valor se inyecta automáticamente a través del HOC `wrapIcon`.
+ *    Para Phosphor Icons, se utiliza el peso geométrico equivalente `weight="regular"`.
+ * 
+ * 2. REGLA DE IMPORTACIÓN:
+ *    Todo componente del sistema debe importar sus íconos desde `@/components/ui/icons`.
+ *    No importar directamente desde `lucide-react` para mantener intacto este estándar.
+ * 
+ * 3. LOGOTIPOS Y MARCAS OFICIALES:
+ *    Todas las marcas comerciales (WhatsApp, LinkedIn, Instagram, Facebook, X, YouTube)
+ *    deben utilizar exclusivamente Phosphor Icons (`@phosphor-icons/react` o re-exportados aquí).
+ */
+
 // IconProps extends standard SVG props + custom size, color, strokeWidth, and duotone
 export interface IconProps extends Omit<React.SVGProps<SVGSVGElement>, 'size'> {
   size?: number | string
@@ -657,6 +676,9 @@ function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>
         extraProps.fill = 'currentColor'
         extraProps.fillOpacity = 0.2
       }
+      if (props.strokeWidth === undefined) {
+        extraProps.strokeWidth = 1.3
+      }
 
       const BaseIcon = usarAnimado ? AnimatedIcon! : LucideIcon
       const iconRef = usarAnimado ? internalAnimatedRef : forwardedRef
@@ -744,6 +766,7 @@ export const ArrowUpRight = wrapIcon(Lucide.ArrowUpRight)
 export const Medal = wrapIcon(Lucide.Medal)
 export const Bell = wrapIcon(Lucide.Bell)
 export const Question = wrapIcon(Lucide.CircleHelp)
+export const Crown = wrapIcon(Lucide.Crown)
 export const ChatCircle = wrapIcon(Lucide.MessageSquare) // Prefer MessageSquare over MessageCircle (preferir message-square)
 export const Envelope = wrapIcon(Lucide.Mail)
 export const Warning = wrapIcon(Lucide.TriangleAlert)
@@ -801,6 +824,8 @@ export const EyeSlash = wrapIcon(Lucide.EyeOff)
 export const Key = wrapIcon(Lucide.Key)
 export const Package = wrapIcon(Lucide.Package)
 export const Sofa = wrapIcon(Lucide.Sofa)
+export const Armchair = wrapIcon(Lucide.Armchair)
+export const Wrench = wrapIcon(Lucide.Wrench)
 export const Truck = wrapIcon(Lucide.Truck)
 export const Folder = wrapIcon(Lucide.Folder)
 export const EllipsisVertical = wrapIcon(Lucide.EllipsisVertical)
@@ -959,6 +984,9 @@ export const Italic = wrapIcon(Lucide.Italic)
 export const Underline = wrapIcon(Lucide.Underline)
 export const CaseSensitive = wrapIcon(Lucide.CaseSensitive)
 export const CheckCheck = wrapIcon(Lucide.CheckCheck)
+export const Crosshair = wrapIcon(Lucide.Crosshair)
+export const ScanSearch = wrapIcon(Lucide.ScanSearch)
+export const Equal = wrapIcon(Lucide.Equal)
 
 // Export brand logos from brand-logos.tsx
 export {
@@ -971,3 +999,4 @@ export {
   TiktokLogo,
 } from './brand-logos'
 
+export { Lucide }

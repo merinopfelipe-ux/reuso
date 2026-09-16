@@ -77,3 +77,35 @@ export async function PATCH(
 
   return NextResponse.json(data)
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const guard = await requireSuperAdmin(request)
+  if (guard.error) return guard.error
+
+  const { data: categoria } = await guard.supabase
+    .from('categorias')
+    .select('nombre')
+    .eq('id', params.id)
+    .single()
+
+  const { error } = await guard.supabase
+    .from('categorias')
+    .delete()
+    .eq('id', params.id)
+
+  if (error) {
+    return NextResponse.json({ error: 'Error al eliminar la categoría.' }, { status: 500 })
+  }
+
+  await logAuditoria(guard.adminClient, {
+    user_id: guard.user.id,
+    accion: 'eliminar_categoria',
+    detalle: { id: params.id, nombre: categoria?.nombre },
+    ip: getIp(request),
+  })
+
+  return NextResponse.json({ success: true })
+}

@@ -9,18 +9,19 @@ export interface SelectorOpcion {
 }
 
 export interface SelectorProps {
-  opciones: SelectorOpcion[]
+  opciones: SelectorOpcion[] | readonly SelectorOpcion[]
   value: string
   onChange: (val: string) => void
   placeholder?: string
   disabled?: boolean
   className?: string
+  style?: React.CSSProperties
 }
 
 // Reemplazo genérico del <select> nativo del navegador (sin estilo propio,
 // distinto en cada sistema operativo) — mismo patrón visual que
 // SelectorCiudad/SelectorEmpresa: botón + panel propio.
-export function Selector({ opciones, value, onChange, placeholder = 'Selecciona', disabled, className = '' }: SelectorProps) {
+export function Selector({ opciones, value, onChange, placeholder = 'Selecciona', disabled, className = '', style }: SelectorProps) {
   const [abierto, setAbierto] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const seleccionada = opciones.find(o => o.value === value)
@@ -51,18 +52,15 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
       <button
         type="button"
         disabled={disabled}
-        onClick={() => setAbierto(!abierto)}
         onKeyDown={onKeyDownTrigger}
-        className="flex w-full items-center justify-between gap-2 px-3.5 py-2.5 rounded-lg border text-sm font-medium transition-colors"
-        style={{
-          background: 'var(--surface, var(--bg-input))',
-          borderColor: 'var(--border)',
-          color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          opacity: disabled ? 0.6 : 1,
-        }}
+        className={`w-full flex items-center justify-between gap-2 px-4 py-3 rounded-2xl border text-sm outline-none transition-colors 
+          ${disabled ? 'opacity-50 cursor-not-allowed bg-[var(--bg-card)]' : 'bg-[var(--bg-input)] hover:bg-[var(--bg-card)] cursor-pointer'} 
+          ${abierto ? 'border-[var(--color-brand)] shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-[var(--border)]'} 
+          ${className}`}
+        style={style}
+        onClick={() => setAbierto(a => !a)}
       >
-        <span className="truncate">{seleccionada?.label ?? placeholder}</span>
+        <span className="truncate" style={{ color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)' }}>{seleccionada?.label ?? placeholder}</span>
         <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
       </button>
 

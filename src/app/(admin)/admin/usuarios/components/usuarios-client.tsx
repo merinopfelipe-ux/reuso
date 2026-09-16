@@ -6,6 +6,7 @@ import { Search as MagnifyingGlass, PlusCircle, KeyRound, Trash } from '@/compon
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
+import { Selector } from '@/components/ui/selector'
 import { Modal } from '@/components/ui/modal'
 import { Button } from '@/components/ui/button'
 import { Pagination } from '@/components/ui/pagination'
@@ -176,14 +177,13 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
         </div>
 
         {/* Filtro rol */}
-        <select
+        <Selector
           value={rolFiltro}
-          onChange={e => navegar({ search: busquedaLocal, rol: e.target.value, page: '1' })}
-          style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-        >
-          <option value="">Todos los roles</option>
-          {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
-        </select>
+          onChange={val => navegar({ search: busquedaLocal, rol: val, page: '1' })}
+          placeholder="Todos los roles"
+          opciones={[{value: '', label: 'Todos los roles'}, ...ROLES.map(r => ({ value: r, label: ROL_LABEL[r] }))]}
+          className="w-[180px]"
+        />
 
 
         <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
@@ -242,27 +242,22 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
 
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>Rol *</label>
-                <select
+                <Selector
                   value={formNuevo.rol}
-                  onChange={e => setFormNuevo(prev => ({ ...prev, rol: e.target.value as Rol }))}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-                >
-                  {ROL_CREAR.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
-                </select>
+                  onChange={val => setFormNuevo(prev => ({ ...prev, rol: val as Rol }))}
+                  opciones={ROL_CREAR.map(r => ({ value: r, label: ROL_LABEL[r] }))}
+                />
               </div>
 
               {ROLES_CON_EMPRESA.includes(formNuevo.rol) && (
                 <div>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>Empresa *</label>
-                  <select
+                  <Selector
                     value={formNuevo.empresa_id}
-                    onChange={e => setFormNuevo(prev => ({ ...prev, empresa_id: e.target.value }))}
-                    required
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 13, outline: 'none' }}
-                  >
-                    <option value="">Selecciona una empresa...</option>
-                    {empresasDisponibles.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}
-                  </select>
+                    onChange={val => setFormNuevo(prev => ({ ...prev, empresa_id: val }))}
+                    placeholder="Selecciona una empresa..."
+                    opciones={empresasDisponibles.map(e => ({ value: e.id, label: e.nombre }))}
+                  />
                 </div>
               )}
 
@@ -309,19 +304,12 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                     <td className="px-4 py-3">{u.email}</td>
                     <td className="px-4 py-3">{getNombreEmpresa(u.empresas)}</td>
                     <td className="px-4 py-3">
-                      <select
+                      <Selector
                         value={u.rol}
                         disabled={cambiando === u.user_id || u.user_id === currentUserId}
-                        onChange={e => cambiarRol(u.user_id, e.target.value as Rol)}
-                        style={{
-                          padding: '4px 8px', borderRadius: 6, fontSize: 12,
-                          border: '1px solid var(--border)', background: 'var(--bg-input)',
-                          color: 'var(--text-primary)', cursor: u.user_id === currentUserId ? 'not-allowed' : 'pointer',
-                          opacity: cambiando === u.user_id ? 0.5 : 1,
-                        }}
-                      >
-                        {ROLES.map(r => <option key={r} value={r}>{ROL_LABEL[r]}</option>)}
-                      </select>
+                        onChange={val => cambiarRol(u.user_id, val as Rol)}
+                        opciones={ROLES.map(r => ({ value: r, label: ROL_LABEL[r] }))}
+                      />
                     </td>
                     <td className="px-4 py-3 text-[var(--text-secondary)] text-center">{formatFecha(u.created_at)}</td>
                     <td className="px-4 py-3 text-center">

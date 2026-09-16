@@ -7,6 +7,7 @@ import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import { Pagination } from '@/components/ui/pagination'
+import { Selector } from '@/components/ui/selector'
 import { formatFecha, formatNumero } from '@/lib/format'
 import type { Rol } from '@/types'
 
@@ -315,19 +316,13 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
                 Categoría
               </label>
-              <select
+              <Selector
                 value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
-                style={{
-                  padding: '7px 10px', borderRadius: 8, border: `1px solid ${BORDER}`,
-                  background: 'var(--bg-input)', color: TEXT_DARK, fontSize: 13, outline: 'none',
-                }}
-              >
-                <option value="">Todas</option>
-                {categorias.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
+                onChange={setCategoria}
+                placeholder="Todas"
+                opciones={[{value: '', label: 'Todas'}, ...categorias.map(cat => ({ value: cat, label: cat }))]}
+                className="w-full"
+              />
             </div>
           )}
 
@@ -336,19 +331,13 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
               <label style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED }}>
                 Empresa
               </label>
-              <select
+              <Selector
                 value={empresaFiltro}
-                onChange={(e) => setEmpresaFiltro(e.target.value)}
-                style={{
-                  padding: '7px 10px', borderRadius: 8, border: `1px solid ${BORDER}`,
-                  background: 'var(--bg-input)', color: TEXT_DARK, fontSize: 13, outline: 'none',
-                }}
-              >
-                <option value="">Todas las empresas</option>
-                {empresas.map((e) => (
-                  <option key={e.id} value={e.id}>{e.nombre}</option>
-                ))}
-              </select>
+                onChange={setEmpresaFiltro}
+                placeholder="Todas las empresas"
+                opciones={[{value: '', label: 'Todas las empresas'}, ...empresas.map(e => ({ value: e.id, label: e.nombre }))]}
+                className="w-full"
+              />
             </div>
           )}
 

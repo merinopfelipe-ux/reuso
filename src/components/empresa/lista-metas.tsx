@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Target, Plus, Activity as Pulse, Trash2 as Trash, Calendar, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { Trophy, Plus, Activity as Pulse, Trash2 as Trash, Calendar, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { Selector } from '@/components/ui/selector'
 
 // Metricas support
 const METRICAS = {
@@ -113,9 +114,12 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>Métrica</label>
-              <select style={inputSt} value={formData.metrica} onChange={e=>setFormData({...formData, metrica: e.target.value})}>
-                {Object.entries(METRICAS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-              </select>
+              <Selector
+                style={inputSt}
+                value={formData.metrica}
+                onChange={val => setFormData({ ...formData, metrica: val })}
+                opciones={Object.entries(METRICAS).map(([k, v]) => ({ value: k, label: v.label }))}
+              />
             </div>
           </div>
           <div>
@@ -143,7 +147,7 @@ export function ListaMetas({ esAdmin }: { esAdmin: boolean }) {
 
       {metas.length === 0 ? (
         <div style={{ textAlign: 'center', padding: 40, border: '1px dashed var(--border)', borderRadius: 12 }}>
-          <Target size={32} color="var(--border)" style={{ margin: '0 auto 12px' }} />
+          <Trophy size={32} color="var(--border)" style={{ margin: '0 auto 12px' }} />
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>Aún no has definido ninguna meta.</p>
         </div>
       ) : (

@@ -1,5 +1,5 @@
 import type { Plan } from '@/types'
-import { Leaf, FlaskConical, TrendingUp, Crown } from 'lucide-react'
+import { Leaf, FlaskConical, TrendingUp, Crown } from '@/components/ui/icons'
 
 export const PLAN_CONFIG: Record<Plan, { label: string; bg: string; color: string; icon: React.ElementType }> = {
   free:      { label: 'Explora',           bg: 'rgba(0,130,124,0.12)',   color: '#00827C', icon: Leaf },

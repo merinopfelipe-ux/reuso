@@ -9,7 +9,7 @@ import {
   ArrowRight,
   Eye,
   EyeSlash,
-  Target,
+  Crosshair,
   Plus,
   MagnifyingGlass,
   Tree,
@@ -38,7 +38,21 @@ import {
   Save,
   Check,
   ShieldCheck,
+  Armchair,
+  Package,
+  Truck,
+  Wrench,
 } from '@/components/ui/icons'
+import {
+  Armchair as PhArmchair,
+  Package as PhPackage,
+  Buildings as PhBuildings,
+  Plant as PhPlant,
+  Truck as PhTruck,
+  User as PhUser,
+  Wrench as PhWrench,
+  MagnifyingGlass as PhMagnifyingGlass,
+} from '@phosphor-icons/react'
 import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
@@ -842,7 +856,7 @@ export default function ManualDisenoPage() {
                  </div>
               </div>
               <div className="flex gap-4">
-                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#59A6E4]/10'}`}><Target size={32} className={isDark ? 'text-white' : 'text-[#59A6E4]'} /></div>
+                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${isDark ? 'bg-white/10' : 'bg-[#59A6E4]/10'}`}><Crosshair size={32} className={isDark ? 'text-white' : 'text-[#59A6E4]'} /></div>
                  <div>
                    <h4 className={`text-xl font-bold mb-2 text-primary`}>Rigor Legal y Cero Promesas</h4>
                    <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} leading-relaxed font-medium`}><strong>Principio de no prometer nada indemostrable:</strong> Prohibido usar superlativos o afirmaciones absolutas como &ldquo;software líder&rdquo;, &ldquo;el mejor&rdquo;, &ldquo;100% garantizado&rdquo; o prometer certificaciones oficiales. Habla siempre de &ldquo;estimaciones ambientales documentadas&rdquo;, &ldquo;respaldo técnico&rdquo; y &ldquo;trazabilidad&rdquo;, protegiendo a la marca frente a riesgos legales y acusaciones de greenwashing.</p>
@@ -1029,86 +1043,153 @@ export default function ManualDisenoPage() {
               Explorar librería Lucide <ArrowRight size={16} strokeWidth={2.5} />
             </a>
           </div>
-          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-12 max-w-3xl`}>Piedra angular de la comunicación visual. Se utilizan <strong>tres grosores de trazo (strokeWidth)</strong> según el contexto: <strong>1.5 (Delgado)</strong>, <strong>2.0 (Regular)</strong> y <strong>2.5 (Destacado)</strong>. Adicionalmente, el hub de iconos local da soporte al atributo <code>duotone</code>, el cual aplica un <strong>relleno al 20% de opacidad</strong> para emular visualmente el estilo duotone nativo.</p>
-          
+          <p className={`${isDark ? 'text-white/50' : 'text-[#474747]'} text-[15px] font-medium mb-8 max-w-3xl`}>
+            Piedra angular de la comunicación visual. El sistema unifica <strong>Lucide React</strong> y <strong>Phosphor Icons</strong> bajo una estricta equivalencia geométrica: <strong>Lucide utiliza <code>strokeWidth=1.3</code></strong> (inyectado globalmente en todo el sistema) y <strong>Phosphor utiliza <code>weight=&quot;regular&quot;</code></strong>. Esta calibración elimina cualquier disparidad visual, logrando una estética coherente, ligera y armónica sin saturación óptica ni sensación de trazos pesados.
+          </p>
+
+          {/* Módulo Destacado: Comparación Visual de Unificación (Lucide 1.3 vs Phosphor Regular) */}
+          <div className={`p-8 md:p-10 rounded-[2.5rem] border mb-12 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#00827C]/10'}`}>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+              <div>
+                <span className={`text-[10px] font-bold tracking-wider ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} block mb-1`}>
+                  Estándar de Unificación Geométrica
+                </span>
+                <h3 className="text-xl font-bold text-primary">Comparativa Directa de Librerías (Trazo 1.3 = Regular)</h3>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <span className="flex items-center gap-1.5 font-semibold text-primary">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#00827C]" /> Lucide (strokeWidth=1.3)
+                </span>
+                <span className="flex items-center gap-1.5 font-semibold text-primary">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#985fa1]" /> Phosphor (weight=&quot;regular&quot;)
+                </span>
+              </div>
+            </div>
+            
+            <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-8 max-w-4xl`}>
+              Ambas bibliotecas se renderizan lado a lado con sus íconos conceptualmente homólogos. Nótese cómo la densidad del trazo, la escala y la ligereza son exactamente idénticas, garantizando que el usuario perciba un único lenguaje visual integral.
+            </p>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+              {[
+                { label: 'Mobiliario', LucideComp: Armchair, PhComp: PhArmchair },
+                { label: 'Logística', LucideComp: Truck, PhComp: PhTruck },
+                { label: 'Empresas', LucideComp: Buildings, PhComp: PhBuildings },
+                { label: 'Inventario', LucideComp: Package, PhComp: PhPackage },
+                { label: 'Sostenibilidad', LucideComp: Leaf, PhComp: PhPlant },
+                { label: 'Usuario', LucideComp: User, PhComp: PhUser },
+                { label: 'Herramientas', LucideComp: Wrench, PhComp: PhWrench },
+                { label: 'Búsqueda', LucideComp: MagnifyingGlass, PhComp: PhMagnifyingGlass },
+              ].map((item, idx) => (
+                <div 
+                  key={idx} 
+                  className={`p-4 rounded-2xl border flex flex-col items-center justify-between text-center transition-all ${isDark ? 'bg-black/20 border-white/5 hover:border-[#D6F391]/30' : 'bg-white border-[#474747]/10 hover:border-[#00827C]/30'}`}
+                >
+                  <span className={`text-[10px] font-bold mb-3 ${isDark ? 'text-white/70' : 'text-[#474747]'}`}>{item.label}</span>
+                  <div className="flex items-center justify-center gap-3 my-2">
+                    <div className="flex flex-col items-center gap-1" title="Lucide strokeWidth=1.3">
+                      <item.LucideComp size={24} strokeWidth={1.3} className={isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} />
+                      <span className="text-[8px] font-medium opacity-50 text-primary">Lucide</span>
+                    </div>
+                    <div className={`w-px h-6 ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+                    <div className="flex flex-col items-center gap-1" title="Phosphor weight=regular">
+                      <item.PhComp size={24} weight="regular" className={isDark ? 'text-[#F3BBD3]' : 'text-[#985fa1]'} />
+                      <span className="text-[8px] font-medium opacity-50 text-primary">Phosphor</span>
+                    </div>
+                  </div>
+                  <span className={`text-[9px] font-mono mt-2 ${isDark ? 'text-white/30' : 'text-[#474747]/50'}`}>1.3 ≈ regular</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Escala de Grosores del Sistema */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Delgado (strokeWidth=1.5)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Fino Decorativo (strokeWidth=1.0)</span>
               <div className="flex justify-center gap-5 mb-4">
-                {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} strokeWidth={1.5} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                {[Leaf, Eye, Calculator, Buildings, Users, Globe].map((IconComp, i) => (
+                  <IconComp key={i} size={28} strokeWidth={1.0} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Decorativo &middot; Fondos &middot; Ilustraciones</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Marcas de agua &middot; Fondos sutiles &middot; Ilustraciones</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Regular (strokeWidth=2.0)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Estándar Global (strokeWidth=1.3)</span>
               <div className="flex justify-center gap-5 mb-4">
-                {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} strokeWidth={2} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                {[Leaf, Eye, Calculator, Buildings, Users, Globe].map((IconComp, i) => (
+                  <IconComp key={i} size={28} strokeWidth={1.3} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Interfaz general &middot; Navegación &middot; Formularios</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Interfaz general &middot; KPIs &middot; Menús &middot; Botones</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
-              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Destacado (strokeWidth=2.5)</span>
+              <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Énfasis / Fuerte (strokeWidth=1.8)</span>
               <div className="flex justify-center gap-5 mb-4">
-                {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} strokeWidth={2.5} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                {[Leaf, Eye, Calculator, Buildings, Users, Globe].map((IconComp, i) => (
+                  <IconComp key={i} size={28} strokeWidth={1.8} className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Activo &middot; Seleccionado &middot; Informes</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Selección activa &middot; Badges destacados &middot; Alertas</p>
             </div>
             <div className={`p-8 rounded-[2.5rem] text-center ${liquidGlassClass}`}>
               <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-6 block`}>Duotone (duotone=true)</span>
               <div className="flex justify-center gap-5 mb-4">
-                {[Leaf, Eye, Calculator, Target, Users, Globe].map((Icon, i) => (
-                  <Icon key={i} size={28} duotone className={isDark ? 'text-white/70' : 'text-[#474747]'} />
+                {[Leaf, Eye, Calculator, Buildings, Users, Globe].map((IconComp, i) => (
+                  <IconComp key={i} size={28} duotone className={isDark ? 'text-white/70' : 'text-[#474747]'} />
                 ))}
               </div>
-              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Relleno 20% &middot; Enfoque visual &middot; Destacados</p>
+              <p className={`text-[10px] ${isDark ? 'text-white/30' : 'text-[#474747]/60'} mt-2`}>Relleno 20% &middot; Navegación lateral activa &middot; Foco</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-9 gap-6">
             {[
-              { i: ArrowRight, n: 'ArrowRight', c: 'hover-slide-r hover-press' },
-              { i: Eye, n: 'Ojo (Mostrar)', c: 'hover-press' },
-              { i: EyeSlash, n: 'EyeSlash', c: 'hover-press' },
-              { i: Plus, n: 'Más (FAB)', c: 'hover-press' },
-              { i: Target, n: 'Meta (Objetivo)', c: 'hover-target hover-press' },
-              { i: MagnifyingGlass, n: 'Magnify', c: 'hover-press' },
-              { i: Leaf, n: 'Hoja (Eco)', c: 'hover-leaf hover-press' },
+              { i: ArrowRight, n: 'Flecha derecha', c: 'hover-slide-r hover-press' },
+              { i: Eye, n: 'Mostrar', c: 'hover-press' },
+              { i: EyeSlash, n: 'Ocultar', c: 'hover-press' },
+              { i: Plus, n: 'Añadir', c: 'hover-press' },
+              { i: ShieldCheck, n: 'Verificado', c: 'hover-press' },
+              { i: MagnifyingGlass, n: 'Búsqueda', c: 'hover-press' },
+              { i: Leaf, n: 'Sostenibilidad', c: 'hover-leaf hover-press' },
               { i: Calculator, n: 'Calculadora', c: 'hover-calc hover-press' },
-              { i: IaIcon, n: 'IA (Font Seravek)', c: 'hover-press' },
+              { i: IaIcon, n: 'Inteligencia artificial', c: 'hover-press' },
             ].map((icon, idx) => (
               <div key={idx} className={`flex flex-col items-center justify-center p-6 border rounded-2xl hover:shadow-[0_12px_32px_rgba(0,130,124,0.06)] hover:-translate-y-1 transition-all group ${icon.c} ${isDark ? 'bg-white/5 border-white/10' : 'bg-primary border-[#474747]/10'}`}>
-                <icon.i size={32} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#474747]'} transition-colors mb-4`} />
+                <icon.i size={32} strokeWidth={1.3} className={`${isDark ? 'text-white/60 group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#474747]'} transition-colors mb-4`} />
                 <span className={`text-[10px] font-bold text-center ${isDark ? 'text-white/30' : 'text-[#474747]/60'}`}>{icon.n}</span>
               </div>
             ))}
           </div>
 
-          {/* Reglas de Uso de Iconografía Duotone y Marcas */}
+          {/* Reglas de Uso de Iconografía y Marcas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12">
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
-              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Iconos Duotone</h4>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Grosor Unificado (1.3 / Regular)</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
-                El estilo <strong>duotone</strong> (relleno sutil al 20% de opacidad) debe emplearse únicamente para elementos destacados que requieran mayor peso visual, como estados activos en menús (sidebar), accesos directos principales en el dashboard o componentes de estado de alto impacto. No se debe usar para botones de acción regulares ni en flujos de texto inline.
+                Para que toda la plataforma se perciba bajo un único sistema iconográfico armónico, <strong>todo ícono de Lucide se renderiza con <code>strokeWidth=1.3</code></strong> (inyectado automáticamente por el wrapper <code>wrapIcon</code> de <code>@/components/ui/icons</code>). Los íconos de <strong>Phosphor Icons</strong> deben utilizar su peso nativo <code>weight=&quot;regular&quot;</code>. Queda prohibido el uso de valores de trazo superiores a 1.5 en elementos de navegación o botones estándar para evitar saturación visual.
               </p>
             </div>
+
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
-                Está estrictamente prohibido utilizar iconos vectoriales genéricos, customizados o de Lucide para representar redes sociales y logotipos comerciales (como WhatsApp, Instagram, LinkedIn, etc.). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong>. Se permite el uso de Phosphor Icons en la interfaz general <strong>si y solo si</strong> el ícono requerido no existe en Lucide y es un caso extremo. En estos escenarios, nuestro hub exporta automáticamente estos íconos envueltos en un HOC (<code>wrapPhosphorIcon</code>) que mapea de forma transparente los grosores (<code>strokeWidth</code> y <code>duotone</code>) a las especificaciones de Lucide para evitar cualquier discrepancia visual:
+                Está estrictamente prohibido utilizar iconos vectoriales genéricos o de Lucide para representar redes sociales y logotipos comerciales (WhatsApp, Instagram, LinkedIn, Facebook, X, YouTube). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong> con sus colores oficiales:
               </p>
               <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
-                <div className="font-bold mb-2">Mapeo de Grosores Automático:</div>
-                <div>• strokeWidth=1.5  → weight=&quot;light&quot;</div>
-                <div>• strokeWidth=2.0  → weight=&quot;regular&quot; (Predeterminado)</div>
-                <div>• strokeWidth=2.5  → weight=&quot;bold&quot;</div>
-                <div>• duotone=true     → weight=&quot;duotone&quot;</div>
+                <div className="font-bold mb-2">Equivalencias Oficiales del Sistema:</div>
+                <div>• Lucide strokeWidth=1.3  ↔ Phosphor weight=&quot;regular&quot; (Estándar global)</div>
+                <div>• Lucide strokeWidth=1.0  ↔ Phosphor weight=&quot;light&quot; (Fino decorativo)</div>
+                <div>• Lucide strokeWidth=1.8  ↔ Phosphor weight=&quot;bold&quot; (Énfasis)</div>
+                <div>• Lucide duotone=true     ↔ Phosphor weight=&quot;duotone&quot; (Relleno al 20%)</div>
               </div>
+            </div>
+
+            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+              <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos Dinámicos y Selector de Categorías</h4>
+              <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
+                Para campos dinámicos donde el usuario o administrador selecciona un ícono (ej. categorías de productos, líneas de negocio, módulos), se utiliza el componente <code>&lt;DynamicIcon /&gt;</code> junto con <code>&lt;IconPicker /&gt;</code>. Los nombres de Lucide se almacenan directamente (ej. <code>&quot;Armchair&quot;</code>) y los de Phosphor con prefijo (ej. <code>&quot;phosphor:Sofa&quot;</code>). <code>DynamicIcon</code> aplica de forma transparente <code>strokeWidth=1.3</code> o <code>weight=&quot;regular&quot;</code> con carga diferida vía <code>next/dynamic</code>.
+              </p>
             </div>
             
             <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
@@ -1724,7 +1805,7 @@ export default function ManualDisenoPage() {
 
                 {/* Renderizado de Display con jerarquía */}
                 <div className="flex flex-col justify-center rounded-xl p-4 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-secondary)] mb-1">
+                  <span className="text-[10px] font-bold tracking-wider text-[var(--text-secondary)] mb-1">
                     Visualización en tarjeta / encabezado de precio:
                   </span>
                   <div className="text-3xl font-black text-primary flex items-baseline">

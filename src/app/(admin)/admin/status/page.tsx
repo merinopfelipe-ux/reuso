@@ -6,6 +6,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { SkeletonCard } from '@/components/ui/skeleton'
+import { Selector } from '@/components/ui/selector'
 
 interface Incidente {
   id: string
@@ -297,32 +298,26 @@ export default function AdminStatusPage() {
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Tipo de Aviso
               </label>
-              <select
+              <Selector
+                opciones={TIPO_OPTS}
                 value={form.tipo}
-                onChange={e => setForm(p => ({ ...p, tipo: e.target.value as Incidente['tipo'] }))}
+                onChange={val => setForm(p => ({ ...p, tipo: val as Incidente['tipo'] }))}
                 className={inputStyle}
                 disabled={actionLoading === 'create'}
-              >
-                {TIPO_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Componente Afectado
               </label>
-              <select
+              <Selector
+                opciones={COMPONENTE_OPTS}
                 value={form.componente}
-                onChange={e => setForm(p => ({ ...p, componente: e.target.value as Incidente['componente'] }))}
+                onChange={val => setForm(p => ({ ...p, componente: val as Incidente['componente'] }))}
                 className={inputStyle}
                 disabled={actionLoading === 'create'}
-              >
-                {COMPONENTE_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             {/* Severidad no aplica a un mantenimiento programado — no es una
@@ -332,16 +327,13 @@ export default function AdminStatusPage() {
                 <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                   Severidad
                 </label>
-                <select
+                <Selector
+                  opciones={SEVERIDAD_OPTS}
                   value={form.severidad}
-                  onChange={e => setForm(p => ({ ...p, severidad: e.target.value as Incidente['severidad'] }))}
+                  onChange={val => setForm(p => ({ ...p, severidad: val as Incidente['severidad'] }))}
                   className={inputStyle}
                   disabled={actionLoading === 'create'}
-                >
-                  {SEVERIDAD_OPTS.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
+                />
               </div>
             )}
 
@@ -349,16 +341,13 @@ export default function AdminStatusPage() {
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Estado Inicial
               </label>
-              <select
+              <Selector
+                opciones={ESTADO_OPTS}
                 value={form.estado}
-                onChange={e => setForm(p => ({ ...p, estado: e.target.value as Incidente['estado'] }))}
+                onChange={val => setForm(p => ({ ...p, estado: val as Incidente['estado'] }))}
                 className={inputStyle}
                 disabled={actionLoading === 'create'}
-              >
-                {ESTADO_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>
@@ -545,32 +534,26 @@ export default function AdminStatusPage() {
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Tipo de Aviso
               </label>
-              <select
+              <Selector
+                opciones={TIPO_OPTS}
                 value={editingIncidente.tipo}
-                onChange={e => setEditingIncidente(p => p ? { ...p, tipo: e.target.value as Incidente['tipo'] } : p)}
+                onChange={val => setEditingIncidente(p => p ? { ...p, tipo: val as Incidente['tipo'] } : p)}
                 className={inputStyle}
                 disabled={actionLoading === 'edit'}
-              >
-                {TIPO_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Componente Afectado
               </label>
-              <select
+              <Selector
+                opciones={COMPONENTE_OPTS}
                 value={editingIncidente.componente}
-                onChange={e => setEditingIncidente(p => p ? { ...p, componente: e.target.value as Incidente['componente'] } : p)}
+                onChange={val => setEditingIncidente(p => p ? { ...p, componente: val as Incidente['componente'] } : p)}
                 className={inputStyle}
                 disabled={actionLoading === 'edit'}
-              >
-                {COMPONENTE_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             {editingIncidente.tipo === 'incidente' && (
@@ -578,16 +561,13 @@ export default function AdminStatusPage() {
                 <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                   Severidad
                 </label>
-                <select
+                <Selector
+                  opciones={SEVERIDAD_OPTS}
                   value={editingIncidente.severidad}
-                  onChange={e => setEditingIncidente(p => p ? { ...p, severidad: e.target.value as Incidente['severidad'] } : p)}
+                  onChange={val => setEditingIncidente(p => p ? { ...p, severidad: val as Incidente['severidad'] } : p)}
                   className={inputStyle}
                   disabled={actionLoading === 'edit'}
-                >
-                  {SEVERIDAD_OPTS.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
+                />
               </div>
             )}
 
@@ -595,16 +575,13 @@ export default function AdminStatusPage() {
               <label className={`block text-xs font-semibold mb-1 ${ts}`}>
                 Estado
               </label>
-              <select
+              <Selector
+                opciones={ESTADO_OPTS}
                 value={editingIncidente.estado}
-                onChange={e => setEditingIncidente(p => p ? { ...p, estado: e.target.value as Incidente['estado'] } : p)}
+                onChange={val => setEditingIncidente(p => p ? { ...p, estado: val as Incidente['estado'] } : p)}
                 className={inputStyle}
                 disabled={actionLoading === 'edit'}
-              >
-                {ESTADO_OPTS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>

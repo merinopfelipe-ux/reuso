@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
-import { Pencil, Trophy, Clock, Sofa, Target, Plus, Trash, ArrowUp, ArrowDown, GripVertical, Eye, EyeOff, MapPinHouse, Question, Funnel, ChartLine, Receipt, Handshake } from '@/components/ui/icons'
+import { Pencil, Trophy, Clock, Sofa, Crosshair, Plus, Trash, ArrowUp, ArrowDown, GripVertical, Eye, EyeOff, MapPinHouse, Question, Funnel, ChartLine, Receipt, Handshake } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
+import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
 import { formatCOP, formatEnteroMillones } from '@/lib/format'
 
@@ -1026,16 +1027,15 @@ export function SalesDashboard({
 
           <div>
             <label className={`block text-sm font-medium ${tp} mb-1.5`}>Vigencia (Año)</label>
-            <select
-              value={metaVigencia}
-              onChange={e => setMetaVigencia(Number(e.target.value))}
-              className={`w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-3 py-2 outline-none ${tp}`}
-            >
-              {[metaVigencia - 1, metaVigencia, metaVigencia + 1, metaVigencia + 2]
+            <Selector
+              value={metaVigencia.toString()}
+              onChange={val => setMetaVigencia(Number(val))}
+              className={`w-full ${tp}`}
+              opciones={[metaVigencia - 1, metaVigencia, metaVigencia + 1, metaVigencia + 2]
                 .filter((y, i, arr) => arr.indexOf(y) === i)
                 .sort()
-                .map(y => <option key={y} value={y}>{y}</option>)}
-            </select>
+                .map(y => ({ value: y.toString(), label: y.toString() }))}
+            />
           </div>
 
           {errorMeta && <p className="text-sm text-[#FF5E4B]">{errorMeta}</p>}
@@ -1047,7 +1047,7 @@ export function SalesDashboard({
         abierto={modalEtapasAbierto}
         titulo="Etapas del Embudo"
         descripcion="Personaliza, oculta o quita cada etapa del embudo."
-        icono={<Target size={20} className="text-[var(--color-brand)]" />}
+        icono={<Crosshair size={20} className="text-[var(--color-brand)]" />}
         onClose={() => { setModalEtapasAbierto(false); setErrorEtapas(null); }}
         onConfirmar={guardarEtapas}
         onCancelar={() => { setModalEtapasAbierto(false); setErrorEtapas(null); }}

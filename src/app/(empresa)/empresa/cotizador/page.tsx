@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { XCircle, ChevronRight as CaretRight, Buildings, Info, Square, SquareCheck, Trash } from '@/components/ui/icons'
-import { Share2 } from 'lucide-react'
+import { Share2 } from '@/components/ui/icons'
 import { SelectorEmpresa } from '@/components/ui/selector-empresa'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'

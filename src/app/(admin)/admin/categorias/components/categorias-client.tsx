@@ -2,8 +2,10 @@
 
 import { useState, useTransition, useMemo, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import * as Lucide from 'lucide-react'
+import { Lucide } from '@/components/ui/icons'
+import * as Phosphor from '@phosphor-icons/react'
 import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen } from '@/components/ui/icons'
+import { Selector } from '@/components/ui/selector'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
@@ -80,10 +82,11 @@ function contarDescendientes(categorias: CategoriaConEsquemaBase[], items: ItemC
 }
 
 import { InputPrecio, InputConUnidad } from '@/components/ui/formatted-number-input'
+import { parsearIcono } from '@/lib/icono-nombre'
 
 // ── Menú de tres puntos (Editar / Desactivar) ───────────────────────────────
 
-function MenuTresPuntos({ activa, visibilidad, onEditar, onToggleActiva, onToggleVisibilidad }: { activa: boolean; visibilidad?: 'global' | 'restringido'; onEditar: () => void; onToggleActiva: () => void; onToggleVisibilidad?: () => void }) {
+function MenuTresPuntos({ activa, visibilidad, onEditar, onToggleActiva, onToggleVisibilidad, onEliminar }: { activa: boolean; visibilidad?: 'global' | 'restringido'; onEditar: () => void; onToggleActiva: () => void; onToggleVisibilidad?: () => void; onEliminar?: () => void }) {
   const [abierto, setAbierto] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -113,6 +116,12 @@ function MenuTresPuntos({ activa, visibilidad, onEditar, onToggleActiva, onToggl
             <button onClick={() => { setAbierto(false); onToggleVisibilidad() }}
               className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
               {visibilidad === 'restringido' ? <><LockOpen size={14} /> Volver a global</> : <><Lock size={14} /> Restringir visibilidad</>}
+            </button>
+          )}
+          {onEliminar && (
+            <button onClick={() => { setAbierto(false); onEliminar() }}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--color-error)]">
+              <Trash size={14} /> Eliminar
             </button>
           )}
         </div>
@@ -292,9 +301,7 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-1">
               <div>
                 <label className={labelSt}>Tipo de material</label>
-                <select style={{ ...inputSt, cursor: 'pointer' }} value={m.categoria_material} onChange={e => setMateriales(r => r.map((x, j) => j === i ? { ...x, categoria_material: e.target.value } : x))}>
-                  {CATEGORIAS_MATERIAL.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
+                <Selector style={{ ...inputSt, cursor: 'pointer' }} value={m.categoria_material} onChange={val => setMateriales(r => r.map((x, j) => j === i ? { ...x, categoria_material: val } : x))} opciones={CATEGORIAS_MATERIAL} />
               </div>
               <div>
                 <label className={labelSt}>Fuente</label>
@@ -514,6 +521,17 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                             await fetch(`/api/admin/categorias/${h.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activa: !h.activa }) })
                             refrescar()
                           }}
+                          onEliminar={async () => {
+                            if (window.confirm(`¿Estás seguro de eliminar la categoría "${h.nombre}"? Todos sus ítems se perderán.`)) {
+                              const res = await fetch(`/api/admin/categorias/${h.id}`, { method: 'DELETE' })
+                              if (!res.ok) {
+                                const err = await res.json().catch(() => ({}))
+                                alert(err.error || 'No se pudo eliminar la categoría (es posible que esté en uso).')
+                              } else {
+                                refrescar()
+                              }
+                            }
+                          }}
                         />
                       </div>
                     </div>
@@ -603,6 +621,17 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                                 await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibilidad: nueva }) })
                                 refrescar()
                               }}
+                              onEliminar={async () => {
+                                if (window.confirm(`¿Estás seguro de eliminar el ítem "${it.nombre}"?`)) {
+                                  const res = await fetch(`/api/admin/items/${it.id}`, { method: 'DELETE' })
+                                  if (!res.ok) {
+                                    const err = await res.json().catch(() => ({}))
+                                    alert(err.error || 'No se pudo eliminar el ítem (es posible que esté en uso).')
+                                  } else {
+                                    refrescar()
+                                  }
+                                }
+                              }}
                             />
                           </td>
                         </tr>
@@ -626,14 +655,20 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
   )
 }
 function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: number; className?: string; bg?: boolean }) {
-  // Import estático de lucide-react (ya lo carga IconPicker en esta misma
-  // página) — un import() dinámico aquí generaba un chunk <facade> frágil en
-  // Turbopack que se rompía con cualquier HMR ("module factory is not
-  // available"), error real y repetible, no un problema de pestaña vieja.
-  const Comp = (nombre && nombre !== 'Icon' && nombre !== 'DynamicIcon' && nombre !== 'IconNode')
-    ? (Lucide as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[nombre]
+  // Import estático de lucide-react/phosphor (ya los carga IconPicker en esta
+  // misma página) — un import() dinámico aquí generaba un chunk <facade>
+  // frágil en Turbopack que se rompía con cualquier HMR ("module factory is
+  // not available"), error real y repetible, no un problema de pestaña vieja.
+  const { libreria, nombre: nombreIcono } = parsearIcono(nombre || '')
+  const excluido = nombreIcono === 'Icon' || nombreIcono === 'DynamicIcon' || nombreIcono === 'IconNode' || nombreIcono === 'IconBase' || nombreIcono === 'IconContext'
+  const Comp = (nombreIcono && !excluido)
+    ? (libreria === 'phosphor'
+        ? (Phosphor as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[nombreIcono]
+        : (Lucide as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[nombreIcono])
     : null
-  const contenido = Comp ? <Comp size={size} className={className} /> : <Folder size={size} className={className} />
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const propsLibreria = libreria === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 }
+  const contenido = Comp ? <Comp size={size} className={className} {...propsLibreria} /> : <Folder size={size} className={className} strokeWidth={1.3} />
   if (!bg) return contenido
   return (
     <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(0,130,124,0.1)' }}>
@@ -735,10 +770,7 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         {modo === 'crear' && !parentId && (
           <div>
             <label className={labelSt}>Módulo (opcional)</label>
-            <select style={inputSt} value={moduloId} onChange={e => setModuloId(e.target.value)}>
-              <option value="">Sin módulo</option>
-              {modulos.map(m => <option key={m.id} value={m.id}>{m.nombre}</option>)}
-            </select>
+            <Selector style={inputSt} value={moduloId} onChange={val => setModuloId(val)} placeholder="Sin módulo" opciones={[{value: '', label: 'Sin módulo'}, ...modulos.map(m => ({ value: m.id, label: m.nombre }))]} />
           </div>
         )}
       </div>
@@ -820,6 +852,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     return inicial
   })
 
+  const [cantidades, setCantidades] = useState<Record<string, string>>(() => {
+    const inicial: Record<string, string> = {}
+    for (const ins of categoria.categoria_insumos_base) {
+      const existente = item?.item_insumos.find(ii => ii.nombre === ins.nombre)
+      inicial[ins.nombre] = String(existente?.cantidad ?? 1)
+    }
+    return inicial
+  })
+
   // Extras: dimensiones que solo aplican a ESTE ítem, no se guardan en el esquema base.
   const nombresBase = useMemo(() => new Set(categoria.categoria_materiales_base.map(m => m.nombre)), [categoria])
   const nombresServBase = useMemo(() => new Set(categoria.categoria_servicios_base.map(s => s.nombre)), [categoria])
@@ -891,6 +932,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       if (x.id !== id) return x
       if (patch.nombre !== undefined && patch.nombre !== x.nombre) {
         moverClave(setPreciosUnitarios, x.nombre, patch.nombre)
+        moverClave(setCantidades, x.nombre, patch.nombre)
       }
       return { ...x, ...patch }
     }))
@@ -946,11 +988,11 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
   const subtotal = useMemo(() => {
     const servBase = esquemaServVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
-    const insBase = esquemaInsVisibles.reduce((s, x) => s + (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
+    const insBase = esquemaInsVisibles.reduce((s, x) => s + (parseFloat(cantidades[x.nombre]) || 0) * (parseFloat(preciosUnitarios[x.nombre]) || 0), 0)
     const servExtra = extraServiciosValidos.reduce((s, x) => s + x.precio, 0)
     const insExtra = extraInsumosValidos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
     return servBase + insBase + servExtra + insExtra
-  }, [precios, preciosUnitarios, esquemaServVisibles, esquemaInsVisibles, extraServiciosValidos, extraInsumosValidos])
+  }, [precios, preciosUnitarios, cantidades, esquemaServVisibles, esquemaInsVisibles, extraServiciosValidos, extraInsumosValidos])
 
   const factor = parseFloat(factorRentabilidad) || 1
   const totalPrecio = subtotal * factor
@@ -970,15 +1012,34 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
     const servicios = [
       ...esquemaServVisibles
-        .filter(s => s.nombre.trim() && (parseFloat(precios[s.nombre]) || 0) > 0)
-        .map(s => ({ nombre: s.nombre.trim(), precio: parseFloat(precios[s.nombre]) })),
+        .filter(s => {
+          const p = parseFloat(precios[s.nombre])
+          return s.nombre.trim() && (isNaN(p) || p >= 0)
+        })
+        .map(s => {
+          const p = parseFloat(precios[s.nombre])
+          return { nombre: s.nombre.trim(), precio: isNaN(p) ? 0 : p }
+        }),
       ...extraServiciosValidos,
     ]
 
     const insumos = [
       ...esquemaInsVisibles
-        .filter(i => i.nombre.trim() && (parseFloat(preciosUnitarios[i.nombre]) || 0) > 0)
-        .map(i => ({ nombre: i.nombre.trim(), cantidad: 1, unidad: i.unidad, precio_unitario: parseFloat(preciosUnitarios[i.nombre]) || parseFloat(i.precio_unitario) || 0 })),
+        .filter(i => {
+          const c = parseFloat(cantidades[i.nombre])
+          const p = parseFloat(preciosUnitarios[i.nombre])
+          return i.nombre.trim() && (isNaN(c) || c >= 0) && (isNaN(p) || p >= 0)
+        })
+        .map(i => {
+          const c = parseFloat(cantidades[i.nombre])
+          const p = parseFloat(preciosUnitarios[i.nombre])
+          return {
+            nombre: i.nombre.trim(),
+            cantidad: isNaN(c) ? 0 : c,
+            unidad: i.unidad,
+            precio_unitario: isNaN(p) ? 0 : p
+          }
+        }),
       ...extraInsumosValidos,
     ]
 
@@ -1182,6 +1243,9 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     <span className="truncate">{fila.nombre}</span>
                     <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                   </p>
+                  <div className="w-24 flex-shrink-0">
+                    <InputConUnidad value={cantidades[fila.nombre] ?? ''} onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: v }))} unidad={fila.unidad || 'ud'} paso="0.1" />
+                  </div>
                   <div className="w-28 flex-shrink-0">
                     <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
                   </div>
@@ -1194,6 +1258,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     type="button"
                     onClick={() => {
                       setInsumosEliminados(prev => new Set(prev).add(fila.id))
+                      setCantidades(p => ({ ...p, [fila.nombre]: '' }))
+                      setPreciosUnitarios(p => ({ ...p, [fila.nombre]: '' }))
                     }}
                     className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
                     title="Eliminar insumo"
@@ -1225,10 +1291,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <div className="flex flex-col gap-2 mb-2">
                 {extraInsumos.map((ins, i) => (
                   <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                       <div>
                         <label className={labelSt}>Insumo</label>
                         <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                      </div>
+                      <div>
+                        <label className={labelSt}>Cantidad</label>
+                        <InputConUnidad value={ins.cantidad} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: v } : x))} unidad={ins.unidad || 'ud'} paso="0.1" />
                       </div>
                       <div>
                         <label className={labelSt}>Unidad</label>

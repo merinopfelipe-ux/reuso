@@ -39,7 +39,7 @@ export const servicioSchema = z.object({
 
 export const insumoSchema = z.object({
   nombre: z.string().min(1).max(100),
-  cantidad: z.number().positive(),
+  cantidad: z.number().nonnegative(),
   unidad: z.string().min(1).max(30),
   precio_unitario: z.number().nonnegative(),
 })

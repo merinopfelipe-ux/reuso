@@ -9,6 +9,7 @@ import type { ItemDetectadoConSnapshot } from '@/app/api/cotizador/diagnostico/r
 import { ImagenAmpliable } from '@/components/ui/imagen-ampliable'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { Modal } from '@/components/ui/modal'
+import { Selector } from '@/components/ui/selector'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { useMaterialDescripciones } from '@/lib/cotizador/use-material-descripciones'
 import { inputSt, rowInputSt } from '@/lib/ui/estilos-formulario'
@@ -236,10 +237,10 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
         <div>
           <label className={`text-xs font-bold tracking-wide mb-1.5 block ${ts}`}>Coincidencia de categoría</label>
           <div className="flex flex-col gap-2">
-            <select
+            <Selector
               value={categoriaSel}
-              onChange={e => {
-                const nuevaCategoria = e.target.value
+              onChange={val => {
+                const nuevaCategoria = val
                 setCategoriaSel(nuevaCategoria)
                 // Si el ítem ya vinculado no pertenece a la nueva categoría,
                 // se desvincula — evita que quede un item_id de la categoría
@@ -251,21 +252,20 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                 }
               }}
               className={inputSt}
-            >
-              <option value="">-- Sin categoría --</option>
-              {catalogoAgrupado.map(([cat]) => <option key={cat} value={cat}>{cat}</option>)}
-            </select>
-            <select
+              placeholder="-- Sin categoría --"
+              opciones={[{value: '', label: '-- Sin categoría --'}, ...catalogoAgrupado.map(([cat]) => ({ value: cat, label: cat }))]}
+            />
+            <Selector
               value={item.item_id}
-              onChange={e => elegirCoincidencia(e.target.value)}
+              onChange={val => elegirCoincidencia(val)}
               disabled={cargandoMatch || !categoriaSel}
               className={`${inputSt} ${!categoriaSel ? 'opacity-50' : ''}`}
-            >
-              <option value="">{categoriaSel ? '-- Seleccionar --' : 'Elija una categoría'}</option>
-              {categoriaSel && (catalogoAgrupado.find(([c]) => c === categoriaSel)?.[1] || []).map(it => (
-                <option key={it.id} value={it.id}>{it.nombre}</option>
-              ))}
-            </select>
+              placeholder={categoriaSel ? '-- Seleccionar --' : 'Elija una categoría'}
+              opciones={[
+                { value: '', label: categoriaSel ? '-- Seleccionar --' : 'Elija una categoría' },
+                ...(categoriaSel ? (catalogoAgrupado.find(([c]) => c === categoriaSel)?.[1] || []) : []).map(it => ({ value: it.id, label: it.nombre }))
+              ]}
+            />
             {cargandoMatch && <p className={`text-xs ${ts}`}>Cargando datos...</p>}
           </div>
         </div>

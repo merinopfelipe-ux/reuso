@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, CheckCircle } from '@/components/ui/icons'
+import { Selector } from '@/components/ui/selector'
 
 interface LeadsFormProps {
   initialPlan?: string
@@ -139,19 +140,20 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
 
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Plan de interés</label>
-          <select
-            name="interes"
+          <Selector
             value={formData.interes}
-            onChange={handleChange}
-            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-[#252525] text-[#474747] dark:text-white outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
-          >
-            <option value="">Selecciona un plan</option>
-            <option value="Explora">Plan Explora</option>
-            <option value="Circular Lab">Plan Circular Lab</option>
-            <option value="Impacto Ilimitado">Plan Impacto Ilimitado</option>
-            <option value="A Medida">Plan A Medida</option>
-            <option value="Consulta general">Consulta o asesoría general</option>
-          </select>
+            onChange={val => setFormData({ ...formData, interes: val })}
+            placeholder="Selecciona un plan"
+            opciones={[
+              { value: '', label: 'Selecciona un plan' },
+              { value: 'Explora', label: 'Plan Explora' },
+              { value: 'Circular Lab', label: 'Plan Circular Lab' },
+              { value: 'Impacto Ilimitado', label: 'Plan Impacto Ilimitado' },
+              { value: 'A Medida', label: 'Plan A Medida' },
+              { value: 'Consulta general', label: 'Consulta o asesoría general' },
+            ]}
+            className="w-full h-auto text-xs sm:text-sm border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-[#252525] text-[#474747] dark:text-white"
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">

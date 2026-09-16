@@ -2,24 +2,32 @@
 
 import { useMemo, useState } from 'react'
 import * as Lucide from 'lucide-react'
+import * as Phosphor from '@phosphor-icons/react'
 import { Search as MagnifyingGlass, X } from '@/components/ui/icons'
 import { normalizar } from '@/lib/normalizar-busqueda-icono'
+import { parsearIcono, construirValorIcono, type LibreriaIcono } from '@/lib/icono-nombre'
 
-// Selector visual de íconos Lucide — como el picker de emojis de Mac: buscas
-// por nombre (en español o inglés) y ves el ícono antes de elegirlo.
+// Selector visual de íconos — como el picker de emojis de Mac: buscas por
+// nombre (en español, en inglés, o el nombre original de cada librería) y ves
+// el ícono antes de elegirlo. Busca en Lucide y Phosphor a la vez, agrupados
+// por librería — 762 nombres coinciden exactamente entre ambas (ej. "Anchor"
+// existe en las dos con diseño distinto), por eso los resultados se muestran
+// separados y el valor de Phosphor se guarda con el prefijo "phosphor:" (ver
+// src/lib/icono-nombre.ts) — Lucide sigue sin prefijo, es el formato de
+// siempre y el de todos los datos ya guardados.
 
-type LucideComponent = React.ForwardRefExoticComponent<React.SVGProps<SVGSVGElement> & { size?: number }>
+type IconComponent = React.ComponentType<{ size?: number; className?: string }>
 
-// Sinónimos en español → términos en inglés que existen en los nombres de Lucide.
-// No es exhaustivo: cubre los conceptos más comunes para esta plataforma
-// (muebles, hogar, flechas, acciones de UI).
+// Sinónimos en español/inglés → términos que existen en los nombres reales
+// de los íconos. No es exhaustivo: cubre los conceptos más comunes para esta
+// plataforma (muebles, hogar, flechas, acciones de UI).
 const SINONIMOS: Record<string, string[]> = {
   derecha: ['right'],
   izquierda: ['left'],
   arriba: ['up'],
   abajo: ['down'],
   flecha: ['arrow', 'chevron'],
-  mesa: ['table'],
+  mesa: ['desk'],
   silla: ['armchair', 'chair'],
   sofa: ['sofa', 'couch', 'armchair'],
   sofá: ['sofa', 'couch', 'armchair'],
@@ -30,6 +38,10 @@ const SINONIMOS: Record<string, string[]> = {
   // normalizar() en src/lib/normalizar-busqueda-icono.ts), así que la clave
   // siempre debe ir SIN tilde — "estantería" nunca haría match aquí.
   estanteria: ['shelf', 'shelves', 'bookshelf', 'shelving'],
+  // Término paraguas: junta todo lo relacionado a muebles de las 2 librerías.
+  mueble: ['armchair', 'chair', 'sofa', 'couch', 'bed', 'desk', 'lamp', 'shelf', 'shelves', 'shelving', 'bookshelf', 'cabinet', 'wardrobe', 'closet', 'drawer', 'dresser', 'stool', 'bench', 'ottoman', 'recliner', 'nightstand'],
+  muebles: ['armchair', 'chair', 'sofa', 'couch', 'bed', 'desk', 'lamp', 'shelf', 'shelves', 'shelving', 'bookshelf', 'cabinet', 'wardrobe', 'closet', 'drawer', 'dresser', 'stool', 'bench', 'ottoman', 'recliner', 'nightstand'],
+  furniture: ['armchair', 'chair', 'sofa', 'couch', 'bed', 'desk', 'lamp', 'shelf', 'shelves', 'shelving', 'bookshelf', 'cabinet', 'wardrobe', 'closet', 'drawer', 'dresser', 'stool', 'bench', 'ottoman', 'recliner', 'nightstand'],
   libro: ['book'],
   biblioteca: ['library', 'bookshelf', 'book'],
   espejo: ['mirror'],
@@ -100,42 +112,80 @@ const SINONIMOS: Record<string, string[]> = {
   bicicleta: ['bike'],
 }
 
-// Todos los nombres exportados por lucide-react que son componentes de ícono,
-// deduplicados por referencia (algunos nombres son alias del mismo ícono).
-const EXCLUIDOS = new Set(['Icon', 'DynamicIcon', 'IconNode'])
-const TODOS_LOS_NOMBRES = Object.keys(Lucide).filter(
-  (nombre) => /^[A-Z]/.test(nombre) && !EXCLUIDOS.has(nombre) && typeof (Lucide as unknown as Record<string, unknown>)[nombre] === 'object'
-)
-const NOMBRES_UNICOS: string[] = (() => {
+// Nombres exportados por cada librería que son componentes de ícono de
+// verdad, deduplicados por referencia (varios nombres son alias del mismo
+// ícono, ej. "ShelvingUnit" y "ShelvingUnitIcon" son el mismo componente).
+const EXCLUIDOS_LUCIDE = new Set(['Icon', 'DynamicIcon', 'IconNode'])
+const EXCLUIDOS_PHOSPHOR = new Set(['IconBase', 'IconContext'])
+
+function nombresUnicos(mod: Record<string, unknown>, excluidos: Set<string>): string[] {
+  // Ordenar para que los nombres sin prefijo "Lucide" se procesen primero.
+  // Lucide exporta todos los íconos por duplicado (ej. "SkipBack" y "LucideSkipBack").
+  // Si se procesa primero "LucideSkipBack", el buscador hace match de "desk" en "luciDESKipback".
+  const candidatos = Object.keys(mod).filter(
+    (nombre) => /^[A-Z]/.test(nombre) && !excluidos.has(nombre) && typeof mod[nombre] === 'object'
+  ).sort((a, b) => {
+    const aLucide = a.startsWith('Lucide')
+    const bLucide = b.startsWith('Lucide')
+    if (aLucide && !bLucide) return 1
+    if (!aLucide && bLucide) return -1
+    return 0
+  })
+
   const vistos = new Set<unknown>()
   const resultado: string[] = []
-  for (const nombre of TODOS_LOS_NOMBRES) {
-    const comp = (Lucide as unknown as Record<string, unknown>)[nombre]
+  for (const nombre of candidatos) {
+    const comp = mod[nombre]
     if (vistos.has(comp)) continue
     vistos.add(comp)
     resultado.push(nombre)
   }
   return resultado
-})()
+}
 
-export function IconPicker({ value, onChange }: { value: string; onChange: (nombre: string) => void }) {
+const NOMBRES_LUCIDE = nombresUnicos(Lucide as unknown as Record<string, unknown>, EXCLUIDOS_LUCIDE)
+const NOMBRES_PHOSPHOR = nombresUnicos(Phosphor as unknown as Record<string, unknown>, EXCLUIDOS_PHOSPHOR)
+
+function componenteDe(libreria: LibreriaIcono, nombre: string): IconComponent | undefined {
+  const mod = libreria === 'phosphor' ? (Phosphor as unknown as Record<string, IconComponent>) : (Lucide as unknown as Record<string, IconComponent>)
+  return mod[nombre]
+}
+
+function buscar(nombres: string[], terminos: string[]): string[] {
+  const coincide = (nombre: string) => {
+    const n = normalizar(nombre)
+    for (const t of terminos) if (n.includes(t)) return true
+    return false
+  }
+  return nombres.filter(coincide)
+}
+
+export function IconPicker({ value, onChange }: { value: string; onChange: (valor: string) => void }) {
   const [busqueda, setBusqueda] = useState('')
   const [abierto, setAbierto] = useState(false)
 
-  const resultados = useMemo(() => {
+  const { resultadosLucide, resultadosPhosphor } = useMemo(() => {
     const q = normalizar(busqueda.trim())
-    if (!q) return NOMBRES_UNICOS.slice(0, 60)
-
-    const terminos = Array.from(new Set([q, ...(SINONIMOS[q] ?? [])]))
-    const coincide = (nombre: string) => {
-      const n = normalizar(nombre)
-      for (const t of terminos) if (n.includes(t)) return true
-      return false
+    if (!q) {
+      return { resultadosLucide: NOMBRES_LUCIDE.slice(0, 30), resultadosPhosphor: NOMBRES_PHOSPHOR.slice(0, 30) }
     }
-    return NOMBRES_UNICOS.filter(coincide).slice(0, 80)
+    const terminos = Array.from(new Set([q, ...(SINONIMOS[q] ?? [])]))
+    return {
+      resultadosLucide: buscar(NOMBRES_LUCIDE, terminos).slice(0, 40),
+      resultadosPhosphor: buscar(NOMBRES_PHOSPHOR, terminos).slice(0, 40),
+    }
   }, [busqueda])
 
-  const IconoActual = value ? (Lucide as unknown as Record<string, LucideComponent>)[value] : undefined
+  const totalResultados = resultadosLucide.length + resultadosPhosphor.length
+
+  const { libreria: libreriaActual, nombre: nombreActual } = parsearIcono(value || '')
+  const IconoActual = value ? componenteDe(libreriaActual, nombreActual) : undefined
+
+  function elegir(libreria: LibreriaIcono, nombre: string) {
+    onChange(construirValorIcono(libreria, nombre))
+    setAbierto(false)
+    setBusqueda('')
+  }
 
   return (
     <div className="relative">
@@ -147,10 +197,11 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (nomb
         style={{ border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
       >
         <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(0,130,124,0.1)' }}>
-          {IconoActual ? <IconoActual size={20} className="text-[var(--color-brand)]" /> : <MagnifyingGlass size={18} className="text-[var(--text-placeholder)]" />}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {IconoActual ? <IconoActual size={20} className="text-[var(--color-brand)]" {...(libreriaActual === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 })} /> : <MagnifyingGlass size={18} className="text-[var(--text-placeholder)]" strokeWidth={1.3} />}
         </div>
         <div className="flex-1 text-left min-w-0">
-          <p className="text-sm font-medium truncate">{value || 'Elegir ícono'}</p>
+          <p className="text-sm font-medium truncate">{nombreActual || 'Elegir ícono'}</p>
           <p className="text-xs text-[var(--text-secondary)]">Toca para buscar</p>
         </div>
       </button>
@@ -163,7 +214,7 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (nomb
               autoFocus
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
-              placeholder="Busca en español: mesa, silla, derecha..."
+              placeholder="Busca en español o inglés: mesa, shelving-unit, muebles..."
               className="flex-1 bg-transparent text-sm outline-none text-[var(--text-primary)]"
             />
             {busqueda && (
@@ -172,27 +223,39 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (nomb
               </button>
             )}
           </div>
-          <p className="text-[11px] text-[var(--text-secondary)] mb-2 px-1">{resultados.length} ícono{resultados.length === 1 ? '' : 's'}</p>
-          <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 max-h-64 overflow-y-auto">
-            {resultados.map(nombre => {
-              const Icono = (Lucide as unknown as Record<string, LucideComponent>)[nombre]
-              const activo = value === nombre
-              return (
-                <button
-                  key={nombre}
-                  type="button"
-                  title={nombre}
-                  onClick={() => { onChange(nombre); setAbierto(false); setBusqueda('') }}
-                  className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover-pop hover-press"
-                  style={{ background: activo ? 'var(--color-brand)' : 'var(--bg-input)' }}
-                >
-                  <Icono size={20} className={activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'} />
-                  <span className={`text-[9px] truncate w-full text-center ${activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'}`}>{nombre}</span>
-                </button>
-              )
-            })}
-            {resultados.length === 0 && (
-              <p className="col-span-full text-xs text-[var(--text-secondary)] py-6 text-center">Sin resultados para &ldquo;{busqueda}&rdquo;.</p>
+          <p className="text-[11px] text-[var(--text-secondary)] mb-2 px-1">{totalResultados} ícono{totalResultados === 1 ? '' : 's'}</p>
+          <div className="max-h-64 overflow-y-auto flex flex-col gap-3">
+            {([
+              ['Lucide', 'lucide', resultadosLucide],
+              ['Phosphor', 'phosphor', resultadosPhosphor],
+            ] as const).map(([titulo, libreria, nombres]) => nombres.length > 0 && (
+              <div key={libreria}>
+                <p className="text-[11px] font-bold text-[var(--text-secondary)] mb-1.5 px-1">{titulo}</p>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                  {nombres.map(nombre => {
+                    const Icono = componenteDe(libreria, nombre)
+                    if (!Icono) return null
+                    const activo = libreriaActual === libreria && nombreActual === nombre
+                    return (
+                      <button
+                        key={`${libreria}:${nombre}`}
+                        type="button"
+                        title={nombre}
+                        onClick={() => elegir(libreria, nombre)}
+                        className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover-pop hover-press"
+                        style={{ background: activo ? 'var(--color-brand)' : 'var(--bg-input)' }}
+                      >
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        <Icono size={20} className={activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'} {...(libreria === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 })} />
+                        <span className={`text-[9px] truncate w-full text-center ${activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'}`}>{nombre}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+            {totalResultados === 0 && (
+              <p className="text-xs text-[var(--text-secondary)] py-6 text-center">Sin resultados para &ldquo;{busqueda}&rdquo;.</p>
             )}
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { TrendingUp as TrendUp, TrendingDown as TrendDown, Minus } from '@/components/ui/icons'
-import type { LucideIcon as Icon } from 'lucide-react'
+import type { LucideIcon as Icon } from '@/components/ui/icons'
 import { Leaf, Droplet, Package, Medal } from '@/components/ui/icons'
 
 export interface IndicadorSemanal {

@@ -4,7 +4,9 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Power, Layers as Stack, Check, X, Tag, Building2 as Buildings, Pencil as PencilSimple } from '@/components/ui/icons'
 import type { ModuloConCategorias } from '@/types'
-import * as LucideIcons from 'lucide-react'
+import { Lucide as LucideIcons } from '@/components/ui/icons'
+import * as PhosphorIcons from '@phosphor-icons/react'
+import { parsearIcono } from '@/lib/icono-nombre'
 
 const C = {
   brand: 'var(--color-brand)',
@@ -16,10 +18,13 @@ const C = {
 }
 
 function LucidePreview({ name }: { name: string }) {
-  if (!name || name === 'Icon' || name === 'DynamicIcon' || name === 'IconNode') return <Stack size={20} color={C.mid} />
-  const Icon = (LucideIcons as Record<string, unknown>)[name] as React.ComponentType<{ size?: number; color?: string }> | undefined
+  const { libreria, nombre } = parsearIcono(name || '')
+  const excluido = !nombre || nombre === 'Icon' || nombre === 'DynamicIcon' || nombre === 'IconNode' || nombre === 'IconBase' || nombre === 'IconContext'
+  if (excluido) return <Stack size={20} color={C.mid} />
+  const mod = libreria === 'phosphor' ? (PhosphorIcons as Record<string, unknown>) : (LucideIcons as Record<string, unknown>)
+  const Icon = mod[nombre] as React.ComponentType<{ size?: number; color?: string; strokeWidth?: number }> | undefined
   if (!Icon) return <Stack size={20} color={C.mid} />
-  return <Icon size={20} color={C.brand} />
+  return <Icon size={20} color={C.brand} strokeWidth={1.3} />
 }
 
 const btnPrimary: React.CSSProperties = {

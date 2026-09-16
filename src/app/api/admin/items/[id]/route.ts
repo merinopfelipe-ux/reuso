@@ -108,3 +108,35 @@ export async function PATCH(
 
   return NextResponse.json(data)
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const guard = await requireSuperAdmin(request)
+  if (guard.error) return guard.error
+
+  const { data: item } = await guard.supabase
+    .from('items')
+    .select('nombre')
+    .eq('id', params.id)
+    .single()
+
+  const { error } = await guard.supabase
+    .from('items')
+    .delete()
+    .eq('id', params.id)
+
+  if (error) {
+    return NextResponse.json({ error: 'Error al eliminar el item.' }, { status: 500 })
+  }
+
+  await logAuditoria(guard.adminClient, {
+    user_id: guard.user.id,
+    accion: 'eliminar_item',
+    detalle: { id: params.id, nombre: item?.nombre },
+    ip: getIp(request),
+  })
+
+  return NextResponse.json({ success: true })
+}

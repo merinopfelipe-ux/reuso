@@ -18,7 +18,7 @@ import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { renderTextoSimple, conPuntoFinal } from '@/lib/cotizador/texto-simple'
 import { calcularDesglose, calcularAnticipo } from '@/lib/cotizador/precio'
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
-import { ScanSearch, Scale, Equal } from 'lucide-react'
+import { ScanSearch, Scale, Equal } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 

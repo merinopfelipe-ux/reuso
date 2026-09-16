@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
+import { Selector } from '@/components/ui/selector'
 import { TriangleAlert as Warning } from '@/components/ui/icons'
 import { DOCUMENTOS_META } from '@/lib/firmas/documentos-meta'
 
@@ -68,14 +69,13 @@ export default function NuevaSolicitudFirmaPage() {
               <p className={`text-xs mt-0.5 ${ts}`}>La persona podrá leerlo completo antes de firmar.</p>
             </div>
           </div>
-          <select
+          <Selector
             value={tipoDocumento}
-            onChange={e => setTipoDocumento(e.target.value)}
+            onChange={setTipoDocumento}
             className={inputSt}
-          >
-            <option value="" disabled>Selecciona el documento que debe firmar</option>
-            {documentos.map(d => <option key={d.tipo} value={d.tipo}>{d.label}</option>)}
-          </select>
+            placeholder="Selecciona el documento que debe firmar"
+            opciones={[{value: '', label: 'Selecciona el documento que debe firmar'}, ...documentos.map(d => ({ value: d.tipo, label: d.label }))]}
+          />
         </section>
 
         <section className="mt-7 pt-6 border-t border-[var(--border)]">
@@ -94,13 +94,19 @@ export default function NuevaSolicitudFirmaPage() {
             </div>
             <div>
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Documento</label>
-              <select value={tipoIdentidad} onChange={e => setTipoIdentidad(e.target.value)} className={inputSt}>
-                <option value="" disabled>Selecciona</option>
-                <option value="CC">Cédula (CC)</option>
-                <option value="CE">Cédula de Extranjería (CE)</option>
-                <option value="NIT">NIT</option>
-                <option value="Pasaporte">Pasaporte</option>
-              </select>
+              <Selector
+                value={tipoIdentidad}
+                onChange={setTipoIdentidad}
+                className={inputSt}
+                placeholder="Selecciona"
+                opciones={[
+                  { value: '', label: 'Selecciona' },
+                  { value: 'CC', label: 'Cédula (CC)' },
+                  { value: 'CE', label: 'Cédula de Extranjería (CE)' },
+                  { value: 'NIT', label: 'NIT' },
+                  { value: 'Pasaporte', label: 'Pasaporte' },
+                ]}
+              />
             </div>
             <div>
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Número del documento</label>

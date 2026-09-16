@@ -21,6 +21,14 @@ Este pilar unifica la experiencia interactiva, los componentes y la identidad vi
   - Uso obligatorio del `@/components/ui/rich-text-editor` para WYSIWYG, integrando el botón de Guardar en su prop `footer`.
   - Uso obligatorio de `@/components/ui/button`.
 
+- **Regla de Iconografía y Unificación de Trazo (MANDATORIO Y PERMANENTE)**
+  - **Unificación de Grosor Visual:** Para garantizar una densidad óptica idéntica y que la plataforma se perciba como un solo sistema uniforme, todo ícono de **Lucide** utiliza un grosor de trazo de `1.3` (`strokeWidth={1.3}`), inyectado de forma predeterminada por el HOC `wrapIcon` en `@/components/ui/icons`. Los íconos de **Phosphor Icons** utilizan `weight="regular"`.
+  - **Hub Central de Importación:** Todo ícono de la interfaz debe importarse desde `@/components/ui/icons`. No importar directamente de `lucide-react` en vistas o componentes sueltos para evitar inconsistencias de grosor.
+  - **Logotipos de Marca Oficiales:** Prohibido usar íconos genéricos o de Lucide para representar redes sociales y plataformas comerciales. Se debe usar siempre **Phosphor Icons** (`@phosphor-icons/react` o desde `@/components/ui/icons`).
+  - **Íconos Dinámicos de Categorías:** Usar `@/components/ui/dynamic-icon` (`<DynamicIcon nombre="..." />`) que maneja nombres de Lucide y nombres con prefijo `phosphor:` aplicando automáticamente el grosor correspondiente (`strokeWidth={1.3}` o `weight="regular"`).
+  - **Cero mayúsculas sostenidas:** Queda prohibido el uso de `uppercase` en etiquetas o nombres de íconos.
+  - **Ícono Target Prohibido:** Prohibido el uso de `Target` (diana concéntrica). Reemplazar por `Cpu`, `Sparkles`, `Calculator` o `ShieldCheck`.
+
 ## B. Diseño Visual y Layout
 - **Regla de Tarjetas y Componentes de Diseño (MANDATORIO Y PERMANENTE)**
   - **Sin sombras:** Prohibido usar sombras en tarjetas de layout. Usar `rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]`.

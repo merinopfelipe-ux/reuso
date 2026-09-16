@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Lock, Plus, X, CaretDown, CaretRight, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
+import { Lock, Plus, Trash, CaretDown, CaretRight, Square, SquareCheck as CheckSquare } from '@/components/ui/icons'
 
 const C = {
   brand: 'var(--color-brand)',
@@ -159,7 +159,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                   opacity: procesando ? 0.6 : 1,
                 }}
               >
-                <X size={12} /> Quitar acceso a seleccionados
+                <Trash size={12} className="text-[var(--color-error)] opacity-80 hover:opacity-100" /> Quitar acceso a seleccionados
               </button>
             </div>
           )}
@@ -220,7 +220,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                                 opacity: procesando ? 0.6 : 1,
                               }}
                             >
-                              <X size={12} /> Quitar acceso
+                              <Trash size={12} className="text-[var(--color-error)] opacity-80 hover:opacity-100" /> Quitar acceso
                             </button>
                           )}
                         </div>

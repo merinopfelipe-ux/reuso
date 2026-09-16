@@ -54,9 +54,20 @@ export function InputPrecio({
             onChange('')
             return
           }
-          const formatted = formatEnteroMillones(parseInt(digits, 10))
+
+          let formatted = ''
+          if (digits.length <= 6) {
+            formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+          } else {
+            const millonesStr = digits.slice(0, digits.length - 6)
+            const restoStr = digits.slice(digits.length - 6)
+            const millonesFormateado = millonesStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+            const milesFormateado = restoStr.slice(0, 3) + '.' + restoStr.slice(3)
+            formatted = `${millonesFormateado}'${milesFormateado}`
+          }
+
           setTempVal(formatted)
-          onChange(digits)
+          onChange(parseInt(digits, 10).toString())
 
           requestAnimationFrame(() => {
             const el = inputRef.current
@@ -151,13 +162,14 @@ export function InputConUnidad({
             return
           }
 
-          // Convertir "1,5" a float
-          const cleanNum = raw.replace(',', '.')
-          const num = parseFloat(cleanNum)
+          const partsClean = raw.split(',')
+          const intPartStr = partsClean[0]
+          const decPartStr = partsClean.length > 1 ? ',' + partsClean[1] : ''
+          const formatted = intPartStr.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + decPartStr
 
-          // Formatear en el UI pero respetando si el usuario está escribiendo el decimal
-          const formatted = formatNumero(num)
           setTempVal(formatted)
+          
+          const cleanNum = raw.replace(',', '.')
           onChange(cleanNum)
           restaurarCursor(formatted)
         }}
