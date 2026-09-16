@@ -4,7 +4,7 @@ import { useState, useTransition, useMemo, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
@@ -27,7 +27,7 @@ const labelSeccion = 'block text-xs font-bold text-[var(--text-primary)] mb-2.5'
 // ── Filas para los editores LIBRES (esquema base / extras: se puede añadir/quitar) ──
 interface MaterialRow { nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string }
 interface ServicioRow { nombre: string; precio: string }
-interface InsumoRow { nombre: string; cantidad: string; unidad: string; precio_unitario: string }
+interface InsumoRow { nombre: string; cantidad: string; unidad: string; precio_unitario: string; peso_kg: string }
 
 // Taxonomía del Reporte 2 (Mitigación GRI/ESG) — ver skill `dominios-datos`.
 const CATEGORIAS_MATERIAL = [
@@ -45,7 +45,7 @@ const CATEGORIAS_MATERIAL = [
 
 const filaMaterial = (): MaterialRow => ({ nombre: '', peso_kg: '', factor_co2_kg: '', factor_agua_l_kg: '', categoria_material: '', origen_fuente: '', detalle_fuente: '' })
 const filaServicio = (): ServicioRow => ({ nombre: '', precio: '' })
-const filaInsumo = (): InsumoRow => ({ nombre: '', cantidad: '', unidad: '', precio_unitario: '' })
+const filaInsumo = (): InsumoRow => ({ nombre: '', cantidad: '', unidad: '', precio_unitario: '', peso_kg: '' })
 
 function materialesAFilas(materiales: { nombre: string; peso_kg: number; factor_co2_kg: number; factor_agua_l_kg: number | null; categoria_material?: string | null; origen_fuente: string | null; detalle_fuente: string | null }[]): MaterialRow[] {
   return materiales.map(m => ({ nombre: m.nombre, peso_kg: String(m.peso_kg), factor_co2_kg: String(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '', categoria_material: m.categoria_material ?? '', origen_fuente: m.origen_fuente ?? '', detalle_fuente: m.detalle_fuente ?? '' }))
@@ -53,8 +53,8 @@ function materialesAFilas(materiales: { nombre: string; peso_kg: number; factor_
 function serviciosAFilas(servicios: { nombre: string; precio: number }[]): ServicioRow[] {
   return servicios.map(s => ({ nombre: s.nombre, precio: String(s.precio) }))
 }
-function insumosAFilas(insumos: { nombre: string; cantidad: number; unidad: string; precio_unitario: number }[]): InsumoRow[] {
-  return insumos.map(i => ({ nombre: i.nombre, cantidad: String(i.cantidad), unidad: i.unidad, precio_unitario: String(i.precio_unitario) }))
+function insumosAFilas(insumos: { nombre: string; cantidad: number; unidad: string; precio_unitario: number; peso_kg?: number | null }[]): InsumoRow[] {
+  return insumos.map(i => ({ nombre: i.nombre, cantidad: String(i.cantidad), unidad: i.unidad, precio_unitario: String(i.precio_unitario), peso_kg: i.peso_kg != null ? String(i.peso_kg) : '' }))
 }
 function filasAMateriales(rows: MaterialRow[], pesoPorDefecto = 1) {
   return rows.filter(m => m.nombre && m.factor_co2_kg)
@@ -64,7 +64,7 @@ function filasAServicios(rows: ServicioRow[]) {
   return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: parseFloat(s.precio) }))
 }
 function filasAInsumos(rows: InsumoRow[]) {
-  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: parseFloat(i.precio_unitario) }))
+  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: parseFloat(i.precio_unitario), peso_kg: i.peso_kg ? parseFloat(i.peso_kg) : undefined }))
 }
 
 // ── Helpers de navegación sobre listas planas (soporta profundidad libre) ──
@@ -330,6 +330,44 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
   return content
 }
 
+function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido }: {
+  nombre: string
+  unidad: string
+  endpoint: string
+  onSugerido: (pesoKg: number) => void
+}) {
+  const [cargando, setCargando] = useState(false)
+
+  async function sugerir() {
+    if (!nombre.trim()) return
+    setCargando(true)
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: nombre.trim(), unidad: unidad || 'unidad' }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) onSugerido(data.peso_kg)
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={sugerir}
+      disabled={cargando || !nombre.trim()}
+      title="Sugerir peso con IA"
+      className="p-1.5 rounded-lg text-[var(--color-brand)] hover-pop hover-press disabled:opacity-40"
+      style={{ background: 'var(--color-brand-light)' }}
+    >
+      <Sparkles size={14} sinAnimacion />
+    </button>
+  )
+}
+
 function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos, mostrarAplicarExistentes, aplicarExistentes, setAplicarExistentes }: {
   titulo?: string
   servicios: ServicioRow[]; setServicios: React.Dispatch<React.SetStateAction<ServicioRow[]>>
@@ -359,10 +397,12 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
       <div className="flex flex-col gap-2 mb-2">
         {insumos.map((ins, i) => (
           <div key={i} className="flex flex-col gap-1">
-            <div className="grid grid-cols-2 sm:grid-cols-[1.3fr_0.8fr_0.9fr_auto] gap-2 items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-[1.1fr_0.7fr_0.7fr_0.9fr_auto_auto] gap-2 items-center">
               <input style={inputSt} placeholder="Insumo (ej: Tela)" value={ins.nombre} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
               <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+              <InputConUnidad value={ins.peso_kg} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
               <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+              <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
               <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
             </div>
             {mostrarAplicarExistentes && ins.nombre.trim() && (
@@ -851,6 +891,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     }
     return inicial
   })
+  const [pesosInsumo, setPesosInsumo] = useState<Record<string, string>>(() => {
+    const inicial: Record<string, string> = {}
+    for (const ins of categoria.categoria_insumos_base) {
+      const existente = item?.item_insumos.find(ii => ii.nombre === ins.nombre)
+      const valor = existente?.peso_kg ?? ins.peso_kg
+      inicial[ins.nombre] = valor != null ? String(valor) : ''
+    }
+    return inicial
+  })
 
   const [cantidades, setCantidades] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
@@ -933,6 +982,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       if (patch.nombre !== undefined && patch.nombre !== x.nombre) {
         moverClave(setPreciosUnitarios, x.nombre, patch.nombre)
         moverClave(setCantidades, x.nombre, patch.nombre)
+        moverClave(setPesosInsumo, x.nombre, patch.nombre)
       }
       return { ...x, ...patch }
     }))
@@ -1037,7 +1087,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             nombre: i.nombre.trim(),
             cantidad: isNaN(c) ? 0 : c,
             unidad: i.unidad,
-            precio_unitario: isNaN(p) ? 0 : p
+            precio_unitario: isNaN(p) ? 0 : p,
+            peso_kg: pesosInsumo[i.nombre] ? parseFloat(pesosInsumo[i.nombre]) : undefined,
           }
         }),
       ...extraInsumosValidos,
@@ -1260,6 +1311,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       setInsumosEliminados(prev => new Set(prev).add(fila.id))
                       setCantidades(p => ({ ...p, [fila.nombre]: '' }))
                       setPreciosUnitarios(p => ({ ...p, [fila.nombre]: '' }))
+                      setPesosInsumo(p => ({ ...p, [fila.nombre]: '' }))
                     }}
                     className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
                     title="Eliminar insumo"
@@ -1281,6 +1333,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                           onChange={e => editarEsquemaIns(fila.id, { unidad: e.target.value })} />
                       </div>
                     </div>
+                    <div className="flex items-end gap-1">
+                      <div className="flex-1">
+                        <label className={labelSt}>Peso</label>
+                        <InputConUnidad value={pesosInsumo[fila.nombre] ?? ''} onChange={v => setPesosInsumo(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.001" />
+                      </div>
+                      <div className="pb-2.5">
+                        <BotonSugerirPeso nombre={fila.nombre} unidad={fila.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setPesosInsumo(p => ({ ...p, [fila.nombre]: String(pesoKg) }))} />
+                      </div>
+                    </div>
                     <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
                   </div>
                 )}
@@ -1291,7 +1352,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <div className="flex flex-col gap-2 mb-2">
                 {extraInsumos.map((ins, i) => (
                   <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                       <div>
                         <label className={labelSt}>Insumo</label>
                         <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
@@ -1303,6 +1364,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       <div>
                         <label className={labelSt}>Unidad</label>
                         <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                      </div>
+                      <div className="flex items-end gap-1">
+                        <div className="flex-1">
+                          <label className={labelSt}>Peso</label>
+                          <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
+                        </div>
+                        <div className="pb-2.5">
+                          <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
+                        </div>
                       </div>
                       <div>
                         <label className={labelSt}>Precio unitario</label>

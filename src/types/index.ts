@@ -154,6 +154,7 @@ export interface ItemInsumo {
   cantidad: number
   unidad: string
   precio_unitario: number
+  peso_kg: number | null
   orden: number
   created_at: string
 }
@@ -217,6 +218,7 @@ export interface CategoriaInsumoBase {
   cantidad: number
   unidad: string
   precio_unitario: number
+  peso_kg: number | null
   orden: number
   created_at: string
 }
