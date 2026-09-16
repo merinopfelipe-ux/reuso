@@ -9,15 +9,19 @@ import { Button } from '@/components/ui/button'
 interface Props {
   token: string
   email: string
-  empresaNombre: string
+  empresaNombre: string | null
   rolAsignado: string
+  esEmpresaNueva: boolean
 }
 
 const BRAND = 'var(--color-brand)'
 
-export default function InvitacionForm({ token, email, empresaNombre, rolAsignado }: Props) {
+export default function InvitacionForm({ token, email, empresaNombre, rolAsignado, esEmpresaNueva }: Props) {
   const router = useRouter()
-  const [form, setForm] = useState({ nombre: '', password: '', password_confirm: '', acepta_terminos: false })
+  const [form, setForm] = useState({
+    nombre: '', password: '', password_confirm: '', acepta_terminos: false,
+    nombre_empresa: '', nit: '', telefono: '', pais: '', ciudad: '',
+  })
   const [showPass, setShowPass] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState('')
@@ -73,7 +77,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
           ¡Cuenta creada!
         </h2>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 8, fontSize: 15 }}>
-          Ya puedes ingresar como parte de <strong>{empresaNombre}</strong>.
+          {empresaNombre ? <>Ya puedes ingresar como parte de <strong>{empresaNombre}</strong>.</> : 'Ya puedes ingresar a la Calculadora de Reúso.'}
         </p>
         <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 20 }}>
           Redirigiendo al inicio de sesión...
@@ -95,12 +99,47 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         marginBottom: 4,
       }}>
         <p style={{ margin: 0, fontSize: 14, color: BRAND, fontWeight: 600 }}>
-          Invitado a: <span style={{ fontWeight: 700 }}>{empresaNombre}</span>
+          {empresaNombre ? <>Invitado a: <span style={{ fontWeight: 700 }}>{empresaNombre}</span></> : 'Activa tu cuenta'}
         </p>
         <p style={{ margin: '2px 0 0', fontSize: 13, color: 'var(--text-secondary)' }}>
           {email} · {rolAsignado === 'empresa_admin' ? 'Administrador' : 'Empleado'}
         </p>
       </div>
+
+      {esEmpresaNueva && (
+        <>
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
+              Nombre de tu empresa
+            </label>
+            <input name="nombre_empresa" value={form.nombre_empresa} onChange={handleChange} required style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
+              NIT
+            </label>
+            <input name="nit" value={form.nit} onChange={handleChange} required style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
+              Teléfono
+            </label>
+            <input name="telefono" value={form.telefono} onChange={handleChange} required style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
+              País
+            </label>
+            <input name="pais" value={form.pais} onChange={handleChange} required style={inputStyle} />
+          </div>
+          <div>
+            <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
+              Ciudad
+            </label>
+            <input name="ciudad" value={form.ciudad} onChange={handleChange} required style={inputStyle} />
+          </div>
+        </>
+      )}
 
       <div>
         <label style={{ display: 'block', marginBottom: 6, fontWeight: 500, fontSize: 14 }}>
