@@ -1289,7 +1289,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Software de sostenibilidad para tu empresa.
+              Software de sostenibilidad para empresas en Colombia.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
@@ -1442,7 +1442,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               Descubre los 9 cálculos ambientales, económicos y sociales
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Desde la estimación rápida de huella hasta la trazabilidad en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
+              Desde la estimación rápida de huella de carbono hasta el seguimiento en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
             </p>
           </div>
 
@@ -2420,7 +2420,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               >
                 Crear cuenta y comenzar gratis <ArrowRight size={18} strokeWidth={2.5} />
               </Link>
-              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Plan Explora con 5 cálculos al mes sin costo · Sin tarjeta de crédito.</p>
+              <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Empieza hoy con el plan Explora, 5 cálculos al mes sin costo · Sin tarjeta de crédito.</p>
             </div>
           </motion.div>
         </div>
