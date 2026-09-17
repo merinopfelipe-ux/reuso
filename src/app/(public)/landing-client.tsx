@@ -292,8 +292,8 @@ type CatKey = keyof typeof CATEGORIAS
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQS = [
   {
-    q: '¿Qué es la RSE y cómo se implementa en empresas o negocios locales?',
-    a: 'La RSE es la decisión voluntaria de gestionar tu impacto positivo en la comunidad y el planeta. En negocios locales la implementas pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso social y ambiental ante clientes y aliados.',
+    q: '¿Qué es la sostenibilidad empresarial y cómo se mide en empresas o negocios locales?',
+    a: 'La sostenibilidad empresarial es la decisión voluntaria de gestionar tu impacto ambiental positivo en la comunidad y el planeta, el corazón de tu RSE. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso social y ambiental ante clientes y aliados.',
   },
   {
     q: '¿Qué significa la responsabilidad social empresarial para una pyme en Colombia?',
@@ -962,7 +962,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       name: 'Metodología',
       link: '#proceso',
       items: [
-        { name: 'Soluciones que te ayudan a mostrar tu RSE', link: '#proceso' },
+        { name: 'Soluciones que te ayudan a mostrar tu sostenibilidad', link: '#proceso' },
         { name: 'Diagnóstico visual con IA', link: '#ia' },
         { name: 'Impacto al Objetivo 12 de la ONU', link: '#ods-12' },
         { name: 'Preguntas frecuentes', link: '#faq' },
@@ -982,7 +982,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
     { title: 'Textil y fibras', link: '#categorias', onClick: () => scrollToCategory('textil') },
     { title: 'Upcycling y residuos voluminosos', link: '#categorias', onClick: () => scrollToCategory('upcycling') },
-    { title: 'Soluciones que te ayudan a mostrar tu RSE', link: '#proceso' },
+    { title: 'Soluciones que te ayudan a mostrar tu sostenibilidad', link: '#proceso' },
     { title: 'Planes de medición y pasaportes digitales', link: '#planes' },
     { title: 'Diagnóstico visual con Inteligencia Artificial', link: '#ia' },
     { title: 'Impacto al Objetivo 12 de la ONU', link: '#ods-12' },
@@ -1289,7 +1289,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Software de ClimaTech para la economía circular.
+              Software de sostenibilidad e impacto ambiental.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
@@ -1299,7 +1299,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </h1>
             
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de Responsabilidad Empresarial (RSE) para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
+              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de responsabilidad social para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1406,7 +1406,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
                 <h3 className={`text-base md:text-base lg:text-lg font-black ${tp}`}>
                   Calculadora de Reúso <br />
-                  Mide tu RSE y sácale provecho a la gestión circular de recursos
+                  Mide tu sostenibilidad y sácale provecho a la gestión circular de recursos
                 </h3>
               </div>
               <ul className="relative z-10 space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4 mt-4 md:mt-6">
@@ -1794,7 +1794,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 herramienta: 'Empezar cálculo',
                 Icon: Calculator,
                 titulo: 'Mide tu impacto ambiental',
-                desc: 'Calcula tus iniciativas de RSE a través del aprovechamiento de recursos. Estima cuánto CO₂ y cuántos residuos evitas con bases técnicas.',
+                desc: 'Calcula tus iniciativas de sostenibilidad a través del aprovechamiento de recursos. Estima cuánto CO₂ y cuántos residuos evitas con bases técnicas.',
                 image: 'https://images.unsplash.com/photo-1679110667877-408593fab0f6?auto=format&fit=crop&q=80&w=800',
               },
               {
@@ -2276,9 +2276,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               },
               {
                 tag: 'El Impacto',
-                titulo: 'Resultados comprobables en cada reporte RSE',
+                titulo: 'Resultados comprobables en cada reporte de sostenibilidad',
                 desc: 'Presenta balances claros que fortalecen propuestas comerciales, sustentan memorias de sostenibilidad y blindan la reputación de tu marca con evidencia libre de cualquier sospecha de greenwashing.',
-                puntos: ['Estructuración de reportes RSE.', 'Transparencia de datos sustentada.'],
+                puntos: ['Estructuración de reportes de sostenibilidad.', 'Transparencia de datos sustentada.'],
                 Icon: TrendingUp,
                 textColor: 'text-[#59A6E4]',
                 bgGradientLight: 'from-white via-white/95 to-[#59A6E4]/15',
@@ -2405,10 +2405,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             <div className="relative z-10 max-w-xl mx-auto">
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-                Software de ClimaTech para medición y trazabilidad corporativa.
+                Software de sostenibilidad para medición y trazabilidad corporativa.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
-                Estructura tus reportes de RSE y economía circular <br className="hidden sm:block" />
+                Estructura tus reportes de sostenibilidad e impacto ambiental <br className="hidden sm:block" />
                 con datos claros
               </h2>
               <p className={`text-xs sm:text-base md:text-sm lg:text-base font-medium mb-6 md:mb-8 lg:mb-10 max-w-lg mx-auto glass-subtitle ${ts}`}>
