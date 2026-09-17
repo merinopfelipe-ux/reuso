@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search as MagnifyingGlass, User, Building2 as Buildings, ChevronRight as CaretRight, Info } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
@@ -75,8 +75,17 @@ function ClientesContent() {
     router.replace(`/empresa/clientes?${params}`)
   }
 
+  // Cada llamada se marca con un número propio — si dos búsquedas quedan en
+  // el aire a la vez (ej. el usuario escribe rápido, o corrige un typo), la
+  // respuesta de una búsqueda ya vieja nunca pisa el resultado de la más
+  // reciente, aunque llegue después. Bug real corregido 2026-09-16: sin
+  // esto, cuál búsqueda "ganaba" dependía de cuál red respondiera primero,
+  // no de cuál se pidió al final.
+  const ultimaPeticionRef = useRef(0)
+
   const cargarClientes = useCallback(async () => {
     if (esSuperAdmin && !empresaId) { setClientes([]); setCargando(false); return }
+    const idPeticion = ++ultimaPeticionRef.current
     setCargando(true)
     try {
       const params = new URLSearchParams()
@@ -84,11 +93,12 @@ function ClientesContent() {
       if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
       const res = await fetch(`/api/cotizador/clientes?${params}`)
       const d = await res.json()
+      if (idPeticion !== ultimaPeticionRef.current) return
       if (d.clientes) setClientes(d.clientes)
     } catch {
       // silencioso: la lista simplemente queda vacía, sin bloquear la página
     } finally {
-      setCargando(false)
+      if (idPeticion === ultimaPeticionRef.current) setCargando(false)
     }
   }, [busqueda, esSuperAdmin, empresaId])
 
