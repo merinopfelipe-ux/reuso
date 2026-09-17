@@ -100,7 +100,7 @@ async function obtenerDatosReales() {
 export const metadata: Metadata = {
   metadataBase: new URL('https://calculadoradereuso.com'),
   title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental y Huella de Carbono',
-  description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa: huella de carbono y responsabilidad social, con estimaciones documentadas. Facilita la trazabilidad con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
+  description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa: huella de carbono y responsabilidad social, con estimaciones documentadas. Facilita el seguimiento con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
   keywords: [
     'software de sostenibilidad',
     'sostenibilidad empresarial colombia',
@@ -134,7 +134,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://calculadoradereuso.com' },
   openGraph: {
     title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental',
-    description: 'Plataforma de sostenibilidad para estructurar tu impacto ambiental y tu responsabilidad social. Estima, reporta y respalda tus iniciativas con trazabilidad integral.',
+    description: 'Plataforma de sostenibilidad para estructurar tu impacto ambiental y tu responsabilidad social. Estima, reporta y respalda tus iniciativas con seguimiento integral.',
     url: 'https://calculadoradereuso.com',
     type: 'website',
     locale: 'es_CO',
@@ -226,7 +226,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'Calculadora de Reúso - Software de Sostenibilidad e Impacto Ambiental',
-    description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa. Facilita estimaciones documentadas, trazabilidad de materiales y reportes estructurados que respaldan tu responsabilidad social.',
+    description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa. Facilita estimaciones documentadas, rastreo de materiales y reportes estructurados que respaldan tu responsabilidad social.',
     url: 'https://calculadoradereuso.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
@@ -256,17 +256,17 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
       {
         '@type': 'Question',
         name: '¿Qué es la sostenibilidad empresarial y cómo medirla en empresas colombianas o negocios locales?',
-        acceptedAnswer: { '@type': 'Answer', text: 'La sostenibilidad empresarial es el compromiso de tu empresa con su impacto ambiental y social, y es el corazón de tu Responsabilidad Social Empresarial (RSE). Se mide usando herramientas digitales como la Calculadora de Reúso para cuantificar iniciativas como la economía circular, realizando estimaciones ambientales que sustentan reportes corporativos y beneficios.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Es el compromiso de tu empresa con su impacto ambiental y social, el corazón de tu Responsabilidad Social Empresarial (RSE). Se mide usando herramientas digitales como la Calculadora de Reúso para cuantificar iniciativas como la economía circular, respaldadas con cifras que sustentan reportes corporativos y beneficios.' },
       },
       {
         '@type': 'Question',
         name: '¿Qué software o herramientas digitales existen para medir el impacto ambiental?',
-        acceptedAnswer: { '@type': 'Answer', text: 'La Calculadora de Reúso es una plataforma especializada en sostenibilidad para medir el impacto ambiental de tu empresa. Facilita la estimación ambiental, la trazabilidad de los materiales y genera cálculos documentados para respaldar tu compromiso responsable en tus reportes de responsabilidad social.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'La Calculadora de Reúso es una plataforma de sostenibilidad que cuantifica el impacto de tu empresa. Facilita el rastreo de materiales y genera cálculos documentados para respaldar tu compromiso responsable en tus reportes de responsabilidad social.' },
       },
       {
         '@type': 'Question',
         name: '¿Por qué la trazabilidad y la economía circular son vitales para la sostenibilidad?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Porque promueven la transparencia. Integrar modelos de economía circular reduce drásticamente las emisiones y el consumo de agua, avanzando tu impacto ambiental de forma medible. Usar el Pasaporte Digital de Producto (DPP) de la Calculadora de Reúso sustenta la trazabilidad técnica, evitando el greenwashing en tus reportes.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Porque promueven la transparencia. Integrar estos modelos circulares reduce drásticamente las emisiones y el consumo de agua, avanzando tu impacto de forma medible. Usar el Pasaporte Digital de Producto (DPP) de la Calculadora de Reúso sustenta el respaldo técnico, evitando el greenwashing en tus reportes.' },
       },
     ],
   },

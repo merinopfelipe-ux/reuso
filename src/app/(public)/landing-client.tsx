@@ -293,7 +293,7 @@ type CatKey = keyof typeof CATEGORIAS
 const FAQS = [
   {
     q: '¿Qué es la sostenibilidad empresarial y cómo se mide en empresas o negocios locales?',
-    a: 'La sostenibilidad empresarial es la decisión voluntaria de gestionar tu impacto ambiental positivo en la comunidad y el planeta, el corazón de tu responsabilidad social. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso social y ambiental ante clientes y aliados.',
+    a: 'Es la decisión voluntaria de gestionar tu huella positiva en la comunidad y el planeta, el corazón de tu responsabilidad social. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso ante clientes y aliados.',
   },
   {
     q: '¿Qué significa la responsabilidad social empresarial para una pyme en Colombia?',
@@ -301,7 +301,7 @@ const FAQS = [
   },
   {
     q: '¿Qué es la economía circular y cómo impacta mi consumo diario?',
-    a: 'La economía circular consiste en mantener materiales y productos en uso el mayor tiempo posible, reduciendo la extracción de recursos vírgenes. Desde la Calculadora de Reúso medimos ese impacto cotidiano: cuando eliges un producto con Pasaporte Digital (DPP), la calculadora estima cuántos litros de agua y kilogramos de residuos ahorraste con esa decisión frente a comprar un artículo nuevo.',
+    a: 'Consiste en mantener materiales y productos en uso el mayor tiempo posible, reduciendo la extracción de recursos vírgenes. Desde la Calculadora de Reúso medimos ese efecto cotidiano: cuando eliges un producto con Pasaporte Digital (DPP), la calculadora estima cuántos litros de agua y kilogramos de residuos ahorraste con esa decisión frente a comprar un artículo nuevo.',
   },
   {
     q: '¿Dónde puedo comprar productos fabricados con principios de economía circular en Colombia?',
@@ -1289,7 +1289,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Software de sostenibilidad e impacto ambiental.
+              Software de sostenibilidad para tu empresa.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
@@ -1299,7 +1299,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </h1>
             
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de responsabilidad social para cumplir tus metas ambientales y sociales.
+              Cuantifica tu huella en 3 minutos y genera reportes de responsabilidad social para respaldar tus compromisos ante clientes y aliados.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1406,7 +1406,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
                 <h3 className={`text-base md:text-base lg:text-lg font-black ${tp}`}>
                   Calculadora de Reúso <br />
-                  Mide tu sostenibilidad y sácale provecho a la gestión circular de recursos
+                  Mide tu sostenibilidad y aprovecha la gestión circular
                 </h3>
               </div>
               <ul className="relative z-10 space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4 mt-4 md:mt-6">
@@ -2405,7 +2405,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             <div className="relative z-10 max-w-xl mx-auto">
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-                Software ClimaTech de sostenibilidad para medición y trazabilidad corporativa.
+                Software ClimaTech de trazabilidad corporativa.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
                 Estructura tus reportes de sostenibilidad e impacto ambiental <br className="hidden sm:block" />
