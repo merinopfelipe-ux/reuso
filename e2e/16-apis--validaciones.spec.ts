@@ -87,4 +87,75 @@ test.describe('APIs & Validaciones', () => {
     const res = await request.get('/api/status/check')
     expect(res.status()).toBeLessThan(500)
   })
+
+  // /legal/firma/[token] es pública (sin sesión) — un token que contiene
+  // "demo" arma una solicitud falsa en memoria (ver page.tsx del token) sin
+  // tocar la tabla firmas_solicitudes ni Storage, así que esta prueba corre
+  // el flujo real de firma (llenar datos + dibujar en el canvas + enviar)
+  // sin crear ni borrar nada en la base de datos real. La nitidez visual
+  // del trazo es inherentemente manual (ojo humano); esto verifica la parte
+  // estructural: se puede dibujar, el formulario valida, y el documento
+  // queda firmado de punta a punta.
+  test('dpl-09 - firma digital: dibujar en el canvas y firmar un documento de punta a punta', async ({ page }) => {
+    const token = `demo-e2e-dpl09-${Date.now()}`
+    await page.goto(`/legal/firma/${token}`, { waitUntil: 'load' })
+
+    // LegalHeader es sticky (position:sticky). `scrollIntoViewIfNeeded()`
+    // deja el elemento pegado al borde del viewport, justo donde vive el
+    // header — y `force: true` en Playwright NO evita esto: solo salta las
+    // validaciones propias de Playwright, pero el clic real se despacha por
+    // coordenadas de pantalla, así que si el header ocupa ese punto, el
+    // clic le llega al header, no al checkbox (causa real confirmada: el
+    // estado nunca cambiaba pese a "click action done"). Centrar el
+    // elemento en el viewport (block: 'center') lo aleja del header fijo en
+    // el borde superior — así el clic normal (sin forzar) sí aterriza en el
+    // lugar correcto.
+    async function centrarYclic(locator: ReturnType<typeof page.locator>) {
+      await locator.evaluate(el => el.scrollIntoView({ block: 'center' }))
+      await locator.click()
+    }
+
+    const checkbox = page.getByRole('checkbox')
+    await expect(checkbox).toBeVisible({ timeout: 10_000 })
+    await centrarYclic(checkbox)
+    await expect(checkbox).toBeChecked()
+    // Confirma que el check() realmente habilitó el formulario antes de
+    // seguir — sin esto, un click que no registró deja los campos
+    // deshabilitados y el resto de la prueba falla más adelante, lejos de
+    // la causa real (bug real encontrado al escribir esta prueba).
+    await expect(page.locator('input[placeholder="Ej. Ana"]')).toBeEnabled({ timeout: 10_000 })
+
+    // "Persona natural" en vez del default "Represento una empresa" — evita
+    // 3 campos extra (razón social/NIT/cargo) que no son el foco de esta
+    // prueba (ya validados por el propio esquema Zod del endpoint).
+    await centrarYclic(page.getByText('Persona natural'))
+
+    await page.locator('input[placeholder="Ej. Ana"]').fill('Ana')
+    await page.locator('input[placeholder="Ej. Gómez"]').fill('Gómez')
+    await page.locator('select').selectOption('CC')
+    await page.locator('input[placeholder="Ej. 1020304050"]').fill('1020304050')
+    await page.locator('input[type="email"]').fill(`e2e_dpl09_${Date.now()}@calculadoradereuso.com`)
+
+    await centrarYclic(page.locator('.w-32.flex-shrink-0 button'))
+    // "Colombia" sin escopar es ambiguo: el footer también dice "...
+    // Medellín y Bogotá, Colombia" — escopar al botón de la lista del
+    // selector de país evita ese choque.
+    await centrarYclic(page.getByRole('button', { name: /^Colombia/ }))
+    await page.locator('input[placeholder="Número de celular"]').fill('3001234567')
+
+    // Dibuja un trazo real dentro del canvas — sin esto FirmaCanvas nunca
+    // dispara onChange y el botón de enviar queda bloqueado por el propio
+    // "Dibuja tu firma antes de enviar" del formulario.
+    const canvas = page.locator('canvas')
+    const box = await canvas.boundingBox()
+    if (!box) throw new Error('El canvas de firma no está visible.')
+    await page.mouse.move(box.x + box.width * 0.2, box.y + box.height * 0.5)
+    await page.mouse.down()
+    await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.3, { steps: 5 })
+    await page.mouse.move(box.x + box.width * 0.8, box.y + box.height * 0.6, { steps: 5 })
+    await page.mouse.up()
+
+    await page.locator('button:has-text("Firmar y recibir mi copia")').click()
+    await expect(page.getByText('Tu documento quedó firmado')).toBeVisible({ timeout: 20_000 })
+  })
 })

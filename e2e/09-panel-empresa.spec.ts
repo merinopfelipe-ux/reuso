@@ -243,6 +243,122 @@ test.describe('empresa_admin', () => {
     })
     expect([401, 403]).toContain(res.status())
   })
+
+  test('emp-11 - subir logo + WhatsApp en la marca persiste tras recargar', async ({ page }) => {
+    await page.goto('/empresa/configuracion/marca', { waitUntil: 'domcontentloaded' })
+
+    // PNG real de 120x120 generado con pngjs (no un buffer vacío) —
+    // comprimirLogoWebP() decodifica la imagen con new Image() y exige al
+    // menos 50x50 px, un archivo falso nunca pasaría de la validación.
+    const { PNG } = await import('pngjs')
+    const png = new PNG({ width: 120, height: 120 })
+    for (let i = 0; i < png.data.length; i += 4) {
+      png.data[i] = 0; png.data[i + 1] = 130; png.data[i + 2] = 124; png.data[i + 3] = 255
+    }
+    const logoBuffer = PNG.sync.write(png)
+
+    await page.locator('input[type="file"]').setInputFiles({ name: 'logo-e2e.png', mimeType: 'image/png', buffer: logoBuffer })
+    await expect(page.locator('img[alt="Logo"]').first()).toBeVisible({ timeout: 10_000 })
+
+    const whatsapp = '573001234567'
+    await page.locator('input[type="tel"]').fill(whatsapp)
+    await expect(page.getByText('Número válido')).toBeVisible()
+
+    await page.locator('button:has-text("Guarda tu marca")').click()
+    await expect(page.getByText('Marca guardada')).toBeVisible({ timeout: 15_000 })
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+    await expect(page.locator('input[type="tel"]')).toHaveValue(whatsapp)
+    // Tras recargar, el logo ya no viene del preview local (data:) sino de
+    // la URL real guardada en Storage — confirma que el guardado sí llegó.
+    const src = await page.locator('img[alt="Logo"]').first().getAttribute('src')
+    expect(src).not.toBeNull()
+    expect(src).not.toMatch(/^data:/)
+  })
+
+  test('emp-12b - invitar un correo con invitación pendiente muestra el aviso, sin duplicar', async ({ page }) => {
+    const email = `e2e_emp12_${Date.now()}@calculadoradereuso.com`
+
+    await page.goto('/empresa/equipo', { waitUntil: 'domcontentloaded' })
+    await page.locator('button:has-text("Invitar")').click()
+    await page.locator('input[type="email"]').fill(email)
+    await page.locator('button:has-text("Generar invitación")').click()
+    await expect(page.getByText(/copiar|copiado/i)).toBeVisible({ timeout: 15_000 })
+    await page.locator('button:has-text("Listo")').click()
+
+    // Mismo correo otra vez: antes no había ningún control y se creaba una
+    // segunda invitación en silencio (bug real, corregido hoy en
+    // /api/empresa/invitar — ahora responde 409).
+    await page.locator('button:has-text("Invitar")').click()
+    await page.locator('input[type="email"]').fill(email)
+    await page.locator('button:has-text("Generar invitación")').click()
+    // El mismo mensaje se muestra 2 veces a propósito: un banner persistente
+    // arriba de la página y el párrafo dentro del propio modal (mismo
+    // estado `error`, mismo patrón que el aviso de límite de plan) —
+    // escopar al párrafo evita el "strict mode violation".
+    await expect(page.getByRole('paragraph').filter({ hasText: 'Ya existe una invitación pendiente' })).toBeVisible({ timeout: 10_000 })
+
+    const { count } = await supabaseAdmin.from('invitaciones').select('id', { count: 'exact', head: true }).eq('email', email)
+    expect(count).toBe(1)
+
+    await supabaseAdmin.from('invitaciones').delete().eq('email', email)
+  })
+
+  test('emp-13 - un logo apaisado no se deforma en la vista previa', async ({ page }) => {
+    await page.goto('/empresa/configuracion/marca', { waitUntil: 'domcontentloaded' })
+
+    const { PNG } = await import('pngjs')
+    const png = new PNG({ width: 320, height: 64 })
+    for (let i = 0; i < png.data.length; i += 4) {
+      png.data[i] = 214; png.data[i + 1] = 243; png.data[i + 2] = 145; png.data[i + 3] = 255
+    }
+    const logoApaisado = PNG.sync.write(png)
+
+    await page.locator('input[type="file"]').setInputFiles({ name: 'logo-apaisado-e2e.png', mimeType: 'image/png', buffer: logoApaisado })
+
+    // La tarjeta "Vista previa de la propuesta" tiene su propio contenedor
+    // fijo (w-10 h-10, esquina redondeada) con object-contain — el logo
+    // apaisado 5:1 debe encajar sin estirar el contenedor.
+    await expect(page.getByText('Vista previa de la propuesta')).toBeVisible()
+    const contenedorPreview = page.locator('img[alt="Logo"]').last().locator('..')
+    const box = await contenedorPreview.boundingBox()
+    expect(box).not.toBeNull()
+    // El contenedor es cuadrado (w-10 h-10 = 40x40px) sin importar la
+    // proporción real de la imagen subida — si se deformara, dejaría de
+    // ser cuadrado.
+    expect(Math.abs((box?.width ?? 0) - (box?.height ?? 0))).toBeLessThan(2)
+
+    const clasesImg = await page.locator('img[alt="Logo"]').last().getAttribute('class')
+    expect(clasesImg).toContain('object-contain')
+  })
+
+  test('emp-14 - directorio de clientes lista y filtra por búsqueda', async ({ page }) => {
+    const empresaId = empresaIdEfimera()
+    const nombreUnico = `E2E Cliente Directorio ${Date.now()}`
+    const { data: cliente, error } = await supabaseAdmin
+      .from('crm_clientes')
+      .insert({ empresa_id: empresaId, tipo: 'persona', nombre: nombreUnico, telefono: '3001234567', es_contacto_real: true })
+      .select('id')
+      .single()
+    if (error || !cliente) throw new Error(`No se pudo sembrar el cliente de emp-14: ${error?.message}`)
+
+    try {
+      await page.goto('/empresa/clientes', { waitUntil: 'domcontentloaded' })
+      await expect(page.getByText(nombreUnico)).toBeVisible({ timeout: 15_000 })
+
+      await page.locator('input[placeholder="Busca por nombre, celular o NIT"]').fill('nombre-que-no-existe-en-ningun-lado')
+      await expect(page.getByText(nombreUnico)).not.toBeVisible()
+
+      await page.locator('input[placeholder="Busca por nombre, celular o NIT"]').fill(nombreUnico)
+      await expect(page.getByText(nombreUnico)).toBeVisible({ timeout: 10_000 })
+
+      await page.getByText(nombreUnico).click()
+      await expect(page).toHaveURL(new RegExp(`/empresa/clientes/${cliente.id}`))
+    } finally {
+      await supabaseAdmin.from('crm_clientes').delete().eq('id', cliente.id)
+    }
+  })
+
   test('emp-15 - /empresa/clientes/[id] responde sin errores 500', async ({ page }) => {
     // Es una ruta dinámica, así que con un fake ID devolverá 404 pero la UI de shell no crashea
     const res = await page.goto('/empresa/clientes/fake-id', { waitUntil: 'domcontentloaded' })
