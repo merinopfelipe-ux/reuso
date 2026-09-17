@@ -86,6 +86,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/status') ||
     pathname === '/legal' ||
     pathname.startsWith('/legal/') ||
+    pathname === '/faq' ||
     pathname.startsWith('/sistema-diseno') ||
     pathname.startsWith('/landing2') ||
     pathname.startsWith('/pivot-roadmap')

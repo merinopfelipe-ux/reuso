@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Solo páginas indexables (todo el árbol /legal y rutas autenticadas son noindex)
   const paginas = [
     { ruta: '', prioridad: 1.0, changeFrequency: 'weekly' as const },
+    { ruta: '/faq', prioridad: 0.8, changeFrequency: 'monthly' as const },
   ]
 
   return paginas.map(({ ruta, prioridad, changeFrequency }) => ({
