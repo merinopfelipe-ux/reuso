@@ -310,6 +310,91 @@ test.describe('super_admin', () => {
     // Limpieza: borrar la invitación efímera creada por esta prueba.
     await supabaseAdmin.from('invitaciones').delete().eq('email', email)
   })
+
+  test('adm-28 - desactivar un insumo en un ítem no borra el insumo de la categoría', async ({ page }) => {
+    test.setTimeout(90_000)
+    // Bug real corregido 2026-09-17: en la ficha de UN ítem, quitar un
+    // insumo heredado (ej. "Tela" en una silla sin tapicería) comparaba la
+    // lista visible contra el largo del esquema de la categoría y disparaba
+    // un PATCH que reescribía categoria_insumos_base entera (DELETE+INSERT),
+    // borrando ese insumo también para el resto de ítems que sí lo usan. Ver
+    // categorias-client.tsx, guardar() → insCambio.
+    const sufijo = Date.now()
+    const nombreInsumo = `Tela QA ${sufijo}`
+    const nombreItemB = `QA E2E item con tela ${sufijo}`
+
+    const { data: categoria, error: errCat } = await supabaseAdmin
+      .from('categorias')
+      .insert({ nombre: `QA E2E cat insumos ${sufijo}`, activa: true })
+      .select('id')
+      .single()
+    if (errCat || !categoria) throw new Error(`No se pudo crear la categoría: ${errCat?.message}`)
+
+    await supabaseAdmin.from('categoria_materiales_base').insert({ categoria_id: categoria.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+    const { data: insumoBase, error: errIns } = await supabaseAdmin
+      .from('categoria_insumos_base')
+      .insert({ categoria_id: categoria.id, nombre: nombreInsumo, cantidad: 1, unidad: 'metros', precio_unitario: 5000 })
+      .select('id')
+      .single()
+    if (errIns || !insumoBase) throw new Error(`No se pudo crear el insumo base: ${errIns?.message}`)
+
+    // Ítem A: nunca usó el insumo (ej. una silla sin tapicería) — sin fila propia en item_insumos.
+    const { data: itemA, error: errA } = await supabaseAdmin
+      .from('items')
+      .insert({ categoria_id: categoria.id, nombre: `QA E2E item sin tela ${sufijo}`, peso_kg: 1, co2_por_unidad: 1 })
+      .select('id')
+      .single()
+    if (errA || !itemA) throw new Error(`No se pudo crear el ítem A: ${errA?.message}`)
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemA.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+
+    // Ítem B: sí usa el insumo, con una cantidad real que nunca debe tocarse.
+    const { data: itemB, error: errB } = await supabaseAdmin
+      .from('items')
+      .insert({ categoria_id: categoria.id, nombre: nombreItemB, peso_kg: 1, co2_por_unidad: 1 })
+      .select('id')
+      .single()
+    if (errB || !itemB) throw new Error(`No se pudo crear el ítem B: ${errB?.message}`)
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemB.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+    await supabaseAdmin.from('item_insumos').insert({ item_id: itemB.id, nombre: nombreInsumo, cantidad: 3, unidad: 'metros', precio_unitario: 5000 })
+
+    // Abre el ítem A: como nunca guardó este insumo, debe verse "(inactivo)".
+    await page.goto(`/admin/categorias?nodo=${categoria.id}&item=${itemA.id}`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await expect(page.getByText(nombreInsumo).first()).toBeVisible({ timeout: 20_000 })
+    await expect(page.getByText('(inactivo)').first()).toBeVisible({ timeout: 10_000 })
+
+    // Quita el insumo de este ítem puntual (el mismo gesto que describió el
+    // usuario: "si no tiene tapicería, no va a tener tela"). Reintenta el
+    // clic dentro de un toPass: justo tras el goto, React puede terminar de
+    // pintar el HTML antes de acabar de hidratarse, y un clic que llega en
+    // esa ventana se pierde sin ningún error (hallazgo real 2026-09-17, visto
+    // en corridas repetidas: el botón sigue intacto minutos después de "hacer
+    // clic" sin que nada lo bloquee).
+    await expect(async () => {
+      await page.locator('button[title="Eliminar insumo"]').click()
+      await expect(page.getByText('Sin insumos asignados.')).toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 15_000 })
+
+    await page.getByRole('button', { name: 'Guardar' }).click()
+    // El panel se cierra y vuelve a la lista de ítems de la categoría.
+    await expect(page.getByText(nombreItemB)).toBeVisible({ timeout: 20_000 })
+
+    // El insumo debe seguir existiendo para la categoría completa.
+    const { data: insumosBaseFinal } = await supabaseAdmin
+      .from('categoria_insumos_base')
+      .select('nombre')
+      .eq('categoria_id', categoria.id)
+    expect(insumosBaseFinal?.some(i => i.nombre === nombreInsumo)).toBe(true)
+
+    // El ítem B, que sí usa el insumo, no debe haber perdido su cantidad.
+    const { data: insumosItemB } = await supabaseAdmin
+      .from('item_insumos')
+      .select('nombre, cantidad')
+      .eq('item_id', itemB.id)
+    const filaTelaB = insumosItemB?.find(i => i.nombre === nombreInsumo)
+    expect(filaTelaB?.cantidad).toBe(3)
+
+    await supabaseAdmin.from('categorias').delete().eq('id', categoria.id)
+  })
 })
 
 test('adm-api - la API de admin rechaza a quien no tiene sesión', async ({ browser }) => {

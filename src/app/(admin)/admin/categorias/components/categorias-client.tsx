@@ -81,7 +81,7 @@ function contarDescendientes(categorias: CategoriaConEsquemaBase[], items: ItemC
   return total
 }
 
-import { InputPrecio, InputConUnidad } from '@/components/ui/formatted-number-input'
+import { InputPrecio, InputConUnidad, InputCantidadInsumo } from '@/components/ui/formatted-number-input'
 import { parsearIcono } from '@/lib/icono-nombre'
 
 // ── Menú de tres puntos (Editar / Desactivar) ───────────────────────────────
@@ -703,11 +703,10 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
   const excluido = nombreIcono === 'Icon' || nombreIcono === 'DynamicIcon' || nombreIcono === 'IconNode' || nombreIcono === 'IconBase' || nombreIcono === 'IconContext'
   const Comp = (nombreIcono && !excluido)
     ? (libreria === 'phosphor'
-        ? (Phosphor as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[nombreIcono]
-        : (Lucide as unknown as Record<string, React.ComponentType<{ size?: number; className?: string }>>)[nombreIcono])
+        ? (Phosphor as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; weight?: string; strokeWidth?: number }>>)[nombreIcono]
+        : (Lucide as unknown as Record<string, React.ComponentType<{ size?: number; className?: string; weight?: string; strokeWidth?: number }>>)[nombreIcono])
     : null
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const propsLibreria = libreria === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 }
+  const propsLibreria = libreria === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 }
   const contenido = Comp ? <Comp size={size} className={className} {...propsLibreria} /> : <Folder size={size} className={className} strokeWidth={1.3} />
   if (!bg) return contenido
   return (
@@ -905,7 +904,13 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const inicial: Record<string, string> = {}
     for (const ins of categoria.categoria_insumos_base) {
       const existente = item?.item_insumos.find(ii => ii.nombre === ins.nombre)
-      inicial[ins.nombre] = String(existente?.cantidad ?? ins.cantidad ?? 0)
+      // Nunca heredar ins.cantidad del esquema base: ese valor es siempre 1,
+      // un placeholder sin sentido real (la cantidad del catálogo no se
+      // edita, ver EditorFinanciero). Bug real: un ítem que nunca guardó
+      // este insumo terminaba sumando su costo con 1 metro implícito, sin
+      // que nadie lo hubiera elegido para ese ítem puntual. Mismo criterio
+      // que ya usan los materiales (pesos) más abajo: vacío si no existe.
+      inicial[ins.nombre] = existente ? String(existente.cantidad) : ''
     }
     return inicial
   })
@@ -951,7 +956,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     id: s.id, nombre: s.nombre, precio: String(s.precio ?? 0),
   })))
   const [esquemaIns, setEsquemaIns] = useState(() => categoria.categoria_insumos_base.map(i => ({
-    id: i.id, nombre: i.nombre, unidad: i.unidad, precio_unitario: String(i.precio_unitario),
+    id: i.id, nombre: i.nombre, unidad: i.unidad, precio_unitario: String(i.precio_unitario), peso_kg: i.peso_kg ?? null,
   })))
 
   // Id de la fila cuyo detalle está desplegado. La lista se ve compacta
@@ -1136,31 +1141,39 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       }
     }
 
-    // Mismo criterio para los costos: si cambió el nombre de un servicio, o
-    // el nombre/unidad/precio de referencia de un insumo, o se quitó alguno,
-    // el esquema financiero de la categoría se actualiza para todos sus ítems.
-    const servCambio =
-      esquemaServVisibles.length !== categoria.categoria_servicios_base.length ||
-      esquemaServVisibles.some(f => f.nombre !== categoria.categoria_servicios_base.find(o => o.id === f.id)?.nombre)
-    const insCambio =
-      esquemaInsVisibles.length !== categoria.categoria_insumos_base.length ||
-      esquemaInsVisibles.some(f => {
-        const orig = categoria.categoria_insumos_base.find(o => o.id === f.id)
-        if (!orig) return true
-        return f.nombre !== orig.nombre || f.unidad !== orig.unidad
-      })
+    // Mismo criterio para los costos: solo si cambió el NOMBRE o la UNIDAD de
+    // un servicio/insumo que sigue existiendo en el esquema, el esquema
+    // financiero de la categoría se actualiza para todos sus ítems. Nunca
+    // por longitud: que ESTE ítem oculte un insumo (ej. "Tela" en una silla
+    // sin tapicería) no debe borrar "Tela" para el resto de sillas de la
+    // categoría que sí la usan — bug real corregido 2026-09-17, la
+    // eliminación por ítem se comparaba contra el largo de la lista visible
+    // y terminaba reescribiendo el catálogo completo. Quitar o restaurar un
+    // insumo de verdad para TODA la categoría se hace desde "Editar
+    // categoría" (EditorFinanciero), nunca desde la ficha de un ítem.
+    const servCambio = esquemaServ.some(f => {
+      const orig = categoria.categoria_servicios_base.find(o => o.id === f.id)
+      return !!orig && f.nombre !== orig.nombre
+    })
+    const insCambio = esquemaIns.some(f => {
+      const orig = categoria.categoria_insumos_base.find(o => o.id === f.id)
+      return !!orig && (f.nombre !== orig.nombre || f.unidad !== orig.unidad)
+    })
 
     if (servCambio || insCambio) {
       const cuerpo: Record<string, unknown> = {}
       if (servCambio) {
-        cuerpo.servicios_base = esquemaServVisibles
+        // Base completa (categoria_servicios_base), nunca la lista filtrada
+        // por lo que este ítem decidió mostrar — un servicio que este ítem
+        // ocultó sigue existiendo para el resto de la categoría.
+        cuerpo.servicios_base = esquemaServ
           .filter(f => f.nombre.trim())
           .map(f => ({ nombre: f.nombre.trim(), precio: parseFloat(f.precio) || 0 }))
       }
       if (insCambio) {
-        cuerpo.insumos_base = esquemaInsVisibles
+        cuerpo.insumos_base = esquemaIns
           .filter(f => f.nombre.trim())
-          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: parseFloat(f.precio_unitario) || 0 }))
+          .map(f => ({ nombre: f.nombre.trim(), cantidad: 1, unidad: f.unidad || 'unidad', precio_unitario: parseFloat(f.precio_unitario) || 0, peso_kg: f.peso_kg ?? undefined }))
       }
       const resCat = await fetch(`/api/admin/categorias/${categoria.id}`, {
         method: 'PATCH',
@@ -1287,106 +1300,143 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin insumos asignados.</p>
             )}
 
-            {esquemaInsVisibles.map(fila => (
-              <div key={fila.id} className="flex flex-col gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
-                    <span className="truncate">{fila.nombre}</span>
-                    <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
-                  </p>
-                  <div className="w-24 flex-shrink-0">
-                    <InputConUnidad value={cantidades[fila.nombre] ?? ''} onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: v }))} unidad={fila.unidad || 'ud'} paso="0.1" />
-                  </div>
-                  <div className="w-28 flex-shrink-0">
-                    <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
-                  </div>
-                  <button type="button" onClick={() => alternarFila(fila.id)}
-                    className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
-                    title="Editar insumo">
-                    <Pencil size={15} sinAnimacion />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setInsumosEliminados(prev => new Set(prev).add(fila.id))
-                      setCantidades(p => ({ ...p, [fila.nombre]: '' }))
-                      setPreciosUnitarios(p => ({ ...p, [fila.nombre]: '' }))
-                      setPesosInsumo(p => ({ ...p, [fila.nombre]: '' }))
-                    }}
-                    className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
-                    title="Eliminar insumo"
-                  >
-                    <Trash size={16} sinAnimacion />
-                  </button>
-                </div>
-                {filaAbierta === fila.id && (
-                  <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelSt}>Insumo</label>
-                        <input style={inputSt} placeholder="Ej: Tela" value={fila.nombre}
-                          onChange={e => editarEsquemaIns(fila.id, { nombre: e.target.value })} />
-                      </div>
-                      <div>
-                        <label className={labelSt}>Unidad</label>
-                        <input style={inputSt} placeholder="Ej: metros" value={fila.unidad}
-                          onChange={e => editarEsquemaIns(fila.id, { unidad: e.target.value })} />
-                      </div>
+            {esquemaInsVisibles.map(fila => {
+              const cantNum = parseFloat(String(cantidades[fila.nombre] ?? '0').replace(',', '.'))
+              const esCero = isNaN(cantNum) || cantNum === 0
+              return (
+                <div
+                  key={fila.id}
+                  className={`flex flex-col gap-2 mb-2 transition-opacity duration-200 ${
+                    esCero ? 'opacity-55 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <p
+                      className={`flex-1 min-w-0 flex items-center gap-1.5 text-sm transition-colors ${
+                        esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'
+                      }`}
+                    >
+                      <span className="truncate">{fila.nombre}</span>
+                      <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
+                      {esCero && (
+                        <span className="text-[10px] font-medium text-[var(--text-placeholder)] italic">
+                          (inactivo)
+                        </span>
+                      )}
+                    </p>
+                    <div className="w-28 flex-shrink-0">
+                      <InputCantidadInsumo
+                        value={cantidades[fila.nombre] ?? 0}
+                        onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: String(v) }))}
+                        unidad={fila.unidad || 'ud'}
+                      />
                     </div>
-                    <div className="flex items-end gap-1">
-                      <div className="flex-1">
-                        <label className={labelSt}>Peso</label>
-                        <InputConUnidad value={pesosInsumo[fila.nombre] ?? ''} onChange={v => setPesosInsumo(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.001" />
-                      </div>
-                      <div className="pb-2.5">
-                        <BotonSugerirPeso nombre={fila.nombre} unidad={fila.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setPesosInsumo(p => ({ ...p, [fila.nombre]: String(pesoKg) }))} />
-                      </div>
+                    <div className={`w-28 flex-shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                      <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
                     </div>
-                    <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                    <button type="button" onClick={() => alternarFila(fila.id)}
+                      className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                      title="Editar insumo">
+                      <Pencil size={15} sinAnimacion />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setInsumosEliminados(prev => new Set(prev).add(fila.id))
+                        setCantidades(p => ({ ...p, [fila.nombre]: '' }))
+                        setPreciosUnitarios(p => ({ ...p, [fila.nombre]: '' }))
+                        setPesosInsumo(p => ({ ...p, [fila.nombre]: '' }))
+                      }}
+                      className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                      title="Eliminar insumo"
+                    >
+                      <Trash size={16} sinAnimacion />
+                    </button>
                   </div>
-                )}
-              </div>
-            ))}
-
-            {extraInsumos.length > 0 && (
-              <div className="flex flex-col gap-2 mb-2">
-                {extraInsumos.map((ins, i) => (
-                  <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                      <div>
-                        <label className={labelSt}>Insumo</label>
-                        <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                      </div>
-                      <div>
-                        <label className={labelSt}>Cantidad</label>
-                        <InputConUnidad value={ins.cantidad} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: v } : x))} unidad={ins.unidad || 'ud'} paso="0.1" />
-                      </div>
-                      <div>
-                        <label className={labelSt}>Unidad</label>
-                        <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                  {filaAbierta === fila.id && (
+                    <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className={labelSt}>Insumo</label>
+                          <input style={inputSt} placeholder="Ej: Tela" value={fila.nombre}
+                            onChange={e => editarEsquemaIns(fila.id, { nombre: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Unidad</label>
+                          <input style={inputSt} placeholder="Ej: metros" value={fila.unidad}
+                            onChange={e => editarEsquemaIns(fila.id, { unidad: e.target.value })} />
+                        </div>
                       </div>
                       <div className="flex items-end gap-1">
                         <div className="flex-1">
                           <label className={labelSt}>Peso</label>
-                          <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
+                          <InputConUnidad value={pesosInsumo[fila.nombre] ?? ''} onChange={v => setPesosInsumo(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.001" />
                         </div>
                         <div className="pb-2.5">
-                          <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
+                          <BotonSugerirPeso nombre={fila.nombre} unidad={fila.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setPesosInsumo(p => ({ ...p, [fila.nombre]: String(pesoKg) }))} />
                         </div>
                       </div>
-                      <div>
-                        <label className={labelSt}>Precio unitario</label>
-                        <InputPrecio value={ins.precio_unitario} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+                      <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            {extraInsumos.length > 0 && (
+              <div className="flex flex-col gap-2 mb-2">
+                {extraInsumos.map((ins, i) => {
+                  const cantNum = typeof ins.cantidad === 'string' ? parseFloat(ins.cantidad.replace(',', '.')) : ins.cantidad
+                  const esCero = isNaN(cantNum) || cantNum === 0
+                  return (
+                    <div
+                      key={i}
+                      className={`flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0 transition-opacity duration-200 ${
+                        esCero ? 'opacity-55 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'
+                      }`}
+                    >
+                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <div>
+                          <label className={labelSt}>
+                            Insumo {esCero && <span className="text-[10px] font-normal text-[var(--text-placeholder)] italic">(inactivo)</span>}
+                          </label>
+                          <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Cantidad</label>
+                          <InputCantidadInsumo
+                            value={ins.cantidad}
+                            onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: String(v) } : x))}
+                            unidad={ins.unidad || 'ud'}
+                          />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Unidad</label>
+                          <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                        </div>
+                        <div className="flex items-end gap-1">
+                          <div className="flex-1">
+                            <label className={labelSt}>Peso</label>
+                            <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
+                          </div>
+                          <div className="pb-2.5">
+                            <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
+                          </div>
+                        </div>
+                        <div className={`transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                          <label className={labelSt}>Precio unitario</label>
+                          <InputPrecio value={ins.precio_unitario} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
+                        </div>
+                      </div>
+                      <CampoTooltip nombre={ins.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      <div className="flex justify-end items-center mt-1">
+                        <button type="button" onClick={() => setExtraInsumos(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+                          <Trash size={14} /> Eliminar
+                        </button>
                       </div>
                     </div>
-                    <CampoTooltip nombre={ins.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                    <div className="flex justify-end items-center mt-1">
-                      <button type="button" onClick={() => setExtraInsumos(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
-                        <Trash size={14} /> Eliminar
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 

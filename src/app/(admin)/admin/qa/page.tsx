@@ -1289,6 +1289,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'En ambos casos llega un correo de invitación al plan elegido, nunca al plan gratuito.',
     journeys: ['Admin Operativa']
   },
+  {
+    id: 'adm-28', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
+    titulo: 'Desactivar un insumo en un ítem no afecta a los demás ítems de la categoría',
+    descripcion: 'Un insumo heredado de la categoría (ej. "Tela") puede no aplicar a un ítem puntual (ej. una silla sin tapicería) sin que eso borre ese insumo para el resto de ítems de la misma categoría.',
+    pasos: [
+      'Entra a una categoría con al menos un insumo (ej. "Tela") y dos ítems.',
+      'En el primer ítem, deja la cantidad de "Tela" en 0 o vacía y guarda — debe verse gris con la etiqueta "(inactivo)".',
+      'Abre el segundo ítem y confirma que "Tela" sigue apareciendo ahí, disponible para ponerle una cantidad real.'
+    ],
+    esperado: 'El primer ítem no suma el costo de "Tela" en su total. El segundo ítem sigue teniendo "Tela" disponible y funcionando con normalidad.',
+    journeys: ['Admin Operativa']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // SETTINGS
