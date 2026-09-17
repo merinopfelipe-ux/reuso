@@ -40,113 +40,118 @@ interface ClusterTheme {
   dark: ThemeTokens
 }
 
+// Los 3 acentos vienen directo de la paleta real del sistema (skill
+// design-system), a propósito ninguno verde/pistacho/menta/teal — nogal,
+// azul info y ámbar warning son los únicos "colores de acento" del sistema
+// que no leen como el verde de marca. Son constantes entre temas (no
+// cambian de valor en modo noche, solo la opacidad de sus fondos tenues).
 const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
   'economia-circular': {
     name: 'Economía circular, huella ambiental y consultoría',
     labelShort: 'Economía circular',
     light: {
-      primary: '#00827C',
-      primaryText: '#00827C',
-      pillBg: 'rgba(0, 130, 124, 0.08)',
-      pillBgHover: 'rgba(0, 130, 124, 0.16)',
-      pillText: '#006B66',
-      badgeBg: 'rgba(0, 130, 124, 0.1)',
-      badgeText: '#00827C',
-      cardOpenBorder: 'rgba(0, 130, 124, 0.35)',
-      cardOpenBg: 'rgba(255, 255, 255, 0.98)',
-      cardHoverBorder: 'rgba(0, 130, 124, 0.3)',
-      btnBg: '#00827C',
+      primary: 'var(--color-nogal)',
+      primaryText: 'var(--color-nogal)',
+      pillBg: 'rgba(173, 124, 67, 0.08)',
+      pillBgHover: 'rgba(173, 124, 67, 0.16)',
+      pillText: 'var(--color-nogal)',
+      badgeBg: 'rgba(173, 124, 67, 0.1)',
+      badgeText: 'var(--color-nogal)',
+      cardOpenBorder: 'rgba(173, 124, 67, 0.35)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(173, 124, 67, 0.3)',
+      btnBg: 'var(--color-nogal)',
       btnText: '#FFFFFF',
-      dotBg: '#00827C',
-      glowShadow: '0 8px 24px -6px rgba(0, 130, 124, 0.15)',
+      dotBg: 'var(--color-nogal)',
+      glowShadow: '0 8px 24px -6px rgba(173, 124, 67, 0.15)',
     },
     dark: {
-      primary: '#D6F391',
-      primaryText: '#D6F391',
-      pillBg: 'rgba(214, 243, 145, 0.12)',
-      pillBgHover: 'rgba(214, 243, 145, 0.2)',
-      pillText: '#D6F391',
-      badgeBg: 'rgba(214, 243, 145, 0.15)',
-      badgeText: '#D6F391',
-      cardOpenBorder: 'rgba(214, 243, 145, 0.45)',
-      cardOpenBg: 'rgba(82, 82, 82, 0.45)',
-      cardHoverBorder: 'rgba(214, 243, 145, 0.3)',
-      btnBg: '#D6F391',
-      btnText: '#2D2D2D',
-      dotBg: '#D6F391',
-      glowShadow: '0 8px 24px -6px rgba(214, 243, 145, 0.15)',
+      primary: 'var(--color-nogal)',
+      primaryText: 'var(--color-nogal)',
+      pillBg: 'rgba(173, 124, 67, 0.15)',
+      pillBgHover: 'rgba(173, 124, 67, 0.25)',
+      pillText: 'var(--color-nogal)',
+      badgeBg: 'rgba(173, 124, 67, 0.18)',
+      badgeText: 'var(--color-nogal)',
+      cardOpenBorder: 'rgba(173, 124, 67, 0.45)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(173, 124, 67, 0.35)',
+      btnBg: 'var(--color-nogal)',
+      btnText: '#FFFFFF',
+      dotBg: 'var(--color-nogal)',
+      glowShadow: '0 8px 24px -6px rgba(173, 124, 67, 0.25)',
     },
   },
   'huella-de-carbono': {
     name: 'Medición de huella de carbono y monitoreo digital',
     labelShort: 'Medición de huella de carbono',
     light: {
-      primary: '#0284C7',
-      primaryText: '#0284C7',
-      pillBg: 'rgba(2, 132, 199, 0.08)',
-      pillBgHover: 'rgba(2, 132, 199, 0.16)',
-      pillText: '#0369A1',
-      badgeBg: 'rgba(2, 132, 199, 0.1)',
-      badgeText: '#0284C7',
-      cardOpenBorder: 'rgba(2, 132, 199, 0.35)',
-      cardOpenBg: 'rgba(255, 255, 255, 0.98)',
-      cardHoverBorder: 'rgba(2, 132, 199, 0.3)',
-      btnBg: '#0284C7',
+      primary: 'var(--color-info)',
+      primaryText: 'var(--color-info-content)',
+      pillBg: 'rgba(89, 166, 228, 0.08)',
+      pillBgHover: 'rgba(89, 166, 228, 0.16)',
+      pillText: 'var(--color-info-content)',
+      badgeBg: 'rgba(89, 166, 228, 0.1)',
+      badgeText: 'var(--color-info-content)',
+      cardOpenBorder: 'rgba(89, 166, 228, 0.35)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(89, 166, 228, 0.3)',
+      btnBg: 'var(--color-info)',
       btnText: '#FFFFFF',
-      dotBg: '#0284C7',
-      glowShadow: '0 8px 24px -6px rgba(2, 132, 199, 0.15)',
+      dotBg: 'var(--color-info)',
+      glowShadow: '0 8px 24px -6px rgba(89, 166, 228, 0.15)',
     },
     dark: {
-      primary: '#38BDF8',
-      primaryText: '#38BDF8',
-      pillBg: 'rgba(56, 189, 248, 0.12)',
-      pillBgHover: 'rgba(56, 189, 248, 0.2)',
-      pillText: '#38BDF8',
-      badgeBg: 'rgba(56, 189, 248, 0.15)',
-      badgeText: '#38BDF8',
-      cardOpenBorder: 'rgba(56, 189, 248, 0.45)',
-      cardOpenBg: 'rgba(82, 82, 82, 0.45)',
-      cardHoverBorder: 'rgba(56, 189, 248, 0.3)',
-      btnBg: '#38BDF8',
-      btnText: '#2D2D2D',
-      dotBg: '#38BDF8',
-      glowShadow: '0 8px 24px -6px rgba(56, 189, 248, 0.15)',
+      primary: 'var(--color-info)',
+      primaryText: 'var(--color-info-content)',
+      pillBg: 'rgba(89, 166, 228, 0.15)',
+      pillBgHover: 'rgba(89, 166, 228, 0.25)',
+      pillText: 'var(--color-info-content)',
+      badgeBg: 'rgba(89, 166, 228, 0.18)',
+      badgeText: 'var(--color-info-content)',
+      cardOpenBorder: 'rgba(89, 166, 228, 0.45)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(89, 166, 228, 0.35)',
+      btnBg: 'var(--color-info)',
+      btnText: '#FFFFFF',
+      dotBg: 'var(--color-info)',
+      glowShadow: '0 8px 24px -6px rgba(89, 166, 228, 0.25)',
     },
   },
   'certificaciones': {
     name: 'Certificaciones, finanzas y educación',
     labelShort: 'Certificaciones',
     light: {
-      primary: '#D97706',
-      primaryText: '#D97706',
-      pillBg: 'rgba(217, 119, 6, 0.08)',
-      pillBgHover: 'rgba(217, 119, 6, 0.16)',
-      pillText: '#B45309',
-      badgeBg: 'rgba(217, 119, 6, 0.1)',
-      badgeText: '#D97706',
-      cardOpenBorder: 'rgba(217, 119, 6, 0.35)',
-      cardOpenBg: 'rgba(255, 255, 255, 0.98)',
-      cardHoverBorder: 'rgba(217, 119, 6, 0.3)',
-      btnBg: '#D97706',
-      btnText: '#FFFFFF',
-      dotBg: '#D97706',
-      glowShadow: '0 8px 24px -6px rgba(217, 119, 6, 0.15)',
+      primary: 'var(--color-warning)',
+      primaryText: 'var(--color-warning-content)',
+      pillBg: 'rgba(246, 191, 62, 0.1)',
+      pillBgHover: 'rgba(246, 191, 62, 0.18)',
+      pillText: 'var(--color-warning-content)',
+      badgeBg: 'rgba(246, 191, 62, 0.12)',
+      badgeText: 'var(--color-warning-content)',
+      cardOpenBorder: 'rgba(246, 191, 62, 0.4)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(246, 191, 62, 0.35)',
+      btnBg: 'var(--color-warning)',
+      btnText: '#474747',
+      dotBg: 'var(--color-warning)',
+      glowShadow: '0 8px 24px -6px rgba(246, 191, 62, 0.2)',
     },
     dark: {
-      primary: '#FBBF24',
-      primaryText: '#FBBF24',
-      pillBg: 'rgba(251, 191, 36, 0.12)',
-      pillBgHover: 'rgba(251, 191, 36, 0.2)',
-      pillText: '#FBBF24',
-      badgeBg: 'rgba(251, 191, 36, 0.15)',
-      badgeText: '#FBBF24',
-      cardOpenBorder: 'rgba(251, 191, 36, 0.45)',
-      cardOpenBg: 'rgba(82, 82, 82, 0.45)',
-      cardHoverBorder: 'rgba(251, 191, 36, 0.3)',
-      btnBg: '#FBBF24',
-      btnText: '#2D2D2D',
-      dotBg: '#FBBF24',
-      glowShadow: '0 8px 24px -6px rgba(251, 191, 36, 0.15)',
+      primary: 'var(--color-warning)',
+      primaryText: 'var(--color-warning-content)',
+      pillBg: 'rgba(246, 191, 62, 0.15)',
+      pillBgHover: 'rgba(246, 191, 62, 0.25)',
+      pillText: 'var(--color-warning-content)',
+      badgeBg: 'rgba(246, 191, 62, 0.18)',
+      badgeText: 'var(--color-warning-content)',
+      cardOpenBorder: 'rgba(246, 191, 62, 0.45)',
+      cardOpenBg: 'var(--bg-card)',
+      cardHoverBorder: 'rgba(246, 191, 62, 0.35)',
+      btnBg: 'var(--color-warning)',
+      btnText: '#474747',
+      dotBg: 'var(--color-warning)',
+      glowShadow: '0 8px 24px -6px rgba(246, 191, 62, 0.25)',
     },
   },
 }
@@ -192,10 +197,10 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
       className={`scroll-mt-24 rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col ${
         open
           ? isDark
-            ? 'bg-[#525252]/40'
+            ? 'bg-[var(--bg-secondary)]/40'
             : 'bg-white'
           : isDark
-            ? 'border-white/10 bg-[#525252]/20 hover:border-white/20 hover:bg-[#525252]/30'
+            ? 'border-white/10 bg-[var(--bg-secondary)]/20 hover:border-white/20 hover:bg-[var(--bg-secondary)]/30'
             : 'border-[var(--border)] bg-[var(--bg-card)]/80 hover:bg-white'
       }`}
     >
@@ -216,8 +221,8 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
               open
                 ? ''
                 : isDark
-                  ? 'text-white group-hover:text-white'
-                  : 'text-[#474747] group-hover:text-[#2D2D2D]'
+                  ? 'text-white'
+                  : 'text-[#474747]'
             }`}
           >
             {item.q}
@@ -244,23 +249,33 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
           <p className={`text-sm sm:text-base leading-relaxed font-normal pt-3 ${isDark ? 'text-white/90' : 'text-[#474747]/95'}`}>
             {item.a}
           </p>
-          {/* Copiar enlace: solo al desplegar, chico, oculto en mobile, el
-              nombre solo aparece como tooltip nativo al pasar el cursor */}
-          <button
-            type="button"
-            onClick={copiarEnlace}
-            title="Copiar enlace"
-            style={{ color: copiado ? tokens.primaryText : undefined }}
-            className={`hidden sm:inline-flex mt-3 items-center gap-1 text-[11px] font-semibold transition-colors ${
-              copiado
-                ? ''
-                : isDark
-                  ? 'text-white/40 hover:text-white'
-                  : 'text-[#474747]/50 hover:text-[#2D2D2D]'
-            }`}
-          >
-            {copiado ? <Check size={11} strokeWidth={2.5} /> : <Copy size={11} />}
-          </button>
+          {/* Copiar enlace: solo al desplegar, chico, oculto en mobile. El
+              texto "Copiar enlace" es un tooltip propio (no el title nativo
+              del navegador, poco confiable) que aparece al pasar el cursor. */}
+          <div className="relative hidden sm:inline-flex group/copy mt-3">
+            <button
+              type="button"
+              onClick={copiarEnlace}
+              style={{ color: copiado ? tokens.primaryText : undefined }}
+              className={`inline-flex items-center gap-1 text-[11px] font-semibold transition-colors ${
+                copiado
+                  ? ''
+                  : isDark
+                    ? 'text-white/40 hover:text-white'
+                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+              }`}
+            >
+              {copiado ? <Check size={11} strokeWidth={2.5} /> : <Copy size={11} />}
+            </button>
+            {!copiado && (
+              <span
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-8 whitespace-nowrap rounded-md px-2 py-1 text-[10px] font-semibold opacity-0 transition-opacity duration-150 group-hover/copy:opacity-100"
+                style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', boxShadow: 'var(--shadow)' }}
+              >
+                Copiar enlace
+              </span>
+            )}
+          </div>
         </div>
       )}
     </article>
@@ -326,7 +341,7 @@ export function FaqClient() {
           top: 0,
           zIndex: 40,
           backdropFilter: 'blur(16px)',
-          background: isDark ? 'rgba(45,45,45,0.75)' : 'rgba(255,255,255,0.75)',
+          background: isDark ? 'rgba(71,71,71,0.75)' : 'rgba(255,255,255,0.75)',
           borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,130,124,0.1)'}`,
         }}
         className="px-4 sm:px-6 py-3"
@@ -398,11 +413,11 @@ export function FaqClient() {
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${
                 clusterActivo === 'todos'
                   ? isDark
-                    ? 'bg-white text-[#2D2D2D]'
-                    : 'bg-[#2D2D2D] text-white'
+                    ? 'bg-white text-[#474747]'
+                    : 'bg-[#474747] text-white'
                   : isDark
                     ? 'bg-white/5 text-white/70 hover:bg-white/10'
-                    : 'bg-[#2D2D2D]/5 text-[#474747] hover:bg-[#2D2D2D]/10'
+                    : 'bg-[#474747]/5 text-[#474747] hover:bg-[#474747]/10'
               }`}
             >
               Todas ({totalPreguntas})
@@ -543,7 +558,7 @@ export function FaqClient() {
         <div
           className={`mt-16 sm:mt-20 p-6 sm:p-10 rounded-3xl border text-center relative overflow-hidden ${
             isDark
-              ? 'border-[#D6F391]/20 bg-gradient-to-b from-[#525252]/40 to-[#525252]/10'
+              ? 'border-[#D6F391]/20 bg-gradient-to-b from-[var(--bg-secondary)]/40 to-[var(--bg-secondary)]/10'
               : 'border-[#00827C]/20 bg-gradient-to-b from-[#00827C]/5 to-transparent'
           }`}
         >
