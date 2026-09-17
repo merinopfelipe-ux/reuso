@@ -1295,11 +1295,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
               <span className="block">Mide, gestiona y comparte</span>
               <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental</span>
-              <span className="block">desde la economía circular</span>
+              <span className="block">con modelos regenerativos</span>
             </h1>
             
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Mide el impacto real de tu economía circular en 3 minutos y genera reportes de Responsabilidad Empresarial (RSE) para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
+              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de Responsabilidad Empresarial (RSE) para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1406,7 +1406,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
                 <h3 className={`text-base md:text-base lg:text-lg font-black ${tp}`}>
                   Calculadora de Reúso <br />
-                  Mide tu RSE y sácale provecho a la economía circular
+                  Mide tu RSE y sácale provecho a la gestión circular de recursos
                 </h3>
               </div>
               <ul className="relative z-10 space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4 mt-4 md:mt-6">
@@ -1794,13 +1794,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 herramienta: 'Empezar cálculo',
                 Icon: Calculator,
                 titulo: 'Mide tu impacto ambiental',
-                desc: 'Calcula tus iniciativas de RSE desde la economía circular. Estima cuánto CO₂ y cuántos residuos evitas con bases técnicas.',
+                desc: 'Calcula tus iniciativas de RSE a través del aprovechamiento de recursos. Estima cuánto CO₂ y cuántos residuos evitas con bases técnicas.',
                 image: 'https://images.unsplash.com/photo-1679110667877-408593fab0f6?auto=format&fit=crop&q=80&w=800',
               },
               {
                 herramienta: 'Generar DPP',
                 Icon: FileText,
-                titulo: 'Pasaporte digital y trazabilidad',
+                titulo: 'Pasaporte digital ClimaTech',
                 desc: 'Genera pasaportes digitales con código QR y registro de seguridad para dar trazabilidad a cada producto.',
                 image: 'https://images.unsplash.com/photo-1626682561113-d1db402cc866?auto=format&fit=crop&q=80&w=800',
               },
@@ -2240,7 +2240,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </span>
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-2xl mx-auto ${ts}`}>
-              Somos el aliado estratégico para respaldar con datos verificables cada meta de sostenibilidad y economía circular. Transformamos iniciativas en métricas trazables que sustentan el cumplimiento del compromiso global ante comités, clientes y auditorías.
+              Somos el aliado ClimaTech estratégico para respaldar con datos verificables cada meta de sostenibilidad y economía circular. Transformamos iniciativas en métricas trazables que sustentan el cumplimiento del compromiso global ante comités, clientes y auditorías.
             </p>
           </div>
 
@@ -2248,7 +2248,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             {[
               {
                 tag: 'El Propósito',
-                titulo: 'Compromiso genuino con la economía circular',
+                titulo: 'Compromiso genuino con modelos regenerativos',
                 desc: 'Demuestra coherencia entre lo que prometes y lo que ejecutas. Facilitamos la transición a modelos regenerativos donde cada material recuperado cuenta una historia de impacto sustentado.',
                 puntos: ['Máxima eficiencia de insumos.', 'Mayor desvío de vertedero.'],
                 Icon: Leaf,
@@ -2405,7 +2405,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             <div className="relative z-10 max-w-xl mx-auto">
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-                Medición y trazabilidad para tu empresa.
+                Software de ClimaTech para medición y trazabilidad corporativa.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
                 Estructura tus reportes de RSE y economía circular <br className="hidden sm:block" />

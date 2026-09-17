@@ -550,7 +550,7 @@ export function Footer({
                 textAlign: 'center',
               }}>
                 <span style={{ fontWeight: 300, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)' }}>
-                  Desarrollado con ♡ en Medellín, Colombia · Calculadora de Reúso by{' '}
+                  Plataforma ClimaTech de economía circular y sostenibilidad <br /> Medellín y Bogotá, Colombia · Calculadora de Reúso by{' '}
                   <a href="https://lurdes.co/" target="_blank" rel="noopener noreferrer" className="footer-discreet-link">
                     Lurdes
                   </a>
@@ -594,7 +594,7 @@ export function Footer({
                 gap: 10,
               }}>
                 <span style={{ fontWeight: 300, color: isDark ? 'rgba(255,255,255,0.45)' : 'rgba(71,71,71,0.45)', textAlign: 'right' }}>
-                  Desarrollado con ♡ en Medellín, Colombia · Calculadora de Reúso by{' '}
+                  Plataforma ClimaTech de economía circular y sostenibilidad · Medellín y Bogotá, Colombia · Calculadora de Reúso by{' '}
                   <a href="https://lurdes.co/" target="_blank" rel="noopener noreferrer" className="footer-discreet-link">
                     Lurdes
                   </a>
