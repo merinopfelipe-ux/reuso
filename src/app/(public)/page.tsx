@@ -100,7 +100,7 @@ async function obtenerDatosReales() {
 export const metadata: Metadata = {
   metadataBase: new URL('https://calculadoradereuso.com'),
   title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental y Huella de Carbono',
-  description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa: huella de carbono, responsabilidad social y economía circular con estimaciones documentadas. Facilita la trazabilidad con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
+  description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa: huella de carbono y responsabilidad social, con estimaciones documentadas. Facilita la trazabilidad con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
   keywords: [
     'software de sostenibilidad',
     'sostenibilidad empresarial colombia',
@@ -112,12 +112,10 @@ export const metadata: Metadata = {
     'calcular huella de carbono',
     'huella hidrica empresarial',
     'economia circular',
-    'economia circular colombia',
     'trazabilidad de materiales',
     'calculos ambientales',
     'calculadora de reuso',
-    'pasaporte digital de producto',
-    'reportes ESG'
+    'pasaporte digital de producto'
   ],
   authors: [{ name: 'Reúso by Grupo MLP', url: 'https://calculadoradereuso.com' }],
   creator: 'Grupo MLP',
@@ -228,7 +226,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: 'Calculadora de Reúso - Software de Sostenibilidad e Impacto Ambiental',
-    description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa. Facilita estimaciones documentadas, trazabilidad de economía circular y reportes estructurados que respaldan tu responsabilidad social y tus memorias ESG.',
+    description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa. Facilita estimaciones documentadas, trazabilidad de materiales y reportes estructurados que respaldan tu responsabilidad social.',
     url: 'https://calculadoradereuso.com',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',

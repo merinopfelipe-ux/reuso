@@ -293,7 +293,7 @@ type CatKey = keyof typeof CATEGORIAS
 const FAQS = [
   {
     q: '¿Qué es la sostenibilidad empresarial y cómo se mide en empresas o negocios locales?',
-    a: 'La sostenibilidad empresarial es la decisión voluntaria de gestionar tu impacto ambiental positivo en la comunidad y el planeta, el corazón de tu RSE. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso social y ambiental ante clientes y aliados.',
+    a: 'La sostenibilidad empresarial es la decisión voluntaria de gestionar tu impacto ambiental positivo en la comunidad y el planeta, el corazón de tu responsabilidad social. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso social y ambiental ante clientes y aliados.',
   },
   {
     q: '¿Qué significa la responsabilidad social empresarial para una pyme en Colombia?',
@@ -1299,7 +1299,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </h1>
             
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de responsabilidad social para cumplir tus metas ambientales, sociales y de gobernanza (ESG).
+              Mide el impacto ambiental de tu empresa en 3 minutos y genera reportes de responsabilidad social para cumplir tus metas ambientales y sociales.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1414,7 +1414,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   'Cálculos de huella de carbono e hídrica respaldados en factores de emisión oficiales (IPCC y GHG Protocol).',
                   'Pasaportes Digitales de Producto (DPP) con código QR y trazabilidad criptográfica para tus clientes.',
                   'Cotizaciones comerciales de alto impacto que demuestran el ahorro económico y ambiental en minutos.',
-                  'Informes de sostenibilidad y RSE listos para descargar en PDF y presentar ante clientes, juntas y auditorías.',
+                  'Informes de sostenibilidad y responsabilidad social listos para descargar en PDF y presentar ante clientes, juntas y auditorías.',
                 ].map((item, i) => (
                   <li key={i} className="group/item flex gap-2.5 md:gap-3 items-start transition-all duration-200 hover:translate-x-1">
                     <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
@@ -1807,7 +1807,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               {
                 herramienta: 'Gestionar impacto',
                 Icon: Receipt,
-                titulo: 'Reportes claros de circularidad',
+                titulo: 'Reportes claros de tu impacto',
                 desc: 'Documenta el ahorro frente a comprar insumos nuevos y genera reportes técnicos con datos que sustentan tu gestión.',
                 image: 'https://images.unsplash.com/photo-1499914485622-a88fac536970?auto=format&fit=crop&q=80&w=800',
               },
@@ -2278,7 +2278,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 tag: 'El Impacto',
                 titulo: 'Resultados comprobables en cada reporte de sostenibilidad',
                 desc: 'Presenta balances claros que fortalecen propuestas comerciales, sustentan memorias de sostenibilidad y blindan la reputación de tu marca con evidencia libre de cualquier sospecha de greenwashing.',
-                puntos: ['Estructuración de reportes de sostenibilidad.', 'Transparencia de datos sustentada.'],
+                puntos: ['Reportes de sostenibilidad.', 'Transparencia de datos sustentada.'],
                 Icon: TrendingUp,
                 textColor: 'text-[#59A6E4]',
                 bgGradientLight: 'from-white via-white/95 to-[#59A6E4]/15',
@@ -2405,7 +2405,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             <div className="relative z-10 max-w-xl mx-auto">
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-                Software de sostenibilidad para medición y trazabilidad corporativa.
+                Software ClimaTech de sostenibilidad para medición y trazabilidad corporativa.
               </p>
               <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
                 Estructura tus reportes de sostenibilidad e impacto ambiental <br className="hidden sm:block" />
