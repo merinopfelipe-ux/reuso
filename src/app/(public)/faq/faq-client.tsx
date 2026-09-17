@@ -268,7 +268,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
             </button>
             {!copiado && (
               <span
-                className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-8 whitespace-nowrap rounded-md px-2 py-1 text-[10px] font-semibold opacity-0 transition-opacity duration-150 group-hover/copy:opacity-100"
+                className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded-md px-2 py-1 text-[10px] font-semibold opacity-0 transition-opacity duration-150 group-hover/copy:opacity-100"
                 style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', color: 'var(--text-primary)', boxShadow: 'var(--shadow)' }}
               >
                 Copiar enlace
