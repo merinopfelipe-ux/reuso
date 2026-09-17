@@ -46,6 +46,31 @@ export async function POST(request: NextRequest) {
   const adminClient = await createAdminClient()
   const ip = getIp(request)
 
+  // Sin duplicados: ni un miembro activo con ese correo en la empresa, ni
+  // una invitación ya pendiente sin usar — antes el POST no revisaba nada
+  // de esto y una misma persona podía quedar invitada 2+ veces sin aviso.
+  const { data: miembroExistente } = await adminClient
+    .from('profiles')
+    .select('id')
+    .eq('empresa_id', empresa_id)
+    .eq('email', email)
+    .maybeSingle()
+  if (miembroExistente) {
+    return NextResponse.json({ error: 'Esa persona ya es parte de tu equipo.' }, { status: 409 })
+  }
+
+  const { data: invitacionPendiente } = await adminClient
+    .from('invitaciones')
+    .select('id')
+    .eq('empresa_id', empresa_id)
+    .eq('email', email)
+    .eq('estado', 'pendiente')
+    .gt('expires_at', new Date().toISOString())
+    .maybeSingle()
+  if (invitacionPendiente) {
+    return NextResponse.json({ error: 'Ya existe una invitación pendiente para ese correo.' }, { status: 409 })
+  }
+
   // Verificar límite de empleados por plan
   const { data: empresaData } = await adminClient
     .from('empresas')
