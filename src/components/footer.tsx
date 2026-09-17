@@ -314,12 +314,12 @@ export function Footer({
     ? [
         { href: '/', label: 'Inicio', isExternal: false },
         { href: '/login', label: 'Iniciar sesión', isExternal: false },
-        { href: '#', label: 'Preguntas frecuentes', isExternal: false },
+        { href: '/faq', label: 'Preguntas frecuentes', isExternal: false },
       ]
     : [
         { href: '/legal/privacidad', label: 'Política de privacidad', isExternal: true },
-        { href: '/legal/reglamento', label: 'Reglamento', isExternal: true },
         { href: '/legal/medicion', label: 'Sobre la medición', isExternal: true },
+        { href: '/faq', label: 'Preguntas frecuentes', isExternal: true },
       ]
 
   // Espacio inferior para el menú móvil:
