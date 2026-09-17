@@ -307,6 +307,14 @@ const FAQS = [
     q: '¿Dónde puedo comprar productos fabricados con principios de economía circular en Colombia?',
     a: 'Puedes adquirirlos a través de la red de empresas, marcas y talleres aliados que gestionan sus inventarios y valorizan materiales con la Calculadora de Reúso. Cada artículo cuenta con su Pasaporte Digital (DPP) mediante código QR, donde puedes verificar el origen de los insumos y la estimación ambiental de su vida útil extendida.',
   },
+  {
+    q: '¿Dónde está disponible la Calculadora de Reúso?',
+    a: 'Es una plataforma en línea disponible para empresas en toda Colombia, con equipo en Medellín y Bogotá. No requiere instalar nada: entras desde cualquier navegador y desde cualquier ciudad del país, sea que tu operación esté en la capital o en una región.',
+  },
+  {
+    q: '¿Cuándo debería empezar a medir la sostenibilidad de mi empresa?',
+    a: 'Desde ahora, sin esperar a tener un área dedicada. Muchas empresas empiezan cuando un cliente corporativo o una licitación exige evidencia técnica, pero cuanto antes registres tus primeros datos, más historial acumulas para tus reportes. Con la Calculadora de Reúso el primer cálculo toma minutos, así que no hay una fecha "ideal" para arrancar distinta a hoy.',
+  },
 ]
 
 // ─── FAQItem ─────────────────────────────────────────────────────────────────
@@ -1361,7 +1369,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
                 <h3 className={`text-base md:text-base lg:text-lg font-black ${tp}`}>
                   La manera de siempre <br />
-                  Hacer las cosas sin medir el impacto real
+                  Hacer las cosas sin estimar tu impacto
                 </h3>
               </div>
               <ul className="space-y-2.5 sm:space-y-3 md:space-y-3.5 lg:space-y-4">

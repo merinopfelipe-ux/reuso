@@ -268,6 +268,16 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
         name: '¿Por qué la trazabilidad y la economía circular son vitales para la sostenibilidad?',
         acceptedAnswer: { '@type': 'Answer', text: 'Porque promueven la transparencia. Integrar estos modelos circulares reduce drásticamente las emisiones y el consumo de agua, avanzando tu impacto de forma medible. Usar el Pasaporte Digital de Producto (DPP) de la Calculadora de Reúso sustenta el respaldo técnico, evitando el greenwashing en tus reportes.' },
       },
+      {
+        '@type': 'Question',
+        name: '¿Dónde está disponible la Calculadora de Reúso?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Es una plataforma en línea disponible para empresas en toda Colombia, con equipo en Medellín y Bogotá. No requiere instalación: se usa desde cualquier navegador y cualquier ciudad del país.' },
+      },
+      {
+        '@type': 'Question',
+        name: '¿Cuándo debería empezar a medir la sostenibilidad de mi empresa?',
+        acceptedAnswer: { '@type': 'Answer', text: 'Desde ahora, sin esperar a tener un área dedicada. Cuanto antes registres tus primeros datos, más historial acumulas para tus reportes de responsabilidad social, y el primer cálculo en la Calculadora de Reúso toma solo minutos.' },
+      },
     ],
   },
   ]
