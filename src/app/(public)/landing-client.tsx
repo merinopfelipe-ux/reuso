@@ -1352,7 +1352,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              El valor de medir tu impacto: <br className="hidden sm:block" />
+              El valor de medir tu sostenibilidad: <br className="hidden sm:block" />
               de buenas intenciones a resultados
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
@@ -1447,7 +1447,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 9 cálculos ambientales, económicos y sociales
+              Descubre los 9 cálculos de sostenibilidad: ambientales, económicos y sociales
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Desde la estimación rápida de huella de carbono hasta el seguimiento en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
@@ -1789,7 +1789,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Soluciones para medir, gestionar
               <br />
-              y respaldar tu impacto circular
+              y respaldar tu impacto ambiental
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Herramientas para cuantificar tus recursos, emitir pasaportes digitales y generar reportes con datos claros.
@@ -1865,7 +1865,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Planes de medición y pasaportes digitales que crecen a tu ritmo
+              Planes de sostenibilidad y pasaportes digitales que crecen a tu ritmo
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
               Cada plan de pago incluye una tarifa de Implementación (pago único), cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
