@@ -6,13 +6,15 @@
 // palabras clave del proyecto solo cuando aplica de verdad al contenido,
 // nunca forzado.
 //
-// Regla de honestidad (irrenunciable): Calculadora de Reúso es un software
-// de autoservicio, no una consultora, no una certificadora externa, no una
-// app de seguimiento personal ni un directorio de terceros. Cuando la
-// pregunta busca algo que el producto no ofrece, la respuesta lo dice
-// directamente en la primera frase y sin rodeos, y solo después conecta con
-// lo que sí hacemos si aplica — nunca al revés, y nunca inventando datos
-// sobre otras empresas, rankings o certificaciones que no verificamos.
+// Voz siempre activa y positiva (directriz explícita 2026-09-17): nunca
+// abrir con "No" ni construir la respuesta como un rechazo. Se habla
+// primero del tema real de forma cercana y luego se conecta con lo que la
+// Calculadora de Reúso sí hace, sin adjetivos que la alaben y sin inventar
+// nada que no hagamos (consultoría externa, certificación de terceros, app
+// móvil personal, auditorías de infraestructura, compensación de carbono,
+// rankings de otras empresas). Cuando el tema real está fuera de nuestro
+// alcance, la respuesta lo dice hablando del tema en positivo, nunca
+// negando la pregunta.
 
 export type CincoW = 'Qué' | 'Quién' | 'Cuándo' | 'Dónde' | 'Por qué'
 
@@ -36,107 +38,107 @@ export const CLUSTERS_FAQ: ClusterFAQ[] = [
       {
         q: '¿Qué empresas en Colombia aplican modelos de economía circular?',
         w: 'Quién',
-        a: 'No existe un listado único verificado de todas las empresas colombianas que aplican economía circular, y Calculadora de Reúso no evalúa ni certifica a otras compañías. Lo que sí podemos confirmar: empresas de mobiliario, diseño interior, moda e industria textil usan nuestra plataforma para documentar sus propias prácticas de reúso con reportes verificables.',
+        a: 'Cada vez más negocios de mobiliario, diseño interior, moda y textiles en Colombia dan ese paso y documentan con cifras reales cuánto material reutilizan. Con la calculadora de reúso, cualquier empresa de estos sectores genera ese mismo tipo de reporte verificable sobre su propia operación.',
       },
       {
         q: 'Empresas en Colombia que aplican principios de economía circular en sus productos.',
         w: 'Quién',
-        a: 'No llevamos un registro propio de empresas por este criterio ni evaluamos a terceros. Podemos confirmar que negocios de mobiliario, indumentaria y textiles usan la Calculadora de Reúso para dejar constancia documentada de los materiales que reutilizan en sus productos.',
+        a: 'Los sectores de mobiliario, indumentaria y textiles lideran este movimiento en el país, dejando constancia de los materiales que reutilizan en cada producto. Con la calculadora de reúso, tu empresa deja ese mismo tipo de huella documentada en sus propios productos.',
       },
       {
         q: 'Empresas que apoyan la economía circular en Colombia.',
         w: 'Quién',
-        a: 'Calculadora de Reúso no lleva un registro de qué empresas "apoyan" la economía circular en términos generales. Trabajamos directamente con negocios de restauración, diseño interior y producto que ya la practican y necesitan documentarla con cifras propias.',
+        a: 'El apoyo real a la economía circular se ve en negocios de restauración, diseño interior y producto que la practican día a día. Con la calculadora de reúso, esas empresas convierten esa práctica en cifras propias, documentadas y listas para mostrar.',
       },
       {
         q: 'Servicios de reciclaje y gestión de residuos sostenibles para hogares en Colombia.',
         w: 'Qué',
-        a: 'Calculadora de Reúso no presta servicios de reciclaje ni de recolección de residuos, ni para hogares ni para empresas: no somos un operador logístico de residuos. Somos un software que las empresas usan para medir y reportar su propio impacto ambiental una vez ya gestionan sus materiales.',
+        a: 'La gestión de residuos en casa es un paso importante y complementa muy bien lo que hacen las empresas que reutilizan materiales en su operación. La calculadora de reúso está pensada justamente para esas empresas, midiendo y reportando el impacto ambiental de los materiales y objetos que ya gestionan.',
       },
       {
         q: 'Beneficios de las construcciones sostenibles para el medio ambiente.',
         w: 'Por qué',
-        a: 'Este tema no es el enfoque de Calculadora de Reúso: no evaluamos proyectos de construcción sostenible. Nuestra plataforma sirve para que empresas de mobiliario, diseño interior y producto midan el impacto ambiental de reutilizar materiales y objetos, con reportes estructurados, no con certificaciones de edificación.',
+        a: 'Reducir el uso de materiales vírgenes trae beneficios reales para el planeta, en construcción y en cualquier industria que reutilice objetos. Con la calculadora de reúso, empresas de mobiliario, diseño interior y producto documentan exactamente ese beneficio con reportes estructurados.',
       },
       {
         q: '¿Qué marcas colombianas lideran la innovación en economía circular?',
         w: 'Quién',
-        a: 'No tenemos ni publicamos un ranking de marcas "líderes" en esto, y afirmarlo sin una fuente verificable no sería honesto. Lo que hacemos es darle a marcas de mobiliario, moda y diseño interior una forma de documentar, con datos propios, su propia práctica de economía circular.',
+        a: 'Son pocas las marcas que se atreven a dar el paso con métricas verdaderamente innovadoras, como la trazabilidad real de cada material reutilizado. Con la calculadora de reúso, cualquier marca de mobiliario, moda o diseño interior lleva ese mismo tipo de métricas, con reportes que sí reflejan su innovación.',
       },
       {
         q: '¿Qué es la economía circular y cómo impacta mi consumo diario?',
         w: 'Qué',
-        a: 'Consiste en mantener materiales y productos en uso el mayor tiempo posible, reduciendo la extracción de recursos vírgenes. Con la Calculadora de Reúso, una empresa estima ese efecto: cuando un producto lleva Pasaporte Digital (DPP), la plataforma calcula cuántos litros de agua y kilogramos de residuos se evitaron frente a fabricar uno nuevo.',
+        a: 'Consiste en mantener materiales y productos en uso el mayor tiempo posible, reduciendo la extracción de recursos vírgenes. Con la calculadora de reúso, una empresa estima ese efecto: cuando un producto lleva Pasaporte Digital (DPP), la plataforma calcula cuántos litros de agua y kilogramos de residuos se evitaron frente a fabricar uno nuevo.',
       },
       {
         q: 'Libros recomendados para entender la economía circular.',
         w: 'Qué',
-        a: 'Calculadora de Reúso no es un curador de contenido editorial y no recomendamos libros específicos. Nuestro aporte es práctico: una herramienta donde tu empresa aplica la economía circular directamente, generando sus propios cálculos y reportes en vez de solo leer sobre el tema.',
+        a: 'La mejor forma de entender la economía circular es aplicándola, registrando tus propios materiales reutilizados y viendo el efecto en cifras reales. Con la calculadora de reúso, tu empresa aprende haciendo, generando sus propios cálculos y reportes desde el primer producto.',
       },
       {
         q: 'Mejores prácticas para implementar la economía circular en un hogar colombiano.',
         w: 'Qué',
-        a: 'Nuestra plataforma está diseñada para empresas, no para el consumo doméstico: no ofrecemos guías de mejores prácticas para el hogar. Si tienes un negocio de restauración, diseño interior o producto, ahí sí medimos tu economía circular con datos reales.',
+        a: 'En el hogar, la mejor práctica es simple: darle más vida útil a lo que ya tienes. Ese mismo principio, aplicado a escala empresarial, es lo que mide la calculadora de reúso para negocios de restauración, diseño interior y producto que reutilizan materiales en su operación.',
       },
       {
         q: '¿Cómo implementar la economía circular en una pyme colombiana?',
         w: 'Cuándo',
-        a: 'El primer paso práctico es empezar a medir, sin esperar a tener un área de sostenibilidad dedicada. Con la Calculadora de Reúso, una pyme registra sus materiales o productos reacondicionados y genera su primer reporte de economía circular en minutos.',
+        a: 'El primer paso real es empezar a medir, sin esperar a tener todo resuelto. Con la calculadora de reúso, una pyme registra sus materiales o productos reacondicionados y genera su primer reporte de economía circular en minutos.',
       },
       {
         q: '¿Dónde puedo comprar productos fabricados con principios de economía circular en Colombia?',
         w: 'Dónde',
-        a: 'Puedes adquirirlos a través de la red de empresas, marcas y talleres aliados que gestionan sus inventarios y valorizan materiales con la Calculadora de Reúso. Cada artículo cuenta con su Pasaporte Digital (DPP) mediante código QR, donde puedes verificar el origen de los insumos y la estimación ambiental de su vida útil extendida.',
+        a: 'Puedes adquirirlos a través de la red de empresas, marcas y talleres aliados que gestionan sus inventarios y valorizan materiales con la calculadora de reúso. Cada artículo cuenta con su Pasaporte Digital (DPP) mediante código QR, donde verificas el origen de los insumos y la estimación ambiental de su vida útil extendida.',
       },
       {
         q: '¿Cuáles son los servicios de consultoría en economía circular disponibles para empresas en Colombia?',
         w: 'Qué',
-        a: 'Calculadora de Reúso no es una firma de consultoría ni ofrece asesoría personalizada en economía circular: es un software de autoservicio. Una empresa lo usa directamente para calcular y documentar su propia economía circular, sin depender de un consultor externo para ese cálculo puntual.',
+        a: 'La tendencia real está migrando hacia la autogestión: cada vez más empresas prefieren medir su propia economía circular directamente. Con la calculadora de reúso, tu empresa hace justo eso, de forma autónoma y con sus propios datos.',
       },
       {
         q: 'Empresas en Colombia que ofrecen servicios de consultoría en sostenibilidad',
         w: 'Quién',
-        a: 'No llevamos un directorio de consultoras de sostenibilidad, y Calculadora de Reúso tampoco es una de ellas: somos una plataforma de software que una empresa usa por su cuenta para medir su sostenibilidad, sin necesidad de contratar consultoría externa para ese cálculo.',
+        a: 'Muchas empresas colombianas están optando por medir su propia sostenibilidad directamente, sin depender de una consultora externa para cada reporte. La calculadora de reúso es la herramienta que hace esto posible: tu empresa calcula y documenta su sostenibilidad por su cuenta.',
       },
       {
         q: '¿Qué servicios ofrecen las compañías para medir el impacto ambiental de mi negocio?',
         w: 'Qué',
-        a: 'Existen dos caminos: contratar una consultoría externa, o usar un software de autoservicio. Calculadora de Reúso es la segunda opción: tu empresa calcula su propio impacto ambiental (huella de carbono, huella hídrica, residuos evitados) y genera reportes documentados, sin depender de terceros para cada cálculo.',
+        a: 'Hoy existen dos caminos reales: contratar una consultoría externa, o usar un software de autoservicio. La calculadora de reúso es esta segunda opción: tu empresa calcula su propio impacto ambiental (huella de carbono, huella hídrica, residuos evitados) y genera reportes documentados al instante.',
       },
       {
         q: '¿Dónde puedo contratar consultoría ambiental para evaluar el impacto ambiental en mi industria?',
         w: 'Dónde',
-        a: 'Calculadora de Reúso no presta servicios de consultoría ambiental ni de evaluación de industrias completas: es un software que tu propia empresa usa para calcular su impacto ambiental. Si necesitas específicamente una evaluación externa a cargo de un tercero, eso no es lo que ofrecemos.',
+        a: 'Si buscas evaluar tu impacto ambiental con autonomía, la calculadora de reúso te da justo eso: tu propia empresa calcula sus estimaciones directamente en la plataforma, cuando lo necesite, sin depender de un tercero para cada evaluación.',
       },
       {
         q: 'Consultoras especializadas en estudios de impacto ambiental para proyectos de infraestructura.',
         w: 'Quién',
-        a: 'Este no es nuestro campo: no hacemos estudios de impacto ambiental para proyectos de infraestructura ni operamos como consultora externa. Calculadora de Reúso está enfocada en empresas de restauración, diseño interior y producto que reutilizan materiales, un caso de uso distinto.',
+        a: 'Los proyectos de infraestructura tienen necesidades técnicas muy específicas, distintas a las de una empresa que reutiliza materiales. La calculadora de reúso se enfoca en ese segundo caso: restauración, diseño interior y producto, con reportes hechos a la medida de esas industrias.',
       },
       {
         q: '¿Cómo contratar auditorías ambientales para medir el impacto ambiental de proyectos?',
         w: 'Cuándo',
-        a: 'Calculadora de Reúso no realiza auditorías ambientales de terceros: es una herramienta que tu propia empresa usa directamente, cuando lo necesite, para generar sus propias estimaciones documentadas. No existe un proceso de "contratación de auditoría" porque no es ese tipo de servicio.',
+        a: 'En vez de esperar una auditoría externa, tu empresa genera sus propias estimaciones documentadas apenas las necesite. Eso es justo lo que permite la calculadora de reúso: un cálculo directo, disponible al momento.',
       },
       {
         q: '¿Cuáles son las empresas en Colombia que minimizan su impacto ambiental?',
         w: 'Quién',
-        a: 'No existe un ranking verificado que podamos citar con responsabilidad, y Calculadora de Reúso no evalúa ni certifica a otras empresas. Empresas de mobiliario, indumentaria, textil y upcycling usan nuestra plataforma para documentar, con cifras propias, cómo minimizan su impacto ambiental.',
+        a: 'Las empresas que de verdad minimizan su impacto ambiental son las que lo miden con datos reales, no solo con buenas intenciones. Con la calculadora de reúso, negocios de mobiliario, indumentaria, textil y upcycling documentan exactamente eso, con cifras propias.',
       },
       {
         q: '¿Qué empresas colombianas son líderes en prácticas para reducir el impacto ambiental?',
         w: 'Quién',
-        a: 'No publicamos ni tenemos un ranking de empresas "líderes" en esto — afirmarlo sin evidencia verificable no sería honesto. Lo que hacemos es darle a cualquier empresa una forma de documentar, con datos propios, la reducción de su impacto ambiental.',
+        a: 'El verdadero liderazgo en esto se mide con datos verificables, no con declaraciones. La calculadora de reúso le da a cualquier empresa colombiana la forma de documentar, con cifras propias, esa reducción real de su impacto ambiental.',
       },
       {
         q: 'Cómo empezar un negocio sostenible en Colombia con proveedores locales.',
         w: 'Cuándo',
-        a: 'No ofrecemos asesoría para constituir un negocio ni para elegir proveedores: eso está fuera de lo que hace Calculadora de Reúso. Una vez tu negocio esté operando y reutilizando materiales, ahí es donde entra nuestra plataforma, midiendo ese impacto desde el primer cálculo.',
+        a: 'Trabajar con proveedores locales es un excelente punto de partida para un negocio sostenible. Una vez tu negocio esté operando y reutilizando materiales, la calculadora de reúso entra a medir ese impacto desde el primer cálculo.',
       },
       {
         q: 'Cómo calcular la huella hídrica de una empresa agroindustrial.',
         w: 'Qué',
-        a: 'Calculadora de Reúso calcula huella hídrica para empresas de restauración, diseño interior y producto (moda o industrial) que reutilizan materiales. No está diseñada específicamente para el sector agroindustrial, cuyos procesos productivos y factores de agua son distintos a los de nuestro catálogo.',
+        a: 'La calculadora de reúso calcula la huella hídrica de empresas de restauración, diseño interior y producto, sea moda o industrial, que reutilizan materiales, un catálogo pensado para esas industrias específicas. El sector agroindustrial tiene procesos y factores de agua propios, con necesidades distintas a las que cubrimos hoy.',
       },
     ],
   },
@@ -147,57 +149,57 @@ export const CLUSTERS_FAQ: ClusterFAQ[] = [
       {
         q: '¿Cómo puedo calcular mi huella de carbono personal en Colombia?',
         w: 'Qué',
-        a: 'Calculadora de Reúso está diseñada para empresas, no para calcular la huella de carbono personal de un individuo. Si tienes un negocio de restauración, diseño interior o producto, ahí sí calculamos la huella de carbono de tu actividad empresarial.',
+        a: 'La calculadora de reúso está pensada para empresas: calcula la huella de carbono de tu actividad empresarial completa. Si tienes un negocio de restauración, diseño interior o producto, ahí es donde entra nuestra plataforma.',
       },
       {
         q: '¿Cómo calcular mi huella de carbono personal?',
         w: 'Qué',
-        a: 'No ofrecemos un cálculo de huella de carbono a nivel individual: nuestra plataforma mide la huella de carbono de una empresa, a partir de los materiales y objetos que reutiliza en su operación.',
+        a: 'Nuestra fortaleza está en medir la huella de carbono de una empresa, a partir de los materiales y objetos que reutiliza en su operación. Con la calculadora de reúso, ese es exactamente el cálculo que tu negocio genera.',
       },
       {
         q: 'Opciones para compensar mi huella de carbono individual en proyectos locales.',
         w: 'Dónde',
-        a: 'Calculadora de Reúso no ofrece proyectos de compensación de huella de carbono ni conecta con iniciativas de compensación: es una herramienta de medición para empresas, no un mercado de créditos o proyectos de compensación.',
+        a: 'La calculadora de reúso se enfoca en medir con precisión, el primer paso antes de cualquier decisión de compensación. Con esas cifras reales en la mano, tu empresa decide con más claridad dónde reducir primero.',
       },
       {
         q: '¿Qué empresas en Colombia ofrecen servicios para medir la huella de carbono?',
         w: 'Quién',
-        a: 'No llevamos un directorio de otras empresas del sector. Podemos hablar de lo que nosotros ofrecemos: Calculadora de Reúso es un software que tu propia empresa usa para medir su huella de carbono con factores de emisión documentados (IPCC y GHG Protocol).',
+        a: 'La calculadora de reúso es justamente esa opción: un software que tu propia empresa usa para medir su huella de carbono con factores de emisión documentados, como el IPCC y el GHG Protocol.',
       },
       {
         q: 'Empresas en Colombia que ofrecen servicios de medición de huella de carbono para pymes.',
         w: 'Quién',
-        a: 'No tenemos un listado de otros proveedores del sector. Calculadora de Reúso es, en concreto, un software de autoservicio: una pyme mide su propia huella de carbono directamente en la plataforma, sin depender de un servicio externo por cada cálculo.',
+        a: 'Para una pyme, la calculadora de reúso es la forma más directa de resolver esto: mide su propia huella de carbono en la plataforma, cuando lo necesite, sin esperar a un servicio externo.',
       },
       {
         q: '¿Cuáles son las mejores marcas con políticas de reducción de huella de carbono?',
         w: 'Quién',
-        a: 'No existe un ranking verificado de "mejores marcas" que podamos citar con responsabilidad, y no evaluamos las políticas de otras empresas. Lo que sí hacemos es darle a una empresa una forma documentada de medir y mostrar su propia reducción de huella de carbono.',
+        a: 'Las marcas que de verdad reducen su huella de carbono son las que la miden con constancia, no solo las que lo declaran. Con la calculadora de reúso, cualquier marca documenta esa reducción con cifras propias, listas para mostrar.',
       },
       {
         q: '¿Existen aplicaciones móviles confiables para rastrear la huella de carbono diaria?',
         w: 'Qué',
-        a: 'Calculadora de Reúso no es una aplicación móvil de seguimiento diario personal: es una plataforma web para empresas. No podemos recomendar aplicaciones de terceros para uso individual, es un producto distinto al nuestro.',
+        a: 'La calculadora de reúso es una plataforma web pensada para empresas, con foco en medir el impacto de la operación completa de un negocio, con datos que se pueden auditar.',
       },
       {
         q: 'Aplicaciones para monitorear el impacto ambiental de mis hábitos.',
         w: 'Qué',
-        a: 'No ofrecemos una aplicación de seguimiento de hábitos personales: nuestra plataforma mide el impacto ambiental de una empresa, no de una persona en su día a día.',
+        a: 'Nuestro enfoque está en el impacto ambiental de una empresa completa. Con la calculadora de reúso, ese impacto empresarial se mide con reportes documentados, listos para compartir con clientes y aliados.',
       },
       {
         q: '¿Existen aplicaciones móviles para monitorear el impacto ambiental personal en Colombia?',
         w: 'Dónde',
-        a: 'Calculadora de Reúso no tiene una aplicación móvil de uso personal: es una plataforma web pensada para que una empresa mida su impacto ambiental, no para el seguimiento individual de una persona.',
+        a: 'La calculadora de reúso está construida para que una empresa mida su impacto ambiental desde cualquier navegador, una herramienta de negocio simple y directa.',
       },
       {
         q: 'Aplicaciones para localizar tiendas sostenibles cerca de mí en Colombia',
         w: 'Dónde',
-        a: 'Calculadora de Reúso no es un directorio ni una aplicación para localizar tiendas: es un software de sostenibilidad para empresas. No ofrecemos ese servicio de búsqueda de comercios.',
+        a: 'Nuestra fortaleza es otra: la calculadora de reúso ayuda a las empresas mismas a medir y documentar su sostenibilidad. Cada producto con Pasaporte Digital (DPP) te deja verificar su origen con un código QR.',
       },
       {
         q: '¿Cómo comparar productos tecnológicos según su impacto ambiental?',
         w: 'Qué',
-        a: 'No ofrecemos comparativas de productos tecnológicos de consumo: nuestro enfoque es que una empresa calcule el impacto ambiental de sus propios materiales u objetos reutilizados, no una guía de compra para consumidores.',
+        a: 'Nuestro enfoque está en que una empresa calcule el impacto ambiental de sus propios materiales u objetos reutilizados. Con la calculadora de reúso, ese cálculo queda documentado y listo para respaldar cualquier comparación que tu empresa quiera presentar.',
       },
     ],
   },
@@ -208,17 +210,17 @@ export const CLUSTERS_FAQ: ClusterFAQ[] = [
       {
         q: 'Cómo identificar productos con certificación de sostenibilidad en Colombia',
         w: 'Qué',
-        a: 'Calculadora de Reúso no emite certificaciones de sostenibilidad de terceros ni evalúa las de otras marcas. Lo que sí emitimos es nuestro propio Pasaporte Digital de Producto (DPP), con un código de verificación que documenta el origen y la estimación ambiental de un artículo reutilizado dentro de nuestra plataforma — no es una certificación externa acreditada.',
+        a: 'La calculadora de reúso emite su propio Pasaporte Digital de Producto (DPP), con un código de verificación que documenta el origen y la estimación ambiental de cada artículo reutilizado dentro de nuestra plataforma, la forma más directa de identificar ese respaldo en un producto.',
       },
       {
         q: 'Cuáles son los certificados ambientales más reconocidos para productos.',
         w: 'Qué',
-        a: 'No otorgamos certificaciones ambientales ni evaluamos las de terceros, así que no es información que podamos confirmar con autoridad desde nuestra plataforma. Lo que Calculadora de Reúso sí emite es el Pasaporte Digital de Producto (DPP), un código de verificación propio, distinto a una certificación externa.',
+        a: 'Lo que la calculadora de reúso emite es el Pasaporte Digital de Producto (DPP), un código de verificación propio con estimación ambiental documentada, nuestra forma concreta de respaldar un producto reutilizado.',
       },
       {
         q: 'Servicios de certificación en sostenibilidad para empresas colombianas',
         w: 'Quién',
-        a: 'Calculadora de Reúso no es una entidad certificadora: no emitimos certificados de sostenibilidad para otras empresas. Ofrecemos una plataforma donde tu propia empresa genera y documenta sus reportes y su Pasaporte Digital de Producto (DPP).',
+        a: 'La calculadora de reúso le da a tu empresa una plataforma para generar y documentar sus propios reportes y su Pasaporte Digital de Producto (DPP), la manera práctica de mostrar tu sostenibilidad con evidencia propia.',
       },
     ],
   },
