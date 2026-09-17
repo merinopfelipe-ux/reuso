@@ -266,7 +266,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
       {
         '@type': 'Question',
         name: '¿Por qué la trazabilidad y la economía circular son vitales para la sostenibilidad?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Porque promueven la transparencia. Integrar estos modelos circulares reduce drásticamente las emisiones y el consumo de agua, avanzando tu impacto de forma medible. Usar el Pasaporte Digital de Producto (DPP) de la Calculadora de Reúso sustenta el respaldo técnico, evitando el greenwashing en tus reportes.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Porque promueven la transparencia. Integrar estos modelos circulares ayuda a reducir emisiones y consumo de agua, con un impacto estimado de forma medible. Usar el Pasaporte Digital de Producto (DPP) de la Calculadora de Reúso aporta respaldo técnico documentado frente a señalamientos de greenwashing en tus reportes.' },
       },
       {
         '@type': 'Question',
