@@ -309,7 +309,7 @@ const FAQS = [
   },
   {
     q: '¿Dónde está disponible la Calculadora de Reúso?',
-    a: 'Es una plataforma en línea disponible para empresas en toda Colombia, con equipo en Medellín y Bogotá. No requiere instalar nada: entras desde cualquier navegador y desde cualquier ciudad del país, sea que tu operación esté en la capital o en una región.',
+    a: 'Es una plataforma en línea, sin importar dónde esté tu empresa. Nuestro equipo tiene base en Medellín y Bogotá, Colombia, pero no requiere instalar nada: entras desde cualquier navegador, en cualquier ciudad.',
   },
   {
     q: '¿Cuándo debería empezar a medir la sostenibilidad de mi empresa?',
@@ -1297,7 +1297,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className="animate-float-hero lg:col-span-7 xl:col-span-7"
           >
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Software de sostenibilidad para empresas en Colombia.
+              Software de sostenibilidad para tu empresa.
             </p>
             
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>

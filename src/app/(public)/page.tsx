@@ -271,7 +271,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
       {
         '@type': 'Question',
         name: '¿Dónde está disponible la Calculadora de Reúso?',
-        acceptedAnswer: { '@type': 'Answer', text: 'Es una plataforma en línea disponible para empresas en toda Colombia, con equipo en Medellín y Bogotá. No requiere instalación: se usa desde cualquier navegador y cualquier ciudad del país.' },
+        acceptedAnswer: { '@type': 'Answer', text: 'Es una plataforma en línea, sin importar dónde esté tu empresa. Nuestro equipo tiene base en Medellín y Bogotá, Colombia, pero no requiere instalación: se usa desde cualquier navegador, en cualquier ciudad.' },
       },
       {
         '@type': 'Question',
