@@ -6,6 +6,7 @@ import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
 import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2 } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
+import { Button } from '@/components/ui/button'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
@@ -261,6 +262,88 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
   conEmpresa: (url: string) => string
 }) {
   const [descripcionesMaterial, setDescripcionesMaterial] = useMaterialDescripcionesState(conEmpresa)
+  const [cargandoFactorIA, setCargandoFactorIA] = useState(false)
+  const [discrepanciasFactor, setDiscrepanciasFactor] = useState<Record<string, {
+    factor_co2_kg: number | null
+    factor_agua_l_kg: number | null
+    confianza: 'alta' | 'media' | 'baja' | null
+    fuente_titulo: string | null
+    fuente_url: string | null
+  }>>({})
+
+  async function sugerirFactoresConIA() {
+    const validos = materiales.filter(m => m.nombre.trim())
+    if (validos.length === 0) return
+    setCargandoFactorIA(true)
+    try {
+      const res = await fetch('/api/admin/materiales/factor-sugerido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          materiales: validos.map(m => ({
+            nombre: m.nombre.trim(),
+            factor_co2_kg_actual: m.factor_co2_kg.trim() ? parseFloat(m.factor_co2_kg) : null,
+            factor_agua_l_kg_actual: m.factor_agua_l_kg.trim() ? parseFloat(m.factor_agua_l_kg) : null,
+          })),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.ok) return
+
+      const nuevasDiscrepancias: typeof discrepanciasFactor = {}
+      setMateriales(prev => prev.map(m => {
+        const sugerido = data.materiales.find((s: { nombre: string }) => s.nombre === m.nombre.trim())
+        if (!sugerido || sugerido.factor_co2_kg === null) return m
+
+        const actual = parseFloat(m.factor_co2_kg)
+        const vacio = !m.factor_co2_kg.trim() || isNaN(actual)
+        if (vacio) {
+          return {
+            ...m,
+            factor_co2_kg: String(sugerido.factor_co2_kg),
+            factor_agua_l_kg: sugerido.factor_agua_l_kg != null ? String(sugerido.factor_agua_l_kg) : m.factor_agua_l_kg,
+            origen_fuente: sugerido.fuente_titulo || m.origen_fuente,
+            detalle_fuente: sugerido.fuente_url || m.detalle_fuente,
+          }
+        }
+
+        const diferencia = Math.abs(sugerido.factor_co2_kg - actual) / actual
+        if (diferencia > 0.10 && (sugerido.confianza === 'alta' || sugerido.confianza === 'media')) {
+          nuevasDiscrepancias[m.nombre] = sugerido
+        }
+        return m
+      }))
+      setDiscrepanciasFactor(nuevasDiscrepancias)
+    } finally {
+      setCargandoFactorIA(false)
+    }
+  }
+
+  function aplicarDiscrepancia(nombre: string) {
+    const sugerido = discrepanciasFactor[nombre]
+    if (!sugerido || sugerido.factor_co2_kg === null) return
+    setMateriales(prev => prev.map(m => m.nombre === nombre ? {
+      ...m,
+      factor_co2_kg: String(sugerido.factor_co2_kg),
+      factor_agua_l_kg: sugerido.factor_agua_l_kg != null ? String(sugerido.factor_agua_l_kg) : m.factor_agua_l_kg,
+      origen_fuente: sugerido.fuente_titulo || m.origen_fuente,
+      detalle_fuente: sugerido.fuente_url || m.detalle_fuente,
+    } : m))
+    setDiscrepanciasFactor(prev => {
+      const resto = { ...prev }
+      delete resto[nombre]
+      return resto
+    })
+  }
+
+  function descartarDiscrepancia(nombre: string) {
+    setDiscrepanciasFactor(prev => {
+      const resto = { ...prev }
+      delete resto[nombre]
+      return resto
+    })
+  }
+
   const content = (
     <>
       {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)] mb-3"><Leaf size={16} /> {titulo}</p> : null}
@@ -312,6 +395,18 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
                 <input style={inputSt} placeholder="https://..." value={m.detalle_fuente} onChange={e => setMateriales(r => r.map((x, j) => j === i ? { ...x, detalle_fuente: e.target.value } : x))} />
               </div>
             </div>
+            {discrepanciasFactor[m.nombre] && (
+              <div className="flex flex-col gap-2 p-3 rounded-xl" style={{ background: 'rgba(246,191,62,0.1)', border: '1px solid rgba(246,191,62,0.3)' }}>
+                <p className="text-xs text-[var(--text-primary)]">
+                  La IA encontró un valor distinto: <strong>{discrepanciasFactor[m.nombre].factor_co2_kg} kg CO₂ eq/kg</strong>
+                  {discrepanciasFactor[m.nombre].fuente_titulo ? ` según ${discrepanciasFactor[m.nombre].fuente_titulo}` : ''}. ¿Reemplazar el valor actual?
+                </p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="secondary" onClick={() => descartarDiscrepancia(m.nombre)}>Descartar</Button>
+                  <Button size="sm" variant="primary" onClick={() => aplicarDiscrepancia(m.nombre)}>Reemplazar</Button>
+                </div>
+              </div>
+            )}
             <div className="flex justify-end mt-1">
               <button type="button" onClick={() => setMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
                 <Trash size={14} /> Eliminar
@@ -320,7 +415,19 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
           </div>
         ))}
       </div>
-      <button type="button" onClick={() => setMateriales(r => [...r, filaMaterial()])} className={`${btnChico} mt-3`}><Plus size={12} /> Añadir material</button>
+      <div className="flex flex-wrap items-center gap-2 mt-3">
+        <button type="button" onClick={() => setMateriales(r => [...r, filaMaterial()])} className={btnChico}><Plus size={12} /> Añadir material</button>
+        <button
+          type="button"
+          onClick={sugerirFactoresConIA}
+          disabled={cargandoFactorIA || materiales.every(m => !m.nombre.trim())}
+          className={`${btnChico} disabled:opacity-40`}
+          style={{ background: 'var(--color-brand-light)', color: 'var(--color-brand)' }}
+        >
+          {cargandoFactorIA ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
+          Sugerir con IA
+        </button>
+      </div>
     </>
   )
 
@@ -620,9 +727,9 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                         />
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-[var(--text-primary)] leading-snug line-clamp-2 mb-1">{h.nombre}</p>
-                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4 flex-1">
-                      {h.descripcion || 'Sin descripción.'}
+                    <p className="text-sm font-bold text-[var(--text-primary)] leading-snug truncate mb-1" title={h.nombre}>{h.nombre}</p>
+                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4 flex-1" title={h.descripcion || ''}>
+                      {h.descripcion || 'Mobiliario y activos circulares.'}
                     </p>
                     <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                       <div>
@@ -681,15 +788,15 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                           onClick={() => abrirItem(it.id)}
                         >
                           <td className="px-4 py-3 text-[var(--text-primary)]">
-                            <span className="inline-flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1.5 font-medium">
                               {it.visibilidad === 'restringido' && <Lock size={12} className="text-[var(--color-brand)] flex-shrink-0" />}
                               {it.nombre}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right text-[var(--text-primary)]">
+                          <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
                             {formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}
                           </td>
-                          <td className="px-4 py-3 text-right text-[var(--text-primary)]">
+                          <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
                             {formatCOP(precioTotal)}
                           </td>
                           <td className="px-4 py-3 text-center">
@@ -755,7 +862,7 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
   const contenido = Comp ? <Comp size={size} className={className} {...propsLibreria} /> : <Folder size={size} className={className} strokeWidth={1.3} />
   if (!bg) return contenido
   return (
-    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'rgba(0,130,124,0.1)' }}>
+    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-brand-light)' }}>
       {contenido}
     </div>
   )
@@ -848,8 +955,17 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         </div>
         <IconPicker value={iconoLucide} onChange={setIconoLucide} />
         <div>
-          <label className={labelSt}>Descripción (opcional)</label>
-          <input style={inputSt} placeholder="Ej: Muebles de comedor" value={descripcion} onChange={e => setDescripcion(e.target.value)} />
+          <div className="flex justify-between items-center mb-1">
+            <label className={labelSt}>Descripción (máx. 140 caracteres)</label>
+            <span className="text-[11px] text-[var(--text-secondary)]">{descripcion.length}/140</span>
+          </div>
+          <input
+            style={inputSt}
+            maxLength={140}
+            placeholder="Ej: Muebles de comedor y activos circulares"
+            value={descripcion}
+            onChange={e => setDescripcion(e.target.value.replace(/\r?\n|\r/g, ' '))}
+          />
         </div>
         {modo === 'crear' && !parentId && (
           <div>
@@ -1233,11 +1349,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       }
     }
 
+    const nombreLimpio = nombre.replace(/\s*√\s*$/, '').trim()
     const url = item ? `/api/admin/items/${item.id}` : '/api/admin/items'
     const method = item ? 'PATCH' : 'POST'
     const body = item
-      ? { nombre, factor_rentabilidad: factor, materiales, servicios, insumos }
-      : { categoria_id: categoria.id, nombre, factor_rentabilidad: factor, materiales, servicios, insumos }
+      ? { nombre: nombreLimpio, factor_rentabilidad: factor, materiales, servicios, insumos }
+      : { categoria_id: categoria.id, nombre: nombreLimpio, factor_rentabilidad: factor, materiales, servicios, insumos }
 
     const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     if (!res.ok) {
@@ -1363,13 +1480,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     >
                       <span className="truncate">{fila.nombre}</span>
                       <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
-                      {esCero && (
-                        <span className="text-[10px] font-medium text-[var(--text-placeholder)] italic">
-                          (inactivo)
-                        </span>
-                      )}
                     </p>
-                    <div className="w-28 flex-shrink-0">
+                    <div className="w-32 flex-shrink-0">
                       <InputCantidadInsumo
                         value={cantidades[fila.nombre] ?? 0}
                         onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: String(v) }))}
@@ -1442,9 +1554,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     >
                       <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                         <div>
-                          <label className={labelSt}>
-                            Insumo {esCero && <span className="text-[10px] font-normal text-[var(--text-placeholder)] italic">(inactivo)</span>}
-                          </label>
+                          <label className={labelSt}>Insumo</label>
                           <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
                         </div>
                         <div>
@@ -1491,7 +1601,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           <div className="mt-4 pt-4 flex flex-col gap-2.5" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="flex items-center justify-between text-sm">
               <span className="text-[var(--text-secondary)]">Subtotal</span>
-              <span className="text-[var(--text-primary)] font-semibold text-right">{formatNumero(subtotal, { moneda: true })}</span>
+              <span className="text-[var(--text-primary)] font-semibold text-right whitespace-nowrap">{formatNumero(subtotal, { moneda: true })}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-[var(--text-secondary)]">Factor de rentabilidad</span>
@@ -1505,7 +1615,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-[var(--text-primary)]">Total del ítem</span>
-              <span className="text-base font-bold text-[var(--color-brand)] text-right">{formatNumero(totalPrecio, { moneda: true })}</span>
+              <span className="text-base font-bold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(totalPrecio, { moneda: true })}</span>
             </div>
           </div>
         </div>
@@ -1633,11 +1743,11 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-[var(--text-primary)]">Total CO₂ eq evitado</span>
-              <span className="text-sm font-bold text-[var(--color-brand)] text-right">{formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}</span>
+              <span className="text-sm font-bold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-[var(--text-primary)]">Total agua evitada</span>
-              <span className="text-sm font-bold text-[#59A6E4] text-right">{formatNumero(totalAgua, { unidad: 'L' })}</span>
+              <span className="text-sm font-bold text-[#59A6E4] text-right whitespace-nowrap">{formatNumero(totalAgua, { unidad: 'L' })}</span>
             </div>
           </div>
         </div>

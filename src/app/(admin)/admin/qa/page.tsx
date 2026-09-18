@@ -1314,6 +1314,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'Los campos de peso de los materiales se llenan con valores numéricos mayores a 0. El factor CO2 y el factor de agua de cada material NO cambian. El ítem se puede guardar sin error después.',
     journeys: ['Admin Operativa']
   },
+  {
+    id: 'adm-30', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
+    titulo: 'Sugerir factor CO2/agua de materiales al crear/editar una categoría',
+    descripcion: 'Al crear o editar una categoría, un botón junto a "Añadir material" busca con IA (Perplexity) el factor de CO2 y agua de cada material, llenando los vacíos directo y avisando (sin reemplazar solo) cuando un valor ya puesto parece incorrecto.',
+    pasos: [
+      'Crea una categoría de prueba con 2 materiales: uno sin factor CO2 puesto, y otro con un valor a propósito absurdo (ej. "Hierro" con factor CO2 en 999).',
+      'Haz clic en "Sugerir con IA", junto al botón "Añadir material".',
+      'Espera a que termine de cargar (unos segundos, hace una búsqueda real).'
+    ],
+    esperado: 'El material sin factor se llena solo, con una fuente real si la encontró. El material con el valor absurdo muestra un aviso con el valor real encontrado y los botones "Descartar"/"Reemplazar" — el valor solo cambia si se hace clic en "Reemplazar". Al repetir la búsqueda con el mismo nombre de material en otra categoría, responde casi instantáneo (viene del caché).',
+    journeys: ['Admin Operativa']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // SETTINGS
