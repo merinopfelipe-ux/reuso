@@ -88,7 +88,7 @@ async function llamarOpenRouter(nombre: string, unidad: string): Promise<{ ok: b
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen2.5-72b-instruct:online',
+        model: 'qwen/qwen3-235b-a22b:online',
         max_tokens: 300,
         temperature: 0.1,
         messages: [{ role: 'user', content: construirPrompt(nombre, unidad) }],

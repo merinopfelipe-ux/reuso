@@ -248,7 +248,7 @@ async function llamarOpenRouter(
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen2.5-vl-7b-instruct',
+        model: 'qwen/qwen3-vl-8b-instruct',
         max_tokens: 500 + imagenes.length * 350,
         temperature: 0.1,
         messages: [

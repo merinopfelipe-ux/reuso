@@ -166,7 +166,7 @@ async function llamarOpenRouterTexto(textoDoc: string, system: string, user: str
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen2.5-72b-instruct',
+        model: 'qwen/qwen3-235b-a22b',
         max_tokens: 512, temperature: 0,
         messages: [
           { role: 'system', content: system },
@@ -229,7 +229,7 @@ async function llamarOpenRouter(base64Data: string, mimeType: string, system: st
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'qwen/qwen2.5-vl-7b-instruct',
+        model: 'qwen/qwen3-vl-8b-instruct',
         max_tokens: 512,
         temperature: 0,
         messages: [
@@ -262,7 +262,7 @@ async function validarConGroq(campos: CampoExtraido[], tipoActivo: string): Prom
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-20b',
         max_tokens: 512,
         temperature: 0,
         messages: [
