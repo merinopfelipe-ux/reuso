@@ -43,7 +43,14 @@ function parsearJSON(raw: string): unknown | null {
 }
 
 function construirPrompt(itemNombre: string, titulo: string): string {
-  return `Eres un investigador de precios de menaje y mobiliario en Colombia. Busca en internet el precio de venta de un mueble NUEVO equivalente a: "${titulo}" (categoría de catálogo: "${itemNombre}").
+  // El nombre de catálogo ("Silla Comedor") es el sujeto principal de la
+  // búsqueda — es un término técnico, mucho más preciso para encontrar un
+  // precio real. El título creativo del diagnóstico por foto ("Silla
+  // tapizada estilo colonial") se usa solo como dato de apoyo (estilo/
+  // material), nunca como el objeto central: se pensó para que un cliente
+  // final lo lea con gusto, no para que una IA lo use como término de
+  // búsqueda técnica. Bug real corregido 2026-09-18.
+  return `Eres un investigador de precios de menaje y mobiliario en Colombia. Busca en internet el precio de venta de un mueble NUEVO equivalente a: "${itemNombre}" (estilo/detalle: "${titulo}").
 
 Busca en tiendas en línea colombianas reales (Falabella, Homecenter, Linio, MercadoLibre Colombia, tiendas de fábrica) el precio de un mueble nuevo comparable. Si encuentras varios precios, usa uno representativo, nunca el más alto ni el más bajo como excepción.
 
