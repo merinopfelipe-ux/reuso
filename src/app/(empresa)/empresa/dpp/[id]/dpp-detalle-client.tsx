@@ -8,8 +8,9 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { KpiCard } from '@/components/admin/kpi-card'
 import { EmptyState } from '@/components/empty-state'
 import { Selector } from '@/components/ui/selector'
+import { Button } from '@/components/ui/button'
 import {
-  CreditCard, Leaf, TrendUp, Target, FileText, CaretDown,
+  CreditCard, Leaf, TrendUp, Crosshair, FileText, CaretDown,
   ArrowCounterClockwise, CheckCircle, ZoomIn,
 } from '@/components/ui/icons'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
@@ -254,6 +255,7 @@ interface Activo {
   n_ciclos: number
   peso_total_kg: number | null
   composicion_json: unknown
+  peso_foto_sugerido_kg: number | null
   co2_manufactura_kg: number | null
   hash_integridad: string | null
   imagen_url: string | null
@@ -306,6 +308,16 @@ interface Props {
 
 export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props) {
   const router = useRouter()
+
+  // Sugerencia de peso por foto (sql/138) — nunca se aplica sola.
+  async function decidirSugerenciaPeso(accion: 'aplicar' | 'descartar') {
+    await fetch(`/api/dpp/activos/${activo.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accion }),
+    })
+    router.refresh()
+  }
 
   // Composición con metadata de circularidad (categoria_material,
   // porcentaje_reciclable) cuando el material viene del catálogo — base
@@ -634,6 +646,17 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 </span>
               )}
             </div>
+            {activo.peso_foto_sugerido_kg != null && (
+              <div className="flex flex-col gap-2 p-3 rounded-xl mb-4" style={{ background: 'rgba(246,191,62,0.1)', border: '1px solid rgba(246,191,62,0.3)' }}>
+                <p className="text-xs text-[var(--text-primary)]">
+                  La foto sugiere <strong>{activo.peso_foto_sugerido_kg} kg</strong> en total. El catálogo estima {activo.peso_total_kg ?? 0} kg.
+                </p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="secondary" onClick={() => decidirSugerenciaPeso('descartar')}>Descartar</Button>
+                  <Button size="sm" variant="primary" onClick={() => decidirSugerenciaPeso('aplicar')}>Usar este peso</Button>
+                </div>
+              </div>
+            )}
             {activo.descripcion && (
               <p style={{ margin: '0 0 14px', fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.65 }}>{activo.descripcion}</p>
             )}
@@ -677,8 +700,8 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                               <span>{m.material}</span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(m.factor_co2_kg)}</td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
+                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(m.factor_co2_kg)}</td>
                           <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">{m.origen_fuente ?? '-'}</td>
                           <td className="px-4 py-3 text-center">
                             {m.nivel_confianza ? (
@@ -990,7 +1013,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 <KpiCard titulo="Costo total (TCO)" valor={formatMoneda(resultados.tco, moneda)} icono={CreditCard} color="#00827C" />
                 <KpiCard titulo="Costo evitado" valor={formatMoneda(resultados.costo_evitado, moneda)} icono={Leaf} color="#38B98E" />
                 <KpiCard titulo="E-ROI" valor={`${resultados.e_roi} %`} icono={TrendUp} color="#59A6E4" subtitulo="Retorno sobre inversión circular" />
-                <KpiCard titulo="Circularidad de entrada" valor={`${resultados.inflow_circular_pct} %`} icono={Target} color="#F6BF3E" subtitulo="Material secundario/renovable sobre el total" />
+                <KpiCard titulo="Circularidad de entrada" valor={`${resultados.inflow_circular_pct} %`} icono={Crosshair} color="#F6BF3E" subtitulo="Material secundario/renovable sobre el total" />
               </div>
               <GraficaMetricas resultados={resultados} moneda={moneda} />
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -1031,10 +1054,10 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                           <td className="px-4 py-3 text-[var(--text-secondary)] text-xs text-center">
                             {formatFecha(m.calculado_at)}
                           </td>
-                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)] text-right">{formatMoneda(m.tco, 'COP')}</td>
-                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right">{formatMoneda(m.costo_evitado, 'COP')}</td>
-                          <td className="px-4 py-3 text-[var(--text-primary)] text-right">{m.e_roi != null ? `${formatNumero(m.e_roi)} %` : '-'}</td>
-                          <td className="px-4 py-3 text-[var(--text-primary)] text-right">{m.inflow_circular_pct != null ? `${formatNumero(m.inflow_circular_pct)} %` : '-'}</td>
+                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)] text-right whitespace-nowrap">{formatMoneda(m.tco, 'COP')}</td>
+                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">{formatMoneda(m.costo_evitado, 'COP')}</td>
+                          <td className="px-4 py-3 text-[var(--text-primary)] text-right whitespace-nowrap">{m.e_roi != null ? `${formatNumero(m.e_roi)} %` : '-'}</td>
+                          <td className="px-4 py-3 text-[var(--text-primary)] text-right whitespace-nowrap">{m.inflow_circular_pct != null ? `${formatNumero(m.inflow_circular_pct)} %` : '-'}</td>
                           <td className="px-4 py-3 font-mono text-xs text-[var(--text-secondary)] text-center">{m.version ?? '-'}</td>
                         </tr>
                       )
