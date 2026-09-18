@@ -7,6 +7,7 @@ import { buscarEnCache, guardarEnCache } from '@/lib/ia/peso-insumo-cache'
 const bodySchema = z.object({
   nombre: z.string().min(1),
   unidad: z.string().min(1),
+  contexto_item: z.string().max(200).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -19,14 +20,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
-  const { nombre, unidad } = parsed.data
+  const { nombre, unidad, contexto_item } = parsed.data
 
   const cacheado = await buscarEnCache(guard.adminClient, nombre, unidad)
   if (cacheado) {
     return NextResponse.json({ ok: true, peso_kg: cacheado.peso_kg, fuente_url: cacheado.fuente_url, confianza: cacheado.confianza, origen: 'cache' })
   }
 
-  const resultado = await buscarPesoInsumo(nombre, unidad)
+  const resultado = await buscarPesoInsumo(nombre, unidad, contexto_item)
   if (!resultado.ok) {
     return NextResponse.json({ ok: false })
   }

@@ -316,48 +316,56 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
 
         <div className="flex flex-col gap-3 mt-2">
           <p className={`text-xs font-bold tracking-wide ${ts}`}>Insumos</p>
-          {insumos.map((ins, i) => (
-            <div key={i} className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              {(ins as { _esNuevo?: boolean })._esNuevo ? (
-                <input value={ins.nombre} onChange={e => actualizarInsumo(i, { nombre: e.target.value })} placeholder="Ej: Tela" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
-              ) : (
-                <span className="flex-1 min-w-[80px] text-sm font-medium text-[var(--text-primary)] line-clamp-2 leading-tight" title={ins.nombre}>{ins.nombre}</span>
-              )}
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <InputCantidadInsumo
-                  value={ins.cantidad}
-                  onChange={cantidad => actualizarInsumo(i, { cantidad })}
-                  unidad={ins.unidad || 'und'}
-                />
-                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent">
-                  <input type="number" min={0} step="0.001" value={ins.peso_kg ?? ''} onChange={e => actualizarInsumo(i, { peso_kg: parseNumero(e.target.value) })} className="w-14 text-right text-sm outline-none border-none p-0 bg-transparent" placeholder="peso" />
-                  <span className={`text-xs ${ts}`}>kg</span>
-                </div>
-                {incluyeIA && (
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      if (!ins.nombre.trim()) return
-                      const res = await fetch(conEmpresa('/api/cotizador/insumos/peso-sugerido'), {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ nombre: ins.nombre.trim(), unidad: ins.unidad || 'unidad' }),
-                      })
-                      const data = await res.json()
-                      if (res.ok && data.ok) actualizarInsumo(i, { peso_kg: data.peso_kg })
-                    }}
-                    className="p-1.5 rounded-lg text-[#00827C] hover:opacity-70 flex-shrink-0"
-                    title="Sugerir peso con IA"
-                  >
-                    <Sparkles size={16} />
-                  </button>
+          {insumos.map((ins, i) => {
+            const cantNum = typeof ins.cantidad === 'string' ? parseFloat(String(ins.cantidad).replace(',', '.')) : ins.cantidad
+            const esCero = isNaN(cantNum) || cantNum === 0
+            return (
+              <div key={i} className={`flex items-center gap-2 sm:gap-3 flex-wrap transition-opacity duration-200 ${esCero ? 'opacity-55 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'}`}>
+                {(ins as { _esNuevo?: boolean })._esNuevo ? (
+                  <input value={ins.nombre} onChange={e => actualizarInsumo(i, { nombre: e.target.value })} placeholder="Ej: Tela" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
+                ) : (
+                  <span className={`flex-1 min-w-[80px] text-sm line-clamp-2 leading-tight transition-colors ${esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'}`} title={ins.nombre}>
+                    {ins.nombre}
+                  </span>
                 )}
-                <span className={`text-sm font-medium ${ts}`}>$</span>
-                <input type="number" min={0} value={ins.precio_unitario} onChange={e => actualizarInsumo(i, { precio_unitario: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <InputCantidadInsumo
+                    value={ins.cantidad}
+                    onChange={cantidad => actualizarInsumo(i, { cantidad })}
+                    unidad={ins.unidad || 'und'}
+                  />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent">
+                    <input type="number" min={0} step="0.001" value={ins.peso_kg ?? ''} onChange={e => actualizarInsumo(i, { peso_kg: parseNumero(e.target.value) })} className="w-14 text-right text-sm outline-none border-none p-0 bg-transparent" placeholder="peso" />
+                    <span className={`text-xs ${ts}`}>kg</span>
+                  </div>
+                  {incluyeIA && (
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        if (!ins.nombre.trim()) return
+                        const res = await fetch(conEmpresa('/api/cotizador/insumos/peso-sugerido'), {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ nombre: ins.nombre.trim(), unidad: ins.unidad || 'unidad', contexto_item: item.titulo?.trim() || undefined }),
+                        })
+                        const data = await res.json()
+                        if (res.ok && data.ok) actualizarInsumo(i, { peso_kg: data.peso_kg })
+                      }}
+                      className="p-1.5 rounded-lg text-[#00827C] hover:opacity-70 flex-shrink-0"
+                      title="Sugerir peso con IA"
+                    >
+                      <Sparkles size={16} />
+                    </button>
+                  )}
+                  <div className={`flex items-center gap-1 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                    <span className={`text-sm font-medium ${ts}`}>$</span>
+                    <input type="number" min={0} value={ins.precio_unitario} onChange={e => actualizarInsumo(i, { precio_unitario: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+                  </div>
+                </div>
+                <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
               </div>
-              <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
-            </div>
-          ))}
+            )
+          })}
           <button type="button" onClick={agregarInsumo} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
             <Plus size={13} /> Añadir insumo
           </button>

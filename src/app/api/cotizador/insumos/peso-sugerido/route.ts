@@ -10,6 +10,7 @@ import type { Plan } from '@/types'
 const bodySchema = z.object({
   nombre: z.string().min(1),
   unidad: z.string().min(1),
+  contexto_item: z.string().max(200).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
-  const { nombre, unidad } = parsed.data
+  const { nombre, unidad, contexto_item } = parsed.data
 
   // El caché no cuesta tokens — se consulta ANTES del gate de plan, para que
   // un dato ya conocido (de cualquier empresa) esté disponible siempre.
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Demasiadas búsquedas de peso. Espera unos minutos.' }, { status: 429 })
   }
 
-  const resultado = await buscarPesoInsumo(nombre, unidad)
+  const resultado = await buscarPesoInsumo(nombre, unidad, contexto_item)
   if (!resultado.ok) {
     return NextResponse.json({ ok: false })
   }
