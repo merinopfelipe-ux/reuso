@@ -12,11 +12,17 @@ import { fetchConTimeout } from './fetch-con-timeout'
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
 
 const materialEstimadoSchema = z.object({
-  nombre: z.string().min(1),
-  peso_kg_estimado: z.number().positive().nullable(),
-  confianza: z.enum(['alta', 'media', 'baja']).nullable(),
-  fuente_titulo: z.string().min(1).max(200).nullable(),
-  fuente_url: z.string().regex(/^https?:\/\//).nullable().optional(),
+  nombre: z.string(),
+  peso_kg_estimado: z.number().nullable().optional(),
+  confianza: z.enum(['alta', 'media', 'baja']).nullable().optional(),
+  fuente_titulo: z.string().nullable().optional(),
+  fuente_url: z.string().nullable().optional(),
+  // Rol del material frente a la acción de restauración descrita en el
+  // título (ej. "retapizado" reemplaza tela/espuma, conserva la madera de
+  // la estructura). Cierra un hueco de dato para el futuro cálculo de F_U
+  // (fracción de masa preservada, MCI) — no calcula F_U aquí, solo lo
+  // marca. Ver sql/137_rol_conservacion_material.sql.
+  rol: z.enum(['se_conserva', 'se_reemplaza', 'desconocido']).nullable().optional(),
 })
 
 const respuestaSchema = z.object({
@@ -26,35 +32,75 @@ const respuestaSchema = z.object({
 export type MaterialPesoEstimado = z.infer<typeof materialEstimadoSchema>
 
 export type ResultadoPesosMateriales =
-  | { ok: true; materiales: MaterialPesoEstimado[] }
-  | { ok: false }
+  | { ok: true; materiales: MaterialPesoEstimado[]; proveedor: 'perplexity' | 'gemini' | 'openrouter' }
+  | { ok: false; error?: string }
 
 function parsearJSON(raw: string): unknown | null {
   if (!raw) return null
+  const limpiarTrailingCommas = (str: string) => str.replace(/[\n\r\t]+/g, ' ').replace(/,\s*([}\]])/g, '$1')
   try {
     const mdMatch = raw.match(/```(?:json)?\s*([\s\S]*?)\s*```/)
     const t = (mdMatch ? mdMatch[1] : raw).trim()
     const start = t.indexOf('{')
     if (start === -1) return null
-    try { return JSON.parse(t.slice(start)) } catch { /* continúa */ }
+    try { return JSON.parse(limpiarTrailingCommas(t.slice(start))) } catch { /* continúa */ }
     const end = t.lastIndexOf('}')
     if (end <= start) return null
-    return JSON.parse(t.slice(start, end + 1))
+    return JSON.parse(limpiarTrailingCommas(t.slice(start, end + 1)))
   } catch { return null }
 }
 
 function construirPrompt(nombreItem: string, categoriaNombre: string, materiales: string[]): string {
   const lista = materiales.map(m => `- ${m}`).join('\n')
-  return `Eres un investigador de materiales de tapicería/carpintería/restauración en Colombia. Para el ítem "${nombreItem}" (categoría: "${categoriaNombre}"), estima el peso en kg de cada uno de estos materiales que lo componen:
+  return `Eres un experto investigador en materiales y procesos de tapicería, carpintería y restauración de muebles.
+
+Atención: El título del ítem a analizar es "${nombreItem}" (categoría: "${categoriaNombre}"). Este título suele describir DOS cosas a la vez: (1) el mueble u objeto físico subyacente, y (2) el servicio o acción que se le va a realizar (por ejemplo, "Restauración de...", "Retapizado de...", "Cambio de patas de..."). Enfócate en el objeto físico subyacente para estimar su peso real, PERO usa la acción descrita (si la hay) para decidir, material por material, si esa acción lo conserva o lo reemplaza.
+
+Tu objetivo es hacer un match lógico entre el objeto físico real descrito en el título y la siguiente lista de materiales, estimando el peso total en kg que cada uno de estos materiales aporta a la composición de un (1) mueble/ítem completo de ese tipo, Y clasificando su rol frente a la acción del título:
+
 ${lista}
 
 Para cada material, sigue este orden:
-1. Si encuentras datos técnicos confiables (fichas de fabricante, catálogos, densidades conocidas de ese material), úsalos. confianza: "alta" o "media", fuente_url con la URL real.
-2. Si no encuentras nada confiable, da un estimado razonado por densidad típica del material y el tamaño típico de un ítem como este. confianza: "baja", fuente_url: null, fuente_titulo explicando el razonamiento (ej. "Estimación por densidad típica de madera de cedro en silla de comedor").
-3. Solo si de verdad no puedes estimar nada (ni por densidad ni por tipo de ítem), pon peso_kg_estimado: null, confianza: null, fuente_titulo: null para ese material. Nunca inventes un número sin ningún razonamiento.
+1. Busca datos en Colombia. Si no encuentras, amplía a nivel Global contrastando fuentes en español e inglés, yendo de lo micro a lo macro.
+2. Si encuentras datos técnicos confiables (fichas de fabricante, catálogos, densidades conocidas de ese material), úsalos. confianza: "alta" o "media", fuente_url con la URL real.
+3. Si no encuentras nada confiable, da un estimado razonado cruzando la densidad típica del material con el volumen o tamaño típico que ocupa en ese mueble en particular. confianza: "baja", fuente_url: null, fuente_titulo explicando tu razonamiento matemático.
+4. Solo si es un material completamente desconocido o inaplicable al ítem, pon peso_kg_estimado: null. NUNCA inventes un número sin ningún razonamiento o cálculo base.
+
+Además, para el campo "rol" de cada material:
+- Si el título describe una acción de restauración/servicio reconocible (ej. "retapizado", "restauración", "cambio de X"), decide si ESE material típicamente se conserva (parte de la estructura o base que la acción no toca) o se reemplaza/afecta (lo que la acción específicamente cambia o repara). Usa "se_conserva" o "se_reemplaza".
+- Si el título NO describe ninguna acción reconocible (ej. solo "Silla", sin verbo de servicio), o no puedes inferir el rol de ese material con la acción dada, responde "desconocido". Nunca inventes una acción que no está en el título.
 
 Responde ÚNICAMENTE con este JSON, un objeto por cada material EN EL MISMO ORDEN en que se listaron arriba, sin texto adicional:
-{ "materiales": [ { "nombre": "...", "peso_kg_estimado": <número o null>, "confianza": "alta"|"media"|"baja"|null, "fuente_titulo": "..."|null, "fuente_url": "https://..."|null } ] }`
+{ "materiales": [ { "nombre": "...", "peso_kg_estimado": <número o null>, "confianza": "alta"|"media"|"baja"|null, "fuente_titulo": "..."|null, "fuente_url": "https://..."|null, "rol": "se_conserva"|"se_reemplaza"|"desconocido" } ] }`
+}
+
+async function llamarPerplexity(prompt: string): Promise<{ ok: boolean; raw: string }> {
+  const key = process.env.PERPLEXITY_KEY
+  if (!key) return { ok: false, raw: '' }
+
+  try {
+    const res = await fetchConTimeout('https://api.perplexity.ai/v1/responses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'perplexity/sonar',
+        input: prompt,
+        tools: [{ type: 'web_search' }],
+        temperature: 0.1,
+        max_output_tokens: 3000,
+      }),
+    }, 15_000)
+    if (!res.ok) return { ok: false, raw: '' }
+
+    const data = await res.json() as {
+      output?: { type: string; content?: { type: string; text: string }[] }[]
+    }
+    const mensaje = data.output?.find(o => o.type === 'message')
+    const texto = mensaje?.content?.find(c => c.type === 'output_text')?.text ?? ''
+    return { ok: !!texto, raw: texto }
+  } catch {
+    return { ok: false, raw: '' }
+  }
 }
 
 async function llamarGemini(prompt: string): Promise<{ ok: boolean; raw: string }> {
@@ -70,12 +116,12 @@ async function llamarGemini(prompt: string): Promise<{ ok: boolean; raw: string 
         contents: [{ role: 'user', parts: [{ text: prompt }] }],
         tools: [{ google_search: {} }],
         generationConfig: {
-          maxOutputTokens: 700,
+          maxOutputTokens: 2500,
           temperature: 0.1,
           thinkingConfig: { thinkingBudget: 0 },
         },
       }),
-    }, 20_000)
+    }, 10_000)
     if (!res.ok) return { ok: false, raw: '' }
     const data = await res.json() as { candidates?: { content: { parts: { text: string }[] } }[] }
     const txt = data.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') ?? ''
@@ -92,12 +138,12 @@ async function llamarOpenRouter(prompt: string): Promise<{ ok: boolean; raw: str
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
         model: 'qwen/qwen3-235b-a22b:online',
-        max_tokens: 700,
+        max_tokens: 2500,
         temperature: 0.1,
         reasoning: { enabled: false },
         messages: [{ role: 'user', content: prompt }],
       }),
-    }, 20_000)
+    }, 12_000)
     if (!res.ok) return { ok: false, raw: '' }
     const data = await res.json() as { choices?: { message: { content: string } }[] }
     const txt = data.choices?.[0]?.message?.content ?? ''
@@ -106,21 +152,31 @@ async function llamarOpenRouter(prompt: string): Promise<{ ok: boolean; raw: str
 }
 
 export async function buscarPesosMaterialesItem(nombreItem: string, categoriaNombre: string, materiales: string[]): Promise<ResultadoPesosMateriales> {
-  if (materiales.length === 0) return { ok: false }
+  if (materiales.length === 0) return { ok: false, error: 'No se enviaron materiales.' }
 
   const prompt = construirPrompt(nombreItem, categoriaNombre, materiales)
 
-  let resultado = await llamarGemini(prompt)
+  // Cascada: 1. Perplexity -> 2. Gemini -> 3. OpenRouter
+  let proveedor: 'perplexity' | 'gemini' | 'openrouter' = 'perplexity'
+  let resultado = await llamarPerplexity(prompt)
   if (!resultado.ok) {
+    proveedor = 'gemini'
+    resultado = await llamarGemini(prompt)
+  }
+  if (!resultado.ok) {
+    proveedor = 'openrouter'
     resultado = await llamarOpenRouter(prompt)
   }
-  if (!resultado.ok) return { ok: false }
+  if (!resultado.ok) return { ok: false, error: 'No se pudo obtener respuesta de los servicios de IA.' }
 
   const json = parsearJSON(resultado.raw)
-  if (!json || typeof json !== 'object') return { ok: false }
+  if (!json || typeof json !== 'object') {
+    console.error('Error parsearJSON, raw:', resultado.raw)
+    return { ok: false, error: 'Respuesta con formato no parseable. RAW: ' + resultado.raw.substring(0, 150) + '...' }
+  }
 
   const parsed = respuestaSchema.safeParse(json)
-  if (!parsed.success) return { ok: false }
+  if (!parsed.success) return { ok: false, error: 'Esquema inválido: ' + parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(', ') }
 
-  return { ok: true, materiales: parsed.data.materiales }
+  return { ok: true, materiales: parsed.data.materiales, proveedor }
 }

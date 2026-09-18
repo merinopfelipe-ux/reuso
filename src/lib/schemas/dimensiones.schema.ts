@@ -29,6 +29,13 @@ export const materialSchema = z.object({
   origen_fuente: z.string().max(200).nullish(),
   detalle_fuente: z.string().max(400).nullish(),
   nivel_confianza: nivelConfianza.default('baja'),
+  // Rol frente a la acción de restauración del título del ítem (hueco de
+  // dato para F_U/MCI, ver sql/137). Solo tiene sentido en item_materiales
+  // — en categoria_materiales_base (sin acción asociada) siempre llega
+  // undefined y nunca se envía (el cliente usa `|| undefined`, nunca
+  // `|| null`, para que la tabla de categoría, que no tiene esta columna,
+  // nunca la reciba).
+  rol_conservacion: z.enum(['se_conserva', 'se_reemplaza', 'desconocido']).nullish(),
 })
 
 // Dimensión financiera (Cotizador). Nunca se mezcla con la ambiental.

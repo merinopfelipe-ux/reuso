@@ -135,6 +135,10 @@ export interface ItemMaterial {
   nivel_confianza: NivelConfianza
   orden: number
   created_at: string
+  // Rol frente a la acción de restauración del título (hueco de dato para
+  // F_U/MCI) — ver sql/137_rol_conservacion_material.sql. Solo existe aquí,
+  // nunca en CategoriaMaterialBase (sin acción asociada).
+  rol_conservacion: 'se_conserva' | 'se_reemplaza' | 'desconocido' | null
 }
 
 // Dimensión financiera (Cotizador). Nunca se mezcla con la ambiental.
