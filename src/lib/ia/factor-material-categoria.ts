@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { fetchConTimeout } from './fetch-con-timeout'
 
 // A diferencia de peso-insumo.ts/peso-materiales-item.ts (Gemini+OpenRouter),
 // esta función usa la Agent API de Perplexity con la herramienta web_search
@@ -76,15 +77,17 @@ export async function buscarFactoresMaterial(materiales: MaterialConsulta[]): Pr
   if (!key) return { ok: false }
 
   try {
-    const res = await fetch('https://api.perplexity.ai/v1/agent', {
+    const res = await fetchConTimeout('https://api.perplexity.ai/v1/agent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
         model: 'perplexity/sonar',
         input: construirPrompt(materiales),
         tools: [{ type: 'web_search' }],
+        temperature: 0.1,
+        max_output_tokens: 800,
       }),
-    })
+    }, 25_000)
     if (!res.ok) return { ok: false }
 
     const data = await res.json() as {

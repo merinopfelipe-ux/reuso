@@ -4,6 +4,7 @@ import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { planIncluyeIA } from '@/lib/plan-limits'
+import { fetchConTimeout } from '@/lib/ia/fetch-con-timeout'
 import type { Plan } from '@/types'
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? 'gemini-3.6-flash'
@@ -131,7 +132,7 @@ async function llamarGeminiTexto(textoDoc: string, system: string, user: string)
   if (!key) return { ok: false, json: null, proveedor: 'gemini' }
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
   try {
-    const res = await fetch(url, {
+    const res = await fetchConTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -147,7 +148,7 @@ async function llamarGeminiTexto(textoDoc: string, system: string, user: string)
           responseSchema: GEMINI_RESPONSE_SCHEMA,
         },
       }),
-    })
+    }, 20_000)
     if (!res.ok) return { ok: false, json: null, proveedor: 'gemini' }
     const data = await res.json() as { candidates?: { content: { parts: { text: string }[] } }[] }
     const txt = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
@@ -162,18 +163,19 @@ async function llamarOpenRouterTexto(textoDoc: string, system: string, user: str
   const key = process.env.OR_KEY
   if (!key) return { ok: false, json: null, proveedor: 'openrouter' }
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetchConTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
         model: 'qwen/qwen3-235b-a22b',
         max_tokens: 512, temperature: 0,
+        reasoning: { enabled: false },
         messages: [
           { role: 'system', content: system },
           { role: 'user',   content: `${user}\n\nDocumento:\n${textoDoc}` },
         ],
       }),
-    })
+    }, 20_000)
     if (!res.ok) return { ok: false, json: null, proveedor: 'openrouter' }
     const data = await res.json() as { choices?: { message: { content: string } }[] }
     const txt = data.choices?.[0]?.message?.content ?? ''
@@ -190,7 +192,7 @@ async function llamarGemini(base64Data: string, mimeType: string, system: string
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
   try {
-    const res = await fetch(url, {
+    const res = await fetchConTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -210,7 +212,7 @@ async function llamarGemini(base64Data: string, mimeType: string, system: string
           responseSchema: GEMINI_RESPONSE_SCHEMA,
         },
       }),
-    })
+    }, 25_000)
     if (!res.ok) return { ok: false, json: null, proveedor: 'gemini' }
     const data = await res.json() as { candidates?: { content: { parts: { text: string }[] } }[] }
     const txt = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ''
@@ -225,7 +227,7 @@ async function llamarOpenRouter(base64Data: string, mimeType: string, system: st
   const key = process.env.OR_KEY
   if (!key) return { ok: false, json: null, proveedor: 'openrouter' }
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetchConTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
@@ -240,7 +242,7 @@ async function llamarOpenRouter(base64Data: string, mimeType: string, system: st
           ]},
         ],
       }),
-    })
+    }, 25_000)
     if (!res.ok) return { ok: false, json: null, proveedor: 'openrouter' }
     const data = await res.json() as { choices?: { message: { content: string } }[] }
     const txt = data.choices?.[0]?.message?.content ?? ''
@@ -258,7 +260,7 @@ async function validarConGroq(campos: CampoExtraido[], tipoActivo: string): Prom
   try {
     const GROQ_SYSTEM = `Valida coherencia de campos financieros. Baja conf a 0 si: precio negativo, peso > 10000 kg, total < suma de partes. No cambies valores. Devuelve solo el array JSON recibido con conf ajustada.`
 
-    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const res = await fetchConTimeout('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
@@ -270,7 +272,7 @@ async function validarConGroq(campos: CampoExtraido[], tipoActivo: string): Prom
           { role: 'user', content: `Activo: "${tipoActivo}". Valida:\n${JSON.stringify(campos)}` },
         ],
       }),
-    })
+    }, 15_000)
     if (!res.ok) return campos
     const data = await res.json() as { choices?: { message: { content: string } }[] }
     const txt = data.choices?.[0]?.message?.content ?? ''

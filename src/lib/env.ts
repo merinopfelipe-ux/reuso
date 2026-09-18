@@ -14,6 +14,7 @@ const OPTIONAL_FEATURES: Record<string, string> = {
   GEMINI_KEY: 'Diagnóstico IA de muebles (cotizador)',
   GROQ_KEY: 'IA fallback (Groq)',
   OR_KEY: 'IA fallback (OpenRouter)',
+  PERPLEXITY_KEY: 'Factor CO2/agua de materiales con fuente real (Perplexity)',
   RESEND_API_KEY: 'Envío de emails (invitaciones, tickets)',
   CRON_SECRET: 'Cron jobs (cotizaciones frías)',
 }

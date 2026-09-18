@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { fetchConTimeout } from './fetch-con-timeout'
 
 // Sugerencia de "precio de mercado nuevo" con búsqueda web — alimenta el
 // Ahorro Neto CAPEX del Reporte 1 (Rentabilidad, dominio A). Mecanismo
@@ -69,7 +70,7 @@ async function llamarGemini(itemNombre: string, titulo: string): Promise<{ ok: b
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
   try {
-    const res = await fetch(url, {
+    const res = await fetchConTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -78,10 +79,10 @@ async function llamarGemini(itemNombre: string, titulo: string): Promise<{ ok: b
         generationConfig: {
           maxOutputTokens: 500,
           temperature: 0.1,
-          thinkingConfig: { thinkingBudget: 150 },
+          thinkingConfig: { thinkingBudget: 0 },
         },
       }),
-    })
+    }, 20_000)
     if (!res.ok) return { ok: false, raw: '' }
     const data = await res.json() as { candidates?: { content: { parts: { text: string }[] } }[] }
     const txt = data.candidates?.[0]?.content?.parts?.map((p) => p.text).join('') ?? ''
@@ -99,7 +100,7 @@ async function llamarOpenRouter(itemNombre: string, titulo: string): Promise<{ o
   const key = process.env.OR_KEY
   if (!key) return { ok: false, raw: '' }
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetchConTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
@@ -109,7 +110,7 @@ async function llamarOpenRouter(itemNombre: string, titulo: string): Promise<{ o
         reasoning: { enabled: false },
         messages: [{ role: 'user', content: construirPrompt(itemNombre, titulo) }],
       }),
-    })
+    }, 20_000)
     if (!res.ok) return { ok: false, raw: '' }
     const data = await res.json() as { choices?: { message: { content: string } }[] }
     const txt = data.choices?.[0]?.message?.content ?? ''

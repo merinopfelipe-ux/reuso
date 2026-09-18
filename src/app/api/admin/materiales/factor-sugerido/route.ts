@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireSuperAdmin } from '@/lib/admin-guard'
 import { buscarFactoresMaterial, type MaterialFactorEstimado } from '@/lib/ia/factor-material-categoria'
-import { buscarEnCache, guardarEnCache } from '@/lib/ia/factor-material-cache'
+import { buscarEnCacheBatch, guardarEnCacheBatch, normalizarNombreMaterial } from '@/lib/ia/factor-material-cache'
 
 const bodySchema = z.object({
   materiales: z.array(z.object({
@@ -22,41 +22,46 @@ export async function POST(request: NextRequest) {
   }
 
   // 1. Resolver del caché lo que ya se conoce (constante física, no varía
-  //    por categoría ni empresa) — solo lo que falte dispara Perplexity.
+  //    por categoría ni empresa) en un solo viaje a Supabase — solo lo que
+  //    falte dispara Perplexity.
   const resultados: MaterialFactorEstimado[] = []
+  const cacheado = await buscarEnCacheBatch(guard.adminClient, parsed.data.materiales.map(m => m.nombre))
   const faltantes: typeof parsed.data.materiales = []
   for (const m of parsed.data.materiales) {
-    const cacheado = await buscarEnCache(guard.adminClient, m.nombre)
-    if (cacheado) {
+    const hit = cacheado.get(normalizarNombreMaterial(m.nombre))
+    if (hit) {
       resultados.push({
         nombre: m.nombre,
-        factor_co2_kg: cacheado.factor_co2_kg,
-        factor_agua_l_kg: cacheado.factor_agua_l_kg,
-        confianza: cacheado.confianza as MaterialFactorEstimado['confianza'],
-        fuente_titulo: cacheado.fuente_titulo,
-        fuente_url: cacheado.fuente_url,
+        factor_co2_kg: hit.factor_co2_kg,
+        factor_agua_l_kg: hit.factor_agua_l_kg,
+        confianza: hit.confianza as MaterialFactorEstimado['confianza'],
+        fuente_titulo: hit.fuente_titulo,
+        fuente_url: hit.fuente_url,
       })
     } else {
       faltantes.push(m)
     }
   }
 
-  // 2. Solo los que faltan van a Perplexity, y se guardan en caché después.
+  // 2. Solo los que faltan van a Perplexity, y se guardan en caché en un
+  //    solo upsert por lote después.
   if (faltantes.length > 0) {
     const resultado = await buscarFactoresMaterial(faltantes)
     if (resultado.ok) {
-      for (const m of resultado.materiales) {
-        resultados.push(m)
-        if (m.factor_co2_kg !== null) {
-          await guardarEnCache(guard.adminClient, m.nombre, {
-            factor_co2_kg: m.factor_co2_kg,
+      resultados.push(...resultado.materiales)
+      const paraGuardar = resultado.materiales
+        .filter(m => m.factor_co2_kg !== null)
+        .map(m => ({
+          nombre: m.nombre,
+          valores: {
+            factor_co2_kg: m.factor_co2_kg as number,
             factor_agua_l_kg: m.factor_agua_l_kg,
             fuente_url: m.fuente_url ?? null,
             fuente_titulo: m.fuente_titulo,
             confianza: m.confianza,
-          })
-        }
-      }
+          },
+        }))
+      await guardarEnCacheBatch(guard.adminClient, paraGuardar)
     }
   }
 

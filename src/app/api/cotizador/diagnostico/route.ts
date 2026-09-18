@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { rateLimit } from '@/lib/rate-limit'
 import { planIncluyeIA } from '@/lib/plan-limits'
+import { fetchConTimeout } from '@/lib/ia/fetch-con-timeout'
 import type { Plan } from '@/types'
 import type { Material as MaterialCompleto } from '@/lib/cotizador/plantillas-base'
 
@@ -158,7 +159,7 @@ async function llamarGemini(
   const enumNombres = [...nombresCatalogo, SIN_MATCH]
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${key}`
   try {
-    const res = await fetch(url, {
+    const res = await fetchConTimeout(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -219,7 +220,7 @@ async function llamarGemini(
           },
         },
       }),
-    })
+    }, 25_000)
     if (!res.ok) {
       console.error('[diagnostico] Gemini respondió error', res.status, (await res.text()).slice(0, 500))
       return { ok: false, raw: '' }
@@ -244,7 +245,7 @@ async function llamarOpenRouter(
   const key = process.env.OR_KEY
   if (!key) return { ok: false, raw: '' }
   try {
-    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const res = await fetchConTimeout('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
@@ -259,7 +260,7 @@ async function llamarOpenRouter(
           ]},
         ],
       }),
-    })
+    }, 25_000)
     if (!res.ok) {
       console.error('[diagnostico] OpenRouter respondió error', res.status, (await res.text()).slice(0, 500))
       return { ok: false, raw: '' }
