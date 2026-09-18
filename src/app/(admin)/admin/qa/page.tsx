@@ -1295,10 +1295,23 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     descripcion: 'Un insumo heredado de la categoría (ej. "Tela") puede no aplicar a un ítem puntual (ej. una silla sin tapicería) sin que eso borre ese insumo para el resto de ítems de la misma categoría.',
     pasos: [
       'Entra a una categoría con al menos un insumo (ej. "Tela") y dos ítems.',
-      'En el primer ítem, deja la cantidad de "Tela" en 0 o vacía y guarda — debe verse gris con la etiqueta "(inactivo)".',
+      'En el primer ítem, deja la cantidad de "Tela" en 0 o vacía y guarda — debe verse atenuado en gris sin sumar costos.',
       'Abre el segundo ítem y confirma que "Tela" sigue apareciendo ahí, disponible para ponerle una cantidad real.'
     ],
     esperado: 'El primer ítem no suma el costo de "Tela" en su total. El segundo ítem sigue teniendo "Tela" disponible y funcionando con normalidad.',
+    journeys: ['Admin Operativa']
+  },
+  {
+    id: 'adm-29', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
+    titulo: 'Completar el peso de materiales de un ítem con IA',
+    descripcion: 'Al crear o editar un ítem, un botón permite pedirle a la IA que estime el peso de todos los materiales listados en una sola llamada, sin tocar factor CO2 ni agua.',
+    pasos: [
+      'Entra a una categoría con al menos 2 materiales y crea un ítem nuevo (o abre uno existente).',
+      'Escribe un nombre real para el ítem (ej. "Silla Comedor de prueba").',
+      'Haz clic en "Completar materiales con IA", debajo de la lista de materiales.',
+      'Espera a que el botón termine de cargar (ícono de reloj gira mientras tanto).'
+    ],
+    esperado: 'Los campos de peso de los materiales se llenan con valores numéricos mayores a 0. El factor CO2 y el factor de agua de cada material NO cambian. El ítem se puede guardar sin error después.',
     journeys: ['Admin Operativa']
   },
 
