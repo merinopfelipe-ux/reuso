@@ -93,6 +93,7 @@ function construirItemStub(opts: {
     descripcion: opts.descripcion ?? '',
     cantidad: opts.cantidad ?? 1,
     confianza: opts.confianza ?? 0,
+    peso_total_estimado_kg: null,
     imagen_index: opts.imagenIndex,
     bounding_box: null,
     factor_rentabilidad: 2,
@@ -499,6 +500,14 @@ function NuevaCotizacionContent() {
       }
       if (!id) return { ok: false, error: 'No se pudo identificar la cotización.' }
 
+      // Umbral 10%, mismo criterio ya usado para la discrepancia de factor
+      // CO2/agua en /admin/categorias — silencio si la foto confirma el
+      // promedio, aviso solo si se desfasa de verdad.
+      const pesoFoto = item.peso_total_estimado_kg
+      const pesoCatalogo = item.peso_kg_unidad
+      const difiereMasDel10Porciento = pesoFoto != null && pesoCatalogo > 0
+        && Math.abs(pesoFoto - pesoCatalogo) / pesoCatalogo > 0.10
+
       const resMueble = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}/mueble`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -514,6 +523,7 @@ function NuevaCotizacionContent() {
           insumos_json: item.insumos.filter(i => i.nombre.trim() && i.cantidad >= 0),
           materiales_json: item.materiales.filter(m => m.nombre.trim() && m.peso_kg > 0 && m.factor_co2_kg > 0),
           factor_rentabilidad: item.factor_rentabilidad,
+          peso_foto_sugerido_kg: difiereMasDel10Porciento ? pesoFoto : undefined,
         }),
       })
       const dataMueble = await resMueble.json()

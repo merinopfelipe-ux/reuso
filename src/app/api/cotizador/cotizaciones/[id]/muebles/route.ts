@@ -43,7 +43,7 @@ export async function GET(
 
     const { data: muebles, error } = await adminClient
       .from('crm_muebles_cotizados')
-      .select('id, item_id, titulo, descripcion, tipo_mueble, categoria, oficios_json, cantidad, servicios_json, insumos_json, factor_rentabilidad, materiales_json, ajustes_humanos_json, precio_mueble, co2_evitado_kg, agua_evitada_l, imagen_url, diagnostico_ia_json, precio_mercado_nuevo, precio_mercado_fuente_url, precio_mercado_estado, oculto')
+      .select('id, item_id, titulo, descripcion, tipo_mueble, categoria, oficios_json, cantidad, servicios_json, insumos_json, factor_rentabilidad, materiales_json, peso_foto_sugerido_kg, ajustes_humanos_json, precio_mueble, co2_evitado_kg, agua_evitada_l, imagen_url, diagnostico_ia_json, precio_mercado_nuevo, precio_mercado_fuente_url, precio_mercado_estado, oculto')
       .eq('cotizacion_id', params.id)
       .order('created_at')
 

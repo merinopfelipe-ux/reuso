@@ -31,6 +31,10 @@ const schema = z.object({
   materiales_json: z.array(materialSchema).optional(),
   factor_rentabilidad: z.number().positive().max(100).optional(),
   co2_evitado_kg_unidad: z.number().nonnegative().optional(),
+  // Solo llega si el peso visto en la foto difirió más de 10% del catálogo
+  // (calculado en el frontend) — sugerencia pendiente de aceptar, nunca se
+  // aplica sola. Ver sql/138.
+  peso_foto_sugerido_kg: z.number().positive().optional(),
 })
 
 export async function POST(
@@ -80,6 +84,7 @@ export async function POST(
   const {
     item_id, cantidad, imagen_base64, mime_type,
     diagnostico_ia_json, fue_corregido_por_humano,
+    peso_foto_sugerido_kg,
   } = parsed.data
   const titulo = parsed.data.titulo?.trim() || null
   const descripcion = parsed.data.descripcion?.trim() || null
@@ -167,6 +172,7 @@ export async function POST(
       insumos_json: insumos,
       factor_rentabilidad,
       peso_estandar_kg: item.peso_kg,
+      peso_foto_sugerido_kg: peso_foto_sugerido_kg ?? null,
       precio_mueble: resultado.precio_mueble,
       co2_evitado_kg: resultado.co2_evitado_kg,
       agua_evitada_l: resultado.agua_evitada_l,
