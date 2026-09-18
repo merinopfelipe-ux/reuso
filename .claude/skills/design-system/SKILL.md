@@ -221,6 +221,27 @@ import { SkeletonLista, SkeletonCard, Skeleton } from '@/components/ui/skeleton'
 ### Submenú de navegación por secciones
 **Componente único:** `src/components/page-submenu.tsx` — `<PageSubmenu items={...} activeHash={...} />`. SIEMPRE usarlo para submenús laterales por anclas (páginas legales, configuración, etc.), nunca crear uno alternativo. `position: sticky`, ancho 180px, ítem activo con borde derecho 3px `var(--color-brand)`. En mobile (<768px) se oculta, sin reemplazo de pills horizontales.
 
+### Página pública de listado por clusters con acordeones (patrón `/faq`)
+Referencia completa: `src/app/(public)/faq/faq-client.tsx`. Úsalo como base antes de armar cualquier página pública nueva que liste contenido agrupado y consultable (glosario, casos de uso, changelog público, etc.) — no inventes una estructura nueva sin revisar primero si este patrón ya resuelve el caso.
+
+**Jerarquía de 3 capas estructurales, siempre en este orden:** filtro global (categoría/cluster, como píldoras horizontales con `flex-wrap`, nunca scroll horizontal) → agrupación temática (cluster, con su propio encabezado: barra de color + título + contador) → unidad mínima interactiva (acordeón individual). La CANTIDAD de clusters/categorías es libre — en `/faq` son 3, pero pueden ser los que haga falta, la estructura no depende de ese número. El buscador filtra en memoria sobre los datos ya cargados y opera sobre las 3 capas a la vez: si ningún ítem de un cluster coincide, el cluster completo desaparece (nunca queda un cluster vacío en pantalla).
+
+**Composición de la página, de arriba a abajo:**
+1. Header sticky con blur (`backdrop-filter`), logo centrado, link "Inicio" a la izquierda, CTA principal a la derecha.
+2. Miga de pan (`<nav aria-label="Miga de pan">`) alineada a la izquierda — nunca centrada.
+3. H1 centrado a 1-2 renglones + subtítulo centrado, ambos con `max-width` propio (no todo el ancho de la página).
+4. Barra de control: píldoras de filtro + buscador, separada del contenido por un borde superior (`border-t`).
+5. Listado agrupado (grid de 1 columna en móvil, 2 en desktop dentro de cada cluster).
+6. Banner de conversión final con una sola acción principal + un canal de contacto humano como salida alterna — nunca varias CTAs compitiendo.
+
+**El acordeón individual (`FAQItem`) es el componente a replicar tal cual:**
+- Colapsado por defecto: borde y fondo neutros, `hover` sutil. Nunca arranca abierto salvo que la URL apunte a su `id` por hash (deep-link a una pregunta puntual).
+- Header del acordeón: título a la izquierda (`<h3>`, semántica real para SEO) + indicador circular a la derecha que rota 180° al abrir (`CaretDown` con `transition-transform`).
+- Al abrir: gana borde de color de acento, sombra suave (`glowShadow`) y el título cambia de color — la respuesta se revela dentro de un contenedor con borde superior propio, separada visualmente de la pregunta.
+- Controles secundarios (copiar enlace, editar, etc.) viven DENTRO del contenido abierto, nunca en el header, y solo aparecen al hacer hover sobre su propio contenedor (`group/copy` + tooltip propio, nunca el `title` nativo del navegador) — jamás fijos, jamás en móvil si no aportan (ocultos con `hidden sm:inline-flex`).
+
+**Estados visuales consistentes en toda la página:** inactivo = plano y de bajo contraste; activo/abierto = borde + sombra + color de acento tomado directo de la paleta del sistema (nunca un color inventado para la sección). Cada cluster/categoría tiene su propio acento de color fijo (mismo criterio que un badge), consistente entre el filtro, el encabezado de sección y el estado abierto de sus acordeones.
+
 ## Reglas generales
 - **Toda descarga de datos SIEMPRE pregunta el formato: CSV, Excel y PDF** (en ese orden) — nunca un botón que descarga directo un solo formato. Única excepción: la cotización pública compartida con el cliente (`/cot/[token]`), que siempre es PDF sin preguntar, porque ahí no hay "datos tabulares" que exportar en otro formato, es el documento en sí. Dos patrones válidos según de dónde salen los datos: `BotonDescargar` (`src/components/boton-descargar.tsx`, para exports generados en un endpoint server-side, ya usado en usuarios/empresas) o un `Popover` con las 3 opciones sobre datos ya cargados en el cliente (`descargarCSV`/`descargarExcel`/`descargarPDFTabla` de `src/lib/csv/`, patrón usado en el Cotizador). Nunca inventes un tercer patrón.
 - **Los títulos de una card NUNCA llevan ícono al lado** (ej. `<User /> Datos del contacto`, `<Package /> Pasaportes DPP`) — solo el texto del título, sin `<div className="flex items-center gap-2">` envolviendo un ícono decorativo. Directriz explícita del usuario. Los íconos siguen siendo válidos en botones, badges, filas de dato individuales o acciones puntuales — la regla es específica del encabezado/título de una tarjeta.
