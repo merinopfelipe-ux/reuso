@@ -18,20 +18,22 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       await expect(footer).toBeVisible({ timeout: 15_000 })
 
       // Columna 1: Título con rainbow
-      await expect(footer.getByRole('heading', { level: 2 })).toContainText(/Tecnología con propósito/i)
+      await expect(footer.getByText(/Tecnología con propósito/i)).toBeVisible()
 
       // Columna 2: Enlaces legales públicos
       const privacyLink = footer.getByRole('link', { name: 'Política de privacidad' })
       await expect(privacyLink).toBeVisible()
       expect(await privacyLink.getAttribute('href')).toBe('/legal/privacidad')
 
-      const reglamentoLink = footer.getByRole('link', { name: 'Reglamento' })
-      await expect(reglamentoLink).toBeVisible()
-      expect(await reglamentoLink.getAttribute('href')).toBe('/legal/reglamento')
-
       const medicionLink = footer.getByRole('link', { name: 'Sobre la medición' })
       await expect(medicionLink).toBeVisible()
       expect(await medicionLink.getAttribute('href')).toBe('/legal/medicion')
+
+      // "Reglamento" se quitó del footer (2026-09-17) y "Preguntas frecuentes"
+      // pasó a ocupar su lugar, siempre de último en la lista.
+      const faqLink = footer.getByRole('link', { name: 'Preguntas frecuentes' })
+      await expect(faqLink).toBeVisible()
+      expect(await faqLink.getAttribute('href')).toBe('/faq')
 
       // Columna 3: Redes sociales oficiales
       await expect(footer.getByLabel('Instagram')).toBeVisible()
@@ -64,7 +66,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
 
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
-      await expect(footer).toContainText(/Medellín, Colombia/i)
+      await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
       await expect(footer.getByRole('button', { name: /modo/i })).toBeVisible()
     })
 
@@ -107,7 +109,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       await expect(footer).toBeVisible({ timeout: 15_000 })
 
       // Columna 1: Título con rainbow
-      await expect(footer.getByRole('heading', { level: 2 })).toContainText(/Tecnología con propósito/i)
+      await expect(footer.getByText(/Tecnología con propósito/i)).toBeVisible()
 
       // Columna 2: Enlaces de retorno exclusivos de Legal
       const inicioLink = footer.getByRole('link', { name: 'Inicio' })
@@ -120,7 +122,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
 
       const faqLink = footer.getByRole('link', { name: 'Preguntas frecuentes' })
       await expect(faqLink).toBeVisible()
-      expect(await faqLink.getAttribute('href')).toBe('#')
+      expect(await faqLink.getAttribute('href')).toBe('/faq')
 
       // Columna 3: Redes sociales
       await expect(footer.getByLabel('Instagram')).toBeVisible()
@@ -145,7 +147,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
 
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
-      await expect(footer).toContainText(/Medellín, Colombia/i)
+      await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
       await expect(footer.getByRole('button', { name: /modo/i })).toBeVisible()
     })
   })
@@ -156,7 +158,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
   test.describe('Variante 3: Footer Sistema Interno (/admin)', () => {
     test.use({ storageState: 'playwright/.auth/super-admin.json' })
 
-    test('Panel Admin (/admin) muestra 4 columnas, IP arriba, Última visita abajo, peso 500 y sin enlaces falsos', async ({ page }) => {
+    test('Panel Admin (/admin) muestra 4 columnas, IP arriba, Última visita abajo, sin negrita y sin enlaces falsos', async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 800 })
       await page.goto('/admin', { waitUntil: 'domcontentloaded', timeout: 60_000 })
 
@@ -164,12 +166,12 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       await expect(footer).toBeVisible({ timeout: 15_000 })
 
       // Columna 1: Título con rainbow
-      await expect(footer.getByRole('heading', { level: 2 })).toContainText(/Tecnología con propósito/i)
+      await expect(footer.getByText(/Tecnología con propósito/i)).toBeVisible()
 
       // Columna 2: Enlaces legales
       await expect(footer.getByRole('link', { name: 'Política de privacidad' })).toBeVisible()
-      await expect(footer.getByRole('link', { name: 'Reglamento' })).toBeVisible()
       await expect(footer.getByRole('link', { name: 'Sobre la medición' })).toBeVisible()
+      await expect(footer.getByRole('link', { name: 'Preguntas frecuentes' })).toBeVisible()
 
       // Columna 3: Redes sociales
       await expect(footer.getByLabel('Instagram')).toBeVisible()
@@ -187,20 +189,23 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       await expect(footer.locator('a[href^="mailto:"]')).toHaveCount(0)
 
       // REGLA CRÍTICA DE PESO TIPOGRÁFICO:
-      // En el sistema interno, todos los títulos van en peso estándar (500).
+      // En el sistema interno, "Dirección IP" y "Última visita" son bloques
+      // estáticos sin enlace (ver footer.tsx, comentario "sin negrita") — van
+      // en peso 400, nunca en negrita, a diferencia de un bloque de contacto
+      // real (enlace), que sí va en 600.
       const weightIp = await ipLabel.evaluate(
         (el) => window.getComputedStyle(el).fontWeight
       )
-      expect(weightIp).toBe('500')
+      expect(weightIp).toBe('400')
 
       const weightLastVisit = await lastVisitLabel.evaluate(
         (el) => window.getComputedStyle(el).fontWeight
       )
-      expect(weightLastVisit).toBe('500')
+      expect(weightLastVisit).toBe('400')
 
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
-      await expect(footer).toContainText(/Medellín, Colombia/i)
+      await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
       await expect(footer.getByRole('button', { name: /modo/i })).toBeVisible()
     })
   })
