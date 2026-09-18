@@ -61,6 +61,11 @@ const itemDetectadoSchema = z.object({
   descripcion: z.string().max(190),
   cantidad: z.number().int().min(1).max(50),
   confianza: z.number().min(0).max(1),
+  // Peso aproximado de TODO el objeto visto en la foto (un solo número, no
+  // por material) — null si la foto no permite estimarlo con confianza
+  // razonable (ángulo malo, objeto tapado). Nunca un porcentaje ni un
+  // desglose: solo lo que la IA vería si tuviera el objeto enfrente.
+  peso_total_estimado_kg: z.number().positive().nullable(),
   imagen_index: z.number().int().min(0),
   bounding_box: boundingBoxSchema.nullable().optional(),
 })
@@ -85,6 +90,7 @@ export interface ItemDetectadoConSnapshot {
   descripcion: string
   cantidad: number
   confianza: number
+  peso_total_estimado_kg: number | null
   imagen_index: number
   bounding_box: BoundingBox | null
   factor_rentabilidad: number
@@ -129,7 +135,7 @@ function parsearJSON(raw: string): unknown | null {
 // ── System prompt del perito visual — detección MÚLTIPLE por foto y tanda ───
 
 function construirSystemPrompt(nombresCatalogo: string[], nImagenes: number): string {
-  return `Eres perito visual de muebles para restauración. Solo clasificas lo que ves en las fotos, nunca calculas precios ni pesos.
+  return `Eres perito visual de muebles para restauración. Solo clasificas lo que ves en las fotos, nunca calculas precios ni desglosas materiales.
 
 Vas a recibir ${nImagenes} foto${nImagenes > 1 ? 's' : ''} en un solo análisis, numeradas de 0 a ${nImagenes - 1} en el orden en que aparecen. Cada foto puede contener VARIOS muebles a la vez (ej. una mesa y varias sillas de comedor). Identifica cada tipo de mueble distinto que veas en CADA foto y cuántas unidades hay de cada uno. Si el mismo mueble aparece repetido en más de una foto (ej. dos ángulos del mismo sofá), repórtalo una sola vez con la foto donde mejor se ve, no lo dupliques.
 
@@ -139,6 +145,8 @@ ${nombresCatalogo.map(n => `- ${n}`).join('\n')}
 Además, para cada mueble escribe un "titulo": algo llamativo y humano, como si un amigo te describiera la pieza para que te imagines teniéndola en tu casa — nunca una etiqueta técnica ni una lista separada por comas. Ejemplo de lo que NO quiero: "Comedor, madera, vintage". Ejemplo de lo que sí: "Comedor de madera vintage" o "Silla tapizada estilo colonial". Suele incluir el material y el estilo cuando aportan (nunca color ni acabados), pero no es una fórmula rígida — prioriza que suene natural y atractivo sobre seguir una estructura fija. Sirve para diferenciarla de otras del mismo tipo en la misma cotización, no repitas el nombre del catálogo tal cual. Máximo 55 caracteres.
 
 También escribe una "descripcion": qué trabajo concreto se le va a hacer a la pieza para restaurarla, en una frase natural — ej. "Cambiar tapizado y reforzar la estructura", "Pulir, barnizar y reemplazar la espuma del asiento". Nunca describas lo que ves ni cómo está ahora mismo, y nunca empieces con "se observa" ni sinónimos ("se aprecia", "se nota", "presenta", "muestra") — ve directo al trabajo a realizar, como si se lo contaras a un colega. Máximo 190 caracteres. Es lo que el cliente final lee en su propuesta: directo, al grano, sin adornos, sin viñetas y sin punto y coma (solo punto o coma), sin inventar datos que no puedas ver en la foto.
+
+Además, para cada mueble estima "peso_total_estimado_kg": el peso aproximado en kg de TODO el mueble, mirando su tamaño y tipo de material en la foto, como si lo levantaras. Es un solo número para el objeto completo, nunca un desglose por parte. Si la foto no te permite estimarlo con confianza razonable (ángulo malo, objeto parcialmente tapado, muy lejos), responde null en vez de inventar un número.
 
 Cuando en una misma foto haya más de un mueble distinto (ej. un sofá y una mesa juntos), o varias unidades del mismo mueble que quieras distinguir, devuelve también "bounding_box": el recuadro que encierra SOLO esa pieza en la foto original, como { "y_min", "x_min", "y_max", "x_max" } en una escala de 0 a 1000 (0,0 es la esquina superior izquierda). Si la foto ya muestra un único mueble ocupando casi todo el encuadre, puedes omitir "bounding_box" — se usará la foto completa.
 
@@ -194,6 +202,7 @@ async function llamarGemini(
                     descripcion: { type: 'STRING', description: 'Trabajo concreto a realizar en la pieza, en frase natural, nunca de lo que se ve ahora ni "se observa"/sinónimos. Máximo 190 caracteres, directo, sin adornos, sin viñetas, sin punto y coma.' },
                     cantidad: { type: 'INTEGER', description: 'Cuántas unidades de este mueble hay.' },
                     confianza: { type: 'NUMBER', description: 'Confianza del match entre 0.0 y 1.0.' },
+                    peso_total_estimado_kg: { type: 'NUMBER', nullable: true, description: 'Peso aproximado en kg de TODO el mueble visto en la foto, un solo número. null si no se puede estimar con confianza razonable.' },
                     imagen_index: { type: 'INTEGER', description: 'De cuál foto salió este ítem (0 es la primera).' },
                     bounding_box: {
                       type: 'OBJECT',
@@ -206,7 +215,7 @@ async function llamarGemini(
                       required: ['y_min', 'x_min', 'y_max', 'x_max'],
                     },
                   },
-                  required: ['item_nombre', 'titulo', 'descripcion', 'cantidad', 'confianza', 'imagen_index'],
+                  required: ['item_nombre', 'titulo', 'descripcion', 'cantidad', 'confianza', 'peso_total_estimado_kg', 'imagen_index'],
                 },
               },
               no_identificados: {
@@ -253,7 +262,7 @@ async function llamarOpenRouter(
         max_tokens: 500 + imagenes.length * 350,
         temperature: 0.1,
         messages: [
-          { role: 'system', content: `${systemPrompt}\n\nResponde SOLO con JSON: { "items_detectados": [{ "item_nombre": string, "titulo": string, "descripcion": string, "cantidad": number, "confianza": number, "imagen_index": number, "bounding_box": { "y_min": number, "x_min": number, "y_max": number, "x_max": number } | null }], "no_identificados": string[], "observaciones_visuales": string }` },
+          { role: 'system', content: `${systemPrompt}\n\nResponde SOLO con JSON: { "items_detectados": [{ "item_nombre": string, "titulo": string, "descripcion": string, "cantidad": number, "confianza": number, "peso_total_estimado_kg": number | null, "imagen_index": number, "bounding_box": { "y_min": number, "x_min": number, "y_max": number, "x_max": number } | null }], "no_identificados": string[], "observaciones_visuales": string }` },
           { role: 'user', content: [
             ...imagenes.map(img => ({ type: 'image_url', image_url: { url: `data:${img.mimeType};base64,${img.base64}` } })),
             { type: 'text', text: userText },
@@ -479,6 +488,7 @@ export async function POST(request: NextRequest) {
       descripcion: d.descripcion,
       cantidad: d.cantidad,
       confianza: d.confianza,
+      peso_total_estimado_kg: d.peso_total_estimado_kg,
       imagen_index: d.imagen_index,
       bounding_box: d.bounding_box ?? null,
       factor_rentabilidad: catInfo.factor_rentabilidad,
