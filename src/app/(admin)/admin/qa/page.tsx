@@ -1326,6 +1326,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'El material sin factor se llena solo, con una fuente real si la encontró. El material con el valor absurdo muestra un aviso con el valor real encontrado y los botones "Descartar"/"Reemplazar" — el valor solo cambia si se hace clic en "Reemplazar". Al repetir la búsqueda con el mismo nombre de material en otra categoría, responde casi instantáneo (viene del caché).',
     journeys: ['Admin Operativa']
   },
+  {
+    id: 'adm-31', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
+    titulo: 'Contexto de ítem en "Sugerir peso"/"Sugerir con IA" + rol de conservación del material',
+    descripcion: 'Los botones de IA de insumo y de factor de material ahora mandan el ítem/categoría como pista de búsqueda (nunca cambia lo que se guarda en caché). Además, "Completar materiales con IA" ahora marca cada material como "Se conserva" o "Se reemplaza" según la acción del título del ítem (ej. "Retapizado").',
+    pasos: [
+      'Abre un ítem con un título que describa una acción real, ej. "Retapizado de Silla Reina Ana", con materiales como "Tela", "Espuma" y "Madera de la estructura".',
+      'Haz clic en "Completar materiales con IA".',
+      'Repite el mismo ítem pero renombrado a algo sin acción, ej. "Silla Windsor", y vuelve a pedir la IA.'
+    ],
+    esperado: 'En el primer caso, "Tela"/"Espuma" muestran la etiqueta "Se reemplaza" y "Madera de la estructura" muestra "Se conserva", junto al nombre del material. En el segundo caso (sin acción reconocible) no aparece ninguna etiqueta. El peso sigue llegando igual que antes en ambos casos. El factor CO2/agua de cada material no cambia por este badge.',
+    journeys: ['Admin Operativa']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // SETTINGS

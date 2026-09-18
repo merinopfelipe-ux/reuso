@@ -26,7 +26,7 @@ const labelSt = 'block text-xs font-semibold text-[var(--text-secondary)] mb-1.5
 const labelSeccion = 'block text-xs font-bold text-[var(--text-primary)] mb-2.5'
 
 // ── Filas para los editores LIBRES (esquema base / extras: se puede añadir/quitar) ──
-interface MaterialRow { nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string }
+interface MaterialRow { nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string; rol_conservacion?: string }
 interface ServicioRow { nombre: string; precio: string }
 interface InsumoRow { nombre: string; cantidad: string; unidad: string; precio_unitario: string; peso_kg: string }
 
@@ -44,12 +44,12 @@ const CATEGORIAS_MATERIAL = [
   { value: 'otros', label: 'Otros' },
 ]
 
-const filaMaterial = (): MaterialRow => ({ nombre: '', peso_kg: '', factor_co2_kg: '', factor_agua_l_kg: '', categoria_material: '', origen_fuente: '', detalle_fuente: '' })
+const filaMaterial = (): MaterialRow => ({ nombre: '', peso_kg: '', factor_co2_kg: '', factor_agua_l_kg: '', categoria_material: '', origen_fuente: '', detalle_fuente: '', rol_conservacion: '' })
 const filaServicio = (): ServicioRow => ({ nombre: '', precio: '' })
 const filaInsumo = (): InsumoRow => ({ nombre: '', cantidad: '', unidad: '', precio_unitario: '', peso_kg: '' })
 
-function materialesAFilas(materiales: { nombre: string; peso_kg: number; factor_co2_kg: number; factor_agua_l_kg: number | null; categoria_material?: string | null; origen_fuente: string | null; detalle_fuente: string | null }[]): MaterialRow[] {
-  return materiales.map(m => ({ nombre: m.nombre, peso_kg: String(m.peso_kg), factor_co2_kg: String(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '', categoria_material: m.categoria_material ?? '', origen_fuente: m.origen_fuente ?? '', detalle_fuente: m.detalle_fuente ?? '' }))
+function materialesAFilas(materiales: { nombre: string; peso_kg: number; factor_co2_kg: number; factor_agua_l_kg: number | null; categoria_material?: string | null; origen_fuente: string | null; detalle_fuente: string | null; rol_conservacion?: string | null }[]): MaterialRow[] {
+  return materiales.map(m => ({ nombre: m.nombre, peso_kg: String(m.peso_kg), factor_co2_kg: String(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '', categoria_material: m.categoria_material ?? '', origen_fuente: m.origen_fuente ?? '', detalle_fuente: m.detalle_fuente ?? '', rol_conservacion: m.rol_conservacion ?? '' }))
 }
 function serviciosAFilas(servicios: { nombre: string; precio: number }[]): ServicioRow[] {
   return servicios.map(s => ({ nombre: s.nombre, precio: String(s.precio) }))
@@ -59,7 +59,7 @@ function insumosAFilas(insumos: { nombre: string; cantidad: number; unidad: stri
 }
 function filasAMateriales(rows: MaterialRow[], pesoPorDefecto = 1) {
   return rows.filter(m => m.nombre && m.factor_co2_kg)
-    .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(m.peso_kg) || pesoPorDefecto, factor_co2_kg: parseFloat(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, categoria_material: m.categoria_material || undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const }))
+    .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(m.peso_kg) || pesoPorDefecto, factor_co2_kg: parseFloat(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, categoria_material: m.categoria_material || undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const, rol_conservacion: m.rol_conservacion || undefined }))
 }
 function filasAServicios(rows: ServicioRow[]) {
   return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: parseFloat(s.precio) }))
@@ -254,12 +254,15 @@ function CampoTooltip({ nombre, mapa, setMapa }: {
   )
 }
 
-function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conEmpresa }: {
+function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conEmpresa, categoriaNombre }: {
   titulo?: string
   materiales: MaterialRow[]
   setMateriales: React.Dispatch<React.SetStateAction<MaterialRow[]>>
   mostrarPeso?: boolean
   conEmpresa: (url: string) => string
+  // Pista de búsqueda para "Sugerir con IA" — nunca cambia el resultado
+  // cacheado, solo ayuda a desambiguar materiales genéricos entre categorías.
+  categoriaNombre?: string
 }) {
   const [descripcionesMaterial, setDescripcionesMaterial] = useMaterialDescripcionesState(conEmpresa)
   const [cargandoFactorIA, setCargandoFactorIA] = useState(false)
@@ -285,6 +288,7 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
             factor_co2_kg_actual: m.factor_co2_kg.trim() ? parseFloat(m.factor_co2_kg) : null,
             factor_agua_l_kg_actual: m.factor_agua_l_kg.trim() ? parseFloat(m.factor_agua_l_kg) : null,
           })),
+          categoria_nombre: categoriaNombre || undefined,
         }),
       })
       const data = await res.json()
@@ -437,11 +441,12 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
   return content
 }
 
-function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido }: {
+function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido, contextoItem }: {
   nombre: string
   unidad: string
   endpoint: string
   onSugerido: (pesoKg: number) => void
+  contextoItem?: string
 }) {
   const [cargando, setCargando] = useState(false)
 
@@ -452,7 +457,7 @@ function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido }: {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: nombre.trim(), unidad: unidad || 'unidad' }),
+        body: JSON.stringify({ nombre: nombre.trim(), unidad: unidad || 'unidad', contexto_item: contextoItem || undefined }),
       })
       const data = await res.json()
       if (res.ok && data.ok) onSugerido(data.peso_kg)
@@ -475,18 +480,40 @@ function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido }: {
   )
 }
 
-function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, onCompletado }: {
+function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, onCompletado, cargando, setCargando }: {
   nombreItem: string
   categoriaNombre: string
   materiales: { nombre: string }[]
-  onCompletado: (resultados: { nombre: string; peso_kg: number | null }[]) => void
+  onCompletado: (resultados: { nombre: string; peso_kg: number | null; rol: string | null }[], proveedor?: string) => void
+  cargando: boolean
+  setCargando: (c: boolean) => void
 }) {
-  const [cargando, setCargando] = useState(false)
+  const [fase, setFase] = useState('')
+  const [feedback, setFeedback] = useState<{ tipo: 'success' | 'error'; texto: string } | null>(null)
   const deshabilitado = !nombreItem.trim() || materiales.length === 0
 
+  useEffect(() => {
+    if (!cargando) {
+      setFase('')
+      return
+    }
+    setFase('Buscando fichas técnicas en internet (Perplexity)...')
+    const t1 = setTimeout(() => {
+      setFase('Extrayendo especificaciones y densidades...')
+    }, 4000)
+    const t2 = setTimeout(() => {
+      setFase('Calculando estimaciones de peso...')
+    }, 8000)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [cargando])
+
   async function completar() {
-    if (deshabilitado) return
+    if (deshabilitado || cargando) return
     setCargando(true)
+    setFeedback(null)
     try {
       const res = await fetch('/api/admin/materiales/peso-sugerido-item', {
         method: 'POST',
@@ -498,29 +525,73 @@ function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, o
         }),
       })
       const data = await res.json()
-      if (res.ok && data.ok) {
-        onCompletado(data.materiales.map((m: { nombre: string; peso_kg_estimado: number | null }) => ({ nombre: m.nombre, peso_kg: m.peso_kg_estimado })))
+      if (res.ok && data.ok && Array.isArray(data.materiales)) {
+        onCompletado(data.materiales.map((m: { nombre: string; peso_kg_estimado: number | null; rol: string | null }) => ({ nombre: m.nombre, peso_kg: m.peso_kg_estimado, rol: m.rol ?? null })), data.proveedor)
+        setFeedback({
+          tipo: 'success',
+          texto: `Pesos estimados con éxito usando ${data.proveedor === 'perplexity' ? 'Perplexity' : data.proveedor === 'gemini' ? 'Gemini' : 'IA'}.`
+        })
+      } else {
+        setFeedback({
+          tipo: 'error',
+          texto: data.error || 'No se pudieron estimar los pesos con IA. Ingrésalos manualmente.'
+        })
       }
+    } catch {
+      setFeedback({
+        tipo: 'error',
+        texto: 'Error de conexión con el servicio de IA. Intenta de nuevo.'
+      })
     } finally {
       setCargando(false)
     }
   }
 
   return (
-    <button
-      type="button"
-      onClick={completar}
-      disabled={cargando || deshabilitado}
-      className={`${btnChico} w-full justify-center mt-2`}
-      style={{ background: 'var(--color-brand-light)', color: 'var(--color-brand)' }}
-    >
-      {cargando ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-      Completar materiales con IA
-    </button>
+    <div className="flex flex-col gap-1.5 mt-2">
+      <button
+        type="button"
+        onClick={completar}
+        disabled={cargando || deshabilitado}
+        className={`${btnChico} w-full justify-center transition-all duration-200`}
+        style={{ background: 'var(--color-brand-light)', color: 'var(--color-brand)' }}
+      >
+        {cargando ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+        {cargando ? (fase || 'Estimando materiales con IA...') : 'Completar materiales con IA'}
+      </button>
+
+      {/* Indicador de contexto en vivo */}
+      {cargando && (
+        <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--color-brand)] py-1 animate-pulse font-medium">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--color-brand)]" />
+          <span>{fase}</span>
+        </div>
+      )}
+
+      {/* Feedback de estado contextual al terminar */}
+      {feedback && !cargando && (
+        <div
+          className={`text-xs px-3 py-2 rounded-lg border flex items-center justify-between gap-2 ${
+            feedback.tipo === 'success'
+              ? 'bg-[#F0FBF7] text-[var(--color-brand)] border-[var(--color-brand)]/20'
+              : 'bg-[#FFF4F3] text-[var(--color-error)] border-[var(--color-error)]/20'
+          }`}
+        >
+          <span>{feedback.texto}</span>
+          <button
+            type="button"
+            onClick={() => setFeedback(null)}
+            className="text-xs opacity-60 hover:opacity-100 font-bold ml-1"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+    </div>
   )
 }
 
-function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos, mostrarAplicarExistentes, aplicarExistentes, setAplicarExistentes }: {
+function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos, mostrarAplicarExistentes, aplicarExistentes, setAplicarExistentes, categoriaNombre }: {
   titulo?: string
   servicios: ServicioRow[]; setServicios: React.Dispatch<React.SetStateAction<ServicioRow[]>>
   insumos: InsumoRow[]; setInsumos: React.Dispatch<React.SetStateAction<InsumoRow[]>>
@@ -529,6 +600,9 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
   mostrarAplicarExistentes?: boolean
   aplicarExistentes?: Record<string, boolean>
   setAplicarExistentes?: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+  // Pista de búsqueda para "Sugerir peso con IA" — nunca cambia el resultado
+  // cacheado, solo ayuda a desambiguar productos genéricos (ver peso-insumo.ts).
+  categoriaNombre?: string
 }) {
   const content = (
     <>
@@ -554,7 +628,7 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
               <input style={inputSt} placeholder="Unidad (ej: metros)" value={ins.unidad} onChange={e => setInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
               <InputConUnidad value={ins.peso_kg} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
               <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-              <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
+              <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} contextoItem={categoriaNombre ? `categoría "${categoriaNombre}"` : undefined} />
               <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
             </div>
             {mostrarAplicarExistentes && ins.nombre.trim() && (
@@ -588,7 +662,8 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
+  const [targetLoading, setTargetLoading] = useState<string | null>(null)
 
   // La categoría y el ítem abiertos viven en la URL (?nodo=&item=): así la vista
   // actual es un link compartible con el equipo y sobrevive a un refresh/guardado.
@@ -602,16 +677,22 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
   function refrescar() { startTransition(() => router.refresh()) }
 
   function irANodo(id: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (id) params.set('nodo', id); else params.delete('nodo')
-    params.delete('item')
-    router.push(params.toString() ? `${pathname}?${params.toString()}` : pathname)
+    setTargetLoading(id ? 'nodo:' + id : 'back')
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (id) params.set('nodo', id); else params.delete('nodo')
+      params.delete('item')
+      router.push(params.toString() ? `${pathname}?${params.toString()}` : pathname)
+    })
   }
 
   function abrirItem(id: string | null) {
-    const params = new URLSearchParams(searchParams.toString())
-    if (id) params.set('item', id); else params.delete('item')
-    router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
+    setTargetLoading(id ? 'item:' + id : 'back')
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (id) params.set('item', id); else params.delete('item')
+      router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname)
+    })
   }
 
   const nodoActual = categorias.find(c => c.id === nodoActualId) ?? null
@@ -659,7 +740,16 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
   return (
     <div>
-      <AdminPageHeader titulo={titulo} showBack onBack={onBack} />
+      <AdminPageHeader 
+        titulo={
+          <span className="flex items-center gap-2">
+            {titulo}
+            {isPending && <Loader2 size={16} className="animate-spin text-[var(--color-brand)] opacity-70" />}
+          </span>
+        } 
+        showBack 
+        onBack={onBack} 
+      />
 
       <ModalConfirmarSalida
         abierto={mostrarConfirmarSalida}
@@ -696,9 +786,13 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                 const total = contarDescendientes(categorias, items, h.id)
                 return (
                   <div key={h.id} onClick={() => irANodo(h.id)}
-                    className={`flex flex-col h-full p-4 rounded-xl cursor-pointer transition-colors hover-pop ${cardBg} hover:border-[var(--color-brand)]/30`}>
+                    className={`flex flex-col h-full p-4 rounded-xl cursor-pointer transition-colors hover-pop ${cardBg} ${isPending && targetLoading === 'nodo:' + h.id ? 'opacity-50 ring-2 ring-[var(--color-brand)] ring-offset-1' : 'hover:border-[var(--color-brand)]/30'}`}>
                     <div className="flex items-start justify-between mb-3">
-                      <IconoDe nombre={h.icono_lucide} className="text-[var(--color-brand)]" size={20} bg />
+                      {isPending && targetLoading === 'nodo:' + h.id ? (
+                        <Loader2 size={20} className="animate-spin text-[var(--color-brand)]" />
+                      ) : (
+                        <IconoDe nombre={h.icono_lucide} className="text-[var(--color-brand)]" size={20} bg />
+                      )}
                       <div className="flex items-center gap-1">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{
                           background: h.activa ? 'rgba(56,185,142,0.1)' : 'rgba(255,94,75,0.08)',
@@ -788,8 +882,9 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                           onClick={() => abrirItem(it.id)}
                         >
                           <td className="px-4 py-3 text-[var(--text-primary)]">
-                            <span className="inline-flex items-center gap-1.5 font-medium">
+                            <span className={`inline-flex items-center gap-1.5 font-medium ${isPending && targetLoading === 'item:' + it.id ? 'opacity-50' : ''}`}>
                               {it.visibilidad === 'restringido' && <Lock size={12} className="text-[var(--color-brand)] flex-shrink-0" />}
+                              {isPending && targetLoading === 'item:' + it.id && <Loader2 size={12} className="animate-spin text-[var(--color-brand)] flex-shrink-0" />}
                               {it.nombre}
                             </span>
                           </td>
@@ -987,8 +1082,9 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
           mostrarAplicarExistentes={modo === 'editar'}
           aplicarExistentes={aplicarExistentesPorInsumo}
           setAplicarExistentes={setAplicarExistentesPorInsumo}
+          categoriaNombre={nombre || nodoPadre?.nombre || undefined}
         />
-        <EditorMateriales titulo="Cálculo ambiental (obligatorio)" materiales={materiales} setMateriales={setMateriales} conEmpresa={(url: string) => url} />
+        <EditorMateriales titulo="Cálculo ambiental (obligatorio)" materiales={materiales} setMateriales={setMateriales} conEmpresa={(url: string) => url} categoriaNombre={nombre || nodoPadre?.nombre || undefined} />
       </div>
 
       <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 px-4 flex items-center justify-center gap-3 mt-3">
@@ -1006,6 +1102,25 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         </button>
       </div>
     </form>
+  )
+}
+
+// Badge informativo del rol de un material frente a la acción de
+// restauración del título (se_conserva/se_reemplaza) — nunca se muestra
+// para "desconocido" ni vacío, para no ensuciar ítems que todavía no
+// tienen este dato. Colores del sistema, nunca inventados.
+function BadgeRolConservacion({ rol }: { rol?: string }) {
+  if (rol !== 'se_conserva' && rol !== 'se_reemplaza') return null
+  return (
+    <span
+      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0"
+      style={{
+        background: rol === 'se_conserva' ? 'var(--color-brand-light)' : 'rgba(246,191,62,0.15)',
+        color: rol === 'se_conserva' ? 'var(--color-brand)' : '#B8860B',
+      }}
+    >
+      {rol === 'se_conserva' ? 'Se conserva' : 'Se reemplaza'}
+    </span>
   )
 }
 
@@ -1029,6 +1144,18 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     for (const m of categoria.categoria_materiales_base) {
       const existente = item?.item_materiales.find(im => im.nombre === m.nombre)
       inicial[m.nombre] = existente ? String(existente.peso_kg) : ''
+    }
+    return inicial
+  })
+  // Rol frente a la acción de restauración del título (se_conserva/
+  // se_reemplaza/desconocido) — item-específico, igual que `pesos`, nunca
+  // vive en el esquema de la categoría (sin acción asociada). Hueco de dato
+  // para el futuro F_U/MCI, ver sql/137_rol_conservacion_material.sql.
+  const [rolesConservacion, setRolesConservacion] = useState<Record<string, string>>(() => {
+    const inicial: Record<string, string> = {}
+    for (const m of categoria.categoria_materiales_base) {
+      const existente = item?.item_materiales.find(im => im.nombre === m.nombre)
+      inicial[m.nombre] = existente?.rol_conservacion ?? ''
     }
     return inicial
   })
@@ -1171,6 +1298,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [cargandoMaterialesIA, setCargandoMaterialesIA] = useState(false)
 
   const extraMaterialesValidos = useMemo(() => filasAMateriales(extraMateriales), [extraMateriales])
   const extraServiciosValidos = useMemo(() => filasAServicios(extraServicios), [extraServicios])
@@ -1217,7 +1345,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const materiales = [
       ...esquemaMatVisibles
         .filter(m => parseFloat(pesos[m.nombre]) > 0)
-        .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: parseFloat(m.factor_co2_kg) || 0, factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const })),
+        .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: parseFloat(m.factor_co2_kg) || 0, factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const, rol_conservacion: rolesConservacion[m.nombre] || undefined })),
       ...extraMaterialesValidos,
     ]
 
@@ -1530,7 +1658,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                           <InputConUnidad value={pesosInsumo[fila.nombre] ?? ''} onChange={v => setPesosInsumo(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.001" />
                         </div>
                         <div className="pb-2.5">
-                          <BotonSugerirPeso nombre={fila.nombre} unidad={fila.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setPesosInsumo(p => ({ ...p, [fila.nombre]: String(pesoKg) }))} />
+                          <BotonSugerirPeso nombre={fila.nombre} unidad={fila.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setPesosInsumo(p => ({ ...p, [fila.nombre]: String(pesoKg) }))} contextoItem={`${nombre} (categoría: ${categoria.nombre})`} />
                         </div>
                       </div>
                       <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
@@ -1575,7 +1703,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                             <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
                           </div>
                           <div className="pb-2.5">
-                            <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} />
+                            <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} contextoItem={`${nombre} (categoría: ${categoria.nombre})`} />
                           </div>
                         </div>
                         <div className={`transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
@@ -1640,9 +1768,16 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       <p className="flex-1 min-w-0 flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
                         <span className="truncate">{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
+                        <BadgeRolConservacion rol={rolesConservacion[fila.nombre]} />
                       </p>
                       <div className="w-28 flex-shrink-0">
-                        <InputConUnidad value={pesos[fila.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.01" />
+                        {cargandoMaterialesIA ? (
+                          <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-[var(--color-brand)] border border-[var(--border)]">
+                            <span className="animate-pulse">calculando...</span>
+                          </div>
+                        ) : (
+                          <InputConUnidad value={pesos[fila.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.01" />
+                        )}
                       </div>
                       <button type="button" onClick={() => alternarFila(fila.id)}
                         className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
@@ -1693,12 +1828,21 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
                       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                         <div>
-                          <label className={labelSt}>Material adicional</label>
+                          <label className={`${labelSt} flex items-center gap-1`}>
+                            Material adicional
+                            <BadgeRolConservacion rol={m.rol_conservacion} />
+                          </label>
                           <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
                         </div>
                         <div>
                           <label className={labelSt}>Peso</label>
-                          <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
+                          {cargandoMaterialesIA ? (
+                            <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-[var(--color-brand)] border border-[var(--border)]">
+                              <span className="animate-pulse">calculando...</span>
+                            </div>
+                          ) : (
+                            <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
+                          )}
                         </div>
                         <div>
                           <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
@@ -1727,13 +1871,25 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               nombreItem={nombre}
               categoriaNombre={categoria.nombre}
               materiales={[...esquemaMatVisibles, ...extraMateriales.filter(m => m.nombre.trim())]}
-              onCompletado={resultados => {
+              cargando={cargandoMaterialesIA}
+              setCargando={setCargandoMaterialesIA}
+              onCompletado={(resultados) => {
                 for (const r of resultados) {
-                  if (r.peso_kg === null) continue
-                  if (esquemaMatVisibles.some(m => m.nombre === r.nombre)) {
-                    setPesos(p => ({ ...p, [r.nombre]: String(r.peso_kg) }))
+                  const rNorm = r.nombre.trim().toLowerCase()
+                  const rolValido = r.rol === 'se_conserva' || r.rol === 'se_reemplaza' || r.rol === 'desconocido' ? r.rol : ''
+                  const matchEsquema = esquemaMatVisibles.find(m => m.nombre.trim().toLowerCase() === rNorm)
+                  if (matchEsquema) {
+                    if (r.peso_kg !== null && r.peso_kg !== undefined) setPesos(p => ({ ...p, [matchEsquema.nombre]: String(r.peso_kg) }))
+                    if (rolValido) setRolesConservacion(p => ({ ...p, [matchEsquema.nombre]: rolValido }))
                   } else {
-                    setExtraMateriales(prev => prev.map(m => m.nombre === r.nombre ? { ...m, peso_kg: String(r.peso_kg) } : m))
+                    const matchExtra = extraMateriales.find(m => m.nombre.trim().toLowerCase() === rNorm)
+                    if (matchExtra) {
+                      setExtraMateriales(prev => prev.map(m => m.nombre.trim().toLowerCase() === rNorm ? {
+                        ...m,
+                        peso_kg: r.peso_kg !== null && r.peso_kg !== undefined ? String(r.peso_kg) : m.peso_kg,
+                        rol_conservacion: rolValido || m.rol_conservacion,
+                      } : m))
+                    }
                   }
                 }
               }}
