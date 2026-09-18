@@ -698,7 +698,87 @@ export async function enviarPropuestaCotizacion(
   })
 }
 
+// ── Confirmación de registro con código OTP de 8 dígitos y enlace directo ─────
+export async function enviarConfirmacionRegistro(
+  to: string,
+  datos: {
+    nombre?: string | null
+    codigoOtp?: string | null
+    enlaceConfirmacion: string
+  }
+): Promise<{ resendEmailId: string | null }> {
+  if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
+  if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const nombreSeguro = datos.nombre ? escaparHtml(datos.nombre) : ''
+  const saludo = nombreSeguro ? `¡Hola, ${nombreSeguro}! 👋` : '¡Hola! 👋'
+
+  const botonDirecto = `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0 24px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="${datos.enlaceConfirmacion}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        Activar mi cuenta
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="padding-top:12px;">
+      <p style="margin:0;font-size:12px;color:#71717A;">O copia este enlace en tu navegador:<br>
+        <a href="${datos.enlaceConfirmacion}" style="color:#00827C;word-break:break-all;font-size:11px;">${datos.enlaceConfirmacion}</a>
+      </p>
+    </td>
+  </tr>
+</table>`
+
+  const bloqueCodigo = datos.codigoOtp ? `
+<div style="margin-top:28px;padding-top:20px;border-top:1px dashed #E5E7EB;">
+  <p style="margin:0 0 12px;font-size:13px;color:#71717A;text-align:center;font-weight:600;">
+    ¿Prefieres ingresar el código en pantalla?
+  </p>
+  <table class="ek" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 12px;">
+    <tr>
+      <td style="background-color:#F0F7F6;border-radius:16px;padding:20px 20px;text-align:center;">
+        <span class="otp-text" style="display:inline-block;font-size:34px;font-weight:800;color:#00827C;letter-spacing:0.18em;">
+          <a href="#otp" style="color:inherit;text-decoration:none;">${
+            datos.codigoOtp.length === 8
+              ? `${datos.codigoOtp.slice(0, 4)}&thinsp;${datos.codigoOtp.slice(4)}`
+              : datos.codigoOtp
+          }</a>
+        </span>
+        <p style="margin:8px 0 0;font-size:12px;color:#71717A;">Expira en 10 minutos.</p>
+      </td>
+    </tr>
+  </table>
+</div>` : ''
+
+  const contenidoCentral = botonDirecto + bloqueCodigo
+
+  const html = emailPlantilla({
+    preheader: 'Activa tu cuenta en la Calculadora de Reúso con un clic',
+    subtituloHeader: 'Confirma tu correo',
+    saludo,
+    cuerpo: 'Te damos la bienvenida a la <strong>Calculadora de Reúso</strong>. Para activar tu cuenta y empezar a medir tu impacto ambiental, haz clic en el botón a continuación:',
+    contenidoCentral,
+    alertaAccion: 'confirmes la cuenta ni compartas el enlace con nadie',
+    mostrarAlerta: true,
+  })
+
+  const { data } = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: 'Activa tu cuenta en la Calculadora de Reúso',
+    html,
+    replyTo: 'soporte@calculadoradereuso.com',
+  })
+
+  return { resendEmailId: data?.id ?? null }
+}
+
 // Nota: enviarCorreoAdmin/emailMarketing/urlBaja (el envío masivo del panel
 // admin con su propio tracking de apertura/clic) se eliminaron junto con
 // /admin/correos (2026-09-06) — esa función pasa a Loops.so. Ver
 // conceptos/arquitectura-correos-2026-09-06 en el Vault.
+

@@ -47,7 +47,7 @@ function ConfirmarEmailContent() {
 
   const confirmar = useCallback(async () => {
     const token = codigo.trim()
-    if (token.length !== 6 || loading || exito) return
+    if ((token.length !== 8 && token.length !== 6) || loading || exito) return
     setLoading(true)
     setError('')
 
@@ -73,7 +73,7 @@ function ConfirmarEmailContent() {
   }, [codigo, loading, exito, emailParam, router])
 
   useEffect(() => {
-    if (codigo.length === 6) {
+    if (codigo.length === 8) {
       const t = setTimeout(confirmar, 300)
       return () => clearTimeout(t)
     }
@@ -84,17 +84,23 @@ function ConfirmarEmailContent() {
     setReenviando(true)
     setError('')
 
-    const { error: err } = await supabaseRef.current.auth.resend({
-      type: 'signup',
-      email: emailParam,
-    })
-
-    setReenviando(false)
-    if (err) {
-      setError('No pudimos reenviar el código. Intenta de nuevo en unos minutos.')
-      return
+    try {
+      const res = await fetch('/api/auth/reenviar-codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailParam }),
+      })
+      if (!res.ok) throw new Error('Error al reenviar')
+    } catch {
+      // Fallback a Supabase resend
+      await supabaseRef.current.auth.resend({
+        type: 'signup',
+        email: emailParam,
+      }).catch(() => {})
+    } finally {
+      setReenviando(false)
+      iniciarCooldown()
     }
-    iniciarCooldown()
   }
 
   const BRAND = isDark ? '#D6F391' : '#00827C'
@@ -103,6 +109,7 @@ function ConfirmarEmailContent() {
   const TEXT_LIGHT = isDark ? 'rgba(255,255,255,0.40)' : 'rgba(71,71,71,0.40)'
   const ERROR_BG = isDark ? 'rgba(255,94,75,0.12)' : 'rgba(255,94,75,0.08)'
   const ERROR_BORDER = isDark ? 'rgba(255,94,75,0.40)' : 'rgba(255,94,75,0.25)'
+  const codigoValido = codigo.length === 8 || codigo.length === 6
 
   if (exito) {
     return (
@@ -140,13 +147,28 @@ function ConfirmarEmailContent() {
       </div>
 
       <h2 style={{ fontSize: 22, fontWeight: 700, color: TEXT_DARK, margin: '0 0 8px', textAlign: 'center' }}>
-        Confirma tu correo
+        Revisa tu correo
       </h2>
-      <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 28px', textAlign: 'center', lineHeight: 1.6 }}>
-        Enviamos un código de 6 dígitos a{' '}
+      <p style={{ fontSize: 13, color: TEXT_MED, margin: '0 0 20px', textAlign: 'center', lineHeight: 1.6 }}>
+        Enviamos un correo de activación con nuestra marca a{' '}
         <strong style={{ color: TEXT_DARK }}>{emailParam || 'tu correo'}</strong>.
-        Ingrésalo para activar tu cuenta.
       </p>
+
+      <div style={{
+        background: isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.06)',
+        border: `1px solid ${isDark ? 'rgba(214,243,145,0.20)' : 'rgba(0,130,124,0.15)'}`,
+        borderRadius: 14,
+        padding: '16px',
+        marginBottom: 24,
+        textAlign: 'center',
+      }}>
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: TEXT_DARK, lineHeight: 1.5 }}>
+          👉 Abre el correo y haz clic en <strong>Activar mi cuenta</strong> para ingresar automáticamente.
+        </p>
+        <p style={{ margin: '6px 0 0', fontSize: 11, color: TEXT_LIGHT }}>
+          Si no lo encuentras en unos segundos, revisa tu carpeta de correo no deseado o spam.
+        </p>
+      </div>
 
       {error && (
         <div style={{
@@ -158,40 +180,41 @@ function ConfirmarEmailContent() {
         </div>
       )}
 
-      <form onSubmit={e => { e.preventDefault(); confirmar() }} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Formulario alternativo de código OTP */}
+      <form onSubmit={e => { e.preventDefault(); confirmar() }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
-          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED, margin: '0 0 12px', textAlign: 'center' }}>
-            Código de verificación
+          <p style={{ fontSize: 12, fontWeight: 600, color: TEXT_MED, margin: '0 0 10px', textAlign: 'center' }}>
+            ¿Prefieres ingresar el código en pantalla?
           </p>
-          <OTPInput value={codigo} onChange={setCodigo} isDark={isDark} disabled={loading} />
+          <OTPInput value={codigo} onChange={setCodigo} isDark={isDark} disabled={loading} length={8} />
         </div>
 
         <button
           type="submit"
-          disabled={loading || codigo.length < 6}
+          disabled={loading || !codigoValido}
           style={{
             width: '100%', padding: '12px',
             borderRadius: 10,
-            background: loading || codigo.length < 6
+            background: loading || !codigoValido
               ? (isDark ? 'rgba(214,243,145,0.25)' : 'rgba(0,130,124,0.35)')
               : BRAND,
-            color: isDark && codigo.length === 6 && !loading ? '#474747' : '#ffffff',
-            fontSize: 15, fontWeight: 600,
+            color: isDark && codigoValido && !loading ? '#474747' : '#ffffff',
+            fontSize: 14, fontWeight: 600,
             border: 'none',
-            cursor: loading || codigo.length < 6 ? 'not-allowed' : 'pointer',
+            cursor: loading || !codigoValido ? 'not-allowed' : 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             transition: 'background 0.2s',
           }}
         >
           {loading
             ? <><CircleNotch size={16} style={{ animation: 'spin 1s linear infinite' }} color="currentColor" /> Verificando...</>
-            : 'Confirmar cuenta'}
+            : 'Validar código'}
         </button>
       </form>
 
-      <div style={{ textAlign: 'center', marginTop: 20 }}>
+      <div style={{ textAlign: 'center', marginTop: 24 }}>
         <p style={{ fontSize: 13, color: TEXT_LIGHT, margin: '0 0 6px' }}>
-          ¿No recibiste el código?
+          ¿No recibiste el correo?
         </p>
         <button
           onClick={handleReenviar}
@@ -203,7 +226,7 @@ function ConfirmarEmailContent() {
             padding: 0,
           }}
         >
-          {reenviando ? 'Enviando...' : cooldown > 0 ? `Reenviar en ${cooldown}s` : 'Reenviar código'}
+          {reenviando ? 'Enviando...' : cooldown > 0 ? `Reenviar en ${cooldown}s` : 'Reenviar correo de activación'}
         </button>
       </div>
 

@@ -10,7 +10,7 @@
 </head>
 <body class="eo" style="margin:0;padding:0;background-color:#ffffff;font-family:'Open Sans',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
   
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Un clic y tu cuenta queda activa&nbsp;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;</div>
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Tu código de verificación para activar tu cuenta&nbsp;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;</div>
 
   <table class="eo" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
     <tr>
@@ -31,11 +31,20 @@
               <p style="margin:0 0 28px;font-size:15px;color:#474747;line-height:1.75;">Confirma tu correo para activar tu cuenta en la Calculadora de Reúso y empezar a medir tu impacto ambiental.</p>
 
               
+<table class="ek" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+  <tr>
+    <td style="background-color:#F0F7F6;border-radius:16px;padding:28px 20px;text-align:center;">
+      <p style="margin:0 0 8px;font-size:13px;color:#474747;font-weight:600;">Tu código de verificación</p>
+      <span class="otp-text" style="display:inline-block;font-size:40px;font-weight:800;color:#00827C;letter-spacing:0.18em;">{{ .Token }}</span>
+      <p style="margin:12px 0 0;font-size:12px;color:#474747;">Expira en 10 minutos. No lo compartas con nadie.</p>
+    </td>
+  </tr>
+</table>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 0;">
   <tr>
     <td align="center">
       <a class="eb" href="{{ .ConfirmationURL }}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Confirmar mi correo
+        Confirmar mi correo directamente
       </a>
     </td>
   </tr>
@@ -59,7 +68,7 @@
                   <td style="background-color:#FFF8E6;border-radius:12px;padding:16px 20px;">
                     <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#474747;">🔔 ¿No lo pediste tú?</p>
                     <p style="margin:0;font-size:13px;color:#474747;line-height:1.65;">
-                      Tranquilo, tu cuenta está segura. Nadie puede usarla sin que tú lo hagas. Solo ignora este correo y no confirmes el correo.
+                      Tranquilo, tu cuenta está segura. Nadie puede usarla sin que tú lo hagas. Solo ignora este correo y no confirmes el correo ni compartas el código.
                     </p>
                   </td>
                 </tr>
@@ -69,13 +78,13 @@
           </tr>
 
           <tr>
-            <td class="ef" style="background-color:#F5F5F5;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
               <p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
                 Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
               </p>
               <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
                 © 2026 Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://reuso.lurdes.co" style="color:#474747;text-decoration:underline;">reuso.lurdes.co</a>
+                <a href="https://calculadoradereuso.com" style="color:#474747;text-decoration:underline;">calculadoradereuso.com</a>
               </p>
             </td>
           </tr>

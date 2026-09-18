@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
 import { encryptSensitive } from '@/lib/encryption.server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sincronizarContactoLoops } from '@/lib/loops'
+import { enviarConfirmacionRegistro } from '@/lib/email'
 
 async function checkRateLimit(ip: string, accion: string, max: number, windowMs: number): Promise<boolean> {
   try {
@@ -132,8 +132,12 @@ export async function POST(request: NextRequest) {
   // Ciframos los datos PII a Nivel de Aplicación antes de que toquen la BD
   const encryptedTelefono = await encryptSensitive(telefono)
 
-  const supabase = createClient()
-  const { error } = await supabase.auth.signUp({
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://calculadoradereuso.com'
+  const redirectCallbackUrl = `${appUrl}/auth/callback?next=/dashboard`
+
+  const adminSupabase = await createAdminClient()
+  const { data: linkData, error: linkError } = await adminSupabase.auth.admin.generateLink({
+    type: 'signup',
     email,
     password,
     options: {
@@ -151,17 +155,30 @@ export async function POST(request: NextRequest) {
         suscrito_newsletter: suscrito_newsletter ?? false,
         codigo_empresa: codigo_empresa ?? null,
       },
+      redirectTo: redirectCallbackUrl,
     },
   })
 
-  if (error) {
-    console.error('SUPABASE SIGNUP ERROR:', error)
-    const msg = error.message?.toLowerCase() ?? ''
+  if (linkError) {
+    console.error('SUPABASE GENERATE LINK ERROR:', linkError)
+    const msg = linkError.message?.toLowerCase() ?? ''
     const mensaje = msg.includes('already registered') || msg.includes('already been registered')
       ? 'Este correo ya tiene una cuenta. Inicia sesión o recupera tu contraseña.'
       : 'No pudimos crear tu cuenta. Intenta de nuevo en unos minutos.'
     return NextResponse.json({ error: mensaje }, { status: 400 })
   }
+
+  const emailOtp = linkData?.properties?.email_otp ?? null
+  const actionLink = linkData?.properties?.action_link ?? `${appUrl}/confirmar-email?email=${encodeURIComponent(email)}`
+
+  // Enviar correo transaccional de confirmación con diseño oficial, OTP y botón directo
+  await enviarConfirmacionRegistro(email, {
+    nombre,
+    codigoOtp: emailOtp,
+    enlaceConfirmacion: actionLink,
+  }).catch((err) => {
+    console.error('Error enviando correo de confirmación de registro:', err)
+  })
 
   // Sincroniza el contacto con Loops.so (marketing / ciclo de vida). No-op si
   // no hay LOOPS_API_KEY, y nunca lanza: un fallo de Loops no bloquea el alta.

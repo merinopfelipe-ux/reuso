@@ -73,8 +73,10 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
     distribuirDesde(0, pasted)
   }
 
+  const isLong = length > 6
+
   return (
-    <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+    <div style={{ display: 'flex', gap: isLong ? 6 : 8, justifyContent: 'center', width: '100%' }}>
       {digits.map((digit, i) => (
         <input
           key={i}
@@ -92,15 +94,16 @@ export function OTPInput({ value, onChange, isDark = false, disabled = false, le
           onPaste={handlePaste}
           style={{
             flex: 1,
-            maxWidth: 52,
-            height: 56,
-            borderRadius: 12,
+            minWidth: 0,
+            maxWidth: isLong ? 42 : 52,
+            height: isLong ? 50 : 56,
+            borderRadius: isLong ? 10 : 12,
             border: `2px solid ${digit ? '#00827C' : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.20)'}`,
             background: digit
               ? (isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.06)')
               : (isDark ? '#5A5A5A' : '#FFFFFF'),
             color: isDark ? '#FFFFFF' : '#474747',
-            fontSize: 22,
+            fontSize: isLong ? 19 : 22,
             fontWeight: 800,
             textAlign: 'center',
             outline: 'none',

@@ -209,12 +209,12 @@ const templates = {
     subject: 'Confirma tu correo en la Calculadora de Reúso',
     html: plantilla({
       subtituloHeader: 'Confirma tu correo',
-      preheader: 'Un clic y tu cuenta queda activa',
+      preheader: 'Tu código de verificación para activar tu cuenta',
       saludo: '¡Ya casi terminas! 🎉',
       cuerpo: 'Confirma tu correo para activar tu cuenta en la Calculadora de Reúso y empezar a medir tu impacto ambiental.',
-      contenidoCentral: botonLink('{{ .ConfirmationURL }}', 'Confirmar mi correo'),
+      contenidoCentral: bloqueOTP('{{ .Token }}') + botonLink('{{ .ConfirmationURL }}', 'Confirmar mi correo directamente'),
       mostrarAlerta: true,
-      alertaAccion: 'confirmes el correo',
+      alertaAccion: 'confirmes el correo ni compartas el código',
     }),
   },
 
@@ -345,9 +345,11 @@ fs.writeFileSync(
   JSON.stringify(subjects, null, 2)
 )
 
-// Abrir primero todos los de día, luego todos los de noche
-for (const f of diaFiles) execSync(`open "${f}"`)
-for (const f of nocheFiles) execSync(`open "${f}"`)
+// Abrir en navegador solo si se pasa flag --open
+if (process.argv.includes('--open')) {
+  for (const f of diaFiles) execSync(`open "${f}"`)
+  for (const f of nocheFiles) execSync(`open "${f}"`)
+}
 
 console.log('\nCómo pegar en Supabase:')
 console.log('  Dashboard → Authentication → Email Templates → selecciona cada template')
