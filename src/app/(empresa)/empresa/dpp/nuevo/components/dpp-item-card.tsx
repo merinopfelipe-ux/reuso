@@ -37,6 +37,7 @@ export interface ItemDppPendiente {
   titulo: string
   descripcion: string
   confianza: number
+  peso_total_estimado_kg: number | null
   imagenPreview: string
   imagenBase64: string
   materiales: MaterialDpp[]

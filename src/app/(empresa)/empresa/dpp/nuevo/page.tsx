@@ -56,6 +56,7 @@ function itemDetectadoAPendiente(
     titulo: d.titulo,
     descripcion: d.descripcion,
     confianza: d.confianza,
+    peso_total_estimado_kg: d.peso_total_estimado_kg,
     imagenPreview: miniatura.imagenPreview,
     imagenBase64: miniatura.imagenBase64,
     materiales: d.materiales.map(m => ({
@@ -80,6 +81,7 @@ function itemManualVacio(fotoPrincipal: FotoCola): ItemDppPendiente {
     titulo: '',
     descripcion: '',
     confianza: 1,
+    peso_total_estimado_kg: null,
     imagenPreview: fotoPrincipal.preview,
     imagenBase64: fotoPrincipal.base64,
     materiales: [],
@@ -290,6 +292,11 @@ export default function NuevoActivoDppPage() {
       porcentaje_reciclable: m.porcentaje_reciclable ?? undefined,
     }))
     const peso_total_kg = materialesConNombre.reduce((s: number, m: MaterialDpp) => s + m.peso_kg, 0)
+    // Umbral 10%, mismo criterio ya usado para la discrepancia de factor
+    // CO2/agua en /admin/categorias — silencio si la foto confirma el
+    // promedio, aviso solo si se desfasa de verdad.
+    const difiereMasDel10Porciento = item.peso_total_estimado_kg != null && peso_total_kg > 0
+      && Math.abs(item.peso_total_estimado_kg - peso_total_kg) / peso_total_kg > 0.10
 
     const res = await fetch('/api/dpp/activos/crear', {
       method: 'POST',
@@ -299,6 +306,7 @@ export default function NuevoActivoDppPage() {
         descripcion: item.descripcion.trim() || undefined,
         peso_total_kg: peso_total_kg > 0 ? peso_total_kg : undefined,
         composicion_json: composicion_json.length > 0 ? composicion_json : undefined,
+        peso_foto_sugerido_kg: difiereMasDel10Porciento ? item.peso_total_estimado_kg : undefined,
         imagen_url,
         cliente_id: clienteSeleccionado?.id,
       }),

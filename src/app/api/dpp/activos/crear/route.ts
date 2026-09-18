@@ -27,6 +27,10 @@ const schema = z.object({
     categoria_material: z.string().nullish(),
     porcentaje_reciclable: z.number().min(0).max(100).nullish(),
   })).optional(),
+  // Solo llega si el peso visto en la foto difirió más de 10% del catálogo
+  // (calculado en el frontend) — sugerencia pendiente de aceptar, nunca se
+  // aplica sola. Ver sql/138.
+  peso_foto_sugerido_kg: z.number().positive().optional(),
   // El item nunca es de la empresa que cotiza, es del cliente dueño del
   // mueble — vínculo siempre opcional (el DPP puede crearse de cero, sin
   // cliente todavía, o al ganar una cotización ya con cliente conocido).
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     )
   }
-  const { nombre, descripcion, categoria_id, peso_total_kg, composicion_json, cliente_id, imagen_url, empresa_id: bodyEmpresaId } = parsed.data
+  const { nombre, descripcion, categoria_id, peso_total_kg, composicion_json, cliente_id, imagen_url, empresa_id: bodyEmpresaId, peso_foto_sugerido_kg } = parsed.data
 
   let targetEmpresaId = empresa_id
   if (rol === 'super_admin') {
@@ -145,6 +149,7 @@ export async function POST(request: NextRequest) {
     categoria_id: categoria_id ?? null,
     peso_total_kg: peso_total_kg ?? null,
     composicion_json: composicion_json ?? null,
+    peso_foto_sugerido_kg: peso_foto_sugerido_kg ?? null,
     co2_manufactura_kg,
     cliente_id: cliente_id ?? null,
     imagen_url: imagen_url ?? null,
