@@ -91,6 +91,7 @@ async function llamarOpenRouter(nombre: string, unidad: string): Promise<{ ok: b
         model: 'qwen/qwen3-235b-a22b:online',
         max_tokens: 300,
         temperature: 0.1,
+        reasoning: { enabled: false },
         messages: [{ role: 'user', content: construirPrompt(nombre, unidad) }],
       }),
     })
