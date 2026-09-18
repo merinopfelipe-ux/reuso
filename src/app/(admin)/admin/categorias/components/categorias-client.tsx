@@ -1369,7 +1369,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         </span>
                       )}
                     </p>
-                    <div className="w-32 flex-shrink-0">
+                    <div className="w-28 flex-shrink-0">
                       <InputCantidadInsumo
                         value={cantidades[fila.nombre] ?? 0}
                         onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: String(v) }))}
