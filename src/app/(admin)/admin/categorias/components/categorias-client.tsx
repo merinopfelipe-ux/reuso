@@ -4,7 +4,7 @@ import { useState, useTransition, useMemo, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2 } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
@@ -364,6 +364,51 @@ function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido }: {
       style={{ background: 'var(--color-brand-light)' }}
     >
       <Sparkles size={14} sinAnimacion />
+    </button>
+  )
+}
+
+function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, onCompletado }: {
+  nombreItem: string
+  categoriaNombre: string
+  materiales: { nombre: string }[]
+  onCompletado: (resultados: { nombre: string; peso_kg: number | null }[]) => void
+}) {
+  const [cargando, setCargando] = useState(false)
+  const deshabilitado = !nombreItem.trim() || materiales.length === 0
+
+  async function completar() {
+    if (deshabilitado) return
+    setCargando(true)
+    try {
+      const res = await fetch('/api/admin/materiales/peso-sugerido-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre_item: nombreItem.trim(),
+          categoria_nombre: categoriaNombre,
+          materiales: materiales.map(m => m.nombre),
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok) {
+        onCompletado(data.materiales.map((m: { nombre: string; peso_kg_estimado: number | null }) => ({ nombre: m.nombre, peso_kg: m.peso_kg_estimado })))
+      }
+    } finally {
+      setCargando(false)
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={completar}
+      disabled={cargando || deshabilitado}
+      className={`${btnChico} w-full justify-center mt-2`}
+      style={{ background: 'var(--color-brand-light)', color: 'var(--color-brand)' }}
+    >
+      {cargando ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+      Completar materiales con IA
     </button>
   )
 }
@@ -1324,7 +1369,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         </span>
                       )}
                     </p>
-                    <div className="w-28 flex-shrink-0">
+                    <div className="w-32 flex-shrink-0">
                       <InputCantidadInsumo
                         value={cantidades[fila.nombre] ?? 0}
                         onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: String(v) }))}
@@ -1567,6 +1612,22 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             )}
 
             <button type="button" onClick={() => setExtraMateriales(r => [...r, filaMaterial()])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir material</button>
+
+            <BotonCompletarMaterialesIA
+              nombreItem={nombre}
+              categoriaNombre={categoria.nombre}
+              materiales={[...esquemaMatVisibles, ...extraMateriales.filter(m => m.nombre.trim())]}
+              onCompletado={resultados => {
+                for (const r of resultados) {
+                  if (r.peso_kg === null) continue
+                  if (esquemaMatVisibles.some(m => m.nombre === r.nombre)) {
+                    setPesos(p => ({ ...p, [r.nombre]: String(r.peso_kg) }))
+                  } else {
+                    setExtraMateriales(prev => prev.map(m => m.nombre === r.nombre ? { ...m, peso_kg: String(r.peso_kg) } : m))
+                  }
+                }
+              }}
+            />
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)' }}>
