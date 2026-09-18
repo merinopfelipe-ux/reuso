@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { Modal } from '@/components/ui/modal'
+import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
 import { Trash2 as Trash, Leaf, Plus, CircleDollarSign, Pencil as PencilSimple, Camera, ClipboardPaste as Clipboard } from '@/components/ui/icons'
 import { formatCOP, formatNumero, parseNumero } from '@/lib/format'
@@ -27,6 +28,7 @@ export interface MuebleEditable {
   insumos_json: Insumo[] | null
   factor_rentabilidad: number
   materiales_json: Material[] | null
+  peso_foto_sugerido_kg: number | null
   co2_evitado_kg: number
   agua_evitada_l: number
   imagen_url?: string | null
@@ -216,6 +218,31 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
   function agregarMaterial() { setMateriales(prev => [...prev, { nombre: '', peso_kg: 0, factor_co2_kg: 0, factor_agua_l_kg: null }]) }
   function quitarMaterial(i: number) { setMateriales(prev => prev.filter((_, j) => j !== i)) }
 
+  // Sugerencia de peso por foto (sql/138) — nunca se aplica sola. "Aplicar"
+  // reparte proporcionalmente entre los materiales ya cargados, "Descartar"
+  // solo limpia el campo, sin tocar el peso actual.
+  async function decidirSugerenciaPeso(accion: 'aplicar' | 'descartar') {
+    if (!mueble || mueble.peso_foto_sugerido_kg == null) return
+    let materialesActualizados: Material[] | undefined
+    if (accion === 'aplicar') {
+      const pesoActual = materiales.reduce((s, m) => s + m.peso_kg, 0)
+      if (pesoActual > 0) {
+        const factor = mueble.peso_foto_sugerido_kg / pesoActual
+        materialesActualizados = materiales.map(m => ({ ...m, peso_kg: m.peso_kg * factor }))
+        setMateriales(materialesActualizados)
+      }
+    }
+    await fetch(conEmpresa(`/api/cotizador/cotizaciones/${cotizacionId}/mueble/${mueble.id}`), {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        peso_foto_sugerido_kg: null,
+        ...(materialesActualizados ? { materiales_json: materialesActualizados } : {}),
+      }),
+    })
+    onGuardado(mueble, null)
+  }
+
   async function guardar() {
     if (!mueble || guardando || eliminando) return
     setGuardando(true)
@@ -372,7 +399,7 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
                   <input value={s.nombre} onChange={e => setServicios(prev => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} placeholder="Ej: Pintor" className="flex-1 bg-transparent border-none p-0 outline-none focus:ring-0 text-sm font-medium text-[var(--text-primary)] min-w-[80px]" />
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <span className={`text-sm font-medium ${ts}`}>$</span>
-                    <input type="number" min={0} value={s.precio} onChange={e => setServicios(prev => prev.map((x, j) => j === i ? { ...x, precio: parseNumero(e.target.value) } : x))} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+                    <input type="number" min={0} value={s.precio} onChange={e => setServicios(prev => prev.map((x, j) => j === i ? { ...x, precio: parseNumero(e.target.value) } : x))} className={`w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C] ${s.precio === 0 ? 'text-[var(--text-secondary)] font-normal' : 'text-[var(--text-primary)] font-semibold'}`} />
                   </div>
                   <button type="button" onClick={() => quitarServicio(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar servicio"><Trash size={16} /></button>
                 </div>
@@ -384,21 +411,29 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
 
             <div className="flex flex-col gap-3 mt-4">
               <p className={`text-xs font-bold tracking-wide ${ts}`}>Insumos</p>
-              {insumos.map((ins, i) => (
-                <div key={i} className="flex items-center gap-3 flex-wrap">
-                  <input value={ins.nombre} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} placeholder="Ej: Tela" className="flex-1 bg-transparent border-none p-0 outline-none focus:ring-0 text-sm font-medium text-[var(--text-primary)] min-w-[80px]" />
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <InputCantidadInsumo
-                      value={ins.cantidad}
-                      onChange={cantidad => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, cantidad } : x))}
-                      unidad={ins.unidad || 'und'}
-                    />
-                    <span className={`text-sm font-medium ${ts}`}>$</span>
-                    <input type="number" min={0} value={ins.precio_unitario} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, precio_unitario: parseNumero(e.target.value) } : x))} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+              {insumos.map((ins, i) => {
+                const cantNum = typeof ins.cantidad === 'string' ? parseFloat(String(ins.cantidad).replace(',', '.')) : ins.cantidad
+                const esCero = isNaN(cantNum) || cantNum === 0
+                return (
+                  <div key={i} className={`flex items-center gap-3 flex-wrap transition-opacity duration-200 ${esCero ? 'opacity-55 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'}`}>
+                    <div className="flex-1 flex items-center gap-1.5 min-w-[80px]">
+                      <input value={ins.nombre} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} placeholder="Ej: Tela" className={`flex-1 bg-transparent border-none p-0 outline-none focus:ring-0 text-sm transition-colors ${esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'}`} />
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <InputCantidadInsumo
+                        value={ins.cantidad}
+                        onChange={cantidad => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, cantidad } : x))}
+                        unidad={ins.unidad || 'und'}
+                      />
+                      <div className={`flex items-center gap-1 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                        <span className={`text-sm font-medium ${ts}`}>$</span>
+                        <input type="number" min={0} value={ins.precio_unitario} onChange={e => setInsumos(prev => prev.map((x, j) => j === i ? { ...x, precio_unitario: parseNumero(e.target.value) } : x))} className={`w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C] ${ins.precio_unitario === 0 ? 'text-[var(--text-secondary)] font-normal' : 'text-[var(--text-primary)] font-semibold'}`} />
+                      </div>
+                    </div>
+                    <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
                   </div>
-                  <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
-                </div>
-              ))}
+                )
+              })}
               <button type="button" onClick={agregarInsumo} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
                 <Plus size={13} /> Añadir insumo
               </button>
@@ -448,6 +483,17 @@ export function EditarMuebleModal({ mueble, conEmpresa, cotizacionId, onClose, o
               <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
                 <Plus size={13} /> Añadir material
               </button>
+              {mueble && mueble.peso_foto_sugerido_kg != null && (
+                <div className="flex flex-col gap-2 p-3 rounded-xl" style={{ background: 'rgba(246,191,62,0.1)', border: '1px solid rgba(246,191,62,0.3)' }}>
+                  <p className="text-xs text-[var(--text-primary)]">
+                    La foto sugiere <strong>{formatNumero(mueble.peso_foto_sugerido_kg)} kg</strong> en total. El catálogo estima {formatNumero(materiales.reduce((s, m) => s + m.peso_kg, 0))} kg.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="secondary" onClick={() => decidirSugerenciaPeso('descartar')}>Descartar</Button>
+                    <Button size="sm" variant="primary" onClick={() => decidirSugerenciaPeso('aplicar')}>Usar este peso</Button>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-3 mt-auto pt-6 border-t border-[var(--border)]/50">

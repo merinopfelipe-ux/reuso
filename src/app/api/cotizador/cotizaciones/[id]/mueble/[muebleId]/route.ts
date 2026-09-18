@@ -58,6 +58,10 @@ const schema = z.object({
   imagen_base64: z.string().max(5_600_000).optional(),
   mime_type: z.enum(['image/jpeg', 'image/png', 'image/webp']).optional(),
   quitar_imagen: z.boolean().optional(),
+  // Sugerencia de peso por foto (sql/138) — null la limpia (descartar o ya
+  // aplicada), un número no debería llegar aquí (solo el POST de confirmar
+  // la guarda por primera vez).
+  peso_foto_sugerido_kg: z.number().positive().nullable().optional(),
 }).refine(d => Object.keys(d).length > 0, { message: 'Envía al menos un campo para actualizar.' })
 
 export async function PATCH(
@@ -88,7 +92,7 @@ export async function PATCH(
 
   const { data: mueble, error: fetchError } = await adminClient
     .from('crm_muebles_cotizados')
-    .select('id, cotizacion_id, empresa_id, item_id, titulo, descripcion, tipo_mueble, cantidad, factor_rentabilidad, materiales_json, servicios_json, insumos_json, peso_estandar_kg, co2_evitado_kg, agua_evitada_l, oculto, imagen_url')
+    .select('id, cotizacion_id, empresa_id, item_id, titulo, descripcion, tipo_mueble, cantidad, factor_rentabilidad, materiales_json, servicios_json, insumos_json, peso_estandar_kg, peso_foto_sugerido_kg, co2_evitado_kg, agua_evitada_l, oculto, imagen_url')
     .eq('id', params.muebleId)
     .eq('cotizacion_id', params.id)
     .eq('empresa_id', empresa_id)
@@ -207,6 +211,7 @@ export async function PATCH(
       servicios_json: servicios,
       insumos_json: insumos,
       materiales_json: materiales,
+      peso_foto_sugerido_kg: parsed.data.peso_foto_sugerido_kg !== undefined ? parsed.data.peso_foto_sugerido_kg : mueble.peso_foto_sugerido_kg,
       factor_rentabilidad,
       oculto,
       imagen_url,
