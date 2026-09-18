@@ -10,6 +10,7 @@ const bodySchema = z.object({
     factor_co2_kg_actual: z.number().nullable(),
     factor_agua_l_kg_actual: z.number().nullable(),
   })).min(1),
+  categoria_nombre: z.string().max(100).optional(),
 })
 
 export async function POST(request: NextRequest) {
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
   // 2. Solo los que faltan van a Perplexity, y se guardan en caché en un
   //    solo upsert por lote después.
   if (faltantes.length > 0) {
-    const resultado = await buscarFactoresMaterial(faltantes)
+    const resultado = await buscarFactoresMaterial(faltantes, parsed.data.categoria_nombre)
     if (resultado.ok) {
       resultados.push(...resultado.materiales)
       const paraGuardar = resultado.materiales

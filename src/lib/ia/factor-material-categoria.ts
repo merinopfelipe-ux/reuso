@@ -49,7 +49,7 @@ function parsearJSON(raw: string): unknown | null {
   } catch { return null }
 }
 
-function construirPrompt(materiales: MaterialConsulta[]): string {
+function construirPrompt(materiales: MaterialConsulta[], categoriaNombre?: string): string {
   const lista = materiales
     .map(m => {
       const actual = m.factor_co2_kg_actual != null
@@ -59,9 +59,13 @@ function construirPrompt(materiales: MaterialConsulta[]): string {
     })
     .join('\n')
 
+  const pista = categoriaNombre
+    ? `\nContexto: estos materiales se usan en la categoría "${categoriaNombre}". Úsalo ÚNICAMENTE para desambiguar materiales genéricos (ej. "espuma" en colchones vs. en sofás tiene composiciones distintas); nunca inventes un factor distinto solo porque cambió la categoría — el factor de un material real (ej. "acero inoxidable 304") es el mismo sin importar dónde se use.\n`
+    : ''
+
   return `Eres un especialista en factores de emisión de gases de efecto invernadero y huella hídrica de materiales, según bases científicas reconocidas (ecoinvent, DEFRA, IPCC, EPA). Busca en internet el factor de CO2 (kg CO2 eq por 1 kg del material) y el factor de agua (L de agua por 1 kg del material) para cada uno de estos materiales:
 ${lista}
-
+${pista}
 Para cada material:
 1. Si encuentras un dato técnico real de una base reconocida, usa confianza "alta" o "media", con fuente_url real y fuente_titulo con el nombre de esa base o ficha.
 2. Si no encuentras nada específico pero puedes dar una estimación razonada por el tipo de material, usa confianza "baja", fuente_url: null, fuente_titulo explicando el razonamiento.
@@ -71,18 +75,18 @@ Responde ÚNICAMENTE con este JSON, un objeto por cada material EN EL MISMO ORDE
 { "materiales": [ { "nombre": "...", "factor_co2_kg": <número o null>, "factor_agua_l_kg": <número o null>, "confianza": "alta"|"media"|"baja"|null, "fuente_titulo": "..."|null, "fuente_url": "https://..."|null } ] }`
 }
 
-export async function buscarFactoresMaterial(materiales: MaterialConsulta[]): Promise<ResultadoFactoresMaterial> {
+export async function buscarFactoresMaterial(materiales: MaterialConsulta[], categoriaNombre?: string): Promise<ResultadoFactoresMaterial> {
   if (materiales.length === 0) return { ok: false }
   const key = process.env.PERPLEXITY_KEY
   if (!key) return { ok: false }
 
   try {
-    const res = await fetchConTimeout('https://api.perplexity.ai/v1/agent', {
+    const res = await fetchConTimeout('https://api.perplexity.ai/v1/responses', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
         model: 'perplexity/sonar',
-        input: construirPrompt(materiales),
+        input: construirPrompt(materiales, categoriaNombre),
         tools: [{ type: 'web_search' }],
         temperature: 0.1,
         max_output_tokens: 800,
