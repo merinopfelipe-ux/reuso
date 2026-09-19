@@ -394,6 +394,89 @@ test.describe('super_admin', () => {
 
     await supabaseAdmin.from('categorias').delete().eq('id', categoria.id)
   })
+
+  test('adm-32 - desactivar un material en un ítem no borra el material de la categoría', async ({ page }) => {
+    test.setTimeout(90_000)
+    // Mismo bug que adm-28, pero en materiales (dimensión ambiental) en vez
+    // de insumos (financiera) — corregido 2026-09-18. En la ficha de UN
+    // ítem, quitar un material heredado (ej. "Cuero" en un mueble sin
+    // tapizar en cuero) comparaba la CANTIDAD de filas visibles contra el
+    // largo del esquema de la categoría y disparaba un PATCH que reescribía
+    // categoria_materiales_base entera, borrando ese material también para
+    // el resto de ítems que sí lo usan. Ver categorias-client.tsx,
+    // guardar() → esquemaCambio.
+    const sufijo = Date.now()
+    const nombreMaterial = `Cuero QA ${sufijo}`
+    const nombreItemB = `QA E2E item con cuero ${sufijo}`
+
+    const { data: categoria, error: errCat } = await supabaseAdmin
+      .from('categorias')
+      .insert({ nombre: `QA E2E cat materiales ${sufijo}`, activa: true })
+      .select('id')
+      .single()
+    if (errCat || !categoria) throw new Error(`No se pudo crear la categoría: ${errCat?.message}`)
+
+    await supabaseAdmin.from('categoria_materiales_base').insert({ categoria_id: categoria.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+    const { data: materialBase, error: errMat } = await supabaseAdmin
+      .from('categoria_materiales_base')
+      .insert({ categoria_id: categoria.id, nombre: nombreMaterial, peso_kg: 1, factor_co2_kg: 2 })
+      .select('id')
+      .single()
+    if (errMat || !materialBase) throw new Error(`No se pudo crear el material base: ${errMat?.message}`)
+
+    // Ítem A: nunca usó el material (ej. una silla sin cuero) — solo tiene madera.
+    const { data: itemA, error: errA } = await supabaseAdmin
+      .from('items')
+      .insert({ categoria_id: categoria.id, nombre: `QA E2E item sin cuero ${sufijo}`, peso_kg: 1, co2_por_unidad: 1 })
+      .select('id')
+      .single()
+    if (errA || !itemA) throw new Error(`No se pudo crear el ítem A: ${errA?.message}`)
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemA.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemA.id, nombre: nombreMaterial, peso_kg: 1, factor_co2_kg: 2 })
+
+    // Ítem B: sí usa el material, con un peso real que nunca debe tocarse.
+    const { data: itemB, error: errB } = await supabaseAdmin
+      .from('items')
+      .insert({ categoria_id: categoria.id, nombre: nombreItemB, peso_kg: 1, co2_por_unidad: 1 })
+      .select('id')
+      .single()
+    if (errB || !itemB) throw new Error(`No se pudo crear el ítem B: ${errB?.message}`)
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemB.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
+    await supabaseAdmin.from('item_materiales').insert({ item_id: itemB.id, nombre: nombreMaterial, peso_kg: 2.5, factor_co2_kg: 2 })
+
+    // Abre el ítem A y quita el material puntual de esta ficha (mismo gesto
+    // que "si no tiene cuero, no va a tener cuero"). Reintenta el clic
+    // dentro de un toPass por la misma condición de carrera de hidratación
+    // ya documentada en adm-28.
+    await page.goto(`/admin/categorias?nodo=${categoria.id}&item=${itemA.id}`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
+    await expect(page.getByText(nombreMaterial).first()).toBeVisible({ timeout: 20_000 })
+
+    await expect(async () => {
+      await page.locator('button[title="Eliminar material"]').last().click()
+      await expect(page.getByText(nombreMaterial)).not.toBeVisible({ timeout: 2_000 })
+    }).toPass({ timeout: 15_000 })
+
+    await page.getByRole('button', { name: 'Guardar' }).click()
+    // El panel se cierra y vuelve a la lista de ítems de la categoría.
+    await expect(page.getByText(nombreItemB)).toBeVisible({ timeout: 20_000 })
+
+    // El material debe seguir existiendo para la categoría completa.
+    const { data: materialesBaseFinal } = await supabaseAdmin
+      .from('categoria_materiales_base')
+      .select('nombre')
+      .eq('categoria_id', categoria.id)
+    expect(materialesBaseFinal?.some(m => m.nombre === nombreMaterial)).toBe(true)
+
+    // El ítem B, que sí usa el material, no debe haber perdido su peso.
+    const { data: materialesItemB } = await supabaseAdmin
+      .from('item_materiales')
+      .select('nombre, peso_kg')
+      .eq('item_id', itemB.id)
+    const filaCueroB = materialesItemB?.find(m => m.nombre === nombreMaterial)
+    expect(filaCueroB?.peso_kg).toBe(2.5)
+
+    await supabaseAdmin.from('categorias').delete().eq('id', categoria.id)
+  })
 })
 
 test('adm-api - la API de admin rechaza a quien no tiene sesión', async ({ browser }) => {

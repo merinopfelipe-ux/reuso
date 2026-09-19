@@ -1350,6 +1350,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'En el primer caso, "Tela"/"Espuma" muestran la etiqueta "Se reemplaza" y "Madera de la estructura" muestra "Se conserva", junto al nombre del material. En el segundo caso (sin acción reconocible) no aparece ninguna etiqueta. El peso sigue llegando igual que antes en ambos casos. El factor CO2/agua de cada material no cambia por este badge.',
     journeys: ['Admin Operativa']
   },
+  {
+    id: 'adm-32', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
+    titulo: 'Desactivar un material en un ítem no afecta a los demás ítems de la categoría',
+    descripcion: 'Un material heredado de la categoría (ej. "Cuero") puede no aplicar a un ítem puntual (ej. una silla sin cuero) sin que eso borre ese material para el resto de ítems de la misma categoría. Mismo bug que adm-28, pero en materiales en vez de insumos.',
+    pasos: [
+      'Entra a una categoría con al menos 2 materiales y dos ítems que usen ambos.',
+      'En el primer ítem, elimina uno de los materiales (ej. "Cuero") con la papelera y guarda.',
+      'Abre el segundo ítem y confirma que ese material sigue apareciendo ahí, con su peso intacto.'
+    ],
+    esperado: 'El primer ítem guarda sin ese material y sin afectar a la categoría. El segundo ítem sigue teniendo el material disponible, con el mismo peso que tenía antes de guardar el primero.',
+    journeys: ['Admin Operativa']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // SETTINGS
