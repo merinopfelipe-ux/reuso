@@ -12,7 +12,7 @@ import { formatCOP, formatEnteroMillones } from '@/lib/format'
 // explícita del usuario solo para estas 2 cards, siempre redondeando hacia
 // arriba (Math.ceil), nunca hacia el más cercano.
 function formatCOPEntero(val: number): string {
-  return `$ ${formatEnteroMillones(Math.ceil(val))}`
+  return `$\u00A0${formatEnteroMillones(Math.ceil(val))}`
 }
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -592,13 +592,13 @@ export function SalesDashboard({
   // TICKET PROMEDIO — nunca con decimales, siempre redondeado hacia arriba
   // al millar más cercano (más grueso que Meta, que redondea al peso).
   const tpv = actual.tpv ?? 0
-  let labelTicket = '$ 0'
+  let labelTicket = '$\u00A00'
   if (tpv >= 1_000_000) {
     const millones = Math.ceil(tpv / 1_000_000)
-    labelTicket = `$ ${millones} M`
+    labelTicket = `$\u00A0${millones}\u00A0M`
   } else if (tpv > 0) {
     const redondeadoMil = Math.ceil(tpv / 1000) * 1000
-    labelTicket = `$ ${formatEnteroMillones(redondeadoMil)}`
+    labelTicket = `$\u00A0${formatEnteroMillones(redondeadoMil)}`
   }
 
   const metaAComparar = metaTipo === 'mensual' ? metaValorMensual : metaValorAnual

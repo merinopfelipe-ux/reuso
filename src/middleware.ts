@@ -81,6 +81,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith('/verificar') ||
     pathname.startsWith('/invitacion/') ||
+    pathname.startsWith('/auth/') ||
     pathname.startsWith('/cot/') ||
     pathname.startsWith('/pasaporte/') ||
     pathname.startsWith('/status') ||
@@ -89,7 +90,8 @@ export async function middleware(request: NextRequest) {
     pathname === '/faq' ||
     pathname.startsWith('/sistema-diseno') ||
     pathname.startsWith('/landing2') ||
-    pathname.startsWith('/pivot-roadmap')
+    pathname.startsWith('/pivot-roadmap') ||
+    pathname.startsWith('/ppt')
   ) {
     return NextResponse.next()
   }

@@ -27,6 +27,7 @@ export default function robots(): MetadataRoute.Robots {
         '/propuesta/',
         '/invitacion/',
         '/sistema-diseno',
+        '/ppt',
       ],
     },
     sitemap: 'https://calculadoradereuso.com/sitemap.xml',

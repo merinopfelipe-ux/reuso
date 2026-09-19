@@ -25,8 +25,8 @@ export async function POST(request: NextRequest) {
     parsed.data.materiales
   )
   if (!resultado.ok) {
-    return NextResponse.json({ ok: false })
+    return NextResponse.json({ ok: false, error: resultado.error ?? 'No se pudieron estimar los pesos.' })
   }
 
-  return NextResponse.json({ ok: true, materiales: resultado.materiales })
+  return NextResponse.json({ ok: true, materiales: resultado.materiales, proveedor: resultado.proveedor })
 }

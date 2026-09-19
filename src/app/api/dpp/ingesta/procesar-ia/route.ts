@@ -140,10 +140,8 @@ async function llamarGeminiTexto(textoDoc: string, system: string, user: string)
         contents: [{ role: 'user', parts: [{ text: `${user}\n\nDocumento:\n${textoDoc}` }] }],
         generationConfig: {
           maxOutputTokens: 512, temperature: 0,
-          // gemini-3.6-flash piensa por defecto: sin este límite, el
-          // razonamiento interno consume todo el maxOutputTokens y no deja
-          // espacio para el JSON de salida.
-          thinkingConfig: { thinkingBudget: 100 },
+          // Desactivar razonamiento interno para máxima velocidad y 0 desperdicio de tokens
+          thinkingConfig: { thinkingBudget: 0 },
           responseMimeType: 'application/json',
           responseSchema: GEMINI_RESPONSE_SCHEMA,
         },

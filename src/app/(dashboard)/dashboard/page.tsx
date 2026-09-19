@@ -614,7 +614,7 @@ export default async function DashboardPage() {
             >
               <div style={{
                 width: 44, height: 44, borderRadius: '50%',
-                background: 'rgba(0,130,124,0.10)',
+                background: 'var(--color-brand-light)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }} className="transition-transform duration-300">
                 <Icon size={20} color="var(--color-brand)" />

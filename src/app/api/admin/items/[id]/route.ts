@@ -35,9 +35,18 @@ export async function PATCH(
     if (delError) return NextResponse.json({ error: 'Error al actualizar los materiales.' }, { status: 500 })
 
     if (materiales.length > 0) {
-      const { error: insError } = await guard.supabase.from('item_materiales').insert(
+      let { error: insError } = await guard.supabase.from('item_materiales').insert(
         materiales.map((m, i) => ({ ...m, item_id: params.id, orden: i }))
       )
+      if (insError && insError.message?.includes('rol_conservacion')) {
+        const sinRol = materiales.map((m, i) => {
+          const { rol_conservacion: _omitido, ...resto } = m
+          void _omitido
+          return { ...resto, item_id: params.id, orden: i }
+        })
+        const retry = await guard.supabase.from('item_materiales').insert(sinRol)
+        insError = retry.error
+      }
       if (insError) return NextResponse.json({ error: 'Error al guardar los materiales.' }, { status: 500 })
     }
 
@@ -45,8 +54,12 @@ export async function PATCH(
     actualizar.co2_por_unidad = materiales.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0)
     actualizar.agua_por_unidad = materiales.reduce((s, m) => s + m.peso_kg * (m.factor_agua_l_kg ?? 0), 0)
     actualizar.nivel_confianza = materiales[0]?.nivel_confianza ?? 'baja'
-    actualizar.origen_fuente = materiales[0]?.origen_fuente ?? null
-    actualizar.detalle_fuente = materiales[0]?.detalle_fuente ?? null
+    if (itemFields.origen_fuente === undefined) {
+      actualizar.origen_fuente = materiales[0]?.origen_fuente ?? null
+    }
+    if (itemFields.detalle_fuente === undefined) {
+      actualizar.detalle_fuente = materiales[0]?.detalle_fuente ?? null
+    }
   }
 
   // Si vienen servicios/insumos, se reemplaza el desglose financiero completo.

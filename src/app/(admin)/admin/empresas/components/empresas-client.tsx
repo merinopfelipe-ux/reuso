@@ -207,8 +207,8 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                     <td className="px-4 py-3 text-[var(--text-primary)]">{emp.nombre}</td>
                     <td className="px-4 py-3"><PlanBadge plan={emp.plan} /></td>
                     <td className="px-4 py-3 text-[var(--text-secondary)]">{emp.sector ?? '-'}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(emp.total_empleados)}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(emp.total_co2, { unidad: 'kg' })}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(emp.total_empleados)}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(emp.total_co2, { unidad: 'kg' })}</td>
                     <td className="px-4 py-3 text-center">
                       <span style={{ 
                         padding: '2px 10px', 

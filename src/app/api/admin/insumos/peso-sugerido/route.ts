@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false })
   }
 
-  await guardarEnCache(guard.adminClient, nombre, unidad, resultado.peso_kg_estimado, resultado.fuente_url, resultado.confianza)
+  await guardarEnCache(guard.adminClient, nombre, unidad, resultado.peso_kg_estimado, resultado.fuente_url ?? null, resultado.confianza ?? null)
 
   return NextResponse.json({
     ok: true,

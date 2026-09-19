@@ -4,7 +4,7 @@ import { servicioSchema, insumoSchema, materialesConImpactoSchema } from './dime
 export const crearCategoriaSchema = z.object({
   nombre: z.string().min(2).max(80),
   icono_lucide: z.string().min(1).max(50),
-  descripcion: z.string().max(300).optional(),
+  descripcion: z.string().max(140).optional(),
   parent_id: z.string().uuid().optional(),
   modulo_id: z.string().uuid().optional(),
   // Esquema base (molde): la dimensión ambiental es obligatoria, la
@@ -19,7 +19,7 @@ export const patchCategoriaSchema = z.object({
   activa: z.boolean().optional(),
   nombre: z.string().min(2).max(80).optional(),
   icono_lucide: z.string().min(1).max(50).optional(),
-  descripcion: z.string().max(300).nullable().optional(),
+  descripcion: z.string().max(140).nullable().optional(),
   parent_id: z.string().uuid().nullable().optional(),
   modulo_id: z.string().uuid().nullable().optional(),
   orden: z.number().int().optional(),

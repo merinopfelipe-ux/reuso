@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Calculator, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Users, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface SubItem {
@@ -47,7 +47,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
     },
     {
       label: 'CRM',
-      icon: Calculator,
+      icon: Users,
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
         { href: '/empresa/clientes', label: 'Clientes' },
@@ -99,7 +99,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
     { href: '/empresa/dpp', label: 'DPP', icon: IdentificationCard },
     {
       label: 'CRM',
-      icon: Calculator,
+      icon: Users,
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones' },
         { href: '/empresa/clientes', label: 'Clientes' },
@@ -119,7 +119,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
     },
     {
       label: 'CRM',
-      icon: Calculator,
+      icon: Users,
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones' },
         { href: '/empresa/clientes', label: 'Clientes' },
@@ -148,7 +148,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
     // No es un link muerto: usuario_libre no tiene el módulo, así que abre el
     // banner de "no está en tu plan" (ModuloBloqueadoBanner) en vez de un
     // href="#" que no llevaba a ningún lado.
-    { href: '/dashboard?modulo_bloqueado=cotizador', label: 'CRM', icon: Calculator },
+    { href: '/dashboard?modulo_bloqueado=cotizador', label: 'CRM', icon: Users },
     {
       label: 'Ajustes',
       icon: Gear,
@@ -358,6 +358,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           --color-text-nav-active: #00827C;
         }
 
+        [data-theme="dark"] {
+          --color-text-nav-active: #D6F391;
+        }
+
         .liquid-base-context {
           background: var(--bg-primary) !important;
         }
@@ -394,7 +398,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         .flyout-item-sustainable:nth-child(6) { animation-delay: 0.18s; }
 
         .clean-item-nav:hover, .flyout-item-sustainable:hover {
-          background: rgba(214, 243, 145, 0.48) !important;
+          background: rgba(0, 130, 124, 0.08) !important;
         }
 
         [data-theme="dark"] .clean-item-nav:not(.reuso-nav-active) {
@@ -445,6 +449,11 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
         [data-theme="dark"] .reuso-nav-active .active-indicator-pill {
           background: #D6F391 !important;
           box-shadow: 0 0 10px rgba(214, 243, 145, 0.4);
+        }
+
+        [data-theme="dark"] .flyout-item-sustainable.reuso-nav-active .flyout-active-dot {
+          background: #D6F391 !important;
+          box-shadow: 0 0 8px rgba(214, 243, 145, 0.4);
         }
 
         [data-theme="dark"] .flyout-item-sustainable.reuso-nav-active {
@@ -564,7 +573,19 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
               }}
             >
               <span style={{ color: isSubActive ? 'var(--color-text-nav-active)' : 'inherit' }}>{sub.label}</span>
-              {isSubActive && <div style={{ width: 6, height: 6, background: 'var(--color-text-nav-active)', borderRadius: '50%' }} />}
+              {isSubActive && (
+                <div
+                  className="flyout-active-dot"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    background: isDark ? '#D6F391' : '#00827C',
+                    borderRadius: '50%',
+                    boxShadow: isDark ? '0 0 8px rgba(214, 243, 145, 0.4)' : 'none',
+                    transition: 'all 0.3s ease',
+                  }}
+                />
+              )}
             </Link>
           )
         }

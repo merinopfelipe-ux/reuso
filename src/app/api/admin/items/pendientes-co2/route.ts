@@ -54,9 +54,18 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Error al reemplazar los materiales.' }, { status: 500 })
   }
 
-  const { error: insError } = await guard.supabase.from('item_materiales').insert(
+  let { error: insError } = await guard.supabase.from('item_materiales').insert(
     materiales.map((m, i) => ({ ...m, item_id, orden: i }))
   )
+  if (insError && insError.message?.includes('rol_conservacion')) {
+    const sinRol = materiales.map((m, i) => {
+      const { rol_conservacion: _omitido, ...resto } = m
+      void _omitido
+      return { ...resto, item_id, orden: i }
+    })
+    const retry = await guard.supabase.from('item_materiales').insert(sinRol)
+    insError = retry.error
+  }
   if (insError) {
     return NextResponse.json({ error: 'Error al guardar los materiales.' }, { status: 500 })
   }

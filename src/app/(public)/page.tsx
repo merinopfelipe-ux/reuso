@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import LandingClient, { type PlanPrecioReal, type CategoriaComparativa } from './landing-client'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { GOOGLE_BUSINESS_URL } from '@/lib/constants/contacto'
+
 
 // ISR de 5 minutos — no force-dynamic, esta es una página pública y
 // CLAUDE.md pide ISR en públicas (nunca sin caché ahí, a diferencia de un
@@ -193,7 +195,8 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
       }
     ],
     sameAs: [
-      'https://www.linkedin.com/company/calculadoradereuso/',
+      GOOGLE_BUSINESS_URL,
+      'https://www.linkedin.com/company/calculadora-de-reuso',
       'https://www.instagram.com/calculadoradereuso',
       'https://x.com/calreuso',
       'https://www.youtube.com/@calculadoradereuso',

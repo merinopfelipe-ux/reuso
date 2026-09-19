@@ -14,8 +14,8 @@ export const REDES_SOCIALES_DEFAULT: RedSocialItem[] = [
   {
     id: 'linkedin',
     nombre: 'LinkedIn',
-    handle: '/calculadoradereuso',
-    href: 'https://www.linkedin.com/company/calculadoradereuso/',
+    handle: '/calculadora-de-reuso',
+    href: 'https://www.linkedin.com/company/calculadora-de-reuso',
     ariaLabel: 'Visitar nuestro perfil en LinkedIn',
   },
   {

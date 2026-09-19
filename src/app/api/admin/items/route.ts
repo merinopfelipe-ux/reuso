@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       co2_por_unidad,
       agua_por_unidad,
       nivel_confianza: materiales[0]?.nivel_confianza ?? 'baja',
-      origen_fuente: materiales[0]?.origen_fuente ?? null,
-      detalle_fuente: materiales[0]?.detalle_fuente ?? null,
+      origen_fuente: itemFields.origen_fuente ?? materiales[0]?.origen_fuente ?? null,
+      detalle_fuente: itemFields.detalle_fuente ?? materiales[0]?.detalle_fuente ?? null,
     })
     .select()
     .single()
@@ -40,9 +40,18 @@ export async function POST(request: NextRequest) {
 
   // Insertar dimensiones hijas por separado (nunca se mezclan entre sí)
   if (materiales.length > 0) {
-    const { error: matError } = await guard.supabase.from('item_materiales').insert(
+    let { error: matError } = await guard.supabase.from('item_materiales').insert(
       materiales.map((m, i) => ({ ...m, item_id: item.id, orden: i }))
     )
+    if (matError && matError.message?.includes('rol_conservacion')) {
+      const sinRol = materiales.map((m, i) => {
+        const { rol_conservacion: _omitido, ...resto } = m
+        void _omitido
+        return { ...resto, item_id: item.id, orden: i }
+      })
+      const retry = await guard.supabase.from('item_materiales').insert(sinRol)
+      matError = retry.error
+    }
     if (matError) {
       await guard.supabase.from('items').delete().eq('id', item.id)
       return NextResponse.json({ error: 'Error al guardar los materiales del item.' }, { status: 500 })

@@ -118,8 +118,8 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                       {c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '-'}
                     </td>
                     <td className="px-4 py-3 text-[var(--color-brand)]">{c.empresas?.nombre ?? '-'}</td>
-                    <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right">{formatNumero(c.total_co2, { unidad: 'kg CO₂' })}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right">{formatNumero(c.total_agua / 1000, { unidad: 'm³' })}</td>
+                    <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(c.total_co2, { unidad: 'kg CO₂' })}</td>
+                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(c.total_agua / 1000, { unidad: 'm³' })}</td>
                     <td className="px-4 py-3 text-center">
                       {activo ? (
                         <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(56,185,142,0.12)', color: '#1F8C65' }}>Activo</span>

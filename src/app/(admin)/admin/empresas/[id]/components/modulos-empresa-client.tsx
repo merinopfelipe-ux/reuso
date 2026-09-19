@@ -129,7 +129,7 @@ export function ModulosEmpresaClient({
               <div style={{
                 width: 36, height: 36, borderRadius: 9, flexShrink: 0,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: activo ? 'rgba(0,130,124,0.12)' : C.light,
+                background: activo ? 'var(--color-brand-light)' : C.light,
               }}>
                 <DynamicIcon nombre={m.icono_lucide} size={17} className={activo ? '' : ''} />
               </div>
@@ -164,7 +164,7 @@ export function ModulosEmpresaClient({
                   padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 700,
                   cursor: toggling === m.id ? 'wait' : 'pointer',
                   border: 'none',
-                  background: activo ? C.brand : 'rgba(0,130,124,0.10)',
+                  background: activo ? C.brand : 'var(--color-brand-light)',
                   color: activo ? 'var(--text-on-brand)' : C.brand,
                   transition: 'all 0.2s',
                   opacity: toggling === m.id ? 0.6 : 1,

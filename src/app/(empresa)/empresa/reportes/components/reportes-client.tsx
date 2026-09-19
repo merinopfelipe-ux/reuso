@@ -91,7 +91,7 @@ function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | numbe
                 style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
               >
                 {fila.map((v, i) => (
-                  <td key={i} className={`px-4 py-3 text-[var(--text-primary)] ${i === 0 ? 'text-left' : 'text-right'}`}>
+                  <td key={i} className={`px-4 py-3 text-[var(--text-primary)] ${i === 0 ? 'text-left' : 'text-right whitespace-nowrap'}`}>
                     {v}
                   </td>
                 ))}

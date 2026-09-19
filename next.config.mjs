@@ -40,8 +40,8 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               process.env.NODE_ENV === 'development'
-              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com"
-              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
+              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.tailwindcss.com"
+              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://cdn.tailwindcss.com",
               // p.typekit.net es de donde Typekit sirve el CSS real, no
               // use.typekit.net (esa es solo el link inicial que lo pide) —
               // sin esto, el navegador bloquea la hoja de estilos real y la

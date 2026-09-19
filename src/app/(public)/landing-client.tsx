@@ -292,28 +292,24 @@ type CatKey = keyof typeof CATEGORIAS
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQS = [
   {
-    q: '¿Qué es la sostenibilidad empresarial y cómo se mide en empresas o negocios locales?',
-    a: 'Es la decisión voluntaria de gestionar tu huella positiva en la comunidad y el planeta, el corazón de tu responsabilidad social. En negocios locales la mides pasando del discurso a los hechos: utilizas la Calculadora de Reúso para registrar tus materiales o productos reacondicionados, estimar los recursos que preservas y generar reportes técnicos que sustentan tu compromiso ante clientes y aliados.',
+    q: '¿Quiénes lideran la sostenibilidad de productos en Colombia?',
+    a: 'Hoy los clientes y comités de compras desconfían de las marcas que afirman ser ecológicas sin pruebas. Quedarse en promesas sin sustento técnico cierra puertas comerciales y debilita tu reputación. Las marcas y talleres que lideran el mercado utilizan la Calculadora de Reúso para emitir Pasaportes Digitales (DPP) con código QR en cada producto, demostrando con transparencia el origen de los insumos y la vida útil extendida de los materiales.',
   },
   {
-    q: '¿Qué significa la responsabilidad social empresarial para una pyme en Colombia?',
-    a: 'Para una pyme en Colombia significa competir con transparencia y abrir puertas a nuevos contratos corporativos. Con la Calculadora de Reúso transformas tus esfuerzos de reciclaje y reuso en métricas claras de agua, CO₂ y residuos evitados, permitiéndote presentar informes confiables y cerrar acuerdos comerciales que exigen criterios de sostenibilidad comprobables.',
+    q: '¿Qué servicios miden la huella de carbono de un negocio?',
+    a: 'Medir las emisiones de carbono tradicionalmente exige costosas consultorías externas que tardan meses en entregar un diagnóstico. Mientras esperas, pierdes licitaciones corporativas frente a competidores más ágiles. La Calculadora de Reúso simplifica este proceso en una sola plataforma: cruza el peso de tus materiales con los estándares internacionales GHG Protocol e IPCC, calculando en 3 minutos las emisiones de CO₂e evitadas y el agua potable preservada.',
   },
   {
-    q: '¿Qué es la economía circular y cómo impacta mi consumo diario?',
-    a: 'Consiste en mantener materiales y productos en uso el mayor tiempo posible, reduciendo la extracción de recursos vírgenes. Desde la Calculadora de Reúso medimos ese efecto cotidiano: cuando eliges un producto con Pasaporte Digital (DPP), la calculadora estima cuántos litros de agua y kilogramos de residuos ahorraste con esa decisión frente a comprar un artículo nuevo.',
+    q: '¿Dónde implementar la economía circular en mi industria?',
+    a: 'Para muchas empresas, la economía circular parece un concepto teórico difícil de aterrizar en la operación diaria. Seguir descartando mobiliario, saldos y retazos es perder dinero y generar sobrecostos de disposición. Puedes implementarla directamente en la plataforma en la nube de la Calculadora de Reúso, disponible en Bogotá, Medellín y toda Colombia. Ingresas tus descartes y el sistema los transforma en inventario comercial valorizado con trazabilidad digital inmediata.',
   },
   {
-    q: '¿Dónde puedo comprar productos fabricados con principios de economía circular en Colombia?',
-    a: 'Puedes adquirirlos a través de la red de empresas, marcas y talleres aliados que gestionan sus inventarios y valorizan materiales con la Calculadora de Reúso. Cada artículo cuenta con su Pasaporte Digital (DPP) mediante código QR, donde puedes verificar el origen de los insumos y la estimación ambiental de su vida útil extendida.',
+    q: '¿Cuándo debe una empresa evaluar su impacto ambiental?',
+    a: 'La mayoría de las compañías miden su impacto tarde, en auditorías de fin de año que no ayudan a generar ventas. Cotizar de la manera tradicional te condena a competir únicamente bajando precios y reduciendo tu margen. Debes medirlo al momento de cotizar: con la Calculadora de Reúso, presentas a tu cliente cuánto dinero ahorra en su proyecto y cuánto impacto ambiental negativo evita al preferir materiales recuperados, cerrando ventas con una ventaja decisiva.',
   },
   {
-    q: '¿Dónde está disponible la Calculadora de Reúso?',
-    a: 'Es una plataforma en línea, sin importar dónde esté tu empresa. Nuestro equipo tiene base en Medellín y Bogotá, Colombia, pero no requiere instalar nada: entras desde cualquier navegador, en cualquier ciudad.',
-  },
-  {
-    q: '¿Cuándo debería empezar a medir la sostenibilidad de mi empresa?',
-    a: 'Desde ahora, sin esperar a tener un área dedicada. Muchas empresas empiezan cuando un cliente corporativo o una licitación exige evidencia técnica, pero cuanto antes registres tus primeros datos, más historial acumulas para tus reportes. Con la Calculadora de Reúso el primer cálculo toma minutos, así que no hay una fecha "ideal" para arrancar distinta a hoy.',
+    q: '¿Por qué respaldar la responsabilidad social con datos técnicos?',
+    a: 'La responsabilidad social empresarial basada en buenas intenciones ya no es suficiente ante clientes exigentes y normativas antifraude verde como la Directiva EmpCo, que sancionan severamente las afirmaciones sin sustento. Respaldarla con datos técnicos blinda tu credibilidad y abre contratos corporativos. La Calculadora de Reúso genera informes técnicos en PDF con un sello criptográfico único (hash), certificando el impacto social y ambiental de tu empresa con validez auditable.',
   },
 ]
 
@@ -1447,7 +1443,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Descubre los 9 cálculos de sostenibilidad: ambientales, económicos y sociales
+              Descubre los 9 cálculos de sostenibilidad: <br className="hidden sm:block" />
+              ambientales, económicos y sociales
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
               Desde la estimación rápida de huella de carbono hasta el seguimiento en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
@@ -1865,7 +1862,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
-              Planes de sostenibilidad y pasaportes digitales que crecen a tu ritmo
+              Planes de sostenibilidad a tu ritmo
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
               Cada plan de pago incluye una tarifa de Implementación (pago único), cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.

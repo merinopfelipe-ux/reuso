@@ -28,6 +28,7 @@ import {
   Bell,
   Gear,
   ChevronRight,
+  Icon,
   Download,
   Upload,
   Trash,
@@ -53,7 +54,6 @@ import {
   Wrench as PhWrench,
   MagnifyingGlass as PhMagnifyingGlass,
 } from '@phosphor-icons/react'
-import { Icon } from 'lucide-react'
 import { avocado, ufo, snowman, strawberry, penguin, chameleon } from '@lucide/lab'
 import { PLANS, CURRENCIES } from '@/lib/constants/pricing'
 import { DesignSystemHeader } from '@/components/design-system-header'

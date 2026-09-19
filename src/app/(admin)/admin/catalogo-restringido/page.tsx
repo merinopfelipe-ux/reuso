@@ -170,10 +170,10 @@ function ItemRestringidoCard({ item, empresas, abierto, onToggle, onOtorgar, onR
             </select>
             <button
               onClick={() => { if (seleccion) { onOtorgar(seleccion); setSeleccion('') } }}
-              className="hover-pop hover-press p-2 rounded-lg bg-[#00827C]/10 flex-shrink-0"
+              className="hover-pop hover-press p-2 rounded-lg bg-[var(--color-brand-light)] flex-shrink-0"
               title="Compartir"
             >
-              <Plus size={16} className="text-[#00827C]" />
+              <Plus size={16} className="text-[var(--color-brand)]" />
             </button>
           </div>
         </div>

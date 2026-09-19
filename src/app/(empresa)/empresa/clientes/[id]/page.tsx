@@ -526,7 +526,7 @@ function DetalleClienteContent() {
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <span className={`text-xs ${ts}`}>{formatFecha(c.created_at)}</span>
-                      <span className={`text-sm font-bold ${tp}`}>{formatCOP(c.total)}</span>
+                      <span className={`text-sm font-bold whitespace-nowrap ${tp}`}>{formatCOP(c.total)}</span>
                     </div>
                   </button>
                 )

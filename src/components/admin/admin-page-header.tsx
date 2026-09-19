@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft } from '@/components/ui/icons'
 
 interface AdminPageHeaderProps {
-  titulo: string
+  titulo: React.ReactNode
   subtitulo?: React.ReactNode
   accion?: React.ReactNode
   showBack?: boolean

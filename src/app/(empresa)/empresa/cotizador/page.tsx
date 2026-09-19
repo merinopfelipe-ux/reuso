@@ -93,8 +93,8 @@ function renderCeldaColumna(clave: ClaveColumna, c: Cotizacion): React.ReactNode
     return <span className="whitespace-nowrap">{formatTelefonoVista(c.crm_clientes.telefono, dial)}</span>
   }
   if (tipo === 'fecha') return <FechaColumna iso={valor as string | null} />
-  if (clave === 'total') return <span className="font-bold">{formatCOP(Number(valor ?? 0))}</span>
-  if (clave === 'co2_evitado_total_kg') return formatNumero(Number(valor ?? 0), { unidad: 'kg CO2 eq' })
+  if (clave === 'total') return <span className="font-bold whitespace-nowrap">{formatCOP(Number(valor ?? 0))}</span>
+  if (clave === 'co2_evitado_total_kg') return <span className="whitespace-nowrap">{formatNumero(Number(valor ?? 0), { unidad: 'kg CO2 eq' })}</span>
   if (clave === 'dias_para_cierre') return valor == null ? '—' : `${valor} d`
   return (valor ?? '—') as string
 }
@@ -641,7 +641,7 @@ function PanelCotizadorContent() {
                                   // "block" nunca junto con "line-clamp-2" — pisa el
                                   // display:-webkit-box que necesita para partir a 2
                                   // líneas (mismo bug ya corregido arriba).
-                                  colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} line-clamp-2 break-words`
+                                  colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} ${clave === 'total' ? 'whitespace-nowrap' : 'line-clamp-2 break-words'}`
                                   // Fecha: nunca truncar con "..." — su propio
                                   // FechaColumna ya resuelve el ajuste por
                                   // pantalla (1 línea en móvil/escritorio, 2
@@ -650,6 +650,7 @@ function PanelCotizadorContent() {
                                   // siempre — directriz explícita del usuario.
                                   : definicionDe(clave).tipo === 'fecha' ? `block ${alineacion === 'text-center' ? 'mx-auto' : alineacion === 'text-right' ? 'ml-auto' : ''} ${margen} ${anchoColumna(clave).celda}`
                                   : clave === 'cliente_telefono' ? `block ${alineacion === 'text-center' ? 'mx-auto' : alineacion === 'text-right' ? 'ml-auto' : ''} ${margen} ${anchoColumna(clave).celda} overflow-visible`
+                                  : clave === 'total' ? `block ${margen} ${anchoColumna(clave).celda} whitespace-nowrap`
                                   : `block ${alineacion === 'text-center' ? 'mx-auto' : alineacion === 'text-right' ? 'ml-auto' : ''} ${margen} ${anchoColumna(clave).celda} truncate`
                                 }>
                                   {renderCeldaColumna(clave, c)}

@@ -4,7 +4,7 @@ import { useState, useTransition, useMemo, useRef, useEffect } from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2 } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
 import { IconPicker } from '@/components/admin/icon-picker'
@@ -484,7 +484,14 @@ function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, o
   nombreItem: string
   categoriaNombre: string
   materiales: { nombre: string }[]
-  onCompletado: (resultados: { nombre: string; peso_kg: number | null; rol: string | null }[], proveedor?: string) => void
+  onCompletado: (resultados: {
+    nombre: string
+    peso_kg: number | null
+    rol: string | null
+    confianza?: 'alta' | 'media' | 'baja' | null
+    fuente_titulo?: string | null
+    fuente_url?: string | null
+  }[], proveedor?: string) => void
   cargando: boolean
   setCargando: (c: boolean) => void
 }) {
@@ -526,10 +533,27 @@ function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, o
       })
       const data = await res.json()
       if (res.ok && data.ok && Array.isArray(data.materiales)) {
-        onCompletado(data.materiales.map((m: { nombre: string; peso_kg_estimado: number | null; rol: string | null }) => ({ nombre: m.nombre, peso_kg: m.peso_kg_estimado, rol: m.rol ?? null })), data.proveedor)
+        onCompletado(
+          data.materiales.map((m: {
+            nombre: string
+            peso_kg_estimado: number | null
+            rol: string | null
+            confianza?: 'alta' | 'media' | 'baja' | null
+            fuente_titulo?: string | null
+            fuente_url?: string | null
+          }) => ({
+            nombre: m.nombre,
+            peso_kg: m.peso_kg_estimado,
+            rol: m.rol ?? null,
+            confianza: m.confianza ?? null,
+            fuente_titulo: m.fuente_titulo ?? null,
+            fuente_url: m.fuente_url ?? null,
+          })),
+          data.proveedor
+        )
         setFeedback({
           tipo: 'success',
-          texto: `Pesos estimados con éxito usando ${data.proveedor === 'perplexity' ? 'Perplexity' : data.proveedor === 'gemini' ? 'Gemini' : 'IA'}.`
+          texto: `Pesos y fuentes estimadas con éxito usando ${data.proveedor === 'perplexity' ? 'Perplexity' : data.proveedor === 'gemini' ? 'Gemini' : 'IA'}.`
         })
       } else {
         setFeedback({
@@ -744,6 +768,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         titulo={
           <span className="flex items-center gap-2">
             {titulo}
+            {itemAbierto && esItemPerplexity(itemAbierto) && <BadgePerplexity />}
             {isPending && <Loader2 size={16} className="animate-spin text-[var(--color-brand)] opacity-70" />}
           </span>
         } 
@@ -886,6 +911,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                               {it.visibilidad === 'restringido' && <Lock size={12} className="text-[var(--color-brand)] flex-shrink-0" />}
                               {isPending && targetLoading === 'item:' + it.id && <Loader2 size={12} className="animate-spin text-[var(--color-brand)] flex-shrink-0" />}
                               {it.nombre}
+                              {esItemPerplexity(it) && <BadgePerplexity />}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
@@ -1113,14 +1139,122 @@ function BadgeRolConservacion({ rol }: { rol?: string }) {
   if (rol !== 'se_conserva' && rol !== 'se_reemplaza') return null
   return (
     <span
-      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0"
+      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 select-none shadow-sm"
       style={{
-        background: rol === 'se_conserva' ? 'var(--color-brand-light)' : 'rgba(246,191,62,0.15)',
-        color: rol === 'se_conserva' ? 'var(--color-brand)' : '#B8860B',
+        background: rol === 'se_conserva' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(246, 191, 62, 0.18)',
+        color: rol === 'se_conserva' ? '#16A34A' : '#B8860B',
+        border: rol === 'se_conserva' ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(246, 191, 62, 0.35)',
       }}
     >
       {rol === 'se_conserva' ? 'Se conserva' : 'Se reemplaza'}
     </span>
+  )
+}
+
+// Logo y badge de Perplexity para marcar ítems enriquecidos con IA
+export function BadgePerplexity({ title = 'Estimado con Perplexity AI', compacto = false }: { title?: string; compacto?: boolean }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-tight select-none transition-all duration-200 hover:opacity-90 shadow-sm"
+      style={{
+        background: 'rgba(32, 128, 141, 0.12)',
+        color: '#20808D',
+        border: '1px solid rgba(32, 128, 141, 0.3)',
+      }}
+      title={title}
+    >
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+        <path d="M12 2v20M4 12h16M6.34 6.34l11.32 11.32M17.66 6.34L6.34 17.66" />
+        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+      </svg>
+      {!compacto && <span>Perplexity</span>}
+    </span>
+  )
+}
+
+export function esItemPerplexity(it: ItemConDimensiones | null | undefined): boolean {
+  if (!it) return false
+  if (it.origen_fuente?.toLowerCase().includes('perplexity')) return true
+  if (it.detalle_fuente?.toLowerCase().includes('perplexity')) return true
+  return it.item_materiales?.some(m => m.origen_fuente?.toLowerCase().includes('perplexity') || m.detalle_fuente?.toLowerCase().includes('perplexity')) ?? false
+}
+
+// Extrae roles de conservación guardados en el JSON de detalle_fuente como respaldo infalible
+function extraerRolesRespaldo(detalleFuente?: string | null): Record<string, string> {
+  if (!detalleFuente) return {}
+  try {
+    const parsed = JSON.parse(detalleFuente)
+    if (parsed && typeof parsed.roles === 'object' && parsed.roles !== null) {
+      return parsed.roles as Record<string, string>
+    }
+  } catch {
+    // Si no es JSON, es texto plano
+  }
+  return {}
+}
+
+export interface InfoFuenteMaterial {
+  confianza?: 'alta' | 'media' | 'baja' | null
+  fuente_titulo?: string | null
+  fuente_url?: string | null
+  proveedor?: string | null
+}
+
+function FichaPerplexityMaterial({ info }: { info?: InfoFuenteMaterial }) {
+  if (!info || (!info.fuente_titulo && !info.fuente_url && !info.confianza)) return null
+  return (
+    <div
+      className="mt-1 p-2 rounded-lg text-xs flex flex-col gap-1 select-text transition-all duration-150"
+      style={{
+        background: 'rgba(32, 128, 141, 0.05)',
+        border: '1px solid rgba(32, 128, 141, 0.18)',
+      }}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-1.5">
+        <span className="inline-flex items-center gap-1 font-semibold text-[#20808D] text-[11px]">
+          <Sparkles size={12} className="text-[#20808D]" />
+          <span>Datos recuperados por Perplexity AI</span>
+        </span>
+        {info.confianza && (
+          <span
+            className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+            style={{
+              background: info.confianza === 'alta'
+                ? 'rgba(34, 197, 94, 0.15)'
+                : info.confianza === 'media'
+                  ? 'rgba(234, 179, 8, 0.15)'
+                  : 'rgba(100, 116, 139, 0.15)',
+              color: info.confianza === 'alta'
+                ? '#16A34A'
+                : info.confianza === 'media'
+                  ? '#D97706'
+                  : '#64748B',
+            }}
+          >
+            Confianza {info.confianza}
+          </span>
+        )}
+      </div>
+      {info.fuente_titulo && (
+        <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed italic">
+          «{info.fuente_titulo}»
+        </p>
+      )}
+      {info.fuente_url && (
+        <div className="pt-0.5">
+          <a
+            href={info.fuente_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#20808D] hover:underline"
+            onClick={e => e.stopPropagation()}
+          >
+            <ExternalLink size={12} />
+            <span>Consultar fuente técnica original</span>
+          </a>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -1134,6 +1268,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 }) {
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
+  const [origenFuente, setOrigenFuente] = useState<string>(() => {
+    if (item?.origen_fuente) return item.origen_fuente
+    if (item?.detalle_fuente?.toLowerCase().includes('perplexity')) return 'perplexity'
+    if (item?.item_materiales.some(m => m.origen_fuente?.toLowerCase().includes('perplexity'))) return 'perplexity'
+    return ''
+  })
   // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
   // es donde el super_admin realmente los edita, junto a cada material de
   // la lista, no solo en el editor del esquema base de la categoría.
@@ -1148,14 +1288,46 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     return inicial
   })
   // Rol frente a la acción de restauración del título (se_conserva/
-  // se_reemplaza/desconocido) — item-específico, igual que `pesos`, nunca
-  // vive en el esquema de la categoría (sin acción asociada). Hueco de dato
-  // para el futuro F_U/MCI, ver sql/137_rol_conservacion_material.sql.
+  // se_reemplaza/desconocido) — lee de la columna nativa item_materiales
+  // o del respaldo en JSON detalle_fuente para que nunca se pierda.
   const [rolesConservacion, setRolesConservacion] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
+    const rolesResp = extraerRolesRespaldo(item?.detalle_fuente)
     for (const m of categoria.categoria_materiales_base) {
-      const existente = item?.item_materiales.find(im => im.nombre === m.nombre)
-      inicial[m.nombre] = existente?.rol_conservacion ?? ''
+      const mNorm = m.nombre.trim().toLowerCase()
+      const existente = item?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
+      const rolEncontrado = existente?.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm] || ''
+      inicial[m.nombre] = rolEncontrado
+    }
+    return inicial
+  })
+
+  // Información técnica detallada (razonamiento, fuente_url, confianza) devuelta por Perplexity
+  const [fuentesMaterial, setFuentesMaterial] = useState<Record<string, InfoFuenteMaterial>>(() => {
+    const inicial: Record<string, InfoFuenteMaterial> = {}
+    for (const im of item?.item_materiales ?? []) {
+      const mNorm = im.nombre.trim().toLowerCase()
+      if (im.detalle_fuente || im.origen_fuente || im.nivel_confianza) {
+        const info: InfoFuenteMaterial = {
+          confianza: im.nivel_confianza as 'alta' | 'media' | 'baja',
+          fuente_titulo: im.detalle_fuente,
+          fuente_url: im.origen_fuente?.startsWith('http') ? im.origen_fuente : null,
+          proveedor: im.origen_fuente,
+        }
+        inicial[im.nombre] = info
+        inicial[mNorm] = info
+      }
+    }
+    if (item?.detalle_fuente) {
+      try {
+        const parsed = JSON.parse(item.detalle_fuente)
+        if (parsed?.materiales_info && typeof parsed.materiales_info === 'object') {
+          for (const [k, v] of Object.entries(parsed.materiales_info as Record<string, InfoFuenteMaterial>)) {
+            inicial[k] = { ...inicial[k], ...v }
+            inicial[k.trim().toLowerCase()] = { ...inicial[k], ...v }
+          }
+        }
+      } catch {}
     }
     return inicial
   })
@@ -1207,9 +1379,24 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const nombresBase = useMemo(() => new Set(categoria.categoria_materiales_base.map(m => m.nombre)), [categoria])
   const nombresServBase = useMemo(() => new Set(categoria.categoria_servicios_base.map(s => s.nombre)), [categoria])
   const nombresInsBase = useMemo(() => new Set(categoria.categoria_insumos_base.map(i => i.nombre)), [categoria])
-  const [extraMateriales, setExtraMateriales] = useState<MaterialRow[]>(
-    materialesAFilas((item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre)))
-  )
+  const [extraMateriales, setExtraMateriales] = useState<MaterialRow[]>(() => {
+    const rolesResp = extraerRolesRespaldo(item?.detalle_fuente)
+    const extras = (item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre))
+    return extras.map(m => {
+      const mNorm = m.nombre.trim().toLowerCase()
+      const rol = m.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm] || ''
+      return {
+        nombre: m.nombre,
+        peso_kg: String(m.peso_kg),
+        factor_co2_kg: String(m.factor_co2_kg),
+        factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '',
+        categoria_material: m.categoria_material ?? '',
+        origen_fuente: m.origen_fuente ?? '',
+        detalle_fuente: m.detalle_fuente ?? '',
+        rol_conservacion: rol,
+      }
+    })
+  })
   const [extraServicios, setExtraServicios] = useState<ServicioRow[]>(
     serviciosAFilas((item?.item_servicios ?? []).filter(s => !nombresServBase.has(s.nombre)))
   )
@@ -1342,11 +1529,60 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const totalPrecio = subtotal * factor
 
   async function guardar() {
+    // Consolidar roles de conservación para respaldo infalible en detalle_fuente
+    const mapaRoles: Record<string, string> = {}
+    for (const [nom, rol] of Object.entries(rolesConservacion)) {
+      if (rol) {
+        mapaRoles[nom] = rol
+        mapaRoles[nom.trim().toLowerCase()] = rol
+      }
+    }
+    for (const m of extraMaterialesValidos) {
+      if (m.rol_conservacion) {
+        mapaRoles[m.nombre] = m.rol_conservacion
+        mapaRoles[m.nombre.trim().toLowerCase()] = m.rol_conservacion
+      }
+    }
+
+    const tieneRoles = Object.keys(mapaRoles).length > 0
+    const tieneFuentes = Object.keys(fuentesMaterial).length > 0
+    const origenFinal = origenFuente || item?.origen_fuente || (tieneRoles || tieneFuentes ? 'perplexity' : undefined)
+
+    let detalleFuenteFinal = item?.detalle_fuente ?? undefined
+    if (origenFinal === 'perplexity' || tieneRoles || tieneFuentes) {
+      detalleFuenteFinal = JSON.stringify({
+        proveedor: 'perplexity',
+        roles: mapaRoles,
+        materiales_info: fuentesMaterial,
+        actualizado_at: new Date().toISOString(),
+      })
+    }
+
     const materiales = [
       ...esquemaMatVisibles
         .filter(m => parseFloat(pesos[m.nombre]) > 0)
-        .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(pesos[m.nombre]), factor_co2_kg: parseFloat(m.factor_co2_kg) || 0, factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const, rol_conservacion: rolesConservacion[m.nombre] || undefined })),
-      ...extraMaterialesValidos,
+        .map(m => {
+          const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
+          return {
+            nombre: m.nombre,
+            peso_kg: parseFloat(pesos[m.nombre]),
+            factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
+            factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
+            origen_fuente: mInfo?.fuente_url || mInfo?.proveedor || origenFinal || m.origen_fuente || undefined,
+            detalle_fuente: mInfo?.fuente_titulo || m.detalle_fuente || undefined,
+            nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
+            rol_conservacion: rolesConservacion[m.nombre] || undefined,
+          }
+        }),
+      ...extraMaterialesValidos.map(m => {
+        const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
+        return {
+          ...m,
+          origen_fuente: mInfo?.fuente_url || mInfo?.proveedor || origenFinal || m.origen_fuente || undefined,
+          detalle_fuente: mInfo?.fuente_titulo || m.detalle_fuente || undefined,
+          nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
+        }
+      }),
     ]
 
     if (materiales.length === 0) {
@@ -1432,14 +1668,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
     // Mismo criterio para los costos: solo si cambió el NOMBRE o la UNIDAD de
     // un servicio/insumo que sigue existiendo en el esquema, el esquema
-    // financiero de la categoría se actualiza para todos sus ítems. Nunca
-    // por longitud: que ESTE ítem oculte un insumo (ej. "Tela" en una silla
-    // sin tapicería) no debe borrar "Tela" para el resto de sillas de la
-    // categoría que sí la usan — bug real corregido 2026-09-17, la
-    // eliminación por ítem se comparaba contra el largo de la lista visible
-    // y terminaba reescribiendo el catálogo completo. Quitar o restaurar un
-    // insumo de verdad para TODA la categoría se hace desde "Editar
-    // categoría" (EditorFinanciero), nunca desde la ficha de un ítem.
+    // financiero de la categoría se actualiza para todos sus ítems.
     const servCambio = esquemaServ.some(f => {
       const orig = categoria.categoria_servicios_base.find(o => o.id === f.id)
       return !!orig && f.nombre !== orig.nombre
@@ -1452,9 +1681,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     if (servCambio || insCambio) {
       const cuerpo: Record<string, unknown> = {}
       if (servCambio) {
-        // Base completa (categoria_servicios_base), nunca la lista filtrada
-        // por lo que este ítem decidió mostrar — un servicio que este ítem
-        // ocultó sigue existiendo para el resto de la categoría.
         cuerpo.servicios_base = esquemaServ
           .filter(f => f.nombre.trim())
           .map(f => ({ nombre: f.nombre.trim(), precio: parseFloat(f.precio) || 0 }))
@@ -1481,8 +1707,25 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const url = item ? `/api/admin/items/${item.id}` : '/api/admin/items'
     const method = item ? 'PATCH' : 'POST'
     const body = item
-      ? { nombre: nombreLimpio, factor_rentabilidad: factor, materiales, servicios, insumos }
-      : { categoria_id: categoria.id, nombre: nombreLimpio, factor_rentabilidad: factor, materiales, servicios, insumos }
+      ? {
+          nombre: nombreLimpio,
+          factor_rentabilidad: factor,
+          materiales,
+          servicios,
+          insumos,
+          origen_fuente: origenFinal,
+          detalle_fuente: detalleFuenteFinal,
+        }
+      : {
+          categoria_id: categoria.id,
+          nombre: nombreLimpio,
+          factor_rentabilidad: factor,
+          materiales,
+          servicios,
+          insumos,
+          origen_fuente: origenFinal,
+          detalle_fuente: detalleFuenteFinal,
+        }
 
     const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     if (!res.ok) {
@@ -1497,7 +1740,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   return (
     <div className="flex flex-col gap-4">
       <div className={`rounded-2xl p-4 ${cardBg}`}>
-        <label className={labelSt}>Nombre del ítem</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className={labelSt}>Nombre del ítem</label>
+          {(origenFuente === 'perplexity' || esItemPerplexity(item)) && (
+            <BadgePerplexity title="Este ítem fue enriquecido con Perplexity AI" />
+          )}
+        </div>
         <input style={inputSt} placeholder="Ej: Mesa 4 puestos" value={nombre} onChange={e => setNombre(e.target.value)} required autoFocus={!item} />
       </div>
 
@@ -1796,6 +2044,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         <Trash size={16} sinAnimacion />
                       </button>
                     </div>
+                    <FichaPerplexityMaterial info={fuentesMaterial[fila.nombre] || fuentesMaterial[fila.nombre.trim().toLowerCase()]} />
                     {filaAbierta === fila.id && (
                       <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1854,6 +2103,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         </div>
                       </div>
                       <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      <FichaPerplexityMaterial info={fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]} />
                       <div className="flex justify-end items-center mt-1">
                         <button type="button" onClick={() => setExtraMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
                           <Trash size={14} /> Eliminar
@@ -1873,14 +2123,28 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               materiales={[...esquemaMatVisibles, ...extraMateriales.filter(m => m.nombre.trim())]}
               cargando={cargandoMaterialesIA}
               setCargando={setCargandoMaterialesIA}
-              onCompletado={(resultados) => {
+              onCompletado={(resultados, prov) => {
+                const p = prov || 'perplexity'
+                setOrigenFuente(p)
                 for (const r of resultados) {
                   const rNorm = r.nombre.trim().toLowerCase()
                   const rolValido = r.rol === 'se_conserva' || r.rol === 'se_reemplaza' || r.rol === 'desconocido' ? r.rol : ''
                   const matchEsquema = esquemaMatVisibles.find(m => m.nombre.trim().toLowerCase() === rNorm)
+                  const infoActualizada: InfoFuenteMaterial = {
+                    confianza: r.confianza ?? null,
+                    fuente_titulo: r.fuente_titulo ?? null,
+                    fuente_url: r.fuente_url ?? null,
+                    proveedor: p,
+                  }
+
                   if (matchEsquema) {
-                    if (r.peso_kg !== null && r.peso_kg !== undefined) setPesos(p => ({ ...p, [matchEsquema.nombre]: String(r.peso_kg) }))
-                    if (rolValido) setRolesConservacion(p => ({ ...p, [matchEsquema.nombre]: rolValido }))
+                    if (r.peso_kg !== null && r.peso_kg !== undefined) setPesos(prev => ({ ...prev, [matchEsquema.nombre]: String(r.peso_kg) }))
+                    if (rolValido) setRolesConservacion(prev => ({ ...prev, [matchEsquema.nombre]: rolValido }))
+                    setFuentesMaterial(prev => ({
+                      ...prev,
+                      [matchEsquema.nombre]: infoActualizada,
+                      [rNorm]: infoActualizada,
+                    }))
                   } else {
                     const matchExtra = extraMateriales.find(m => m.nombre.trim().toLowerCase() === rNorm)
                     if (matchExtra) {
@@ -1888,7 +2152,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         ...m,
                         peso_kg: r.peso_kg !== null && r.peso_kg !== undefined ? String(r.peso_kg) : m.peso_kg,
                         rol_conservacion: rolValido || m.rol_conservacion,
+                        origen_fuente: r.fuente_url || p,
+                        detalle_fuente: r.fuente_titulo || m.detalle_fuente,
                       } : m))
+                      setFuentesMaterial(prev => ({
+                        ...prev,
+                        [matchExtra.nombre]: infoActualizada,
+                        [rNorm]: infoActualizada,
+                      }))
                     }
                   }
                 }

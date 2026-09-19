@@ -755,6 +755,7 @@ IaIcon.displayName = 'IaIcon'
 
 // Re-export standard Lucide icon types
 export type { LucideIcon } from 'lucide-react'
+export { Icon } from 'lucide-react'
 
 // Export wrapped icons
 export const Sun = wrapIcon(Lucide.Sun)

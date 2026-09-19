@@ -246,7 +246,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
           {mostrarCompartir && (
             <div style={{ marginTop: 10 }}>
               {seleccionCompartir.size > 0 && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, padding: '8px 12px', borderRadius: 8, background: 'rgba(0,130,124,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, padding: '8px 12px', borderRadius: 8, background: 'var(--color-brand-light)' }}>
                   <span style={{ fontSize: 12, fontWeight: 600, color: C.dark }}>{seleccionCompartir.size} seleccionado{seleccionCompartir.size > 1 ? 's' : ''}</span>
                   <button
                     disabled={procesando}
@@ -254,7 +254,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                     className={procesando ? '' : 'hover-pop hover-press'}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 5, padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
-                      cursor: procesando ? 'wait' : 'pointer', border: 'none', background: 'rgba(0,130,124,0.10)', color: C.brand,
+                      cursor: procesando ? 'wait' : 'pointer', border: 'none', background: 'var(--color-brand-light)', color: C.brand,
                       opacity: procesando ? 0.6 : 1,
                     }}
                   >
@@ -304,7 +304,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                                 flexShrink: 0, display: 'flex', alignItems: 'center', gap: 5,
                                 padding: '5px 12px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                                 cursor: procesando ? 'wait' : 'pointer', border: 'none',
-                                background: 'rgba(0,130,124,0.10)', color: C.brand,
+                                background: 'var(--color-brand-light)', color: C.brand,
                                 opacity: procesando ? 0.6 : 1,
                               }}
                             >

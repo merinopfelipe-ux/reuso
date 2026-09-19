@@ -255,8 +255,8 @@ function ClientesContent() {
                             onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${c.id}`))}
                             className={`w-full rounded-[12px] border p-3.5 text-left transition-all flex items-center gap-3 bg-[var(--bg-card)] border-[var(--border)] hover:bg-[var(--bg-hover)]`}
                           >
-                            <div className="w-9 h-9 rounded-full bg-[#00827C]/10 flex items-center justify-center flex-shrink-0">
-                              <User size={16} className="text-[#00827C]" />
+                            <div className="w-9 h-9 rounded-full bg-[var(--color-brand-light)] flex items-center justify-center flex-shrink-0">
+                              <User size={16} className="text-[var(--color-brand)]" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className={`text-sm font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>

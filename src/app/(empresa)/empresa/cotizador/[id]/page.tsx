@@ -1088,25 +1088,25 @@ function DetalleCotizacionContent() {
                       <div className="space-y-1">
                         <div className="flex justify-between items-center">
                           <span className={`text-sm ${ts}`}>Subtotal</span>
-                          <span className={`text-sm ${tp}`}>{formatCOP(desglose.subtotal + desglose.transporte)}</span>
+                          <span className={`text-sm font-medium whitespace-nowrap ${tp}`}>{formatCOP(desglose.subtotal + desglose.transporte)}</span>
                         </div>
                         {desglose.descuentoMonto > 0 && (
                           <div className="flex justify-between items-center">
                             <span className={`text-sm ${ts}`}>
                               Descuento{cot.descuento_tipo === 'porcentaje' ? ` (${formatNumero(cot.descuento)}%)` : ''}
                             </span>
-                            <span className="text-sm text-[#FF5E4B]">- {formatCOP(desglose.descuentoMonto)}</span>
+                            <span className="text-sm font-medium whitespace-nowrap text-[#FF5E4B]">- {formatCOP(desglose.descuentoMonto)}</span>
                           </div>
                         )}
                         {cot.iva_activo && (
                           <div className="flex justify-between items-center">
                             <span className={`text-sm ${ts}`}>IVA ({formatNumero(cot.iva_porcentaje)}%)</span>
-                            <span className={`text-sm ${tp}`}>{formatCOP(desglose.ivaMonto)}</span>
+                            <span className={`text-sm font-medium whitespace-nowrap ${tp}`}>{formatCOP(desglose.ivaMonto)}</span>
                           </div>
                         )}
                         <div className={`flex justify-between items-center pt-2 mt-1 border-t border-light`}>
                           <span className={`text-sm font-bold ${tp}`}>Total</span>
-                          <span className="text-xl font-bold text-[#00827C]">{formatCOP(Number(cot.total))}</span>
+                          <span className="text-xl font-bold whitespace-nowrap text-[#00827C]">{formatCOP(Number(cot.total))}</span>
                         </div>
                       </div>
                     )

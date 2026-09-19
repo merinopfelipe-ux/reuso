@@ -57,3 +57,7 @@ playwright-report/
 # repo) — útil en esta máquina, pero sería un enlace roto para cualquier
 # otra persona que clone el repositorio.
 obsidian_vault
+
+# Presentaciones locales para equipos comerciales/eventos (pantallas TV, etc)
+# Son visores interactivos HTML que no hacen parte del código de la app.
+src/app/ppt/

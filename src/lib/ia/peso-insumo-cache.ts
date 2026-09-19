@@ -27,11 +27,11 @@ export async function buscarEnCache(adminClient: SupabaseClient<any>, nombre: st
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function guardarEnCache(adminClient: SupabaseClient<any>, nombre: string, unidad: string, pesoKg: number, fuenteUrl: string, confianza: string): Promise<void> {
+export async function guardarEnCache(adminClient: SupabaseClient<any>, nombre: string, unidad: string, pesoKg: number, fuenteUrl?: string | null, confianza?: string | null): Promise<void> {
   await adminClient
     .from('peso_insumos_referencia')
     .upsert(
-      { nombre_normalizado: normalizarNombreInsumo(nombre), unidad, peso_kg: pesoKg, fuente_url: fuenteUrl, confianza },
+      { nombre_normalizado: normalizarNombreInsumo(nombre), unidad, peso_kg: pesoKg, fuente_url: fuenteUrl ?? null, confianza: confianza ?? null },
       { onConflict: 'nombre_normalizado,unidad' }
     )
 }

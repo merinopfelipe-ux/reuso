@@ -16,7 +16,7 @@ import { parsearIcono, construirValorIcono, type LibreriaIcono } from '@/lib/ico
 // src/lib/icono-nombre.ts) — Lucide sigue sin prefijo, es el formato de
 // siempre y el de todos los datos ya guardados.
 
-type IconComponent = React.ComponentType<{ size?: number; className?: string }>
+type IconComponent = React.ComponentType<{ size?: number; className?: string; strokeWidth?: number; weight?: string }>
 
 // Sinónimos en español/inglés → términos que existen en los nombres reales
 // de los íconos. No es exhaustivo: cubre los conceptos más comunes para esta
@@ -196,9 +196,8 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (valo
         className="w-full flex items-center gap-3 px-3 py-3 rounded-xl border hover-pop"
         style={{ border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
       >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(0,130,124,0.1)' }}>
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          {IconoActual ? <IconoActual size={20} className="text-[var(--color-brand)]" {...(libreriaActual === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 })} /> : <MagnifyingGlass size={18} className="text-[var(--text-placeholder)]" strokeWidth={1.3} />}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'var(--color-brand-light)' }}>
+          {IconoActual ? <IconoActual size={20} className="text-[var(--color-brand)]" {...(libreriaActual === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} /> : <MagnifyingGlass size={18} className="text-[var(--text-placeholder)]" strokeWidth={1.3} />}
         </div>
         <div className="flex-1 text-left min-w-0">
           <p className="text-sm font-medium truncate">{nombreActual || 'Elegir ícono'}</p>
@@ -245,8 +244,7 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (valo
                         className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover-pop hover-press"
                         style={{ background: activo ? 'var(--color-brand)' : 'var(--bg-input)' }}
                       >
-                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        <Icono size={20} className={activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'} {...(libreria === 'phosphor' ? { weight: 'regular' as any } : { strokeWidth: 1.3 })} />
+                        <Icono size={20} className={activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'} {...(libreria === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} />
                         <span className={`text-[9px] truncate w-full text-center ${activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'}`}>{nombre}</span>
                       </button>
                     )

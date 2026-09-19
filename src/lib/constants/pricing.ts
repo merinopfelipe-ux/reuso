@@ -1,4 +1,4 @@
-import { Target, FlaskConical as Flask, Zap as Lightning, ShieldCheck, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { Sparkles, FlaskConical as Flask, Zap as Lightning, ShieldCheck, IdCard as IdentificationCard } from '@/components/ui/icons'
 
 export function formatearPrecioColombiano(val: number | string | null | undefined, permitirDecimales = true): string {
   if (val === null || val === undefined || val === '') return '0'
@@ -159,7 +159,7 @@ export const VALUE_PROPS = [
     desc: 'Datos trazables a fuentes internacionales (Ecoinvent, DEFRA). Bases técnicas reconocidas para tus reportes de sostenibilidad.',
   },
   {
-    Icon: Target,
+    Icon: Sparkles,
     title: 'Foco en Reúso',
     desc: 'No reciclaje clásico. Especializados en el acto de reutilizar objetos existentes (ropa, muebles, electrónicos).',
   },

@@ -9,6 +9,11 @@ export const WA_MENSAJE_DEFAULT = 'Hola, quiero más información sobre la Calcu
 export const FECHA_ACTUALIZACION_LEGAL = '13 de septiembre de 2026'
 export const EMAIL_CONTACTO_LEGAL = 'servicio@calculadoradereuso.com'
 
+// Perfil y reseñas de Google My Business (Google Maps / Knowledge Graph)
+export const GOOGLE_BUSINESS_URL = 'https://g.page/r/Ccb-Aa0oMB9WEBI'
+export const GOOGLE_BUSINESS_REVIEW_URL = 'https://g.page/r/Ccb-Aa0oMB9WEBI/review'
+
 export function waLink(mensaje: string = WA_MENSAJE_DEFAULT, numero: string = WA_NUMBER): string {
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`
 }
+

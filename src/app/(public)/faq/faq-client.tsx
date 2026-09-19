@@ -412,11 +412,11 @@ export function FaqClient() {
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${
                 clusterActivo === 'todos'
                   ? isDark
-                    ? 'bg-white text-[#474747]'
-                    : 'bg-[#474747] text-white'
+                    ? 'bg-white text-[var(--text-primary)]'
+                    : 'bg-[var(--text-primary)] text-white'
                   : isDark
                     ? 'bg-white/5 text-white/70 hover:bg-white/10'
-                    : 'bg-[#474747]/5 text-[#474747] hover:bg-[#474747]/10'
+                    : 'bg-[var(--text-primary)]/5 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10'
               }`}
             >
               Todas ({totalPreguntas})

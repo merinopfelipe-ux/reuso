@@ -117,14 +117,19 @@ export function definicionDe(clave: ClaveColumna): DefinicionColumna {
 // haga scroll horizontal (overflow-x-auto) en pantallas pequeñas, evitando
 // que las columnas se aplasten "todo encima de todo" (solicitud del usuario).
 export function anchoColumna(clave: ClaveColumna): { celda: string; encabezado: string } {
-  if (clave === 'cliente_telefono') return { celda: 'min-w-[145px] max-w-[145px] xl:max-w-[190px]', encabezado: 'min-w-[110px] max-w-[110px] xl:max-w-[140px]' }
+  // Teléfono: compacto sin partirse, ajustado de 145px a 125px para liberar espacio.
+  if (clave === 'cliente_telefono') return { celda: 'min-w-[125px] max-w-[125px] xl:max-w-[160px]', encabezado: 'min-w-[100px] max-w-[100px] xl:max-w-[130px]' }
   if (clave === 'cliente_nombre') return { celda: 'min-w-[100px] max-w-[100px] xl:max-w-[220px]', encabezado: 'min-w-[80px] max-w-[80px] xl:max-w-[160px]' }
   // "B2C"/"B2B" son 3 caracteres fijos — la CELDA va lo más angosta posible
   // el ENCABEZADO necesita más ancho que la celda para que quepa "Tipo cliente"
   // en una sola línea (o en dos con whitespace-pre). "cliente" ocupa ~45px.
   if (clave === 'tipo_cliente') return { celda: 'min-w-[24px] max-w-[30px] xl:max-w-[40px]', encabezado: 'min-w-[38px] max-w-[42px] xl:max-w-[50px]' }
   // "COT XXXXXXXX" nunca debe cortarse. El ancho se ajusta para garantizar que quepa completo.
-  if (clave === 'codigo_cotizacion') return { celda: 'min-w-[115px] max-w-[115px] xl:max-w-[130px]', encabezado: 'min-w-[95px] max-w-[95px] xl:max-w-[110px]' }
+  if (clave === 'codigo_cotizacion') return { celda: 'min-w-[110px] max-w-[110px] xl:max-w-[125px]', encabezado: 'min-w-[90px] max-w-[90px] xl:max-w-[105px]' }
+  // Total monetario: requiere ancho suficiente para el monto en COP ($ y millones), nunca se parte.
+  if (clave === 'total') return { celda: 'min-w-[110px] max-w-[125px] xl:max-w-[160px]', encabezado: 'min-w-[85px] max-w-[95px] xl:max-w-[140px]' }
+  // Columnas numéricas cortas: optimizadas para ahorrar espacio
+  if (clave === 'veces_abierta' || clave === 'dias_para_cierre') return { celda: 'min-w-[65px] max-w-[70px] xl:max-w-[85px]', encabezado: 'min-w-[65px] max-w-[70px] xl:max-w-[85px]' }
   const tipo = definicionDe(clave).tipo
   if (tipo === 'fecha') return { celda: 'min-w-[135px] max-w-[135px] xl:max-w-[230px]', encabezado: 'min-w-[95px] max-w-[95px] xl:max-w-[175px]' }
   if (tipo === 'numero') return { celda: 'min-w-[90px] max-w-[90px] xl:max-w-[150px]', encabezado: 'min-w-[75px] max-w-[75px] xl:max-w-[130px]' }

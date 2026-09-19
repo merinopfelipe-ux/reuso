@@ -65,14 +65,14 @@ export function formatNumero(
 ): string {
   const num = typeof val === 'string' ? parseNumero(val) : val
   if (num === null || num === undefined || isNaN(num)) {
-    if (opciones?.moneda) return '$ 0'
-    if (opciones?.unidad) return `0 ${opciones.unidad}`
+    if (opciones?.moneda) return '$\u00A00'
+    if (opciones?.unidad) return `0\u00A0${opciones.unidad}`
     return '0'
   }
 
   if (num === 0) {
-    if (opciones?.moneda) return '$ 0'
-    if (opciones?.unidad) return `0 ${opciones.unidad}`
+    if (opciones?.moneda) return '$\u00A00'
+    if (opciones?.unidad) return `0\u00A0${opciones.unidad}`
     return '0'
   }
 
@@ -88,15 +88,17 @@ export function formatNumero(
   if (tieneDecimal) {
     baseStr += ',' + decDigit
   }
+
+  if (opciones?.moneda) {
+    // Espacio no rompible (\u00A0) para que el signo de pesos NUNCA quede
+    // solo en un renglón superior ni se separe del número al ajustar ancho.
+    return `${negativo ? '-' : ''}$\u00A0${baseStr}`
+  }
   if (negativo) {
     baseStr = '-' + baseStr
   }
-
-  if (opciones?.moneda) {
-    return `$ ${baseStr}`
-  }
   if (opciones?.unidad) {
-    return `${baseStr} ${opciones.unidad}`
+    return `${baseStr}\u00A0${opciones.unidad}`
   }
   return baseStr
 }

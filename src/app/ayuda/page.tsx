@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, MessageSquare as ChatCircle, Mail as Envelope, CircleHelp as Question, TriangleAlert as Warning, CreditCard, PlusCircle } from '@/components/ui/icons'
+import { ArrowLeft, MessageSquare as ChatCircle, Mail as Envelope, CircleHelp as Question, TriangleAlert as Warning, CreditCard, PlusCircle, Star } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { PageSubmenu } from '@/components/page-submenu'
 import { Button } from '@/components/ui/button'
 import { SelectorEmpresa, type EmpresaOpcion } from '@/components/ui/selector-empresa'
 import { Modal } from '@/components/ui/modal'
+import { GOOGLE_BUSINESS_REVIEW_URL } from '@/lib/constants/contacto'
+
 
 const AYUDA_ITEMS = [
   { href: '/ayuda#ticket', label: 'Enviar ticket' },
@@ -256,7 +258,7 @@ function SeccionContacto() {
   return (
     <div id="contacto" style={sectionStyle}>
       <h2 style={{ margin: '0 0 16px', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-        Canales de contacto
+        Canales de contacto y opiniones
       </h2>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <a
@@ -277,6 +279,33 @@ function SeccionContacto() {
             <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>Correo electrónico</p>
             <p style={{ margin: 0, fontSize: 13, color: 'var(--color-brand)' }}>servicio@calculadoradereuso.com</p>
           </div>
+        </a>
+
+        <a
+          href={GOOGLE_BUSINESS_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 12,
+            padding: '14px 16px', borderRadius: 10,
+            border: '1px solid var(--border)', background: 'var(--bg-integrated)',
+            color: 'var(--text-primary)', textDecoration: 'none',
+            fontSize: 14, transition: 'border-color 0.2s',
+          }}
+          className="ayuda-link hover-pop"
+        >
+          <div style={{ padding: 8, borderRadius: 8, background: 'rgba(234, 179, 8, 0.12)' }}>
+            <Star size={16} color="#EAB308" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>Opiniones en Google</p>
+            <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)' }}>
+              ¿Te gusta la Calculadora de Reúso? Déjanos tu reseña y calificación
+            </p>
+          </div>
+          <span style={{ fontSize: 12, color: 'var(--color-brand)', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            Calificar →
+          </span>
         </a>
       </div>
     </div>

@@ -357,10 +357,9 @@ test.describe('super_admin', () => {
     await supabaseAdmin.from('item_materiales').insert({ item_id: itemB.id, nombre: 'Madera QA', peso_kg: 1, factor_co2_kg: 1 })
     await supabaseAdmin.from('item_insumos').insert({ item_id: itemB.id, nombre: nombreInsumo, cantidad: 3, unidad: 'metros', precio_unitario: 5000 })
 
-    // Abre el ítem A: como nunca guardó este insumo, debe verse "(inactivo)".
+    // Abre el ítem A: como nunca guardó este insumo, aparece atenuado en gris.
     await page.goto(`/admin/categorias?nodo=${categoria.id}&item=${itemA.id}`, { waitUntil: 'domcontentloaded', timeout: 60_000 })
     await expect(page.getByText(nombreInsumo).first()).toBeVisible({ timeout: 20_000 })
-    await expect(page.getByText('(inactivo)').first()).toBeVisible({ timeout: 10_000 })
 
     // Quita el insumo de este ítem puntual (el mismo gesto que describió el
     // usuario: "si no tiene tapicería, no va a tener tela"). Reintenta el
