@@ -13,7 +13,8 @@ export async function PATCH(
   const body = await request.json().catch(() => null)
   const parsed = patchCategoriaSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
+    const detalleErr = parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(' | ')
+    return NextResponse.json({ error: `Datos inválidos: ${detalleErr}` }, { status: 400 })
   }
 
   const { materiales_base, servicios_base, insumos_base, ...categoriaFields } = parsed.data

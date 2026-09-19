@@ -1132,22 +1132,60 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
 }
 
 // Badge informativo del rol de un material frente a la acción de
-// restauración del título (se_conserva/se_reemplaza) — nunca se muestra
-// para "desconocido" ni vacío, para no ensuciar ítems que todavía no
-// tienen este dato. Colores del sistema, nunca inventados.
-function BadgeRolConservacion({ rol }: { rol?: string }) {
-  if (rol !== 'se_conserva' && rol !== 'se_reemplaza') return null
+// Badge interactivo del rol de un material frente a la acción de restauración.
+// Permite alternar entre "Se conserva" y "Se reemplaza" con un clic, o definirlo si está pendiente.
+function BadgeRolConservacion({
+  rol,
+  onCambiar,
+}: {
+  rol?: string
+  onCambiar?: (nuevoRol: string) => void
+}) {
+  const esConserva = rol === 'se_conserva'
+  const esReemplaza = rol === 'se_reemplaza' || rol === 'residuo'
+  const esPendiente = !esConserva && !esReemplaza
+
+  function handleToggle() {
+    if (!onCambiar) return
+    if (esConserva) onCambiar('se_reemplaza')
+    else if (esReemplaza) onCambiar('se_conserva')
+    else onCambiar('se_conserva')
+  }
+
+  if (esPendiente) {
+    return null
+  }
+
   return (
-    <span
-      className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 select-none shadow-sm"
+    <button
+      type="button"
+      onClick={handleToggle}
+      title="Haz clic para alternar entre 'Se conserva' y 'Se reemplaza'"
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 select-none shadow-xs transition-transform active:scale-95 cursor-pointer"
       style={{
-        background: rol === 'se_conserva' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(246, 191, 62, 0.18)',
-        color: rol === 'se_conserva' ? '#16A34A' : '#B8860B',
-        border: rol === 'se_conserva' ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(246, 191, 62, 0.35)',
+        background: esConserva ? 'rgba(34, 197, 94, 0.15)' : 'rgba(246, 191, 62, 0.18)',
+        color: esConserva ? '#16A34A' : '#B8860B',
+        border: esConserva ? '1px solid rgba(34, 197, 94, 0.35)' : '1px solid rgba(246, 191, 62, 0.38)',
       }}
     >
-      {rol === 'se_conserva' ? 'Se conserva' : 'Se reemplaza'}
-    </span>
+      <span>{esConserva ? 'Se conserva' : 'Se reemplaza'}</span>
+      <span className="text-[8px] opacity-60">⇄</span>
+    </button>
+  )
+}
+
+// Ícono oficial de Perplexity AI (isotipo vectorial idéntico al oficial)
+export function IconoPerplexity({ className = '', size = 13 }: { className?: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+    >
+      <path d="M22.3977 7.0896h-2.3106V.0676l-7.5094 6.3542V.1577h-1.1554v6.1966L4.4904 0v7.0896H1.6023v10.3976h2.8882V24l6.932-6.3591v6.2005h1.1554v-6.0469l6.9318 6.1807v-6.4879h2.8882V7.0896zm-3.4657-4.531v4.531h-5.355l5.355-4.531zm-13.2862.0676 4.8691 4.4634H5.6458V2.6262zM2.7576 16.332V8.245h7.8476l-6.1149 6.1147v1.9723H2.7576zm2.8882 5.0404v-3.8852h.0001v-2.6488l5.7763-5.7764v7.0111l-5.7764 5.2993zm12.7086.0248-5.7766-5.1509V9.0618l5.7766 5.7766v6.5588zm2.8882-5.0652h-1.733v-1.9723L13.3948 8.245h7.8478v8.087z" />
+    </svg>
   )
 }
 
@@ -1155,7 +1193,7 @@ function BadgeRolConservacion({ rol }: { rol?: string }) {
 export function BadgePerplexity({ title = 'Estimado con Perplexity AI', compacto = false }: { title?: string; compacto?: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-tight select-none transition-all duration-200 hover:opacity-90 shadow-sm"
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold tracking-tight select-none transition-all duration-200 hover:opacity-90 shadow-sm"
       style={{
         background: 'rgba(32, 128, 141, 0.12)',
         color: '#20808D',
@@ -1163,10 +1201,7 @@ export function BadgePerplexity({ title = 'Estimado con Perplexity AI', compacto
       }}
       title={title}
     >
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
-        <path d="M12 2v20M4 12h16M6.34 6.34l11.32 11.32M17.66 6.34L6.34 17.66" />
-        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
-      </svg>
+      <IconoPerplexity size={11} className="flex-shrink-0" />
       {!compacto && <span>Perplexity</span>}
     </span>
   )
@@ -1177,6 +1212,31 @@ export function esItemPerplexity(it: ItemConDimensiones | null | undefined): boo
   if (it.origen_fuente?.toLowerCase().includes('perplexity')) return true
   if (it.detalle_fuente?.toLowerCase().includes('perplexity')) return true
   return it.item_materiales?.some(m => m.origen_fuente?.toLowerCase().includes('perplexity') || m.detalle_fuente?.toLowerCase().includes('perplexity')) ?? false
+}
+
+// Determina si una fuente proviene realmente de Perplexity y no de una estimación interna/provisional
+export function esFuentePerplexity(info?: InfoFuenteMaterial | null): info is InfoFuenteMaterial {
+  if (!info) return false
+  const titulo = (info.fuente_titulo || '').toLowerCase()
+  const prov = (info.proveedor || '').toLowerCase()
+  const url = (info.fuente_url || '').toLowerCase()
+
+  // Si es fuente interna o no fue consultado con Perplexity, no mostrar logo ni desplegar nada
+  if (titulo.includes('factor interno') || titulo.includes('interno') || titulo.includes('provisional')) {
+    if (!prov.includes('perplexity') && !url.includes('perplexity')) {
+      return false
+    }
+  }
+
+  if (prov.includes('perplexity') || url.includes('perplexity') || titulo.includes('perplexity')) {
+    return true
+  }
+
+  if (info.fuente_url && info.fuente_url.startsWith('http') && prov !== 'interno') {
+    return true
+  }
+
+  return false
 }
 
 // Extrae roles de conservación guardados en el JSON de detalle_fuente como respaldo infalible
@@ -1200,61 +1260,157 @@ export interface InfoFuenteMaterial {
   proveedor?: string | null
 }
 
-function FichaPerplexityMaterial({ info }: { info?: InfoFuenteMaterial }) {
-  if (!info || (!info.fuente_titulo && !info.fuente_url && !info.confianza)) return null
+// Botón e ícono de Perplexity al lado del tooltip, que abre modal con contraste perfecto día/noche.
+// Si no se consultó Perplexity y es fuente interna, no se muestra nada.
+function BotonInfoPerplexity({
+  info,
+  nombreMaterial,
+}: {
+  info?: InfoFuenteMaterial
+  nombreMaterial: string
+}) {
+  const [abierto, setAbierto] = useState(false)
+  
+  // Regla: si no se consultó Perplexity y es fuente interna, no poner logo ni desplegar nada
+  if (!esFuentePerplexity(info)) return null
+
   return (
-    <div
-      className="mt-1 p-2 rounded-lg text-xs flex flex-col gap-1 select-text transition-all duration-150"
-      style={{
-        background: 'rgba(32, 128, 141, 0.05)',
-        border: '1px solid rgba(32, 128, 141, 0.18)',
-      }}
-    >
-      <div className="flex flex-wrap items-center justify-between gap-1.5">
-        <span className="inline-flex items-center gap-1 font-semibold text-[#20808D] text-[11px]">
-          <Sparkles size={12} className="text-[#20808D]" />
-          <span>Datos recuperados por Perplexity AI</span>
-        </span>
-        {info.confianza && (
-          <span
-            className="px-1.5 py-0.5 rounded text-[10px] font-semibold"
+    <>
+      <button
+        type="button"
+        onClick={() => setAbierto(true)}
+        className="inline-flex items-center justify-center w-5 h-5 rounded-md transition-all duration-150 hover:scale-110 active:scale-95 flex-shrink-0 cursor-pointer shadow-xs"
+        style={{
+          background: 'rgba(32, 128, 141, 0.15)',
+          color: '#20808D',
+          border: '1px solid rgba(32, 128, 141, 0.35)',
+        }}
+        title="Ver especificaciones y fuentes técnicas de Perplexity"
+      >
+        <IconoPerplexity size={12} />
+      </button>
+
+      {abierto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(3px)' }}
+          onClick={() => setAbierto(false)}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl p-5 shadow-2xl flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150"
             style={{
-              background: info.confianza === 'alta'
-                ? 'rgba(34, 197, 94, 0.15)'
-                : info.confianza === 'media'
-                  ? 'rgba(234, 179, 8, 0.15)'
-                  : 'rgba(100, 116, 139, 0.15)',
-              color: info.confianza === 'alta'
-                ? '#16A34A'
-                : info.confianza === 'media'
-                  ? '#D97706'
-                  : '#64748B',
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-primary)',
             }}
-          >
-            Confianza {info.confianza}
-          </span>
-        )}
-      </div>
-      {info.fuente_titulo && (
-        <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed italic">
-          «{info.fuente_titulo}»
-        </p>
-      )}
-      {info.fuente_url && (
-        <div className="pt-0.5">
-          <a
-            href={info.fuente_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#20808D] hover:underline"
             onClick={e => e.stopPropagation()}
           >
-            <ExternalLink size={12} />
-            <span>Consultar fuente técnica original</span>
-          </a>
+            {/* Cabecera del modal */}
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[#20808D]"
+                  style={{ background: 'rgba(32, 128, 141, 0.18)' }}
+                >
+                  <IconoPerplexity size={16} />
+                </span>
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--text-primary)] leading-none">
+                    Perplexity AI · {nombreMaterial}
+                  </h3>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
+                    Ficha técnica y respaldo consultado en internet
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAbierto(false)}
+                className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                title="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Contenido con legibilidad impecable día y noche */}
+            <div className="flex flex-col gap-3">
+              {info.confianza && (
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-[var(--text-secondary)] font-medium">Nivel de confianza:</span>
+                  <span
+                    className="px-2 py-0.5 rounded-full text-[11px] font-semibold"
+                    style={{
+                      background: info.confianza === 'alta'
+                        ? 'rgba(34, 197, 94, 0.15)'
+                        : info.confianza === 'media'
+                          ? 'rgba(234, 179, 8, 0.15)'
+                          : 'rgba(100, 116, 139, 0.18)',
+                      color: info.confianza === 'alta'
+                        ? '#16A34A'
+                        : info.confianza === 'media'
+                          ? '#D97706'
+                          : 'var(--text-primary)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    Confianza {info.confianza}
+                  </span>
+                </div>
+              )}
+
+              {info.fuente_titulo && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-[var(--text-secondary)]">
+                    Razonamiento técnico y especificaciones:
+                  </span>
+                  <div
+                    className="p-3 rounded-xl text-xs leading-relaxed"
+                    style={{
+                      background: 'var(--bg-input)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    «{info.fuente_titulo}»
+                  </div>
+                </div>
+              )}
+
+              {info.fuente_url && (
+                <div className="pt-1">
+                  <a
+                    href={info.fuente_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold w-full justify-center transition-opacity hover:opacity-85"
+                    style={{
+                      background: 'rgba(32, 128, 141, 0.15)',
+                      color: '#20808D',
+                      border: '1px solid rgba(32, 128, 141, 0.3)',
+                    }}
+                  >
+                    <ExternalLink size={14} />
+                    <span>Abrir fuente web consultada</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Pie del modal */}
+            <div className="flex justify-end pt-2">
+              <button
+                type="button"
+                onClick={() => setAbierto(false)}
+                className={btnSecundario}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
 
@@ -1568,19 +1724,20 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             peso_kg: parseFloat(pesos[m.nombre]),
             factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
             factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
-            origen_fuente: mInfo?.fuente_url || mInfo?.proveedor || origenFinal || m.origen_fuente || undefined,
-            detalle_fuente: mInfo?.fuente_titulo || m.detalle_fuente || undefined,
+            origen_fuente: mInfo?.fuente_url ? mInfo.fuente_url.slice(0, 1900) : (mInfo?.proveedor || origenFinal || m.origen_fuente || undefined),
+            detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
             nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
-            rol_conservacion: rolesConservacion[m.nombre] || undefined,
+            rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || undefined),
           }
         }),
       ...extraMaterialesValidos.map(m => {
         const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
         return {
           ...m,
-          origen_fuente: mInfo?.fuente_url || mInfo?.proveedor || origenFinal || m.origen_fuente || undefined,
-          detalle_fuente: mInfo?.fuente_titulo || m.detalle_fuente || undefined,
+          origen_fuente: mInfo?.fuente_url ? mInfo.fuente_url.slice(0, 1900) : (mInfo?.proveedor || origenFinal || m.origen_fuente || undefined),
+          detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
           nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
+          rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || undefined),
         }
       }),
     ]
@@ -1630,18 +1787,17 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     // si el super_admin los editó (o quitó un material) desde este ítem, el
     // cambio se propaga al esquema base y por lo tanto a todos los ítems de
     // esa categoría. El peso, en cambio, es solo de este ítem.
-    const esquemaCambio =
-      esquemaMatVisibles.length !== categoria.categoria_materiales_base.length ||
-      esquemaMatVisibles.some(f => {
-        const orig = categoria.categoria_materiales_base.find(o => o.id === f.id)
-        if (!orig) return true
-        return f.nombre !== orig.nombre
-          || (parseFloat(f.factor_co2_kg) || 0) !== orig.factor_co2_kg
-          || (f.factor_agua_l_kg ? parseFloat(f.factor_agua_l_kg) : null) !== orig.factor_agua_l_kg
-      })
+    const esquemaCambio = esquemaMat.some(f => {
+      const orig = categoria.categoria_materiales_base.find(o => o.id === f.id)
+      return !!orig && (
+        f.nombre !== orig.nombre
+        || (parseFloat(f.factor_co2_kg) || 0) !== orig.factor_co2_kg
+        || (f.factor_agua_l_kg ? parseFloat(f.factor_agua_l_kg) : null) !== orig.factor_agua_l_kg
+      )
+    })
 
     if (esquemaCambio) {
-      const materialesBase = esquemaMatVisibles
+      const materialesBase = esquemaMat
         .filter(f => f.nombre.trim())
         .map(f => ({
           nombre: f.nombre.trim(),
@@ -1768,7 +1924,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                   <div key={fila.id} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
-                        <span className="truncate">{fila.nombre}</span>
+                        <span>{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                       </p>
                       <div className="w-28 flex-shrink-0">
@@ -1854,7 +2010,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'
                       }`}
                     >
-                      <span className="truncate">{fila.nombre}</span>
+                      <span>{fila.nombre}</span>
                       <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                     </p>
                     <div className="w-32 flex-shrink-0">
@@ -2013,10 +2169,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                 {esquemaMatVisibles.map(fila => (
                   <div key={fila.id} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <p className="flex-1 min-w-0 flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
-                        <span className="truncate">{fila.nombre}</span>
+                      <p className="flex-1 min-w-0 flex items-center flex-wrap gap-1.5 text-sm font-medium text-[var(--text-primary)]">
+                        <span>{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
-                        <BadgeRolConservacion rol={rolesConservacion[fila.nombre]} />
+                        <BotonInfoPerplexity info={fuentesMaterial[fila.nombre] || fuentesMaterial[fila.nombre.trim().toLowerCase()]} nombreMaterial={fila.nombre} />
+                        <BadgeRolConservacion
+                          rol={rolesConservacion[fila.nombre]}
+                          onCambiar={nuevoRol => setRolesConservacion(p => ({ ...p, [fila.nombre]: nuevoRol }))}
+                        />
                       </p>
                       <div className="w-28 flex-shrink-0">
                         {cargandoMaterialesIA ? (
@@ -2044,14 +2204,25 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         <Trash size={16} sinAnimacion />
                       </button>
                     </div>
-                    <FichaPerplexityMaterial info={fuentesMaterial[fila.nombre] || fuentesMaterial[fila.nombre.trim().toLowerCase()]} />
                     {filaAbierta === fila.id && (
                       <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                           <div>
                             <label className={labelSt}>Material</label>
                             <input style={inputSt} placeholder="Ej: Madera dura" value={fila.nombre}
                               onChange={e => editarEsquemaMat(fila.id, { nombre: e.target.value })} />
+                          </div>
+                          <div>
+                            <label className={labelSt}>Rol de conservación</label>
+                            <select
+                              style={inputSt}
+                              value={rolesConservacion[fila.nombre] || ''}
+                              onChange={e => setRolesConservacion(p => ({ ...p, [fila.nombre]: e.target.value }))}
+                            >
+                              <option value="">Sin definir</option>
+                              <option value="se_conserva">Se conserva</option>
+                              <option value="se_reemplaza">Se reemplaza</option>
+                            </select>
                           </div>
                           <div>
                             <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
@@ -2075,13 +2246,30 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                 {extraMateriales.map((m, i) => {
                   return (
                     <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
                         <div>
-                          <label className={`${labelSt} flex items-center gap-1`}>
+                          <label className={`${labelSt} flex items-center gap-1.5`}>
                             Material adicional
-                            <BadgeRolConservacion rol={m.rol_conservacion} />
+                            <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
+                            <BotonInfoPerplexity info={fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]} nombreMaterial={m.nombre || 'Material adicional'} />
+                            <BadgeRolConservacion
+                              rol={m.rol_conservacion}
+                              onCambiar={nuevoRol => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: nuevoRol } : x))}
+                            />
                           </label>
                           <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                        </div>
+                        <div>
+                          <label className={labelSt}>Rol de conservación</label>
+                          <select
+                            style={inputSt}
+                            value={m.rol_conservacion || ''}
+                            onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: e.target.value } : x))}
+                          >
+                            <option value="">Sin definir</option>
+                            <option value="se_conserva">Se conserva</option>
+                            <option value="se_reemplaza">Se reemplaza</option>
+                          </select>
                         </div>
                         <div>
                           <label className={labelSt}>Peso</label>
@@ -2103,7 +2291,6 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         </div>
                       </div>
                       <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                      <FichaPerplexityMaterial info={fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]} />
                       <div className="flex justify-end items-center mt-1">
                         <button type="button" onClick={() => setExtraMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
                           <Trash size={14} /> Eliminar
