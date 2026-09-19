@@ -691,6 +691,18 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     esperado: 'La página exhibe una insignia de autenticidad clara que genera confianza en el consumidor final.',
     journeys: ['Cliente Final', 'Directivo']
   },
+  {
+    id: 'dpp-08', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp/nuevo', critica: false,
+    titulo: 'Peso sugerido por foto al confirmar un activo',
+    descripcion: 'Si la foto sugiere un peso muy distinto al del catálogo (más de 10%), el detalle del activo muestra un aviso con "Usar este peso"/"Descartar". Si la foto confirma el promedio, no aparece nada.',
+    pasos: [
+      'Sube una foto de un objeto claramente más grande o más chico de lo típico para su categoría y confirma el activo.',
+      'Abre el detalle del DPP recién creado.',
+      'Haz clic en "Usar este peso" o "Descartar".'
+    ],
+    esperado: 'Aparece el aviso con los dos números (foto vs catálogo). "Usar este peso" actualiza el peso total y reparte proporcionalmente entre los materiales, y el aviso desaparece. "Descartar" solo hace desaparecer el aviso, sin tocar el peso.',
+    journeys: ['Admin Operativa']
+  },
 
   // ══════════════════════════════════════════════════════════════════
   // DASHBOARD
