@@ -671,14 +671,6 @@ function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, o
         {cargando ? (fase || 'Estimando materiales con IA...') : 'Completar materiales con IA'}
       </button>
 
-      {/* Indicador de contexto en vivo */}
-      {cargando && (
-        <div className="flex items-center justify-center gap-1.5 text-xs text-[var(--color-brand)] py-1 animate-pulse font-medium">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--color-brand)]" />
-          <span>{fase}</span>
-        </div>
-      )}
-
       {/* Feedback de estado contextual al terminar */}
       {feedback && !cargando && (
         <div
