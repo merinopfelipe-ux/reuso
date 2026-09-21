@@ -3727,17 +3727,17 @@ function QAContenido() {
                               </a>
                             )}
                             <span className={`text-xs ${theme.textSecondary}`}>
-                              · Pantalla {indicePagina + 1} de {paginas.length} ({paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'})
+                              · {paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => copiarResumenIA(generarResumenIA(paginaActual.ruta), `Resumen IA de ${paginaActual.ruta} copiado`)}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                             isDark
                               ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
                               : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
@@ -3749,7 +3749,7 @@ function QAContenido() {
                         <button
                           type="button"
                           onClick={() => { setAlcanceParcial(paginaActual.ruta); setMostrarInforme('parcial') }}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                             isDark ? 'bg-[#D6F391]/15 text-[#D6F391] border-[#D6F391]/30 hover:bg-[#D6F391]/25' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30 hover:bg-[#00827C]/20'
                           }`}
                         >
@@ -3758,14 +3758,14 @@ function QAContenido() {
                         <button
                           onClick={() => { const i = Math.max(0, indicePagina - 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
                           disabled={indicePagina === 0}
-                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} disabled:opacity-30`}
+                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap ${theme.inputBg} ${theme.textSecondary} disabled:opacity-30`}
                         >
                           Anterior
                         </button>
                         <button
                           onClick={() => { const i = Math.min(paginas.length - 1, indicePagina + 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
                           disabled={indicePagina >= paginas.length - 1}
-                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all disabled:opacity-30 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} border-transparent font-semibold`}
+                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all disabled:opacity-30 whitespace-nowrap ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} border-transparent font-semibold`}
                         >
                           Siguiente
                         </button>
