@@ -475,7 +475,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
             }`}
           >
             <span className={`text-[8px] sm:text-[9px] md:text-[8px] lg:text-[10px] font-bold leading-tight transition-colors duration-200 ${
-              isDark ? 'text-[#D6F391]' : 'text-[#00827C]'
+              isDark ? 'text-[#D6F391]' : 'text-[#006B66]'
             }`}>
               {stat.label}
             </span>
@@ -502,7 +502,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
           </span>
           <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-black transition-all duration-300 ${
             isHovered ? 'scale-110' : ''
-          } ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+          } ${isDark ? 'text-[#D6F391]' : 'text-[#006B66]'}`}>
             {circRate}%
           </span>
         </div>
@@ -589,7 +589,7 @@ function CategoryMetricsDisplay({
       >
         <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-3">
           <Leaf size={16} className={`transition-transform duration-300 ${hoveredCard === 'planeta' ? 'scale-125 rotate-6' : ''} ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`} />
-          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#006B66]'}`}>
             Impacto ambiental evitado.
           </span>
         </div>
@@ -1169,7 +1169,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
   const cat = CATEGORIAS[activeCategory]
   const tp = isDark ? 'text-white' : 'text-[#474747]'
-  const ts = isDark ? 'text-white/70' : 'text-[#474747]/70'
+  const ts = isDark ? 'text-white/70' : 'text-[#474747]/80'
 
   // Offset dinámico para botones flotantes:
   // En móvil: mínimo 98px para estar sobre la barra de navegación móvil (88px altura + 10px margen),
@@ -1286,12 +1286,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       <section id="hero" className="scroll-mt-28 pt-[124px] sm:pt-[136px] md:pt-[154px] lg:pt-[168px] pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           {/* Texto izquierdo animado (Mayor ancho para H1 prominente en 3 líneas) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="animate-float-hero lg:col-span-7 xl:col-span-7"
-          >
+          <div className="animate-float-hero lg:col-span-7 xl:col-span-7">
             <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
               Software de sostenibilidad para tu empresa.
             </p>
@@ -1328,17 +1323,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 Explora los cálculos
               </a>
             </div>
-          </motion.div>
+          </div>
 
           {/* Tarjeta interactiva derecha (Espacio optimizado y compacto) */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="animate-float-hero-delayed lg:col-span-5 xl:col-span-5 w-full max-w-lg mx-auto lg:max-w-none"
-          >
+          <div className="animate-float-hero-delayed lg:col-span-5 xl:col-span-5 w-full max-w-lg mx-auto lg:max-w-none">
             <HeroImpactPanel isDark={isDark} tp={tp} ts={ts} liquidGlass={liquidGlass} />
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -2150,7 +2140,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <IaIcon size={14} />
                     </div>
                     <div>
-                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Reconocimiento visual automático</h4>
+                      <h3 className={`text-sm sm:text-base font-bold ${tp}`}>Reconocimiento visual automático</h3>
                       <p className={`text-xs sm:text-sm font-medium ${ts}`}>Descubre de qué material están hechas las cosas con solo analizar una imagen.</p>
                     </div>
                   </div>
@@ -2160,7 +2150,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <ShieldCheck size={14} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h4 className={`text-sm sm:text-base font-bold ${tp}`}>Estimaciones con fundamentos técnicos</h4>
+                      <h3 className={`text-sm sm:text-base font-bold ${tp}`}>Estimaciones con fundamentos técnicos</h3>
                       <p className={`text-xs sm:text-sm font-medium ${ts}`}>Usamos bases de datos internacionales reconocidas para que tus estimaciones tengan respaldo técnico sólido.</p>
                     </div>
                   </div>

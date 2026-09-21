@@ -305,7 +305,7 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Cálculos"
@@ -323,7 +323,7 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Industrias"
@@ -341,7 +341,7 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Metodología"
@@ -359,7 +359,7 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.6)',
+            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Planes"
