@@ -208,7 +208,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo', 'Cliente Final']
   },
 {
-    id: 'pub-03', categoria: 'Páginas Públicas', ruta: '/verificar', critica: true,
+    id: 'pub-03', categoria: 'Páginas Públicas', ruta: '/verificar', critica: false,
     titulo: 'Buscador de validación de informes',
     descripcion: 'Formulario público donde cualquier persona ingresa el código impreso en un certificado o informe para saltar a su ficha de autenticidad.',
     pasos: [
@@ -364,7 +364,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Directivo', 'Admin Operativa']
   },
 {
-    id: 'pub-13', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: true,
+    id: 'pub-13', categoria: 'Páginas Públicas', ruta: '/legal/medicion', critica: false,
     titulo: 'Metodología de cálculo y factores de emisión',
     descripcion: 'Explica en un lenguaje accesible y con base científica cómo convertimos los kilogramos de residuos reutilizados en emisiones de CO2 evitadas, enlazando a la política de IA.',
     pasos: [
@@ -436,7 +436,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Cliente Final', 'Admin Operativa']
   },
 {
-    id: 'pub-24', categoria: 'Páginas Públicas', ruta: '/ | /legal | /admin', critica: true,
+    id: 'pub-24', categoria: 'Páginas Públicas', ruta: '/ | /legal | /admin', critica: false,
     titulo: 'Consistencia y reglas de los 3 tipos de footer (Escritorio y Móvil)',
     descripcion: 'Verificación de las 3 variantes de pie de página de la plataforma (Público, Legal y Sistema Interno), asegurando en escritorio su estructura a 4 columnas, límites y pesos tipográficos a 10px, y en móvil su estructura vertical unificada, enlaces en una sola línea y espaciado adaptativo para el menú inferior.',
     pasos: [
@@ -511,7 +511,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
 {
-    id: 'auth-07', categoria: 'Autenticación', ruta: '/invitacion/[token]', critica: true,
+    id: 'auth-07', categoria: 'Autenticación', ruta: '/invitacion/[token]', critica: false,
     titulo: 'Bienvenida a un nuevo miembro del equipo',
     descripcion: 'Asegura que cuando la líder invita a un empleado nuevo a la empresa, él reciba un enlace fácil de usar para configurar su cuenta y unirse de inmediato.',
     pasos: [
@@ -558,7 +558,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'auth-11', categoria: 'Autenticación', ruta: '/registro', critica: true,
+    id: 'auth-11', categoria: 'Autenticación', ruta: '/registro', critica: false,
     titulo: 'Verificación de seguridad sin interrupciones',
     descripcion: 'Asegura que la casilla de comprobación de seguridad funcione de forma suave y no bloquee a usuarios reales que se están registrando.',
     pasos: [
@@ -570,7 +570,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Cliente Final']
   },
 {
-    id: 'auth-12', categoria: 'Autenticación', ruta: '/dashboard', critica: true,
+    id: 'auth-12', categoria: 'Autenticación', ruta: '/dashboard', critica: false,
     titulo: 'Cierre de sesión coherente en varias pestañas',
     descripcion: 'Si tienes el sistema abierto en varias pestañas y cierras sesión en una, las demás deben reconocer que ya saliste para cuidar tu privacidad.',
     pasos: [
@@ -610,7 +610,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // DPP / PASAPORTE
   // ══════════════════════════════════════════════════════════════════
 {
-    id: 'dpp-01', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp', critica: true,
+    id: 'dpp-01', categoria: 'DPP / Pasaporte', ruta: '/empresa/dpp', critica: false,
     titulo: 'Catálogo de pasaportes digitales emitidos',
     descripcion: 'Muestra el inventario de pasaportes digitales de producto creados por la empresa, con su código único, estado y enlace QR.',
     pasos: [
@@ -681,7 +681,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Cliente Final', 'Admin Operativa']
   },
 {
-    id: 'dpp-07', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: true,
+    id: 'dpp-07', categoria: 'DPP / Pasaporte', ruta: '/pasaporte/[codigo]', critica: false,
     titulo: 'Certeza de autenticidad en el pasaporte digital',
     descripcion: 'Verifica que la información mostrada al público sea genuina y coincida con la emitido por la empresa fabricante o restauradora.',
     pasos: [
@@ -856,7 +856,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'emp-05', categoria: 'Panel Empresa', ruta: '/empresa/equipo', critica: true,
+    id: 'emp-05', categoria: 'Panel Empresa', ruta: '/empresa/equipo', critica: false,
     titulo: 'Directorio del equipo de trabajo y colaboración',
     descripcion: 'Facilita a la administradora ver a todos los colaboradores de la empresa, invitar nuevos compañeros o pausar accesos cuando alguien cambia de rol.',
     pasos: [
@@ -963,7 +963,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'emp-14', categoria: 'Panel Empresa', ruta: '/empresa/clientes', critica: true,
+    id: 'emp-14', categoria: 'Panel Empresa', ruta: '/empresa/clientes', critica: false,
     titulo: 'Directorio comercial de clientes y aliados B2B',
     descripcion: 'Organiza la lista de empresas y compradores a quienes les envías cotizaciones o informes de reutilización.',
     pasos: [
@@ -1039,7 +1039,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'adm-05', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
+    id: 'adm-05', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
     titulo: 'Catálogo de materiales y categorías de reuso',
     descripcion: 'Permite dar de alta nuevos tipos de residuos o materiales reciclables y ajustar factores de impacto ambiental.',
     pasos: [
@@ -1063,7 +1063,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'adm-08', categoria: 'Panel Admin', ruta: '/admin/tickets', critica: true,
+    id: 'adm-08', categoria: 'Panel Admin', ruta: '/admin/tickets', critica: false,
     titulo: 'Atención y respuesta a solicitudes de ayuda',
     descripcion: 'Permite a los administradores revisar preguntas o problemas reportados por los usuarios y responderles con amabilidad.',
     pasos: [
@@ -1218,7 +1218,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'adm-21', categoria: 'Panel Admin', ruta: '/admin/firmas', critica: true,
+    id: 'adm-21', categoria: 'Panel Admin', ruta: '/admin/firmas', critica: false,
     titulo: 'Invitación a firmar acuerdos de confidencialidad',
     descripcion: 'Permite generar invitaciones digitales para que los representantes de nuevas empresas firmen acuerdos antes de iniciar operaciones.',
     pasos: [
@@ -1254,7 +1254,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'adm-24', categoria: 'Panel Admin', ruta: '/admin/planes', critica: true,
+    id: 'adm-24', categoria: 'Panel Admin', ruta: '/admin/planes', critica: false,
     titulo: 'Diseño y ajuste de planes de suscripción',
     descripcion: 'Permite crear o ajustar las condiciones y beneficios de los planes en modo borrador antes de ponerlos a disposición de las empresas.',
     pasos: [
@@ -1302,7 +1302,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa']
   },
   {
-    id: 'adm-28', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
+    id: 'adm-28', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
     titulo: 'Desactivar un insumo en un ítem no afecta a los demás ítems de la categoría',
     descripcion: 'Un insumo heredado de la categoría (ej. "Tela") puede no aplicar a un ítem puntual (ej. una silla sin tapicería) sin que eso borre ese insumo para el resto de ítems de la misma categoría.',
     pasos: [
@@ -1351,7 +1351,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa']
   },
   {
-    id: 'adm-32', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: true,
+    id: 'adm-32', categoria: 'Panel Admin', ruta: '/admin/categorias', critica: false,
     titulo: 'Desactivar un material en un ítem no afecta a los demás ítems de la categoría',
     descripcion: 'Un material heredado de la categoría (ej. "Cuero") puede no aplicar a un ítem puntual (ej. una silla sin cuero) sin que eso borre ese material para el resto de ítems de la misma categoría. Mismo bug que adm-28, pero en materiales en vez de insumos.',
     pasos: [
@@ -1461,7 +1461,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // COTIZADOR IA
   // ══════════════════════════════════════════════════════════════════
 {
-    id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: true,
+    id: 'cot-01', categoria: 'Cotizador IA', ruta: '/empresa/cotizador', critica: false,
     titulo: 'Bandeja de cotizaciones y búsqueda rápida',
     descripcion: 'Organiza todas las propuestas comerciales de restauración de muebles en una vista clara con filtros por estado: borrador, enviada, aprobada o declinada.',
     pasos: [
@@ -1485,7 +1485,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Empleado', 'Admin Operativa']
   },
 {
-    id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    id: 'cot-03', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
     titulo: 'Orientación honesta ante materiales no aptos',
     descripcion: 'Si se sube la foto de un material no restaurable (como aglomerado o plástico deteriorado), el sistema orienta con honestidad en lugar de generar falsas expectativas.',
     pasos: [
@@ -1589,7 +1589,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Empleado', 'Admin Operativa']
   },
 {
-    id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: true,
+    id: 'cot-12', categoria: 'Cotizador IA', ruta: '/empresa/cotizador/nueva', critica: false,
     titulo: 'Seguridad al adjuntar imágenes de productos',
     descripcion: 'Verifica que los archivos subidos sean imágenes auténticas (como JPG, PNG o WebP) y rechaza archivos dudosos para proteger la plataforma.',
     pasos: [
@@ -1604,7 +1604,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   // RENDIMIENTO
   // ══════════════════════════════════════════════════════════════════
 {
-    id: 'perf-01', categoria: 'Rendimiento', ruta: '/dashboard', critica: true,
+    id: 'perf-01', categoria: 'Rendimiento', ruta: '/dashboard', critica: false,
     titulo: 'Ingreso veloz a tu espacio de trabajo',
     descripcion: 'Asegura que desde que presionas "Ingresar" hasta que ves tu calculadora lista pasen menos de un segundo, sin pantallas en blanco.',
     pasos: [
@@ -1704,7 +1704,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Empleado', 'Admin Operativa', 'Cliente Final']
   },
 {
-    id: 'perf-10', categoria: 'Rendimiento', ruta: '/', critica: true,
+    id: 'perf-10', categoria: 'Rendimiento', ruta: '/', critica: false,
     titulo: 'Puntaje perfecto en métricas de posicionamiento (SEO y Accesibilidad)',
     descripcion: 'Prueba manual en Google PageSpeed Insights sobre el entorno de producción (Vercel) para validar que el SEO alcanza 100/100.',
     pasos: [
@@ -1716,7 +1716,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Directivo', 'Admin Operativa']
   },
 {
-    id: 'perf-11', categoria: 'Rendimiento', ruta: '/', critica: true,
+    id: 'perf-11', categoria: 'Rendimiento', ruta: '/', critica: false,
     titulo: 'Estructura semántica para IAs (GEO - Generative Engine Optimization)',
     descripcion: 'Validar la riqueza semántica para Motores Generativos verificando los esquemas JSON-LD de la Landing Page.',
     pasos: [
@@ -1755,7 +1755,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Directivo']
   },
 {
-    id: 'seg-03', categoria: 'Seguridad', ruta: '/api/cotizador', critica: false,
+    id: 'seg-03', categoria: 'Seguridad', ruta: '/api/cotizador', critica: true,
     titulo: 'Confidencialidad total entre empresas diferentes',
     descripcion: 'Asegura que los colaboradores de una empresa jamás puedan ver los clientes, presupuestos o proyectos de otra organización aliada.',
     pasos: [
@@ -1810,7 +1810,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     journeys: ['Admin Operativa', 'Empleado']
   },
 {
-    id: 'seg-08', categoria: 'Seguridad', ruta: '/admin', critica: false,
+    id: 'seg-08', categoria: 'Seguridad', ruta: '/admin', critica: true,
     titulo: 'Resguardo de tu sesión activa en el navegador',
     descripcion: 'Asegura que tu inicio de sesión permanezca resguardado y que nadie pueda alterar tus permisos desde las herramientas del navegador.',
     pasos: [
