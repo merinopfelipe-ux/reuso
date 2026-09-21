@@ -95,13 +95,14 @@ export function InputConUnidad({
   onChange,
   unidad,
 
+  onBlur,
   className = '',
 }: {
   value: string
   onChange: (v: string) => void
+  onBlur?: () => void
   unidad: string
   paso?: string
-
   className?: string
 }) {
   const [focused, setFocused] = useState(false)
@@ -173,7 +174,10 @@ export function InputConUnidad({
           onChange(cleanNum)
           restaurarCursor(formatted)
         }}
-        onBlur={() => setFocused(false)}
+        onBlur={() => {
+          setFocused(false)
+          onBlur?.()
+        }}
         placeholder="0"
         style={{ textAlign: 'right', padding: '10px 2px', border: 'none', background: 'transparent', outline: 'none', color: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 'var(--text-secondary)' : 'var(--text-primary)', opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1, fontSize: 14, width: '100%', minWidth: 0, flex: 1, fontWeight: 600 }}
       />

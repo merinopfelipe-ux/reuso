@@ -1491,6 +1491,97 @@ function BotonInfoPerplexity({
   )
 }
 
+// Modal de confirmación cuando el usuario intenta modificar manualmente el peso de un material estimado por Perplexity
+function ModalConfirmacionAjustePerplexity({
+  nombreMaterial,
+  pesoOriginal,
+  nuevoPeso,
+  onConfirmar,
+  onCancelar,
+}: {
+  nombreMaterial: string
+  pesoOriginal: string
+  nuevoPeso: string
+  onConfirmar: () => void
+  onCancelar: () => void
+}) {
+  const [montado, setMontado] = useState(false)
+
+  useEffect(() => {
+    setMontado(true)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancelar()
+      if (e.key === 'Enter') onConfirmar()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onCancelar, onConfirmar])
+
+  if (!montado || typeof document === 'undefined') return null
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      onClick={e => {
+        if (e.target === e.currentTarget) onCancelar()
+      }}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-[var(--text-primary)]"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="flex items-center gap-3 pb-3 border-b border-[var(--border)] mb-4">
+          <span
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[#00827C] dark:text-[#2DD4BF]"
+            style={{ background: 'rgba(45, 212, 191, 0.14)' }}
+          >
+            <IconoPerplexity size={18} />
+          </span>
+          <div>
+            <h3 className="text-base font-bold leading-tight text-[var(--text-primary)]">
+              ¿Ajustar peso estimado por IA?
+            </h3>
+            <p className="text-xs text-[var(--text-secondary)]">
+              {nombreMaterial}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+          <p>
+            El peso de este material (<strong className="text-[var(--text-primary)]">{pesoOriginal} kg</strong>) fue calculado con <strong>Perplexity AI</strong>.
+          </p>
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200">
+            Si ajustas este número a <strong className="font-bold">{nuevoPeso} kg</strong>, se eliminará la referencia de Perplexity <strong>únicamente de {nombreMaterial}</strong>.
+          </div>
+          <p className="text-xs text-[var(--text-placeholder)]">
+            Los demás materiales conservarán intactas sus fuentes, justificaciones técnicas y vínculos con Perplexity.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 pt-2">
+          <button
+            type="button"
+            onClick={onCancelar}
+            className="px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-all cursor-pointer"
+          >
+            Cancelar (mantener {pesoOriginal} kg)
+          </button>
+          <button
+            type="button"
+            onClick={onConfirmar}
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--color-brand)] text-white hover:opacity-90 transition-all shadow-xs cursor-pointer"
+          >
+            Ajustar solo este número
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 // ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
 
 function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
@@ -1730,6 +1821,102 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     setOrigenFuente('')
   }
 
+  // Pesos originales devueltos por Perplexity para detectar si el usuario editó el número
+  const [pesosOriginalesIA, setPesosOriginalesIA] = useState<Record<string, string>>(() => {
+    const orig: Record<string, string> = {}
+    for (const im of item?.item_materiales ?? []) {
+      const info = fuentesMaterial[im.nombre] || fuentesMaterial[im.nombre.trim().toLowerCase()]
+      if (esFuentePerplexity(info) && im.peso_kg > 0) {
+        orig[im.nombre] = String(im.peso_kg)
+        orig[im.nombre.trim().toLowerCase()] = String(im.peso_kg)
+      }
+    }
+    if (item?.detalle_fuente) {
+      try {
+        const parsed = JSON.parse(item.detalle_fuente)
+        const mats = parsed?.materiales_info as Record<string, InfoFuenteMaterial> | undefined
+        if (mats) {
+          for (const [k, v] of Object.entries(mats)) {
+            if (esFuentePerplexity(v)) {
+              const im = item.item_materiales.find(m => m.nombre.trim().toLowerCase() === k.trim().toLowerCase())
+              if (im && im.peso_kg > 0) {
+                orig[k] = String(im.peso_kg)
+                orig[k.trim().toLowerCase()] = String(im.peso_kg)
+              }
+            }
+          }
+        }
+      } catch {}
+    }
+    return orig
+  })
+
+  // Conjunto de materiales cuyo peso fue ajustado manualmente por el usuario
+  const [materialesAjustadosManualmente, setMaterialesAjustadosManualmente] = useState<Set<string>>(new Set())
+
+  // Estado del popup de confirmación de ajuste de peso estimado
+  const [popupAjuste, setPopupAjuste] = useState<{
+    nombre: string
+    pesoOriginal: string
+    nuevoPeso: string
+    esExtra?: boolean
+    indexExtra?: number
+  } | null>(null)
+
+  function verificarAjustePeso(nombre: string, nuevoValor: string, esExtra?: boolean, indexExtra?: number) {
+    const k = nombre.trim().toLowerCase()
+    if (!k || materialesAjustadosManualmente.has(k)) return
+    const pesoOrig = pesosOriginalesIA[nombre] || pesosOriginalesIA[k]
+    if (!pesoOrig) return
+
+    const pOrigNum = parseFloat(pesoOrig) || 0
+    const pNuevoNum = parseFloat(nuevoValor) || 0
+
+    // Si el número efectivamente cambió respecto al estimado por IA
+    if (pOrigNum > 0 && pNuevoNum !== pOrigNum && nuevoValor.trim() !== pesoOrig.trim()) {
+      setPopupAjuste({
+        nombre,
+        pesoOriginal: pesoOrig,
+        nuevoPeso: nuevoValor,
+        esExtra,
+        indexExtra,
+      })
+    }
+  }
+
+  function confirmarDesvinculacionPerplexity() {
+    if (!popupAjuste) return
+    const { nombre } = popupAjuste
+    const k = nombre.trim().toLowerCase()
+
+    // Marca este material como ajustado manualmente
+    setMaterialesAjustadosManualmente(prev => new Set(prev).add(k))
+
+    // Elimina la referencia de Perplexity SOLO de este material
+    setFuentesMaterial(prev => {
+      const copia = { ...prev }
+      delete copia[nombre]
+      delete copia[k]
+      return copia
+    })
+
+    setPopupAjuste(null)
+  }
+
+  function cancelarDesvinculacionPerplexity() {
+    if (!popupAjuste) return
+    const { nombre, pesoOriginal, esExtra, indexExtra } = popupAjuste
+
+    // Restaura el peso original de Perplexity en el formulario
+    if (esExtra && typeof indexExtra === 'number') {
+      setExtraMateriales(r => r.map((x, j) => j === indexExtra ? { ...x, peso_kg: pesoOriginal } : x))
+    } else {
+      setPesos(p => ({ ...p, [nombre]: pesoOriginal }))
+    }
+
+    setPopupAjuste(null)
+  }
+
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
   const [cargandoMaterialesIA, setCargandoMaterialesIA] = useState(false)
@@ -1842,68 +2029,20 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const tieneRoles = Object.keys(rolesConservacion).length > 0
     const tieneFuentes = Object.keys(fuentesMaterial).length > 0
 
-    // Conservar Perplexity si se ejecutó activamente en la sesión o si el ítem ya provenía de Perplexity
-    const fueCalculadoConIA = origenFuente === 'perplexity' || esItemPerplexity(item) || Boolean(item?.origen_fuente?.includes('perplexity'))
-    const origenFinal = fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente ?? null)
-
-    let detalleFuenteFinal: string | null = null
-    if (tieneRoles || tieneFuentes || fueCalculadoConIA) {
-      detalleFuenteFinal = JSON.stringify({
-        proveedor: fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente ?? 'interno'),
-        roles: mapaRoles,
-        materiales_info: fuentesMaterial,
-        actualizado_at: new Date().toISOString(),
-      })
-    }
-
-    // Validar que ningún material adicional con nombre quede sin peso o sin factor de CO2
-    for (const m of extraMateriales) {
-      if (m.nombre.trim()) {
-        const p = parseFloat(m.peso_kg)
-        const f = parseFloat(m.factor_co2_kg)
-        if (isNaN(p) || p <= 0) {
-          setError(`El material adicional "${m.nombre}" debe tener un peso mayor a 0 kg.`)
-          setFilaAbierta(m.id ?? null)
-          return
-        }
-        if (isNaN(f) || f <= 0) {
-          setError(`El material adicional "${m.nombre}" requiere un factor de CO₂ (kg CO₂ eq/kg) mayor a 0 para calcular su impacto ambiental. Puedes sugerirlo con IA o ingresarlo.`)
-          setFilaAbierta(m.id ?? null)
-          return
-        }
-      }
-    }
-
-    // Validar que ningún servicio adicional con nombre quede incompleto o con precio negativo
-    for (const s of extraServicios) {
-      if (s.nombre.trim()) {
-        const p = parseFloat(s.precio)
-        if (s.precio.trim() === '' || isNaN(p) || p < 0) {
-          setError(`El servicio adicional "${s.nombre}" debe tener un precio o costo válido (mayor o igual a 0).`)
-          setFilaAbierta(s.id ?? null)
-          return
-        }
-      }
-    }
-
-    // Validar que ningún insumo adicional con nombre quede incompleto
-    for (const ins of extraInsumos) {
-      if (ins.nombre.trim()) {
-        const c = parseFloat(ins.cantidad)
-        const p = parseFloat(ins.precio_unitario)
-        if (ins.cantidad.trim() === '' || isNaN(c) || c <= 0) {
-          setError(`El insumo adicional "${ins.nombre}" debe tener una cantidad mayor a 0.`)
-          setFilaAbierta(ins.id ?? null)
-          return
-        }
-        if (!ins.unidad.trim()) {
-          setError(`El insumo adicional "${ins.nombre}" requiere una unidad de medida (ej: metros, unidad, kg).`)
-          setFilaAbierta(ins.id ?? null)
-          return
-        }
-        if (ins.precio_unitario.trim() === '' || isNaN(p) || p < 0) {
-          setError(`El insumo adicional "${ins.nombre}" requiere un precio unitario válido (mayor o igual a 0).`)
-          setFilaAbierta(ins.id ?? null)
+    // Verificar si algún material con Perplexity cambió de peso y no ha sido confirmado aún
+    for (const [nom, pVal] of Object.entries(pesos)) {
+      const k = nom.trim().toLowerCase()
+      if (materialesAjustadosManualmente.has(k)) continue
+      const pesoOrig = pesosOriginalesIA[nom] || pesosOriginalesIA[k]
+      if (pesoOrig) {
+        const pOrigNum = parseFloat(pesoOrig) || 0
+        const pNuevoNum = parseFloat(pVal) || 0
+        if (pOrigNum > 0 && pNuevoNum !== pOrigNum && pVal.trim() !== pesoOrig.trim()) {
+          setPopupAjuste({
+            nombre: nom,
+            pesoOriginal: pesoOrig,
+            nuevoPeso: pVal,
+          })
           return
         }
       }
@@ -1914,36 +2053,59 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         .filter(m => parseFloat(pesos[m.nombre]) > 0)
         .map(m => {
           const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
-          const esPerpReal = esFuentePerplexity(mInfo)
+          const esManual = materialesAjustadosManualmente.has(m.nombre.trim().toLowerCase())
+          const esPerpReal = !esManual && esFuentePerplexity(mInfo)
           const matOrigen = mInfo?.fuente_url
             ? mInfo.fuente_url.slice(0, 1900)
-            : (esPerpReal || fueCalculadoConIA ? 'perplexity' : (m.origen_fuente || undefined))
+            : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
           return {
             nombre: m.nombre,
             peso_kg: parseFloat(pesos[m.nombre]),
             factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
             factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
             origen_fuente: matOrigen,
-            detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
+            detalle_fuente: esManual ? undefined : (mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined)),
             nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
             rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva'),
           }
         }),
       ...extraMaterialesValidos.map(m => {
         const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
-        const esPerpReal = esFuentePerplexity(mInfo)
+        const esManual = materialesAjustadosManualmente.has(m.nombre.trim().toLowerCase())
+        const esPerpReal = !esManual && esFuentePerplexity(mInfo)
         const matOrigen = mInfo?.fuente_url
           ? mInfo.fuente_url.slice(0, 1900)
-          : (esPerpReal || fueCalculadoConIA ? 'perplexity' : (m.origen_fuente || undefined))
+          : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
         return {
           ...m,
           origen_fuente: matOrigen,
-          detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
+          detalle_fuente: esManual ? undefined : (mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined)),
           nivel_confianza: (mInfo?.confianza || m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
           rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || 'se_conserva'),
         }
       }),
     ]
+
+    // Solo se mantiene 'perplexity' en el ítem si al menos un material conserva Perplexity
+    const algunMaterialTienePerp = materiales.some(m => m.origen_fuente === 'perplexity' || (m.origen_fuente && m.origen_fuente.startsWith('http')))
+    const origenFinal = algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : null)
+
+    let detalleFuenteFinal: string | null = null
+    if (tieneRoles || tieneFuentes || algunMaterialTienePerp) {
+      // Filtrar materiales_info para omitir los que fueron ajustados manualmente
+      const infoFiltrada: Record<string, InfoFuenteMaterial> = {}
+      for (const [k, v] of Object.entries(fuentesMaterial)) {
+        if (!materialesAjustadosManualmente.has(k.trim().toLowerCase())) {
+          infoFiltrada[k] = v
+        }
+      }
+      detalleFuenteFinal = JSON.stringify({
+        proveedor: algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente ?? 'interno'),
+        roles: mapaRoles,
+        materiales_info: infoFiltrada,
+        actualizado_at: new Date().toISOString(),
+      })
+    }
 
     if (materiales.length === 0) {
       setError('Coloca el peso de al menos un material — el impacto ambiental no puede quedar en cero.')
@@ -2556,7 +2718,13 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                             <span className="animate-pulse">calculando...</span>
                           </div>
                         ) : (
-                          <InputConUnidad value={pesos[fila.nombre] ?? ''} onChange={v => setPesos(p => ({ ...p, [fila.nombre]: v }))} unidad="kg" paso="0.01" />
+                          <InputConUnidad
+                            value={pesos[fila.nombre] ?? ''}
+                            onChange={v => setPesos(p => ({ ...p, [fila.nombre]: v }))}
+                            onBlur={() => verificarAjustePeso(fila.nombre, pesos[fila.nombre] ?? '')}
+                            unidad="kg"
+                            paso="0.01"
+                          />
                         )}
                       </div>
                       <button type="button" onClick={() => alternarFila(fila.id)}
@@ -2649,7 +2817,13 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                               <span className="animate-pulse">calculando...</span>
                             </div>
                           ) : (
-                            <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
+                            <InputConUnidad
+                              value={m.peso_kg}
+                              onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))}
+                              onBlur={() => verificarAjustePeso(m.nombre, m.peso_kg, true, i)}
+                              unidad="kg"
+                              paso="0.01"
+                            />
                           )}
                         </div>
                         <button
@@ -2760,6 +2934,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               onCompletado={(resultados, prov) => {
                 const p = prov || 'perplexity'
                 setOrigenFuente(p)
+                const nuevosPesosIA: Record<string, string> = {}
                 for (const r of resultados) {
                   const rNorm = r.nombre.trim().toLowerCase()
                   const rolValido = r.rol === 'se_conserva' || r.rol === 'se_reemplaza' || r.rol === 'desconocido' ? r.rol : ''
@@ -2769,6 +2944,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     fuente_titulo: r.fuente_titulo ?? null,
                     fuente_url: r.fuente_url ?? null,
                     proveedor: p,
+                  }
+
+                  if (r.peso_kg !== null && r.peso_kg !== undefined && r.peso_kg > 0) {
+                    nuevosPesosIA[r.nombre] = String(r.peso_kg)
+                    nuevosPesosIA[rNorm] = String(r.peso_kg)
+                    if (matchEsquema) nuevosPesosIA[matchEsquema.nombre] = String(r.peso_kg)
                   }
 
                   if (matchEsquema) {
@@ -2821,6 +3002,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                     }
                   }
                 }
+                setPesosOriginalesIA(prev => ({ ...prev, ...nuevosPesosIA }))
+                setMaterialesAjustadosManualmente(new Set())
               }}
             />
           </div>
@@ -2854,6 +3037,16 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           {guardando ? 'Guardando...' : 'Guardar'}
         </button>
       </div>
+
+      {popupAjuste && (
+        <ModalConfirmacionAjustePerplexity
+          nombreMaterial={popupAjuste.nombre}
+          pesoOriginal={popupAjuste.pesoOriginal}
+          nuevoPeso={popupAjuste.nuevoPeso}
+          onConfirmar={confirmarDesvinculacionPerplexity}
+          onCancelar={cancelarDesvinculacionPerplexity}
+        />
+      )}
     </div>
   )
 }
