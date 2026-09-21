@@ -5,7 +5,9 @@ import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check, MagnifyingGlass } from '@/components/ui/icons'
+import { SortTh } from '@/components/sort-th'
+import type { SortState } from '@/lib/use-sortable'
 import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
 import { IconPicker } from '@/components/admin/icon-picker'
@@ -805,6 +807,96 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
   const itemAbiertoId: string | 'nuevo' | null = creandoItem ? 'nuevo' : itemIdParam
   const itemAbierto = itemIdParam ? items.find(i => i.id === itemIdParam) ?? null : null
 
+  // Filtros y orden canónico de la tabla de ítems (por defecto alfabético A-Z según Nombre)
+  const [busquedaItem, setBusquedaItem] = useState('')
+  const [filtroCiudad, setFiltroCiudad] = useState('')
+  const [filtroEstado, setFiltroEstado] = useState('')
+  const [sortItems, setSortItems] = useState<SortState>({ col: 'nombre', dir: 'asc' })
+
+  function toggleSortItems(col: string) {
+    setSortItems(prev => {
+      if (prev.col !== col) return { col, dir: 'asc' }
+      if (prev.dir === 'asc') return { col, dir: 'desc' }
+      return { col: 'nombre', dir: 'asc' }
+    })
+  }
+
+  useEffect(() => {
+    setBusquedaItem('')
+    setFiltroCiudad('')
+    setFiltroEstado('')
+    setSortItems({ col: 'nombre', dir: 'asc' })
+  }, [nodoActualId])
+
+  const itemsConCalculos = useMemo(() => {
+    return itemsAqui.map(it => {
+      const factor = it.factor_rentabilidad || 1
+      const precioTotal = (
+        it.item_servicios.reduce((s, x) => s + x.precio, 0) +
+        it.item_insumos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)
+      ) * factor
+      const totalCo2 = it.item_materiales.reduce((s, x) => s + x.peso_kg * x.factor_co2_kg, 0)
+      const ciudad = extraerCiudadDeNombre(it.nombre)
+      return {
+        ...it,
+        precioTotal,
+        totalCo2,
+        ciudad,
+      }
+    })
+  }, [itemsAqui])
+
+  const ciudadesDisponibles = useMemo(() => {
+    const set = new Set<string>()
+    itemsConCalculos.forEach(it => {
+      if (it.ciudad) set.add(it.ciudad)
+    })
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'es'))
+  }, [itemsConCalculos])
+
+  const itemsFiltrados = useMemo(() => {
+    return itemsConCalculos.filter(it => {
+      if (busquedaItem.trim()) {
+        const q = busquedaItem.trim().toLowerCase()
+        const coincideNombre = it.nombre.toLowerCase().includes(q)
+        const coincideCiudad = it.ciudad ? it.ciudad.toLowerCase().includes(q) : false
+        if (!coincideNombre && !coincideCiudad) return false
+      }
+      if (filtroCiudad) {
+        if (filtroCiudad === 'sin-ciudad') {
+          if (it.ciudad) return false
+        } else if (it.ciudad?.toLowerCase() !== filtroCiudad.toLowerCase()) {
+          return false
+        }
+      }
+      if (filtroEstado) {
+        if (filtroEstado === 'activos' && it.activo === false) return false
+        if (filtroEstado === 'inactivos' && it.activo !== false) return false
+        if (filtroEstado === 'perplexity' && !esItemPerplexity(it)) return false
+        if (filtroEstado === 'restringido' && it.visibilidad !== 'restringido') return false
+      }
+      return true
+    })
+  }, [itemsConCalculos, busquedaItem, filtroCiudad, filtroEstado])
+
+  const itemsOrdenados = useMemo(() => {
+    const col = sortItems.col || 'nombre'
+    const dir = sortItems.dir || 'asc'
+    return [...itemsFiltrados].sort((a, b) => {
+      let cmp = 0
+      if (col === 'nombre') {
+        cmp = a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+      } else if (col === 'co2') {
+        cmp = a.totalCo2 - b.totalCo2
+      } else if (col === 'precio') {
+        cmp = a.precioTotal - b.precioTotal
+      }
+      return dir === 'asc' ? cmp : -cmp
+    })
+  }, [itemsFiltrados, sortItems])
+
+  const hayFiltrosItems = busquedaItem.trim() !== '' || filtroCiudad !== '' || filtroEstado !== ''
+
   function solicitarSalida(accion: () => void) {
     if (itemAbiertoId || editandoId) {
       setAccionSalirPending(() => accion)
@@ -973,23 +1065,117 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
           {/* Ítems — solo cuando este nodo NO tiene subcategorías (es donde viven los ítems reales) */}
           {nodoActual && hijos.length === 0 && (
             <div className="flex flex-col gap-3">
-              <div className={`rounded-[12px] overflow-hidden border border-[var(--border)] ${cardBg}`}>
+              {/* Barra de herramientas con buscador y filtros del Sistema de Diseño */}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                {/* Buscador */}
+                <div className="relative flex-1 min-w-[200px] max-w-xs">
+                  <MagnifyingGlass
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Buscar ítems o ciudad..."
+                    value={busquedaItem}
+                    onChange={e => setBusquedaItem(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] transition-colors"
+                  />
+                </div>
+
+                {/* Filtro por ciudad (si hay ciudades detectadas en esta categoría) */}
+                {ciudadesDisponibles.length > 0 && (
+                  <Selector
+                    value={filtroCiudad}
+                    onChange={setFiltroCiudad}
+                    placeholder="Todas las ciudades"
+                    opciones={[
+                      { value: '', label: 'Todas las ciudades' },
+                      ...ciudadesDisponibles.map(c => ({ value: c, label: c })),
+                      { value: 'sin-ciudad', label: 'Sin ciudad' },
+                    ]}
+                    className="w-[180px]"
+                  />
+                )}
+
+                {/* Filtro por estado */}
+                <Selector
+                  value={filtroEstado}
+                  onChange={setFiltroEstado}
+                  placeholder="Todos los estados"
+                  opciones={[
+                    { value: '', label: 'Todos los estados' },
+                    { value: 'activos', label: 'Activos' },
+                    { value: 'inactivos', label: 'Inactivos' },
+                    { value: 'perplexity', label: 'Con Perplexity AI' },
+                    { value: 'restringido', label: 'Visibilidad restringida' },
+                  ]}
+                  className="w-[170px]"
+                />
+
+                {/* Limpiar filtros */}
+                {hayFiltrosItems && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setBusquedaItem('')
+                      setFiltroCiudad('')
+                      setFiltroEstado('')
+                    }}
+                    className="px-3 py-2 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                  >
+                    Limpiar
+                  </button>
+                )}
+
+                {/* Contador y botón Nuevo ítem */}
+                <div className="ml-auto flex items-center gap-3">
+                  <span className="text-xs text-[var(--text-secondary)] whitespace-nowrap">
+                    {itemsOrdenados.length === itemsAqui.length
+                      ? `${itemsAqui.length} ${itemsAqui.length === 1 ? 'ítem' : 'ítems'}`
+                      : `${itemsOrdenados.length} de ${itemsAqui.length} ítems`}
+                  </span>
+                  <Button
+                    onClick={() => setCreandoItem(true)}
+                    icon={<Plus size={15} />}
+                    size="md"
+                  >
+                    Nuevo ítem
+                  </Button>
+                </div>
+              </div>
+
+              {/* Tabla Canónica del Sistema de Diseño con SortTh y Zebra */}
+              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
-                        <th className="text-left px-4 py-2.5 font-semibold whitespace-nowrap">Nombre</th>
-                        <th className="text-right px-4 py-2.5 font-semibold whitespace-nowrap">CO₂</th>
-                        <th className="text-right px-4 py-2.5 font-semibold whitespace-nowrap">Precio</th>
-                        <th className="px-4 py-2.5"></th>
+                        <SortTh col="nombre" sort={sortItems} onToggle={toggleSortItems}>
+                          Nombre
+                        </SortTh>
+                        <SortTh col="co2" sort={sortItems} onToggle={toggleSortItems} align="right">
+                          CO₂
+                        </SortTh>
+                        <SortTh col="precio" sort={sortItems} onToggle={toggleSortItems} align="right">
+                          Precio
+                        </SortTh>
+                        <th className="px-4 py-2.5 w-12" />
                       </tr>
                     </thead>
-                  <tbody>
-                    {itemsAqui.map((it, idx) => {
-                      const factor = it.factor_rentabilidad || 1
-                      const precioTotal = (it.item_servicios.reduce((s, x) => s + x.precio, 0) + it.item_insumos.reduce((s, x) => s + x.cantidad * x.precio_unitario, 0)) * factor
-                      const totalCo2 = it.item_materiales.reduce((s, x) => s + x.peso_kg * x.factor_co2_kg, 0)
-                      return (
+                    <tbody>
+                      {itemsOrdenados.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="px-4 py-8 text-center text-xs text-[var(--text-secondary)]"
+                          >
+                            {itemsAqui.length === 0
+                              ? 'No hay ítems registrados en esta categoría.'
+                              : 'No se encontraron ítems con los filtros aplicados.'}
+                          </td>
+                        </tr>
+                      )}
+                      {itemsOrdenados.map((it, idx) => (
                         <tr
                           key={it.id}
                           className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
@@ -1007,12 +1193,12 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
-                            {formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}
+                            {formatNumero(it.totalCo2, { unidad: 'kg CO₂ eq' })}
                           </td>
                           <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
-                            {formatCOP(precioTotal)}
+                            {formatCOP(it.precioTotal)}
                           </td>
-                          <td className="px-4 py-3 text-center">
+                          <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
                             <MenuTresPuntos
                               activa={it.activo !== false}
                               visibilidad={it.visibilidad ?? 'global'}
@@ -1041,18 +1227,11 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                             />
                           </td>
                         </tr>
-                      )
-                    })}
-                  </tbody>
+                      ))}
+                    </tbody>
                   </table>
                 </div>
               </div>
-              <button
-                onClick={() => setCreandoItem(true)}
-                className={`self-start flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold hover-pop hover-press ${cardBg} text-[var(--color-brand)]`}
-              >
-                <Plus size={14} /> Agrega un nuevo ítem
-              </button>
             </div>
           )}
         </div>
