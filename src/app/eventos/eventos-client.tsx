@@ -16,7 +16,7 @@ const inputBase = `
 `
 
 const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
-const ASTERISCO = <span className="text-[var(--color-error)]"> *</span>
+
 
 export function EventosClient({ evento }: { evento: string | null }) {
   const [nombre, setNombre] = useState('')
@@ -136,7 +136,7 @@ export function EventosClient({ evento }: { evento: string | null }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="flex flex-col gap-1">
                     <label htmlFor="nombre" className="text-xs font-semibold text-[var(--text-secondary)]/70">
-                      Nombres{ASTERISCO}
+                      Nombres
                     </label>
                     <div className="relative">
                       <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
@@ -185,7 +185,7 @@ export function EventosClient({ evento }: { evento: string | null }) {
                       type="text"
                       value={empresa}
                       onChange={e => setEmpresa(e.target.value)}
-                      placeholder="Tu empresa (opcional)"
+                      placeholder="Tu empresa"
                       autoComplete="organization"
                       maxLength={100}
                       className={`${inputBase} pl-10`}
