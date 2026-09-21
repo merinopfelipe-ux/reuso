@@ -40,7 +40,7 @@ export default function RootLayout({
         {/* Adelanta la conexión a Typekit (Seravek): el CSS sale de use.typekit.net
             y las letras de p.typekit.net. Open Sans ya es propia (public/fonts). */}
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://p.typekit.net" />
         <link rel="preload" href="/fonts/open-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Seravek (Typekit) sin bloquear el primer pintado: se inyecta con
             media="print" y pasa a "all" al cargar. Mientras llega, el texto usa

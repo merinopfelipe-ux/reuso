@@ -50,18 +50,18 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
     labelShort: 'Economía circular',
     light: {
       primary: 'var(--color-success)',
-      primaryText: 'var(--color-success)',
+      primaryText: '#156649',
       pillBg: 'rgba(56, 185, 142, 0.08)',
       pillBgHover: 'rgba(56, 185, 142, 0.16)',
-      pillText: 'var(--color-success)',
+      pillText: '#156649',
       badgeBg: 'rgba(56, 185, 142, 0.1)',
-      badgeText: 'var(--color-success)',
+      badgeText: '#156649',
       cardOpenBorder: 'rgba(56, 185, 142, 0.35)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(56, 185, 142, 0.3)',
-      btnBg: 'var(--color-success)',
+      btnBg: '#156649',
       btnText: '#FFFFFF',
-      dotBg: 'var(--color-success)',
+      dotBg: '#156649',
       glowShadow: '0 8px 24px -6px rgba(56, 185, 142, 0.15)',
     },
     dark: {
@@ -86,18 +86,18 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
     labelShort: 'Medición de huella de carbono',
     light: {
       primary: 'var(--color-info)',
-      primaryText: 'var(--color-info-content)',
+      primaryText: '#1E5D8F',
       pillBg: 'rgba(89, 166, 228, 0.08)',
       pillBgHover: 'rgba(89, 166, 228, 0.16)',
-      pillText: 'var(--color-info-content)',
+      pillText: '#1E5D8F',
       badgeBg: 'rgba(89, 166, 228, 0.1)',
-      badgeText: 'var(--color-info-content)',
+      badgeText: '#1E5D8F',
       cardOpenBorder: 'rgba(89, 166, 228, 0.35)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(89, 166, 228, 0.3)',
-      btnBg: 'var(--color-info)',
+      btnBg: '#1E5D8F',
       btnText: '#FFFFFF',
-      dotBg: 'var(--color-info)',
+      dotBg: '#1E5D8F',
       glowShadow: '0 8px 24px -6px rgba(89, 166, 228, 0.15)',
     },
     dark: {
@@ -122,18 +122,18 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
     labelShort: 'Certificaciones',
     light: {
       primary: 'var(--color-violeta)',
-      primaryText: 'var(--color-violeta)',
+      primaryText: '#763B7F',
       pillBg: 'rgba(152, 95, 161, 0.1)',
       pillBgHover: 'rgba(152, 95, 161, 0.18)',
-      pillText: 'var(--color-violeta)',
+      pillText: '#763B7F',
       badgeBg: 'rgba(152, 95, 161, 0.12)',
-      badgeText: 'var(--color-violeta)',
+      badgeText: '#763B7F',
       cardOpenBorder: 'rgba(152, 95, 161, 0.4)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(152, 95, 161, 0.35)',
-      btnBg: 'var(--color-violeta)',
+      btnBg: '#763B7F',
       btnText: '#FFFFFF',
-      dotBg: 'var(--color-violeta)',
+      dotBg: '#763B7F',
       glowShadow: '0 8px 24px -6px rgba(152, 95, 161, 0.2)',
     },
     dark: {
@@ -162,6 +162,24 @@ function getClusterTheme(slug: string, isDark: boolean): { theme: ClusterTheme; 
     theme: cluster,
     tokens: isDark ? cluster.dark : cluster.light,
   }
+}
+
+// Divide el texto por "Calculadora de Reúso" (case-insensitive) y envuelve
+// cada ocurrencia en <strong>, corrigiendo además la capitalización de marca.
+// Solo se usa en las respuestas visibles del FAQ (campo `a`), nunca en las
+// preguntas (campo `q`) ni en metadatos/JSON-LD.
+function boldBrand(text: string): React.ReactNode {
+  const BRAND = 'Calculadora de Reúso'
+  const regex = /calculadora de reúso/gi
+  const parts = text.split(regex)
+  const result: React.ReactNode[] = []
+  parts.forEach((part, i) => {
+    result.push(part)
+    if (i < parts.length - 1) {
+      result.push(<strong key={i}>{BRAND}</strong>)
+    }
+  })
+  return result
 }
 
 interface FAQItemProps {
@@ -246,7 +264,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
       {open && (
         <div id={contentId} className="px-4 sm:px-5 pb-5 pt-1 border-t border-[var(--border)]/50">
           <p className={`text-sm sm:text-base leading-relaxed font-normal pt-3 ${isDark ? 'text-white/90' : 'text-[#474747]/95'}`}>
-            {item.a}
+            {boldBrand(item.a)}
           </p>
           {/* Copiar enlace: solo al desplegar, chico, oculto en mobile. El
               texto "Copiar enlace" es un tooltip propio (no el title nativo
@@ -255,6 +273,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
             <button
               type="button"
               onClick={copiarEnlace}
+              aria-label="Copiar enlace a esta pregunta"
               style={{ color: copiado ? tokens.primaryText : undefined }}
               className={`inline-flex items-center gap-1 text-[11px] font-semibold transition-colors ${
                 copiado
@@ -348,9 +367,10 @@ export function FaqClient() {
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <Link
             href="/"
+            aria-label="Volver al inicio"
             className={`inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold ${tp} hover-pop transition-opacity hover:opacity-80`}
           >
-            <ArrowLeft size={16} />
+            <ArrowLeft size={16} aria-hidden="true" />
             <span className="hidden xs:inline">Inicio</span>
           </Link>
 
@@ -383,7 +403,7 @@ export function FaqClient() {
       </header>
 
       {/* ── CUERPO PRINCIPAL (MOBILE FIRST + MULTICOLUMNA DESKTOP) ── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-20">
         {/* Miga de pan semántica */}
         <nav aria-label="Miga de pan" className="mb-6 flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
           <Link href="/" className="hover:text-[var(--color-brand)] transition-colors">Inicio</Link>
@@ -586,7 +606,7 @@ export function FaqClient() {
             </a>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }

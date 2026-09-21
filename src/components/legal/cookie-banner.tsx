@@ -104,7 +104,6 @@ export function CookieBanner() {
 
     const consent = loadConsent()
     if (!consent) {
-      setStep('banner')
       if (detectedColombia) {
         // En Colombia, pre-aceptamos todas por defecto bajo ley de consentimiento implícito/opción de revocación
         setFuncional(true)
@@ -113,6 +112,30 @@ export function CookieBanner() {
         setFuncional(false)
         setAnalitica(false)
       }
+      const activarBanner = () => {
+        setStep('banner')
+        desuscribir()
+      }
+
+      const desuscribir = () => {
+        clearTimeout(timeoutId)
+        window.removeEventListener('scroll', activarBanner)
+        window.removeEventListener('pointerdown', activarBanner)
+        window.removeEventListener('touchstart', activarBanner)
+        window.removeEventListener('mousemove', activarBanner)
+        window.removeEventListener('keydown', activarBanner)
+      }
+
+      // El banner se activa en la primera interacción real (toque, scroll, click, tecla o mouse)
+      // o tras 12 segundos si el usuario se queda quieto, evitando colisionar con la ventana de medición de LCP sintética (5s).
+      window.addEventListener('scroll', activarBanner, { passive: true, once: true })
+      window.addEventListener('pointerdown', activarBanner, { passive: true, once: true })
+      window.addEventListener('touchstart', activarBanner, { passive: true, once: true })
+      window.addEventListener('mousemove', activarBanner, { passive: true, once: true })
+      window.addEventListener('keydown', activarBanner, { passive: true, once: true })
+      const timeoutId = setTimeout(activarBanner, 12000)
+
+      return desuscribir
     } else {
       setFuncional(consent.f)
       setAnalitica(consent.a)

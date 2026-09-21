@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { motion, AnimatePresence } from 'motion/react'
+import { m, LazyMotion, domAnimation, AnimatePresence } from 'motion/react'
 import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Flask, Plus, Users } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
@@ -343,7 +343,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
       </button>
       <AnimatePresence initial={false}>
         {open && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -351,7 +351,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
             className="overflow-hidden px-3 sm:px-4"
           >
             <p className={`text-sm sm:text-base leading-relaxed py-3 font-medium ${isDark ? 'text-white/75' : 'text-[#474747]/80'}`}>{a}</p>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
       <div className={`w-full h-px mt-1 bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/10'} to-transparent`} />
@@ -363,10 +363,10 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
 function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp: string; ts: string; liquidGlass: string }) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  const [co2, setCo2] = useState(0)
-  const [water, setWater] = useState(0)
-  const [margin, setMargin] = useState(0)
-  const [circRate, setCircRate] = useState(0)
+  const [co2, setCo2] = useState(847)
+  const [water, setWater] = useState(12.5)
+  const [margin, setMargin] = useState(38)
+  const [circRate, setCircRate] = useState(74)
 
   // Valores objetivo (Estándar vs. Cursor encima / aceleración dinámica)
   const targetCo2 = isHovered ? (hoveredIndex === 0 ? 1080 : 960) : 847
@@ -375,8 +375,16 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
   const targetCirc = isHovered ? (hoveredIndex !== null ? 92 : 86) : 74
 
   useEffect(() => {
+    if (!isHovered) {
+      setCo2(847)
+      setWater(12.5)
+      setMargin(38)
+      setCircRate(74)
+      return
+    }
+
     let animId: number
-    const duration = isHovered ? 650 : 1200
+    const duration = 650
     const start = performance.now()
     const startCo2 = co2
     const startWater = water
@@ -1189,10 +1197,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   // no cambió en absoluto, solo el momento en que el contenido aparece.
 
   return (
-    <div
-      className={`min-h-screen font-sans transition-colors duration-300 ${isDark ? 'bg-[#474747] text-white' : 'bg-primary text-[#474747]'}`}
-      style={{ overflowX: 'clip' }}
-    >
+    <LazyMotion features={domAnimation}>
+      <div
+        className={`min-h-screen font-sans transition-colors duration-300 ${isDark ? 'bg-[#474747] text-white' : 'bg-primary text-[#474747]'}`}
+        style={{ overflowX: 'clip' }}
+      >
       {/* ESTILOS GLOBALES Y ANIMACIONES MODERNAS */}
       <style jsx global>{`
         html { scroll-behavior: smooth; scroll-padding-top: 96px; }
@@ -1272,10 +1281,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         }}
         extraActions={
           <>
-            <Link href="/registro" className={`px-3 sm:px-5 py-2 rounded-full text-sm sm:text-base font-bold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
+            <Link href="/registro" className={`px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-bold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
               Empezar gratis
             </Link>
-            <Link href="/login" className={`inline-flex px-3 sm:px-4 py-2 rounded-full border text-sm sm:text-base font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
+            <Link href="/login" className={`inline-flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-base font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
               Entrar
             </Link>
           </>
@@ -1445,7 +1454,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             {TODOS_LOS_CALCULOS.slice(0, 6).map((calc, i) => {
               const IconComponent = calc.icon
               return (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -1505,7 +1514,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       {calc.desc}
                     </p>
                   </div>
-                </motion.div>
+                </m.div>
               )
             })}
           </div>
@@ -1669,7 +1678,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     }`}
                   >
                     {isSelected && (
-                      <motion.div
+                      <m.div
                         layoutId="activeTabMobilePill"
                         className={`absolute inset-0 rounded-full pointer-events-none ${
                           isDark 
@@ -1703,7 +1712,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     }`}
                   >
                     {isSelected && (
-                      <motion.div
+                      <m.div
                         layoutId="activeTabDesktopPill"
                         className={`absolute inset-0 rounded-xl md:rounded-2xl pointer-events-none ${
                           isDark 
@@ -1739,7 +1748,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
               <div className="relative z-10 min-h-[290px]">
                 <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
+                  <m.div
                     key={cat.id}
                     initial={{ opacity: 0, y: 8, filter: 'blur(3px)' }}
                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
@@ -1760,7 +1769,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts}`}>
                         {cat.desc}
                       </p>
-                    </motion.div>
+                    </m.div>
                   </AnimatePresence>
                 </div>
             </div>
@@ -1807,7 +1816,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 image: 'https://images.unsplash.com/photo-1499914485622-a88fac536970?auto=format&fit=crop&q=80&w=800',
               },
             ].map((paso, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -1840,7 +1849,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {paso.desc}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -2101,7 +2110,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
       <section id="ia" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/[0.02]'}`}>
         <div className="max-w-6xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '100px' }}
@@ -2211,7 +2220,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -2284,7 +2293,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 image: 'https://images.unsplash.com/photo-1704080118559-4aa32c2f4e1f?auto=format&fit=crop&q=80&w=800',
               },
             ].map((col, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -2305,13 +2314,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div className="relative z-10">
                     <div className="flex-1 pt-1 mb-5 sm:mb-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <motion.div
+                        <m.div
                           animate={{ scale: [1, 1.18, 1], rotate: [0, 6, -6, 0] }}
                           transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
                           className="inline-flex items-center justify-center flex-shrink-0"
                         >
                           <col.Icon size={18} className={`${col.textColor} transition-transform duration-300 group-hover:scale-125`} />
-                        </motion.div>
+                        </m.div>
                         <span className={`text-xs sm:text-sm font-bold tracking-normal ${col.textColor}`}>
                           {col.tag}
                         </span>
@@ -2334,7 +2343,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -2360,7 +2369,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 10 - CTA FINAL ─────────────────────────────────────────── */}
       <section id="cta-final" className="scroll-mt-28 pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
         <div className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '100px' }}
@@ -2417,7 +2426,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </Link>
               <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Empieza hoy con el plan Explora, 5 cálculos al mes sin costo · Sin tarjeta de crédito.</p>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
@@ -2478,7 +2487,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         {contactModalOpen && (
           <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
             {/* Backdrop con desenfoque: claro de día, oscuro de noche */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -2490,7 +2499,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             />
 
             {/* Tarjeta modal */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 16 }}
@@ -2533,11 +2542,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
               {/* Formulario */}
               <LeadsForm key={selectedPlan ?? 'default'} initialPlan={selectedPlan ?? undefined} />
-            </motion.div>
+            </m.div>
           </div>
         )}
       </AnimatePresence>
 
-    </div>
+      </div>
+    </LazyMotion>
   )
 }

@@ -111,8 +111,7 @@ export function LandingHeader({
     }
   }
 
-  if (!mounted) return null
-
+  // Eliminado: if (!mounted) return null para permitir SSR del header y pre-carga del logo con priority
   const headerStyle: React.CSSProperties = {
     background: isDark ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)' : 'rgba(255, 255, 255, 0.5)',
     backdropFilter: 'blur(8px) saturate(180%)',
@@ -170,8 +169,8 @@ export function LandingHeader({
                     }}
                     className={`px-3 md:px-4 py-2 rounded-full cursor-pointer transition-all flex items-center font-semibold text-xs md:text-sm ${
                       isDark 
-                        ? 'text-white/70 hover:text-[#D6F391] hover:bg-white/10' 
-                        : 'text-[#474747]/70 hover:text-[#00827C] hover:bg-[#00827C]/5'
+                        ? 'text-white/80 hover:text-[#D6F391] hover:bg-white/10' 
+                        : 'text-[#474747]/90 hover:text-[#00827C] hover:bg-[#00827C]/5'
                     }`}
                   >
                     {group.name}
@@ -187,7 +186,7 @@ export function LandingHeader({
                   onMouseEnter={() => handleMenuEnter(group.name, idx)}
                   onMouseLeave={handleMenuLeave}
                 >
-                  <div className={`px-3 md:px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? (isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]') : isDark ? 'text-white/60 hover:text-white/90' : 'text-[#474747]/60 hover:text-[#474747]/90'}`}>
+                  <div className={`px-3 md:px-4 py-2 rounded-full cursor-default transition-all flex items-center gap-1.5 ${isOpen ? (isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]') : isDark ? 'text-white/75 hover:text-white/90' : 'text-[#474747]/90 hover:text-[#474747]'}`}>
                     {group.name}
                     <CaretDown size={14} strokeWidth={2.5} className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
                   </div>
@@ -196,13 +195,13 @@ export function LandingHeader({
             })}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             {onContactClick ? (
               <button
                 aria-label="Te llamamos"
                 title="Te llamamos"
                 onClick={onContactClick}
-                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm hover-pop hover-press ${
+                className={`hidden md:flex w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center transition-all border shadow-sm hover-pop hover-press ${
                   isDark
                     ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391] hover:bg-[#D6F391]/20 hover:border-[#D6F391]/70'
                     : 'bg-[#00827C]/[0.05] border-[#00827C]/35 text-[#00827C] hover:bg-[#00827C]/12 hover:border-[#00827C]/60'

@@ -85,7 +85,7 @@ export function GoogleAnalytics() {
           en vez de competir con lo que se ve primero (PageSpeed, 2026-09-21).
           Los eventos previos quedan en dataLayer y se envían al cargar. */}
       <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="lazyOnload" />
-      <Script id="google-analytics-init" strategy="afterInteractive">
+      <Script id="google-analytics-init" strategy="lazyOnload">
         {`
           gtag('js', new Date());
           gtag('config', '${GA_ID}', { anonymize_ip: true });

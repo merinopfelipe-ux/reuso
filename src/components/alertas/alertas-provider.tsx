@@ -6,7 +6,7 @@ import type { Alerta } from '@/types'
 
 export function AlertasProvider({ children }: { children: React.ReactNode }) {
   const [alertas, setAlertas] = useState<AlertaConLeida[]>([])
-  const [cargando, setCargando] = useState(true)
+  const [cargando, setCargando] = useState(false)
 
   useEffect(() => {
     // AlertasProvider vive en el layout raíz (envuelve también las páginas
