@@ -9,13 +9,25 @@ const nextConfig = {
   // marca — protege links viejos ya impresos/indexados (QR de certificados,
   // resultados de Google) para que no queden rotos.
   async redirects() {
+    // ── Vanity URLs de redes sociales ────────────────────────────────────────
+    // Permiten compartir URLs cortas y memorables en eventos, tarjetas y
+    // presentaciones: calculadoradereuso.com/instagram → perfil oficial.
+    // Lo mismo aplica en creuso.app (ver creuso-app-redirect/vercel.json).
+    const redesSociales = [
+      { source: '/instagram', destination: 'https://www.instagram.com/calculadoradereuso', permanent: true },
+      { source: '/linkedin',  destination: 'https://www.linkedin.com/company/calculadora-de-reuso', permanent: true },
+      { source: '/youtube',   destination: 'https://www.youtube.com/@calculadoradereuso', permanent: true },
+    ]
+
     return [
+      // Migración de dominio (2026-09-05)
       {
         source: '/:path*',
         has: [{ type: 'host', value: 'reuso.lurdes.co' }],
         destination: 'https://calculadoradereuso.com/:path*',
         permanent: true,
       },
+      ...redesSociales,
     ]
   },
 
