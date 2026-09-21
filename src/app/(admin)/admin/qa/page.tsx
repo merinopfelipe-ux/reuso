@@ -6,7 +6,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { LogoSpinner } from '@/components/ui/logo-spinner'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { comprimirImagenWebP } from '@/lib/image-compress'
-import { CheckCircle, XCircle, Circle, Square, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle, Clock, Copy, ExternalLink, Upload, ClipboardPaste } from '@/components/ui/icons'
+import { CheckCircle, XCircle, Circle, Square, ClipboardList as ClipboardText, Download as DownloadSimple, RotateCcw as ArrowCounterClockwise, Zap as Lightning, Lock, BarChart2 as ChartBar, Bot as Robot, FileText, Store as Storefront, Building2 as Buildings, Bell, ShieldCheck, Globe, Settings as Gear, BookOpen, Search as MagnifyingGlass, ChevronDown as CaretDown, ChevronUp as CaretUp, Save as FloppyDisk, X, MinusCircle, CircleHelp as Question, Trash, AlertCircle, Clock, Copy, ExternalLink, Upload, ClipboardPaste, Warning } from '@/components/ui/icons'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 
@@ -2240,7 +2240,10 @@ function QAContenido() {
   // (Páginas Públicas), perdiendo dónde estaba (bug real reportado,
   // 2026-09-15).
   const modoUrl = searchParams.get('modo')
-  const [modo, setModo] = useState<'modulo' | 'pagina'>(modoUrl === 'pagina' ? 'pagina' : 'modulo')
+  const [modo, setModo] = useState<'modulo' | 'pagina' | 'criticas'>(
+    modoUrl === 'criticas' ? 'criticas' : modoUrl === 'pagina' ? 'pagina' : 'modulo'
+  )
+  const [filtroModuloCritico, setFiltroModuloCritico] = useState<string | null>(null)
   const categoriaUrl = searchParams.get('categoria')
   const [categoriaActiva, setCategoriaActiva] = useState(
     categoriaUrl && CATEGORIAS.some(c => c.key === categoriaUrl) ? categoriaUrl : CATEGORIAS[0].key
@@ -2251,10 +2254,11 @@ function QAContenido() {
     const params = new URLSearchParams()
     params.set('modo', modo)
     if (modo === 'modulo') params.set('categoria', categoriaActiva)
-    else if (rutaActiva) params.set('ruta', rutaActiva)
+    else if (modo === 'pagina' && rutaActiva) params.set('ruta', rutaActiva)
+    else if (modo === 'criticas' && filtroModuloCritico) params.set('cat_critica', filtroModuloCritico)
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modo, categoriaActiva, rutaActiva])
+  }, [modo, categoriaActiva, rutaActiva, filtroModuloCritico])
 
   const categoriasReactivas = useMemo(() => CATEGORIAS.map(cat => {
     if (cat.key === 'Modo Noche') return { ...cat, color: isDark ? '#D6F391' : '#6C8E24' }
@@ -2666,20 +2670,27 @@ function QAContenido() {
   const indicePagina = Math.max(0, paginas.findIndex(p => p.ruta === rutaVigente))
   const paginaActual = paginas[indicePagina]
 
-  // Tareas visibles según el módulo activo, filtradas por búsqueda
+  // Tareas visibles según el módulo activo o modo críticas, filtradas por búsqueda y con críticas SIEMPRE de primeras
   const tareasCategoria = tareas.filter(t => {
-    if (modo === 'pagina') {
+    if (modo === 'criticas') {
+      if (!t.critica) return false
+      if (filtroModuloCritico && t.categoria !== filtroModuloCritico) return false
+    } else if (modo === 'pagina') {
       if (t.ruta !== rutaVigente) return false
     } else if (t.categoria !== categoriaActiva) return false
     if (!busqueda) return true
     const b = busqueda.toLowerCase()
     return t.titulo.toLowerCase().includes(b) || t.ruta.includes(b) || t.descripcion.toLowerCase().includes(b)
+  }).sort((a, b) => {
+    // Mandato explícito: las pruebas críticas SIEMPRE aparecen de primeras en cada categoría
+    if (a.critica !== b.critica) return a.critica ? -1 : 1
+    return 0
   })
 
   // El contenido del lado se considera pequeño si tiene 2 o menos pruebas
   const contenidoLadoPequeno = tareasCategoria.length <= 2
 
-  const alcanceEfectivoParcial = alcanceParcial ?? (modo === 'modulo' ? categoriaActiva : rutaVigente)
+  const alcanceEfectivoParcial = alcanceParcial ?? (modo === 'modulo' ? categoriaActiva : modo === 'pagina' ? rutaVigente : (filtroModuloCritico ?? 'Todas las críticas'))
 
   // Generación de informe
   const generarInforme = (tipoParam?: 'final' | 'parcial', alcancesParam?: string, formato: 'completo' | 'compacto' = 'compacto') => {
@@ -2703,12 +2714,15 @@ function QAContenido() {
     }
 
     if (tipo === 'parcial') {
+      const esCriticas = modo === 'criticas'
       const esPorTema = modo === 'modulo'
       const targetScope = alcancesParam ?? alcanceEfectivoParcial
-      const scopeLabel = esPorTema ? `TEMA: ${targetScope}` : `PANTALLA: ${targetScope}`
-      const pruebasScope = esPorTema 
-        ? tareas.filter(t => t.categoria === targetScope)
-        : tareas.filter(t => t.ruta === targetScope)
+      const scopeLabel = esCriticas ? `CRÍTICAS: ${targetScope}` : (esPorTema ? `TEMA: ${targetScope}` : `PANTALLA: ${targetScope}`)
+      const pruebasScope = esCriticas
+        ? (filtroModuloCritico ? tareas.filter(t => t.categoria === filtroModuloCritico && t.critica) : tareas.filter(t => t.critica))
+        : (esPorTema 
+            ? tareas.filter(t => t.categoria === targetScope)
+            : tareas.filter(t => t.ruta === targetScope))
 
       const evaluadas = pruebasScope.filter(t => t.estado !== 'pendiente')
       const oks = evaluadas.filter(t => t.estado === 'ok').length
@@ -2829,17 +2843,22 @@ function QAContenido() {
 
   // Resumen de ultra ahorro de tokens diseñado para enviar a IA: solo errores, fallas y lo crítico
   const generarResumenIA = (alcancesParam?: string) => {
+    const esCriticas = modo === 'criticas'
     const esPorTema = modo === 'modulo'
     const targetScope = alcancesParam ?? alcanceEfectivoParcial
-    const esGlobal = !alcancesParam && !alcanceParcial && mostrarInforme !== 'parcial'
+    const esGlobal = !alcancesParam && !alcanceParcial && mostrarInforme !== 'parcial' && !esCriticas
 
-    const pruebasScope = esGlobal
+    const pruebasScope = esCriticas
+      ? (filtroModuloCritico ? tareas.filter(t => t.categoria === filtroModuloCritico && t.critica) : tareas.filter(t => t.critica))
+      : esGlobal
       ? tareas
       : esPorTema
         ? tareas.filter(t => t.categoria === targetScope)
         : tareas.filter(t => t.ruta === targetScope)
 
-    const scopeLabel = esGlobal ? 'Global' : (esPorTema ? targetScope : targetScope)
+    const scopeLabel = esCriticas
+      ? (filtroModuloCritico ? `Críticas: ${filtroModuloCritico}` : 'Todas las Críticas')
+      : esGlobal ? 'Global' : targetScope
 
     // Incluimos ÚNICAMENTE lo que requiere acción o lectura:
     // 1. Fallas, parciales y dudas (críticas primero)
@@ -3128,6 +3147,32 @@ function QAContenido() {
                   className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-white/50 focus:border-[#00827C]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
                 />
               </div>
+
+              {/* Botón de Críticas General */}
+              <button
+                type="button"
+                onClick={() => {
+                  setModo(prev => prev === 'criticas' ? 'modulo' : 'criticas')
+                  setFiltroModuloCritico(null)
+                  setExpandida(null)
+                }}
+                className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg border text-xs font-bold transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer ${
+                  modo === 'criticas'
+                    ? 'bg-[#FF5E4B] text-white border-[#FF5E4B] shadow-sm'
+                    : isDark
+                      ? 'bg-[#FF5E4B]/15 text-[#FF7B6B] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/25'
+                      : 'bg-[#FF5E4B]/10 text-[#CC3C2A] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/20'
+                }`}
+                title="Ver todas las pruebas críticas de todo el sistema en una sola vista general"
+              >
+                <Warning size={13} className={modo === 'criticas' ? 'text-white' : ''} />
+                <span>Críticas generales</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                  modo === 'criticas' ? 'bg-white/20 text-white' : isDark ? 'bg-[#FF5E4B]/30 text-white' : 'bg-[#FF5E4B]/20 text-[#CC3C2A]'
+                }`}>
+                  {totalCriticas}
+                </span>
+              </button>
               <button
                 onClick={() => setModalNuevoIntento({ abierto: true, alcance: 'completo' })}
                 className={`flex items-center justify-center sm:justify-start gap-1 px-2.5 py-2 sm:py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-spin shrink-0`}
@@ -3184,10 +3229,10 @@ function QAContenido() {
             >
               <div className="flex items-center justify-between mb-2.5 px-1">
                 <h2 className={`text-xs sm:text-sm font-semibold ${theme.textSecondary}`}>
-                  <span>{modo === 'pagina' ? 'Pantallas del sistema' : 'Módulos del sistema'}</span>
+                  <span>{modo === 'criticas' ? 'Pruebas críticas' : modo === 'pagina' ? 'Pantallas del sistema' : 'Módulos del sistema'}</span>
                 </h2>
                 <span className="text-[11px] opacity-60 lg:hidden">
-                  {modo === 'modulo' ? `${categoriasReactivas.length} módulos (desliza ↔)` : `${paginas.length} pantallas`}
+                  {modo === 'criticas' ? `${totalCriticas} críticas` : modo === 'modulo' ? `${categoriasReactivas.length} módulos (desliza ↔)` : `${paginas.length} pantallas`}
                 </span>
               </div>
 
@@ -3210,7 +3255,23 @@ function QAContenido() {
                       : `bg-transparent ${theme.textSecondary} hover:opacity-70`
                   }`}
                 >
-                  Pantalla a pantalla
+                  Pantalla
+                </button>
+                <button
+                  onClick={() => { setModo('criticas'); setFiltroModuloCritico(null); setExpandida(null) }}
+                  className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
+                    modo === 'criticas'
+                      ? 'bg-[#FF5E4B] text-white shadow-sm'
+                      : `bg-transparent ${theme.textSecondary} hover:opacity-70`
+                  }`}
+                >
+                  <Warning size={11} className={modo === 'criticas' ? 'text-white' : 'text-[#FF5E4B]'} />
+                  <span>Críticas</span>
+                  <span className={`text-[9px] px-1 rounded-full ${
+                    modo === 'criticas' ? 'bg-white/25 text-white' : 'bg-[#FF5E4B]/15 text-[#FF5E4B]'
+                  }`}>
+                    {totalCriticas}
+                  </span>
                 </button>
               </div>
 
@@ -3284,6 +3345,127 @@ function QAContenido() {
                       </button>
                     )
                   })}
+                </div>
+              )}
+
+              {modo === 'criticas' && (
+                <div className={`flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 gap-2.5 p-1 -m-1 snap-x scrollbar-thin ${contenidoLadoPequeno ? 'lg:overflow-y-auto pr-2' : ''}`}>
+                  {/* Tarjeta para "Todas las críticas" */}
+                  {(() => {
+                    const isAllActive = filtroModuloCritico === null
+                    const criticasTodas = tareas.filter(t => t.critica)
+                    const totalC = criticasTodas.length || 1
+                    const cOk = criticasTodas.filter(t => t.estado === 'ok').length
+                    const cParcial = criticasTodas.filter(t => t.estado === 'parcial').length
+                    const cDudosa = criticasTodas.filter(t => t.estado === 'no_se_entiende').length
+                    const cFail = criticasTodas.filter(t => t.estado === 'falla').length
+                    const cRev = cOk + cParcial + cDudosa + cFail
+                    const allDone = criticasTodas.length > 0 && cOk === criticasTodas.length
+
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => { setFiltroModuloCritico(null); setExpandida(null) }}
+                        className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 ${
+                          isAllActive
+                            ? 'border-[#FF5E4B] z-10 shadow-[inset_0_0_40px_rgba(255,94,75,0.2)] bg-card'
+                            : `hover:shadow-[0_8px_30px_rgba(255,94,75,0.25)] ${theme.sidebarInactiveBg}`
+                        }`}
+                      >
+                        <div className="absolute left-0 top-0 bottom-0 w-1.5 transition-all rounded-l-xl bg-[#FF5E4B]" />
+                        <div className="pl-2 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <Warning size={13} className="text-[#FF5E4B] shrink-0" />
+                            <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 ${isAllActive ? '!text-[#FF5E4B]' : theme.textTitle}`}>
+                              Todas las críticas
+                            </span>
+                          </div>
+                          <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-90 shrink-0`}>
+                            <span className={`font-mono text-[11px] ${allDone ? 'text-[#38B98E] font-bold' : theme.textSecondary}`}>
+                              {cRev}/{criticasTodas.length}
+                            </span>
+                            {allDone && <CheckCircle size={12} className="text-[#38B98E]" />}
+                          </div>
+                        </div>
+                        <p className={`pl-2 text-[11px] leading-tight truncate ${theme.textSecondary} opacity-75`}>
+                          Vista global de pruebas críticas
+                        </p>
+                        <div className="pl-2 flex flex-col gap-1 w-full">
+                          <div className={`w-full h-1.5 rounded-full overflow-hidden flex ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
+                            {cOk > 0 && <div style={{ width: `${(cOk / totalC) * 100}%` }} className="bg-[#38B98E] h-full" />}
+                            {cParcial > 0 && <div style={{ width: `${(cParcial / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#F6BF3E]' : 'bg-[#F59E0B]'}`} />}
+                            {cDudosa > 0 && <div style={{ width: `${(cDudosa / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#D8B4E2]' : 'bg-[#985fa1]'}`} />}
+                            {cFail > 0 && <div style={{ width: `${(cFail / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#FF7B6B]' : 'bg-[#FF5E4B]'}`} />}
+                          </div>
+                        </div>
+                      </button>
+                    )
+                  })()}
+
+                  {/* Módulos que tienen pruebas críticas */}
+                  {categoriasReactivas
+                    .filter(cat => tareas.some(t => t.categoria === cat.key && t.critica))
+                    .map(cat => {
+                      const isActive = filtroModuloCritico === cat.key
+                      const ct = tareas.filter(t => t.categoria === cat.key && t.critica)
+                      const totalCat = ct.length || 1
+                      const cOk = ct.filter(t => t.estado === 'ok').length
+                      const cParcial = ct.filter(t => t.estado === 'parcial').length
+                      const cDudosa = ct.filter(t => t.estado === 'no_se_entiende').length
+                      const cFail = ct.filter(t => t.estado === 'falla').length
+                      const cRevisadas = cOk + cParcial + cDudosa + cFail
+                      const isDone = ct.length > 0 && cOk === ct.length
+                      const Icon = cat.icono
+
+                      return (
+                        <button
+                          key={cat.key}
+                          type="button"
+                          onClick={() => { setFiltroModuloCritico(cat.key); setExpandida(null) }}
+                          className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-[var(--card-color)] ${
+                            isActive 
+                              ? `border-[var(--card-color)] z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] bg-card` 
+                              : `hover:shadow-[0_8px_30px_var(--card-glow)] ${theme.sidebarInactiveBg}`
+                          }`}
+                          style={{
+                            '--card-color': cat.color,
+                            '--card-glow': isDark ? `${cat.color}40` : `${cat.color}30`,
+                            '--card-bg-active': isDark ? `${cat.color}30` : `${cat.color}20`
+                          } as React.CSSProperties}
+                        >
+                          <div className="absolute left-0 top-0 bottom-0 w-1.5 transition-all rounded-l-xl"
+                            style={{ backgroundColor: cat.color }} />
+
+                          <div className="pl-2 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <Icon size={13} color={cat.color} style={{ color: cat.color }} className="shrink-0" />
+                              <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 group-hover:!text-[var(--card-color)] ${isActive ? '!text-[var(--card-color)]' : theme.textTitle}`}>
+                                {cat.key}
+                              </span>
+                            </div>
+                            <div className={`flex items-center gap-1.5 text-xs ${theme.textSecondary} opacity-90 shrink-0`}>
+                              <span className={`font-mono text-[11px] ${isDone ? 'text-[#38B98E] font-bold' : theme.textSecondary}`}>
+                                {cRevisadas}/{ct.length}
+                              </span>
+                              {isDone && <CheckCircle size={12} className="text-[#38B98E]" />}
+                            </div>
+                          </div>
+
+                          <p className={`pl-2 text-[11px] leading-tight truncate ${theme.textSecondary} opacity-75`}>
+                            {ct.length} crítica{ct.length === 1 ? '' : 's'}
+                          </p>
+
+                          <div className="pl-2 flex flex-col gap-1 w-full">
+                            <div className={`w-full h-1.5 rounded-full overflow-hidden flex ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
+                              {cOk > 0 && <div style={{ width: `${(cOk / totalCat) * 100}%` }} className="bg-[#38B98E] h-full" />}
+                              {cParcial > 0 && <div style={{ width: `${(cParcial / totalCat) * 100}%` }} className={`h-full ${isDark ? 'bg-[#F6BF3E]' : 'bg-[#F59E0B]'}`} />}
+                              {cDudosa > 0 && <div style={{ width: `${(cDudosa / totalCat) * 100}%` }} className={`h-full ${isDark ? 'bg-[#D8B4E2]' : 'bg-[#985fa1]'}`} />}
+                              {cFail > 0 && <div style={{ width: `${(cFail / totalCat) * 100}%` }} className={`h-full ${isDark ? 'bg-[#FF7B6B]' : 'bg-[#FF5E4B]'}`} />}
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
                 </div>
               )}
 
@@ -3421,7 +3603,88 @@ function QAContenido() {
               className={`border ${theme.headerBg} rounded-2xl p-4 sm:px-5 sm:py-4 transition-all`}
               style={{ boxShadow: `0 4px 24px ${theme.shadow}` }}
             >
-              {modo === 'pagina' && paginaActual ? (() => {
+              {modo === 'criticas' ? (() => {
+                const criticasActuales = tareasCategoria
+                const totalC = criticasActuales.length || 1
+                const cOk = criticasActuales.filter(t => t.estado === 'ok').length
+                const cParcial = criticasActuales.filter(t => t.estado === 'parcial').length
+                const cDudosa = criticasActuales.filter(t => t.estado === 'no_se_entiende').length
+                const cFail = criticasActuales.filter(t => t.estado === 'falla').length
+                const cRev = cOk + cParcial + cDudosa + cFail
+                const tituloHeader = filtroModuloCritico ? `Pruebas Críticas · ${filtroModuloCritico}` : 'Todas las Pruebas Críticas del Sistema'
+
+                return (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-1.5 h-10 rounded-full shrink-0 bg-[#FF5E4B]" />
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                            <Warning size={18} className="text-[#FF5E4B] shrink-0" />
+                            <span className="text-xs sm:text-base font-bold text-[#FF5E4B]">
+                              {tituloHeader}
+                            </span>
+                            <span className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-[#FF5E4B]/15 text-[#FF5E4B]">
+                              {criticasActuales.length} {criticasActuales.length === 1 ? 'crítica' : 'críticas'}
+                            </span>
+                          </div>
+                          <p className={`text-xs ${theme.textSecondary}`}>
+                            {filtroModuloCritico
+                              ? `Filtrando únicamente las pruebas con impacto crítico en ${filtroModuloCritico}`
+                              : 'Revisión prioritaria transversal de todas las pruebas que bloquean o comprometen la operación'}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 sm:flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                        <button
+                          type="button"
+                          onClick={() => copiarResumenIA(generarResumenIA(), 'Resumen IA de críticas copiado')}
+                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                            isDark
+                              ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
+                              : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
+                          }`}
+                          title="Copia el resumen de incidencias críticas para IA"
+                        >
+                          <Robot size={11} /> Resumen IA
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAlcanceParcial(filtroModuloCritico ?? 'Todas las críticas')
+                            setMostrarInforme('parcial')
+                          }}
+                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                            isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B] border-[#FF5E4B]/40 hover:bg-[#FF5E4B]/30' : 'bg-[#FF5E4B]/10 text-[#CC3C2A] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/20'
+                          }`}
+                        >
+                          <FileText size={11} /> Informe críticas
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Barra de progreso de pruebas críticas */}
+                    <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-500/10">
+                      <div className={`h-2 rounded-full overflow-hidden flex ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
+                        {cOk > 0 && <div style={{ width: `${(cOk / totalC) * 100}%` }} className="bg-[#38B98E] h-full" title={`${cOk} aprobadas`} />}
+                        {cParcial > 0 && <div style={{ width: `${(cParcial / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#F6BF3E]' : 'bg-[#F59E0B]'}`} title={`${cParcial} parciales`} />}
+                        {cDudosa > 0 && <div style={{ width: `${(cDudosa / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#D8B4E2]' : 'bg-[#985fa1]'}`} title={`${cDudosa} dudosas`} />}
+                        {cFail > 0 && <div style={{ width: `${(cFail / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#FF7B6B]' : 'bg-[#FF5E4B]'}`} title={`${cFail} fallas`} />}
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-placeholder font-medium">
+                        <span>{cRev} de {criticasActuales.length} revisadas</span>
+                        <div className="flex items-center gap-2">
+                          {cOk > 0 && <span className={`font-semibold ${isDark ? 'text-[#38B98E]' : 'text-[#1F8C65]'}`}>{cOk} aprobadas</span>}
+                          {cParcial > 0 && <span className={`font-semibold ${isDark ? 'text-[#F6BF3E]' : 'text-[#D97706]'}`}>{cParcial} parciales</span>}
+                          {cDudosa > 0 && <span className={`font-semibold ${isDark ? 'text-[#D8B4E2]' : 'text-[#8A4A94]'}`}>{cDudosa} dudas</span>}
+                          {cFail > 0 && <span className={`font-semibold ${isDark ? 'text-[#FF7B6B]' : 'text-[#CC3C2A]'}`}>{cFail} fallas</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })() : modo === 'pagina' && paginaActual ? (() => {
                 const pagTotal = paginaActual.pruebas.length || 1
                 const pagOk = paginaActual.pruebas.filter(t => t.estado === 'ok').length
                 const pagParcial = paginaActual.pruebas.filter(t => t.estado === 'parcial').length
@@ -4756,13 +5019,27 @@ function QAContenido() {
                   </div>
 
                   {/* 3. Pruebas Críticas con Falla */}
-                  <div className={`p-3.5 rounded-xl border flex flex-col gap-1.5 ${isDark ? 'bg-[#525252] border-white/10 text-white' : 'bg-primary border-light text-primary'}`}>
-                    <span className={`text-[11px] font-bold ${isDark ? 'text-gray-300' : 'text-secondary'}`}>Pruebas críticas con falla</span>
+                  <div
+                    onClick={() => {
+                      setModo('criticas')
+                      setFiltroModuloCritico(null)
+                      setMostrarProgresoModal(false)
+                      setExpandida(null)
+                    }}
+                    className={`p-3.5 rounded-xl border flex flex-col gap-1.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] ${
+                      isDark ? 'bg-[#525252] border-white/10 text-white hover:border-[#FF5E4B]/60' : 'bg-primary border-light text-primary hover:border-[#FF5E4B]/60'
+                    }`}
+                    title="Click para ver todas las pruebas críticas"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className={`text-[11px] font-bold ${isDark ? 'text-gray-300' : 'text-secondary'}`}>Pruebas críticas con falla</span>
+                      <Warning size={13} className="text-[#FF5E4B]" />
+                    </div>
                     <span className={`text-2xl font-extrabold ${criticasFallas > 0 ? (isDark ? 'text-[#FF7B6B]' : 'text-[#CC3C2A]') : '#38B98E'}`}>
                       {criticasFallas}
                     </span>
                     <span className={`text-[10px] sm:text-[11px] ${isDark ? 'text-gray-300' : 'text-secondary'}`}>
-                      {criticasEvaluadas} de {totalCriticas} evaluadas
+                      {criticasEvaluadas} de {totalCriticas} evaluadas · <span className="underline font-semibold text-[#FF5E4B]">Ver críticas</span>
                     </span>
                   </div>
 
