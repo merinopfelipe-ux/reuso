@@ -16,9 +16,9 @@ export const metadata: Metadata = {
     template: '%s - calculadoradereuso.com',
   },
   description: 'Mide y comunica el CO₂ evitado cuando reutilizas objetos.',
-  // Por defecto permitimos indexación; las rutas privadas (admin, dashboard,
-  // cotizador, etc.) definen su propio robots: { index: false } en su metadata.
-  robots: { index: true, follow: true },
+  // Bloqueamos indexación globalmente por defecto; solo / y /faq sobrescriben
+  // con robots: { index: true } en su propia metadata de página.
+  robots: { index: false, follow: false },
   // Apaga el ícono de "descargar imagen" que Edge superpone al pasar el
   // mouse sobre cualquier <img> — no es algo que agreguemos nosotros, es un
   // comportamiento nativo del navegador, y aquí no aplica (fotos de

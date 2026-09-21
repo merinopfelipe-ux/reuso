@@ -11,12 +11,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const hoy = new Date()
 
   const paginas: { ruta: string; prioridad: number; changeFrequency: MetadataRoute.Sitemap[number]['changeFrequency'] }[] = [
-    { ruta: '',         prioridad: 1.0, changeFrequency: 'weekly'  },
-    { ruta: '/faq',     prioridad: 0.8, changeFrequency: 'monthly' },
-    // /eventos es una landing de captura de leads ligada a eventos presenciales;
-    // se indexa para que quienes busquen el evento nos encuentren, pero con
-    // prioridad baja porque no compite con el home en keywords de sostenibilidad.
-    { ruta: '/eventos', prioridad: 0.5, changeFrequency: 'weekly'  },
+    { ruta: '',     prioridad: 1.0, changeFrequency: 'weekly'  },
+    { ruta: '/faq', prioridad: 0.8, changeFrequency: 'monthly' },
+    // Solo estas dos páginas son indexables. Todo lo demás
+    // (admin, cotizador, /eventos, /legal, etc.) es noindex.
   ]
 
   return paginas.map(({ ruta, prioridad, changeFrequency }) => ({
