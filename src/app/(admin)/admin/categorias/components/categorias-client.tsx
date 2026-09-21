@@ -100,6 +100,50 @@ function contarDescendientes(categorias: CategoriaConEsquemaBase[], items: ItemC
   return total
 }
 
+export function normalizarBaseNombreItem(nombre: string): string {
+  if (!nombre) return ''
+  let s = nombre.toLowerCase().trim()
+  const ciudades = [
+    'medellin', 'medellín', 'bogota', 'bogotá', 'cali', 'barranquilla', 'cartagena',
+    'bucaramanga', 'pereira', 'manizales', 'santa marta', 'cucuta', 'cúcuta', 'ibague', 'ibagué',
+    'villavicencio', 'pasto', 'neiva', 'armenia', 'valledupar', 'monteria', 'montería',
+    'sincelejo', 'popayan', 'popayán', 'tunja', 'riohacha', 'florencia', 'yopal', 'quibdo',
+    'quibdó', 'inirida', 'inírida', 'mocoa', 'leticia', 'nacional', 'local'
+  ]
+  const ciudadesPattern = ciudades.join('|')
+  
+  // Quitar sufijos de precios: ej. " - $500.000", " $120.000 COP"
+  s = s.replace(/\s*[-–—/]?\s*\$\s*[\d.,]+/gi, '')
+  s = s.replace(/\s*[-–—/]?\s*[\d.,]+\s*(cop|pesos)\b/gi, '')
+  // Quitar sufijo con guión, raya o barra con ciudad: ej. " - Medellín", " - Bogotá)"
+  s = s.replace(new RegExp(`\\s*[-–—/]\\s*(${ciudadesPattern})(?=[^a-záéíóúüñ]|$)`, 'gi'), '')
+  // Quitar ciudad entre paréntesis: ej. "(Medellín)", "(Bogotá)"
+  s = s.replace(new RegExp(`\\s*\\((${ciudadesPattern})\\)\\s*`, 'gi'), ' ')
+  // Quitar ciudad al final: ej. " Silla oficina Medellín"
+  s = s.replace(new RegExp(`\\s+(${ciudadesPattern})\\s*\\)?$`, 'gi'), '')
+
+  return s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\w\s]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+export function buscarHermanoConPesos(
+  nombreItem: string,
+  itemIdActual: string | null | undefined,
+  itemsCategoria: ItemConDimensiones[]
+): ItemConDimensiones | null {
+  const base = normalizarBaseNombreItem(nombreItem)
+  if (!base) return null
+  return itemsCategoria.find(h => {
+    if (itemIdActual && h.id === itemIdActual) return false
+    if (normalizarBaseNombreItem(h.nombre) !== base) return false
+    return h.item_materiales && h.item_materiales.some(m => (m.peso_kg || 0) > 0)
+  }) ?? null
+}
+
 import { InputPrecio, InputConUnidad, InputCantidadInsumo } from '@/components/ui/formatted-number-input'
 import { parsearIcono } from '@/lib/icono-nombre'
 
@@ -806,6 +850,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         <PanelItemValores
           item={itemAbierto}
           categoria={nodoActual}
+          itemsCategoria={itemsAqui}
           onGuardado={() => { setCreandoItem(false); abrirItem(null); refrescar() }}
           onCancelar={() => solicitarSalida(() => { setCreandoItem(false); abrirItem(null) })}
         />
@@ -1584,17 +1629,27 @@ function ModalConfirmacionAjustePerplexity({
 
 // ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
 
-function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
+function obtenerFuenteInicial(item: ItemConDimensiones | null, itemsCategoria: ItemConDimensiones[]): ItemConDimensiones | null {
+  const tienePesosPropios = item?.item_materiales && item.item_materiales.some(m => (m.peso_kg || 0) > 0)
+  if (tienePesosPropios) return item
+  return buscarHermanoConPesos(item?.nombre ?? '', item?.id, itemsCategoria)
+}
+
+function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, onCancelar }: {
   item: ItemConDimensiones | null
   categoria: CategoriaConEsquemaBase
+  itemsCategoria?: ItemConDimensiones[]
   onGuardado: () => void
   onCancelar?: () => void
 }) {
+  const fuenteInicial = obtenerFuenteInicial(item, itemsCategoria)
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
   const [origenFuente, setOrigenFuente] = useState<string>(() => {
     if (esItemPerplexity(item)) return 'perplexity'
-    return item?.origen_fuente ?? ''
+    if (item?.origen_fuente) return item.origen_fuente
+    if (fuenteInicial && esItemPerplexity(fuenteInicial)) return 'perplexity'
+    return fuenteInicial?.origen_fuente ?? ''
   })
   // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
   // es donde el super_admin realmente los edita, junto a cada material de
@@ -1604,7 +1659,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const [pesos, setPesos] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
     for (const m of categoria.categoria_materiales_base) {
-      const existente = item?.item_materiales.find(im => im.nombre === m.nombre)
+      const existente = fuenteInicial?.item_materiales.find(im => im.nombre === m.nombre)
       inicial[m.nombre] = existente ? String(existente.peso_kg) : ''
     }
     return inicial
@@ -1614,10 +1669,10 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   // o del respaldo en JSON detalle_fuente para que nunca se pierda.
   const [rolesConservacion, setRolesConservacion] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
-    const rolesResp = extraerRolesRespaldo(item?.detalle_fuente)
+    const rolesResp = extraerRolesRespaldo(fuenteInicial?.detalle_fuente)
     for (const m of categoria.categoria_materiales_base) {
       const mNorm = m.nombre.trim().toLowerCase()
-      const existente = item?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
+      const existente = fuenteInicial?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
       const rolRaw = existente?.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm]
       const rolEncontrado = rolRaw === 'se_reemplaza' || rolRaw === 'residuo' ? 'se_reemplaza' : 'se_conserva'
       inicial[m.nombre] = rolEncontrado
@@ -1628,7 +1683,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   // Información técnica detallada (razonamiento, fuente_url, confianza) devuelta por Perplexity
   const [fuentesMaterial, setFuentesMaterial] = useState<Record<string, InfoFuenteMaterial>>(() => {
     const inicial: Record<string, InfoFuenteMaterial> = {}
-    for (const im of item?.item_materiales ?? []) {
+    for (const im of fuenteInicial?.item_materiales ?? []) {
       const mNorm = im.nombre.trim().toLowerCase()
       if (im.detalle_fuente || im.origen_fuente || im.nivel_confianza) {
         const info: InfoFuenteMaterial = {
@@ -1641,9 +1696,9 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         inicial[mNorm] = info
       }
     }
-    if (item?.detalle_fuente) {
+    if (fuenteInicial?.detalle_fuente) {
       try {
-        const parsed = JSON.parse(item.detalle_fuente)
+        const parsed = JSON.parse(fuenteInicial.detalle_fuente)
         if (parsed?.materiales_info && typeof parsed.materiales_info === 'object') {
           for (const [k, v] of Object.entries(parsed.materiales_info as Record<string, InfoFuenteMaterial>)) {
             inicial[k] = { ...inicial[k], ...v }
@@ -1703,8 +1758,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const nombresServBase = useMemo(() => new Set(categoria.categoria_servicios_base.map(s => s.nombre)), [categoria])
   const nombresInsBase = useMemo(() => new Set(categoria.categoria_insumos_base.map(i => i.nombre)), [categoria])
   const [extraMateriales, setExtraMateriales] = useState<MaterialRow[]>(() => {
-    const rolesResp = extraerRolesRespaldo(item?.detalle_fuente)
-    const extras = (item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre))
+    const rolesResp = extraerRolesRespaldo(fuenteInicial?.detalle_fuente)
+    const extras = (fuenteInicial?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre))
     return extras.map(m => {
       const mNorm = m.nombre.trim().toLowerCase()
       const rolRaw = m.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm]
@@ -1824,21 +1879,21 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   // Pesos originales devueltos por Perplexity para detectar si el usuario editó el número
   const [pesosOriginalesIA, setPesosOriginalesIA] = useState<Record<string, string>>(() => {
     const orig: Record<string, string> = {}
-    for (const im of item?.item_materiales ?? []) {
+    for (const im of fuenteInicial?.item_materiales ?? []) {
       const info = fuentesMaterial[im.nombre] || fuentesMaterial[im.nombre.trim().toLowerCase()]
       if (esFuentePerplexity(info) && im.peso_kg > 0) {
         orig[im.nombre] = String(im.peso_kg)
         orig[im.nombre.trim().toLowerCase()] = String(im.peso_kg)
       }
     }
-    if (item?.detalle_fuente) {
+    if (fuenteInicial?.detalle_fuente) {
       try {
-        const parsed = JSON.parse(item.detalle_fuente)
+        const parsed = JSON.parse(fuenteInicial.detalle_fuente)
         const mats = parsed?.materiales_info as Record<string, InfoFuenteMaterial> | undefined
         if (mats) {
           for (const [k, v] of Object.entries(mats)) {
             if (esFuentePerplexity(v)) {
-              const im = item.item_materiales.find(m => m.nombre.trim().toLowerCase() === k.trim().toLowerCase())
+              const im = fuenteInicial?.item_materiales.find(m => m.nombre.trim().toLowerCase() === k.trim().toLowerCase())
               if (im && im.peso_kg > 0) {
                 orig[k] = String(im.peso_kg)
                 orig[k.trim().toLowerCase()] = String(im.peso_kg)
@@ -1917,7 +1972,80 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     setPopupAjuste(null)
   }
 
+  const hermanoConPesos = useMemo(() => {
+    return buscarHermanoConPesos(nombre, item?.id, itemsCategoria)
+  }, [nombre, item?.id, itemsCategoria])
+
+  function copiarPesosDeHermano(hermano: ItemConDimensiones) {
+    if (!hermano.item_materiales || hermano.item_materiales.length === 0) return
+    const nuevosPesos: Record<string, string> = { ...pesos }
+    const nuevosRoles: Record<string, string> = { ...rolesConservacion }
+    const nuevasFuentes: Record<string, InfoFuenteMaterial> = { ...fuentesMaterial }
+    const nuevosOrigIA: Record<string, string> = { ...pesosOriginalesIA }
+    const nuevosExtras: MaterialRow[] = []
+
+    const rolesResp = extraerRolesRespaldo(hermano.detalle_fuente)
+    let infoHermano: Record<string, InfoFuenteMaterial> = {}
+    if (hermano.detalle_fuente) {
+      try {
+        const parsed = JSON.parse(hermano.detalle_fuente)
+        if (parsed?.materiales_info) infoHermano = parsed.materiales_info
+      } catch {}
+    }
+
+    for (const im of hermano.item_materiales) {
+      const imNorm = im.nombre.trim().toLowerCase()
+      const pStr = im.peso_kg != null && im.peso_kg > 0 ? String(im.peso_kg) : ''
+      const matchEsquema = esquemaMatVisibles.find(m => m.nombre.trim().toLowerCase() === imNorm)
+      const rolRaw = im.rol_conservacion || rolesResp[im.nombre] || rolesResp[imNorm]
+      const rol = rolRaw === 'se_reemplaza' || rolRaw === 'residuo' ? 'se_reemplaza' : 'se_conserva'
+      const infoFuente: InfoFuenteMaterial = infoHermano[im.nombre] || infoHermano[imNorm] || {
+        confianza: im.nivel_confianza as 'alta' | 'media' | 'baja',
+        fuente_titulo: im.detalle_fuente,
+        fuente_url: im.origen_fuente?.startsWith('http') ? im.origen_fuente : null,
+        proveedor: im.origen_fuente,
+      }
+
+      if (matchEsquema) {
+        nuevosPesos[matchEsquema.nombre] = pStr
+        nuevosRoles[matchEsquema.nombre] = rol
+        nuevasFuentes[matchEsquema.nombre] = infoFuente
+        nuevasFuentes[imNorm] = infoFuente
+        if (im.peso_kg && esFuentePerplexity(infoFuente)) {
+          nuevosOrigIA[matchEsquema.nombre] = pStr
+          nuevosOrigIA[imNorm] = pStr
+        }
+      } else {
+        nuevosExtras.push({
+          id: nuevoIdFila('mat-extra'),
+          nombre: im.nombre,
+          peso_kg: pStr,
+          factor_co2_kg: String(im.factor_co2_kg || 0),
+          factor_agua_l_kg: im.factor_agua_l_kg != null ? String(im.factor_agua_l_kg) : '',
+          categoria_material: im.categoria_material ?? '',
+          origen_fuente: im.origen_fuente ?? '',
+          detalle_fuente: im.detalle_fuente ?? '',
+          rol_conservacion: rol,
+        })
+        nuevasFuentes[im.nombre] = infoFuente
+        nuevasFuentes[imNorm] = infoFuente
+        if (im.peso_kg && esFuentePerplexity(infoFuente)) {
+          nuevosOrigIA[im.nombre] = pStr
+          nuevosOrigIA[imNorm] = pStr
+        }
+      }
+    }
+
+    setPesos(nuevosPesos)
+    setRolesConservacion(nuevosRoles)
+    setFuentesMaterial(nuevasFuentes)
+    setPesosOriginalesIA(nuevosOrigIA)
+    if (nuevosExtras.length > 0) setExtraMateriales(nuevosExtras)
+    if (hermano.origen_fuente) setOrigenFuente(hermano.origen_fuente)
+  }
+
   const [guardando, setGuardando] = useState(false)
+  const [mensajeGuardando, setMensajeGuardando] = useState('')
   const [error, setError] = useState('')
   const [cargandoMaterialesIA, setCargandoMaterialesIA] = useState(false)
   const [cargandoFactorExtra, setCargandoFactorExtra] = useState<Record<string, boolean>>({})
@@ -2010,24 +2138,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const totalPrecio = subtotal * factor
 
   async function guardar() {
-    // Consolidar roles de conservación para respaldo infalible en detalle_fuente
-    const mapaRoles: Record<string, string> = {}
-    for (const [nom, rol] of Object.entries(rolesConservacion)) {
-      const pesoVal = parseFloat(pesos[nom]) || 0
-      const rolFinal = rol || (pesoVal > 0 ? 'se_conserva' : '')
-      if (rolFinal) {
-        mapaRoles[nom] = rolFinal
-        mapaRoles[nom.trim().toLowerCase()] = rolFinal
-      }
+    setError('')
+    const nombreLimpio = nombre.replace(/\s*√\s*$/, '').trim()
+    if (!nombreLimpio) {
+      setError('Ingresa el nombre del ítem.')
+      return
     }
-    for (const m of extraMaterialesValidos) {
-      const rolFinal = m.rol_conservacion || 'se_conserva'
-      mapaRoles[m.nombre] = rolFinal
-      mapaRoles[m.nombre.trim().toLowerCase()] = rolFinal
-    }
-
-    const tieneRoles = Object.keys(rolesConservacion).length > 0
-    const tieneFuentes = Object.keys(fuentesMaterial).length > 0
 
     // Verificar si algún material con Perplexity cambió de peso y no ha sido confirmado aún
     for (const [nom, pVal] of Object.entries(pesos)) {
@@ -2048,10 +2164,248 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
       }
     }
 
-    const materiales = [
-      ...esquemaMatVisibles
-        .filter(m => parseFloat(pesos[m.nombre]) > 0)
-        .map(m => {
+    // Comprobar si al menos un material tiene peso mayor a 0
+    let tieneAlMenosUnoConPeso = esquemaMatVisibles.some(m => (parseFloat(pesos[m.nombre]) || 0) > 0)
+      || extraMaterialesValidos.some(m => m.peso_kg > 0)
+
+    let materialesGuardarFinal: {
+      nombre: string
+      peso_kg: number
+      factor_co2_kg: number
+      factor_agua_l_kg?: number
+      origen_fuente?: string
+      detalle_fuente?: string
+      nivel_confianza: 'alta' | 'media' | 'baja'
+      rol_conservacion: string
+    }[] = []
+
+    let origenFinalCalculado: string | null = origenFuente
+    let detalleFuenteFinalCalculado: string | null = null
+
+    // Si está COMPLETAMENTE en ceros:
+    if (!tieneAlMenosUnoConPeso) {
+      const hermano = buscarHermanoConPesos(nombreLimpio, item?.id, itemsCategoria)
+      if (hermano && hermano.item_materiales && hermano.item_materiales.some(m => (m.peso_kg || 0) > 0)) {
+        // Heredar directamente del hermano sin gastar tokens en Perplexity
+        copiarPesosDeHermano(hermano)
+        materialesGuardarFinal = hermano.item_materiales
+          .filter(im => (im.peso_kg || 0) > 0)
+          .map(im => ({
+            nombre: im.nombre,
+            peso_kg: im.peso_kg,
+            factor_co2_kg: im.factor_co2_kg || 0,
+            factor_agua_l_kg: im.factor_agua_l_kg ?? undefined,
+            origen_fuente: im.origen_fuente ?? undefined,
+            detalle_fuente: im.detalle_fuente ?? undefined,
+            nivel_confianza: (im.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
+            rol_conservacion: (im.rol_conservacion === 'se_reemplaza' ? 'se_reemplaza' : 'se_conserva') as string,
+          }))
+        origenFinalCalculado = hermano.origen_fuente ?? null
+        detalleFuenteFinalCalculado = hermano.detalle_fuente ?? null
+        tieneAlMenosUnoConPeso = materialesGuardarFinal.length > 0
+      } else {
+        // Llamada a Perplexity AI antes de guardar para que no quede en ceros
+        setGuardando(true)
+        setMensajeGuardando('Estimando pesos con Perplexity AI para evitar ceros...')
+        try {
+          const matsParaIA = [...esquemaMatVisibles, ...extraMateriales.filter(m => m.nombre.trim())].map(m => m.nombre)
+          const resIA = await fetch('/api/admin/materiales/peso-sugerido-item', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombre_item: nombreLimpio,
+              categoria_nombre: categoria.nombre,
+              materiales: matsParaIA,
+            }),
+          })
+          const dataIA = await resIA.json()
+          if (resIA.ok && dataIA.ok && Array.isArray(dataIA.materiales) && dataIA.materiales.length > 0) {
+            const prov = dataIA.proveedor || 'perplexity'
+            origenFinalCalculado = prov
+            setOrigenFuente(prov)
+
+            const nuevosPesosIA: Record<string, string> = {}
+            const nuevosPesos: Record<string, string> = { ...pesos }
+            const nuevosRoles: Record<string, string> = { ...rolesConservacion }
+            const nuevasFuentes: Record<string, InfoFuenteMaterial> = { ...fuentesMaterial }
+            const nuevosExtras: MaterialRow[] = [...extraMateriales]
+
+            const listaNuevosMats: typeof materialesGuardarFinal = []
+
+            for (const r of dataIA.materiales as {
+              nombre: string
+              peso_kg_estimado?: number | null
+              rol?: string | null
+              confianza?: 'alta' | 'media' | 'baja' | null
+              fuente_titulo?: string | null
+              fuente_url?: string | null
+            }[]) {
+              const rNorm = r.nombre.trim().toLowerCase()
+              const rolValido = r.rol === 'se_reemplaza' || r.rol === 'residuo' ? 'se_reemplaza' : 'se_conserva'
+              const p = r.peso_kg_estimado || 0
+              const infoActualizada: InfoFuenteMaterial = {
+                confianza: r.confianza ?? null,
+                fuente_titulo: r.fuente_titulo ?? null,
+                fuente_url: r.fuente_url ?? null,
+                proveedor: prov,
+              }
+
+              const matchEsquema = esquemaMatVisibles.find(m => m.nombre.trim().toLowerCase() === rNorm)
+              if (matchEsquema) {
+                if (p > 0) {
+                  nuevosPesos[matchEsquema.nombre] = String(p)
+                  nuevosPesosIA[matchEsquema.nombre] = String(p)
+                  nuevosPesosIA[rNorm] = String(p)
+                  listaNuevosMats.push({
+                    nombre: matchEsquema.nombre,
+                    peso_kg: p,
+                    factor_co2_kg: parseFloat(matchEsquema.factor_co2_kg) || 0,
+                    factor_agua_l_kg: matchEsquema.factor_agua_l_kg ? parseFloat(matchEsquema.factor_agua_l_kg) : undefined,
+                    origen_fuente: r.fuente_url ? r.fuente_url.slice(0, 1900) : prov,
+                    detalle_fuente: r.fuente_titulo ? r.fuente_titulo.slice(0, 4000) : undefined,
+                    nivel_confianza: (r.confianza || 'baja') as 'alta' | 'media' | 'baja',
+                    rol_conservacion: rolValido,
+                  })
+                }
+                nuevosRoles[matchEsquema.nombre] = rolValido
+                nuevasFuentes[matchEsquema.nombre] = infoActualizada
+                nuevasFuentes[rNorm] = infoActualizada
+              } else {
+                const matchExtra = nuevosExtras.find(m => m.nombre.trim().toLowerCase() === rNorm)
+                if (matchExtra) {
+                  if (p > 0) {
+                    matchExtra.peso_kg = String(p)
+                    nuevosPesosIA[matchExtra.nombre] = String(p)
+                    nuevosPesosIA[rNorm] = String(p)
+                    listaNuevosMats.push({
+                      nombre: matchExtra.nombre,
+                      peso_kg: p,
+                      factor_co2_kg: parseFloat(matchExtra.factor_co2_kg) || 0,
+                      factor_agua_l_kg: matchExtra.factor_agua_l_kg ? parseFloat(matchExtra.factor_agua_l_kg) : undefined,
+                      origen_fuente: r.fuente_url ? r.fuente_url.slice(0, 1900) : prov,
+                      detalle_fuente: r.fuente_titulo ? r.fuente_titulo.slice(0, 4000) : undefined,
+                      nivel_confianza: (r.confianza || 'baja') as 'alta' | 'media' | 'baja',
+                      rol_conservacion: rolValido,
+                    })
+                  }
+                  matchExtra.rol_conservacion = rolValido
+                  matchExtra.origen_fuente = r.fuente_url || prov
+                  matchExtra.detalle_fuente = r.fuente_titulo || matchExtra.detalle_fuente
+                } else if (p > 0) {
+                  const nuevoExtra: MaterialRow = {
+                    id: nuevoIdFila('mat-extra'),
+                    nombre: r.nombre,
+                    peso_kg: String(p),
+                    factor_co2_kg: '',
+                    factor_agua_l_kg: '',
+                    categoria_material: '',
+                    origen_fuente: r.fuente_url || prov,
+                    detalle_fuente: r.fuente_titulo || '',
+                    rol_conservacion: rolValido,
+                  }
+                  nuevosExtras.push(nuevoExtra)
+                  listaNuevosMats.push({
+                    nombre: r.nombre,
+                    peso_kg: p,
+                    factor_co2_kg: 0,
+                    factor_agua_l_kg: undefined,
+                    origen_fuente: r.fuente_url ? r.fuente_url.slice(0, 1900) : prov,
+                    detalle_fuente: r.fuente_titulo ? r.fuente_titulo.slice(0, 4000) : undefined,
+                    nivel_confianza: (r.confianza || 'baja') as 'alta' | 'media' | 'baja',
+                    rol_conservacion: rolValido,
+                  })
+                }
+                nuevasFuentes[r.nombre] = infoActualizada
+                nuevasFuentes[rNorm] = infoActualizada
+              }
+            }
+
+            setPesos(nuevosPesos)
+            setRolesConservacion(nuevosRoles)
+            setFuentesMaterial(nuevasFuentes)
+            setPesosOriginalesIA(prev => ({ ...prev, ...nuevosPesosIA }))
+            setExtraMateriales(nuevosExtras)
+
+            materialesGuardarFinal = listaNuevosMats
+            tieneAlMenosUnoConPeso = listaNuevosMats.length > 0
+
+            const mapaRolesIA: Record<string, string> = {}
+            for (const [nom, rol] of Object.entries(nuevosRoles)) {
+              if (rol) {
+                mapaRolesIA[nom] = rol
+                mapaRolesIA[nom.trim().toLowerCase()] = rol
+              }
+            }
+            detalleFuenteFinalCalculado = JSON.stringify({
+              proveedor: prov,
+              roles: mapaRolesIA,
+              materiales_info: nuevasFuentes,
+              actualizado_at: new Date().toISOString(),
+            })
+          } else {
+            setError(dataIA.error || 'No se pudieron estimar los pesos con Perplexity AI. Ingresa el peso de al menos un material.')
+            setGuardando(false)
+            setMensajeGuardando('')
+            return
+          }
+        } catch {
+          setError('Error de conexión con Perplexity AI al estimar pesos. Intenta de nuevo.')
+          setGuardando(false)
+          setMensajeGuardando('')
+          return
+        }
+      }
+    }
+
+    if (!tieneAlMenosUnoConPeso) {
+      setError('Coloca el peso de al menos un material. El impacto ambiental no puede quedar en cero.')
+      setGuardando(false)
+      setMensajeGuardando('')
+      return
+    }
+
+    // Si no provino de una estimación en caliente de ceros, construir los materiales con el estado actual
+    if (materialesGuardarFinal.length === 0) {
+      const mapaRoles: Record<string, string> = {}
+      for (const [nom, rol] of Object.entries(rolesConservacion)) {
+        const pesoVal = parseFloat(pesos[nom]) || 0
+        const rolFinal = rol || (pesoVal > 0 ? 'se_conserva' : '')
+        if (rolFinal) {
+          mapaRoles[nom] = rolFinal
+          mapaRoles[nom.trim().toLowerCase()] = rolFinal
+        }
+      }
+      for (const m of extraMaterialesValidos) {
+        const rolFinal = m.rol_conservacion || 'se_conserva'
+        mapaRoles[m.nombre] = rolFinal
+        mapaRoles[m.nombre.trim().toLowerCase()] = rolFinal
+      }
+
+      const tieneRoles = Object.keys(rolesConservacion).length > 0
+      const tieneFuentes = Object.keys(fuentesMaterial).length > 0
+
+      materialesGuardarFinal = [
+        ...esquemaMatVisibles
+          .filter(m => parseFloat(pesos[m.nombre]) > 0)
+          .map(m => {
+            const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
+            const esManual = materialesAjustadosManualmente.has(m.nombre.trim().toLowerCase())
+            const esPerpReal = !esManual && esFuentePerplexity(mInfo)
+            const matOrigen = mInfo?.fuente_url
+              ? mInfo.fuente_url.slice(0, 1900)
+              : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
+            return {
+              nombre: m.nombre,
+              peso_kg: parseFloat(pesos[m.nombre]),
+              factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
+              factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
+              origen_fuente: matOrigen,
+              detalle_fuente: esManual ? undefined : (mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined)),
+              nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
+              rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva'),
+            }
+          }),
+        ...extraMaterialesValidos.map(m => {
           const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
           const esManual = materialesAjustadosManualmente.has(m.nombre.trim().toLowerCase())
           const esPerpReal = !esManual && esFuentePerplexity(mInfo)
@@ -2059,58 +2413,37 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             ? mInfo.fuente_url.slice(0, 1900)
             : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
           return {
-            nombre: m.nombre,
-            peso_kg: parseFloat(pesos[m.nombre]),
-            factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
-            factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
+            ...m,
             origen_fuente: matOrigen,
             detalle_fuente: esManual ? undefined : (mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined)),
-            nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
-            rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva'),
+            nivel_confianza: (mInfo?.confianza || m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
+            rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || 'se_conserva'),
           }
         }),
-      ...extraMaterialesValidos.map(m => {
-        const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
-        const esManual = materialesAjustadosManualmente.has(m.nombre.trim().toLowerCase())
-        const esPerpReal = !esManual && esFuentePerplexity(mInfo)
-        const matOrigen = mInfo?.fuente_url
-          ? mInfo.fuente_url.slice(0, 1900)
-          : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
-        return {
-          ...m,
-          origen_fuente: matOrigen,
-          detalle_fuente: esManual ? undefined : (mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined)),
-          nivel_confianza: (mInfo?.confianza || m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
-          rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || 'se_conserva'),
-        }
-      }),
-    ]
+      ]
 
-    // Solo se mantiene 'perplexity' en el ítem si al menos un material conserva Perplexity
-    const algunMaterialTienePerp = materiales.some(m => m.origen_fuente === 'perplexity' || (m.origen_fuente && m.origen_fuente.startsWith('http')))
-    const origenFinal = algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : null)
+      const algunMaterialTienePerp = materialesGuardarFinal.some(m => m.origen_fuente === 'perplexity' || (m.origen_fuente && m.origen_fuente.startsWith('http')))
+      origenFinalCalculado = algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : null)
 
-    let detalleFuenteFinal: string | null = null
-    if (tieneRoles || tieneFuentes || algunMaterialTienePerp) {
-      // Filtrar materiales_info para omitir los que fueron ajustados manualmente
-      const infoFiltrada: Record<string, InfoFuenteMaterial> = {}
-      for (const [k, v] of Object.entries(fuentesMaterial)) {
-        if (!materialesAjustadosManualmente.has(k.trim().toLowerCase())) {
-          infoFiltrada[k] = v
+      if (tieneRoles || tieneFuentes || algunMaterialTienePerp) {
+        const infoFiltrada: Record<string, InfoFuenteMaterial> = {}
+        for (const [k, v] of Object.entries(fuentesMaterial)) {
+          if (!materialesAjustadosManualmente.has(k.trim().toLowerCase())) {
+            infoFiltrada[k] = v
+          }
         }
+        detalleFuenteFinalCalculado = JSON.stringify({
+          proveedor: algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente ?? 'interno'),
+          roles: mapaRoles,
+          materiales_info: infoFiltrada,
+          actualizado_at: new Date().toISOString(),
+        })
       }
-      detalleFuenteFinal = JSON.stringify({
-        proveedor: algunMaterialTienePerp ? 'perplexity' : (item?.origen_fuente ?? 'interno'),
-        roles: mapaRoles,
-        materiales_info: infoFiltrada,
-        actualizado_at: new Date().toISOString(),
-      })
     }
 
-    if (materiales.length === 0) {
-      setError('Coloca el peso de al menos un material — el impacto ambiental no puede quedar en cero.')
-      return
-    }
+    const materiales = materialesGuardarFinal
+    const origenFinal = origenFinalCalculado
+    const detalleFuenteFinal = detalleFuenteFinalCalculado
 
     const servicios = [
       ...esquemaServVisibles
@@ -2183,6 +2516,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         const d = await resCat.json().catch(() => ({}))
         setError(d.error ?? 'Error al actualizar el esquema de la categoría.')
         setGuardando(false)
+        setMensajeGuardando('')
         return
       }
     }
@@ -2220,11 +2554,11 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         const d = await resCat.json().catch(() => ({}))
         setError(d.error ?? 'Error al actualizar los costos de la categoría.')
         setGuardando(false)
+        setMensajeGuardando('')
         return
       }
     }
 
-    const nombreLimpio = nombre.replace(/\s*√\s*$/, '').trim()
     const url = item ? `/api/admin/items/${item.id}` : '/api/admin/items'
     const method = item ? 'PATCH' : 'POST'
     const body = item
@@ -2250,11 +2584,43 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
     const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     if (!res.ok) {
-      const d = await res.json()
+      const d = await res.json().catch(() => ({}))
       setError(d.error ?? 'Error al guardar.')
       setGuardando(false)
+      setMensajeGuardando('')
       return
     }
+
+    const resData = await res.json().catch(() => ({}))
+    const idGuardado = item?.id ?? resData?.id
+
+    // Sincronizar automáticamente con ítems hermanos de otras ciudades o precios que estén en ceros
+    const baseActual = normalizarBaseNombreItem(nombreLimpio)
+    const hermanosSinPesos = (itemsCategoria || []).filter(h => {
+      if (idGuardado && h.id === idGuardado) return false
+      if (!h.id) return false
+      const matchBase = normalizarBaseNombreItem(h.nombre) === baseActual
+      const sinPesos = !h.item_materiales || h.item_materiales.length === 0 || h.item_materiales.every(m => (m.peso_kg || 0) <= 0)
+      return matchBase && sinPesos
+    })
+
+    if (hermanosSinPesos.length > 0) {
+      setMensajeGuardando(`Sincronizando materiales con ${hermanosSinPesos.length} ítem(s) hermanos...`)
+      await Promise.all(
+        hermanosSinPesos.map(h =>
+          fetch(`/api/admin/items/${h.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              materiales,
+              origen_fuente: origenFinal,
+              detalle_fuente: detalleFuenteFinal,
+            }),
+          }).catch(err => console.error(`Error sincronizando hermano ${h.nombre}:`, err))
+        )
+      )
+    }
+
     onGuardado()
   }
 
@@ -2270,6 +2636,23 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           )}
         </div>
         <input style={inputSt} placeholder="Ej: Mesa 4 puestos" value={nombre} onChange={e => setNombre(e.target.value)} required autoFocus={!item} />
+        {hermanoConPesos && (
+          <div className="mt-3 flex items-center justify-between p-2.5 px-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-[#00827C] dark:text-[#2DD4BF]">
+            <div className="flex items-center gap-2 min-w-0">
+              <Sparkles size={14} className="flex-shrink-0" />
+              <span className="truncate">
+                Especificaciones compartidas con <strong>{hermanoConPesos.nombre}</strong> (pesos y fuentes sincronizados para ahorrar tokens).
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => copiarPesosDeHermano(hermanoConPesos)}
+              className="underline hover:opacity-80 font-medium ml-2 flex-shrink-0 cursor-pointer text-xs"
+            >
+              Copiar de nuevo
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
@@ -3034,7 +3417,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           </button>
         )}
         <button onClick={guardar} disabled={guardando} className={btnPrimario}>
-          {guardando ? 'Guardando...' : 'Guardar'}
+          {guardando ? (mensajeGuardando || 'Guardando...') : 'Guardar'}
         </button>
       </div>
 
