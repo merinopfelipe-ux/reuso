@@ -18,7 +18,11 @@ const leadSchema = z.object({
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
-  const allowed = await rateLimit(`leads:${ip}`, 5, 5 * 60_000)
+  // En un evento muchas personas comparten el mismo wifi (misma IP): con 5 envíos
+  // cada 5 minutos se bloquearía a los asistentes. /eventos manda interes "Eventos".
+  const previo = await request.clone().json().catch(() => ({}))
+  const esEvento = previo?.interes === 'Eventos'
+  const allowed = await rateLimit(`leads:${ip}`, esEvento ? 60 : 5, 5 * 60_000)
   if (!allowed) {
     return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta en un momento.' }, { status: 429 })
   }
