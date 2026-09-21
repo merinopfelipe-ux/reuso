@@ -320,6 +320,7 @@ export function Footer({
         { href: '/legal/privacidad', label: 'Política de privacidad', isExternal: true },
         { href: '/legal/medicion', label: 'Sobre la medición', isExternal: true },
         { href: '/faq', label: 'Preguntas frecuentes', isExternal: true },
+        { href: '/eventos', label: 'Eventos', isExternal: false },
       ]
 
   // Espacio inferior para el menú móvil:
