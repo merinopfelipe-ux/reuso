@@ -723,6 +723,10 @@ export function Footer({
           gap: 0px;
           text-decoration: none;
           cursor: pointer;
+          /* Área táctil de al menos 24 px de alto (accesibilidad, WCAG 2.5.8).
+             Autorizado por el usuario 2026-09-21 (zona protegida). */
+          min-height: 24px;
+          align-items: center;
           transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .footer-interactive-block:hover {

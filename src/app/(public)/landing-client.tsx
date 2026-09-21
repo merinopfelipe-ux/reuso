@@ -1866,11 +1866,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               ))}
             </div>
             <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-[40px] border-[#00827C]/10'}`}>
-              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts} opacity-50`}`}>Mensual</span>
+              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts}`}`}>Mensual</span>
               <button aria-label="Cambiar entre cobro mensual y anual" onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${billing === 'annual' ? 'translate-x-4 lg:translate-x-5' : 'translate-x-0.5'}`} />
               </button>
-              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts} opacity-50`}`}>Anual</span>
+              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts}`}`}>Anual</span>
               {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] bg-[#00827C]/8'}`}>2 meses gratis.</span>}
             </div>
           </div>
@@ -1890,7 +1890,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 md:px-3 md:py-0.5 lg:px-4 lg:py-1 bg-[#474747] text-[#D6F391] text-[9px] md:text-[9px] lg:text-[10px] font-bold rounded-full whitespace-nowrap shadow-md">Más popular</div>
                 )}
                 <div className="mb-4 md:mb-5 lg:mb-6">
-                  <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 opacity-60 ${ts}`}>{plan.tagline}</p>
+                  <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 ${ts}`}>{plan.tagline}</p>
                   <h3 className={`text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 group-hover:${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} ${tp}`}>{plan.name}</h3>
                   <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 group-hover:text-[var(--color-brand)] ${tp}`}>{formatPrice(plan)}</div>
                   {plan.priceMonthlyCOP > 0 && (
@@ -1905,7 +1905,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/12'}`}>
                   {cuotasPlan(plan).map((c, k) => (
                     <div key={k}>
-                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide opacity-55 ${ts}`}>{c.etiqueta}</dt>
+                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
                       <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
                     </div>
                   ))}

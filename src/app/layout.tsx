@@ -42,7 +42,15 @@ export default function RootLayout({
         <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
         <link rel="preload" href="/fonts/open-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-        <link rel="stylesheet" href="https://use.typekit.net/ggf2dir.css" />
+        {/* Seravek (Typekit) sin bloquear el primer pintado: se inyecta con
+            media="print" y pasa a "all" al cargar. Mientras llega, el texto usa
+            Open Sans (ya es propia) y luego cambia a Seravek. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){var l=document.createElement('link');l.rel='stylesheet';
+          l.href='https://use.typekit.net/ggf2dir.css';l.media='print';
+          l.onload=function(){l.media='all'};document.head.appendChild(l)})();
+        ` }} />
+        <noscript><link rel="stylesheet" href="https://use.typekit.net/ggf2dir.css" /></noscript>
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             var saved = localStorage.getItem('theme');
