@@ -16,20 +16,21 @@ export const REDES_SOCIALES_DEFAULT: RedSocialItem[] = [
     nombre: 'LinkedIn',
     handle: '/calculadora-de-reuso',
     href: 'https://www.linkedin.com/company/calculadora-de-reuso',
-    ariaLabel: 'Visitar nuestro perfil en LinkedIn',
+    // WCAG 2.5.3: el aria-label debe contener el texto visible (el handle)
+    ariaLabel: 'LinkedIn /calculadora-de-reuso — Ver perfil',
   },
   {
     id: 'youtube',
     nombre: 'YouTube',
     handle: '/calculadoradereuso',
     href: 'https://www.youtube.com/@calculadoradereuso',
-    ariaLabel: 'Visitar nuestro canal en YouTube',
+    ariaLabel: 'YouTube /calculadoradereuso — Ver canal',
   },
   {
     id: 'instagram',
     nombre: 'Instagram',
     handle: '@calculadoradereuso',
     href: 'https://www.instagram.com/calculadoradereuso',
-    ariaLabel: 'Visitar nuestro perfil en Instagram',
+    ariaLabel: 'Instagram @calculadoradereuso — Ver perfil',
   },
 ]

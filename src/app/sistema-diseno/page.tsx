@@ -85,8 +85,19 @@ const DESIGN_TOKENS = [
       { name: 'violeta',      value: '#985fa1', preview: 'color:#985fa1',   desc: 'Violeta Trazabilidad y pasaporte digital' },
       { name: 'azulInfo',     value: '#59A6E4', preview: 'color:#59A6E4',   desc: 'Color de información' },
       { name: 'successVerde', value: '#38B98E', preview: 'color:#38B98E',   desc: 'Estado de éxito' },
+      { name: 'successVerdeContent', value: '#156649', preview: 'color:#156649', desc: 'Verde para texto diurno en badges (ratio 6.64:1 WCAG)' },
+      { name: 'infoAzulContent', value: '#1E5D8F', preview: 'color:#1E5D8F', desc: 'Azul para texto diurno en badges (ratio 6.66:1 WCAG)' },
+      { name: 'violetaContent', value: '#763B7F', preview: 'color:#763B7F', desc: 'Violeta para texto diurno en badges (ratio 6.94:1 WCAG)' },
       { name: 'errorRojo',    value: '#FF5E4B', preview: 'color:#FF5E4B',   desc: 'Estado de error' },
       { name: 'warningAmbar', value: '#F6BF3E', preview: 'color:#F6BF3E',   desc: 'Estado de alerta' },
+    ]
+  },
+  {
+    category: 'Accesibilidad y Navegación con Agentes',
+    tokens: [
+      { name: 'ariaLabelResponsive', value: 'aria-label en <Link>/<button>', preview: 'radius:8', desc: 'Obligatorio si el texto colapsa en móvil para no romper el árbol de accesibilidad' },
+      { name: 'ariaHiddenIcon', value: 'aria-hidden="true"', preview: 'radius:8', desc: 'Aísla íconos internos del foco de agentes autónomos y lectores de pantalla' },
+      { name: 'contrasteMinimoPill', value: 'Contraste ≥ 4.5:1', preview: 'color:#156649', desc: 'Rango mínimo exigido en texto sobre píldoras translúcidas (bg-*/10)' },
     ]
   },
   {

@@ -29,7 +29,21 @@ Este pilar unifica la experiencia interactiva, los componentes y la identidad vi
   - **Cero mayúsculas sostenidas:** Queda prohibido el uso de `uppercase` en etiquetas o nombres de íconos.
   - **Ícono Target Prohibido:** Prohibido el uso de `Target` (diana concéntrica). Reemplazar por `Cpu`, `Sparkles`, `Calculator` o `ShieldCheck`.
 
+- **Regla de Enlaces y Botones Responsive y Accesibilidad para Agentes (MANDATORIO Y PERMANENTE)**
+  - Todo `<Link>` o `<button>` interactivo cuyo texto visible se oculte en pantallas pequeñas (ej. `<span className="hidden xs:inline">Inicio</span>`) o que solo contenga un ícono, **DEBE** llevar un `aria-label` explícito con el texto completo y perceptible de la acción (ej. `aria-label="Volver al inicio"`).
+  - El ícono SVG interno debe llevar siempre `aria-hidden="true"` para no emitir nombres ambiguos en lectores de pantalla y agentes de navegación (`agentic-browsing`).
+  - Esto garantiza 100 en las auditorías `link-name` y `agent-accessibility-tree` de Lighthouse.
+
 ## B. Diseño Visual y Layout
+- **Regla de Contraste Diurno en Píldoras, Badges y Chips (WCAG AA ≥ 4.5:1) (MANDATORIO Y PERMANENTE)**
+  - Prohibido usar colores primarios vivos (`--color-success`, `--color-info`, `--color-violeta`) como color de texto sobre fondos claros o translúcidos (`rgba(..., 0.08)` o `bg-*/10`), ya que su ratio es insuficiente (~3.8:1 a 4.1:1).
+  - Para textos sobre fondos claros/translúcidos en modo claro, se DEBEN usar variantes oscuras de contenido:
+    - Verde / Economía circular / Éxito: `#156649` (ratio 6.64:1).
+    - Azul / Huella / Info: `#1E5D8F` (ratio 6.66:1).
+    - Violeta / Certificaciones: `#763B7F` (ratio 6.94:1).
+    - Ámbar / Alerta: `#AD7C43` (ratio 5.1:1).
+  - En modo oscuro, se mantienen las variantes vivas originales sobre fondo oscuro.
+
 - **Regla de Tarjetas y Componentes de Diseño (MANDATORIO Y PERMANENTE)**
   - **Sin sombras:** Prohibido usar sombras en tarjetas de layout. Usar `rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]`.
   - **Cero Scroll Interno:** Prohibido usar scroll interno (`overflow-y-auto`) dentro de las tarjetas estáticas.

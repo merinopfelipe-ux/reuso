@@ -2196,6 +2196,171 @@ function getPesoCriticidad(t: { id: string; critica: boolean }): number {
   return PESOS_CRITICOS[t.id] ?? 100
 }
 
+// ── PageSpeed Widget (exclusivo para perf-10) ──────────────────────────────────
+
+type PSIScore = { performance: number; seo: number; accessibility: number; best_practices: number }
+type PSIEstado = 'idle' | 'cargando' | 'ok' | 'error'
+type PSIFila = { url: string; label: string; estado: PSIEstado; scores: PSIScore | null; error: string | null }
+
+const PAGINAS_PSI = [
+  { url: '/', label: 'Portada (/)' },
+  { url: '/faq', label: 'FAQ (/faq)' },
+  { url: '/login', label: 'Login (/login)' },
+]
+
+function scoreBadge(score: number) {
+  const color = score >= 90 ? '#38B98E' : score >= 50 ? '#F6BF3E' : '#FF5E4B'
+  const bg = `${color}18`
+  const border = `${color}40`
+  return { color, bg, border }
+}
+
+function PageSpeedWidget({ isDark }: { isDark: boolean }) {
+  const [filas, setFilas] = useState<PSIFila[]>(
+    PAGINAS_PSI.map(p => ({ url: p.url, label: p.label, estado: 'idle', scores: null, error: null }))
+  )
+
+  const analizar = async (idx: number) => {
+    const base = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
+    const urlCompleta = `${base}${filas[idx].url}`
+
+    setFilas(prev => prev.map((f, i) => i === idx ? { ...f, estado: 'cargando', scores: null, error: null } : f))
+
+    try {
+      const res = await fetch(`/api/pagespeed?url=${encodeURIComponent(urlCompleta)}&strategy=mobile`)
+      const data = await res.json()
+      if (!res.ok || data.error) {
+        setFilas(prev => prev.map((f, i) => i === idx ? { ...f, estado: 'error', error: data.error ?? 'Error desconocido' } : f))
+      } else {
+        setFilas(prev => prev.map((f, i) => i === idx ? { ...f, estado: 'ok', scores: data } : f))
+      }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Error de red'
+      setFilas(prev => prev.map((f, i) => i === idx ? { ...f, estado: 'error', error: msg } : f))
+    }
+  }
+
+  const analizarTodas = () => filas.forEach((_, i) => analizar(i))
+
+  const cats = [
+    { key: 'performance' as const,    label: 'Rendimiento' },
+    { key: 'seo' as const,            label: 'SEO' },
+    { key: 'accessibility' as const,  label: 'Accesibilidad' },
+    { key: 'best_practices' as const, label: 'Buenas prácticas' },
+  ]
+
+  return (
+    <div
+      className="mb-4 rounded-xl overflow-hidden"
+      style={{
+        border: `1px solid ${isDark ? 'rgba(214,243,145,0.15)' : 'rgba(0,130,124,0.12)'}`,
+        background: isDark ? 'rgba(214,243,145,0.04)' : 'rgba(0,130,124,0.03)',
+      }}
+    >
+      {/* Header */}
+      <div
+        className="flex items-center justify-between px-4 py-2.5 border-b"
+        style={{ borderColor: isDark ? 'rgba(214,243,145,0.10)' : 'rgba(0,130,124,0.10)' }}
+      >
+        <div className="flex items-center gap-2">
+          <Lightning size={14} color={isDark ? '#D6F391' : '#00827C'} />
+          <span className={`text-xs font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+            Análisis automático de PageSpeed (Mobile)
+          </span>
+        </div>
+        <button
+          onClick={analizarTodas}
+          className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all hover:scale-105 active:scale-95 ${
+            isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'
+          }`}
+        >
+          Analizar las 3
+        </button>
+      </div>
+
+      {/* Filas */}
+      <div className="flex flex-col divide-y" style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.06)' }}>
+        {filas.map((fila, idx) => {
+          const cargando = fila.estado === 'cargando'
+          return (
+            <div key={fila.url} className="px-4 py-3 flex flex-col gap-2">
+              {/* Fila superior: label + botón */}
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-xs font-semibold ${isDark ? 'text-white/80' : 'text-[#474747]'}`}>
+                  {fila.label}
+                </span>
+                <button
+                  onClick={() => analizar(idx)}
+                  disabled={cargando}
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                    isDark
+                      ? 'border-[#D6F391]/30 text-[#D6F391] hover:bg-[#D6F391]/10'
+                      : 'border-[#00827C]/30 text-[#00827C] hover:bg-[#00827C]/08'
+                  }`}
+                >
+                  {cargando ? 'Analizando…' : 'Analizar'}
+                </button>
+              </div>
+
+              {/* Estados */}
+              {fila.estado === 'idle' && (
+                <p className={`text-[11px] ${isDark ? 'text-white/30' : 'text-[#474747]/40'}`}>
+                  Pulsa Analizar para obtener los scores reales de Lighthouse.
+                </p>
+              )}
+
+              {fila.estado === 'cargando' && (
+                <div className="flex gap-2">
+                  {cats.map(c => (
+                    <div
+                      key={c.key}
+                      className="flex-1 h-8 rounded-lg animate-pulse"
+                      style={{ background: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)' }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {fila.estado === 'error' && (
+                <p className="text-[11px] text-[#FF5E4B] font-medium">
+                  Error: {fila.error}
+                </p>
+              )}
+
+              {fila.estado === 'ok' && fila.scores && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {cats.map(c => {
+                    const val = fila.scores![c.key]
+                    const { color, bg, border } = scoreBadge(val)
+                    return (
+                      <div
+                        key={c.key}
+                        className="flex flex-col items-center py-1.5 px-2 rounded-lg"
+                        style={{ background: bg, border: `1px solid ${border}` }}
+                      >
+                        <span className="text-lg font-black leading-none" style={{ color }}>
+                          {val}
+                        </span>
+                        <span className="text-[10px] font-semibold mt-0.5" style={{ color }}>
+                          {c.label}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <p className={`px-4 py-2 text-[10px] border-t ${isDark ? 'text-white/25 border-white/06' : 'text-[#474747]/35 border-[#00827C]/08'}`}>
+        Scores sobre la URL de <code>NEXT_PUBLIC_APP_URL</code> en mobile. Usa el veredicto de abajo para registrar el resultado.
+      </p>
+    </div>
+  )
+}
+
 // ── Componente ─────────────────────────────────────────────────────────────────
 
 function QAContenido() {
@@ -4175,6 +4340,11 @@ function QAContenido() {
                           )
                         })}
 
+
+                         {/* PageSpeed automático — solo para perf-10 */}
+                         {tarea.id === 'perf-10' && (
+                           <PageSpeedWidget isDark={isDark} />
+                         )}
                         {/* Notas */}
                         <label className={`block text-xs font-bold ${theme.textSecondary} mb-1.5`}>
                           Tus apuntes
