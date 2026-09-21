@@ -3,6 +3,8 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
+import { enviarSeguimientoEvento, enviarAvisoLeadEvento } from '@/lib/email'
+import { waLink } from '@/lib/constants/contacto'
 
 const leadSchema = z.object({
   nombre: z.string().min(2, 'El nombre es muy corto.'),
@@ -55,6 +57,21 @@ export async function POST(request: NextRequest) {
     }
 
     const adminClient = await createAdminClient()
+
+    // Un solo correo de seguimiento por dirección cada 24 horas: evita que el
+    // formulario sirva para llenar de mensajes el correo de otra persona.
+    let yaContactado = false
+    if (lead.interes === 'Eventos') {
+      const desde = new Date(Date.now() - 24 * 3600_000).toISOString()
+      const { count } = await adminClient
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .ilike('email', lead.email.replace(/[\\%_]/g, '\\$&'))
+        .eq('interes', 'Eventos')
+        .gte('created_at', desde)
+      yaContactado = (count ?? 0) > 0
+    }
+
     const { data, error } = await adminClient
       .from('leads')
       .insert([lead])
@@ -69,8 +86,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Nota: Aquí se podría integrar Resend para enviar notificación al admin
-    // pero por ahora lo dejamos solo en BD como "todo lo gratis".
+    // Leads de /eventos: correo inmediato a la persona y aviso al equipo con un
+    // botón de WhatsApp (sin API de WhatsApp). Un fallo de correo nunca rompe el envío.
+    if (lead.interes === 'Eventos' && !yaContactado) {
+      const celular = /Celular:\s*(\+?\d[\d\s]*)/.exec(lead.mensaje)?.[1]?.trim() ?? ''
+      const digitos = celular.replace(/\D/g, '')
+      const whatsappUrl = waLink('Hola, nos vimos en el evento y quedamos en contacto. Te escribimos de la Calculadora de Reúso.', digitos)
+      await Promise.allSettled([
+        enviarSeguimientoEvento(lead.email, { empresa: lead.empresa ?? lead.nombre }),
+        enviarAvisoLeadEvento({ empresa: lead.empresa ?? lead.nombre, email: lead.email, celular, whatsappUrl }),
+      ])
+    }
 
     return NextResponse.json({ ok: true, id: data.id })
   } catch {

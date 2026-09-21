@@ -777,6 +777,100 @@ export async function enviarConfirmacionRegistro(
   return { resendEmailId: data?.id ?? null }
 }
 
+// ── Página /eventos: seguimiento inmediato al lead y aviso interno ───────────
+
+function botonCorreo(href: string, texto: string): string {
+  return `
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+  <tr>
+    <td align="center">
+      <a class="eb" href="${href}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+        ${texto}
+      </a>
+    </td>
+  </tr>
+</table>`
+}
+
+// Correo simple que recibe la persona apenas deja sus datos en /eventos.
+export async function enviarSeguimientoEvento(
+  to: string,
+  datos: { empresa: string }
+): Promise<{ resendEmailId: string | null }> {
+  if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
+  if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const empresaSegura = escaparHtml(datos.empresa)
+
+  const html = emailPlantilla({
+    preheader: 'Nos vimos y quedamos en contacto. Recibimos los datos de tu empresa.',
+    subtituloHeader: 'Nos vimos y quedamos en contacto',
+    saludo: '¡Hola!',
+    cuerpo: `Nos vimos en el evento y quedamos en contacto. Recibimos los datos de <strong>${empresaSegura}</strong>. No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
+    contenidoCentral: botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso'),
+    mostrarAlerta: false,
+    avisoPie: 'Recibiste este correo porque dejaste los datos de tu empresa en nuestro evento. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
+  })
+
+  const { data } = await resend.emails.send({
+    from: FROM,
+    to,
+    subject: 'Nos vimos y quedamos en contacto',
+    html,
+    replyTo: 'servicio@calculadoradereuso.com',
+  })
+  return { resendEmailId: data?.id ?? null }
+}
+
+// Aviso interno: llega al equipo con un botón que abre WhatsApp con el mensaje
+// listo, porque no hay API de WhatsApp (basta un toque para enviarlo).
+export async function enviarAvisoLeadEvento(datos: {
+  empresa: string
+  email: string
+  celular: string
+  whatsappUrl: string
+}): Promise<{ resendEmailId: string | null }> {
+  if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
+  if (!process.env.RESEND_API_KEY) return { resendEmailId: null }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const empresaSegura = escaparHtml(datos.empresa)
+  const fila = (k: string, v: string) => `
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">${k}</td>
+    <td style="padding:6px 0;color:#474747;font-size:13px;">${v}</td>
+  </tr>`
+
+  const contenidoCentral = `
+<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+  ${fila('Empresa', empresaSegura)}
+  ${fila('Celular', escaparHtml(datos.celular))}
+  ${fila('Correo', escaparHtml(datos.email))}
+</table>
+${botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp')}`
+
+  const html = emailPlantilla({
+    preheader: `${datos.empresa} dejó sus datos en el evento.`,
+    subtituloHeader: 'Nuevo contacto del evento',
+    saludo: 'Nuevo contacto',
+    cuerpo: 'Una empresa dejó sus datos en la página de eventos y ya recibió un correo de seguimiento. Toca el botón para abrir WhatsApp con el mensaje listo.',
+    contenidoCentral,
+    mostrarAlerta: false,
+    avisoPie: 'Aviso interno del equipo de la Calculadora de Reúso.',
+  })
+
+  const { data } = await resend.emails.send({
+    from: FROM,
+    to: 'servicio@calculadoradereuso.com',
+    subject: `Nuevo contacto del evento: ${datos.empresa.replace(/[\r\n]+/g, ' ').slice(0, 80)}`,
+    html,
+  })
+  return { resendEmailId: data?.id ?? null }
+}
+
 // Nota: enviarCorreoAdmin/emailMarketing/urlBaja (el envío masivo del panel
 // admin con su propio tracking de apertura/clic) se eliminaron junto con
 // /admin/correos (2026-09-06) — esa función pasa a Loops.so. Ver

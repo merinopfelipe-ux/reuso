@@ -6,6 +6,7 @@ import { Building2 as Buildings, Mail as EnvelopeSimple, CheckCircle } from '@/c
 import { InputTelefono } from '@/components/ui/input-telefono'
 import { Button } from '@/components/ui/button'
 import { validarTelefono } from '@/lib/telefono'
+import { waLink } from '@/lib/constants/contacto'
 
 const inputBase = `
   w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition-all duration-200
@@ -73,8 +74,16 @@ export function EventosClient() {
             <CheckCircle size={44} className="text-[var(--color-brand)]" />
             <h1 className="text-xl font-bold text-[var(--text-primary)]">Recibimos tus datos</h1>
             <p className="text-sm text-[var(--text-secondary)]">
-              Gracias por visitarnos. Te contactamos muy pronto para mostrarte cómo medir el impacto de tu empresa.
+              Te enviamos un correo y te contactamos muy pronto para mostrarte cómo medir el impacto de tu empresa.
             </p>
+            <a
+              href={waLink('Hola, nos vimos en el evento y quiero saber más de la Calculadora de Reúso.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center justify-center rounded-full bg-[var(--color-brand)] px-6 py-3 text-sm font-semibold text-[var(--text-on-brand)] transition-all hover-pop hover-press"
+            >
+              Escríbenos por WhatsApp
+            </a>
           </div>
         ) : (
           <>
