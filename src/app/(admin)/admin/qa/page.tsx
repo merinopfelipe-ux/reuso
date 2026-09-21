@@ -3655,34 +3655,32 @@ function QAContenido() {
             >
               {modo === 'criticas' ? (() => {
                 const criticasActuales = tareasCategoria
-                const tituloHeader = filtroModuloCritico ? `Pruebas Críticas · ${filtroModuloCritico}` : 'Todas las Pruebas Críticas del Sistema'
                 const descripcionHeader = filtroModuloCritico
                   ? `Filtrando únicamente las pruebas con impacto crítico en ${filtroModuloCritico}`
                   : 'Revisión prioritaria transversal de todas las pruebas que bloquean o comprometen la operación'
 
                 return (
-                  <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-6 rounded-full bg-[#FF5E4B]" />
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-1.5 h-6 rounded-full bg-[#FF5E4B] shrink-0" />
+                        <div className="flex items-center gap-2 flex-wrap min-w-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             <Warning size={16} className="text-[#FF5E4B] shrink-0" />
-                            <span className="text-xs sm:text-sm font-bold text-[#FF5E4B]">
-                              {tituloHeader}
+                            <span className="text-xs sm:text-sm font-bold text-[#FF5E4B] whitespace-nowrap">
+                              {criticasActuales.length} {criticasActuales.length === 1 ? 'prueba crítica' : 'pruebas críticas'}
                             </span>
                           </div>
-                          <span className={`text-xs ${theme.textSecondary}`}>
-                            · {criticasActuales.length} {criticasActuales.length === 1 ? 'prueba crítica' : 'pruebas críticas'}
+                          <span className={`text-xs ${theme.textSecondary} opacity-90`}>
+                            · {descripcionHeader}
                           </span>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                      <div className="flex items-center gap-2 shrink-0">
                         <button
                           type="button"
                           onClick={() => copiarResumenIA(generarResumenIA(), 'Resumen IA de críticas copiado')}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                             isDark
                               ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
                               : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
@@ -3697,7 +3695,7 @@ function QAContenido() {
                             setAlcanceParcial(filtroModuloCritico ?? 'Todas las críticas')
                             setMostrarInforme('parcial')
                           }}
-                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                             isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B] border-[#FF5E4B]/40 hover:bg-[#FF5E4B]/30' : 'bg-[#FF5E4B]/10 text-[#CC3C2A] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/20'
                           }`}
                         >
@@ -3705,11 +3703,6 @@ function QAContenido() {
                         </button>
                       </div>
                     </div>
-
-                    <p className={`pl-4 text-xs ${theme.textSecondary} opacity-80`}>
-                      {descripcionHeader}
-                    </p>
-                  </div>
                 )
               })() : modo === 'pagina' && paginaActual ? (() => {
                 return (
