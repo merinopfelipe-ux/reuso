@@ -1222,11 +1222,21 @@ export function BadgePerplexity({ title = 'Estimado con Perplexity AI' }: { titl
 export function esItemPerplexity(it: ItemConDimensiones | null | undefined): boolean {
   if (!it) return false
 
-  // 1. Si el detalle_fuente tiene materiales con fuentes de Perplexity verificadas
+  // 1. Si el ítem directamente tiene origen_fuente 'perplexity' o 'openrouter'
+  const origItem = (it.origen_fuente || '').toLowerCase()
+  if (origItem.includes('perplexity') || origItem.includes('openrouter')) {
+    return true
+  }
+
+  // 2. Si el detalle_fuente tiene proveedor perplexity o materiales con info de Perplexity
   if (it.detalle_fuente) {
     try {
       const parsed = JSON.parse(it.detalle_fuente)
       if (parsed && typeof parsed === 'object') {
+        const prov = String(parsed.proveedor || '').toLowerCase()
+        if (prov.includes('perplexity') || prov.includes('openrouter')) {
+          return true
+        }
         const matsInfo = parsed.materiales_info as Record<string, InfoFuenteMaterial> | undefined
         if (matsInfo && typeof matsInfo === 'object') {
           const tieneFuenteReal = Object.values(matsInfo).some(f => esFuentePerplexity(f))
@@ -1242,14 +1252,14 @@ export function esItemPerplexity(it: ItemConDimensiones | null | undefined): boo
     }
   }
 
-  // 2. Verificar si alguno de sus materiales tiene fuente técnica externa de Perplexity
+  // 3. Verificar si alguno de sus materiales tiene fuente técnica de Perplexity
   const tieneMatPerplexity = it.item_materiales?.some(m => {
     if (!m.origen_fuente && !m.detalle_fuente) return false
     const det = (m.detalle_fuente || '').toLowerCase()
     if (det.includes('factor interno') || det.includes('interno') || det.includes('provisional')) return false
     if (m.origen_fuente && m.origen_fuente.startsWith('http')) return true
     const orig = (m.origen_fuente || '').toLowerCase()
-    if ((orig.includes('perplexity') || orig.includes('openrouter')) && (m.nivel_confianza === 'alta' || m.nivel_confianza === 'media') && det.length > 15) {
+    if (orig.includes('perplexity') || orig.includes('openrouter')) {
       return true
     }
     return false
@@ -1269,13 +1279,17 @@ export function esFuentePerplexity(info?: InfoFuenteMaterial | null): info is In
     return false
   }
 
+  // Si el proveedor explícitamente es Perplexity o OpenRouter y tiene razonamiento o URL
+  if (prov.includes('perplexity') || prov.includes('openrouter')) {
+    return Boolean(info.fuente_url || (info.fuente_titulo && info.fuente_titulo.trim().length > 10))
+  }
+
   // Debe tener una URL real de internet o un título técnico sustancial de IA
   const tieneUrlReal = Boolean(info.fuente_url && info.fuente_url.startsWith('http'))
   const tieneTituloTecnico = Boolean(
     info.fuente_titulo &&
     info.fuente_titulo.trim().length > 15 &&
-    (prov.includes('perplexity') || prov.includes('openrouter')) &&
-    (info.confianza === 'alta' || info.confianza === 'media')
+    (titulo.includes('estimación razonada') || titulo.includes('densidad') || titulo.includes('fuente'))
   )
 
   return tieneUrlReal || tieneTituloTecnico
@@ -1489,7 +1503,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
   const [origenFuente, setOrigenFuente] = useState<string>(() => {
     if (esItemPerplexity(item)) return 'perplexity'
-    return item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : ''
+    return item?.origen_fuente ?? ''
   })
   // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
   // es donde el super_admin realmente los edita, junto a cada material de
@@ -1828,15 +1842,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const tieneRoles = Object.keys(rolesConservacion).length > 0
     const tieneFuentes = Object.keys(fuentesMaterial).length > 0
 
-    // Solo se considera Perplexity si se ejecutó activamente el cálculo en esta sesión (origenFuente === 'perplexity')
-    // o si el ítem ya tenía Perplexity con fuentes técnicas verificadas.
-    const fueCalculadoConIA = origenFuente === 'perplexity' || (esItemPerplexity(item) && Object.values(fuentesMaterial).some(f => esFuentePerplexity(f)))
-    const origenFinal = fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : null)
+    // Conservar Perplexity si se ejecutó activamente en la sesión o si el ítem ya provenía de Perplexity
+    const fueCalculadoConIA = origenFuente === 'perplexity' || esItemPerplexity(item) || Boolean(item?.origen_fuente?.includes('perplexity'))
+    const origenFinal = fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente ?? null)
 
     let detalleFuenteFinal: string | null = null
     if (tieneRoles || tieneFuentes || fueCalculadoConIA) {
       detalleFuenteFinal = JSON.stringify({
-        proveedor: fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : 'interno'),
+        proveedor: fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente ?? 'interno'),
         roles: mapaRoles,
         materiales_info: fuentesMaterial,
         actualizado_at: new Date().toISOString(),
@@ -1904,7 +1917,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
           const esPerpReal = esFuentePerplexity(mInfo)
           const matOrigen = mInfo?.fuente_url
             ? mInfo.fuente_url.slice(0, 1900)
-            : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
+            : (esPerpReal || fueCalculadoConIA ? 'perplexity' : (m.origen_fuente || undefined))
           return {
             nombre: m.nombre,
             peso_kg: parseFloat(pesos[m.nombre]),
@@ -1921,12 +1934,12 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         const esPerpReal = esFuentePerplexity(mInfo)
         const matOrigen = mInfo?.fuente_url
           ? mInfo.fuente_url.slice(0, 1900)
-          : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
+          : (esPerpReal || fueCalculadoConIA ? 'perplexity' : (m.origen_fuente || undefined))
         return {
           ...m,
           origen_fuente: matOrigen,
           detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
-          nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
+          nivel_confianza: (mInfo?.confianza || m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
           rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || 'se_conserva'),
         }
       }),
@@ -2086,7 +2099,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   return (
     <div className="flex flex-col gap-4">
       <div className={`rounded-2xl p-4 ${cardBg}`}>
-        <label className={labelSt}>Nombre del ítem</label>
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <label className={labelSt}>Nombre del ítem</label>
+          {(origenFuente === 'perplexity' || esItemPerplexity(item)) && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#00827C] dark:text-[#2DD4BF] bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              <IconoPerplexity size={12} /> Estimado con Perplexity AI
+            </span>
+          )}
+        </div>
         <input style={inputSt} placeholder="Ej: Mesa 4 puestos" value={nombre} onChange={e => setNombre(e.target.value)} required autoFocus={!item} />
       </div>
 
