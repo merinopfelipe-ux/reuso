@@ -81,7 +81,10 @@ export function GoogleAnalytics() {
   // a correr sin saber que arranca en modo sin cookies.
   return (
     <>
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+      {/* lazyOnload: gtag.js (167 KiB) espera a que la página termine de cargar
+          en vez de competir con lo que se ve primero (PageSpeed, 2026-09-21).
+          Los eventos previos quedan en dataLayer y se envían al cargar. */}
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="lazyOnload" />
       <Script id="google-analytics-init" strategy="afterInteractive">
         {`
           gtag('js', new Date());
