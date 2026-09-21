@@ -10,9 +10,8 @@ import { enviarSeguimientoEvento, enviarAvisoLeadEvento } from '@/lib/email'
 // Captura de leads en eventos: nombre y apellido, empresa, y basta el celular
 // O el correo. Página pública sin sesión (mismo patrón que /api/leads).
 const schema = z.object({
-  nombre: z.string().trim().min(3, 'Escribe tu nombre y apellido.').max(100)
-    .refine(v => v.split(/\s+/).filter(p => p.length >= 2).length >= 2, 'Escribe tu nombre y apellido.'),
-  empresa: z.string().trim().min(2, 'Escribe el nombre de tu empresa.').max(100),
+  nombre: z.string().trim().min(2, 'Escribe tu nombre.').max(100),
+  empresa: z.string().trim().max(100).optional().nullable(),
   email: z.string().trim().max(150).optional(),
   indicativo: z.string().trim().max(6).optional(),
   telefono: z.string().trim().max(20).optional(),
@@ -62,8 +61,10 @@ export async function POST(request: NextRequest) {
       yaContactado = (count ?? 0) > 0
     }
 
+    const empresaLimpia = empresa ? empresa.trim() : null
+
     const { error } = await admin.from('leads').insert([{
-      nombre, empresa, email: email || null, telefono: celular || null,
+      nombre, empresa: empresaLimpia, email: email || null, telefono: celular || null,
       interes: 'Eventos', evento_nombre: evento?.nombre ?? null,
       mensaje: evento ? `Evento: ${evento.nombre}` : 'Evento sin nombre programado',
     }])
@@ -78,8 +79,8 @@ export async function POST(request: NextRequest) {
       ? waLink(`Hola ${nombre.split(/\s+/)[0]}, nos conocemos${evento ? ` en ${evento.nombre}` : ' en el evento'} y quedamos en contacto. Te escribimos de la Calculadora de Reúso.`, `${indicativo.replace(/\D/g, '')}${digitos}`)
       : ''
     await Promise.allSettled([
-      email && !yaContactado ? enviarSeguimientoEvento(email, { nombre, empresa, evento: evento?.nombre }) : Promise.resolve(),
-      enviarAvisoLeadEvento({ nombre, empresa, email, celular, whatsappUrl, evento: evento?.nombre }),
+      email && !yaContactado ? enviarSeguimientoEvento(email, { nombre, empresa: empresaLimpia, evento: evento?.nombre }) : Promise.resolve(),
+      enviarAvisoLeadEvento({ nombre, empresa: empresaLimpia, email, celular, whatsappUrl, evento: evento?.nombre }),
     ])
 
     return NextResponse.json({ ok: true, correoEnviado: !!email && !yaContactado })

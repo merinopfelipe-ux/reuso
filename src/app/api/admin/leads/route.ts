@@ -5,8 +5,15 @@ import { z } from 'zod'
 
 const patchLeadSchema = z.object({
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).optional(),
-  notas_admin: z.string().max(2000).optional(),
-  asignado_a: z.uuid().nullable().optional(),
+  notas_admin: z.string().max(2000).nullable().optional(),
+  asignado_a: z.string().uuid().nullable().optional(),
+  nombre: z.string().trim().max(100).nullable().optional(),
+  email: z.string().trim().email('Correo inválido.').nullable().optional().or(z.literal('')),
+  telefono: z.string().trim().max(30).nullable().optional(),
+  empresa: z.string().trim().max(100).nullable().optional(),
+  interes: z.string().trim().max(100).nullable().optional(),
+  mensaje: z.string().max(2000).nullable().optional(),
+  evento_nombre: z.string().trim().max(120).nullable().optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -52,9 +59,12 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
+  const patchData = { ...parsed.data }
+  if (patchData.email === '') patchData.email = null
+
   const { data, error } = await guard.adminClient
     .from('leads')
-    .update({ ...parsed.data, updated_at: new Date().toISOString() })
+    .update({ ...patchData, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()
@@ -64,9 +74,31 @@ export async function PATCH(request: NextRequest) {
   await logAuditoria(guard.adminClient, {
     user_id: guard.user.id,
     accion: 'actualizar_lead',
-    detalle: { id, cambios: parsed.data },
+    detalle: { id, cambios: patchData },
     ip: getIp(request),
   })
 
   return NextResponse.json(data)
 }
+
+export async function DELETE(request: NextRequest) {
+  const guard = await requireSuperAdmin(request)
+  if (guard.error) return guard.error
+
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  if (!id) return NextResponse.json({ error: 'Falta el id.' }, { status: 400 })
+
+  const { error } = await guard.adminClient.from('leads').delete().eq('id', id)
+  if (error) return NextResponse.json({ error: 'Error al eliminar el lead.' }, { status: 500 })
+
+  await logAuditoria(guard.adminClient, {
+    user_id: guard.user.id,
+    accion: 'eliminar_lead',
+    detalle: { id },
+    ip: getIp(request),
+  })
+
+  return NextResponse.json({ ok: true })
+}
+

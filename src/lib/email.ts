@@ -797,7 +797,7 @@ function botonCorreo(href: string, texto: string): string {
 // por el primer nombre y menciona el evento programado en /admin/leads.
 export async function enviarSeguimientoEvento(
   to: string,
-  datos: { nombre: string; empresa: string; evento?: string | null }
+  datos: { nombre: string; empresa?: string | null; evento?: string | null }
 ): Promise<{ resendEmailId: string | null }> {
   if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
@@ -805,18 +805,19 @@ export async function enviarSeguimientoEvento(
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const nombre = escaparHtml(primerNombre(datos.nombre))
-  const empresaSegura = escaparHtml(datos.empresa)
+  const empresaSegura = datos.empresa ? escaparHtml(datos.empresa) : ''
   const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
   const conocimos = evento ? `Nos conocemos en <strong>${evento}</strong> y quedamos en contacto.` : 'Nos vimos en el evento y quedamos en contacto.'
+  const textoEmpresa = empresaSegura ? ` Recibimos los datos de <strong>${empresaSegura}</strong>.` : ' Recibimos tus datos.'
 
   const html = emailPlantilla({
-    preheader: evento ? `Nos conocemos en ${evento}. Recibimos los datos de tu empresa.` : 'Nos vimos y quedamos en contacto. Recibimos los datos de tu empresa.',
+    preheader: evento ? `Nos conocemos en ${evento}. Recibimos tus datos.` : 'Nos vimos y quedamos en contacto. Recibimos tus datos.',
     subtituloHeader: evento ? `Nos conocemos en ${evento}` : 'Nos vimos y quedamos en contacto',
     saludo: nombre ? `¡Hola, ${nombre}!` : '¡Hola!',
-    cuerpo: `${conocimos} Recibimos los datos de <strong>${empresaSegura}</strong>. No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
+    cuerpo: `${conocimos}${textoEmpresa} No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
     contenidoCentral: botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso'),
     mostrarAlerta: false,
-    avisoPie: 'Recibiste este correo porque dejaste los datos de tu empresa en nuestro evento. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
+    avisoPie: 'Recibiste este correo porque dejaste tus datos en nuestro evento. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
   })
 
   const { data } = await resend.emails.send({
@@ -833,7 +834,7 @@ export async function enviarSeguimientoEvento(
 // listo, porque no hay API de WhatsApp (basta un toque para enviarlo).
 export async function enviarAvisoLeadEvento(datos: {
   nombre: string
-  empresa: string
+  empresa?: string | null
   email?: string
   celular?: string
   whatsappUrl?: string
@@ -853,7 +854,7 @@ export async function enviarAvisoLeadEvento(datos: {
   const contenidoCentral = `
 <table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
   ${fila('Nombre', datos.nombre)}
-  ${fila('Empresa', datos.empresa)}
+  ${fila('Empresa', datos.empresa ?? '')}
   ${fila('Celular', datos.celular ?? '')}
   ${fila('Correo', datos.email ?? '')}
   ${fila('Evento', datos.evento ?? '')}
@@ -864,20 +865,26 @@ ${datos.whatsappUrl ? botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp') : 
     ? `${datos.email ? 'Ya recibió un correo de seguimiento. ' : 'No dejó correo. '}Toca el botón para abrir WhatsApp con el mensaje listo.`
     : 'No dejó celular, solo correo, y ya recibió el correo de seguimiento.'
 
+  const origen = datos.empresa ? `${datos.nombre} de ${datos.empresa}` : datos.nombre
+
   const html = emailPlantilla({
-    preheader: `${datos.nombre} de ${datos.empresa} dejó sus datos en el evento.`,
+    preheader: `${origen} dejó sus datos en el evento.`,
     subtituloHeader: 'Nuevo contacto del evento',
     saludo: 'Nuevo contacto',
-    cuerpo: `${escaparHtml(datos.nombre)} de ${escaparHtml(datos.empresa)} dejó sus datos en la página de eventos. ${cuerpo}`,
+    cuerpo: `${escaparHtml(origen)} dejó sus datos en la página de eventos. ${cuerpo}`,
     contenidoCentral,
     mostrarAlerta: false,
     avisoPie: 'Aviso interno del equipo de la Calculadora de Reúso.',
   })
 
+  const asunto = datos.empresa
+    ? `Nuevo contacto del evento: ${datos.empresa.replace(/[\r\n]+/g, ' ').slice(0, 80)}`
+    : `Nuevo contacto del evento: ${datos.nombre.replace(/[\r\n]+/g, ' ').slice(0, 80)}`
+
   const { data } = await resend.emails.send({
     from: FROM,
     to: 'servicio@calculadoradereuso.com',
-    subject: `Nuevo contacto del evento: ${datos.empresa.replace(/[\r\n]+/g, ' ').slice(0, 80)}`,
+    subject: asunto,
     html,
   })
   return { resendEmailId: data?.id ?? null }

@@ -172,7 +172,7 @@ export function Footer({
     // ----------------------------------------------------
     // DISEÑO ESCRITORIO (DESK): Réplica idéntica en los 3
     // Límite superior: Bloque 1 | Límite inferior: Bloque 2
-    // Todo a 10px siempre
+    // Todo a 10px siempre, alineado a la derecha
     // ----------------------------------------------------
     if (variant === 'legal') {
       return (
@@ -180,17 +180,17 @@ export function Footer({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: 'flex-end',
           height: 70,
           fontSize: 10,
-          textAlign: 'left',
+          textAlign: 'right',
         }}>
           {/* Límite superior: Última actualización (Sin enlace: sin negrita, sin animación, 10px siempre) */}
-          <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', gap: 0, cursor: 'default' }}>
-            <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15 }}>
+          <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0, cursor: 'default', textAlign: 'right' }}>
+            <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
               {cleanIpLabel || 'Última actualización'}
             </div>
-            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15 }}>
+            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
               {ip ? ip.split(',')[0].trim() : '13 de septiembre de 2026'}
             </div>
           </div>
@@ -201,12 +201,12 @@ export function Footer({
             target="_blank"
             rel="noopener noreferrer"
             className="footer-interactive-block"
-            style={{ gap: 0 }}
+            style={{ gap: 0, alignItems: 'flex-end', textAlign: 'right' }}
           >
-            <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15 }}>
+            <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
               {cleanLastVisitLabel || 'Contacto'}
             </div>
-            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word' }}>
+            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word', textAlign: 'right' }}>
               {lastVisit || 'servicio@calculadoradereuso.com'}
             </div>
           </a>
@@ -221,17 +221,17 @@ export function Footer({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          alignItems: 'flex-start',
+          alignItems: 'flex-end',
           height: 70,
           fontSize: 10,
-          textAlign: 'left',
+          textAlign: 'right',
         }}>
           {/* Límite superior: Dirección IP (Sin enlace: sin negrita, sin animación, 10px siempre) */}
-          <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', gap: 0, cursor: 'default' }}>
-            <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15 }}>
+          <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0, cursor: 'default', textAlign: 'right' }}>
+            <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
               {cleanIpLabel || 'Dirección IP'}
             </div>
-            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15 }}>
+            <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
               {ip || '—'}
             </div>
           </div>
@@ -243,21 +243,21 @@ export function Footer({
               target="_blank"
               rel="noopener noreferrer"
               className="footer-interactive-block"
-              style={{ gap: 0 }}
+              style={{ gap: 0, alignItems: 'flex-end', textAlign: 'right' }}
             >
-              <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15 }}>
+              <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
                 {cleanLastVisitLabel || 'Contacto'}
               </div>
-              <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word' }}>
+              <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word', textAlign: 'right' }}>
                 {lastVisit}
               </div>
             </a>
           ) : (
-            <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', gap: 0, cursor: 'default' }}>
-              <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15 }}>
+            <div className="footer-static-info" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0, cursor: 'default', textAlign: 'right' }}>
+              <div className="footer-info-primary" style={{ fontWeight: 400, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
                 {cleanLastVisitLabel && cleanLastVisitLabel !== 'Contacto' ? cleanLastVisitLabel : 'Última visita'}
               </div>
-              <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15 }}>
+              <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
                 {lastVisit || '—'}
               </div>
             </div>
@@ -272,21 +272,21 @@ export function Footer({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'flex-end',
         height: 70,
         fontSize: 10,
-        textAlign: 'left',
+        textAlign: 'right',
       }}>
         {/* Límite superior: Inicia ahora (Con enlace: con negrita, animación de redes, 10px siempre) */}
         <Link
           href="/registro"
           className="footer-interactive-block"
-          style={{ gap: 0 }}
+          style={{ gap: 0, alignItems: 'flex-end', textAlign: 'right' }}
         >
-          <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15 }}>
+          <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
             Inicia ahora
           </div>
-          <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15 }}>
+          <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
             En 3 minutos tienes tu primer reporte.
           </div>
         </Link>
@@ -297,12 +297,12 @@ export function Footer({
           target="_blank"
           rel="noopener noreferrer"
           className="footer-interactive-block"
-          style={{ gap: 0 }}
+          style={{ gap: 0, alignItems: 'flex-end', textAlign: 'right' }}
         >
-          <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15 }}>
+          <div className="footer-info-primary" style={{ fontWeight: 600, fontSize: 10, lineHeight: 1.15, textAlign: 'right' }}>
             {cleanLastVisitLabel || 'Contacto'}
           </div>
-          <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word' }}>
+          <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word', textAlign: 'right' }}>
             {lastVisit || 'servicio@calculadoradereuso.com'}
           </div>
         </a>
