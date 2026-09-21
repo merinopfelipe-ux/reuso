@@ -8,6 +8,8 @@ export interface SelectorOpcion {
   label: string
 }
 
+export type SelectorTamano = 'sm' | 'md' | 'lg'
+
 export interface SelectorProps {
   opciones: SelectorOpcion[] | readonly SelectorOpcion[]
   value: string
@@ -16,12 +18,34 @@ export interface SelectorProps {
   disabled?: boolean
   className?: string
   style?: React.CSSProperties
+  tamano?: SelectorTamano
+}
+
+const SIZES: Record<SelectorTamano, string> = {
+  sm: 'h-8 px-2.5 text-xs',
+  md: 'h-9 px-3 text-xs',
+  lg: 'h-11 px-4 text-sm',
+}
+
+const ICON_SIZES: Record<SelectorTamano, number> = {
+  sm: 13,
+  md: 14,
+  lg: 16,
 }
 
 // Reemplazo genérico del <select> nativo del navegador (sin estilo propio,
 // distinto en cada sistema operativo) — mismo patrón visual que
 // SelectorCiudad/SelectorEmpresa: botón + panel propio.
-export function Selector({ opciones, value, onChange, placeholder = 'Selecciona', disabled, className = '', style }: SelectorProps) {
+export function Selector({
+  opciones,
+  value,
+  onChange,
+  placeholder = 'Selecciona',
+  disabled,
+  className = '',
+  style,
+  tamano = 'md',
+}: SelectorProps) {
   const [abierto, setAbierto] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const seleccionada = opciones.find(o => o.value === value)
@@ -48,20 +72,19 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
   }
 
   return (
-    <div className={`relative w-full ${className}`} ref={containerRef}>
+    <div className={`relative ${className}`} ref={containerRef}>
       <button
         type="button"
         disabled={disabled}
         onKeyDown={onKeyDownTrigger}
-        className={`w-full flex items-center justify-between gap-2 px-4 py-3 rounded-2xl border text-sm outline-none transition-colors 
+        className={`w-full flex items-center justify-between gap-2 rounded-lg border outline-none transition-colors ${SIZES[tamano]} 
           ${disabled ? 'opacity-50 cursor-not-allowed bg-[var(--bg-card)]' : 'bg-[var(--bg-input)] hover:bg-[var(--bg-card)] cursor-pointer'} 
-          ${abierto ? 'border-[var(--color-brand)] shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-[var(--border)]'} 
-          ${className}`}
+          ${abierto ? 'border-[var(--color-brand)] shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-[var(--border)]'}`}
         style={style}
         onClick={() => setAbierto(a => !a)}
       >
         <span className="whitespace-nowrap" style={{ color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)' }}>{seleccionada?.label ?? placeholder}</span>
-        <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <ChevronDown size={ICON_SIZES[tamano]} className="text-[var(--text-secondary)] flex-shrink-0" />
       </button>
 
       {abierto && !disabled && (
@@ -77,7 +100,7 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
                   key={o.value}
                   type="button"
                   onClick={() => { onChange(o.value); setAbierto(false) }}
-                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] whitespace-nowrap ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors hover:bg-[var(--bg-hover)] whitespace-nowrap ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {o.label}

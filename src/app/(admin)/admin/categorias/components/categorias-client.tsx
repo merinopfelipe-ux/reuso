@@ -1203,7 +1203,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                     placeholder="Buscar ítems..."
                     value={busquedaItem}
                     onChange={e => setBusquedaItem(e.target.value)}
-                    className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] transition-colors"
+                    className="w-full h-9 pl-8 pr-3 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] transition-colors box-border"
                   />
                 </div>
 
@@ -1213,6 +1213,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                     value={filtroEstado}
                     onChange={setFiltroEstado}
                     placeholder="Todos los estados"
+                    tamano="md"
                     opciones={[
                       { value: '', label: 'Todos los estados' },
                       { value: 'activos', label: 'Activos' },
@@ -1221,7 +1222,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                       { value: 'sin-perplexity', label: 'Sin Perplexity AI' },
                       { value: 'restringido', label: 'Visibilidad restringida' },
                     ]}
-                    className="w-auto min-w-[210px]"
+                    className="w-auto min-w-[200px]"
                   />
                 </div>
 
@@ -1233,7 +1234,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                       setBusquedaItem('')
                       setFiltroEstado('')
                     }}
-                    className="px-3 py-2 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0"
+                    className="h-9 px-3 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0"
                   >
                     Limpiar
                   </button>
