@@ -2420,7 +2420,9 @@ function QAContenido() {
     const data = tareasPendientesRef.current
     const tareasSnap = alcance === 'completo'
       ? data
-      : data.filter(t => t.categoria === alcance)
+      : alcance.startsWith('criticas')
+      ? (alcance === 'criticas_global' ? data.filter(t => t.critica) : data.filter(t => t.critica && `criticas_${t.categoria}` === alcance))
+      : data.filter(t => t.categoria === alcance || t.ruta === alcance)
     
     setIntentos(prev => {
       const numeroSiguiente = prev.filter(i => i.alcance === alcance).length + 1
@@ -2461,7 +2463,17 @@ function QAContenido() {
       return actualizadas
     })
     if (intento.alcance !== 'completo') {
-      setCategoriaActiva(intento.alcance)
+      if (intento.alcance.startsWith('criticas')) {
+        setModo('criticas')
+        const mod = intento.alcance.replace('criticas_', '')
+        setFiltroModuloCritico(mod === 'criticas_global' ? null : mod)
+      } else if (intento.alcance.startsWith('/')) {
+        setModo('pagina')
+        setRutaActiva(intento.alcance)
+      } else {
+        setModo('modulo')
+        setCategoriaActiva(intento.alcance)
+      }
     }
     setMostrarHistorial(null)
     mostrarToast(`Se restauró el ${intento.etiqueta} (${intento.alcance}) al tablero activo`)
@@ -2475,7 +2487,16 @@ function QAContenido() {
     // 2. Resetear tareas
     setTareas(prev => {
       const actualizadas = prev.map(t => {
-        if (alcance !== 'completo' && t.categoria !== alcance) return t
+        if (alcance !== 'completo') {
+          if (alcance.startsWith('criticas')) {
+            if (!t.critica) return t
+            if (alcance !== 'criticas_global' && `criticas_${t.categoria}` !== alcance) return t
+          } else if (alcance.startsWith('/')) {
+            if (t.ruta !== alcance) return t
+          } else if (t.categoria !== alcance) {
+            return t
+          }
+        }
         if (conservarAprobadas && t.estado === 'ok') return t
         return {
           ...t,
@@ -4283,7 +4304,25 @@ function QAContenido() {
 
             {/* ── Footer del módulo activo ─────────────────────────────── */}
             {(() => {
-              const intentosModulo = intentos.filter(i => i.alcance === categoriaActiva).length
+              const alcanceObjetivo = modo === 'criticas'
+                ? (filtroModuloCritico ? `criticas_${filtroModuloCritico}` : 'criticas_global')
+                : modo === 'pagina'
+                ? rutaVigente
+                : categoriaActiva
+
+              const etiquetaAmbito = modo === 'criticas'
+                ? (filtroModuloCritico ? `en críticas de ${filtroModuloCritico}` : 'en críticas generales')
+                : modo === 'pagina'
+                ? 'en esta pantalla'
+                : 'en este módulo'
+
+              const etiquetaAcciones = modo === 'criticas'
+                ? 'Acciones de críticas'
+                : modo === 'pagina'
+                ? 'Acciones de la pantalla'
+                : 'Acciones del módulo'
+
+              const intentosModulo = intentos.filter(i => i.alcance === alcanceObjetivo).length
               return (
                 <div className={`border ${theme.cardBg} rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-xs transition-all`}>
                   {/* Línea 1: Estado y contexto del módulo */}
@@ -4292,14 +4331,14 @@ function QAContenido() {
                       <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${intentosModulo > 0 ? 'bg-[#38B98E] ring-4 ring-[#38B98E]/20' : 'bg-gray-400/40'}`} />
                       <span className={`${theme.textPrimary} font-semibold text-xs sm:text-sm`}>
                         {intentosModulo === 0
-                          ? 'Sin intentos guardados en este módulo'
+                          ? `Sin intentos guardados ${etiquetaAmbito}`
                           : intentosModulo === 1
-                          ? '1 intento guardado en este módulo'
-                          : `${intentosModulo} intentos guardados en este módulo`}
+                          ? `1 intento guardado ${etiquetaAmbito}`
+                          : `${intentosModulo} intentos guardados ${etiquetaAmbito}`}
                       </span>
                     </div>
                     <span className={`text-[11px] ${theme.textSecondary} hidden sm:inline-block font-medium`}>
-                      Acciones del módulo
+                      {etiquetaAcciones}
                     </span>
                   </div>
 
@@ -4307,7 +4346,7 @@ function QAContenido() {
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full">
                     <button
                       type="button"
-                      onClick={() => setModalNuevoIntento({ abierto: true, alcance: categoriaActiva })}
+                      onClick={() => setModalNuevoIntento({ abierto: true, alcance: alcanceObjetivo })}
                       className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-semibold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer ${theme.cardBg} ${theme.textPrimary} ${isDark ? 'border-white/10 hover:border-amber-400/40 hover:bg-white/5' : 'border-light hover:border-amber-500/40 hover:bg-secondary'}`}
                       title="Crea un nuevo intento guardando previamente el estado actual"
                     >
@@ -4317,7 +4356,7 @@ function QAContenido() {
 
                     <button
                       type="button"
-                      onClick={() => guardarSnapshot(categoriaActiva)}
+                      onClick={() => guardarSnapshot(alcanceObjetivo)}
                       className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-semibold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer ${theme.cardBg} ${theme.textPrimary} ${isDark ? 'border-white/10 hover:border-emerald-400/40 hover:bg-white/5' : 'border-light hover:border-emerald-500/40 hover:bg-secondary'}`}
                       title="Guarda una foto exacta del estado actual en el historial sin borrar nada"
                     >
@@ -4327,7 +4366,7 @@ function QAContenido() {
 
                     <button
                       type="button"
-                      onClick={() => setMostrarHistorial(categoriaActiva)}
+                      onClick={() => setMostrarHistorial(alcanceObjetivo)}
                       className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-semibold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer ${theme.cardBg} ${theme.textPrimary} ${isDark ? 'border-white/10 hover:border-indigo-400/40 hover:bg-white/5' : 'border-light hover:border-indigo-500/40 hover:bg-secondary'}`}
                     >
                       <FileText size={15} color={isDark ? '#A5B4FC' : '#4F46E5'} className="shrink-0" />
@@ -4339,7 +4378,10 @@ function QAContenido() {
 
                     <button
                       type="button"
-                      onClick={() => { setAlcanceParcial(modo === 'modulo' ? categoriaActiva : rutaVigente); setMostrarInforme('parcial') }}
+                      onClick={() => {
+                        setAlcanceParcial(alcanceObjetivo)
+                        setMostrarInforme('parcial')
+                      }}
                       className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer shadow-xs ${
                         isDark
                           ? 'bg-[#D6F391]/15 text-[#D6F391] border border-[#D6F391]/30 hover:bg-[#D6F391]/25'
