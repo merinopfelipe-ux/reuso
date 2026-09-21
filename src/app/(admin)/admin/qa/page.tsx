@@ -3655,42 +3655,34 @@ function QAContenido() {
             >
               {modo === 'criticas' ? (() => {
                 const criticasActuales = tareasCategoria
-                const totalC = criticasActuales.length || 1
-                const cOk = criticasActuales.filter(t => t.estado === 'ok').length
-                const cParcial = criticasActuales.filter(t => t.estado === 'parcial').length
-                const cDudosa = criticasActuales.filter(t => t.estado === 'no_se_entiende').length
-                const cFail = criticasActuales.filter(t => t.estado === 'falla').length
-                const cRev = cOk + cParcial + cDudosa + cFail
                 const tituloHeader = filtroModuloCritico ? `Pruebas Críticas · ${filtroModuloCritico}` : 'Todas las Pruebas Críticas del Sistema'
+                const descripcionHeader = filtroModuloCritico
+                  ? `Filtrando únicamente las pruebas con impacto crítico en ${filtroModuloCritico}`
+                  : 'Revisión prioritaria transversal de todas las pruebas que bloquean o comprometen la operación'
 
                 return (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-1.5 h-10 rounded-full shrink-0 bg-[#FF5E4B]" />
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                            <Warning size={18} className="text-[#FF5E4B] shrink-0" />
-                            <span className="text-xs sm:text-base font-bold text-[#FF5E4B]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-6 rounded-full bg-[#FF5E4B]" />
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <Warning size={16} className="text-[#FF5E4B] shrink-0" />
+                            <span className="text-xs sm:text-sm font-bold text-[#FF5E4B]">
                               {tituloHeader}
                             </span>
-                            <span className="text-[11px] px-2 py-0.5 rounded-full font-bold bg-[#FF5E4B]/15 text-[#FF5E4B]">
-                              {criticasActuales.length} {criticasActuales.length === 1 ? 'crítica' : 'críticas'}
-                            </span>
                           </div>
-                          <p className={`text-xs ${theme.textSecondary}`}>
-                            {filtroModuloCritico
-                              ? `Filtrando únicamente las pruebas con impacto crítico en ${filtroModuloCritico}`
-                              : 'Revisión prioritaria transversal de todas las pruebas que bloquean o comprometen la operación'}
-                          </p>
+                          <span className={`text-xs ${theme.textSecondary}`}>
+                            · {criticasActuales.length} {criticasActuales.length === 1 ? 'prueba crítica' : 'pruebas críticas'}
+                          </span>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                      <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
                         <button
                           type="button"
                           onClick={() => copiarResumenIA(generarResumenIA(), 'Resumen IA de críticas copiado')}
-                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
                             isDark
                               ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
                               : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
@@ -3705,7 +3697,7 @@ function QAContenido() {
                             setAlcanceParcial(filtroModuloCritico ?? 'Todas las críticas')
                             setMostrarInforme('parcial')
                           }}
-                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
                             isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B] border-[#FF5E4B]/40 hover:bg-[#FF5E4B]/30' : 'bg-[#FF5E4B]/10 text-[#CC3C2A] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/20'
                           }`}
                         >
@@ -3714,24 +3706,9 @@ function QAContenido() {
                       </div>
                     </div>
 
-                    {/* Barra de progreso de pruebas críticas */}
-                    <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-500/10">
-                      <div className={`h-2 rounded-full overflow-hidden flex ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
-                        {cOk > 0 && <div style={{ width: `${(cOk / totalC) * 100}%` }} className="bg-[#38B98E] h-full" title={`${cOk} aprobadas`} />}
-                        {cParcial > 0 && <div style={{ width: `${(cParcial / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#F6BF3E]' : 'bg-[#F59E0B]'}`} title={`${cParcial} parciales`} />}
-                        {cDudosa > 0 && <div style={{ width: `${(cDudosa / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#D8B4E2]' : 'bg-[#985fa1]'}`} title={`${cDudosa} dudosas`} />}
-                        {cFail > 0 && <div style={{ width: `${(cFail / totalC) * 100}%` }} className={`h-full ${isDark ? 'bg-[#FF7B6B]' : 'bg-[#FF5E4B]'}`} title={`${cFail} fallas`} />}
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-placeholder font-medium">
-                        <span>{cRev} de {criticasActuales.length} revisadas</span>
-                        <div className="flex items-center gap-2">
-                          {cOk > 0 && <span className={`font-semibold ${isDark ? 'text-[#38B98E]' : 'text-[#1F8C65]'}`}>{cOk} aprobadas</span>}
-                          {cParcial > 0 && <span className={`font-semibold ${isDark ? 'text-[#F6BF3E]' : 'text-[#D97706]'}`}>{cParcial} parciales</span>}
-                          {cDudosa > 0 && <span className={`font-semibold ${isDark ? 'text-[#D8B4E2]' : 'text-[#8A4A94]'}`}>{cDudosa} dudas</span>}
-                          {cFail > 0 && <span className={`font-semibold ${isDark ? 'text-[#FF7B6B]' : 'text-[#CC3C2A]'}`}>{cFail} fallas</span>}
-                        </div>
-                      </div>
-                    </div>
+                    <p className={`pl-4 text-xs ${theme.textSecondary} opacity-80`}>
+                      {descripcionHeader}
+                    </p>
                   </div>
                 )
               })() : modo === 'pagina' && paginaActual ? (() => {
