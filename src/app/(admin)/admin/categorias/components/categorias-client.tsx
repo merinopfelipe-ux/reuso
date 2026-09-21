@@ -875,6 +875,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
       {itemParaDuplicar && (
         <ModalDuplicarItemCiudad
           item={itemParaDuplicar}
+          itemsCategoria={itemsAqui}
           onExito={() => {
             setItemParaDuplicar(null)
             refrescar()
@@ -1681,10 +1682,12 @@ const CIUDADES_COLOMBIA_COMUNES = [
 
 function ModalDuplicarItemCiudad({
   item,
+  itemsCategoria = [],
   onExito,
   onCancelar,
 }: {
   item: ItemConDimensiones
+  itemsCategoria?: ItemConDimensiones[]
   onExito: () => void
   onCancelar: () => void
 }) {
@@ -1695,6 +1698,14 @@ function ModalDuplicarItemCiudad({
   const [nombreModificadoManualmente, setNombreModificadoManualmente] = useState(false)
   const [duplicando, setDuplicando] = useState(false)
   const [error, setError] = useState('')
+
+  const itemExistenteConMismoNombre = useMemo(() => {
+    const limp = nombreNuevo.trim().toLowerCase()
+    if (!limp) return null
+    return itemsCategoria.find(
+      it => it.id !== item.id && it.nombre.trim().toLowerCase() === limp
+    ) ?? null
+  }, [nombreNuevo, itemsCategoria, item.id])
 
   useEffect(() => {
     setMontado(true)
@@ -1732,47 +1743,67 @@ function ModalDuplicarItemCiudad({
     setError('')
 
     try {
-      const payload = {
-        categoria_id: item.categoria_id,
-        nombre: nombreFinal,
-        factor_rentabilidad: item.factor_rentabilidad ?? 2,
-        activo: item.activo !== false,
-        visibilidad: item.visibilidad ?? 'global',
-        origen_fuente: item.origen_fuente ?? null,
-        detalle_fuente: item.detalle_fuente ?? null,
-        materiales: materialesConPeso.map(m => ({
-          nombre: m.nombre,
-          peso_kg: m.peso_kg,
-          factor_co2_kg: m.factor_co2_kg || 0,
-          factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
-          categoria_material: m.categoria_material || undefined,
-          origen_fuente: m.origen_fuente || undefined,
-          detalle_fuente: m.detalle_fuente || undefined,
-          nivel_confianza: (m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
-          rol_conservacion: (m.rol_conservacion || 'se_conserva') as 'se_conserva' | 'se_reemplaza' | 'desconocido',
-        })),
-        servicios: (item.item_servicios || []).map(s => ({
-          nombre: s.nombre,
-          precio: s.precio || 0,
-        })),
-        insumos: (item.item_insumos || []).map(i => ({
-          nombre: i.nombre,
-          cantidad: i.cantidad || 0,
-          unidad: i.unidad || 'unidad',
-          precio_unitario: i.precio_unitario || 0,
-          peso_kg: i.peso_kg ?? undefined,
-        })),
-      }
+      const materialesPayload = materialesConPeso.map(m => ({
+        nombre: m.nombre,
+        peso_kg: m.peso_kg,
+        factor_co2_kg: m.factor_co2_kg || 0,
+        factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
+        categoria_material: m.categoria_material || undefined,
+        origen_fuente: m.origen_fuente || undefined,
+        detalle_fuente: m.detalle_fuente || undefined,
+        nivel_confianza: (m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
+        rol_conservacion: (m.rol_conservacion || 'se_conserva') as 'se_conserva' | 'se_reemplaza' | 'desconocido',
+      }))
 
-      const res = await fetch('/api/admin/items', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      if (itemExistenteConMismoNombre) {
+        const patchPayload = {
+          materiales: materialesPayload,
+          origen_fuente: item.origen_fuente ?? null,
+          detalle_fuente: item.detalle_fuente ?? null,
+        }
+        const res = await fetch(`/api/admin/items/${itemExistenteConMismoNombre.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(patchPayload),
+        })
 
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}))
-        throw new Error(d.error || 'No se pudo duplicar el ítem.')
+        if (!res.ok) {
+          const d = await res.json().catch(() => ({}))
+          throw new Error(d.error || 'No se pudo actualizar el ítem existente.')
+        }
+      } else {
+        const payload = {
+          categoria_id: item.categoria_id,
+          nombre: nombreFinal,
+          factor_rentabilidad: item.factor_rentabilidad ?? 2,
+          activo: item.activo !== false,
+          visibilidad: item.visibilidad ?? 'global',
+          origen_fuente: item.origen_fuente ?? null,
+          detalle_fuente: item.detalle_fuente ?? null,
+          materiales: materialesPayload,
+          servicios: (item.item_servicios || []).map(s => ({
+            nombre: s.nombre,
+            precio: s.precio || 0,
+          })),
+          insumos: (item.item_insumos || []).map(i => ({
+            nombre: i.nombre,
+            cantidad: i.cantidad || 0,
+            unidad: i.unidad || 'unidad',
+            precio_unitario: i.precio_unitario || 0,
+            peso_kg: i.peso_kg ?? undefined,
+          })),
+        }
+
+        const res = await fetch('/api/admin/items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+
+        if (!res.ok) {
+          const d = await res.json().catch(() => ({}))
+          throw new Error(d.error || 'No se pudo duplicar el ítem.')
+        }
       }
 
       onExito()
@@ -1872,6 +1903,15 @@ function ModalDuplicarItemCiudad({
             </p>
           </div>
 
+          {itemExistenteConMismoNombre && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 leading-relaxed">
+              <Sparkles size={16} className="flex-shrink-0 mt-0.5 text-amber-600" />
+              <div>
+                Ya existe el ítem <strong>{itemExistenteConMismoNombre.nombre}</strong> en el catálogo. Al confirmar, se actualizarán sus materiales y fuentes de Perplexity para que sea idéntico al de origen, sin crear un duplicado repetido.
+              </div>
+            </div>
+          )}
+
           <div className="p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-[#00827C] dark:text-[#2DD4BF] flex items-start gap-2.5 leading-relaxed">
             <Sparkles size={16} className="flex-shrink-0 mt-0.5" />
             <div>
@@ -1898,12 +1938,12 @@ function ModalDuplicarItemCiudad({
             {duplicando ? (
               <>
                 <Loader2 size={14} className="animate-spin" />
-                Duplicando...
+                {itemExistenteConMismoNombre ? 'Actualizando...' : 'Duplicando...'}
               </>
             ) : (
               <>
                 <Copy size={14} />
-                Duplicar ítem
+                {itemExistenteConMismoNombre ? 'Actualizar ítem existente' : 'Duplicar ítem'}
               </>
             )}
           </button>
