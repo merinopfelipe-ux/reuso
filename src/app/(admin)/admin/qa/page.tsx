@@ -3786,15 +3786,15 @@ function QAContenido() {
                           </span>
                         </div>
                         <span className={`text-xs ${theme.textSecondary}`}>
-                          {tareasCategoria.length === 0 ? '· Sin resultados con ese filtro.' : `· ${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
+                          {tareasCategoria.length === 0 ? '· Sin resultados con ese filtro.' : `· ${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'}`}
                         </span>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
                         type="button"
                         onClick={() => copiarResumenIA(generarResumenIA(catActual.key), `Resumen IA de ${catActual.key} copiado`)}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                           isDark
                             ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
                             : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
@@ -3806,7 +3806,7 @@ function QAContenido() {
                       <button
                         type="button"
                         onClick={() => { setAlcanceParcial(catActual.key); setMostrarInforme('parcial') }}
-                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap ${
                           isDark ? 'bg-[#D6F391]/15 text-[#D6F391] border-[#D6F391]/30 hover:bg-[#D6F391]/25' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30 hover:bg-[#00827C]/20'
                         }`}
                       >
