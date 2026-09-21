@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
 import { IconPicker } from '@/components/admin/icon-picker'
@@ -144,12 +144,31 @@ export function buscarHermanoConPesos(
   }) ?? null
 }
 
+import { extraerCiudadDeNombre, generarNombreDuplicadoCiudad } from '@/lib/ciudad-item'
+export { extraerCiudadDeNombre, generarNombreDuplicadoCiudad }
+
 import { InputPrecio, InputConUnidad, InputCantidadInsumo } from '@/components/ui/formatted-number-input'
 import { parsearIcono } from '@/lib/icono-nombre'
 
-// ── Menú de tres puntos (Editar / Desactivar) ───────────────────────────────
+// ── Menú de tres puntos (Editar / Duplicar / Desactivar) ───────────────────────
 
-function MenuTresPuntos({ activa, visibilidad, onEditar, onToggleActiva, onToggleVisibilidad, onEliminar }: { activa: boolean; visibilidad?: 'global' | 'restringido'; onEditar: () => void; onToggleActiva: () => void; onToggleVisibilidad?: () => void; onEliminar?: () => void }) {
+function MenuTresPuntos({
+  activa,
+  visibilidad,
+  onEditar,
+  onDuplicar,
+  onToggleActiva,
+  onToggleVisibilidad,
+  onEliminar,
+}: {
+  activa: boolean
+  visibilidad?: 'global' | 'restringido'
+  onEditar: () => void
+  onDuplicar?: () => void
+  onToggleActiva: () => void
+  onToggleVisibilidad?: () => void
+  onEliminar?: () => void
+}) {
   const [abierto, setAbierto] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -166,11 +185,17 @@ function MenuTresPuntos({ activa, visibilidad, onEditar, onToggleActiva, onToggl
         <DotsThree size={18} />
       </button>
       {abierto && (
-        <div className="absolute right-0 top-full mt-1 z-20 w-40 rounded-[12px] overflow-hidden border border-[var(--border)] bg-[var(--bg-card)] shadow-lg">
+        <div className="absolute right-0 top-full mt-1 z-20 w-44 rounded-[12px] overflow-hidden border border-[var(--border)] bg-[var(--bg-card)] shadow-lg">
           <button onClick={() => { setAbierto(false); onEditar() }}
             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
             <Pencil size={14} /> Editar
           </button>
+          {onDuplicar && (
+            <button onClick={() => { setAbierto(false); onDuplicar() }}
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
+              <Copy size={14} /> Duplicar
+            </button>
+          )}
           <button onClick={() => { setAbierto(false); onToggleActiva() }}
             className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
             <Power size={14} /> {activa ? 'Desactivar' : 'Activar'}
@@ -756,6 +781,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
   const nodoActualId = searchParams.get('nodo')
   const itemIdParam = searchParams.get('item')
   const [creandoItem, setCreandoItem] = useState(false)
+  const [itemParaDuplicar, setItemParaDuplicar] = useState<ItemConDimensiones | null>(null)
   const [editandoId, setEditandoId] = useState<string | 'nuevo-raiz' | 'nuevo-hijo' | null>(null)
   const [mostrarConfirmarSalida, setMostrarConfirmarSalida] = useState(false)
   const [accionSalirPending, setAccionSalirPending] = useState<(() => void) | null>(null)
@@ -845,6 +871,17 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         }}
         onCancelar={() => setMostrarConfirmarSalida(false)}
       />
+
+      {itemParaDuplicar && (
+        <ModalDuplicarItemCiudad
+          item={itemParaDuplicar}
+          onExito={() => {
+            setItemParaDuplicar(null)
+            refrescar()
+          }}
+          onCancelar={() => setItemParaDuplicar(null)}
+        />
+      )}
 
       {(itemAbiertoId === 'nuevo' || itemAbierto) && nodoActual ? (
         <PanelItemValores
@@ -987,6 +1024,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                               activa={it.activo !== false}
                               visibilidad={it.visibilidad ?? 'global'}
                               onEditar={() => abrirItem(it.id)}
+                              onDuplicar={() => setItemParaDuplicar(it)}
                               onToggleActiva={async () => {
                                 await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activo: it.activo === false }) })
                                 refrescar()
@@ -1627,13 +1665,256 @@ function ModalConfirmacionAjustePerplexity({
   )
 }
 
-// ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
+const CIUDADES_COLOMBIA_COMUNES = [
+  'Bogotá',
+  'Medellín',
+  'Cali',
+  'Barranquilla',
+  'Cartagena',
+  'Bucaramanga',
+  'Pereira',
+  'Manizales',
+  'Santa Marta',
+  'Cúcuta',
+  'Ibagué',
+]
 
-function obtenerFuenteInicial(item: ItemConDimensiones | null, itemsCategoria: ItemConDimensiones[]): ItemConDimensiones | null {
-  const tienePesosPropios = item?.item_materiales && item.item_materiales.some(m => (m.peso_kg || 0) > 0)
-  if (tienePesosPropios) return item
-  return buscarHermanoConPesos(item?.nombre ?? '', item?.id, itemsCategoria)
+function ModalDuplicarItemCiudad({
+  item,
+  onExito,
+  onCancelar,
+}: {
+  item: ItemConDimensiones
+  onExito: () => void
+  onCancelar: () => void
+}) {
+  const [montado, setMontado] = useState(false)
+  const ciudadActual = useMemo(() => extraerCiudadDeNombre(item.nombre), [item.nombre])
+  const [ciudadNueva, setCiudadNueva] = useState('')
+  const [nombreNuevo, setNombreNuevo] = useState(() => item.nombre)
+  const [nombreModificadoManualmente, setNombreModificadoManualmente] = useState(false)
+  const [duplicando, setDuplicando] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    setMontado(true)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !duplicando) onCancelar()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onCancelar, duplicando])
+
+  const aplicarCiudad = (ciudad: string, manual = false) => {
+    setCiudadNueva(ciudad)
+    if (!manual) {
+      setNombreModificadoManualmente(false)
+      setNombreNuevo(generarNombreDuplicadoCiudad(item.nombre, ciudad))
+    } else if (!nombreModificadoManualmente) {
+      setNombreNuevo(generarNombreDuplicadoCiudad(item.nombre, ciudad))
+    }
+  }
+
+  async function handleDuplicar() {
+    const nombreFinal = nombreNuevo.trim()
+    if (!nombreFinal) {
+      setError('Por favor ingresa un nombre para el ítem duplicado.')
+      return
+    }
+
+    const materialesConPeso = (item.item_materiales || []).filter(m => (m.peso_kg || 0) > 0)
+    if (materialesConPeso.length === 0) {
+      setError('El ítem original no tiene materiales con peso configurado. Configura el ítem de origen para poder duplicarlo a otra ciudad.')
+      return
+    }
+
+    setDuplicando(true)
+    setError('')
+
+    try {
+      const payload = {
+        categoria_id: item.categoria_id,
+        nombre: nombreFinal,
+        factor_rentabilidad: item.factor_rentabilidad ?? 2,
+        activo: item.activo !== false,
+        visibilidad: item.visibilidad ?? 'global',
+        origen_fuente: item.origen_fuente ?? null,
+        detalle_fuente: item.detalle_fuente ?? null,
+        materiales: materialesConPeso.map(m => ({
+          nombre: m.nombre,
+          peso_kg: m.peso_kg,
+          factor_co2_kg: m.factor_co2_kg || 0,
+          factor_agua_l_kg: m.factor_agua_l_kg ?? undefined,
+          categoria_material: m.categoria_material || undefined,
+          origen_fuente: m.origen_fuente || undefined,
+          detalle_fuente: m.detalle_fuente || undefined,
+          nivel_confianza: (m.nivel_confianza || 'baja') as 'alta' | 'media' | 'baja',
+          rol_conservacion: (m.rol_conservacion || 'se_conserva') as 'se_conserva' | 'se_reemplaza' | 'desconocido',
+        })),
+        servicios: (item.item_servicios || []).map(s => ({
+          nombre: s.nombre,
+          precio: s.precio || 0,
+        })),
+        insumos: (item.item_insumos || []).map(i => ({
+          nombre: i.nombre,
+          cantidad: i.cantidad || 0,
+          unidad: i.unidad || 'unidad',
+          precio_unitario: i.precio_unitario || 0,
+          peso_kg: i.peso_kg ?? undefined,
+        })),
+      }
+
+      const res = await fetch('/api/admin/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d.error || 'No se pudo duplicar el ítem.')
+      }
+
+      onExito()
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error inesperado al duplicar.')
+      setDuplicando(false)
+    }
+  }
+
+  if (!montado || typeof document === 'undefined') return null
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      onClick={e => {
+        if (e.target === e.currentTarget && !duplicando) onCancelar()
+      }}
+    >
+      <div
+        className="w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-[var(--text-primary)] flex flex-col gap-4"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="flex items-center gap-3 pb-3 border-b border-[var(--border)]">
+          <span
+            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[var(--color-brand)]"
+            style={{ background: 'rgba(0, 130, 124, 0.12)' }}
+          >
+            <Copy size={18} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-base font-bold leading-tight text-[var(--text-primary)]">
+              Duplicar ítem por ciudad
+            </h3>
+            <p className="text-xs text-[var(--text-secondary)] truncate">
+              Origen: <strong className="text-[var(--text-primary)]">{item.nombre}</strong>
+              {ciudadActual && <span> ({ciudadActual})</span>}
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-[var(--color-error)]">
+            {error}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-3">
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+              Ciudad de destino
+            </label>
+            <input
+              type="text"
+              value={ciudadNueva}
+              onChange={e => aplicarCiudad(e.target.value, true)}
+              placeholder="Ej: Bogotá, Medellín, Cali..."
+              style={inputSt}
+              autoFocus
+            />
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              {CIUDADES_COLOMBIA_COMUNES.map(c => {
+                const esActiva = ciudadNueva.trim().toLowerCase() === c.toLowerCase()
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => aplicarCiudad(c, false)}
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-all cursor-pointer ${
+                      esActiva
+                        ? 'bg-[var(--color-brand)] text-white border-transparent font-bold'
+                        : 'bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--color-brand)]'
+                    }`}
+                  >
+                    {c}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+              Nombre para el nuevo ítem
+            </label>
+            <input
+              type="text"
+              value={nombreNuevo}
+              onChange={e => {
+                setNombreNuevo(e.target.value)
+                setNombreModificadoManualmente(true)
+              }}
+              style={inputSt}
+            />
+            <p className="text-[11px] text-[var(--text-placeholder)] mt-1">
+              Se ajusta automáticamente con la ciudad seleccionada y puedes editarlo si deseas
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-[#00827C] dark:text-[#2DD4BF] flex items-start gap-2.5 leading-relaxed">
+            <Sparkles size={16} className="flex-shrink-0 mt-0.5" />
+            <div>
+              Se duplican todos los materiales, pesos y datos técnicos idénticos sin consultar a Perplexity, ahorrando tokens. Los servicios y precios quedan listos para ajustar según la ciudad.
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[var(--border)]">
+          <button
+            type="button"
+            onClick={onCancelar}
+            disabled={duplicando}
+            className="px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-all cursor-pointer disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleDuplicar}
+            disabled={duplicando}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[var(--color-brand)] text-white hover:opacity-90 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+          >
+            {duplicando ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Duplicando...
+              </>
+            ) : (
+              <>
+                <Copy size={14} />
+                Duplicar ítem
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
 }
+
+// ── Panel de valores de ítem: estructura precargada del esquema base + extras propios ──
 
 function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, onCancelar }: {
   item: ItemConDimensiones | null
@@ -1642,14 +1923,12 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
   onGuardado: () => void
   onCancelar?: () => void
 }) {
-  const fuenteInicial = obtenerFuenteInicial(item, itemsCategoria)
+  const fuenteInicial = item
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
   const [origenFuente, setOrigenFuente] = useState<string>(() => {
     if (esItemPerplexity(item)) return 'perplexity'
-    if (item?.origen_fuente) return item.origen_fuente
-    if (fuenteInicial && esItemPerplexity(fuenteInicial)) return 'perplexity'
-    return fuenteInicial?.origen_fuente ?? ''
+    return item?.origen_fuente ?? ''
   })
   // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
   // es donde el super_admin realmente los edita, junto a cada material de
@@ -1659,7 +1938,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
   const [pesos, setPesos] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
     for (const m of categoria.categoria_materiales_base) {
-      const existente = fuenteInicial?.item_materiales.find(im => im.nombre === m.nombre)
+      const existente = item?.item_materiales.find(im => im.nombre === m.nombre)
       inicial[m.nombre] = existente ? String(existente.peso_kg) : ''
     }
     return inicial
@@ -1669,10 +1948,10 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
   // o del respaldo en JSON detalle_fuente para que nunca se pierda.
   const [rolesConservacion, setRolesConservacion] = useState<Record<string, string>>(() => {
     const inicial: Record<string, string> = {}
-    const rolesResp = extraerRolesRespaldo(fuenteInicial?.detalle_fuente)
+    const rolesResp = extraerRolesRespaldo(item?.detalle_fuente)
     for (const m of categoria.categoria_materiales_base) {
       const mNorm = m.nombre.trim().toLowerCase()
-      const existente = fuenteInicial?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
+      const existente = item?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
       const rolRaw = existente?.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm]
       const rolEncontrado = rolRaw === 'se_reemplaza' || rolRaw === 'residuo' ? 'se_reemplaza' : 'se_conserva'
       inicial[m.nombre] = rolEncontrado
@@ -1683,7 +1962,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
   // Información técnica detallada (razonamiento, fuente_url, confianza) devuelta por Perplexity
   const [fuentesMaterial, setFuentesMaterial] = useState<Record<string, InfoFuenteMaterial>>(() => {
     const inicial: Record<string, InfoFuenteMaterial> = {}
-    for (const im of fuenteInicial?.item_materiales ?? []) {
+    for (const im of item?.item_materiales ?? []) {
       const mNorm = im.nombre.trim().toLowerCase()
       if (im.detalle_fuente || im.origen_fuente || im.nivel_confianza) {
         const info: InfoFuenteMaterial = {
@@ -1696,9 +1975,9 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
         inicial[mNorm] = info
       }
     }
-    if (fuenteInicial?.detalle_fuente) {
+    if (item?.detalle_fuente) {
       try {
-        const parsed = JSON.parse(fuenteInicial.detalle_fuente)
+        const parsed = JSON.parse(item.detalle_fuente)
         if (parsed?.materiales_info && typeof parsed.materiales_info === 'object') {
           for (const [k, v] of Object.entries(parsed.materiales_info as Record<string, InfoFuenteMaterial>)) {
             inicial[k] = { ...inicial[k], ...v }
@@ -2589,36 +2868,6 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
       setGuardando(false)
       setMensajeGuardando('')
       return
-    }
-
-    const resData = await res.json().catch(() => ({}))
-    const idGuardado = item?.id ?? resData?.id
-
-    // Sincronizar automáticamente con ítems hermanos de otras ciudades o precios que estén en ceros
-    const baseActual = normalizarBaseNombreItem(nombreLimpio)
-    const hermanosSinPesos = (itemsCategoria || []).filter(h => {
-      if (idGuardado && h.id === idGuardado) return false
-      if (!h.id) return false
-      const matchBase = normalizarBaseNombreItem(h.nombre) === baseActual
-      const sinPesos = !h.item_materiales || h.item_materiales.length === 0 || h.item_materiales.every(m => (m.peso_kg || 0) <= 0)
-      return matchBase && sinPesos
-    })
-
-    if (hermanosSinPesos.length > 0) {
-      setMensajeGuardando(`Sincronizando materiales con ${hermanosSinPesos.length} ítem(s) hermanos...`)
-      await Promise.all(
-        hermanosSinPesos.map(h =>
-          fetch(`/api/admin/items/${h.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              materiales,
-              origen_fuente: origenFinal,
-              detalle_fuente: detalleFuenteFinal,
-            }),
-          }).catch(err => console.error(`Error sincronizando hermano ${h.nombre}:`, err))
-        )
-      )
     }
 
     onGuardado()
