@@ -60,7 +60,7 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
         style={style}
         onClick={() => setAbierto(a => !a)}
       >
-        <span className="truncate" style={{ color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)' }}>{seleccionada?.label ?? placeholder}</span>
+        <span className="whitespace-nowrap" style={{ color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)' }}>{seleccionada?.label ?? placeholder}</span>
         <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
       </button>
 
@@ -68,7 +68,7 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAbierto(false)} />
           <div
-            className="absolute top-full left-0 mt-1.5 w-full border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col"
+            className="absolute top-full left-0 mt-1.5 min-w-full w-max max-w-sm border rounded-xl shadow-xl z-50 overflow-hidden flex flex-col"
             style={{ background: 'var(--bg-card)', borderColor: 'var(--border)', maxHeight: '300px' }}
           >
             <div className="overflow-y-auto flex-1 p-1">
@@ -77,7 +77,7 @@ export function Selector({ opciones, value, onChange, placeholder = 'Selecciona'
                   key={o.value}
                   type="button"
                   onClick={() => { onChange(o.value); setAbierto(false) }}
-                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] whitespace-nowrap ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {o.label}

@@ -810,7 +810,6 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
   // Filtros y orden canónico de la tabla de ítems (por defecto alfabético A-Z según Nombre)
   const [busquedaItem, setBusquedaItem] = useState('')
-  const [filtroCiudad, setFiltroCiudad] = useState('')
   const [filtroEstado, setFiltroEstado] = useState('')
   const [sortItems, setSortItems] = useState<SortState>({ col: 'nombre', dir: 'asc' })
 
@@ -835,7 +834,6 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
   useEffect(() => {
     setBusquedaItem('')
-    setFiltroCiudad('')
     setFiltroEstado('')
     setSortItems({ col: 'nombre', dir: 'asc' })
     setSeleccionados(new Set())
@@ -859,14 +857,6 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
     })
   }, [itemsAqui])
 
-  const ciudadesDisponibles = useMemo(() => {
-    const set = new Set<string>()
-    itemsConCalculos.forEach(it => {
-      if (it.ciudad) set.add(it.ciudad)
-    })
-    return Array.from(set).sort((a, b) => a.localeCompare(b, 'es'))
-  }, [itemsConCalculos])
-
   const itemsFiltrados = useMemo(() => {
     return itemsConCalculos.filter(it => {
       if (busquedaItem.trim()) {
@@ -875,22 +865,16 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         const coincideCiudad = it.ciudad ? it.ciudad.toLowerCase().includes(q) : false
         if (!coincideNombre && !coincideCiudad) return false
       }
-      if (filtroCiudad) {
-        if (filtroCiudad === 'sin-ciudad') {
-          if (it.ciudad) return false
-        } else if (it.ciudad?.toLowerCase() !== filtroCiudad.toLowerCase()) {
-          return false
-        }
-      }
       if (filtroEstado) {
         if (filtroEstado === 'activos' && it.activo === false) return false
         if (filtroEstado === 'inactivos' && it.activo !== false) return false
-        if (filtroEstado === 'perplexity' && !esItemPerplexity(it)) return false
+        if ((filtroEstado === 'con-perplexity' || filtroEstado === 'perplexity') && !esItemPerplexity(it)) return false
+        if (filtroEstado === 'sin-perplexity' && esItemPerplexity(it)) return false
         if (filtroEstado === 'restringido' && it.visibilidad !== 'restringido') return false
       }
       return true
     })
-  }, [itemsConCalculos, busquedaItem, filtroCiudad, filtroEstado])
+  }, [itemsConCalculos, busquedaItem, filtroEstado])
 
   const itemsOrdenados = useMemo(() => {
     const col = sortItems.col || 'nombre'
@@ -908,7 +892,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
     })
   }, [itemsFiltrados, sortItems])
 
-  const hayFiltrosItems = busquedaItem.trim() !== '' || filtroCiudad !== '' || filtroEstado !== ''
+  const hayFiltrosItems = busquedaItem.trim() !== '' || filtroEstado !== ''
 
   const todasSeleccionadas = itemsOrdenados.length > 0 && itemsOrdenados.every(it => seleccionados.has(it.id))
 
@@ -1207,51 +1191,39 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
           {nodoActual && hijos.length === 0 && (
             <div className="flex flex-col gap-3">
               {/* Barra de herramientas con buscador y filtros del Sistema de Diseño */}
-              <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="flex items-center gap-3 w-full">
                 {/* Buscador */}
-                <div className="relative flex-1 min-w-[200px] max-w-xs">
+                <div className="relative flex-1 max-w-sm min-w-[200px]">
                   <MagnifyingGlass
                     size={14}
                     className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] pointer-events-none"
                   />
                   <input
                     type="text"
-                    placeholder="Buscar ítems o ciudad..."
+                    placeholder="Buscar ítems..."
                     value={busquedaItem}
                     onChange={e => setBusquedaItem(e.target.value)}
                     className="w-full pl-8 pr-3 py-2 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] transition-colors"
                   />
                 </div>
 
-                {/* Filtro por ciudad (si hay ciudades detectadas en esta categoría) */}
-                {ciudadesDisponibles.length > 0 && (
-                  <Selector
-                    value={filtroCiudad}
-                    onChange={setFiltroCiudad}
-                    placeholder="Todas las ciudades"
-                    opciones={[
-                      { value: '', label: 'Todas las ciudades' },
-                      ...ciudadesDisponibles.map(c => ({ value: c, label: c })),
-                      { value: 'sin-ciudad', label: 'Sin ciudad' },
-                    ]}
-                    className="w-[180px]"
-                  />
-                )}
-
                 {/* Filtro por estado */}
-                <Selector
-                  value={filtroEstado}
-                  onChange={setFiltroEstado}
-                  placeholder="Todos los estados"
-                  opciones={[
-                    { value: '', label: 'Todos los estados' },
-                    { value: 'activos', label: 'Activos' },
-                    { value: 'inactivos', label: 'Inactivos' },
-                    { value: 'perplexity', label: 'Con Perplexity AI' },
-                    { value: 'restringido', label: 'Visibilidad restringida' },
-                  ]}
-                  className="w-[170px]"
-                />
+                <div className="flex-shrink-0">
+                  <Selector
+                    value={filtroEstado}
+                    onChange={setFiltroEstado}
+                    placeholder="Todos los estados"
+                    opciones={[
+                      { value: '', label: 'Todos los estados' },
+                      { value: 'activos', label: 'Activos' },
+                      { value: 'inactivos', label: 'Inactivos' },
+                      { value: 'con-perplexity', label: 'Con Perplexity AI' },
+                      { value: 'sin-perplexity', label: 'Sin Perplexity AI' },
+                      { value: 'restringido', label: 'Visibilidad restringida' },
+                    ]}
+                    className="w-auto min-w-[210px]"
+                  />
+                </div>
 
                 {/* Limpiar filtros */}
                 {hayFiltrosItems && (
@@ -1259,17 +1231,16 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                     type="button"
                     onClick={() => {
                       setBusquedaItem('')
-                      setFiltroCiudad('')
                       setFiltroEstado('')
                     }}
-                    className="px-3 py-2 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                    className="px-3 py-2 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0"
                   >
                     Limpiar
                   </button>
                 )}
 
                 {/* Contador y botón Nuevo ítem */}
-                <div className="ml-auto flex items-center gap-3">
+                <div className="ml-auto flex items-center gap-3 flex-shrink-0">
                   <span className="text-xs text-[var(--text-secondary)] whitespace-nowrap">
                     {itemsOrdenados.length === itemsAqui.length
                       ? `${itemsAqui.length} ${itemsAqui.length === 1 ? 'ítem' : 'ítems'}`
