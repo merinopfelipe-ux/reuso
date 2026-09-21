@@ -38,10 +38,14 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
+              // Analítica (solo carga si la persona acepta las cookies "Analíticas"):
+              // Google Analytics 4 y Microsoft Clarity. Sin estos orígenes en
+              // script-src/connect-src/img-src el navegador los bloquea en silencio
+              // (Clarity nunca arrancaba, GA4 tampoco enviaba datos). 2026-09-21.
               "default-src 'self'",
               process.env.NODE_ENV === 'development'
-              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.tailwindcss.com"
-              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://cdn.tailwindcss.com",
+              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms"
+              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms",
               // p.typekit.net es de donde Typekit sirve el CSS real, no
               // use.typekit.net (esa es solo el link inicial que lo pide) —
               // sin esto, el navegador bloquea la hoja de estilos real y la
@@ -49,8 +53,8 @@ const nextConfig = {
               // había corregido en reuso-landing/next.config.mjs).
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net https://p.typekit.net",
               "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://p.typekit.net https://fonts.typekit.net",
-              "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net https://images.unsplash.com",
-              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com",
+              "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net https://images.unsplash.com https://*.google-analytics.com https://*.googletagmanager.com https://*.clarity.ms https://c.bing.com",
+              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.clarity.ms https://c.bing.com",
               "frame-src https://challenges.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",
