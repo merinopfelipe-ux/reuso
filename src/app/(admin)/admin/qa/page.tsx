@@ -2147,6 +2147,55 @@ function CapturasQA({ taskId, notas, isDark, subiendo, onElegirArchivo, onQuitar
   )
 }
 
+// ── Jerarquía de criticidad: del más crítico (P0 bloqueo/seguridad) al menos crítico (P2 operativo)
+const PESOS_CRITICOS: Record<string, number> = {
+  // P0: Bloqueo Total / Seguridad / Acceso Principal
+  'seg-03': 1,  // Fuga de datos comercial entre empresas (multi-tenant)
+  'seg-01': 2,  // Middleware de aislamiento de rutas
+  'seg-08': 3,  // Protección de permisos y rol en servidor (anti-escalamiento)
+  'seg-02': 4,  // Bloqueo de APIs no autenticadas
+  'seg-06': 5,  // Hermetismo de datos en pasaportes digitales
+  'seg-11': 6,  // Inmutabilidad de roles asignados
+  'seg-10': 7,  // Verificación estricta de permisos por rol
+  'seg-05': 8,  // Protección contra fuerza bruta en login
+  'auth-01': 9, // Login principal
+  'auth-05': 10, // Registro de nuevas cuentas
+  'auth-02': 11, // Rechazo de contraseñas incorrectas
+  'auth-08': 12, // Protección y redirección de rutas privadas
+  'auth-14': 13, // Activación de cuentas de clientes con plan comprado
+
+  // P1: Núcleo de Negocio / Transaccional / Validez Legal / Fórmulas
+  'api-01': 20, // Validación base de parámetros en cálculo ambiental
+  'api-07': 21, // Integridad matemática con números grandes y decimales
+  'dash-01': 22, // Persistencia del cálculo de impacto en base de datos
+  'cot-06': 23, // Flujo completo de cotización con IA
+  'cot-02': 24, // Diagnóstico visual de muebles con IA
+  'pub-04': 25, // Consulta y aprobación de cotización por el cliente final
+  'cot-07': 26, // Generación de enlace compartible de propuesta
+  'pub-16': 27, // Firma digital vinculante de acuerdos legales
+  'dpp-02': 28, // Emisión y guardado de pasaporte digital
+  'dpp-04': 29, // Consulta pública por código QR de pasaporte
+  'pub-23': 30, // Ficha pública de verificación de certificados
+
+  // P2: Gestión Operativa / Informes Oficiales / Onboarding
+  'emp-03': 40, // Generación de informe oficial de sostenibilidad
+  'emp-01': 41, // Tablero de metas e impacto empresarial
+  'adm-01': 42, // Carga y métricas del panel de administración
+  'adm-02': 43, // Directorio de usuarios y asignación de roles
+  'adm-03': 44, // Gestión de empresas aliadas
+  'adm-27': 45, // Alta de empresa con plan corporativo pago
+  'auth-10': 46, // Onboarding obligatorio de datos empresariales
+  'auth-13': 47, // Confirmación de email
+  'api-06': 48, // Validación de archivos e imágenes reales
+  'seg-09': 49, // Sanitización de campos contra inyección
+  'seg-12': 50  // Protección de operaciones sensibles de perfil
+}
+
+function getPesoCriticidad(t: { id: string; critica: boolean }): number {
+  if (!t.critica) return 999
+  return PESOS_CRITICOS[t.id] ?? 100
+}
+
 // ── Componente ─────────────────────────────────────────────────────────────────
 
 function QAContenido() {
@@ -2670,7 +2719,7 @@ function QAContenido() {
   const indicePagina = Math.max(0, paginas.findIndex(p => p.ruta === rutaVigente))
   const paginaActual = paginas[indicePagina]
 
-  // Tareas visibles según el módulo activo o modo críticas, filtradas por búsqueda y con críticas SIEMPRE de primeras
+  // Tareas visibles según el módulo activo o modo críticas, filtradas por búsqueda y con críticas SIEMPRE de primeras (ordenadas del más al menos crítico)
   const tareasCategoria = tareas.filter(t => {
     if (modo === 'criticas') {
       if (!t.critica) return false
@@ -2682,8 +2731,13 @@ function QAContenido() {
     const b = busqueda.toLowerCase()
     return t.titulo.toLowerCase().includes(b) || t.ruta.includes(b) || t.descripcion.toLowerCase().includes(b)
   }).sort((a, b) => {
-    // Mandato explícito: las pruebas críticas SIEMPRE aparecen de primeras en cada categoría
+    // Mandato explícito: las pruebas críticas SIEMPRE aparecen de primeras, ordenadas del más al menos crítico
     if (a.critica !== b.critica) return a.critica ? -1 : 1
+    if (a.critica && b.critica) {
+      const pesoA = getPesoCriticidad(a)
+      const pesoB = getPesoCriticidad(b)
+      if (pesoA !== pesoB) return pesoA - pesoB
+    }
     return 0
   })
 
@@ -2868,6 +2922,11 @@ function QAContenido() {
       .filter(t => t.estado === 'falla' || t.estado === 'parcial' || t.estado === 'no_se_entiende' || t.notas.trim().length > 0)
       .sort((a, b) => {
         if (a.critica !== b.critica) return a.critica ? -1 : 1
+        if (a.critica && b.critica) {
+          const pesoA = getPesoCriticidad(a)
+          const pesoB = getPesoCriticidad(b)
+          if (pesoA !== pesoB) return pesoA - pesoB
+        }
         if (a.estado === 'falla' && b.estado !== 'falla') return -1
         if (b.estado === 'falla' && a.estado !== 'falla') return 1
         return 0
