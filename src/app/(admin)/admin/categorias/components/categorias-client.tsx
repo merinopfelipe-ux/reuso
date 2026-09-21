@@ -5,11 +5,12 @@ import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check, MagnifyingGlass } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check, MagnifyingGlass, Square, SquareCheck } from '@/components/ui/icons'
 import { SortTh } from '@/components/sort-th'
 import type { SortState } from '@/lib/use-sortable'
 import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
+import { Modal, ModalConfirmarSalida } from '@/components/ui/modal'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
@@ -821,11 +822,23 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
     })
   }
 
+  // Selección múltiple para borrado masivo
+  const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
+  const [itemsAEliminar, setItemsAEliminar] = useState<ItemConDimensiones[] | null>(null)
+  const [eliminandoItems, setEliminandoItems] = useState(false)
+  const [errorEliminarItems, setErrorEliminarItems] = useState('')
+
+  // Estado para eliminar categoría sin window.confirm
+  const [categoriaAEliminar, setCategoriaAEliminar] = useState<CategoriaConEsquemaBase | null>(null)
+  const [eliminandoCategoria, setEliminandoCategoria] = useState(false)
+  const [errorEliminarCategoria, setErrorEliminarCategoria] = useState('')
+
   useEffect(() => {
     setBusquedaItem('')
     setFiltroCiudad('')
     setFiltroEstado('')
     setSortItems({ col: 'nombre', dir: 'asc' })
+    setSeleccionados(new Set())
   }, [nodoActualId])
 
   const itemsConCalculos = useMemo(() => {
@@ -897,6 +910,76 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
   const hayFiltrosItems = busquedaItem.trim() !== '' || filtroCiudad !== '' || filtroEstado !== ''
 
+  const todasSeleccionadas = itemsOrdenados.length > 0 && itemsOrdenados.every(it => seleccionados.has(it.id))
+
+  function toggleSeleccionado(id: string) {
+    setSeleccionados(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleSeleccionarTodas() {
+    setSeleccionados(prev => {
+      const next = new Set(prev)
+      if (todasSeleccionadas) {
+        itemsOrdenados.forEach(it => next.delete(it.id))
+      } else {
+        itemsOrdenados.forEach(it => next.add(it.id))
+      }
+      return next
+    })
+  }
+
+  async function ejecutarEliminarItems() {
+    if (!itemsAEliminar || itemsAEliminar.length === 0) return
+    setEliminandoItems(true)
+    setErrorEliminarItems('')
+    try {
+      const respuestas = await Promise.all(
+        itemsAEliminar.map(it => fetch(`/api/admin/items/${it.id}`, { method: 'DELETE' }))
+      )
+      const fallidos = respuestas.filter(r => !r.ok)
+      if (fallidos.length > 0) {
+        setErrorEliminarItems(`No se pudieron eliminar ${fallidos.length} ${fallidos.length === 1 ? 'ítem' : 'ítems'}. Es posible que estén en uso.`)
+      } else {
+        setSeleccionados(prev => {
+          const next = new Set(prev)
+          itemsAEliminar.forEach(it => next.delete(it.id))
+          return next
+        })
+        setItemsAEliminar(null)
+        refrescar()
+      }
+    } catch {
+      setErrorEliminarItems('Hubo un problema de conexión al eliminar los ítems.')
+    } finally {
+      setEliminandoItems(false)
+    }
+  }
+
+  async function ejecutarEliminarCategoria() {
+    if (!categoriaAEliminar) return
+    setEliminandoCategoria(true)
+    setErrorEliminarCategoria('')
+    try {
+      const res = await fetch(`/api/admin/categorias/${categoriaAEliminar.id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        setErrorEliminarCategoria(err.error || 'No se pudo eliminar la categoría (es posible que esté en uso).')
+      } else {
+        setCategoriaAEliminar(null)
+        refrescar()
+      }
+    } catch {
+      setErrorEliminarCategoria('Hubo un problema de conexión al eliminar la categoría.')
+    } finally {
+      setEliminandoCategoria(false)
+    }
+  }
+
   function solicitarSalida(accion: () => void) {
     if (itemAbiertoId || editandoId) {
       setAccionSalirPending(() => accion)
@@ -955,6 +1038,74 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         }}
         onCancelar={() => setMostrarConfirmarSalida(false)}
       />
+
+      {/* Modal de confirmación para eliminar ítems (individual o lote) */}
+      <Modal
+        abierto={!!itemsAEliminar && itemsAEliminar.length > 0}
+        onClose={() => {
+          if (!eliminandoItems) {
+            setItemsAEliminar(null)
+            setErrorEliminarItems('')
+          }
+        }}
+        titulo={itemsAEliminar?.length === 1 ? '¿Eliminar ítem?' : '¿Eliminar ítems seleccionados?'}
+        icono={<Trash size={22} />}
+        colorIcono="var(--color-error)"
+        textoConfirmar={eliminandoItems ? 'Eliminando...' : 'Eliminar'}
+        textoCancelar="Cancelar"
+        varianteConfirmar="error"
+        onConfirmar={ejecutarEliminarItems}
+      >
+        <div className="space-y-2">
+          {errorEliminarItems && (
+            <p className="text-xs text-[var(--color-error)] font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
+              {errorEliminarItems}
+            </p>
+          )}
+          <p className="text-sm text-[var(--text-primary)]">
+            {itemsAEliminar?.length === 1 ? (
+              <>Vas a eliminar el ítem <strong>{itemsAEliminar[0].nombre}</strong> de forma permanente.</>
+            ) : (
+              <>Vas a eliminar <strong>{itemsAEliminar?.length} ítems</strong> seleccionados de forma permanente.</>
+            )}
+          </p>
+          <p className="text-xs text-[var(--text-secondary)]">
+            Esta acción no se puede deshacer y eliminará sus materiales, servicios e insumos asociados.
+          </p>
+        </div>
+      </Modal>
+
+      {/* Modal de confirmación para eliminar categoría */}
+      <Modal
+        abierto={!!categoriaAEliminar}
+        onClose={() => {
+          if (!eliminandoCategoria) {
+            setCategoriaAEliminar(null)
+            setErrorEliminarCategoria('')
+          }
+        }}
+        titulo="¿Eliminar categoría?"
+        icono={<Trash size={22} />}
+        colorIcono="var(--color-error)"
+        textoConfirmar={eliminandoCategoria ? 'Eliminando...' : 'Eliminar'}
+        textoCancelar="Cancelar"
+        varianteConfirmar="error"
+        onConfirmar={ejecutarEliminarCategoria}
+      >
+        <div className="space-y-2">
+          {errorEliminarCategoria && (
+            <p className="text-xs text-[var(--color-error)] font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
+              {errorEliminarCategoria}
+            </p>
+          )}
+          <p className="text-sm text-[var(--text-primary)]">
+            Vas a eliminar la categoría <strong>{categoriaAEliminar?.nombre}</strong> de forma permanente. Todos sus ítems se perderán.
+          </p>
+          <p className="text-xs text-[var(--text-secondary)]">
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </Modal>
 
       {itemParaDuplicar && (
         <ModalDuplicarItemCiudad
@@ -1016,17 +1167,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                             await fetch(`/api/admin/categorias/${h.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activa: !h.activa }) })
                             refrescar()
                           }}
-                          onEliminar={async () => {
-                            if (window.confirm(`¿Estás seguro de eliminar la categoría "${h.nombre}"? Todos sus ítems se perderán.`)) {
-                              const res = await fetch(`/api/admin/categorias/${h.id}`, { method: 'DELETE' })
-                              if (!res.ok) {
-                                const err = await res.json().catch(() => ({}))
-                                alert(err.error || 'No se pudo eliminar la categoría (es posible que esté en uso).')
-                              } else {
-                                refrescar()
-                              }
-                            }
-                          }}
+                          onEliminar={() => { setCategoriaAEliminar(h); setErrorEliminarCategoria('') }}
                         />
                       </div>
                     </div>
@@ -1144,12 +1285,52 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                 </div>
               </div>
 
+              {/* Barra de acción masiva de selección */}
+              {seleccionados.size > 0 && (
+                <div className="flex items-center justify-between rounded-[10px] border border-[var(--color-brand)]/20 bg-[var(--color-brand-light)] px-4 py-2.5">
+                  <span className="text-xs font-semibold text-[var(--color-brand)]">
+                    {seleccionados.size} {seleccionados.size === 1 ? 'ítem seleccionado' : 'ítems seleccionados'}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSeleccionados(new Set())}
+                      className="text-xs font-medium px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                    >
+                      Deseleccionar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setItemsAEliminar(itemsAqui.filter(it => seleccionados.has(it.id)))
+                        setErrorEliminarItems('')
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 cursor-pointer shadow-xs"
+                    >
+                      <Trash size={14} sinAnimacion /> Eliminar
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Tabla Canónica del Sistema de Diseño con SortTh y Zebra */}
               <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                        <th className="px-3 py-2.5 w-10 text-center">
+                          <button
+                            type="button"
+                            onClick={toggleSeleccionarTodas}
+                            className="inline-flex items-center justify-center cursor-pointer"
+                            title={todasSeleccionadas ? 'Deseleccionar todos' : 'Seleccionar todos'}
+                          >
+                            {todasSeleccionadas
+                              ? <SquareCheck size={18} className="text-[var(--color-brand)]" sinAnimacion />
+                              : <Square size={18} className="text-[var(--text-secondary)] opacity-60 hover:opacity-100 transition-opacity" sinAnimacion />}
+                          </button>
+                        </th>
                         <SortTh col="nombre" sort={sortItems} onToggle={toggleSortItems}>
                           Nombre
                         </SortTh>
@@ -1166,7 +1347,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                       {itemsOrdenados.length === 0 && (
                         <tr>
                           <td
-                            colSpan={4}
+                            colSpan={5}
                             className="px-4 py-8 text-center text-xs text-[var(--text-secondary)]"
                           >
                             {itemsAqui.length === 0
@@ -1184,6 +1365,18 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                           onClick={() => abrirItem(it.id)}
                         >
+                          <td className="px-3 py-3 text-center" onClick={e => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              onClick={() => toggleSeleccionado(it.id)}
+                              className="inline-flex items-center justify-center cursor-pointer"
+                              title={seleccionados.has(it.id) ? 'Deseleccionar ítem' : 'Seleccionar ítem'}
+                            >
+                              {seleccionados.has(it.id)
+                                ? <SquareCheck size={18} className="text-[var(--color-brand)]" sinAnimacion />
+                                : <Square size={18} className="text-[var(--text-secondary)] opacity-50 hover:opacity-100 transition-opacity" sinAnimacion />}
+                            </button>
+                          </td>
                           <td className="px-4 py-3 text-[var(--text-primary)]">
                             <span className={`inline-flex items-center gap-1.5 font-medium ${isPending && targetLoading === 'item:' + it.id ? 'opacity-50' : ''}`}>
                               {it.visibilidad === 'restringido' && <Lock size={12} className="text-[var(--color-brand)] flex-shrink-0" />}
@@ -1213,16 +1406,9 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                                 await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibilidad: nueva }) })
                                 refrescar()
                               }}
-                              onEliminar={async () => {
-                                if (window.confirm(`¿Estás seguro de eliminar el ítem "${it.nombre}"?`)) {
-                                  const res = await fetch(`/api/admin/items/${it.id}`, { method: 'DELETE' })
-                                  if (!res.ok) {
-                                    const err = await res.json().catch(() => ({}))
-                                    alert(err.error || 'No se pudo eliminar el ítem (es posible que esté en uso).')
-                                  } else {
-                                    refrescar()
-                                  }
-                                }
+                              onEliminar={() => {
+                                setItemsAEliminar([it])
+                                setErrorEliminarItems('')
                               }}
                             />
                           </td>
@@ -1260,8 +1446,6 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
     </div>
   )
 }
-
-import { ModalConfirmarSalida } from '@/components/ui/modal'
 
 // ── Formulario crear/editar nodo — incluye el esquema base fusionado ───────
 
