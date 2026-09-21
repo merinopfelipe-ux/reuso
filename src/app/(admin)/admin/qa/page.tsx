@@ -3301,11 +3301,6 @@ function QAContenido() {
                 >
                   <Warning size={11} className={modo === 'criticas' ? 'text-white' : 'text-[#FF5E4B]'} />
                   <span>Críticas</span>
-                  <span className={`text-[9px] px-1 rounded-full ${
-                    modo === 'criticas' ? 'bg-white/25 text-white' : 'bg-[#FF5E4B]/15 text-[#FF5E4B]'
-                  }`}>
-                    {totalCriticas}
-                  </span>
                 </button>
               </div>
 
