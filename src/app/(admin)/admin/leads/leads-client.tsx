@@ -3,7 +3,6 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Inbox as Tray, Mail as Envelope, Building2 as Buildings, Calendar, ChevronDown as CaretDown, ChevronUp as CaretUp, Phone } from '@/components/ui/icons'
-import { formatTelefonoVista } from '@/lib/telefono'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { Selector } from '@/components/ui/selector'
@@ -35,7 +34,10 @@ interface Lead {
   mensaje: string | null
   estado: EstadoLead
   created_at: string
+  evento_nombre?: string | null
 }
+
+interface Evento { id: string; nombre: string; fecha: string }
 
 
 function estadoBadge(estado: EstadoLead) {
@@ -47,13 +49,34 @@ function estadoBadge(estado: EstadoLead) {
   )
 }
 
-export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
+export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: { leads: Lead[]; eventos?: Evento[] }) {
   const router = useRouter()
   const [, startTransition] = useTransition()
   const [leads, setLeads] = useState(inicial)
   const [filtroEstado, setFiltroEstado] = useState<EstadoLead | ''>('')
   const [expandido, setExpandido] = useState<string | null>(null)
   const [cambiando, setCambiando] = useState<string | null>(null)
+  const [eventos, setEventos] = useState(eventosIniciales)
+  const [evNombre, setEvNombre] = useState('')
+  const [evFecha, setEvFecha] = useState('')
+  const [evError, setEvError] = useState('')
+  const [evGuardando, setEvGuardando] = useState(false)
+
+  async function crearEvento() {
+    setEvError('')
+    setEvGuardando(true)
+    const res = await fetch('/api/admin/eventos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: evNombre, fecha: evFecha }) })
+    const data = await res.json().catch(() => ({}))
+    setEvGuardando(false)
+    if (!res.ok) return setEvError(data.error ?? 'No pudimos guardar el evento.')
+    setEventos(prev => [data.evento, ...prev].sort((a, b) => b.fecha.localeCompare(a.fecha)))
+    setEvNombre(''); setEvFecha('')
+  }
+
+  async function borrarEvento(id: string) {
+    const res = await fetch(`/api/admin/eventos?id=${id}`, { method: 'DELETE' })
+    if (res.ok) setEventos(prev => prev.filter(e => e.id !== id))
+  }
 
   const filtrados = filtroEstado ? leads.filter(l => l.estado === filtroEstado) : leads
 
@@ -96,6 +119,32 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
         </a>
       </div>
 
+      {/* Eventos: la página /eventos y el correo automático usan el de hoy o el próximo */}
+      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)]" style={{ padding: 16, marginBottom: 20 }}>
+        <p style={{ fontSize: 14, fontWeight: 700, color: C.dark, margin: '0 0 4px' }}>Eventos</p>
+        <p style={{ fontSize: 12, color: C.mid, margin: '0 0 12px' }}>
+          Programa el nombre y la fecha. El correo dirá &quot;Nos conocemos en&quot; y el nombre del evento de hoy o el próximo.
+        </p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+          <input value={evNombre} onChange={e => setEvNombre(e.target.value)} placeholder="Nombre del evento" maxLength={120}
+            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13, flex: '1 1 220px' }} />
+          <input type="date" value={evFecha} onChange={e => setEvFecha(e.target.value)}
+            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+          <Button size="sm" variant="primary" loading={evGuardando} onClick={crearEvento}>Programar</Button>
+        </div>
+        {evError && <p role="alert" style={{ fontSize: 12, color: 'var(--color-error)', margin: '8px 0 0' }}>{evError}</p>}
+        {eventos.length > 0 && (
+          <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {eventos.map(ev => (
+              <li key={ev.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 13, color: C.dark }}>
+                <span><strong>{ev.nombre}</strong>{' · '}{new Date(`${ev.fecha}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <Button size="sm" variant="secondary" onClick={() => borrarEvento(ev.id)}>Quitar</Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
       {/* KPIs rápidos */}
       <div className="leads-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
         {ESTADOS.map(e => {
@@ -136,7 +185,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
                       {estadoBadge(lead.estado)}
                       {lead.interes && (
                         <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, background: 'rgba(89,166,228,0.12)', color: '#2B7FBF' }}>
-                          {lead.interes}
+                          {lead.interes}{lead.evento_nombre ? ` · ${lead.evento_nombre}` : ''}
                         </span>
                       )}
                     </div>
@@ -153,7 +202,7 @@ export function LeadsClient({ leads: inicial }: { leads: Lead[] }) {
                       )}
                       {lead.telefono && (
                         <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Phone size={11} />{formatTelefonoVista(lead.telefono, '+57')}
+                          <Phone size={11} />{lead.telefono}
                         </span>
                       )}
                       <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>

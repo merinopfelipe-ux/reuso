@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
+import { primerNombre } from '@/lib/eventos'
 
 // ── Dark mode - espejo fiel de globals.css [data-theme="dark"] ───────────────
 // --bg-primary:#474747  --bg-card:#525252  --text-primary:#FFFFFF
@@ -792,23 +793,27 @@ function botonCorreo(href: string, texto: string): string {
 </table>`
 }
 
-// Correo simple que recibe la persona apenas deja sus datos en /eventos.
+// Correo que recibe la persona apenas deja sus datos en /eventos. Saluda solo
+// por el primer nombre y menciona el evento programado en /admin/leads.
 export async function enviarSeguimientoEvento(
   to: string,
-  datos: { empresa: string }
+  datos: { nombre: string; empresa: string; evento?: string | null }
 ): Promise<{ resendEmailId: string | null }> {
   if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const nombre = escaparHtml(primerNombre(datos.nombre))
   const empresaSegura = escaparHtml(datos.empresa)
+  const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
+  const conocimos = evento ? `Nos conocemos en <strong>${evento}</strong> y quedamos en contacto.` : 'Nos vimos en el evento y quedamos en contacto.'
 
   const html = emailPlantilla({
-    preheader: 'Nos vimos y quedamos en contacto. Recibimos los datos de tu empresa.',
-    subtituloHeader: 'Nos vimos y quedamos en contacto',
-    saludo: '¡Hola!',
-    cuerpo: `Nos vimos en el evento y quedamos en contacto. Recibimos los datos de <strong>${empresaSegura}</strong>. No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
+    preheader: evento ? `Nos conocemos en ${evento}. Recibimos los datos de tu empresa.` : 'Nos vimos y quedamos en contacto. Recibimos los datos de tu empresa.',
+    subtituloHeader: evento ? `Nos conocemos en ${evento}` : 'Nos vimos y quedamos en contacto',
+    saludo: nombre ? `¡Hola, ${nombre}!` : '¡Hola!',
+    cuerpo: `${conocimos} Recibimos los datos de <strong>${empresaSegura}</strong>. No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
     contenidoCentral: botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso'),
     mostrarAlerta: false,
     avisoPie: 'Recibiste este correo porque dejaste los datos de tu empresa en nuestro evento. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
@@ -817,7 +822,7 @@ export async function enviarSeguimientoEvento(
   const { data } = await resend.emails.send({
     from: FROM,
     to,
-    subject: 'Nos vimos y quedamos en contacto',
+    subject: evento ? `Nos conocemos en ${datos.evento!.replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}` : 'Nos vimos y quedamos en contacto',
     html,
     replyTo: 'servicio@calculadoradereuso.com',
   })
@@ -827,36 +832,43 @@ export async function enviarSeguimientoEvento(
 // Aviso interno: llega al equipo con un botón que abre WhatsApp con el mensaje
 // listo, porque no hay API de WhatsApp (basta un toque para enviarlo).
 export async function enviarAvisoLeadEvento(datos: {
+  nombre: string
   empresa: string
-  email: string
-  celular: string
-  whatsappUrl: string
+  email?: string
+  celular?: string
+  whatsappUrl?: string
+  evento?: string | null
 }): Promise<{ resendEmailId: string | null }> {
   if (process.env.SKIP_TEST_EMAILS === 'true') return { resendEmailId: null }
   if (!process.env.RESEND_API_KEY) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
-  const empresaSegura = escaparHtml(datos.empresa)
-  const fila = (k: string, v: string) => `
+  const fila = (k: string, v: string) => v ? `
   <tr>
     <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">${k}</td>
-    <td style="padding:6px 0;color:#474747;font-size:13px;">${v}</td>
-  </tr>`
+    <td style="padding:6px 0;color:#474747;font-size:13px;">${escaparHtml(v)}</td>
+  </tr>` : ''
 
   const contenidoCentral = `
 <table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
-  ${fila('Empresa', empresaSegura)}
-  ${fila('Celular', escaparHtml(datos.celular))}
-  ${fila('Correo', escaparHtml(datos.email))}
+  ${fila('Nombre', datos.nombre)}
+  ${fila('Empresa', datos.empresa)}
+  ${fila('Celular', datos.celular ?? '')}
+  ${fila('Correo', datos.email ?? '')}
+  ${fila('Evento', datos.evento ?? '')}
 </table>
-${botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp')}`
+${datos.whatsappUrl ? botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp') : ''}`
+
+  const cuerpo = datos.whatsappUrl
+    ? `${datos.email ? 'Ya recibió un correo de seguimiento. ' : 'No dejó correo. '}Toca el botón para abrir WhatsApp con el mensaje listo.`
+    : 'No dejó celular, solo correo, y ya recibió el correo de seguimiento.'
 
   const html = emailPlantilla({
-    preheader: `${datos.empresa} dejó sus datos en el evento.`,
+    preheader: `${datos.nombre} de ${datos.empresa} dejó sus datos en el evento.`,
     subtituloHeader: 'Nuevo contacto del evento',
     saludo: 'Nuevo contacto',
-    cuerpo: 'Una empresa dejó sus datos en la página de eventos y ya recibió un correo de seguimiento. Toca el botón para abrir WhatsApp con el mensaje listo.',
+    cuerpo: `${escaparHtml(datos.nombre)} de ${escaparHtml(datos.empresa)} dejó sus datos en la página de eventos. ${cuerpo}`,
     contenidoCentral,
     mostrarAlerta: false,
     avisoPie: 'Aviso interno del equipo de la Calculadora de Reúso.',

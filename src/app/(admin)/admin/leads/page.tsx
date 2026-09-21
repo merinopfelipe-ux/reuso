@@ -25,6 +25,10 @@ export default async function AdminLeadsPage() {
     .from('leads')
     .select('*')
     .order('created_at', { ascending: false })
+  const { data: eventos } = await adminClient
+    .from('eventos')
+    .select('id, nombre, fecha')
+    .order('fecha', { ascending: false })
 
   return (
     <div>
@@ -33,7 +37,7 @@ export default async function AdminLeadsPage() {
         subtitulo="Prospectos capturados desde la landing page"
         showBack
       />
-      <LeadsClient leads={leads ?? []} />
+      <LeadsClient leads={leads ?? []} eventos={eventos ?? []} />
     </div>
   )
 }
