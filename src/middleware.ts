@@ -203,6 +203,7 @@ export const config = {
     // 2026-09-02: robots.txt/sitemap.xml/llms.txt/og-image.png redirigían a
     // /login porque no estaban en esta lista) — cualquier archivo suelto en
     // public/ con extensión reconocible queda excluido por patrón.
-    '/((?!_next/static|_next/image|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json)$).*)',
+    // woff2/woff/ttf/otf: fuentes propias en public/fonts (2026-09-21).
+    '/((?!_next/static|_next/image|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json|woff2|woff|ttf|otf)$).*)',
   ],
 }

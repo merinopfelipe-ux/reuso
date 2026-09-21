@@ -37,6 +37,11 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
+        {/* Adelanta la conexión a Typekit (Seravek): el CSS sale de use.typekit.net
+            y las letras de p.typekit.net. Open Sans ya es propia (public/fonts). */}
+        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://p.typekit.net" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/open-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="stylesheet" href="https://use.typekit.net/ggf2dir.css" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
