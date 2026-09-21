@@ -13,7 +13,8 @@ export async function PATCH(
   const body = await request.json().catch(() => null)
   const parsed = patchItemSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Datos inválidos.' }, { status: 400 })
+    const detalleErr = parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(' | ')
+    return NextResponse.json({ error: `Datos inválidos: ${detalleErr}` }, { status: 400 })
   }
 
   // Snapshot "antes" para la auditoría (Reporte 4, dominio D) — se toma antes

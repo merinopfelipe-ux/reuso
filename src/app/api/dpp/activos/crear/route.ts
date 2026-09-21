@@ -26,6 +26,7 @@ const schema = z.object({
     // cálculo ya confirmado.
     categoria_material: z.string().nullish(),
     porcentaje_reciclable: z.number().min(0).max(100).nullish(),
+    rol_conservacion: z.string().optional(),
   })).optional(),
   // Solo llega si el peso visto en la foto difirió más de 10% del catálogo
   // (calculado en el frontend) — sugerencia pendiente de aceptar, nunca se

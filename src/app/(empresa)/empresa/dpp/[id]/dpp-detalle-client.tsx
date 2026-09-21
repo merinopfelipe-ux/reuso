@@ -332,6 +332,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
         nivel_confianza?: string
         categoria_material?: string | null
         porcentaje_reciclable?: number | null
+        rol_conservacion?: string
       }[]
     : []
   const desgloseCircularSugerido = desglosarMasaCircular(
@@ -696,8 +697,15 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                         >
                           <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span>{m.material}</span>
+                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-xs ring-1 inset-ring ${
+                                m.rol_conservacion === 'se_reemplaza'
+                                  ? 'bg-gray-100 text-gray-600 ring-gray-500/20' 
+                                  : 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+                              }`}>
+                                {m.rol_conservacion === 'se_reemplaza' ? 'Se reemplaza' : 'Se conserva'}
+                              </span>
                             </div>
                           </td>
                           <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>

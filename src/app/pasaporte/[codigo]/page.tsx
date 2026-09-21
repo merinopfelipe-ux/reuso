@@ -24,6 +24,7 @@ type ComposicionItem = {
   factor_co2_kg: number
   origen_fuente?: string
   nivel_confianza?: string
+  rol_conservacion?: string
 }
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string }> = {
@@ -251,8 +252,20 @@ export default async function PasaportePage({ params }: PageProps) {
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                         >
                           <td style={{ padding: '9px 10px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                               <span>{m.material}</span>
+                              <span style={{
+                                background: m.rol_conservacion === 'se_reemplaza' ? '#F3F4F6' : '#ECFDF5',
+                                color: m.rol_conservacion === 'se_reemplaza' ? '#4B5563' : '#047857',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontSize: '9px',
+                                fontWeight: 700,
+                                letterSpacing: '0.025em',
+                                border: `1px solid ${m.rol_conservacion === 'se_reemplaza' ? '#E5E7EB' : '#A7F3D0'}`
+                              }}>
+                                {m.rol_conservacion === 'se_reemplaza' ? 'Se reemplaza' : 'Se conserva'}
+                              </span>
                             </div>
                           </td>
                           <td style={{ padding: '9px 10px', color: 'var(--text-secondary)', textAlign: 'right' }}>{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>

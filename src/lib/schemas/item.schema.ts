@@ -12,8 +12,8 @@ export const crearItemSchema = z.object({
   servicios: z.array(servicioSchema).default([]),
   insumos: z.array(insumoSchema).default([]),
   orden: z.number().int().optional(),
-  origen_fuente: z.string().max(200).nullish(),
-  detalle_fuente: z.string().max(4000).nullish(),
+  origen_fuente: z.string().max(2000).nullish(),
+  detalle_fuente: z.string().nullish(),
 })
 
 export const patchItemSchema = z.object({
@@ -28,8 +28,8 @@ export const patchItemSchema = z.object({
   servicios: z.array(servicioSchema).optional(),
   insumos: z.array(insumoSchema).optional(),
   orden: z.number().int().optional(),
-  origen_fuente: z.string().max(200).nullish(),
-  detalle_fuente: z.string().max(4000).nullish(),
+  origen_fuente: z.string().max(2000).nullish(),
+  detalle_fuente: z.string().nullish(),
 })
 
 export type CrearItem = z.infer<typeof crearItemSchema>

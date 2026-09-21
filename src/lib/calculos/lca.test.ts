@@ -26,4 +26,17 @@ describe('calcularHuellaManufactura', () => {
     const composicion = [{ peso_kg: 1, factor_co2_kg: 1 / 3 }]
     expect(calcularHuellaManufactura(composicion)).toBe(0.3333)
   })
+
+  it('ignora los materiales cuyo rol_conservacion sea se_reemplaza', () => {
+    const composicion = [
+      { peso_kg: 10, factor_co2_kg: 2, rol_conservacion: 'se_conserva' },
+      { peso_kg: 5, factor_co2_kg: 3, rol_conservacion: 'se_reemplaza' },
+      { peso_kg: 2, factor_co2_kg: 1 }, // Sin rol, debe sumar por defecto
+    ]
+    // 10 * 2 = 20 (se_conserva)
+    // 5 * 3 = 15 (ignorado)
+    // 2 * 1 = 2 (sin rol especificado)
+    // Total = 22
+    expect(calcularHuellaManufactura(composicion)).toBe(22)
+  })
 })

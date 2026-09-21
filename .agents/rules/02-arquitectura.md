@@ -12,3 +12,7 @@
   - **Contenedor Único y Absoluto:** TODA PÁGINA DEBE estar envuelta por `w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8`.
   - **Espaciado Inferior Unificado:** Toda página del sistema DEBE usar estrictamente `pb-6` en su contenedor raíz. Se prohíbe usar `min-h-screen` en contenedores raíz anidados.
   - **Sistema de Grillas Interno (5 Variables Únicas):** La distribución interior usará EXCLUSIVAMENTE 100%, 50/50, 66/33, 4x25% o el Dashboard (2.5fr / 1.5fr / 2fr).
+
+- **Regla de Esquemas Base de Categoría vs Ítems (MANDATORIO Y PERMANENTE)**
+  - **Aislamiento de Ítems:** Ocultar o eliminar con la papelera (🗑) un material o insumo heredado en la ficha de un ítem particular (porque ese ítem puntual no lo lleva) NUNCA debe considerarse un cambio de categoría ni alterar `categoria_materiales_base` / `categoria_insumos_base`.
+  - **Detección de Cambios de Esquema:** NUNCA comparar la cantidad de filas visibles contra el largo del esquema de la categoría. El esquema base solo se actualiza (PATCH) si realmente se modificó el nombre o factor de un material/insumo que sigue existiendo en la categoría.

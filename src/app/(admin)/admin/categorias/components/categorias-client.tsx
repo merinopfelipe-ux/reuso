@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useTransition, useMemo, useRef, useEffect } from 'react'
+import { useState, useTransition, useMemo, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/icons'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
 import { Button } from '@/components/ui/button'
 import { IconPicker } from '@/components/admin/icon-picker'
@@ -26,9 +27,16 @@ const labelSt = 'block text-xs font-semibold text-[var(--text-secondary)] mb-1.5
 const labelSeccion = 'block text-xs font-bold text-[var(--text-primary)] mb-2.5'
 
 // ── Filas para los editores LIBRES (esquema base / extras: se puede añadir/quitar) ──
-interface MaterialRow { nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string; rol_conservacion?: string }
-interface ServicioRow { nombre: string; precio: string }
-interface InsumoRow { nombre: string; cantidad: string; unidad: string; precio_unitario: string; peso_kg: string }
+interface MaterialRow { id?: string; nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string; rol_conservacion?: string }
+interface ServicioRow { id?: string; nombre: string; precio: string }
+interface InsumoRow { id?: string; nombre: string; cantidad: string; unidad: string; precio_unitario: string; peso_kg: string }
+
+function nuevoIdFila(prefijo = 'row'): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  return `${prefijo}-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+}
 
 // Taxonomía del Reporte 2 (Mitigación GRI/ESG) — ver skill `dominios-datos`.
 const CATEGORIAS_MATERIAL = [
@@ -44,28 +52,38 @@ const CATEGORIAS_MATERIAL = [
   { value: 'otros', label: 'Otros' },
 ]
 
-const filaMaterial = (): MaterialRow => ({ nombre: '', peso_kg: '', factor_co2_kg: '', factor_agua_l_kg: '', categoria_material: '', origen_fuente: '', detalle_fuente: '', rol_conservacion: '' })
-const filaServicio = (): ServicioRow => ({ nombre: '', precio: '' })
-const filaInsumo = (): InsumoRow => ({ nombre: '', cantidad: '', unidad: '', precio_unitario: '', peso_kg: '' })
+const filaMaterial = (): MaterialRow => ({ id: nuevoIdFila('mat'), nombre: '', peso_kg: '', factor_co2_kg: '', factor_agua_l_kg: '', categoria_material: '', origen_fuente: '', detalle_fuente: '', rol_conservacion: 'se_conserva' })
+const filaServicio = (): ServicioRow => ({ id: nuevoIdFila('serv'), nombre: '', precio: '' })
+const filaInsumo = (): InsumoRow => ({ id: nuevoIdFila('ins'), nombre: '', cantidad: '', unidad: '', precio_unitario: '', peso_kg: '' })
 
-function materialesAFilas(materiales: { nombre: string; peso_kg: number; factor_co2_kg: number; factor_agua_l_kg: number | null; categoria_material?: string | null; origen_fuente: string | null; detalle_fuente: string | null; rol_conservacion?: string | null }[]): MaterialRow[] {
-  return materiales.map(m => ({ nombre: m.nombre, peso_kg: String(m.peso_kg), factor_co2_kg: String(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '', categoria_material: m.categoria_material ?? '', origen_fuente: m.origen_fuente ?? '', detalle_fuente: m.detalle_fuente ?? '', rol_conservacion: m.rol_conservacion ?? '' }))
+function materialesAFilas(materiales: { id?: string; nombre: string; peso_kg: number; factor_co2_kg: number; factor_agua_l_kg: number | null; categoria_material?: string | null; origen_fuente: string | null; detalle_fuente: string | null; rol_conservacion?: string | null }[]): MaterialRow[] {
+  return materiales.map(m => ({ id: m.id || nuevoIdFila('mat'), nombre: m.nombre, peso_kg: String(m.peso_kg), factor_co2_kg: String(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg != null ? String(m.factor_agua_l_kg) : '', categoria_material: m.categoria_material ?? '', origen_fuente: m.origen_fuente ?? '', detalle_fuente: m.detalle_fuente ?? '', rol_conservacion: m.rol_conservacion ?? '' }))
 }
-function serviciosAFilas(servicios: { nombre: string; precio: number }[]): ServicioRow[] {
-  return servicios.map(s => ({ nombre: s.nombre, precio: String(s.precio) }))
+function serviciosAFilas(servicios: { id?: string; nombre: string; precio: number }[]): ServicioRow[] {
+  return servicios.map(s => ({ id: s.id || nuevoIdFila('serv'), nombre: s.nombre, precio: String(s.precio) }))
 }
-function insumosAFilas(insumos: { nombre: string; cantidad: number; unidad: string; precio_unitario: number; peso_kg?: number | null }[]): InsumoRow[] {
-  return insumos.map(i => ({ nombre: i.nombre, cantidad: String(i.cantidad), unidad: i.unidad, precio_unitario: String(i.precio_unitario), peso_kg: i.peso_kg != null ? String(i.peso_kg) : '' }))
+function insumosAFilas(insumos: { id?: string; nombre: string; cantidad: number; unidad: string; precio_unitario: number; peso_kg?: number | null }[]): InsumoRow[] {
+  return insumos.map(i => ({ id: i.id || nuevoIdFila('ins'), nombre: i.nombre, cantidad: String(i.cantidad), unidad: i.unidad, precio_unitario: String(i.precio_unitario), peso_kg: i.peso_kg != null ? String(i.peso_kg) : '' }))
 }
 function filasAMateriales(rows: MaterialRow[], pesoPorDefecto = 1) {
   return rows.filter(m => m.nombre && m.factor_co2_kg)
     .map(m => ({ nombre: m.nombre, peso_kg: parseFloat(m.peso_kg) || pesoPorDefecto, factor_co2_kg: parseFloat(m.factor_co2_kg), factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined, categoria_material: m.categoria_material || undefined, origen_fuente: m.origen_fuente || undefined, detalle_fuente: m.detalle_fuente || undefined, nivel_confianza: 'baja' as const, rol_conservacion: m.rol_conservacion || undefined }))
 }
 function filasAServicios(rows: ServicioRow[]) {
-  return rows.filter(s => s.nombre && s.precio).map(s => ({ nombre: s.nombre, precio: parseFloat(s.precio) }))
+  return rows
+    .filter(s => s.nombre.trim() && s.precio.trim() !== '' && !isNaN(parseFloat(s.precio)))
+    .map(s => ({ nombre: s.nombre.trim(), precio: parseFloat(s.precio) }))
 }
 function filasAInsumos(rows: InsumoRow[]) {
-  return rows.filter(i => i.nombre && i.cantidad && i.unidad && i.precio_unitario).map(i => ({ nombre: i.nombre, cantidad: parseFloat(i.cantidad), unidad: i.unidad, precio_unitario: parseFloat(i.precio_unitario), peso_kg: i.peso_kg ? parseFloat(i.peso_kg) : undefined }))
+  return rows
+    .filter(i => i.nombre.trim() && i.cantidad.trim() !== '' && !isNaN(parseFloat(i.cantidad)) && i.unidad.trim() && i.precio_unitario.trim() !== '' && !isNaN(parseFloat(i.precio_unitario)))
+    .map(i => ({
+      nombre: i.nombre.trim(),
+      cantidad: parseFloat(i.cantidad),
+      unidad: i.unidad.trim(),
+      precio_unitario: parseFloat(i.precio_unitario),
+      peso_kg: i.peso_kg ? parseFloat(i.peso_kg) : undefined,
+    }))
 }
 
 // ── Helpers de navegación sobre listas planas (soporta profundidad libre) ──
@@ -768,7 +786,6 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         titulo={
           <span className="flex items-center gap-2">
             {titulo}
-            {itemAbierto && esItemPerplexity(itemAbierto) && <BadgePerplexity />}
             {isPending && <Loader2 size={16} className="animate-spin text-[var(--color-brand)] opacity-70" />}
           </span>
         } 
@@ -1136,24 +1153,26 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
 // Permite alternar entre "Se conserva" y "Se reemplaza" con un clic, o definirlo si está pendiente.
 function BadgeRolConservacion({
   rol,
+  peso,
   onCambiar,
 }: {
   rol?: string
+  peso?: string | number
   onCambiar?: (nuevoRol: string) => void
 }) {
-  const esConserva = rol === 'se_conserva'
+  const pesoNum = typeof peso === 'number' ? peso : parseFloat(String(peso ?? ''))
+  // Si el resultado es 0 o no está asignado, no hay necesidad de colocar esta info
+  if (isNaN(pesoNum) || pesoNum <= 0) {
+    return null
+  }
+
+  // Únicamente existen dos estados posibles: "Se conserva" o "Se reemplaza" (sin un tercer estado)
   const esReemplaza = rol === 'se_reemplaza' || rol === 'residuo'
-  const esPendiente = !esConserva && !esReemplaza
+  const esConserva = !esReemplaza
 
   function handleToggle() {
     if (!onCambiar) return
-    if (esConserva) onCambiar('se_reemplaza')
-    else if (esReemplaza) onCambiar('se_conserva')
-    else onCambiar('se_conserva')
-  }
-
-  if (esPendiente) {
-    return null
+    onCambiar(esReemplaza ? 'se_conserva' : 'se_reemplaza')
   }
 
   return (
@@ -1161,15 +1180,14 @@ function BadgeRolConservacion({
       type="button"
       onClick={handleToggle}
       title="Haz clic para alternar entre 'Se conserva' y 'Se reemplaza'"
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0 select-none shadow-xs transition-transform active:scale-95 cursor-pointer"
-      style={{
-        background: esConserva ? 'rgba(34, 197, 94, 0.15)' : 'rgba(246, 191, 62, 0.18)',
-        color: esConserva ? '#16A34A' : '#B8860B',
-        border: esConserva ? '1px solid rgba(34, 197, 94, 0.35)' : '1px solid rgba(246, 191, 62, 0.38)',
-      }}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0 select-none shadow-xs transition-transform active:scale-95 cursor-pointer border ${
+        esConserva
+          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+          : 'bg-amber-500/15 border-amber-500/30 text-amber-800 dark:text-amber-200'
+      }`}
     >
       <span>{esConserva ? 'Se conserva' : 'Se reemplaza'}</span>
-      <span className="text-[8px] opacity-60">⇄</span>
+      <span className="text-[9px] opacity-60">⇄</span>
     </button>
   )
 }
@@ -1189,54 +1207,78 @@ export function IconoPerplexity({ className = '', size = 13 }: { className?: str
   )
 }
 
-// Logo y badge de Perplexity para marcar ítems enriquecidos con IA
-export function BadgePerplexity({ title = 'Estimado con Perplexity AI', compacto = false }: { title?: string; compacto?: boolean }) {
+// Logo de Perplexity para marcar ítems enriquecidos con IA (limpio, sin caja ni texto redundante)
+export function BadgePerplexity({ title = 'Estimado con Perplexity AI' }: { title?: string; compacto?: boolean }) {
   return (
     <span
-      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-semibold tracking-tight select-none transition-all duration-200 hover:opacity-90 shadow-sm"
-      style={{
-        background: 'rgba(32, 128, 141, 0.12)',
-        color: '#20808D',
-        border: '1px solid rgba(32, 128, 141, 0.3)',
-      }}
+      className="inline-flex items-center text-[#00827C] dark:text-[#2DD4BF] hover:opacity-80 transition-opacity flex-shrink-0 cursor-default"
       title={title}
     >
-      <IconoPerplexity size={11} className="flex-shrink-0" />
-      {!compacto && <span>Perplexity</span>}
+      <IconoPerplexity size={14} className="flex-shrink-0" />
     </span>
   )
 }
 
 export function esItemPerplexity(it: ItemConDimensiones | null | undefined): boolean {
   if (!it) return false
-  if (it.origen_fuente?.toLowerCase().includes('perplexity')) return true
-  if (it.detalle_fuente?.toLowerCase().includes('perplexity')) return true
-  return it.item_materiales?.some(m => m.origen_fuente?.toLowerCase().includes('perplexity') || m.detalle_fuente?.toLowerCase().includes('perplexity')) ?? false
+
+  // 1. Si el detalle_fuente tiene materiales con fuentes de Perplexity verificadas
+  if (it.detalle_fuente) {
+    try {
+      const parsed = JSON.parse(it.detalle_fuente)
+      if (parsed && typeof parsed === 'object') {
+        const matsInfo = parsed.materiales_info as Record<string, InfoFuenteMaterial> | undefined
+        if (matsInfo && typeof matsInfo === 'object') {
+          const tieneFuenteReal = Object.values(matsInfo).some(f => esFuentePerplexity(f))
+          if (tieneFuenteReal) return true
+        }
+      }
+    } catch {
+      // Texto plano
+      const det = it.detalle_fuente.toLowerCase()
+      if (det.includes('perplexity') && !det.includes('factor interno') && !det.includes('provisional')) {
+        return true
+      }
+    }
+  }
+
+  // 2. Verificar si alguno de sus materiales tiene fuente técnica externa de Perplexity
+  const tieneMatPerplexity = it.item_materiales?.some(m => {
+    if (!m.origen_fuente && !m.detalle_fuente) return false
+    const det = (m.detalle_fuente || '').toLowerCase()
+    if (det.includes('factor interno') || det.includes('interno') || det.includes('provisional')) return false
+    if (m.origen_fuente && m.origen_fuente.startsWith('http')) return true
+    const orig = (m.origen_fuente || '').toLowerCase()
+    if ((orig.includes('perplexity') || orig.includes('openrouter')) && (m.nivel_confianza === 'alta' || m.nivel_confianza === 'media') && det.length > 15) {
+      return true
+    }
+    return false
+  }) ?? false
+
+  return tieneMatPerplexity
 }
 
 // Determina si una fuente proviene realmente de Perplexity y no de una estimación interna/provisional
 export function esFuentePerplexity(info?: InfoFuenteMaterial | null): info is InfoFuenteMaterial {
   if (!info) return false
-  const titulo = (info.fuente_titulo || '').toLowerCase()
+  const titulo = (info.fuente_titulo || '').trim().toLowerCase()
   const prov = (info.proveedor || '').toLowerCase()
-  const url = (info.fuente_url || '').toLowerCase()
 
-  // Si es fuente interna o no fue consultado con Perplexity, no mostrar logo ni desplegar nada
+  // Si es fuente interna o provisional, NUNCA es Perplexity
   if (titulo.includes('factor interno') || titulo.includes('interno') || titulo.includes('provisional')) {
-    if (!prov.includes('perplexity') && !url.includes('perplexity')) {
-      return false
-    }
+    return false
   }
 
-  if (prov.includes('perplexity') || url.includes('perplexity') || titulo.includes('perplexity')) {
-    return true
-  }
+  // Debe tener una URL real de internet o un título técnico sustancial de IA
+  const tieneUrlReal = Boolean(info.fuente_url && info.fuente_url.startsWith('http'))
+  const tieneTituloTecnico = Boolean(
+    info.fuente_titulo &&
+    info.fuente_titulo.trim().length > 15 &&
+    (prov.includes('perplexity') || prov.includes('openrouter')) &&
+    (info.confianza === 'alta' || info.confianza === 'media')
+  )
 
-  if (info.fuente_url && info.fuente_url.startsWith('http') && prov !== 'interno') {
-    return true
-  }
-
-  return false
+  return tieneUrlReal || tieneTituloTecnico
 }
 
 // Extrae roles de conservación guardados en el JSON de detalle_fuente como respaldo infalible
@@ -1260,155 +1302,176 @@ export interface InfoFuenteMaterial {
   proveedor?: string | null
 }
 
-// Botón e ícono de Perplexity al lado del tooltip, que abre modal con contraste perfecto día/noche.
-// Si no se consultó Perplexity y es fuente interna, no se muestra nada.
+// Popover flotante contextual de Perplexity AI, anclado directamente al botón.
+// Sin backdrop que oscurezca la pantalla, con legibilidad perfecta día/noche y cierre click-outside / Escape.
 function BotonInfoPerplexity({
   info,
   nombreMaterial,
+  peso,
 }: {
   info?: InfoFuenteMaterial
   nombreMaterial: string
+  peso?: string | number
 }) {
   const [abierto, setAbierto] = useState(false)
-  
+  const [coords, setCoords] = useState<{ top?: number; bottom?: number; left: number } | null>(null)
+  const [montado, setMontado] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const popoverRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    setMontado(true)
+  }, [])
+
+  const posicionar = useCallback(() => {
+    if (!triggerRef.current || typeof window === 'undefined') return
+    const rect = triggerRef.current.getBoundingClientRect()
+    const ancho = Math.min(340, window.innerWidth - 24)
+    let left = rect.left - 12
+    if (left + ancho > window.innerWidth - 12) {
+      left = window.innerWidth - ancho - 12
+    }
+    if (left < 12) left = 12
+
+    const espacioAbajo = window.innerHeight - rect.bottom
+    const preferirAbajo = espacioAbajo >= 200 || rect.top < 200
+
+    if (preferirAbajo) {
+      setCoords({ top: rect.bottom + 6, left })
+    } else {
+      setCoords({ bottom: window.innerHeight - rect.top + 6, left })
+    }
+  }, [])
+
+  function alternar() {
+    if (!abierto) posicionar()
+    setAbierto(v => !v)
+  }
+
+  useEffect(() => {
+    if (!abierto) return
+    function onClickAfuera(e: MouseEvent) {
+      if (triggerRef.current?.contains(e.target as Node)) return
+      if (popoverRef.current?.contains(e.target as Node)) return
+      setAbierto(false)
+    }
+    function onScroll(e: Event) {
+      if (popoverRef.current?.contains(e.target as Node)) return
+      posicionar()
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setAbierto(false)
+    }
+
+    document.addEventListener('mousedown', onClickAfuera)
+    document.addEventListener('keydown', onKeyDown)
+    window.addEventListener('scroll', onScroll, true)
+    window.addEventListener('resize', posicionar)
+    return () => {
+      document.removeEventListener('mousedown', onClickAfuera)
+      document.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('scroll', onScroll, true)
+      window.removeEventListener('resize', posicionar)
+    }
+  }, [abierto, posicionar])
+
+  // Regla: si el resultado es 0 o está vacío, no hay necesidad de decir o colocar esta info
+  const pesoNum = typeof peso === 'number' ? peso : parseFloat(String(peso ?? ''))
+  if (isNaN(pesoNum) || pesoNum <= 0) return null
+
   // Regla: si no se consultó Perplexity y es fuente interna, no poner logo ni desplegar nada
   if (!esFuentePerplexity(info)) return null
 
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setAbierto(true)}
-        className="inline-flex items-center justify-center w-5 h-5 rounded-md transition-all duration-150 hover:scale-110 active:scale-95 flex-shrink-0 cursor-pointer shadow-xs"
-        style={{
-          background: 'rgba(32, 128, 141, 0.15)',
-          color: '#20808D',
-          border: '1px solid rgba(32, 128, 141, 0.35)',
-        }}
+        onClick={alternar}
+        className={`inline-flex items-center justify-center p-0.5 text-[#00827C] dark:text-[#2DD4BF] hover:text-[#0891b2] dark:hover:text-[#5eead4] transition-all flex-shrink-0 cursor-pointer ${
+          abierto ? 'scale-115 opacity-100' : 'opacity-85 hover:opacity-100 hover:scale-110 active:scale-95'
+        }`}
         title="Ver especificaciones y fuentes técnicas de Perplexity"
       >
-        <IconoPerplexity size={12} />
+        <IconoPerplexity size={13} />
       </button>
 
-      {abierto && (
+      {abierto && montado && coords && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0, 0, 0, 0.65)', backdropFilter: 'blur(3px)' }}
-          onClick={() => setAbierto(false)}
+          ref={popoverRef}
+          className="fixed z-[9999] rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-150 text-[var(--text-primary)]"
+          style={{
+            width: Math.min(340, typeof window !== 'undefined' ? window.innerWidth - 24 : 340),
+            top: coords.top,
+            bottom: coords.bottom,
+            left: coords.left,
+          }}
         >
-          <div
-            className="w-full max-w-lg rounded-2xl p-5 shadow-2xl flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-150"
-            style={{
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              color: 'var(--text-primary)',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Cabecera del modal */}
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
-              <div className="flex items-center gap-2">
+          {/* Cabecera compacta del popover */}
+          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+            <div className="flex items-center gap-1.5">
+              <span
+                className="w-5 h-5 rounded flex items-center justify-center text-[#00827C] dark:text-[#2DD4BF]"
+                style={{ background: 'rgba(45, 212, 191, 0.14)' }}
+              >
+                <IconoPerplexity size={11} />
+              </span>
+              <span className="text-xs font-bold tracking-tight text-[var(--text-primary)]">
+                Perplexity AI
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {info.confianza && (
                 <span
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-[#20808D]"
-                  style={{ background: 'rgba(32, 128, 141, 0.18)' }}
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize border ${
+                    info.confianza === 'alta'
+                      ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                      : info.confianza === 'media'
+                        ? 'bg-amber-500/15 border-amber-500/30 text-amber-800 dark:text-amber-200'
+                        : 'bg-slate-500/15 border-slate-500/30 text-slate-700 dark:text-slate-200'
+                  }`}
                 >
-                  <IconoPerplexity size={16} />
+                  Confianza {info.confianza}
                 </span>
-                <div>
-                  <h3 className="text-sm font-bold text-[var(--text-primary)] leading-none">
-                    Perplexity AI · {nombreMaterial}
-                  </h3>
-                  <p className="text-[11px] text-[var(--text-secondary)] mt-0.5">
-                    Ficha técnica y respaldo consultado en internet
-                  </p>
-                </div>
-              </div>
+              )}
               <button
                 type="button"
                 onClick={() => setAbierto(false)}
-                className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
+                className="w-5 h-5 rounded flex items-center justify-center text-[var(--text-placeholder)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-xs"
                 title="Cerrar"
               >
                 ✕
               </button>
             </div>
-
-            {/* Contenido con legibilidad impecable día y noche */}
-            <div className="flex flex-col gap-3">
-              {info.confianza && (
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-secondary)] font-medium">Nivel de confianza:</span>
-                  <span
-                    className="px-2 py-0.5 rounded-full text-[11px] font-semibold"
-                    style={{
-                      background: info.confianza === 'alta'
-                        ? 'rgba(34, 197, 94, 0.15)'
-                        : info.confianza === 'media'
-                          ? 'rgba(234, 179, 8, 0.15)'
-                          : 'rgba(100, 116, 139, 0.18)',
-                      color: info.confianza === 'alta'
-                        ? '#16A34A'
-                        : info.confianza === 'media'
-                          ? '#D97706'
-                          : 'var(--text-primary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    Confianza {info.confianza}
-                  </span>
-                </div>
-              )}
-
-              {info.fuente_titulo && (
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-[var(--text-secondary)]">
-                    Razonamiento técnico y especificaciones:
-                  </span>
-                  <div
-                    className="p-3 rounded-xl text-xs leading-relaxed"
-                    style={{
-                      background: 'var(--bg-input)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--text-primary)',
-                    }}
-                  >
-                    «{info.fuente_titulo}»
-                  </div>
-                </div>
-              )}
-
-              {info.fuente_url && (
-                <div className="pt-1">
-                  <a
-                    href={info.fuente_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold w-full justify-center transition-opacity hover:opacity-85"
-                    style={{
-                      background: 'rgba(32, 128, 141, 0.15)',
-                      color: '#20808D',
-                      border: '1px solid rgba(32, 128, 141, 0.3)',
-                    }}
-                  >
-                    <ExternalLink size={14} />
-                    <span>Abrir fuente web consultada</span>
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* Pie del modal */}
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setAbierto(false)}
-                className={btnSecundario}
-              >
-                Cerrar
-              </button>
-            </div>
           </div>
-        </div>
+
+          {/* Contenido contextual */}
+          <div className="pt-2 flex flex-col gap-2">
+            <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">
+              {nombreMaterial}
+            </p>
+
+            {info.fuente_titulo && (
+              <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic bg-[var(--bg-input)] p-2.5 rounded-lg border border-[var(--border)]">
+                «{info.fuente_titulo}»
+              </p>
+            )}
+
+            {info.fuente_url && (
+              <a
+                href={info.fuente_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#00827C] dark:text-[#2DD4BF] hover:underline pt-0.5 transition-colors"
+              >
+                <span>Consultar fuente web original</span>
+                <ExternalLink size={12} />
+              </a>
+            )}
+          </div>
+        </div>,
+        document.body
       )}
     </>
   )
@@ -1425,10 +1488,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   const [nombre, setNombre] = useState(item?.nombre ?? '')
   const [factorRentabilidad, setFactorRentabilidad] = useState(String(item?.factor_rentabilidad ?? 2))
   const [origenFuente, setOrigenFuente] = useState<string>(() => {
-    if (item?.origen_fuente) return item.origen_fuente
-    if (item?.detalle_fuente?.toLowerCase().includes('perplexity')) return 'perplexity'
-    if (item?.item_materiales.some(m => m.origen_fuente?.toLowerCase().includes('perplexity'))) return 'perplexity'
-    return ''
+    if (esItemPerplexity(item)) return 'perplexity'
+    return item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : ''
   })
   // Textos de ayuda de los materiales base — esta pantalla ("Editar ítem")
   // es donde el super_admin realmente los edita, junto a cada material de
@@ -1452,7 +1513,8 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     for (const m of categoria.categoria_materiales_base) {
       const mNorm = m.nombre.trim().toLowerCase()
       const existente = item?.item_materiales.find(im => im.nombre.trim().toLowerCase() === mNorm)
-      const rolEncontrado = existente?.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm] || ''
+      const rolRaw = existente?.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm]
+      const rolEncontrado = rolRaw === 'se_reemplaza' || rolRaw === 'residuo' ? 'se_reemplaza' : 'se_conserva'
       inicial[m.nombre] = rolEncontrado
     }
     return inicial
@@ -1540,8 +1602,10 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     const extras = (item?.item_materiales ?? []).filter(m => !nombresBase.has(m.nombre))
     return extras.map(m => {
       const mNorm = m.nombre.trim().toLowerCase()
-      const rol = m.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm] || ''
+      const rolRaw = m.rol_conservacion || rolesResp[m.nombre] || rolesResp[mNorm]
+      const rol = rolRaw === 'se_reemplaza' || rolRaw === 'residuo' ? 'se_reemplaza' : 'se_conserva'
       return {
+        id: (m as { id?: string }).id || nuevoIdFila('mat-extra'),
         nombre: m.nombre,
         peso_kg: String(m.peso_kg),
         factor_co2_kg: String(m.factor_co2_kg),
@@ -1639,9 +1703,53 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     }))
   }
 
+  function limpiarTodosMateriales() {
+    setPesos(prev => {
+      const nuevo: Record<string, string> = { ...prev }
+      for (const m of esquemaMat) {
+        nuevo[m.nombre] = '0'
+      }
+      return nuevo
+    })
+    setExtraMateriales(prev => prev.map(m => ({ ...m, peso_kg: '0' })))
+    setFuentesMaterial({})
+    setOrigenFuente('')
+  }
+
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
   const [cargandoMaterialesIA, setCargandoMaterialesIA] = useState(false)
+  const [cargandoFactorExtra, setCargandoFactorExtra] = useState<Record<string, boolean>>({})
+
+  async function sugerirFactorMaterialExtra(idFila: string, nombreMat: string) {
+    if (!nombreMat.trim()) return
+    setCargandoFactorExtra(prev => ({ ...prev, [idFila]: true }))
+    try {
+      const res = await fetch('/api/admin/materiales/factor-sugerido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          materiales: [{ nombre: nombreMat.trim(), factor_co2_kg_actual: null, factor_agua_l_kg_actual: null }],
+          categoria_nombre: categoria.nombre,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok && data.ok && Array.isArray(data.materiales) && data.materiales[0]?.factor_co2_kg != null) {
+        const sugerido = data.materiales[0]
+        setExtraMateriales(prev => prev.map(m => (m.id === idFila || m.nombre.trim().toLowerCase() === nombreMat.trim().toLowerCase()) ? {
+          ...m,
+          factor_co2_kg: String(sugerido.factor_co2_kg),
+          factor_agua_l_kg: sugerido.factor_agua_l_kg != null ? String(sugerido.factor_agua_l_kg) : m.factor_agua_l_kg,
+          origen_fuente: sugerido.fuente_url || sugerido.fuente_titulo || m.origen_fuente,
+          detalle_fuente: sugerido.fuente_titulo || m.detalle_fuente,
+        } : m))
+      }
+    } catch {
+      // Si falla la red no bloquea al usuario
+    } finally {
+      setCargandoFactorExtra(prev => ({ ...prev, [idFila]: false }))
+    }
+  }
 
   const extraMaterialesValidos = useMemo(() => filasAMateriales(extraMateriales), [extraMateriales])
   const extraServiciosValidos = useMemo(() => filasAServicios(extraServicios), [extraServicios])
@@ -1662,16 +1770,32 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   }, [esquemaIns, insumosEliminados])
 
   const totalCo2 = useMemo(() => {
-    const base = esquemaMatVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_co2_kg) || 0), 0)
-    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0)
+    const base = esquemaMatVisibles.reduce((s, m) => {
+      const rol = rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva')
+      if (rol === 'se_reemplaza') return s
+      return s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_co2_kg) || 0)
+    }, 0)
+    const extra = extraMaterialesValidos.reduce((s, m) => {
+      const rol = m.rol_conservacion || 'se_conserva'
+      if (rol === 'se_reemplaza') return s
+      return s + m.peso_kg * m.factor_co2_kg
+    }, 0)
     return base + extra
-  }, [pesos, esquemaMatVisibles, extraMaterialesValidos])
+  }, [pesos, esquemaMatVisibles, extraMaterialesValidos, rolesConservacion])
 
   const totalAgua = useMemo(() => {
-    const base = esquemaMatVisibles.reduce((s, m) => s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_agua_l_kg) || 0), 0)
-    const extra = extraMaterialesValidos.reduce((s, m) => s + m.peso_kg * (m.factor_agua_l_kg ?? 0), 0)
+    const base = esquemaMatVisibles.reduce((s, m) => {
+      const rol = rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva')
+      if (rol === 'se_reemplaza') return s
+      return s + (parseFloat(pesos[m.nombre]) || 0) * (parseFloat(m.factor_agua_l_kg) || 0)
+    }, 0)
+    const extra = extraMaterialesValidos.reduce((s, m) => {
+      const rol = m.rol_conservacion || 'se_conserva'
+      if (rol === 'se_reemplaza') return s
+      return s + m.peso_kg * (m.factor_agua_l_kg ?? 0)
+    }, 0)
     return base + extra
-  }, [pesos, esquemaMatVisibles, extraMaterialesValidos])
+  }, [pesos, esquemaMatVisibles, extraMaterialesValidos, rolesConservacion])
 
   const subtotal = useMemo(() => {
     const servBase = esquemaServVisibles.reduce((s, x) => s + (parseFloat(precios[x.nombre]) || 0), 0)
@@ -1688,30 +1812,88 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
     // Consolidar roles de conservación para respaldo infalible en detalle_fuente
     const mapaRoles: Record<string, string> = {}
     for (const [nom, rol] of Object.entries(rolesConservacion)) {
-      if (rol) {
-        mapaRoles[nom] = rol
-        mapaRoles[nom.trim().toLowerCase()] = rol
+      const pesoVal = parseFloat(pesos[nom]) || 0
+      const rolFinal = rol || (pesoVal > 0 ? 'se_conserva' : '')
+      if (rolFinal) {
+        mapaRoles[nom] = rolFinal
+        mapaRoles[nom.trim().toLowerCase()] = rolFinal
       }
     }
     for (const m of extraMaterialesValidos) {
-      if (m.rol_conservacion) {
-        mapaRoles[m.nombre] = m.rol_conservacion
-        mapaRoles[m.nombre.trim().toLowerCase()] = m.rol_conservacion
-      }
+      const rolFinal = m.rol_conservacion || 'se_conserva'
+      mapaRoles[m.nombre] = rolFinal
+      mapaRoles[m.nombre.trim().toLowerCase()] = rolFinal
     }
 
-    const tieneRoles = Object.keys(mapaRoles).length > 0
+    const tieneRoles = Object.keys(rolesConservacion).length > 0
     const tieneFuentes = Object.keys(fuentesMaterial).length > 0
-    const origenFinal = origenFuente || item?.origen_fuente || (tieneRoles || tieneFuentes ? 'perplexity' : undefined)
 
-    let detalleFuenteFinal = item?.detalle_fuente ?? undefined
-    if (origenFinal === 'perplexity' || tieneRoles || tieneFuentes) {
+    // Solo se considera Perplexity si se ejecutó activamente el cálculo en esta sesión (origenFuente === 'perplexity')
+    // o si el ítem ya tenía Perplexity con fuentes técnicas verificadas.
+    const fueCalculadoConIA = origenFuente === 'perplexity' || (esItemPerplexity(item) && Object.values(fuentesMaterial).some(f => esFuentePerplexity(f)))
+    const origenFinal = fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : null)
+
+    let detalleFuenteFinal: string | null = null
+    if (tieneRoles || tieneFuentes || fueCalculadoConIA) {
       detalleFuenteFinal = JSON.stringify({
-        proveedor: 'perplexity',
+        proveedor: fueCalculadoConIA ? 'perplexity' : (item?.origen_fuente && item.origen_fuente !== 'perplexity' ? item.origen_fuente : 'interno'),
         roles: mapaRoles,
         materiales_info: fuentesMaterial,
         actualizado_at: new Date().toISOString(),
       })
+    }
+
+    // Validar que ningún material adicional con nombre quede sin peso o sin factor de CO2
+    for (const m of extraMateriales) {
+      if (m.nombre.trim()) {
+        const p = parseFloat(m.peso_kg)
+        const f = parseFloat(m.factor_co2_kg)
+        if (isNaN(p) || p <= 0) {
+          setError(`El material adicional "${m.nombre}" debe tener un peso mayor a 0 kg.`)
+          setFilaAbierta(m.id ?? null)
+          return
+        }
+        if (isNaN(f) || f <= 0) {
+          setError(`El material adicional "${m.nombre}" requiere un factor de CO₂ (kg CO₂ eq/kg) mayor a 0 para calcular su impacto ambiental. Puedes sugerirlo con IA o ingresarlo.`)
+          setFilaAbierta(m.id ?? null)
+          return
+        }
+      }
+    }
+
+    // Validar que ningún servicio adicional con nombre quede incompleto o con precio negativo
+    for (const s of extraServicios) {
+      if (s.nombre.trim()) {
+        const p = parseFloat(s.precio)
+        if (s.precio.trim() === '' || isNaN(p) || p < 0) {
+          setError(`El servicio adicional "${s.nombre}" debe tener un precio o costo válido (mayor o igual a 0).`)
+          setFilaAbierta(s.id ?? null)
+          return
+        }
+      }
+    }
+
+    // Validar que ningún insumo adicional con nombre quede incompleto
+    for (const ins of extraInsumos) {
+      if (ins.nombre.trim()) {
+        const c = parseFloat(ins.cantidad)
+        const p = parseFloat(ins.precio_unitario)
+        if (ins.cantidad.trim() === '' || isNaN(c) || c <= 0) {
+          setError(`El insumo adicional "${ins.nombre}" debe tener una cantidad mayor a 0.`)
+          setFilaAbierta(ins.id ?? null)
+          return
+        }
+        if (!ins.unidad.trim()) {
+          setError(`El insumo adicional "${ins.nombre}" requiere una unidad de medida (ej: metros, unidad, kg).`)
+          setFilaAbierta(ins.id ?? null)
+          return
+        }
+        if (ins.precio_unitario.trim() === '' || isNaN(p) || p < 0) {
+          setError(`El insumo adicional "${ins.nombre}" requiere un precio unitario válido (mayor o igual a 0).`)
+          setFilaAbierta(ins.id ?? null)
+          return
+        }
+      }
     }
 
     const materiales = [
@@ -1719,25 +1901,33 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
         .filter(m => parseFloat(pesos[m.nombre]) > 0)
         .map(m => {
           const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
+          const esPerpReal = esFuentePerplexity(mInfo)
+          const matOrigen = mInfo?.fuente_url
+            ? mInfo.fuente_url.slice(0, 1900)
+            : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
           return {
             nombre: m.nombre,
             peso_kg: parseFloat(pesos[m.nombre]),
             factor_co2_kg: parseFloat(m.factor_co2_kg) || 0,
             factor_agua_l_kg: m.factor_agua_l_kg ? parseFloat(m.factor_agua_l_kg) : undefined,
-            origen_fuente: mInfo?.fuente_url ? mInfo.fuente_url.slice(0, 1900) : (mInfo?.proveedor || origenFinal || m.origen_fuente || undefined),
+            origen_fuente: matOrigen,
             detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
             nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
-            rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || undefined),
+            rol_conservacion: rolesConservacion[m.nombre] === 'residuo' ? 'se_reemplaza' : (rolesConservacion[m.nombre] || 'se_conserva'),
           }
         }),
       ...extraMaterialesValidos.map(m => {
         const mInfo = fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]
+        const esPerpReal = esFuentePerplexity(mInfo)
+        const matOrigen = mInfo?.fuente_url
+          ? mInfo.fuente_url.slice(0, 1900)
+          : (esPerpReal ? 'perplexity' : (m.origen_fuente && m.origen_fuente !== 'perplexity' ? m.origen_fuente : undefined))
         return {
           ...m,
-          origen_fuente: mInfo?.fuente_url ? mInfo.fuente_url.slice(0, 1900) : (mInfo?.proveedor || origenFinal || m.origen_fuente || undefined),
+          origen_fuente: matOrigen,
           detalle_fuente: mInfo?.fuente_titulo ? mInfo.fuente_titulo.slice(0, 4000) : (m.detalle_fuente || undefined),
           nivel_confianza: (mInfo?.confianza || 'baja') as 'alta' | 'media' | 'baja',
-          rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || undefined),
+          rol_conservacion: m.rol_conservacion === 'residuo' ? 'se_reemplaza' : (m.rol_conservacion || 'se_conserva'),
         }
       }),
     ]
@@ -1896,12 +2086,7 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
   return (
     <div className="flex flex-col gap-4">
       <div className={`rounded-2xl p-4 ${cardBg}`}>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className={labelSt}>Nombre del ítem</label>
-          {(origenFuente === 'perplexity' || esItemPerplexity(item)) && (
-            <BadgePerplexity title="Este ítem fue enriquecido con Perplexity AI" />
-          )}
-        </div>
+        <label className={labelSt}>Nombre del ítem</label>
         <input style={inputSt} placeholder="Ej: Mesa 4 puestos" value={nombre} onChange={e => setNombre(e.target.value)} required autoFocus={!item} />
       </div>
 
@@ -1955,6 +2140,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                             onChange={e => editarEsquemaServ(fila.id, e.target.value)} />
                         </div>
                         <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                        <div className="flex justify-end items-center mt-1">
+                          <button
+                            type="button"
+                            onClick={() => setFilaAbierta(null)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                          >
+                            <Check size={13} /> Guardar
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1964,30 +2158,101 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
 
             {extraServicios.length > 0 && (
               <div className="flex flex-col gap-2 mb-2">
-                {extraServicios.map((s, i) => (
-                  <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className={labelSt}>Servicio</label>
-                        <input style={inputSt} placeholder="Ej: Pintor" value={s.nombre} onChange={e => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                {extraServicios.map((s, i) => {
+                  const sId = s.id || `extra-serv-${i}`
+                  const abierto = filaAbierta === sId
+                  return (
+                    <div key={sId} className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                          <span>{s.nombre.trim() || '(Servicio adicional)'}</span>
+                          {s.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[s.nombre] ?? ''} />}
+                        </p>
+                        <div className="w-28 flex-shrink-0">
+                          <InputPrecio
+                            value={s.precio}
+                            onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => alternarFila(sId)}
+                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          title="Editar servicio"
+                        >
+                          <Pencil size={15} sinAnimacion />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExtraServicios(r => r.filter((_, j) => j !== i))
+                            if (filaAbierta === sId) setFilaAbierta(null)
+                          }}
+                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          title="Eliminar servicio"
+                        >
+                          <Trash size={16} sinAnimacion />
+                        </button>
                       </div>
-                      <div>
-                        <label className={labelSt}>Precio</label>
-                        <InputPrecio value={s.precio} onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))} />
-                      </div>
+                      {abierto && (
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className={labelSt}>Servicio</label>
+                              <input
+                                style={inputSt}
+                                placeholder="Ej: Pintor"
+                                value={s.nombre}
+                                onChange={e => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))}
+                              />
+                            </div>
+                            <div>
+                              <label className={labelSt}>Precio</label>
+                              <InputPrecio
+                                value={s.precio}
+                                onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))}
+                              />
+                            </div>
+                          </div>
+                          <CampoTooltip nombre={s.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                          <div className="flex justify-between items-center mt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setExtraServicios(r => r.filter((_, j) => j !== i))
+                                setFilaAbierta(null)
+                              }}
+                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                            >
+                              <Trash size={14} /> Eliminar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFilaAbierta(null)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                            >
+                              <Check size={13} /> Guardar
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <CampoTooltip nombre={s.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                    <div className="flex justify-end items-center mt-1">
-                      <button type="button" onClick={() => setExtraServicios(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
-                        <Trash size={14} /> Eliminar
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
 
-            <button type="button" onClick={() => setExtraServicios(r => [...r, filaServicio()])} className={`${btnChico} mb-4`}><Plus size={12} /> Añadir servicio</button>
+            <button
+              type="button"
+              onClick={() => {
+                const nuevo = filaServicio()
+                setExtraServicios(r => [...r, nuevo])
+                setFilaAbierta(nuevo.id!)
+              }}
+              className={`${btnChico} mb-4`}
+            >
+              <Plus size={12} /> Añadir servicio
+            </button>
 
             <label className={`${labelSeccion} mt-2`}>Insumos</label>
             {esquemaInsVisibles.length === 0 && extraInsumos.length === 0 && (
@@ -2066,6 +2331,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         </div>
                       </div>
                       <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                      <div className="flex justify-end items-center mt-1">
+                        <button
+                          type="button"
+                          onClick={() => setFilaAbierta(null)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                        >
+                          <Check size={13} /> Guardar
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -2075,59 +2349,119 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             {extraInsumos.length > 0 && (
               <div className="flex flex-col gap-2 mb-2">
                 {extraInsumos.map((ins, i) => {
+                  const insId = ins.id || `extra-ins-${i}`
+                  const abierto = filaAbierta === insId
                   const cantNum = typeof ins.cantidad === 'string' ? parseFloat(ins.cantidad.replace(',', '.')) : ins.cantidad
                   const esCero = isNaN(cantNum) || cantNum === 0
                   return (
                     <div
-                      key={i}
-                      className={`flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0 transition-opacity duration-200 ${
+                      key={insId}
+                      className={`flex flex-col gap-2 transition-opacity duration-200 ${
                         esCero ? 'opacity-55 hover:opacity-100 focus-within:opacity-100' : 'opacity-100'
                       }`}
                     >
-                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                        <div>
-                          <label className={labelSt}>Insumo</label>
-                          <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-                        </div>
-                        <div>
-                          <label className={labelSt}>Cantidad</label>
+                      <div className="flex items-center gap-2">
+                        <p
+                          className={`flex-1 min-w-0 flex items-center gap-1.5 text-sm transition-colors ${
+                            esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'
+                          }`}
+                        >
+                          <span>{ins.nombre.trim() || '(Insumo adicional)'}</span>
+                          {ins.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[ins.nombre] ?? ''} />}
+                        </p>
+                        <div className="w-32 flex-shrink-0">
                           <InputCantidadInsumo
                             value={ins.cantidad}
                             onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: String(v) } : x))}
                             unidad={ins.unidad || 'ud'}
                           />
                         </div>
-                        <div>
-                          <label className={labelSt}>Unidad</label>
-                          <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                        <div className={`w-28 flex-shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                          <InputPrecio
+                            value={ins.precio_unitario}
+                            onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))}
+                          />
                         </div>
-                        <div className="flex items-end gap-1">
-                          <div className="flex-1">
-                            <label className={labelSt}>Peso</label>
-                            <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
-                          </div>
-                          <div className="pb-2.5">
-                            <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} contextoItem={`${nombre} (categoría: ${categoria.nombre})`} />
-                          </div>
-                        </div>
-                        <div className={`transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
-                          <label className={labelSt}>Precio unitario</label>
-                          <InputPrecio value={ins.precio_unitario} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
-                        </div>
-                      </div>
-                      <CampoTooltip nombre={ins.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                      <div className="flex justify-end items-center mt-1">
-                        <button type="button" onClick={() => setExtraInsumos(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
-                          <Trash size={14} /> Eliminar
+                        <button
+                          type="button"
+                          onClick={() => alternarFila(insId)}
+                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          title="Editar insumo"
+                        >
+                          <Pencil size={15} sinAnimacion />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExtraInsumos(r => r.filter((_, j) => j !== i))
+                            if (filaAbierta === insId) setFilaAbierta(null)
+                          }}
+                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          title="Eliminar insumo"
+                        >
+                          <Trash size={16} sinAnimacion />
                         </button>
                       </div>
+                      {abierto && (
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className={labelSt}>Insumo</label>
+                              <input style={inputSt} placeholder="Ej: Tela" value={ins.nombre} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                            </div>
+                            <div>
+                              <label className={labelSt}>Unidad</label>
+                              <input style={inputSt} placeholder="Ej: metros" value={ins.unidad} onChange={e => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, unidad: e.target.value } : x))} />
+                            </div>
+                          </div>
+                          <div className="flex items-end gap-1">
+                            <div className="flex-1">
+                              <label className={labelSt}>Peso</label>
+                              <InputConUnidad value={ins.peso_kg} onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
+                            </div>
+                            <div className="pb-2.5">
+                              <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} contextoItem={`${nombre} (categoría: ${categoria.nombre})`} />
+                            </div>
+                          </div>
+                          <CampoTooltip nombre={ins.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                          <div className="flex justify-between items-center mt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setExtraInsumos(r => r.filter((_, j) => j !== i))
+                                setFilaAbierta(null)
+                              }}
+                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                            >
+                              <Trash size={14} /> Eliminar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFilaAbierta(null)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                            >
+                              <Check size={13} /> Guardar
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
               </div>
             )}
 
-            <button type="button" onClick={() => setExtraInsumos(r => [...r, { ...filaInsumo(), cantidad: '1' }])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir insumo</button>
+            <button
+              type="button"
+              onClick={() => {
+                const nuevo = { ...filaInsumo(), cantidad: '1' }
+                setExtraInsumos(r => [...r, nuevo])
+                setFilaAbierta(nuevo.id!)
+              }}
+              className={`${btnChico} mb-2`}
+            >
+              <Plus size={12} /> Añadir insumo
+            </button>
           </div>
 
           <div className="mt-4 pt-4 flex flex-col gap-2.5" style={{ borderTop: '1px solid var(--border)' }}>
@@ -2159,7 +2493,20 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
               <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)]"><Leaf size={16} /> Cálculo ambiental</p>
             </div>
 
-            <label className={labelSeccion}>Materiales</label>
+            <div className="flex items-center gap-1.5 mb-2.5">
+              <label className="text-xs font-bold text-[var(--text-primary)]">Materiales</label>
+              <button
+                type="button"
+                onClick={limpiarTodosMateriales}
+                title="Limpiar"
+                className="inline-flex items-center gap-1 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors p-1 -my-1 rounded cursor-pointer group"
+              >
+                <BrushCleaning size={15} />
+                <span className="hidden group-hover:inline-block text-[11px] font-medium text-[var(--text-secondary)]">
+                  limpiar
+                </span>
+              </button>
+            </div>
             {esquemaMatVisibles.length === 0 && extraMateriales.length === 0 && (
               <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin materiales asignados.</p>
             )}
@@ -2172,9 +2519,14 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                       <p className="flex-1 min-w-0 flex items-center flex-wrap gap-1.5 text-sm font-medium text-[var(--text-primary)]">
                         <span>{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
-                        <BotonInfoPerplexity info={fuentesMaterial[fila.nombre] || fuentesMaterial[fila.nombre.trim().toLowerCase()]} nombreMaterial={fila.nombre} />
+                        <BotonInfoPerplexity
+                          info={fuentesMaterial[fila.nombre] || fuentesMaterial[fila.nombre.trim().toLowerCase()]}
+                          nombreMaterial={fila.nombre}
+                          peso={pesos[fila.nombre]}
+                        />
                         <BadgeRolConservacion
                           rol={rolesConservacion[fila.nombre]}
+                          peso={pesos[fila.nombre]}
                           onCambiar={nuevoRol => setRolesConservacion(p => ({ ...p, [fila.nombre]: nuevoRol }))}
                         />
                       </p>
@@ -2216,10 +2568,9 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                             <label className={labelSt}>Rol de conservación</label>
                             <select
                               style={inputSt}
-                              value={rolesConservacion[fila.nombre] || ''}
+                              value={rolesConservacion[fila.nombre] === 'se_reemplaza' || rolesConservacion[fila.nombre] === 'residuo' ? 'se_reemplaza' : 'se_conserva'}
                               onChange={e => setRolesConservacion(p => ({ ...p, [fila.nombre]: e.target.value }))}
                             >
-                              <option value="">Sin definir</option>
                               <option value="se_conserva">Se conserva</option>
                               <option value="se_reemplaza">Se reemplaza</option>
                             </select>
@@ -2234,6 +2585,15 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                           </div>
                         </div>
                         <CampoTooltip nombre={fila.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                        <div className="flex justify-end items-center mt-1">
+                          <button
+                            type="button"
+                            onClick={() => setFilaAbierta(null)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                          >
+                            <Check size={13} /> Guardar
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -2242,37 +2602,28 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
             )}
 
             {extraMateriales.length > 0 && (
-              <div className="flex flex-col gap-3 mb-3">
+              <div className="flex flex-col gap-2 mb-3">
                 {extraMateriales.map((m, i) => {
+                  const matId = m.id || `extra-mat-${i}`
+                  const abierto = filaAbierta === matId
                   return (
-                    <div key={i} className="flex flex-col gap-2 pb-3 border-b border-[var(--border)] last:border-b-0">
-                      <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                        <div>
-                          <label className={`${labelSt} flex items-center gap-1.5`}>
-                            Material adicional
-                            <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
-                            <BotonInfoPerplexity info={fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]} nombreMaterial={m.nombre || 'Material adicional'} />
-                            <BadgeRolConservacion
-                              rol={m.rol_conservacion}
-                              onCambiar={nuevoRol => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: nuevoRol } : x))}
-                            />
-                          </label>
-                          <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                    <div key={matId} className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 min-w-0 flex items-center gap-1.5 text-sm text-[var(--text-primary)]">
+                          <span className="truncate">{m.nombre.trim() || '(Material adicional)'}</span>
+                          {m.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />}
+                          <BotonInfoPerplexity
+                            info={fuentesMaterial[m.nombre] || fuentesMaterial[m.nombre.trim().toLowerCase()]}
+                            nombreMaterial={m.nombre || 'Material adicional'}
+                            peso={m.peso_kg}
+                          />
+                          <BadgeRolConservacion
+                            rol={m.rol_conservacion}
+                            peso={m.peso_kg}
+                            onCambiar={nuevoRol => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: nuevoRol } : x))}
+                          />
                         </div>
-                        <div>
-                          <label className={labelSt}>Rol de conservación</label>
-                          <select
-                            style={inputSt}
-                            value={m.rol_conservacion || ''}
-                            onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: e.target.value } : x))}
-                          >
-                            <option value="">Sin definir</option>
-                            <option value="se_conserva">Se conserva</option>
-                            <option value="se_reemplaza">Se reemplaza</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className={labelSt}>Peso</label>
+                        <div className="w-28 flex-shrink-0">
                           {cargandoMaterialesIA ? (
                             <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-[var(--color-brand)] border border-[var(--border)]">
                               <span className="animate-pulse">calculando...</span>
@@ -2281,28 +2632,104 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                             <InputConUnidad value={m.peso_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.01" />
                           )}
                         </div>
-                        <div>
-                          <label className={labelSt}>Factor CO₂ eq (por 1 kg)</label>
-                          <InputConUnidad value={m.factor_co2_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_co2_kg: v } : x))} unidad="kg CO₂ eq/kg" paso="0.0001" />
-                        </div>
-                        <div>
-                          <label className={labelSt}>Agua (por 1 kg)</label>
-                          <InputConUnidad value={m.factor_agua_l_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_agua_l_kg: v } : x))} unidad="L agua/kg" paso="0.1" />
-                        </div>
-                      </div>
-                      <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
-                      <div className="flex justify-end items-center mt-1">
-                        <button type="button" onClick={() => setExtraMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
-                          <Trash size={14} /> Eliminar
+                        <button
+                          type="button"
+                          onClick={() => alternarFila(matId)}
+                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          title="Editar material"
+                        >
+                          <Pencil size={15} sinAnimacion />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setExtraMateriales(r => r.filter((_, j) => j !== i))
+                            if (filaAbierta === matId) setFilaAbierta(null)
+                          }}
+                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          title="Eliminar material"
+                        >
+                          <Trash size={16} sinAnimacion />
                         </button>
                       </div>
+                      {abierto && (
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                            <div>
+                              <label className={labelSt}>Material adicional</label>
+                              <input style={inputSt} placeholder="Ej: Madera dura" value={m.nombre} onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
+                            </div>
+                            <div>
+                              <label className={labelSt}>Rol de conservación</label>
+                              <select
+                                style={inputSt}
+                                value={m.rol_conservacion === 'se_reemplaza' || m.rol_conservacion === 'residuo' ? 'se_reemplaza' : 'se_conserva'}
+                                onChange={e => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: e.target.value } : x))}
+                              >
+                                <option value="se_conserva">Se conserva</option>
+                                <option value="se_reemplaza">Se reemplaza</option>
+                              </select>
+                            </div>
+                            <div>
+                              <div className="flex items-center justify-between mb-1.5">
+                                <label className="block text-xs font-semibold text-[var(--text-secondary)]">Factor CO₂ eq</label>
+                                <button
+                                  type="button"
+                                  disabled={!m.nombre.trim() || !!cargandoFactorExtra[matId]}
+                                  onClick={() => sugerirFactorMaterialExtra(matId, m.nombre)}
+                                  className="text-[11px] font-semibold text-[var(--color-brand)] hover:opacity-75 disabled:opacity-40 inline-flex items-center gap-1 cursor-pointer"
+                                  title="Buscar factor de emisión con IA"
+                                >
+                                  {cargandoFactorExtra[matId] ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
+                                  Sugerir con IA
+                                </button>
+                              </div>
+                              <InputConUnidad value={m.factor_co2_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_co2_kg: v } : x))} unidad="kg CO₂ eq/kg" paso="0.0001" />
+                            </div>
+                            <div>
+                              <label className={labelSt}>Agua (por 1 kg)</label>
+                              <InputConUnidad value={m.factor_agua_l_kg} onChange={v => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, factor_agua_l_kg: v } : x))} unidad="L agua/kg" paso="0.1" />
+                            </div>
+                          </div>
+                          <CampoTooltip nombre={m.nombre} mapa={descripcionesMaterial} setMapa={setDescripcionesMaterial} />
+                          <div className="flex justify-between items-center mt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setExtraMateriales(r => r.filter((_, j) => j !== i))
+                                setFilaAbierta(null)
+                              }}
+                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                            >
+                              <Trash size={14} /> Eliminar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFilaAbierta(null)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                            >
+                              <Check size={13} /> Guardar
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )
                 })}
               </div>
             )}
 
-            <button type="button" onClick={() => setExtraMateriales(r => [...r, filaMaterial()])} className={`${btnChico} mb-2`}><Plus size={12} /> Añadir material</button>
+            <button
+              type="button"
+              onClick={() => {
+                const nuevo = filaMaterial()
+                setExtraMateriales(r => [...r, nuevo])
+                setFilaAbierta(nuevo.id!)
+              }}
+              className={`${btnChico} mb-2`}
+            >
+              <Plus size={12} /> Añadir material
+            </button>
 
             <BotonCompletarMaterialesIA
               nombreItem={nombre}
@@ -2347,6 +2774,30 @@ function PanelItemValores({ item, categoria, onGuardado, onCancelar }: {
                         [matchExtra.nombre]: infoActualizada,
                         [rNorm]: infoActualizada,
                       }))
+                      if (!matchExtra.factor_co2_kg.trim() && matchExtra.id) {
+                        sugerirFactorMaterialExtra(matchExtra.id, matchExtra.nombre)
+                      }
+                    } else {
+                      // La IA descubrió un material adicional para este ítem que no estaba en la categoría
+                      const nuevoId = nuevoIdFila('mat-extra')
+                      const nuevoMat: MaterialRow = {
+                        id: nuevoId,
+                        nombre: r.nombre,
+                        peso_kg: r.peso_kg !== null && r.peso_kg !== undefined ? String(r.peso_kg) : '',
+                        factor_co2_kg: '',
+                        factor_agua_l_kg: '',
+                        categoria_material: '',
+                        origen_fuente: r.fuente_url || p,
+                        detalle_fuente: r.fuente_titulo || '',
+                        rol_conservacion: rolValido || 'se_conserva',
+                      }
+                      setExtraMateriales(prev => [...prev, nuevoMat])
+                      setFuentesMaterial(prev => ({
+                        ...prev,
+                        [r.nombre]: infoActualizada,
+                        [rNorm]: infoActualizada,
+                      }))
+                      sugerirFactorMaterialExtra(nuevoId, r.nombre)
                     }
                   }
                 }

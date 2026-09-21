@@ -3515,44 +3515,57 @@ function QAContenido() {
                   </div>
                 )
               })() : (
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: catActual.color }} />
-                    <div>
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <catActual.icono size={16} color={catActual.color} />
-                        <span className="text-xs sm:text-sm font-bold" style={{ color: catActual.color }}>
-                          {catActual.key}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-1.5 h-6 rounded-full" style={{ backgroundColor: catActual.color }} />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-2">
+                          <catActual.icono size={16} color={catActual.color} />
+                          <span className="text-xs sm:text-sm font-bold" style={{ color: catActual.color }}>
+                            {catActual.key}
+                          </span>
+                        </div>
+                        <span className={`text-xs ${theme.textSecondary}`}>
+                          {tareasCategoria.length === 0 ? '· Sin resultados con ese filtro.' : `· ${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
                         </span>
                       </div>
-                      <p className={`text-xs ${theme.textSecondary}`}>
-                        {tareasCategoria.length === 0 ? 'Sin resultados con ese filtro.' : `${tareasCategoria.length} prueba${tareasCategoria.length === 1 ? '' : 's'} en este módulo`}
-                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                      <button
+                        type="button"
+                        onClick={() => copiarResumenIA(generarResumenIA(catActual.key), `Resumen IA de ${catActual.key} copiado`)}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          isDark
+                            ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
+                            : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
+                        }`}
+                        title="Copia el resumen de este módulo para IA"
+                      >
+                        <Robot size={11} color={isDark ? '#D8B4E2' : '#985fa1'} /> Resumen para IA
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAlcanceParcial(catActual.key); setMostrarInforme('parcial') }}
+                        className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          isDark ? 'bg-[#D6F391]/15 text-[#D6F391] border-[#D6F391]/30 hover:bg-[#D6F391]/25' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30 hover:bg-[#00827C]/20'
+                        }`}
+                      >
+                        <FileText size={11} color={isDark ? '#D6F391' : '#00827C'} /> Informe del tema
+                      </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
-                    <button
-                      type="button"
-                      onClick={() => copiarResumenIA(generarResumenIA(catActual.key), `Resumen IA de ${catActual.key} copiado`)}
-                      className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
-                        isDark
-                          ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
-                          : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
-                      }`}
-                      title="Copia el resumen de este módulo para IA"
-                    >
-                      <Robot size={11} color={isDark ? '#D8B4E2' : '#985fa1'} /> Resumen para IA
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setAlcanceParcial(catActual.key); setMostrarInforme('parcial') }}
-                      className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
-                        isDark ? 'bg-[#D6F391]/15 text-[#D6F391] border-[#D6F391]/30 hover:bg-[#D6F391]/25' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30 hover:bg-[#00827C]/20'
-                      }`}
-                    >
-                      <FileText size={11} color={isDark ? '#D6F391' : '#00827C'} /> Informe del tema
-                    </button>
-                  </div>
+                  {catActual.desc && (() => {
+                    const match = catActual.desc.match(/^(P\d+)\s*·\s*(.*)$/)
+                    const textoPrioridad = match
+                      ? `${match[2]} · Prioridad ${match[1].replace('P', '')}`
+                      : catActual.desc
+                    return (
+                      <p className={`pl-4 text-xs ${theme.textSecondary} opacity-80`}>
+                        {textoPrioridad}
+                      </p>
+                    )
+                  })()}
                 </div>
               )}
             </div>

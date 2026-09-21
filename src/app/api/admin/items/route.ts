@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null)
   const parsed = crearItemSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: 'Datos inválidos. Revisa el formulario.' }, { status: 400 })
+    const detalleErr = parsed.error.issues.map(i => `${i.path.join('.')}: ${i.message}`).join(' | ')
+    return NextResponse.json({ error: `Datos inválidos: ${detalleErr}` }, { status: 400 })
   }
 
   const { materiales, servicios, insumos, ...itemFields } = parsed.data

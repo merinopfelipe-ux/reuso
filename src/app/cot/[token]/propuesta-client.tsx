@@ -312,13 +312,16 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
       m.materiales_json.forEach((mat: any) => {
         const nombre = mat.nombre || mat.material || mat.nombre_material
         const peso = Number(mat.peso_kg ?? mat.peso ?? 0)
+        const rol = mat.rol_conservacion || 'se_conserva'
         if (nombre && peso > 0) {
-          materialMap.set(nombre, (materialMap.get(nombre) ?? 0) + peso * qty)
+          const key = `${nombre}|${rol}`
+          materialMap.set(key, (materialMap.get(key) ?? 0) + peso * qty)
         }
       })
     } else if (m.peso_estandar_kg && Number(m.peso_estandar_kg) > 0) {
       const nombre = m.categoria || m.tipo_mueble || 'materiales del elemento'
-      materialMap.set(nombre, (materialMap.get(nombre) ?? 0) + Number(m.peso_estandar_kg) * qty)
+      const key = `${nombre}|se_conserva`
+      materialMap.set(key, (materialMap.get(key) ?? 0) + Number(m.peso_estandar_kg) * qty)
     }
   })
 
@@ -1175,28 +1178,35 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                     </tr>
                   </thead>
                   <tbody>
-                    {Array.from(materialMap.entries()).map(([nombre, peso], idx) => (
-                      <tr 
-                        key={idx}
-                        className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-table-hover)] transition-colors ${
-                          idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
-                        }`}
-                      >
-                        <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium">
-                          {/* capitalize solo en el nombre — puesto alrededor del
-                              TooltipInfo también, el texto del tooltip flotante
-                              heredaba la transformación y salía Con Cada
-                              Palabra En Mayúscula, que no es como se guardó. */}
-                          <span className="inline-flex items-center gap-1">
-                            <span className="capitalize">{nombre}</span>
-                            <TooltipInfo texto={descripcionesLookup.get(nombre.toLowerCase()) ?? ''} />
-                          </span>
-                        </td>
-                        <td className="py-1.5 px-3 text-[var(--text-primary)] font-bold text-right">
-                          {formatNumero(peso)} kg
-                        </td>
-                      </tr>
-                    ))}
+                    {Array.from(materialMap.entries()).map(([key, peso], idx) => {
+                      const [nombre, rol] = key.split('|')
+                      const esReemplazo = rol === 'se_reemplaza'
+                      return (
+                        <tr 
+                          key={idx}
+                          className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-table-hover)] transition-colors ${
+                            idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          }`}
+                        >
+                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium">
+                            <span className="inline-flex items-center gap-1.5 flex-wrap">
+                              <span className="capitalize">{nombre}</span>
+                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-xs ring-1 inset-ring ${
+                                esReemplazo 
+                                  ? 'bg-gray-100 text-gray-600 ring-gray-500/20' 
+                                  : 'bg-emerald-50 text-[#00827C] ring-emerald-600/20'
+                              }`}>
+                                {esReemplazo ? 'Se reemplaza' : 'Se conserva'}
+                              </span>
+                              <TooltipInfo texto={descripcionesLookup.get(nombre.toLowerCase()) ?? ''} />
+                            </span>
+                          </td>
+                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-bold text-right">
+                            {formatNumero(peso)} kg
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>
