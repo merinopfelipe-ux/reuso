@@ -3148,31 +3148,6 @@ function QAContenido() {
                 />
               </div>
 
-              {/* Botón de Críticas General */}
-              <button
-                type="button"
-                onClick={() => {
-                  setModo(prev => prev === 'criticas' ? 'modulo' : 'criticas')
-                  setFiltroModuloCritico(null)
-                  setExpandida(null)
-                }}
-                className={`flex items-center justify-center sm:justify-start gap-1.5 px-3 py-2 sm:py-1.5 rounded-lg border text-xs font-bold transition-all hover:scale-105 active:scale-95 shrink-0 cursor-pointer ${
-                  modo === 'criticas'
-                    ? 'bg-[#FF5E4B] text-white border-[#FF5E4B] shadow-sm'
-                    : isDark
-                      ? 'bg-[#FF5E4B]/15 text-[#FF7B6B] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/25'
-                      : 'bg-[#FF5E4B]/10 text-[#CC3C2A] border-[#FF5E4B]/30 hover:bg-[#FF5E4B]/20'
-                }`}
-                title="Ver todas las pruebas críticas de todo el sistema en una sola vista general"
-              >
-                <Warning size={13} className={modo === 'criticas' ? 'text-white' : ''} />
-                <span>Críticas generales</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
-                  modo === 'criticas' ? 'bg-white/20 text-white' : isDark ? 'bg-[#FF5E4B]/30 text-white' : 'bg-[#FF5E4B]/20 text-[#CC3C2A]'
-                }`}>
-                  {totalCriticas}
-                </span>
-              </button>
               <button
                 onClick={() => setModalNuevoIntento({ abierto: true, alcance: 'completo' })}
                 className={`flex items-center justify-center sm:justify-start gap-1 px-2.5 py-2 sm:py-1.5 rounded-lg border ${theme.cardBg} ${theme.textSecondary} text-xs font-semibold hover:scale-105 active:scale-95 transition-all hover-spin shrink-0`}
