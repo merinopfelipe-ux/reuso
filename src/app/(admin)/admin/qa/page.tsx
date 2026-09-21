@@ -3712,19 +3712,13 @@ function QAContenido() {
                   </div>
                 )
               })() : modo === 'pagina' && paginaActual ? (() => {
-                const pagTotal = paginaActual.pruebas.length || 1
-                const pagOk = paginaActual.pruebas.filter(t => t.estado === 'ok').length
-                const pagParcial = paginaActual.pruebas.filter(t => t.estado === 'parcial').length
-                const pagDudosa = paginaActual.pruebas.filter(t => t.estado === 'no_se_entiende').length
-                const pagFail = paginaActual.pruebas.filter(t => t.estado === 'falla').length
-                const pagRev = pagOk + pagParcial + pagDudosa + pagFail
                 return (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-1.5 h-10 rounded-full shrink-0" style={{ backgroundColor: '#00827C' }} />
+                        <div className="w-1.5 h-6 rounded-full shrink-0" style={{ backgroundColor: '#00827C' }} />
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2 mb-0.5 flex-wrap">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className={`text-xs sm:text-sm font-mono font-semibold ${theme.textPrimary} break-all`}>
                               {paginaActual.ruta}
                             </span>
@@ -3738,10 +3732,10 @@ function QAContenido() {
                                 {paginaActual.ruta.includes('[') ? 'Abrir demo' : 'Abrir'}
                               </a>
                             )}
+                            <span className={`text-xs ${theme.textSecondary}`}>
+                              · Pantalla {indicePagina + 1} de {paginas.length} ({paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'})
+                            </span>
                           </div>
-                          <p className={`text-xs ${theme.textSecondary}`}>
-                            Pantalla {indicePagina + 1} de {paginas.length} · {paginaActual.pruebas.length} prueba{paginaActual.pruebas.length === 1 ? '' : 's'} aquí
-                          </p>
                         </div>
                       </div>
 
@@ -3749,7 +3743,7 @@ function QAContenido() {
                         <button
                           type="button"
                           onClick={() => copiarResumenIA(generarResumenIA(paginaActual.ruta), `Resumen IA de ${paginaActual.ruta} copiado`)}
-                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
                             isDark
                               ? 'bg-[#985fa1]/25 text-[#D8B4E2] border-[#D8B4E2]/40 hover:bg-[#985fa1]/40'
                               : 'bg-[#985fa1]/15 text-[#8A4A94] border-[#985fa1]/30 hover:bg-[#985fa1]/25'
@@ -3761,7 +3755,7 @@ function QAContenido() {
                         <button
                           type="button"
                           onClick={() => { setAlcanceParcial(paginaActual.ruta); setMostrarInforme('parcial') }}
-                          className={`text-xs px-2.5 py-2 sm:py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
+                          className={`text-xs px-2.5 py-1.5 rounded-lg border font-semibold transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-1 ${
                             isDark ? 'bg-[#D6F391]/15 text-[#D6F391] border-[#D6F391]/30 hover:bg-[#D6F391]/25' : 'bg-[#00827C]/10 text-[#00827C] border-[#00827C]/30 hover:bg-[#00827C]/20'
                           }`}
                         >
@@ -3770,36 +3764,17 @@ function QAContenido() {
                         <button
                           onClick={() => { const i = Math.max(0, indicePagina - 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
                           disabled={indicePagina === 0}
-                          className={`text-xs px-3 py-2 sm:py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} disabled:opacity-30`}
+                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${theme.inputBg} ${theme.textSecondary} disabled:opacity-30`}
                         >
                           Anterior
                         </button>
                         <button
                           onClick={() => { const i = Math.min(paginas.length - 1, indicePagina + 1); setRutaActiva(paginas[i].ruta); setExpandida(null) }}
                           disabled={indicePagina >= paginas.length - 1}
-                          className={`text-xs px-3 py-2 sm:py-1.5 rounded-lg border transition-all disabled:opacity-30 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} border-transparent font-semibold`}
+                          className={`text-xs px-3 py-1.5 rounded-lg border transition-all disabled:opacity-30 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} border-transparent font-semibold`}
                         >
                           Siguiente
                         </button>
-                      </div>
-                    </div>
-
-                    {/* Barra de progreso de la pantalla */}
-                    <div className="flex flex-col gap-1.5 pt-2 border-t border-gray-500/10">
-                      <div className={`h-2 rounded-full overflow-hidden flex ${isDark ? 'bg-white/10' : 'bg-black/10'}`}>
-                        {pagOk > 0 && <div style={{ width: `${(pagOk / pagTotal) * 100}%` }} className="bg-[#38B98E] h-full" title={`${pagOk} aprobadas`} />}
-                        {pagParcial > 0 && <div style={{ width: `${(pagParcial / pagTotal) * 100}%` }} className={`h-full ${isDark ? 'bg-[#F6BF3E]' : 'bg-[#F59E0B]'}`} title={`${pagParcial} parciales`} />}
-                        {pagDudosa > 0 && <div style={{ width: `${(pagDudosa / pagTotal) * 100}%` }} className={`h-full ${isDark ? 'bg-[#D8B4E2]' : 'bg-[#985fa1]'}`} title={`${pagDudosa} dudosas`} />}
-                        {pagFail > 0 && <div style={{ width: `${(pagFail / pagTotal) * 100}%` }} className={`h-full ${isDark ? 'bg-[#FF7B6B]' : 'bg-[#FF5E4B]'}`} title={`${pagFail} fallas`} />}
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-placeholder font-medium">
-                        <span>{pagRev} de {paginaActual.pruebas.length} revisadas</span>
-                        <div className="flex items-center gap-2">
-                          {pagOk > 0 && <span className={`font-semibold ${isDark ? 'text-[#38B98E]' : 'text-[#1F8C65]'}`}>{pagOk} aprobadas</span>}
-                          {pagParcial > 0 && <span className={`font-semibold ${isDark ? 'text-[#F6BF3E]' : 'text-[#D97706]'}`}>{pagParcial} parciales</span>}
-                          {pagDudosa > 0 && <span className={`font-semibold ${isDark ? 'text-[#D8B4E2]' : 'text-[#8A4A94]'}`}>{pagDudosa} dudas</span>}
-                          {pagFail > 0 && <span className={`font-semibold ${isDark ? 'text-[#FF7B6B]' : 'text-[#CC3C2A]'}`}>{pagFail} fallas</span>}
-                        </div>
                       </div>
                     </div>
                   </div>
