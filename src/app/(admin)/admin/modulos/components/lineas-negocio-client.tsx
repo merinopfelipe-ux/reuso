@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Power, Check, X, Building2 as Buildings, Pencil as PencilSimple, Layers as Stack } from '@/components/ui/icons'
 import { IconPicker } from '@/components/admin/icon-picker'
 import type { LineaNegocio } from '@/types'
-import { Lucide as LucideIcons } from '@/components/ui/icons'
+import { Lucide as LucideIcons } from '@/components/ui/lucide-all'
 import * as PhosphorIcons from '@phosphor-icons/react'
 import { parsearIcono } from '@/lib/icono-nombre'
 

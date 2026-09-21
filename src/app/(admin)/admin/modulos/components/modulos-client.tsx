@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Power, Layers as Stack, Check, X, Tag, Building2 as Buildings, Pencil as PencilSimple } from '@/components/ui/icons'
 import type { ModuloConCategorias } from '@/types'
-import { Lucide as LucideIcons } from '@/components/ui/icons'
+import { Lucide as LucideIcons } from '@/components/ui/lucide-all'
 import * as PhosphorIcons from '@phosphor-icons/react'
 import { parsearIcono } from '@/lib/icono-nombre'
 

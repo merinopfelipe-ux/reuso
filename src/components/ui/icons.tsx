@@ -1,7 +1,183 @@
 'use client'
 
 import React, { useEffect, useRef } from 'react'
-import * as Lucide from 'lucide-react'
+import {
+  ALargeSmall as Lucide_ALargeSmall,
+  Activity as Lucide_Activity,
+  AlertCircle as Lucide_AlertCircle,
+  Armchair as Lucide_Armchair,
+  ArrowDown as Lucide_ArrowDown,
+  ArrowLeft as Lucide_ArrowLeft,
+  ArrowRight as Lucide_ArrowRight,
+  ArrowUp as Lucide_ArrowUp,
+  ArrowUpDown as Lucide_ArrowUpDown,
+  ArrowUpRight as Lucide_ArrowUpRight,
+  BadgeDollarSign as Lucide_BadgeDollarSign,
+  BadgePercent as Lucide_BadgePercent,
+  BarChart2 as Lucide_BarChart2,
+  Bath as Lucide_Bath,
+  Bell as Lucide_Bell,
+  Bold as Lucide_Bold,
+  BookOpen as Lucide_BookOpen,
+  Bot as Lucide_Bot,
+  BrushCleaning as Lucide_BrushCleaning,
+  Building as Lucide_Building,
+  Building2 as Lucide_Building2,
+  Calculator as Lucide_Calculator,
+  Calendar as Lucide_Calendar,
+  Camera as Lucide_Camera,
+  Car as Lucide_Car,
+  CaseSensitive as Lucide_CaseSensitive,
+  CaseUpper as Lucide_CaseUpper,
+  ChartLine as Lucide_ChartLine,
+  Check as Lucide_Check,
+  CheckCheck as Lucide_CheckCheck,
+  CheckCircle as Lucide_CheckCircle,
+  ChevronDown as Lucide_ChevronDown,
+  ChevronLeft as Lucide_ChevronLeft,
+  ChevronRight as Lucide_ChevronRight,
+  ChevronUp as Lucide_ChevronUp,
+  ChevronsUpDown as Lucide_ChevronsUpDown,
+  Circle as Lucide_Circle,
+  CircleDollarSign as Lucide_CircleDollarSign,
+  CircleHelp as Lucide_CircleHelp,
+  CircleUser as Lucide_CircleUser,
+  ClipboardList as Lucide_ClipboardList,
+  ClipboardPaste as Lucide_ClipboardPaste,
+  Clock as Lucide_Clock,
+  Coins as Lucide_Coins,
+  Columns3 as Lucide_Columns3,
+  Cookie as Lucide_Cookie,
+  Copy as Lucide_Copy,
+  Cpu as Lucide_Cpu,
+  CreditCard as Lucide_CreditCard,
+  Crosshair as Lucide_Crosshair,
+  Crown as Lucide_Crown,
+  Database as Lucide_Database,
+  Download as Lucide_Download,
+  Droplet as Lucide_Droplet,
+  Dumbbell as Lucide_Dumbbell,
+  EllipsisVertical as Lucide_EllipsisVertical,
+  Equal as Lucide_Equal,
+  ExternalLink as Lucide_ExternalLink,
+  Eye as Lucide_Eye,
+  EyeOff as Lucide_EyeOff,
+  FileText as Lucide_FileText,
+  FileX as Lucide_FileX,
+  Filter as Lucide_Filter,
+  FlaskConical as Lucide_FlaskConical,
+  Folder as Lucide_Folder,
+  Globe as Lucide_Globe,
+  GripVertical as Lucide_GripVertical,
+  Hammer as Lucide_Hammer,
+  Handshake as Lucide_Handshake,
+  Headphones as Lucide_Headphones,
+  Headset as Lucide_Headset,
+  Heart as Lucide_Heart,
+  HeartHandshake as Lucide_HeartHandshake,
+  Highlighter as Lucide_Highlighter,
+  History as Lucide_History,
+  Home as Lucide_Home,
+  Hourglass as Lucide_Hourglass,
+  IdCard as Lucide_IdCard,
+  Image as Lucide_Image,
+  Inbox as Lucide_Inbox,
+  Info as Lucide_Info,
+  Italic as Lucide_Italic,
+  Key as Lucide_Key,
+  KeyRound as Lucide_KeyRound,
+  Layers as Lucide_Layers,
+  LayoutGrid as Lucide_LayoutGrid,
+  Leaf as Lucide_Leaf,
+  LifeBuoy as Lucide_LifeBuoy,
+  Lightbulb as Lucide_Lightbulb,
+  Link as Lucide_Link,
+  List as Lucide_List,
+  Loader2 as Lucide_Loader2,
+  Lock as Lucide_Lock,
+  LockKeyhole as Lucide_LockKeyhole,
+  LogOut as Lucide_LogOut,
+  Mail as Lucide_Mail,
+  MailOpen as Lucide_MailOpen,
+  MapPin as Lucide_MapPin,
+  MapPinHouse as Lucide_MapPinHouse,
+  Medal as Lucide_Medal,
+  Menu as Lucide_Menu,
+  MessageSquare as Lucide_MessageSquare,
+  Minus as Lucide_Minus,
+  MinusCircle as Lucide_MinusCircle,
+  Monitor as Lucide_Monitor,
+  Moon as Lucide_Moon,
+  MousePointerClick as Lucide_MousePointerClick,
+  Package as Lucide_Package,
+  PenLine as Lucide_PenLine,
+  Pencil as Lucide_Pencil,
+  Percent as Lucide_Percent,
+  Phone as Lucide_Phone,
+  Pin as Lucide_Pin,
+  PinOff as Lucide_PinOff,
+  Plus as Lucide_Plus,
+  PlusCircle as Lucide_PlusCircle,
+  Power as Lucide_Power,
+  QrCode as Lucide_QrCode,
+  Quote as Lucide_Quote,
+  Receipt as Lucide_Receipt,
+  Redo2 as Lucide_Redo2,
+  RefreshCcw as Lucide_RefreshCcw,
+  RefreshCw as Lucide_RefreshCw,
+  RotateCcw as Lucide_RotateCcw,
+  Save as Lucide_Save,
+  Scale as Lucide_Scale,
+  ScanSearch as Lucide_ScanSearch,
+  Scissors as Lucide_Scissors,
+  Scroll as Lucide_Scroll,
+  Search as Lucide_Search,
+  Send as Lucide_Send,
+  SendHorizontal as Lucide_SendHorizontal,
+  Settings as Lucide_Settings,
+  Share2 as Lucide_Share2,
+  Shield as Lucide_Shield,
+  ShieldAlert as Lucide_ShieldAlert,
+  ShieldCheck as Lucide_ShieldCheck,
+  Shirt as Lucide_Shirt,
+  ShowerHead as Lucide_ShowerHead,
+  SlidersHorizontal as Lucide_SlidersHorizontal,
+  SmilePlus as Lucide_SmilePlus,
+  Sofa as Lucide_Sofa,
+  Sparkles as Lucide_Sparkles,
+  Sprout as Lucide_Sprout,
+  Square as Lucide_Square,
+  SquareCheck as Lucide_SquareCheck,
+  SquareSplitHorizontal as Lucide_SquareSplitHorizontal,
+  Star as Lucide_Star,
+  Store as Lucide_Store,
+  Sun as Lucide_Sun,
+  Tag as Lucide_Tag,
+  Target as Lucide_Target,
+  Timer as Lucide_Timer,
+  Trash2 as Lucide_Trash2,
+  TreePine as Lucide_TreePine,
+  Trees as Lucide_Trees,
+  TrendingDown as Lucide_TrendingDown,
+  TrendingUp as Lucide_TrendingUp,
+  TriangleAlert as Lucide_TriangleAlert,
+  Trophy as Lucide_Trophy,
+  Truck as Lucide_Truck,
+  Underline as Lucide_Underline,
+  Undo2 as Lucide_Undo2,
+  Unlock as Lucide_Unlock,
+  Upload as Lucide_Upload,
+  User as Lucide_User,
+  UserCheck as Lucide_UserCheck,
+  UserPlus as Lucide_UserPlus,
+  Users as Lucide_Users,
+  Wallet as Lucide_Wallet,
+  Wrench as Lucide_Wrench,
+  X as Lucide_X,
+  XCircle as Lucide_XCircle,
+  Zap as Lucide_Zap,
+  ZoomIn as Lucide_ZoomIn,
+} from 'lucide-react'
 import { motion, useAnimation, type Variants, type Transition } from 'motion/react'
 
 /**
@@ -758,22 +934,22 @@ export type { LucideIcon } from 'lucide-react'
 export { Icon } from 'lucide-react'
 
 // Export wrapped icons
-export const Sun = wrapIcon(Lucide.Sun)
-export const Moon = wrapIcon(Lucide.Moon)
-export const Monitor = wrapIcon(Lucide.Monitor)
-export const ArrowLeft = wrapIcon(Lucide.ArrowLeft)
-export const ArrowRight = wrapIcon(Lucide.ArrowRight)
-export const ArrowUpRight = wrapIcon(Lucide.ArrowUpRight)
-export const Medal = wrapIcon(Lucide.Medal)
-export const Bell = wrapIcon(Lucide.Bell)
-export const Question = wrapIcon(Lucide.CircleHelp)
-export const Crown = wrapIcon(Lucide.Crown)
-export const ChatCircle = wrapIcon(Lucide.MessageSquare) // Prefer MessageSquare over MessageCircle (preferir message-square)
-export const Envelope = wrapIcon(Lucide.Mail)
-export const Warning = wrapIcon(Lucide.TriangleAlert)
-export const CreditCard = wrapIcon(Lucide.CreditCard)
-export const UserPlus = wrapIcon(Lucide.UserPlus)
-export const Clock = wrapIcon(Lucide.Clock)
+export const Sun = wrapIcon(Lucide_Sun)
+export const Moon = wrapIcon(Lucide_Moon)
+export const Monitor = wrapIcon(Lucide_Monitor)
+export const ArrowLeft = wrapIcon(Lucide_ArrowLeft)
+export const ArrowRight = wrapIcon(Lucide_ArrowRight)
+export const ArrowUpRight = wrapIcon(Lucide_ArrowUpRight)
+export const Medal = wrapIcon(Lucide_Medal)
+export const Bell = wrapIcon(Lucide_Bell)
+export const Question = wrapIcon(Lucide_CircleHelp)
+export const Crown = wrapIcon(Lucide_Crown)
+export const ChatCircle = wrapIcon(Lucide_MessageSquare) // Prefer MessageSquare over MessageCircle (preferir message-square)
+export const Envelope = wrapIcon(Lucide_Mail)
+export const Warning = wrapIcon(Lucide_TriangleAlert)
+export const CreditCard = wrapIcon(Lucide_CreditCard)
+export const UserPlus = wrapIcon(Lucide_UserPlus)
+export const Clock = wrapIcon(Lucide_Clock)
 
 // Los 5 íconos de abajo antes eran SVGs dibujados a mano con animaciones
 // propias (rotate/translate/scale combinadas) — Lucide ya trae exactamente
@@ -781,214 +957,214 @@ export const Clock = wrapIcon(Lucide.Clock)
 // como el resto: usa la versión animada de lucide-animated.com si existe
 // (hoy solo ChartLine la tiene), si no cae al zoom estándar del sistema.
 // Nunca se vuelve a dibujar un ícono a mano cuando Lucide ya lo tiene.
-export const MapPinHouse = wrapIcon(Lucide.MapPinHouse)
-export const ChartLine = wrapIcon(Lucide.ChartLine)
-export const Receipt = wrapIcon(Lucide.Receipt)
-export const Handshake = wrapIcon(Lucide.Handshake)
+export const MapPinHouse = wrapIcon(Lucide_MapPinHouse)
+export const ChartLine = wrapIcon(Lucide_ChartLine)
+export const Receipt = wrapIcon(Lucide_Receipt)
+export const Handshake = wrapIcon(Lucide_Handshake)
 
-export const Timer = wrapIcon(Lucide.Timer)
-export const Hourglass = wrapIcon(Lucide.Hourglass)
-export const CheckCircle = wrapIcon(Lucide.CheckCircle)
-export const XCircle = wrapIcon(Lucide.XCircle)
-export const Users = wrapIcon(Lucide.Users)
-export const CircleNotch = wrapIcon(Lucide.Loader2)
-export const Copy = wrapIcon(Lucide.Copy)
-export const Check = wrapIcon(Lucide.Check)
-export const Link = wrapIcon(Lucide.Link)
-export const Leaf = wrapIcon(Lucide.Leaf)
-export const Drop = wrapIcon(Lucide.Droplet)
-export const Globe = wrapIcon(Lucide.Globe)
-export const Tree = wrapIcon(Lucide.Trees)
-export const Trees = wrapIcon(Lucide.Trees)
-export const TreePine = wrapIcon(Lucide.TreePine)
-export const Sprout = wrapIcon(Lucide.Sprout)
-export const Car = wrapIcon(Lucide.Car)
-export const Upload = wrapIcon(Lucide.Upload)
-export const FloppyDisk = wrapIcon(Lucide.Save)
-export const Buildings = wrapIcon(Lucide.Building2)
-export const Calendar = wrapIcon(Lucide.Calendar)
-export const Info = wrapIcon(Lucide.Info)
-export const MagnifyingGlass = wrapIcon(Lucide.Search)
-export const ShieldCheck = wrapIcon(Lucide.ShieldCheck)
-export const ShieldWarning = wrapIcon(Lucide.ShieldAlert)
-export const FileX = wrapIcon(Lucide.FileX)
-export const X = wrapIcon(Lucide.X)
-export const FileText = wrapIcon(Lucide.FileText)
-export const Shield = wrapIcon(Lucide.Shield)
-export const Database = wrapIcon(Lucide.Database)
-export const Cookie = wrapIcon(Lucide.Cookie)
-export const Lock = wrapIcon(Lucide.Lock)
-export const LockOpen = wrapIcon(Lucide.Unlock)
-export const ChartBar = wrapIcon(Lucide.BarChart2)
-export const Eye = wrapIcon(Lucide.Eye)
-export const EyeSlash = wrapIcon(Lucide.EyeOff)
-export const Key = wrapIcon(Lucide.Key)
-export const Package = wrapIcon(Lucide.Package)
-export const Sofa = wrapIcon(Lucide.Sofa)
-export const Armchair = wrapIcon(Lucide.Armchair)
-export const Wrench = wrapIcon(Lucide.Wrench)
-export const Truck = wrapIcon(Lucide.Truck)
-export const Folder = wrapIcon(Lucide.Folder)
-export const EllipsisVertical = wrapIcon(Lucide.EllipsisVertical)
-export const ClockCounterClockwise = wrapIcon(Lucide.History)
-export const Lifebuoy = wrapIcon(Lucide.LifeBuoy)
-export const Star = wrapIcon(Lucide.Star)
-export const Calculator = wrapIcon(Lucide.Calculator)
-export const Tray = wrapIcon(Lucide.Inbox)
-export const Download = wrapIcon(Lucide.Download)
-export const Share2 = wrapIcon(Lucide.Share2)
-export const TrendUp = wrapIcon(Lucide.TrendingUp)
-export const TrendDown = wrapIcon(Lucide.TrendingDown)
-export const Headphones = wrapIcon(Lucide.Headphones)
-export const Stack = wrapIcon(Lucide.Layers)
-export const Plus = wrapIcon(Lucide.Plus)
-export const Power = wrapIcon(Lucide.Power)
-export const CaretDown = wrapIcon(Lucide.ChevronDown)
-export const Columns3 = wrapIcon(Lucide.Columns3)
-export const CaretRight = wrapIcon(Lucide.ChevronRight)
-export const CaretLeft = wrapIcon(Lucide.ChevronLeft)
-export const CaretUp = wrapIcon(Lucide.ChevronUp)
-export const PlusCircle = wrapIcon(Lucide.PlusCircle)
-export const ArrowSquareOut = wrapIcon(Lucide.ExternalLink)
-export const Funnel = wrapIcon(Lucide.Filter)
-export const Tag = wrapIcon(Lucide.Tag)
-export const PencilSimple = wrapIcon(Lucide.Pencil)
+export const Timer = wrapIcon(Lucide_Timer)
+export const Hourglass = wrapIcon(Lucide_Hourglass)
+export const CheckCircle = wrapIcon(Lucide_CheckCircle)
+export const XCircle = wrapIcon(Lucide_XCircle)
+export const Users = wrapIcon(Lucide_Users)
+export const CircleNotch = wrapIcon(Lucide_Loader2)
+export const Copy = wrapIcon(Lucide_Copy)
+export const Check = wrapIcon(Lucide_Check)
+export const Link = wrapIcon(Lucide_Link)
+export const Leaf = wrapIcon(Lucide_Leaf)
+export const Drop = wrapIcon(Lucide_Droplet)
+export const Globe = wrapIcon(Lucide_Globe)
+export const Tree = wrapIcon(Lucide_Trees)
+export const Trees = wrapIcon(Lucide_Trees)
+export const TreePine = wrapIcon(Lucide_TreePine)
+export const Sprout = wrapIcon(Lucide_Sprout)
+export const Car = wrapIcon(Lucide_Car)
+export const Upload = wrapIcon(Lucide_Upload)
+export const FloppyDisk = wrapIcon(Lucide_Save)
+export const Buildings = wrapIcon(Lucide_Building2)
+export const Calendar = wrapIcon(Lucide_Calendar)
+export const Info = wrapIcon(Lucide_Info)
+export const MagnifyingGlass = wrapIcon(Lucide_Search)
+export const ShieldCheck = wrapIcon(Lucide_ShieldCheck)
+export const ShieldWarning = wrapIcon(Lucide_ShieldAlert)
+export const FileX = wrapIcon(Lucide_FileX)
+export const X = wrapIcon(Lucide_X)
+export const FileText = wrapIcon(Lucide_FileText)
+export const Shield = wrapIcon(Lucide_Shield)
+export const Database = wrapIcon(Lucide_Database)
+export const Cookie = wrapIcon(Lucide_Cookie)
+export const Lock = wrapIcon(Lucide_Lock)
+export const LockOpen = wrapIcon(Lucide_Unlock)
+export const ChartBar = wrapIcon(Lucide_BarChart2)
+export const Eye = wrapIcon(Lucide_Eye)
+export const EyeSlash = wrapIcon(Lucide_EyeOff)
+export const Key = wrapIcon(Lucide_Key)
+export const Package = wrapIcon(Lucide_Package)
+export const Sofa = wrapIcon(Lucide_Sofa)
+export const Armchair = wrapIcon(Lucide_Armchair)
+export const Wrench = wrapIcon(Lucide_Wrench)
+export const Truck = wrapIcon(Lucide_Truck)
+export const Folder = wrapIcon(Lucide_Folder)
+export const EllipsisVertical = wrapIcon(Lucide_EllipsisVertical)
+export const ClockCounterClockwise = wrapIcon(Lucide_History)
+export const Lifebuoy = wrapIcon(Lucide_LifeBuoy)
+export const Star = wrapIcon(Lucide_Star)
+export const Calculator = wrapIcon(Lucide_Calculator)
+export const Tray = wrapIcon(Lucide_Inbox)
+export const Download = wrapIcon(Lucide_Download)
+export const Share2 = wrapIcon(Lucide_Share2)
+export const TrendUp = wrapIcon(Lucide_TrendingUp)
+export const TrendDown = wrapIcon(Lucide_TrendingDown)
+export const Headphones = wrapIcon(Lucide_Headphones)
+export const Stack = wrapIcon(Lucide_Layers)
+export const Plus = wrapIcon(Lucide_Plus)
+export const Power = wrapIcon(Lucide_Power)
+export const CaretDown = wrapIcon(Lucide_ChevronDown)
+export const Columns3 = wrapIcon(Lucide_Columns3)
+export const CaretRight = wrapIcon(Lucide_ChevronRight)
+export const CaretLeft = wrapIcon(Lucide_ChevronLeft)
+export const CaretUp = wrapIcon(Lucide_ChevronUp)
+export const PlusCircle = wrapIcon(Lucide_PlusCircle)
+export const ArrowSquareOut = wrapIcon(Lucide_ExternalLink)
+export const Funnel = wrapIcon(Lucide_Filter)
+export const Tag = wrapIcon(Lucide_Tag)
+export const PencilSimple = wrapIcon(Lucide_Pencil)
 // PROHIBIDO POR SISTEMA DE DISEÑO (2026-08-25):
 // El ícono `Target` (círculos concéntricos / diana) queda PROHIBIDO en toda la aplicación
 // porque carece de claridad semántica y confunde al usuario. Usar `Scissors`, `Layers`, `Sparkles`, `Cpu` o `Calculator`.
-export const Target = wrapIcon(Lucide.Target)
-export const Scissors = wrapIcon(Lucide.Scissors)
-export const Shirt = wrapIcon(Lucide.Shirt)
-export const Pulse = wrapIcon(Lucide.Activity)
-export const Trash = wrapIcon(Lucide.Trash2)
-export const Heart = wrapIcon(Lucide.Heart)
-export const Trophy = wrapIcon(Lucide.Trophy)
-export const PaperPlaneRight = wrapIcon(Lucide.SendHorizontal)
-export const PaperPlaneTilt = wrapIcon(Lucide.SendHorizontal)
-export const CursorClick = wrapIcon(Lucide.MousePointerClick)
-export const EnvelopeOpen = wrapIcon(Lucide.MailOpen)
-export const WarningCircle = wrapIcon(Lucide.AlertCircle)
-export const Building = wrapIcon(Lucide.Building)
-export const User = wrapIcon(Lucide.User)
-export const Gear = wrapIcon(Lucide.Settings)
-export const SignOut = wrapIcon(Lucide.LogOut)
-export const UserCheck = wrapIcon(Lucide.UserCheck)
-export const List = wrapIcon(Lucide.List)
-export const Menu = wrapIcon(Lucide.Menu)
-export const SquaresFour = wrapIcon(Lucide.LayoutGrid)
-export const Scroll = wrapIcon(Lucide.Scroll)
-export const House = wrapIcon(Lucide.Home)
-export const Scales = wrapIcon(Lucide.Scale)
-export const Lightbulb = wrapIcon(Lucide.Lightbulb)
-export const Minus = wrapIcon(Lucide.Minus)
-export const CaretUpDown = wrapIcon(Lucide.ChevronsUpDown)
-export const Flask = wrapIcon(Lucide.FlaskConical)
-export const Lightning = wrapIcon(Lucide.Zap)
-export const Cpu = wrapIcon(Lucide.Cpu)
-export const Shower = wrapIcon(Lucide.ShowerHead)
-export const ArrowCounterClockwise = wrapIcon(Lucide.RotateCcw)
-export const Image = wrapIcon(Lucide.Image)
-export const Phone = wrapIcon(Lucide.Phone)
-export const SquareHalf = wrapIcon(Lucide.SquareSplitHorizontal)
-export const Spinner = wrapIcon(Lucide.Loader2)
+export const Target = wrapIcon(Lucide_Target)
+export const Scissors = wrapIcon(Lucide_Scissors)
+export const Shirt = wrapIcon(Lucide_Shirt)
+export const Pulse = wrapIcon(Lucide_Activity)
+export const Trash = wrapIcon(Lucide_Trash2)
+export const Heart = wrapIcon(Lucide_Heart)
+export const Trophy = wrapIcon(Lucide_Trophy)
+export const PaperPlaneRight = wrapIcon(Lucide_SendHorizontal)
+export const PaperPlaneTilt = wrapIcon(Lucide_SendHorizontal)
+export const CursorClick = wrapIcon(Lucide_MousePointerClick)
+export const EnvelopeOpen = wrapIcon(Lucide_MailOpen)
+export const WarningCircle = wrapIcon(Lucide_AlertCircle)
+export const Building = wrapIcon(Lucide_Building)
+export const User = wrapIcon(Lucide_User)
+export const Gear = wrapIcon(Lucide_Settings)
+export const SignOut = wrapIcon(Lucide_LogOut)
+export const UserCheck = wrapIcon(Lucide_UserCheck)
+export const List = wrapIcon(Lucide_List)
+export const Menu = wrapIcon(Lucide_Menu)
+export const SquaresFour = wrapIcon(Lucide_LayoutGrid)
+export const Scroll = wrapIcon(Lucide_Scroll)
+export const House = wrapIcon(Lucide_Home)
+export const Scales = wrapIcon(Lucide_Scale)
+export const Lightbulb = wrapIcon(Lucide_Lightbulb)
+export const Minus = wrapIcon(Lucide_Minus)
+export const CaretUpDown = wrapIcon(Lucide_ChevronsUpDown)
+export const Flask = wrapIcon(Lucide_FlaskConical)
+export const Lightning = wrapIcon(Lucide_Zap)
+export const Cpu = wrapIcon(Lucide_Cpu)
+export const Shower = wrapIcon(Lucide_ShowerHead)
+export const ArrowCounterClockwise = wrapIcon(Lucide_RotateCcw)
+export const Image = wrapIcon(Lucide_Image)
+export const Phone = wrapIcon(Lucide_Phone)
+export const SquareHalf = wrapIcon(Lucide_SquareSplitHorizontal)
+export const Spinner = wrapIcon(Lucide_Loader2)
 
 
 // --- AUTO-GENERATED EXPORTS ---
-export const Activity = wrapIcon(Lucide.Activity)
-export const AlertCircle = wrapIcon(Lucide.AlertCircle)
-export const ArrowDown = wrapIcon(Lucide.ArrowDown)
-export const ArrowUp = wrapIcon(Lucide.ArrowUp)
-export const ArrowUpDown = wrapIcon(Lucide.ArrowUpDown)
-export const BadgePercent = wrapIcon(Lucide.BadgePercent)
-export const BadgeDollarSign = wrapIcon(Lucide.BadgeDollarSign)
-export const BarChart2 = wrapIcon(Lucide.BarChart2)
-export const Bath = wrapIcon(Lucide.Bath)
-export const BookOpen = wrapIcon(Lucide.BookOpen)
-export const Bot = wrapIcon(Lucide.Bot)
-export const Building2 = wrapIcon(Lucide.Building2)
-export const Camera = wrapIcon(Lucide.Camera)
-export const ChevronDown = wrapIcon(Lucide.ChevronDown)
-export const ChevronLeft = wrapIcon(Lucide.ChevronLeft)
-export const ChevronRight = wrapIcon(Lucide.ChevronRight)
-export const ChevronUp = wrapIcon(Lucide.ChevronUp)
-export const ChevronsUpDown = wrapIcon(Lucide.ChevronsUpDown)
-export const Circle = wrapIcon(Lucide.Circle)
-export const CircleDollarSign = wrapIcon(Lucide.CircleDollarSign)
-export const Coins = wrapIcon(Lucide.Coins)
-export const Wallet = wrapIcon(Lucide.Wallet)
-export const CircleHelp = wrapIcon(Lucide.CircleHelp)
-export const CircleUser = wrapIcon(Lucide.CircleUser)
-export const ClipboardList = wrapIcon(Lucide.ClipboardList)
-export const ClipboardPaste = wrapIcon(Lucide.ClipboardPaste)
-export const Droplet = wrapIcon(Lucide.Droplet)
-export const Dumbbell = wrapIcon(Lucide.Dumbbell)
-export const ExternalLink = wrapIcon(Lucide.ExternalLink)
-export const EyeOff = wrapIcon(Lucide.EyeOff)
-export const Filter = wrapIcon(Lucide.Filter)
-export const FlaskConical = wrapIcon(Lucide.FlaskConical)
-export const Hammer = wrapIcon(Lucide.Hammer)
-export const Headset = wrapIcon(Lucide.Headset)
-export const HeartHandshake = wrapIcon(Lucide.HeartHandshake)
-export const History = wrapIcon(Lucide.History)
-export const Home = wrapIcon(Lucide.Home)
-export const IdCard = wrapIcon(Lucide.IdCard)
-export const MapPin = wrapIcon(Lucide.MapPin)
-export const Pin = wrapIcon(Lucide.Pin)
-export const PinOff = wrapIcon(Lucide.PinOff)
-export const Inbox = wrapIcon(Lucide.Inbox)
-export const KeyRound = wrapIcon(Lucide.KeyRound)
-export const Layers = wrapIcon(Lucide.Layers)
-export const LayoutGrid = wrapIcon(Lucide.LayoutGrid)
-export const LifeBuoy = wrapIcon(Lucide.LifeBuoy)
-export const Loader2 = wrapIcon(Lucide.Loader2)
-export const LockKeyhole = wrapIcon(Lucide.LockKeyhole)
-export const LogOut = wrapIcon(Lucide.LogOut)
-export const Mail = wrapIcon(Lucide.Mail)
-export const MessageSquare = wrapIcon(Lucide.MessageSquare)
-export const MinusCircle = wrapIcon(Lucide.MinusCircle)
-export const PenLine = wrapIcon(Lucide.PenLine)
-export const Pencil = wrapIcon(Lucide.Pencil)
-export const Percent = wrapIcon(Lucide.Percent)
-export const QrCode = wrapIcon(Lucide.QrCode)
-export const Quote = wrapIcon(Lucide.Quote)
-export const RefreshCcw = wrapIcon(Lucide.RefreshCcw)
-export const RefreshCw = wrapIcon(Lucide.RefreshCw)
-export const RotateCcw = wrapIcon(Lucide.RotateCcw)
-export const Save = wrapIcon(Lucide.Save)
-export const Scale = wrapIcon(Lucide.Scale)
-export const Search = wrapIcon(Lucide.Search)
-export const Send = wrapIcon(Lucide.Send)
-export const SendHorizontal = wrapIcon(Lucide.SendHorizontal)
-export const Settings = wrapIcon(Lucide.Settings)
-export const GripVertical = wrapIcon(Lucide.GripVertical)
-export const ShowerHead = wrapIcon(Lucide.ShowerHead)
-export const SlidersHorizontal = wrapIcon(Lucide.SlidersHorizontal)
-export const Square = wrapIcon(Lucide.Square)
-export const SquareCheck = wrapIcon(Lucide.SquareCheck)
-export const Store = wrapIcon(Lucide.Store)
-export const Trash2 = wrapIcon(Lucide.Trash2)
-export const TreeDeciduous = wrapIcon(Lucide.Trees)
-export const TrendingDown = wrapIcon(Lucide.TrendingDown)
-export const TrendingUp = wrapIcon(Lucide.TrendingUp)
-export const TriangleAlert = wrapIcon(Lucide.TriangleAlert)
-export const Zap = wrapIcon(Lucide.Zap)
-export const ZoomIn = wrapIcon(Lucide.ZoomIn)
-export const Sparkles = wrapIcon(Lucide.Sparkles)
-export const BrushCleaning = wrapIcon(Lucide.BrushCleaning)
-export const Highlighter = wrapIcon(Lucide.Highlighter)
-export const CaseUpper = wrapIcon(Lucide.CaseUpper)
-export const ALargeSmall = wrapIcon(Lucide.ALargeSmall)
-export const SmilePlus = wrapIcon(Lucide.SmilePlus)
-export const Bold = wrapIcon(Lucide.Bold)
-export const Undo2 = wrapIcon(Lucide.Undo2)
-export const Redo2 = wrapIcon(Lucide.Redo2)
-export const Italic = wrapIcon(Lucide.Italic)
-export const Underline = wrapIcon(Lucide.Underline)
-export const CaseSensitive = wrapIcon(Lucide.CaseSensitive)
-export const CheckCheck = wrapIcon(Lucide.CheckCheck)
-export const Crosshair = wrapIcon(Lucide.Crosshair)
-export const ScanSearch = wrapIcon(Lucide.ScanSearch)
-export const Equal = wrapIcon(Lucide.Equal)
+export const Activity = wrapIcon(Lucide_Activity)
+export const AlertCircle = wrapIcon(Lucide_AlertCircle)
+export const ArrowDown = wrapIcon(Lucide_ArrowDown)
+export const ArrowUp = wrapIcon(Lucide_ArrowUp)
+export const ArrowUpDown = wrapIcon(Lucide_ArrowUpDown)
+export const BadgePercent = wrapIcon(Lucide_BadgePercent)
+export const BadgeDollarSign = wrapIcon(Lucide_BadgeDollarSign)
+export const BarChart2 = wrapIcon(Lucide_BarChart2)
+export const Bath = wrapIcon(Lucide_Bath)
+export const BookOpen = wrapIcon(Lucide_BookOpen)
+export const Bot = wrapIcon(Lucide_Bot)
+export const Building2 = wrapIcon(Lucide_Building2)
+export const Camera = wrapIcon(Lucide_Camera)
+export const ChevronDown = wrapIcon(Lucide_ChevronDown)
+export const ChevronLeft = wrapIcon(Lucide_ChevronLeft)
+export const ChevronRight = wrapIcon(Lucide_ChevronRight)
+export const ChevronUp = wrapIcon(Lucide_ChevronUp)
+export const ChevronsUpDown = wrapIcon(Lucide_ChevronsUpDown)
+export const Circle = wrapIcon(Lucide_Circle)
+export const CircleDollarSign = wrapIcon(Lucide_CircleDollarSign)
+export const Coins = wrapIcon(Lucide_Coins)
+export const Wallet = wrapIcon(Lucide_Wallet)
+export const CircleHelp = wrapIcon(Lucide_CircleHelp)
+export const CircleUser = wrapIcon(Lucide_CircleUser)
+export const ClipboardList = wrapIcon(Lucide_ClipboardList)
+export const ClipboardPaste = wrapIcon(Lucide_ClipboardPaste)
+export const Droplet = wrapIcon(Lucide_Droplet)
+export const Dumbbell = wrapIcon(Lucide_Dumbbell)
+export const ExternalLink = wrapIcon(Lucide_ExternalLink)
+export const EyeOff = wrapIcon(Lucide_EyeOff)
+export const Filter = wrapIcon(Lucide_Filter)
+export const FlaskConical = wrapIcon(Lucide_FlaskConical)
+export const Hammer = wrapIcon(Lucide_Hammer)
+export const Headset = wrapIcon(Lucide_Headset)
+export const HeartHandshake = wrapIcon(Lucide_HeartHandshake)
+export const History = wrapIcon(Lucide_History)
+export const Home = wrapIcon(Lucide_Home)
+export const IdCard = wrapIcon(Lucide_IdCard)
+export const MapPin = wrapIcon(Lucide_MapPin)
+export const Pin = wrapIcon(Lucide_Pin)
+export const PinOff = wrapIcon(Lucide_PinOff)
+export const Inbox = wrapIcon(Lucide_Inbox)
+export const KeyRound = wrapIcon(Lucide_KeyRound)
+export const Layers = wrapIcon(Lucide_Layers)
+export const LayoutGrid = wrapIcon(Lucide_LayoutGrid)
+export const LifeBuoy = wrapIcon(Lucide_LifeBuoy)
+export const Loader2 = wrapIcon(Lucide_Loader2)
+export const LockKeyhole = wrapIcon(Lucide_LockKeyhole)
+export const LogOut = wrapIcon(Lucide_LogOut)
+export const Mail = wrapIcon(Lucide_Mail)
+export const MessageSquare = wrapIcon(Lucide_MessageSquare)
+export const MinusCircle = wrapIcon(Lucide_MinusCircle)
+export const PenLine = wrapIcon(Lucide_PenLine)
+export const Pencil = wrapIcon(Lucide_Pencil)
+export const Percent = wrapIcon(Lucide_Percent)
+export const QrCode = wrapIcon(Lucide_QrCode)
+export const Quote = wrapIcon(Lucide_Quote)
+export const RefreshCcw = wrapIcon(Lucide_RefreshCcw)
+export const RefreshCw = wrapIcon(Lucide_RefreshCw)
+export const RotateCcw = wrapIcon(Lucide_RotateCcw)
+export const Save = wrapIcon(Lucide_Save)
+export const Scale = wrapIcon(Lucide_Scale)
+export const Search = wrapIcon(Lucide_Search)
+export const Send = wrapIcon(Lucide_Send)
+export const SendHorizontal = wrapIcon(Lucide_SendHorizontal)
+export const Settings = wrapIcon(Lucide_Settings)
+export const GripVertical = wrapIcon(Lucide_GripVertical)
+export const ShowerHead = wrapIcon(Lucide_ShowerHead)
+export const SlidersHorizontal = wrapIcon(Lucide_SlidersHorizontal)
+export const Square = wrapIcon(Lucide_Square)
+export const SquareCheck = wrapIcon(Lucide_SquareCheck)
+export const Store = wrapIcon(Lucide_Store)
+export const Trash2 = wrapIcon(Lucide_Trash2)
+export const TreeDeciduous = wrapIcon(Lucide_Trees)
+export const TrendingDown = wrapIcon(Lucide_TrendingDown)
+export const TrendingUp = wrapIcon(Lucide_TrendingUp)
+export const TriangleAlert = wrapIcon(Lucide_TriangleAlert)
+export const Zap = wrapIcon(Lucide_Zap)
+export const ZoomIn = wrapIcon(Lucide_ZoomIn)
+export const Sparkles = wrapIcon(Lucide_Sparkles)
+export const BrushCleaning = wrapIcon(Lucide_BrushCleaning)
+export const Highlighter = wrapIcon(Lucide_Highlighter)
+export const CaseUpper = wrapIcon(Lucide_CaseUpper)
+export const ALargeSmall = wrapIcon(Lucide_ALargeSmall)
+export const SmilePlus = wrapIcon(Lucide_SmilePlus)
+export const Bold = wrapIcon(Lucide_Bold)
+export const Undo2 = wrapIcon(Lucide_Undo2)
+export const Redo2 = wrapIcon(Lucide_Redo2)
+export const Italic = wrapIcon(Lucide_Italic)
+export const Underline = wrapIcon(Lucide_Underline)
+export const CaseSensitive = wrapIcon(Lucide_CaseSensitive)
+export const CheckCheck = wrapIcon(Lucide_CheckCheck)
+export const Crosshair = wrapIcon(Lucide_Crosshair)
+export const ScanSearch = wrapIcon(Lucide_ScanSearch)
+export const Equal = wrapIcon(Lucide_Equal)
 
 // Export brand logos from brand-logos.tsx
 export {
@@ -1000,5 +1176,3 @@ export {
   YoutubeLogo,
   TiktokLogo,
 } from './brand-logos'
-
-export { Lucide }

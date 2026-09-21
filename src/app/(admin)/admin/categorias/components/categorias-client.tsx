@@ -3,7 +3,7 @@
 import { useState, useTransition, useMemo, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { Lucide } from '@/components/ui/icons'
+import { Lucide } from '@/components/ui/lucide-all'
 import * as Phosphor from '@phosphor-icons/react'
 import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check, MagnifyingGlass, Square, SquareCheck } from '@/components/ui/icons'
 import { SortTh } from '@/components/sort-th'
