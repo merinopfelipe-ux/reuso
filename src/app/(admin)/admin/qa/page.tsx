@@ -3660,18 +3660,14 @@ function QAContenido() {
                   : 'Revisión prioritaria transversal de todas las pruebas que bloquean o comprometen la operación'
 
                 return (
+                  <div className="flex flex-col gap-1.5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3">
                         <div className="w-1.5 h-6 rounded-full bg-[#FF5E4B] shrink-0" />
-                        <div className="flex items-center gap-2 flex-wrap min-w-0">
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <Warning size={16} className="text-[#FF5E4B] shrink-0" />
-                            <span className="text-xs sm:text-sm font-bold text-[#FF5E4B] whitespace-nowrap">
-                              {criticasActuales.length} {criticasActuales.length === 1 ? 'prueba crítica' : 'pruebas críticas'}
-                            </span>
-                          </div>
-                          <span className={`text-xs ${theme.textSecondary} opacity-90`}>
-                            · {descripcionHeader}
+                        <div className="flex items-center gap-2">
+                          <Warning size={16} className="text-[#FF5E4B] shrink-0" />
+                          <span className="text-xs sm:text-sm font-bold text-[#FF5E4B] whitespace-nowrap">
+                            Pruebas críticas
                           </span>
                         </div>
                       </div>
@@ -3703,6 +3699,11 @@ function QAContenido() {
                         </button>
                       </div>
                     </div>
+
+                    <p className={`pl-4 text-xs ${theme.textSecondary}`}>
+                      {criticasActuales.length} {criticasActuales.length === 1 ? 'prueba crítica' : 'pruebas críticas'} · {descripcionHeader}
+                    </p>
+                  </div>
                 )
               })() : modo === 'pagina' && paginaActual ? (() => {
                 return (
