@@ -204,6 +204,6 @@ export const config = {
     // /login porque no estaban en esta lista) — cualquier archivo suelto en
     // public/ con extensión reconocible queda excluido por patrón.
     // woff2/woff/ttf/otf: fuentes propias en public/fonts (2026-09-21).
-    '/((?!_next/static|_next/image|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json|woff2|woff|ttf|otf)$).*)',
+    '/((?!_next/static|_next/image|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json|html|woff2|woff|ttf|otf)$).*)',
   ],
 }
