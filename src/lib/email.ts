@@ -804,26 +804,44 @@ export async function enviarSeguimientoEvento(
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
-  const nombre = escaparHtml(primerNombre(datos.nombre))
+  const nombreSeguro = escaparHtml(primerNombre(datos.nombre))
   const empresaSegura = datos.empresa ? escaparHtml(datos.empresa) : ''
   const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
-  const conocimos = evento ? `Nos conocemos en <strong>${evento}</strong> y quedamos en contacto.` : 'Nos vimos en el evento y quedamos en contacto.'
-  const textoEmpresa = empresaSegura ? ` Recibimos los datos de <strong>${empresaSegura}</strong>.` : ' Recibimos tus datos.'
+
+  // Saludo de cabecera y preheader
+  const subtitulo = evento ? `Nos encontramos en ${evento}` : 'Quedamos en contacto'
+  const preheader = evento
+    ? `Nos encontramos en ${evento} y quedamos en contacto.`
+    : 'Quedamos en contacto. Pronto te escribimos.'
+
+  // Texto introductorio
+  const textoEmpresa = empresaSegura ? ` Recibimos los datos de <strong>${empresaSegura}</strong>.` : ''
+  const cuerpo = evento
+    ? `Nos encontramos en <strong>${evento}</strong> y quedamos en contacto.${textoEmpresa}`
+    : `Quedamos en contacto.${textoEmpresa}`
+
+  // Botón + mensaje de cierre
+  const contenidoCentral = `
+${botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso')}
+<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">
+  Pronto te escribiremos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.
+</p>`
 
   const html = emailPlantilla({
-    preheader: evento ? `Nos conocemos en ${evento}. Recibimos tus datos.` : 'Nos vimos y quedamos en contacto. Recibimos tus datos.',
-    subtituloHeader: evento ? `Nos conocemos en ${evento}` : 'Nos vimos y quedamos en contacto',
-    saludo: nombre ? `¡Hola, ${nombre}!` : '¡Hola!',
-    cuerpo: `${conocimos}${textoEmpresa} No tienes que hacer nada más. En las próximas horas te escribimos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.`,
-    contenidoCentral: botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso'),
+    preheader,
+    subtituloHeader: subtitulo,
+    saludo: nombreSeguro ? `¡Hola, ${nombreSeguro}!` : '¡Hola!',
+    cuerpo,
+    contenidoCentral,
     mostrarAlerta: false,
-    avisoPie: 'Recibiste este correo porque dejaste tus datos en nuestro evento. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
+    mostrarFirma: false,
+    avisoPie: 'Recibiste este correo porque dejaste tus datos en nuestra web. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
   })
 
   const { data } = await resend.emails.send({
     from: FROM,
     to,
-    subject: evento ? `Nos conocemos en ${datos.evento!.replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}` : 'Nos vimos y quedamos en contacto',
+    subject: evento ? `Nos encontramos en ${datos.evento!.replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}` : 'Quedamos en contacto',
     html,
     replyTo: 'servicio@calculadoradereuso.com',
   })

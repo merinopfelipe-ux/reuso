@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Inbox as Tray, Mail as Envelope, Building2 as Buildings, Calendar, ChevronDown as CaretDown, ChevronUp as CaretUp, Phone, Pencil, Trash2, Download } from '@/components/ui/icons'
+import { Inbox as Tray, Mail as Envelope, Phone, Pencil, Trash2, Download } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { Selector } from '@/components/ui/selector'
@@ -38,40 +38,32 @@ interface Lead {
   notas_admin?: string | null
 }
 
-interface Evento { id: string; nombre: string; fecha: string }
+interface Evento { id: string; nombre: string; fecha_inicio: string; fecha_fin: string | null }
 
 
-function estadoBadge(estado: EstadoLead) {
-  const cfg = ESTADO_CONFIG[estado] ?? ESTADO_CONFIG.nuevo
-  return (
-    <span style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: cfg.bg, color: cfg.color }}>
-      {cfg.label}
-    </span>
-  )
-}
 
 export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: { leads: Lead[]; eventos?: Evento[] }) {
   const router = useRouter()
   const [, startTransition] = useTransition()
   const [leads, setLeads] = useState(inicial)
   const [filtroEstado, setFiltroEstado] = useState<EstadoLead | ''>('')
-  const [expandido, setExpandido] = useState<string | null>(null)
   const [cambiando, setCambiando] = useState<string | null>(null)
   const [eventos, setEventos] = useState(eventosIniciales)
   const [evNombre, setEvNombre] = useState('')
-  const [evFecha, setEvFecha] = useState('')
+  const [evFechaInicio, setEvFechaInicio] = useState('')
+  const [evFechaFin, setEvFechaFin] = useState('')
   const [evError, setEvError] = useState('')
   const [evGuardando, setEvGuardando] = useState(false)
 
   async function crearEvento() {
     setEvError('')
     setEvGuardando(true)
-    const res = await fetch('/api/admin/eventos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: evNombre, fecha: evFecha }) })
+    const res = await fetch('/api/admin/eventos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nombre: evNombre, fecha_inicio: evFechaInicio, fecha_fin: evFechaFin || null }) })
     const data = await res.json().catch(() => ({}))
     setEvGuardando(false)
     if (!res.ok) return setEvError(data.error ?? 'No pudimos guardar el evento.')
-    setEventos(prev => [data.evento, ...prev].sort((a, b) => b.fecha.localeCompare(a.fecha)))
-    setEvNombre(''); setEvFecha('')
+    setEventos(prev => [data.evento, ...prev].sort((a, b) => b.fecha_inicio.localeCompare(a.fecha_inicio)))
+    setEvNombre(''); setEvFechaInicio(''); setEvFechaFin('')
   }
 
   async function borrarEvento(id: string) {
@@ -93,7 +85,6 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
   })
   const [guardandoEdit, setGuardandoEdit] = useState(false)
   const [errorEdit, setErrorEdit] = useState('')
-  const [eliminandoId, setEliminandoId] = useState<string | null>(null)
 
   function abrirEdicion(lead: Lead) {
     setLeadEditando(lead)
@@ -211,28 +202,39 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
         </a>
       </div>
 
-      {/* Eventos: la página /eventos y el correo automático usan el de hoy o el próximo */}
+      {/* Eventos: rango de fechas — puede haber varios activos al mismo tiempo */}
       <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)]" style={{ padding: 16, marginBottom: 20 }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: C.dark, margin: '0 0 4px' }}>Eventos</p>
         <p style={{ fontSize: 12, color: C.mid, margin: '0 0 12px' }}>
-          Programa el nombre y la fecha. El correo dirá &quot;Nos conocemos en&quot; y el nombre del evento de hoy o el próximo.
+          Programa nombre y rango de fechas. El correo dirá &quot;Nos encontramos en&quot; + el nombre del evento activo hoy.
         </p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <input value={evNombre} onChange={e => setEvNombre(e.target.value)} placeholder="Nombre del evento" maxLength={120}
-            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13, flex: '1 1 220px' }} />
-          <input type="date" value={evFecha} onChange={e => setEvFecha(e.target.value)}
-            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13, flex: '1 1 180px' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <input type="date" value={evFechaInicio} onChange={e => setEvFechaInicio(e.target.value)}
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+            <span style={{ fontSize: 12, color: C.mid }}>hasta</span>
+            <input type="date" value={evFechaFin} onChange={e => setEvFechaFin(e.target.value)}
+              min={evFechaInicio}
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+          </div>
           <Button size="sm" variant="primary" loading={evGuardando} onClick={crearEvento}>Programar</Button>
         </div>
         {evError && <p role="alert" style={{ fontSize: 12, color: 'var(--color-error)', margin: '8px 0 0' }}>{evError}</p>}
         {eventos.length > 0 && (
           <ul style={{ listStyle: 'none', margin: '12px 0 0', padding: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {eventos.map(ev => (
-              <li key={ev.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 13, color: C.dark }}>
-                <span><strong>{ev.nombre}</strong>{' · '}{new Date(`${ev.fecha}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                <Button size="sm" variant="secondary" onClick={() => borrarEvento(ev.id)}>Quitar</Button>
-              </li>
-            ))}
+            {eventos.map(ev => {
+              const inicio = new Date(`${ev.fecha_inicio}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })
+              const fin = ev.fecha_fin ? new Date(`${ev.fecha_fin}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date(`${ev.fecha_inicio}T12:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })
+              const rango = ev.fecha_fin && ev.fecha_fin !== ev.fecha_inicio ? `${inicio} – ${fin}` : fin
+              return (
+                <li key={ev.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, fontSize: 13, color: C.dark }}>
+                  <span><strong>{ev.nombre}</strong>{' · '}{rango}</span>
+                  <Button size="sm" variant="secondary" onClick={() => borrarEvento(ev.id)}>Quitar</Button>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>
@@ -256,120 +258,85 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
         })}
       </div>
 
-      {/* Lista */}
+      {/* Tabla de leads */}
       {filtrados.length === 0 ? (
         <div style={{ padding: '60px 20px', textAlign: 'center', border: `1px dashed ${C.border}`, borderRadius: 16 }}>
           <Tray size={40} color={C.border} style={{ margin: '0 auto 12px' }} />
           <p style={{ fontSize: 15, fontWeight: 600, color: C.dark }}>Sin leads{filtroEstado ? ` en estado "${ESTADO_CONFIG[filtroEstado].label}"` : ''}</p>
-          <p style={{ fontSize: 13, color: C.mid }}>Cuando alguien complete el formulario de la landing aparecerá aquí.</p>
+          <p style={{ fontSize: 13, color: C.mid }}>Cuando alguien complete el formulario aparecerá aquí.</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {filtrados.map(lead => {
-            const abierto = expandido === lead.id
-            return (
-              <div key={lead.id} className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
-                {/* Fila principal */}
-                <div className="lead-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto auto', alignItems: 'center', gap: 12, padding: '14px 18px' }}>
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 4 }}>
-                      <span style={{ fontWeight: 700, fontSize: 15, color: C.dark }}>{lead.nombre ?? '(sin nombre)'}</span>
-                      {estadoBadge(lead.estado)}
-                      {lead.interes && (
-                        <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, background: 'rgba(89,166,228,0.12)', color: '#2B7FBF' }}>
-                          {lead.interes}{lead.evento_nombre ? ` · ${lead.evento_nombre}` : ''}
-                        </span>
-                      )}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: `2px solid ${C.border}` }}>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Nombre</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Empresa</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Contacto</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Evento</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Fecha y hora</th>
+                <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 700, color: C.mid, fontSize: 11, whiteSpace: 'nowrap' }}>Estado</th>
+                <th style={{ padding: '10px 12px' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtrados.map(lead => (
+                <tr key={lead.id} style={{ borderBottom: `1px solid ${C.border}` }}>
+                  <td style={{ padding: '10px 12px', color: C.dark, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                    {lead.nombre ?? '(sin nombre)'}
+                  </td>
+                  <td style={{ padding: '10px 12px', color: C.mid, whiteSpace: 'nowrap' }}>
+                    {lead.empresa ?? <span style={{ opacity: 0.4 }}>-</span>}
+                  </td>
+                  <td style={{ padding: '10px 12px', color: C.mid }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {lead.email && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Envelope size={11} />{lead.email}</span>}
+                      {lead.telefono && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Phone size={11} />{lead.telefono}</span>}
                     </div>
-                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                      {lead.email && (
-                        <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Envelope size={11} />{lead.email}
-                        </span>
-                      )}
-                      {lead.empresa && (
-                        <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Buildings size={11} />{lead.empresa}
-                        </span>
-                      )}
-                      {lead.telefono && (
-                        <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Phone size={11} />{lead.telefono}
-                        </span>
-                      )}
-                      <span style={{ fontSize: 12, color: C.mid, display: 'flex', alignItems: 'center', gap: 4 }}>
-                        <Calendar size={11} />{new Date(lead.created_at).toLocaleDateString('es-CO')}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Cambiar estado */}
-                  <div style={{ minWidth: 140 }}>
+                  </td>
+                  <td style={{ padding: '10px 12px', color: C.mid, whiteSpace: 'nowrap' }}>
+                    {lead.evento_nombre ?? <span style={{ opacity: 0.4 }}>-</span>}
+                  </td>
+                  <td style={{ padding: '10px 12px', color: C.mid, whiteSpace: 'nowrap', fontSize: 12 }}>
+                    {new Date(lead.created_at).toLocaleString('es-CO', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                  <td style={{ padding: '10px 12px', position: 'relative', zIndex: 10 }}>
                     <Selector
                       value={lead.estado}
                       disabled={cambiando === lead.id}
                       onChange={val => cambiarEstado(lead.id, val as EstadoLead)}
                       opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
                     />
-                  </div>
-
-                  {/* Editar Lead */}
-                  <button
-                    onClick={() => abrirEdicion(lead)}
-                    className="hover-pop hover-press"
-                    title="Editar información del lead"
-                    style={{ padding: '7px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: C.dark }}
-                  >
-                    <Pencil size={13} color={C.brand} /> Editar
-                  </button>
-
-                  {/* WhatsApp */}
-                  <button onClick={() => abrirWhatsApp(lead)}
-                    className="hover-pop hover-press"
-                    style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <WhatsappLogo size={13} color="white" /> WA
-                  </button>
-
-                  {/* Expandir */}
-                  <button onClick={() => setExpandido(abierto ? null : lead.id)}
-                    className="hover-pop hover-press"
-                    style={{ padding: 6, borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                    {abierto ? <CaretUp size={15} color={C.mid} /> : <CaretDown size={15} color={C.mid} />}
-                  </button>
-                </div>
-
-                {/* Detalle expandido */}
-                {abierto && (
-                  <div style={{ padding: '12px 18px 16px', borderTop: `1px solid ${C.border}`, background: C.light, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                    {lead.mensaje && (
-                      <div>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: C.mid, marginBottom: 4 }}>Mensaje</p>
-                        <p style={{ fontSize: 13, color: C.dark, lineHeight: 1.6, margin: 0 }}>{lead.mensaje}</p>
-                      </div>
-                    )}
-                    {lead.notas_admin && (
-                      <div>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: C.brand, marginBottom: 4 }}>Notas internas (Admin)</p>
-                        <p style={{ fontSize: 13, color: C.dark, lineHeight: 1.6, margin: 0 }}>{lead.notas_admin}</p>
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 6 }}>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        icon={<Trash2 size={13} />}
-                        loading={eliminandoId === lead.id}
-                        onClick={() => eliminarLead(lead.id)}
-                        className="text-[var(--color-error)]"
+                  </td>
+                  <td style={{ padding: '10px 12px', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                      <button
+                        onClick={() => abrirEdicion(lead)}
+                        className="hover-pop hover-press"
+                        title="Editar"
+                        style={{ padding: '6px 10px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5, fontSize: 12, fontWeight: 600, color: C.dark }}
                       >
-                        Eliminar lead
-                      </Button>
+                        <Pencil size={13} color={C.brand} /> Editar
+                      </button>
+                      <button onClick={() => abrirWhatsApp(lead)}
+                        className="hover-pop hover-press"
+                        style={{ padding: '5px 10px', borderRadius: 8, border: 'none', background: '#25D366', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <WhatsappLogo size={13} color="white" /> WA
+                      </button>
+                      <button
+                        onClick={() => eliminarLead(lead.id)}
+                        className="hover-pop hover-press"
+                        title="Eliminar"
+                        style={{ padding: '6px 8px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                      >
+                        <Trash2 size={13} color="var(--color-error)" />
+                      </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

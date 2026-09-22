@@ -72,7 +72,7 @@ export function EventosClient({ evento }: { evento: string | null }) {
 
   return (
     <ProteccionPublica>
-      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[var(--bg-primary)] px-4 py-10">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[var(--bg-primary)] px-4 py-4 sm:py-10">
         <Image src="/logo-completo.svg" alt="Calculadora de Reúso" width={190} height={53} priority />
 
         <div className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--bg-card)] p-6 shadow-sm sm:p-8">
@@ -234,6 +234,28 @@ export function EventosClient({ evento }: { evento: string | null }) {
                 />
 
                 {error && <p role="alert" className="text-sm text-[var(--color-error)]">{error}</p>}
+
+                {/* Términos y condiciones: siempre activo, no bloquea el envío */}
+                <label className="flex items-start gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked
+                    readOnly
+                    className="mt-0.5 h-4 w-4 rounded border-[var(--border)] accent-[var(--color-brand)] cursor-default"
+                    aria-label="Acepto los términos y condiciones"
+                  />
+                  <span className="text-xs text-[var(--text-secondary)] leading-snug">
+                    Acepto los{' '}
+                    <a
+                      href="/legal/terminos"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-[var(--color-brand)] hover:opacity-80 transition-opacity"
+                    >
+                      términos y condiciones
+                    </a>
+                  </span>
+                </label>
 
                 <Button type="submit" variant="primary" loading={enviando} className="w-full">
                   Enviar
