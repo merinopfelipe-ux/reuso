@@ -127,17 +127,12 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState(false)
   const [passError, setPassError] = useState(false)
   const [recordarme, setRecordarme] = useState(false)
-  const [idioma, setIdioma] = useState<'ES' | 'ENG'>('ES')
-
-  useEffect(() => {
-    const guardado = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
-    if (guardado) {
-      setIdioma(guardado)
-    } else {
-      const sys = navigator.language?.toLowerCase() ?? ''
-      setIdioma(sys.startsWith('es') ? 'ES' : 'ENG')
-    }
-  }, [])
+  // Español siempre, sin excepción (Regla de Oro del CLAUDE.md) — este login
+  // detectaba el idioma del navegador y mostraba una plantilla en inglés con
+  // datos de ejemplo falsos a cualquiera con el sistema en otro idioma. Bug
+  // real, encontrado el 2026-09-27 al reproducir "DPP y cotización no
+  // funcionan": el login roto le impedía a Felipe pasar de esa pantalla.
+  const idioma = 'ES' as const
   const [isDark, setIsDark] = useState(false)
 
   useEffect(() => {
