@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
 
 const T = {
@@ -131,19 +130,8 @@ const T = {
 }
 
 export default function LegalIAPage() {
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
-
-  useEffect(() => {
-    const checkIdioma = () => {
-      const saved = localStorage.getItem('reuso_idioma')
-      if (saved === 'ENG') setLang('ENG')
-      else if (saved === 'ES') setLang('ES')
-      else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
-    }
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
-  }, [])
+    // Español siempre (Regla de Oro CLAUDE.md) — bug de idioma corregido 2026-09-27
+  const lang = ('ES' as string) as 'ES' | 'ENG' // valor fijo, tipado como union para no romper comparaciones existentes
 
   const t = T[lang]
 

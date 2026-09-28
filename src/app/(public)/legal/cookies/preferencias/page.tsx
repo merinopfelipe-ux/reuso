@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
 import { Lock, CheckCircle, XCircle } from '@/components/ui/icons'
@@ -227,23 +227,11 @@ function ImpactoRow({
 
 export default function CookiesPreferenciasPage() {
   const router = useRouter()
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
+    // Español siempre (Regla de Oro CLAUDE.md) — bug de idioma corregido 2026-09-27
+  const lang = ('ES' as string) as 'ES' | 'ENG' // valor fijo, tipado como union para no romper comparaciones existentes
   const [funcional, setFuncional] = useState(false)
   const [analitica, setAnalitica] = useState(false)
   const [saved, setSaved] = useState(false)
-
-  const checkIdioma = useCallback(() => {
-    const stored = localStorage.getItem('reuso_idioma')
-    if (stored === 'ENG') setLang('ENG')
-    else if (stored === 'ES') setLang('ES')
-    else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
-  }, [])
-
-  useEffect(() => {
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
-  }, [checkIdioma])
 
   useEffect(() => {
     const consent = loadConsent()

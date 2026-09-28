@@ -77,20 +77,9 @@ export function LegalPageLayout({
   hideLeeTambien = false,
 }: LegalPageLayoutProps) {
   const pathname = usePathname()
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
+    // Español siempre (Regla de Oro CLAUDE.md) — bug de idioma corregido 2026-09-27
+  const lang = ('ES' as string) as 'ES' | 'ENG' // valor fijo, tipado como union para no romper comparaciones existentes
   const [shuffledCards, setShuffledCards] = useState<LeeTabienItem[]>([])
-
-  useEffect(() => {
-    const checkIdioma = () => {
-      const saved = localStorage.getItem('reuso_idioma')
-      if (saved === 'ENG') setLang('ENG')
-      else if (saved === 'ES') setLang('ES')
-      else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
-    }
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
-  }, [])
 
   useEffect(() => {
     const allPages = ALL_LEGAL_PAGES[lang] || ALL_LEGAL_PAGES.ES

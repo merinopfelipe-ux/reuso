@@ -86,7 +86,10 @@ export function CookieBanner() {
   const [funcional, setFuncional] = useState(false)
   const [analitica, setAnalitica] = useState(false)
   const [esColombia, setEsColombia] = useState(false)
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
+  // Español siempre, sin excepción (Regla de Oro del CLAUDE.md) — mismo bug
+  // que login/page.tsx (2026-09-27): detectaba navigator.language y mostraba
+  // el banner en inglés, tapando el formulario de acceso a quien lo viera.
+  const lang = 'ES' as const
 
   useEffect(() => {
     // Detectar si el usuario está en Colombia
@@ -144,21 +147,6 @@ export function CookieBanner() {
     const handleReset = () => setStep('banner')
     window.addEventListener('reuso_cookies_reset', handleReset)
     return () => window.removeEventListener('reuso_cookies_reset', handleReset)
-  }, [])
-
-  useEffect(() => {
-    const checkIdioma = () => {
-      const saved = localStorage.getItem('reuso_idioma') as 'ES' | 'ENG' | null
-      if (saved) {
-        setLang(saved)
-      } else {
-        const sys = navigator.language?.toLowerCase() ?? ''
-        setLang(sys.startsWith('es') ? 'ES' : 'ENG')
-      }
-    }
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
   }, [])
 
   function aceptarTodo() {

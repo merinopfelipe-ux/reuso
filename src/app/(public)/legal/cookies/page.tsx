@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalPageLayout, h2, p } from '@/components/legal/legal-page-layout'
 import { Lock, BarChart2 as ChartBar, SlidersHorizontal } from '@/components/ui/icons'
@@ -47,7 +46,6 @@ const T = {
     s3Title: '2. Cookies funcionales',
     s3Desc: 'Opcionales. Recuerdan tus preferencias para mejorar tu experiencia. Si las rechazas, la plataforma sigue funcionando pero puede que no recuerde tus ajustes entre sesiones.',
     s3Rows: [
-      { nombre: 'reuso_idioma', dominio: 'calculadoradereuso.com (y dominios redirigidos)', duracion: '1 año', finalidad: 'Guarda tu preferencia de idioma (ES / EN) para los documentos legales y la interfaz.' },
       { nombre: 'reuso_tema', dominio: 'calculadoradereuso.com (y dominios redirigidos)', duracion: '1 año', finalidad: 'Guarda tu preferencia de modo claro u oscuro.' },
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com (y dominios redirigidos)', duracion: '30 días', finalidad: 'Mantiene la sesión iniciada si marcas «Recuérdame» en el login.' },
     ],
@@ -125,7 +123,6 @@ const T = {
     s3Title: '2. Functional cookies',
     s3Desc: 'Optional. They remember your preferences to improve your experience. If you reject them, the platform continues to function but may not remember your settings between sessions.',
     s3Rows: [
-      { nombre: 'reuso_idioma', dominio: 'calculadoradereuso.com (and redirecting domains)', duracion: '1 year', finalidad: 'Saves your language preference (ES / EN) for legal documents and the interface.' },
       { nombre: 'reuso_tema', dominio: 'calculadoradereuso.com (and redirecting domains)', duracion: '1 year', finalidad: 'Saves your preference for light or dark mode.' },
       { nombre: 'reuso_remember_web_*', dominio: 'calculadoradereuso.com (and redirecting domains)', duracion: '30 days', finalidad: 'Keeps your session active if you check «Remember me» at login.' },
     ],
@@ -225,19 +222,8 @@ function CookieTable({ rows, thNombre, thDominio, thDuracion, thFinalidad }: {
 }
 
 export default function CookiesPage() {
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
-
-  useEffect(() => {
-    const checkIdioma = () => {
-      const saved = localStorage.getItem('reuso_idioma')
-      if (saved === 'ENG') setLang('ENG')
-      else if (saved === 'ES') setLang('ES')
-      else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
-    }
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
-  }, [])
+    // Español siempre (Regla de Oro CLAUDE.md) — bug de idioma corregido 2026-09-27
+  const lang = ('ES' as string) as 'ES' | 'ENG' // valor fijo, tipado como union para no romper comparaciones existentes
 
   const t = T[lang]
 

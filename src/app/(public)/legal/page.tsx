@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
@@ -60,19 +59,8 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
 }
 
 export default function LegalIndexPage() {
-  const [lang, setLang] = useState<'ES' | 'ENG'>('ES')
-
-  useEffect(() => {
-    const checkIdioma = () => {
-      const saved = localStorage.getItem('reuso_idioma')
-      if (saved === 'ENG') setLang('ENG')
-      else if (saved === 'ES') setLang('ES')
-      else setLang(navigator.language.startsWith('es') ? 'ES' : 'ENG')
-    }
-    checkIdioma()
-    window.addEventListener('reuso_idioma_change', checkIdioma)
-    return () => window.removeEventListener('reuso_idioma_change', checkIdioma)
-  }, [])
+    // Español siempre (Regla de Oro CLAUDE.md) — bug de idioma corregido 2026-09-27
+  const lang = ('ES' as string) as 'ES' | 'ENG' // valor fijo, tipado como union para no romper comparaciones existentes
 
   const t = T[lang]
 
