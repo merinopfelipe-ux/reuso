@@ -13,6 +13,9 @@ import {
   IdCard as IdentificationCard,
   ClipboardList,
   History as ClockCounterClockwise,
+  Calculator,
+  Users,
+  TrendingUp as TrendUp,
 } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
@@ -41,6 +44,7 @@ function getConfig(rol: Rol): MobileConfig {
           { href: '/admin', label: 'Resumen', icon: SquaresFour },
           { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
           { href: '/admin/empresas', label: 'Empresas', icon: Buildings },
+          { href: '/admin/leads', label: 'Leads', icon: Users },
         ],
         drawerItems: [
           { href: '/admin', label: 'Resumen', grupo: 'Principal' },
@@ -75,6 +79,7 @@ function getConfig(rol: Rol): MobileConfig {
           { href: '/empresa', label: 'Inicio', icon: House },
           { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
           { href: '/empresa/dpp', label: 'DPP', icon: IdentificationCard },
+          { href: '/empresa/calculos', label: 'Cálculos', icon: Calculator },
         ],
         drawerItems: [
           { href: '/empresa', label: 'Perfil', grupo: 'Empresa' },
@@ -94,8 +99,9 @@ function getConfig(rol: Rol): MobileConfig {
       return {
         quickItems: [
           { href: '/dashboard', label: 'Inicio', icon: House },
-          { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
           { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
+          { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
+          { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
         ],
         drawerItems: [
           { href: '/dashboard', label: 'Inicio', grupo: 'Principal' },
@@ -113,6 +119,7 @@ function getConfig(rol: Rol): MobileConfig {
           { href: '/dashboard', label: 'Inicio', icon: House },
           { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
           { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
+          { href: '/empresa/nueva', label: 'Planes', icon: TrendUp },
         ],
         drawerItems: [
           { href: '/dashboard', label: 'Inicio', grupo: 'Principal' },
@@ -192,16 +199,17 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
         gap: 10,
         pointerEvents: 'none',
       }}>
-        {/* PILL — 3 accesos directos */}
+        {/* PILL — 4 accesos directos */}
         <nav key={pathname} style={{
           ...glassPill,
           flex: 1,
-          height: 64,
+          height: 60,
           borderRadius: 9999,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-evenly',
-          padding: '0 6px',
+          justifyContent: 'space-between',
+          padding: '0 4px',
+          gap: 2,
           pointerEvents: 'auto',
         }}>
           {quickItems.map((item) => {
@@ -214,21 +222,26 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: active ? 8 : 0,
-                  padding: active ? '10px 18px' : '10px 14px',
+                  justifyContent: 'center',
+                  gap: active ? 6 : 0,
+                  padding: active ? '8px 12px' : '8px 10px',
                   borderRadius: 9999,
                   background: active ? activePillBg : 'transparent',
                   color: active ? brandColor : inactiveColor,
                   textDecoration: 'none',
                   whiteSpace: 'nowrap',
+                  flex: active ? '1 1 auto' : '0 0 auto',
+                  minWidth: 0,
                 }}
               >
-                <item.icon size={22} strokeWidth={active ? 2.5 : 2} />
+                <item.icon size={20} strokeWidth={active ? 2.5 : 2} />
                 {active && (
                   <span style={{
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: 700,
                     letterSpacing: '0.01em',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}>
                     {item.label}
                   </span>
@@ -243,8 +256,8 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           onClick={() => setDrawerOpen(!drawerOpen)}
           style={{
             ...glassPill,
-            width: 56,
-            height: 56,
+            width: 52,
+            height: 52,
             borderRadius: '50%',
             flexShrink: 0,
             display: 'flex',
@@ -301,8 +314,10 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
               boxShadow: isDark
                 ? '0 -8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)'
                 : '0 -8px 40px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.8)',
-            }}
-            className="no-scrollbar"
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            } as React.CSSProperties}
+            className="mobile-nav-drawer-scroll"
           >
             {drawerItems.map((item, idx) => {
               const active = isActive(item.href)
@@ -355,6 +370,11 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           </div>
         </>
       )}
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .mobile-nav-drawer-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        .mobile-nav-drawer-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+      ` }} />
     </>
   )
 }
