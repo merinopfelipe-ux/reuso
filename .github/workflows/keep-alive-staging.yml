@@ -1,0 +1,47 @@
+name: Mantener activa la base de pruebas (staging)
+
+# Supabase pausa los proyectos del plan gratuito tras 7 días sin actividad.
+# `reuso-staging` (rjcfqcqgqxoblisuyapq) es la base de pruebas — el entorno
+# local (.env.local) y los e2e apuntan ahí, no a producción — y nadie le
+# hace una consulta real si no se está trabajando en el repo esa semana.
+# Producción no tiene este problema: ya tiene su propio ping en
+# /api/cron/keep-alive-supabase (lunes y jueves, vía Vercel Cron).
+#
+# Esta acción hace una sola consulta de lectura, sin tocar datos, cada 3 días
+# (margen sobre el límite de 7 para tolerar que GitHub retrase un cron).
+
+on:
+  schedule:
+    - cron: '0 12 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    name: Consulta mínima a la base de pruebas
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Comprobar que existen las llaves de staging
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$STAGING_SUPABASE_URL" ] || [ -z "$STAGING_SUPABASE_ANON_KEY" ]; then
+            echo "::error::Faltan STAGING_SUPABASE_URL o STAGING_SUPABASE_ANON_KEY en Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+      - name: Ping de lectura a Supabase (sin escribir nada)
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+        run: |
+          CODIGO=$(curl -s -o /dev/null -w "%{http_code}" \
+            "$STAGING_SUPABASE_URL/rest/v1/categorias?select=id&limit=1" \
+            -H "apikey: $STAGING_SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $STAGING_SUPABASE_ANON_KEY")
+          echo "Respuesta de Supabase: $CODIGO"
+          if [ "$CODIGO" -ge 400 ]; then
+            echo "::error::Supabase respondió $CODIGO. Revisa si el proyecto ya está pausado."
+            exit 1
+          fi
