@@ -85,6 +85,7 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
   })
   const [guardandoEdit, setGuardandoEdit] = useState(false)
   const [errorEdit, setErrorEdit] = useState('')
+  const [eliminandoId, setEliminandoId] = useState<string | null>(null)
 
   function abrirEdicion(lead: Lead) {
     setLeadEditando(lead)
@@ -325,9 +326,10 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
                       </button>
                       <button
                         onClick={() => eliminarLead(lead.id)}
+                        disabled={eliminandoId === lead.id}
                         className="hover-pop hover-press"
                         title="Eliminar"
-                        style={{ padding: '6px 8px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                        style={{ padding: '6px 8px', borderRadius: 8, border: `1px solid ${C.border}`, background: 'var(--bg-primary)', cursor: eliminandoId === lead.id ? 'default' : 'pointer', display: 'flex', alignItems: 'center', opacity: eliminandoId === lead.id ? 0.5 : 1 }}
                       >
                         <Trash2 size={13} color="var(--color-error)" />
                       </button>
