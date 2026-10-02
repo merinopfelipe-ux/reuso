@@ -3,10 +3,8 @@ import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { patchModuloEmpresaSchema } from '@/lib/schemas/modulo.schema'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 
@@ -42,10 +40,8 @@ export async function GET(
   return NextResponse.json(resultado)
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

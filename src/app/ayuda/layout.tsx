@@ -24,7 +24,7 @@ export default async function AyudaLayout({ children }: { children: React.ReactN
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
   const nombre = displayName(perfil ?? { nombre: user.email?.split('@')[0] })
 
-  const head = headers()
+  const head = await headers()
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
 
   const { data: logs } = await adminClient

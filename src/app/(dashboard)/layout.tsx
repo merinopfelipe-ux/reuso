@@ -29,7 +29,7 @@ export default async function DashboardLayout({
   if (rol === 'super_admin') redirect('/admin')
 
   // empresa_admin puede entrar al dashboard como colaborador usando la cookie modo_empleado
-  const modoEmpleado = cookies().get('modo_empleado')?.value === '1'
+  const modoEmpleado = (await cookies()).get('modo_empleado')?.value === '1'
   if (rol === 'empresa_admin' && !modoEmpleado) redirect('/empresa')
 
   // Rol efectivo para la UI (sidebar de empleado cuando está en modo colaborador)
@@ -38,7 +38,7 @@ export default async function DashboardLayout({
   const nombre = displayName(perfil ?? { nombre: user.email })
 
   // Datos técnicos para Footer
-  const head = headers()
+  const head = await headers()
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
 
   // Última visita

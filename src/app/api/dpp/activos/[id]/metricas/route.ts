@@ -25,10 +25,8 @@ const schema = z.object({
   moneda: z.enum(['COP', 'USD', 'EUR']).default('COP'),
 })
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await dppAuthCheck(['empresa_admin'])
   if (!auth.ok) {
     return NextResponse.json(

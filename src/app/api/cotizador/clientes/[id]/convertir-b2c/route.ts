@@ -19,7 +19,8 @@ const schema = z.object({
 // vinculado por duplicado_de_id — nunca automático, siempre lo dispara el
 // vendedor desde la búsqueda (identificacion-cliente.tsx). No modifica ni
 // borra el contacto original.
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

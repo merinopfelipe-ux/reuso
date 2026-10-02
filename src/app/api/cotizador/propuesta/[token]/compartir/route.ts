@@ -7,7 +7,8 @@ import { buscarUbicacionPorIp } from '@/lib/geo-ip'
 // usa el botón "Compartir" de la propuesta pública (WhatsApp o correo) —
 // antes solo se sabía si el cliente ABRIÓ el enlace desde WhatsApp/correo
 // (por el referrer), nunca si alguien lo compartió activamente desde aquí.
-export async function POST(request: NextRequest, { params }: { params: { token: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const body = await request.json().catch(() => null)
   const medio = body?.medio
   if (medio !== 'whatsapp' && medio !== 'correo') {

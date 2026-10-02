@@ -14,7 +14,8 @@ const schema = z.object({
   duracion_seg: z.number().int().min(0).max(86_400),
 })
 
-export async function POST(request: NextRequest, { params }: { params: { token: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
   const permitido = await rateLimit(`cotizacion_tiempo:${ip}`, 20, 60_000)
   if (!permitido) return NextResponse.json({ ok: false }, { status: 429 })

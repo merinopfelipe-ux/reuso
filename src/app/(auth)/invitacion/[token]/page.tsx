@@ -4,12 +4,13 @@ import { ShieldWarning, Leaf } from '@/components/ui/icons'
 import InvitacionForm from './components/invitacion-form'
 
 interface Props {
-  params: { token: string }
+  params: Promise<{ token: string }>
 }
 
 const BRAND = 'var(--color-brand)'
 
-export default async function InvitacionPage({ params }: Props) {
+export default async function InvitacionPage(props: Props) {
+  const params = await props.params;
   const { token } = params
   const tokenHash = createHash('sha256').update(token).digest('hex')
   const adminClient = await createAdminClient()

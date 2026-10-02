@@ -13,10 +13,8 @@ function normalizarCodigo(raw: string): { exact: string; prefix: string | null }
   return { exact: limpio, prefix: null }
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { codigo: string } }
-) {
+export async function GET(_request: Request, props: { params: Promise<{ codigo: string }> }) {
+  const params = await props.params;
   const adminClient = await createAdminClient()
   const { exact, prefix } = normalizarCodigo(params.codigo)
 

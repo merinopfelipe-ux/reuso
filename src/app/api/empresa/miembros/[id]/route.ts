@@ -13,10 +13,8 @@ async function getPerfilYEmpresa(supabase: ReturnType<typeof createClient>) {
   return perfil ? { ...perfil, userId: user.id } : null
 }
 
-export async function DELETE(
-  _: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(_: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient()
   const perfil = await getPerfilYEmpresa(supabase)
   if (!perfil) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
@@ -50,10 +48,8 @@ export async function DELETE(
   return NextResponse.json({ ok: true })
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient()
   const perfil = await getPerfilYEmpresa(supabase)
   if (!perfil) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })

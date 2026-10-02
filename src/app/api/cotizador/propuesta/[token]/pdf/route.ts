@@ -10,7 +10,8 @@ const LIMITE_DESCARGAS = 6
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(request: NextRequest, { params }: { params: { token: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const adminClient = await createAdminClient()
 
   const { data: cot } = await adminClient
@@ -65,5 +66,5 @@ export async function GET(request: NextRequest, { params }: { params: { token: s
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="cotizacion-${cot.codigo_cotizacion.replace(/\s+/g, '-')}.pdf"`,
     },
-  })
+  });
 }

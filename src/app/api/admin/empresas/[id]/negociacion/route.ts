@@ -21,10 +21,8 @@ async function guardSuperAdmin() {
 
 // GET: la negociación propia de esta empresa, si existe (null si no tiene,
 // lo que significa que usa el plan global normal).
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await guardSuperAdmin()
   if (!user) return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
 
@@ -56,10 +54,8 @@ const putSchema = z.object({
   notas: z.string().max(500).optional(),
 })
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await guardSuperAdmin()
   if (!user) return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
 
@@ -96,10 +92,8 @@ export async function PUT(
 }
 
 // DELETE: quita la negociación propia, la empresa vuelve a usar el plan global.
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await guardSuperAdmin()
   if (!user) return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
 

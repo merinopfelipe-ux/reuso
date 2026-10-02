@@ -4,11 +4,12 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import NuevaEmpresaForm from './components/nueva-empresa-form'
 
 
-export default async function NuevaEmpresaPage({
-  searchParams,
-}: {
-  searchParams?: { preview?: string }
-}) {
+export default async function NuevaEmpresaPage(
+  props: {
+    searchParams?: Promise<{ preview?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const isPreview = searchParams?.preview === 'true'
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()

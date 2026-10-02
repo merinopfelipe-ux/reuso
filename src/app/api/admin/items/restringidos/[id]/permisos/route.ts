@@ -7,7 +7,8 @@ const schema = z.object({ empresa_id: z.string().uuid() })
 
 // Otorga acceso de un ítem restringido a OTRA empresa específica (no la que
 // lo creó, que ya tiene su propio permiso automático desde POST /api/cotizador/items).
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

@@ -18,10 +18,8 @@ const schema = z.object({
   png_base64: z.string().max(3_000_000),
 })
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

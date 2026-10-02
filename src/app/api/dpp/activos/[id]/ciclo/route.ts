@@ -21,10 +21,8 @@ const schema = z.object({
   path: ['peso_residuo_reciclado_kg'],
 })
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

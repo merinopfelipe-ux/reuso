@@ -6,10 +6,8 @@ import { patchEmpresaSchema } from '@/lib/schemas/empresa.schema'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { sincronizarModulosSegunPlan } from '@/lib/permisos/sync-modulos-plan'
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

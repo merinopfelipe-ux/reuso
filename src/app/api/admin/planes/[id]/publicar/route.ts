@@ -17,10 +17,8 @@ const PLANES_VALIDOS = ['free', 'lab', 'impulso', 'ilimitado']
 // momento, cualquier empresa SIN negociación propia (empresas_negociaciones)
 // queda bajo estos valores nuevos — las que sí tienen negociación no se
 // ven afectadas nunca por esto, ver sql/115.
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })

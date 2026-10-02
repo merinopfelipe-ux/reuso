@@ -16,10 +16,8 @@ const schema = z.object({
   mime: z.enum(['image/webp', 'image/png', 'image/jpeg']),
 })
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

@@ -10,11 +10,12 @@ import { UsuariosClient } from './components/usuarios-client'
 const DEFAULT_PAGE_SIZE = 25
 const MAX_PAGE_SIZE = 100
 
-export default async function UsuariosPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | undefined>
-}) {
+export default async function UsuariosPage(
+  props: {
+    searchParams: Promise<Record<string, string | undefined>>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

@@ -24,7 +24,7 @@ export default async function EmpresaCalculosPage() {
   const empresa_id = perfil?.empresa_id ?? null
 
   // Guard: solo empresa_admin (y empresa_admin en modo colaborador sigue siendo empresa_admin aquí)
-  const modoEmpleado = cookies().get('modo_empleado')?.value === '1'
+  const modoEmpleado = (await cookies()).get('modo_empleado')?.value === '1'
   if (rol !== 'empresa_admin' || modoEmpleado) redirect('/dashboard')
   if (!empresa_id) redirect('/empresa')
 

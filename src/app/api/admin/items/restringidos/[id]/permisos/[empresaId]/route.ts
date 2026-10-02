@@ -4,7 +4,11 @@ import { logAuditoria } from '@/lib/audit'
 
 // Revoca el acceso de una empresa a un ítem restringido. No borra el ítem ni
 // afecta cotizaciones ya emitidas (esas conservan su snapshot independiente).
-export async function DELETE(request: NextRequest, { params }: { params: { id: string; empresaId: string } }) {
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: string; empresaId: string }> }
+) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

@@ -7,10 +7,11 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { DppDetalleClient } from './dpp-detalle-client'
 
 interface PageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export default async function DppDetallePage({ params }: PageProps) {
+export default async function DppDetallePage(props: PageProps) {
+  const params = await props.params;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

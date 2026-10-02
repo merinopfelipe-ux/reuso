@@ -63,10 +63,8 @@ const schema = z.object({
 
 const CAMPOS_PRECIO = ['descuento_activo', 'descuento', 'descuento_tipo', 'transporte_activo', 'transporte_valor', 'iva_activo', 'iva_porcentaje'] as const
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // Try/catch general: si cotizadorAuthCheck o la consulta lanzan una
   // excepción no prevista (ej. un tropiezo de red hablando con Supabase),
   // Next.js devolvía una respuesta que no era JSON y el frontend fallaba con
@@ -147,10 +145,8 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -300,10 +296,8 @@ export async function PATCH(
 // Borrado real: la fila de crm_cotizaciones y todo lo relacionado (muebles,
 // aperturas, historial de estado, notas) tienen ON DELETE CASCADE hacia
 // ella, así que un solo DELETE aquí limpia todo.
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

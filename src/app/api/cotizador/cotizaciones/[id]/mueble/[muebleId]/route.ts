@@ -66,8 +66,9 @@ const schema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; muebleId: string } }
+  props: { params: Promise<{ id: string; muebleId: string }> }
 ) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -265,8 +266,9 @@ export async function PATCH(
 // Borra un mueble cotizado y recalcula automáticamente los totales de la cotización
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string; muebleId: string } }
+  props: { params: Promise<{ id: string; muebleId: string }> }
 ) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

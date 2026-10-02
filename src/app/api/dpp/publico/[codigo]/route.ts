@@ -4,10 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getIp } from '@/lib/admin-guard'
 import { rateLimit } from '@/lib/rate-limit'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { codigo: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ codigo: string }> }) {
+  const params = await props.params;
   const ip = getIp(request)
   const allowed = await rateLimit(`dpp_publico:${ip}`, 30, 60_000)
   if (!allowed) {

@@ -6,7 +6,8 @@ import { construirPdfCotizacion } from '@/lib/pdf/construir-pdf-cotizacion'
 // de /api/cotizador/propuesta/[token]/pdf, esta no cuenta contra el límite
 // de descargas del cliente ni se registra como trazabilidad de apertura:
 // es una acción del equipo, no del cliente.
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -33,5 +34,5 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="cotizacion-${cot.codigo_cotizacion.replace(/\s+/g, '-')}.pdf"`,
     },
-  })
+  });
 }

@@ -3,7 +3,8 @@ import { requireSuperAdmin } from '@/lib/admin-guard'
 
 // Devuelve una signed URL de corta duración para el PDF consolidado del
 // bucket privado 'firmas' — nunca getPublicUrl() (bucket privado).
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

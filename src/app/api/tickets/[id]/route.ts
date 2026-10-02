@@ -4,14 +4,15 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { resolverAutores } from '@/lib/resolver-autores'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const adminClient = await createAdminClient()
-  
+
   // Detalle del ticket con datos del creador. profiles_user se resuelve
   // aparte, nunca con el embed `profiles_user:user_id(...)`: tickets.user_id
   // referencia auth.users(id), no profiles(id) — el embed rechazaba la
@@ -51,13 +52,14 @@ const patchSchema = z.object({
   estado: z.enum(['abierto', 'en_proceso', 'resuelto', 'cerrado']).optional(),
 })
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { data: profile } = await supabase.from('profiles').select('rol').eq('user_id', user.id).single()
-  
+
   // Requisito: solo el super_admin (o el usuario creador cerrándolo) puede alterar estado
   // Para simplificar, super_admin cambia todo; usuario solo puede marcar 'cerrado'.
   const isSuper = profile?.rol === 'super_admin'

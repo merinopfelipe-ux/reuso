@@ -10,7 +10,8 @@ import { FECHA_ACTUALIZACION_LEGAL, EMAIL_CONTACTO_LEGAL } from '@/lib/constants
 
 export const revalidate = 0
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const adminClient = await createAdminClient()
   const { exact, prefix } = normalizarCodigo(params.codigo)
   const metaQuery = adminClient.from('informes').select('co2_total, metadata_json')
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 interface PageProps {
-  params: { codigo: string }
+  params: Promise<{ codigo: string }>
 }
 
 function formatFecha(iso: string) {
@@ -58,7 +59,8 @@ function normalizarCodigo(raw: string): { exact: string; prefix: string | null }
   return { exact: limpio, prefix: null }
 }
 
-export default async function VerificarPage({ params }: PageProps) {
+export default async function VerificarPage(props: PageProps) {
+  const params = await props.params;
   const adminClient = await createAdminClient()
   const { exact, prefix } = normalizarCodigo(params.codigo)
 

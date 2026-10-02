@@ -8,10 +8,11 @@ export const revalidate = 0
 export const fetchCache = 'force-no-store'
 
 interface Props {
-  params: { token: string }
+  params: Promise<{ token: string }>
 }
 
-export default async function PropuestaPublicaPage({ params }: Props) {
+export default async function PropuestaPublicaPage(props: Props) {
+  const params = await props.params;
   const adminClient = await createAdminClient()
 
   // Buscar cotización con datos de empresa incluyendo campos de marca

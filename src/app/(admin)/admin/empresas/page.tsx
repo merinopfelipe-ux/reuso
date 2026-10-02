@@ -10,11 +10,12 @@ import type { Plan } from '@/types'
 
 const DEFAULT_PAGE_SIZE = 25
 
-export default async function EmpresasPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | undefined>
-}) {
+export default async function EmpresasPage(
+  props: {
+    searchParams: Promise<Record<string, string | undefined>>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

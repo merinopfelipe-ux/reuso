@@ -11,10 +11,8 @@ import type { Plan } from '@/types'
 // POST: dispara la búsqueda IA de "precio de mercado nuevo" para un mueble
 // ya cotizado (Reporte 1, dominio A). Fire-and-forget desde la UI: el alta
 // del mueble ya respondió antes de que el cliente llame a este endpoint.
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { muebleId: string } }
-) {
+export async function POST(request: NextRequest, props: { params: Promise<{ muebleId: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -110,10 +108,8 @@ const patchSchema = z.object({
   precio_mercado_fuente_url: z.string().regex(/^https?:\/\//, 'La fuente debe ser una URL válida.').optional(),
 })
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { muebleId: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ muebleId: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

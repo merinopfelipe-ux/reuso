@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await dppAuthCheck(['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

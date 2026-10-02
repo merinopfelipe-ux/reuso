@@ -7,7 +7,7 @@ import { LegalHeader } from '@/components/legal/legal-header'
 export const dynamic = 'force-dynamic'
 
 interface Props {
-  params: { token: string }
+  params: Promise<{ token: string }>
 }
 
 type EstadoValidacion = 'valido' | 'invalido' | 'firmado' | 'expirado'
@@ -23,7 +23,8 @@ function EstadoInvalido({ titulo, descripcion }: { titulo: string; descripcion: 
   )
 }
 
-export default async function FirmaTokenPage({ params }: Props) {
+export default async function FirmaTokenPage(props: Props) {
+  const params = await props.params;
   let solicitud = null
   try {
     const adminClient = await createAdminClient()

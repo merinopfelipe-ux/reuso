@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // Try/catch general: mismo criterio que el endpoint base de la cotización
   // — nunca dejar que una excepción no prevista devuelva algo que no sea
   // JSON, o el frontend no puede ni mostrar el error real ni reintentar.

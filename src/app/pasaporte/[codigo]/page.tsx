@@ -16,7 +16,7 @@ export async function generateStaticParams() {
   return []
 }
 
-interface PageProps { params: { codigo: string } }
+interface PageProps { params: Promise<{ codigo: string }> }
 
 type ComposicionItem = {
   material: string
@@ -45,7 +45,8 @@ function formatFecha(iso: string | null) {
 
 
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata(props: PageProps): Promise<Metadata> {
+  const params = await props.params;
   const adminClient = await createAdminClient()
   const { data: activo } = await adminClient
     .from('dpp_activos')
@@ -72,7 +73,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function PasaportePage({ params }: PageProps) {
+export default async function PasaportePage(props: PageProps) {
+  const params = await props.params;
   const adminClient = await createAdminClient()
   const codigo = decodeURIComponent(params.codigo)
 

@@ -5,7 +5,8 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 // Atributos personalizados key-value por cliente — permite guardar datos
 // imprevistos (ej. "Horario de entrega preferido") sin alterar el esquema
 // central de crm_clientes.
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
@@ -31,7 +32,8 @@ const schema = z.object({
 })
 
 // Crea o actualiza (upsert por cliente_id+clave) un atributo.
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })

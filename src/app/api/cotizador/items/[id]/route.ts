@@ -7,10 +7,8 @@ import { logAuditoria } from '@/lib/audit'
 // EditarMuebleModal para mostrar SIEMPRE todas las líneas editables del
 // ítem, no solo las que quedaron con valor distinto de 0 en el snapshot de
 // la cotización (crm_muebles_cotizados.servicios_json/insumos_json).
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -49,10 +47,8 @@ export async function GET(
 // Las cotizaciones ya emitidas conservan su snapshot (materiales_json/
 // servicios_json/insumos_json en crm_muebles_cotizados) intacto porque
 // crm_muebles_cotizados.item_id es ON DELETE SET NULL, no CASCADE.
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json(

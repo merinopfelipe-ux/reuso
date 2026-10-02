@@ -4,7 +4,8 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 // Log cronológico de aperturas del enlace público (una fila por visita, ver
 // migración 036) — a diferencia de crm_cotizaciones.veces_abierta que solo
 // guarda el contador acumulado, esto muestra CUÁNDO abrió cada vez.
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
   if (!auth.ok) {
     return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })

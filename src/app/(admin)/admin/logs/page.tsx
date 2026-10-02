@@ -9,11 +9,12 @@ import { LogsClient } from './components/logs-client'
 
 const DEFAULT_PAGE_SIZE = 25
 
-export default async function LogsPage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | undefined>
-}) {
+export default async function LogsPage(
+  props: {
+    searchParams: Promise<Record<string, string | undefined>>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

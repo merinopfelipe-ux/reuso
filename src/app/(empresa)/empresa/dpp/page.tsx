@@ -23,11 +23,12 @@ function formatFecha(iso: string) {
   return formatFechaBase(iso)
 }
 
-export default async function DppPage({
-  searchParams,
-}: {
-  searchParams: { estado?: string; q?: string }
-}) {
+export default async function DppPage(
+  props: {
+    searchParams: Promise<{ estado?: string; q?: string }>
+  }
+) {
+  const searchParams = await props.searchParams;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

@@ -10,7 +10,8 @@ const DIAS_EXPIRACION = 7
 // Reenvía el correo de invitación. Genera un token nuevo (invalida el
 // anterior, incluso si no había expirado) y reinicia la ventana de 7 días —
 // así "reenviar" también sirve para revivir una solicitud ya expirada.
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
 

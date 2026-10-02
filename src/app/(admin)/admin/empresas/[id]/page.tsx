@@ -10,11 +10,12 @@ import { LineasEmpresaClient } from './components/lineas-empresa-client'
 import { NegociacionEmpresaClient } from './components/negociacion-empresa-client'
 import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
 
-export default async function EmpresaDetallePage({
-  params,
-}: {
-  params: { id: string }
-}) {
+export default async function EmpresaDetallePage(
+  props: {
+    params: Promise<{ id: string }>
+  }
+) {
+  const params = await props.params;
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

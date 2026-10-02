@@ -4,7 +4,8 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 // Historial cronológico de cambios de estado del embudo (una fila por
 // cambio, ver migración 043) — lo usa "Actividad" en el detalle de la
 // cotización para mostrar todo el recorrido, no solo el estado actual.
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   // Try/catch general: mismo criterio que los otros 2 endpoints de esta
   // misma pantalla — nunca dejar que una excepción no prevista devuelva algo
   // que no sea JSON.

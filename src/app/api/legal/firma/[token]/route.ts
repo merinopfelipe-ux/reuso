@@ -29,7 +29,8 @@ const schema = z.object({
 // Firma efectiva de la solicitud: valida el token server-side (nunca desde
 // el navegador con anon key, siempre con service role), genera el PDF,
 // invalida el token de un solo uso (pendiente -> firmado) y envía la copia.
-export async function POST(request: NextRequest, { params }: { params: { token: string } }) {
+export async function POST(request: NextRequest, props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
   const allowed = await rateLimit(`firma_token:${ip}`, 5, 5 * 60_000)
   if (!allowed) {

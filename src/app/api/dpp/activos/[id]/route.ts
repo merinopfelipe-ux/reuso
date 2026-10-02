@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await dppAuthCheck(['empresa_admin', 'empleado', 'super_admin'])
   if (!auth.ok) {
     return NextResponse.json(
@@ -74,10 +72,8 @@ const patchSchema = z.object({
 // Decide la sugerencia de peso por foto (sql/138) — nunca se aplica sola.
 // "aplicar" reparte proporcionalmente entre los materiales ya guardados,
 // "descartar" solo limpia el campo.
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const auth = await dppAuthCheck(['empresa_admin', 'empleado', 'super_admin'])
   if (!auth.ok) {
     return NextResponse.json(
