@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 // NOTA IMPORTANTE: Navegamos con domcontentloaded para evitar esperas infinitas
 // de hojas de estilo externas (use.typekit.net) que bloquean el evento 'load'.

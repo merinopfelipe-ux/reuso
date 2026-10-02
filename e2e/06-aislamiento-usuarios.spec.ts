@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect, type Page } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import path from 'path'

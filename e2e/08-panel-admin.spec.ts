@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 
 // Archivo reescrito por completo el 2026-09-02. El anterior tenía los IDs
@@ -179,7 +179,9 @@ test.describe('super_admin', () => {
 
   test('adm-15 - plantillas: el firmante persiste tras guardar y recargar', async ({ page }) => {
     await page.goto('/admin/plantillas', { waitUntil: 'domcontentloaded' })
-        const inputFirmante = page.getByPlaceholder('Ej: María López')
+    // Solo el campo visible: mientras React termina de hidratar puede haber
+    // un instante con una copia oculta del formulario (modo estricto).
+    const inputFirmante = page.getByPlaceholder('Ej: María López').filter({ visible: true })
     await expect(inputFirmante).toBeVisible({ timeout: 15_000 })
     const valorOriginal = await inputFirmante.inputValue()
 
@@ -190,10 +192,10 @@ test.describe('super_admin', () => {
     await expect(page.getByText('Plantilla guardada correctamente.')).toBeVisible({ timeout: 15_000 })
 
     await page.reload({ waitUntil: 'domcontentloaded' })
-        await expect(page.getByPlaceholder('Ej: María López')).toHaveValue(nuevoFirmante, { timeout: 10_000 })
+        await expect(page.getByPlaceholder('Ej: María López').filter({ visible: true })).toHaveValue(nuevoFirmante, { timeout: 10_000 })
 
     // Se devuelve al valor real que tenía antes de la prueba.
-    await restaurarValor(page.getByPlaceholder('Ej: María López'), valorOriginal || 'Director', 'Guardar plantilla', page)
+    await restaurarValor(page.getByPlaceholder('Ej: María López').filter({ visible: true }), valorOriginal || 'Director', 'Guardar plantilla', page)
   })
 
   test('adm-16 - logs: paginar rápido no duplica filas ni cuelga la tabla', async ({ page }) => {

@@ -1,14 +1,10 @@
 // Falla el CI ante cualquier vulnerabilidad CRÍTICA de npm audit, salvo las
 // listadas aquí, que están mitigadas por configuración y no son explotables
-// en este despliegue. npm audit no lee next.config.mjs, por eso hace falta
-// esta lista. Cada entrada exige motivo: al actualizar a Next 15.5.24 o
-// superior, estas dos desaparecen solas y la lista debe quedar vacía.
+// en este despliegue (npm audit no lee next.config.mjs). Cada entrada exige motivo.
 import { execSync } from 'node:child_process'
 
-const MITIGADAS = {
-  'GHSA-2xp9-vwfh-vxw4': 'RCE en Image Optimization con AVIF. next.config.mjs fija images.formats a solo image/webp, AVIF nunca se procesa.',
-  'GHSA-p293-qw3h-jr36': 'RCE solo en servidores Windows. Vercel ejecuta en Linux.',
-}
+// Vacía desde la migración a Next 16 (2026-10-02): ya no hay críticas que mitigar.
+const MITIGADAS = {}
 
 let salida
 try {

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
@@ -301,15 +301,14 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
       await page.goto(`/confirmar-email?email=${encodeURIComponent(email)}`)
       await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
 
-      await expect(page.getByText('Confirma tu correo')).toBeVisible({ timeout: 10_000 })
+      await expect(page.getByText('Revisa tu correo')).toBeVisible({ timeout: 10_000 })
       await expect(page.getByText(email)).toBeVisible()
 
-      // Las 6 casillas de OTPInput tienen maxLength={6} cada una (no 1) y su
-      // onChange reparte cualquier valor de más de un caracter entre las 6
-      // (ver src/components/otp-input.tsx, distribuirDesde) — llenar la
-      // primera casilla con fill() dispara ese reparto igual que pegar un
-      // código, sin simular tecla por tecla.
-      await page.locator('input').first().fill('000000')
+      // La pantalla usa 8 casillas (OTPInput length=8, el largo real del
+      // código de Supabase) y se envía sola al completar las 8. Llenar la
+      // primera casilla con fill() reparte el valor entre todas, igual que
+      // pegar un código (ver src/components/otp-input.tsx, distribuirDesde).
+      await page.locator('input').first().fill('00000000')
       await expect(page.getByText(/no es válido o ya expiró/i)).toBeVisible({ timeout: 10_000 })
     } finally {
       await supabaseAdmin.auth.admin.deleteUser(cuenta.user.id)

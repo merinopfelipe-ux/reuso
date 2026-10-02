@@ -155,7 +155,12 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          # Claves de PRUEBA oficiales de Cloudflare (públicas, siempre aprueban).
+          # Con la clave real, Turnstile rechaza al navegador automatizado y
+          # reintenta en bucle: la página se satura y las pruebas agotan su
+          # tiempo (causa del CI rojo desde 2026-09-17). Producción no cambia.
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
+          TURNSTILE_SECRET_KEY: 1x0000000000000000000000000000000AA
           # e2e/06-aislamiento-usuarios.spec.ts exige TEST_SECURITY_PASSWORD y
           # e2e/auth.setup.ts exige TEST_SUPER_ADMIN_PASSWORD (la contraseña
           # real de merinop@me.com, para iniciar sesión como super_admin

@@ -1,6 +1,7 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
+import { abrirTarjetaDppManual, agregarMaterial } from './dpp-helpers'
 
 // dpp-03 a dpp-07 eran `test.skip()` con el cuerpo vacío hasta el 2026-09-02.
 
@@ -56,29 +57,11 @@ test.describe('DPP / Pasaporte', () => {
   test('dpp-02 - crear un pasaporte digital lo guarda con su código', async ({ page }) => {
     test.setTimeout(120_000)
     const nombre = `Silla E2E ${Date.now()}`
-    await page.goto('/empresa/dpp/nuevo', { waitUntil: 'domcontentloaded', timeout: 60_000 })
-    const campoNombre = page.getByPlaceholder('Silla de madera, Mesa de oficina...')
-    await expect(campoNombre).toBeVisible({ timeout: 30_000 })
-
-    // COMPORTAMIENTO REAL OBSERVADO (2026-09-02): esta pantalla se vuelve a
-    // montar poco después de cargar y BORRA lo que ya estaba escrito. Se
-    // comprobó en vivo: tras llenar y verificar ambos campos, al hacer clic
-    // los dos inputs estaban otra vez vacíos y el navegador bloqueaba el
-    // envío por sus propios `required`, sin ninguna petición ni error visible
-    // (por eso la prueba anterior moría esperando una respuesta que nunca
-    // salía). Por eso llenar y enviar van juntos y se reintentan como una
-    // sola operación: si el remonte borra los campos, el intento siguiente
-    // los vuelve a llenar. En cuanto el envío sale de verdad, la pantalla
-    // navega al detalle y el ciclo termina.
-    // El patrón viejo (/Detalles del Activo|Pasaporte Digital/) además daba
-    // por buena la navegación porque "Pasaportes Digitales" del menú lateral
-    // ya coincidía, aunque el formulario hubiera fallado y siguiera ahí.
-    await expect(async () => {
-      await campoNombre.fill(nombre)
-      await page.getByPlaceholder('8.5').fill('15')
-      await page.getByRole('button', { name: 'Crea el pasaporte' }).click()
-      await page.waitForURL(/\/empresa\/dpp\/[0-9a-f-]{36}/, { timeout: 8_000 })
-    }).toPass({ timeout: 90_000 })
+    const campoNombre = await abrirTarjetaDppManual(page)
+    await campoNombre.fill(nombre)
+    await agregarMaterial(page, 'Madera', '15')
+    await page.getByRole('button', { name: 'Confirmar y crear este DPP' }).click()
+    await expect(page.getByText('Pasaportes creados en esta tanda')).toBeVisible({ timeout: 30_000 })
 
     const { data: creado } = await supabaseAdmin
       .from('dpp_activos').select('id, codigo_dpp').eq('nombre', nombre).maybeSingle()

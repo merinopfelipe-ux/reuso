@@ -44,3 +44,30 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Versiones mayores descartadas con prueba real (2026-10-02), no proponer
+    # hasta que el ecosistema las soporte:
+    # - eslint 10: eslint-plugin-react (incluido en eslint-config-next) usa
+    #   context.getFilename, que eslint 10 eliminó, y el lint completo se cae.
+    # - @types/node 25+: los tipos deben coincidir con el Node que corre la app
+    #   (24 en local, CI y Vercel). Subirlos permitiría usar APIs que no existen.
+    # - typescript: va como alias de la API 6 (la que exigen typescript-eslint y
+    #   Next); TS 7 nativo vive en @typescript/native y sí se actualiza.
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Bogota"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "ci(deps)"

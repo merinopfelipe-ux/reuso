@@ -1,8 +1,9 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import { abrirTarjetaDppManual, agregarMaterial } from './dpp-helpers'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -183,22 +184,18 @@ test.describe('Rendimiento', () => {
     // falta DevTools manual) — confirma que el formulario no pierde los
     // datos ya escritos ni truena al fallar la petición.
     test('perf-07 - formulario DPP conserva los datos si la red falla', async ({ page, context }) => {
-      // Bug real corregido 2026-09-02: los campos del formulario DPP no
-      // tienen atributo name ni id — se ubican por su placeholder real, y
-      // el botón de envío dice "Crea el pasaporte", no "Generar Pasaporte".
-      await page.goto('/empresa/dpp/nuevo', { timeout: 60_000 })
-      await page.waitForLoadState('load')
-      const nombreInput = page.getByPlaceholder('Silla de madera, Mesa de oficina...')
-      await expect(nombreInput).toBeVisible({ timeout: 15_000 })
+      // El formulario del activo vive en la tarjeta que aparece tras
+      // "Generar propuesta" (flujo actual de /empresa/dpp/nuevo).
+      const nombreInput = await abrirTarjetaDppManual(page)
       await nombreInput.fill('Producto de prueba e2e')
-      await page.getByPlaceholder('8.5').fill('12')
+      const peso = await agregarMaterial(page, 'Madera', '12')
 
       await context.setOffline(true)
-      await page.getByRole('button', { name: 'Crea el pasaporte' }).click().catch(() => {})
+      await page.getByRole('button', { name: 'Confirmar y crear este DPP' }).click().catch(() => {})
       await page.waitForTimeout(2_000)
       // Lo que exige el QA: la red se cae y el formulario NO se limpia.
       await expect(nombreInput).toHaveValue('Producto de prueba e2e')
-      await expect(page.getByPlaceholder('8.5')).toHaveValue('12')
+      await expect(peso).toHaveValue('12')
       await context.setOffline(false)
     })
 

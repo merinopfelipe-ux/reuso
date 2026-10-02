@@ -1,0 +1,32 @@
+name: Fusión automática de Dependabot (menores y parches)
+
+# Decisión de Felipe (2026-10-02): las actualizaciones menores y de parche se
+# fusionan solas cuando el CI queda en verde. Las mayores siguen llegando como
+# PR para revisar, porque suelen exigir migrar código. Producción NO se
+# despliega sola (vercel.json main:false): se sube con `vercel --prod`.
+#
+# Requisito único en GitHub: Settings -> General -> "Allow auto-merge".
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Leer metadatos de la actualización
+        id: meta
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Activar fusión automática si es menor o parche
+        if: steps.meta.outputs.update-type == 'version-update:semver-minor' || steps.meta.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

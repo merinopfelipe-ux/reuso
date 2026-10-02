@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 
 // Escrito de cero el 2026-09-02: de los 12 seg-*, 10 eran `test.skip` con el

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 // Escrito de cero el 2026-09-02: de los 7 api-*, 6 eran `test.skip` con el
 // cuerpo vacío y el único "real" (api-01) afirmaba 401 sin sesión, que no es
@@ -136,7 +136,7 @@ test.describe('APIs & Validaciones', () => {
     await page.locator('input[placeholder="Ej. 1020304050"]').fill('1020304050')
     await page.locator('input[type="email"]').fill(`e2e_dpl09_${Date.now()}@calculadoradereuso.com`)
 
-    await centrarYclic(page.locator('.w-32.flex-shrink-0 button'))
+    await centrarYclic(page.locator('.w-32.shrink-0 button'))
     // "Colombia" sin escopar es ambiguo: el footer también dice "...
     // Medellín y Bogotá, Colombia" — escopar al botón de la lista del
     // selector de país evita ese choque.

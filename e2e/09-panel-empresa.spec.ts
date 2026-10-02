@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 
@@ -202,7 +202,8 @@ test.describe('empresa_admin', () => {
     const tituloMeta = `Meta E2E ${Date.now()}`
     await page.locator('button:has-text("Crear Meta")').click()
     await page.getByPlaceholder(/título|meta|reducción/i).fill(tituloMeta)
-    await page.locator('select').first().selectOption('co2_kg')
+    // La métrica ahora es el Selector del sistema de diseño (no <select>) y ya
+    // viene en co2_kg por defecto, que es la que prueba este caso.
     await page.getByPlaceholder(/500|objetivo|numeral/i).fill('100')
     const hoy = new Date().toISOString().slice(0, 10)
     const fin = new Date(Date.now() + 90 * 86400_000).toISOString().slice(0, 10)

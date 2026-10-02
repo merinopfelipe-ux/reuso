@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './fixtures'
 
 // El toggle real es <ThemeToggle> (src/components/theme-toggle.tsx),
 // aria-label "Cambiar a modo noche" / "Cambiar a modo día" — igual en

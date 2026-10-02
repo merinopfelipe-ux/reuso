@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './fixtures'
 
 // Los 4 tipos reales son Info/Promo/Estado/Urgente (Selector custom, nunca
 // <select> nativo) — no existen "warning"/"critical". Prioridad real

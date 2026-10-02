@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 test.describe('empleado', () => {
   test.use({ storageState: 'playwright/.auth/empleado.json' })

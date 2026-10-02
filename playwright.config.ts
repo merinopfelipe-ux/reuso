@@ -21,9 +21,12 @@ export default defineConfig({
   // pero confiable, que es justo lo que se necesita para que sirva de símil
   // del QA manual.
   workers: 1,
-  retries: 0,
+  // En CI un reintento: una prueba solo cuenta como fallida si falla dos
+  // veces seguidas (evita que una inestable frene la fusión automática).
+  retries: process.env.CI ? 1 : 0,
   timeout: 60_000,
-  reporter: 'list',
+  // En CI también genera el reporte HTML que el workflow sube como artefacto.
+  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: BASE_URL,
     trace: 'on-first-retry',

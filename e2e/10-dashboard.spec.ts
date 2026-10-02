@@ -1,4 +1,4 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './fixtures'
 
 // IDs con prefijo 'ul-' (usuario_libre) — antes usaban 'dash-XX', pero esos
 // números ya significan algo distinto en el checklist manual de /admin/qa

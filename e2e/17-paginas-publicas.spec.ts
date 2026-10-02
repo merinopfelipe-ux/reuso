@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import { createHash } from 'crypto'
 
@@ -214,7 +214,7 @@ test.describe('Páginas Públicas', () => {
     await page.getByPlaceholder('Ej. 900123456-7').fill('900123456-7')
     await page.getByPlaceholder('Ej. Ana').fill('Lucía')
     await page.getByPlaceholder('Ej. Gómez').fill('Prueba')
-    await page.getByPlaceholder('Cargo del representante').fill('Representante legal')
+    await page.getByPlaceholder('Ej. Representante legal').fill('Representante legal')
     await page.locator('select').selectOption('CC')
     await page.getByPlaceholder('Ej. 1020304050').fill('1020304050')
     await page.getByRole('button', { name: 'Seleccionar' }).click()

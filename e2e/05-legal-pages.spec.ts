@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 test.describe('Páginas Legales y Cookies (Sin Autenticación)', () => {
   // Sin usar estado de autenticación guardado - Acceso 100% público
