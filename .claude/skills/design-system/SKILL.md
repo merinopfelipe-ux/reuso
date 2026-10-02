@@ -87,6 +87,24 @@ El bug de modo noche más común en este proyecto es un componente que declara s
   versiones ajustadas para texto legible sobre fondo tenue de cada color (día y noche tienen valores distintos, ya definidos en globals.css — úsalas en vez de recalcular opacidades a mano).
 ```
 
+### Secuencias multicolor: SIEMPRE en orden arcoíris (norma 2026-10-01)
+Cuando un componente usa varios acentos a la vez (pasos de un flujo, tarjetas en grilla, segmentos de una barra, degradados), los colores van en el orden del arcoíris y solo con los tokens de arriba, sin inventar tonos:
+
+`#FF5E4B` rojo (error) → `#AD7C43` nogal (naranja tierra) → `#F6BF3E` amarillo (warning) → `#D6F391` pistacho → `#38B98E` verde (success) → `#8AD0B2` menta → `#00827C` verde azulado (brand) → `#59A6E4` azul (info) → `#F3BBD3` rosa (cierre violeta)
+
+- Se toma un tramo consecutivo o un subconjunto que respete ese orden. Nunca se salta hacia atrás (azul antes que amarillo, rosa al inicio, verde entre dos amarillos).
+- En secuencias decorativas o de progreso se empieza desde nogal: el rojo `#FF5E4B` significa error en todo el sistema y no abre una secuencia positiva.
+- Los degradados también siguen el orden (ej. verde → azul, pistacho → menta → azul, nunca azul → verde).
+- Referencia aplicada: diagrama del DPP en la landing (`DPP_PASOS` en `landing-client.tsx`): amarillo → verde → menta → azul → rosa.
+
+### Resaltado sobre acento de color: ícono/texto SIEMPRE blanco (norma 2026-10-01)
+Cuando un elemento se resalta llenándose de un acento sólido (nodo activo, check marcado, chip con hover relleno), el ícono o texto encima es **siempre blanco `#FFFFFF`**, en día y en noche, sea cual sea el acento. Prohibido mezclar: unos resaltados en `#474747` y otros en blanco dentro del mismo componente.
+- Única excepción, por ser token sagrado del CLAUDE.md: sobre pistacho `#D6F391` sólido el contenido sigue siendo `#474747`.
+- Esto aplica solo al estado resaltado (relleno sólido).
+
+### Ícono en reposo dentro de una secuencia multicolor: SIEMPRE en su propio acento (norma 2026-10-01)
+Sin estar activo, cada ícono va pintado en el acento que le corresponde, en día y en noche. **Nunca en `#474747` ni en negro**, aunque el acento sea claro (amarillo, rosa, menta, pistacho). Prohibido que en un mismo grupo unos íconos inactivos vayan en color y otros en negro. Para que el acento claro se lea en día: fondo del nodo casi blanco (tinte del acento ≤ 8%), borde del acento y trazo un poco más grueso, nunca cambiar el ícono a negro.
+
 ## FONDOS SIEMPRE PLANOS
 Día: `#FFFFFF` puro. Noche: `#474747` Negro Lurdes. PROHIBIDO en fondo de PÁGINA: gradientes, blobs, `animate-blob`, glows, `radial-gradient`/`linear-gradient` de pantalla completa. Efectos visuales (glass, blur, sombras, blobs decorativos) solo dentro de componentes internos (cards, modales, sidebar, header), nunca como fondo de página completa.
 

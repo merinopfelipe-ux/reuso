@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { m, LazyMotion, domAnimation, AnimatePresence } from 'motion/react'
-import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Flask, Plus, Users } from '@/components/ui/icons'
+import { m, LazyMotion, domAnimation, AnimatePresence, useInView, useReducedMotion } from 'motion/react'
+import { Calculator, Leaf, ArrowRight, Check, ChevronDown as CaretDown, RefreshCw as ArrowsClockwise, Trash, Drop, Scissors, Sofa, Shirt, TrendingUp, FileText, X, Receipt, Coins, IaIcon, ShieldCheck, Headset, Flask, Plus, Users, Link as LinkIcon, MapPin, Hammer, UserPlus, QrCode } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { PLANS, CURRENCIES, formatearPrecioColombiano, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
@@ -355,6 +355,199 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
         )}
       </AnimatePresence>
       <div className={`w-full h-px mt-1 bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/10'} to-transparent`} />
+    </div>
+  )
+}
+
+// ─── DppTrazabilidadVisual (diagrama animado, solo tablet y escritorio) ──────
+// Coordenadas en un viewBox de 600x520: el contenedor usa la misma proporción,
+// así las líneas SVG y los nodos HTML posicionados en % quedan alineados.
+// Acentos en orden arcoíris (norma del skill design-system): amarillo → verde
+// → menta → azul → rosa. En reposo el ícono va en su propio acento, nunca en
+// #474747. Resaltado sólido, siempre ícono blanco.
+const DPP_RESALTADO = '#FFFFFF'
+const DPP_PASOS = [
+  { icon: Trash, label: 'Residuo rescatado antes del desecho', color: '#F6BF3E' },
+  { icon: MapPin, label: 'Origen y procedencia declarados', color: '#38B98E' },
+  { icon: Hammer, label: 'Transformación documentada', color: '#8AD0B2' },
+  { icon: UserPlus, label: 'Nuevo uso y cliente vinculado', color: '#59A6E4' },
+  { icon: FileText, label: 'Evidencias anexadas', color: '#F3BBD3' },
+]
+const DPP_NODO_Y = [60, 160, 260, 360, 460]
+const DPP_HASHES = ['9c41e07b', '3fa8d215', 'b72c094e', '51de8a3c', 'e08f6b97']
+
+function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const enVista = useInView(ref, { amount: 0.3 })
+  const reducido = useReducedMotion()
+  const [activo, setActivo] = useState(0)
+  const [pausado, setPausado] = useState(false)
+
+  useEffect(() => {
+    if (reducido) { setActivo(DPP_PASOS.length - 1); return }
+    if (!enVista || pausado) return
+    const id = setInterval(() => setActivo(a => (a + 1) % DPP_PASOS.length), 2200)
+    return () => clearInterval(id)
+  }, [enVista, reducido, pausado])
+
+  const enfocar = (i: number) => { setPausado(true); setActivo(i) }
+
+  const linea = isDark ? 'rgba(255,255,255,0.22)' : 'rgba(71,71,71,0.22)'
+  const pasoActivo = DPP_PASOS[activo]
+  const yActivo = DPP_NODO_Y[activo]
+
+  return (
+    <div ref={ref} className="relative w-full aspect-[600/520] select-none" aria-hidden="true" onMouseLeave={() => setPausado(false)}>
+      {/* Brillos de color internos del componente (nunca fondo de página) */}
+      <div className="absolute left-[2%] top-[10%] w-[34%] aspect-square rounded-full blur-3xl pointer-events-none" style={{ background: `#F6BF3E${isDark ? '1A' : '2E'}` }} />
+      <div className="absolute left-[24%] top-[46%] w-[36%] aspect-square rounded-full blur-3xl pointer-events-none" style={{ background: `#38B98E${isDark ? '1F' : '2E'}` }} />
+      <div className="absolute right-[2%] top-[20%] w-[34%] aspect-square rounded-full blur-3xl pointer-events-none" style={{ background: `#59A6E4${isDark ? '1A' : '2E'}` }} />
+      <div
+        className="absolute left-[45%] top-[30%] w-[34%] aspect-square rounded-full blur-3xl pointer-events-none transition-colors duration-700"
+        style={{ background: `${pasoActivo.color}${isDark ? '24' : '33'}` }}
+      />
+
+      <svg viewBox="0 0 600 520" className="absolute inset-0 w-full h-full overflow-visible">
+        <g fill="none" stroke={linea} strokeWidth="1.5" className="dpp-dash-flow">
+          <path d={`M 140 60 V ${DPP_NODO_Y[4]} M 220 60 V ${DPP_NODO_Y[4]}`} />
+          <path d="M 92 260 H 140" />
+        </g>
+        {DPP_PASOS.map((paso, i) => (
+          <path
+            key={paso.label}
+            d={`M 140 ${DPP_NODO_Y[i]} H 220`}
+            fill="none"
+            stroke={paso.color}
+            strokeOpacity={i === activo ? 1 : 0.55}
+            strokeWidth={i === activo ? 2 : 1.5}
+            className="dpp-dash-flow transition-all duration-300"
+          />
+        ))}
+        <path d="M 220 260 H 300" fill="none" stroke={pasoActivo.color} strokeWidth="2" className="dpp-dash-flow transition-all duration-500" />
+        {!reducido && (
+          <m.circle
+            key={activo}
+            r="5"
+            fill={pasoActivo.color}
+            initial={{ cx: 205, cy: yActivo, opacity: 0 }}
+            animate={{ cx: [205, 220, 220, 300], cy: [yActivo, yActivo, 260, 260], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.4, ease: 'easeInOut', times: [0, 0.2, 0.7, 1] }}
+          />
+        )}
+      </svg>
+
+      {/* Nodo central: el vínculo que une todas las acciones */}
+      <div className="absolute aspect-square w-[9.5%] -translate-x-1/2 -translate-y-1/2" style={{ left: '8.67%', top: '50%' }}>
+        <div className="absolute -inset-[20%] rounded-full transition-colors duration-700" style={{ background: `${pasoActivo.color}${isDark ? '33' : '2E'}` }} />
+        <m.div
+          animate={reducido ? undefined : { scale: [1, 1.06, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+          className="relative w-full h-full rounded-full flex items-center justify-center shadow-lg"
+          style={{
+            background: 'linear-gradient(135deg, #38B98E, #00827C 55%, #59A6E4)',
+            color: DPP_RESALTADO,
+          }}
+        >
+          <LinkIcon className="w-[42%] h-[42%]" strokeWidth={2.2} sinAnimacion />
+        </m.div>
+      </div>
+
+      {/* Columna de acciones trazables */}
+      {DPP_PASOS.map((paso, i) => {
+        const Icono = paso.icon
+        const esActivo = i === activo
+        return (
+          <div
+            key={paso.label}
+            className="absolute aspect-square w-[8.7%] -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+            style={{ left: '30%', top: `${(DPP_NODO_Y[i] / 520) * 100}%` }}
+            onMouseEnter={() => enfocar(i)}
+          >
+            {/* Base opaca: tapa las líneas punteadas para que terminen limpias en el borde del halo */}
+            <div className="absolute -inset-[22%] rounded-full" style={{ background: 'var(--bg-primary)' }} />
+            <div
+              className="absolute -inset-[22%] rounded-full transition-colors duration-300"
+              style={{ background: `${paso.color}${esActivo ? '4D' : (isDark ? '1F' : '24')}` }}
+            />
+            <div
+              className="relative w-full h-full rounded-full flex items-center justify-center transition-all duration-300"
+              style={{
+                background: esActivo ? paso.color : `color-mix(in srgb, ${paso.color} ${isDark ? 18 : 8}%, var(--bg-card))`,
+                border: `1.5px solid ${paso.color}${esActivo ? '' : '80'}`,
+                color: esActivo ? DPP_RESALTADO : paso.color,
+                transform: esActivo ? 'scale(1.14)' : 'scale(1)',
+                boxShadow: esActivo ? `0 8px 22px ${paso.color}66` : `0 4px 12px ${paso.color}${isDark ? '1F' : '26'}`,
+              }}
+            >
+              <Icono className="w-[42%] h-[42%]" strokeWidth={esActivo ? 2.4 : 2.2} sinAnimacion />
+            </div>
+          </div>
+        )
+      })}
+
+      {/* Tarjeta del pasaporte que se completa paso a paso */}
+      <div
+        className="absolute flex flex-col rounded-2xl lg:rounded-3xl p-[3.5%] border transition-shadow duration-700"
+        style={{
+          left: '50%', top: '4.6%', width: '48.7%', height: '90.8%',
+          background: 'var(--bg-card)',
+          borderColor: `${pasoActivo.color}66`,
+          boxShadow: isDark ? `0 20px 50px rgba(71,71,71,0.55), 0 0 0 1px ${pasoActivo.color}26` : `0 20px 50px ${pasoActivo.color}33, inset 0 1px 0 rgba(255,255,255,0.9)`,
+        }}
+      >
+        <p className="text-[10px] lg:text-[11px] font-semibold opacity-60 text-[var(--text-primary)]">Pasaporte Digital de Producto</p>
+        <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-[var(--text-primary)] mt-0.5">Activo circular</p>
+        <p className="text-[10px] lg:text-[11px] font-mono opacity-50 text-[var(--text-primary)] mt-0.5">DPP-7F3A-2026</p>
+        <div className="h-px my-[4%]" style={{ background: 'var(--border)' }} />
+
+        <div className="flex-1 flex flex-col justify-between gap-1.5">
+          {DPP_PASOS.map((paso, i) => {
+            const hecho = i <= activo
+            const esActivo = i === activo
+            return (
+              <div
+                key={paso.label}
+                className="flex items-center gap-2 rounded-xl px-2 py-[3.2%] border transition-all duration-300 cursor-pointer"
+                onMouseEnter={() => enfocar(i)}
+                style={{
+                  transform: esActivo ? 'translateX(4px)' : 'translateX(0)',
+                  borderColor: esActivo ? paso.color : `${paso.color}${hecho ? '40' : '1F'}`,
+                  background: esActivo ? `${paso.color}${isDark ? '24' : '1F'}` : (hecho ? `${paso.color}0D` : 'transparent'),
+                }}
+              >
+                <div
+                  className="flex-shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center transition-all duration-500"
+                  style={{
+                    background: hecho ? paso.color : 'transparent',
+                    border: hecho ? 'none' : `1.5px dashed ${paso.color}99`,
+                    color: DPP_RESALTADO,
+                    transform: hecho ? 'scale(1)' : 'scale(0.85)',
+                  }}
+                >
+                  {hecho && <Check size={12} strokeWidth={3} sinAnimacion />}
+                </div>
+                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-[var(--text-primary)] transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-45'}`}>
+                  {paso.label}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        <div className="mt-[4%] rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 transition-colors duration-500" style={{ background: `${pasoActivo.color}${isDark ? '1F' : '1A'}` }}>
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold opacity-60 text-[var(--text-primary)]">Huella SHA-256 encadenada</p>
+            <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-[var(--text-primary)]">{DPP_HASHES[activo]}…</p>
+          </div>
+          <QrCode size={22} strokeWidth={1.8} className="flex-shrink-0 text-[var(--text-primary)] opacity-70" sinAnimacion />
+        </div>
+      </div>
+
+      <style>{`
+        .dpp-dash-flow { stroke-dasharray: 3 6; stroke-linecap: round; animation: dppDashFlow 1.4s linear infinite; }
+        @keyframes dppDashFlow { to { stroke-dashoffset: -18; } }
+        @media (prefers-reduced-motion: reduce) { .dpp-dash-flow { animation: none; } }
+      `}</style>
     </div>
   )
 }
@@ -957,6 +1150,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       link: '#calculos',
       items: [
         { name: 'Comparativa de Impacto', link: '#comparativa' },
+        { name: 'Pasaporte Digital de Producto (DPP)', link: '#dpp' },
         { name: '9 Cálculos de impacto', link: '#calculos' },
       ]
     },
@@ -989,6 +1183,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   const searchResults = [
     { title: 'Comparativa de impacto: intenciones a resultados reales', link: '#comparativa' },
     { title: '9 Cálculos ambientales, económicos y sociales', link: '#calculos' },
+    { title: 'Pasaporte Digital de Producto (DPP) y trazabilidad', link: '#dpp' },
     { title: '¿Cuánto valor recupera tu empresa con economía circular?', link: '#categorias' },
     { title: 'Mobiliario y diseño interior', link: '#categorias', onClick: () => scrollToCategory('mobiliario') },
     { title: 'Indumentaria y calzado', link: '#categorias', onClick: () => scrollToCategory('indumentaria') },
@@ -1002,8 +1197,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   ]
 
   const liquidGlass = isDark
-    ? 'bg-[#474747]/35 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+    ? 'bg-[#474747]/35 backdrop-blur-[60px] backdrop-saturate-[200%] border border-white/10 shadow-2xl'
+    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   // Busca el precio real publicado (config_planes) para este plan y moneda.
   // Si no llegó ningún dato del servidor, o falta ese plan puntual, cae de
@@ -1303,11 +1498,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
               <span className="block">Mide, gestiona y comparte</span>
               <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental</span>
-              <span className="block">con modelos regenerativos</span>
+              <span className="block">con trazabilidad en cada acción</span>
             </h1>
-            
+
             <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
-              Cuantifica tu huella en 3 minutos y genera reportes de responsabilidad social para respaldar tus compromisos ante clientes y aliados.
+              Emite Pasaportes Digitales (DPP) con QR y genera informes de datos para tus reportes de RSE y ESG que respaldan tus compromisos ante clientes y aliados.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
@@ -1432,6 +1627,58 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 ))}
               </ul>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
+      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <section id="dpp" className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
+          {/* Diagrama animado: solo tablet y escritorio */}
+          <div className="hidden md:block lg:col-span-7 w-full max-w-2xl mx-auto lg:max-w-none">
+            <DppTrazabilidadVisual isDark={isDark} />
+          </div>
+
+          <div className="lg:col-span-5">
+            <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+              Pasaporte Digital de Producto (DPP)
+            </p>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp}`}>
+              Une cada punto,{' '}
+              <span className="bg-clip-text text-transparent" style={{ backgroundImage: isDark ? 'linear-gradient(90deg, #F6BF3E, #D6F391 30%, #8AD0B2 65%, #59A6E4)' : 'linear-gradient(90deg, #38B98E, #00827C 55%, #59A6E4)' }}>
+                desde el residuo hasta su nuevo uso
+              </span>
+            </h2>
+
+            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-3 ${ts}`}>
+              Tu trazabilidad empieza donde otras terminan. Los pasaportes tradicionales nacen en la fábrica, con el producto nuevo. El tuyo nace cuando alguien quiso desecharlo. Registras de dónde tomaste el residuo, en qué lo transformaste y a dónde llegó, y demuestras con datos que tu operación es sostenible.
+            </p>
+            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-7 ${ts}`}>
+              Llega antes que la norma. Europa ya lo incorpora. En LATAM todavía es opcional, y quien registra hoy llega listo cuando sus clientes lo pidan.
+            </p>
+
+            <p className={`text-sm sm:text-base font-black mb-3 ${tp}`}>Lo que demuestras con cada pasaporte</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {[
+                { icon: MapPin, texto: 'De dónde tomaste el residuo antes de que terminara desechado', color: '#F6BF3E' },
+                { icon: Hammer, texto: 'En qué lo transformaste, con qué materiales y quién intervino', color: '#38B98E' },
+                { icon: QrCode, texto: 'Cada pieza con su QR público, consultable sin crear cuenta', color: '#59A6E4' },
+                { icon: ShieldCheck, texto: 'Un registro encadenado SHA-256 que ayuda a detectar cambios', color: '#F3BBD3' },
+              ].map(({ icon: Icono, texto, color }) => (
+                <div
+                  key={texto}
+                  style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
+                  className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
+                >
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-[var(--ic)] group-hover:bg-[var(--c)] group-hover:text-[var(--sobre)]">
+                    <Icono size={16} strokeWidth={2} sinAnimacion />
+                  </div>
+                  <span className={`text-xs sm:text-[13px] font-semibold leading-snug ${ts}`}>{texto}</span>
+                </div>
+              ))}
+            </div>
+
           </div>
         </div>
       </section>
