@@ -9,7 +9,7 @@ import { eliminarContactoLoops } from '@/lib/loops'
 // El user_id SIEMPRE sale de la sesión real (auth.getUser()), nunca del
 // body — nadie puede pedir borrar la cuenta de otra persona por aquí.
 export async function DELETE(request: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 

@@ -7,17 +7,13 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { PanelInformes } from '@/components/informes/panel-informes'
 import { CalculadoraConHistorial } from '@/components/calculadora/calculadora-con-historial'
 import { KpiCardAnimado, type IndicadorSemanal } from '@/components/dashboard/kpi-card-animado'
-import dynamic from 'next/dynamic'
 import { type PuntoMensualPersonal } from '@/components/dashboard/grafica-linea-personal'
 import { OnboardingCard } from '@/components/dashboard/onboarding-card'
 
-const GraficaLineaPersonal = dynamic(() => import('@/components/dashboard/grafica-linea-personal'), {
-  ssr: false, loading: () => <div style={{ height: 200, borderRadius: 12, background: 'var(--border)' }} />, })
-const DonutCategorias = dynamic(() => import('@/components/empresa/donut-categorias'), {
-  ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: 'var(--border)' }} />, })
 import { Buildings, Package, ClockCounterClockwise, Lifebuoy, ArrowRight, Star } from '@/components/ui/icons'
 import type { Informe, Rol } from '@/types'
 import { displayName } from '@/lib/display-name'
+import { GraficaLineaPersonal, DonutCategorias } from './diferidos'
 
 // ─── Pure functions de agregación ──────────────────────────────────────────
 
@@ -155,7 +151,7 @@ function SectionCard({ titulo, children }: { titulo: string; children: React.Rea
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

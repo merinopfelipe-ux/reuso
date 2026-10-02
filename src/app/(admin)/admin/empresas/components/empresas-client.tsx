@@ -35,7 +35,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
   const [, startTransition] = useTransition()
   const [busquedaLocal, setBusquedaLocal] = useState(search)
   const [abiertoPlan, setAbiertoPlan] = useState(false)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const { sorted: empresasOrdenadas, sort, toggleSort } = useSortable(empresas as unknown as Record<string, unknown>[])
 
   const [modalInvitar, setModalInvitar] = useState(false)

@@ -12,7 +12,7 @@ interface PageProps {
 
 export default async function DppDetallePage(props: PageProps) {
   const params = await props.params;
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

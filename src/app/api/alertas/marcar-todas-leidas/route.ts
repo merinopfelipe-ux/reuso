@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 // "Limpiar" el dropdown de notificaciones: marca como leídas TODAS las
 // alertas activas del usuario de una sola vez (no solo la que se clickeó).
 export async function POST(): Promise<NextResponse> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autenticado.' }, { status: 401 })
 

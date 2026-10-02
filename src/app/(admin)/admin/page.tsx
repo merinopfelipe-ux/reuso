@@ -6,14 +6,14 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { Users, Buildings, Calculator, Leaf } from '@/components/ui/icons'
-import dynamic from 'next/dynamic'
 import { KpiCard } from '@/components/admin/kpi-card'
 
 import { displayName } from '@/lib/display-name'
 import { formatFecha, formatNumero } from '@/lib/format'
+import { ActivityChart } from './diferidos'
 
 export default async function AdminPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
@@ -71,13 +71,6 @@ export default async function AdminPage() {
     const dia = fecha.slice(0, 10)
     actividadMap.set(dia, (actividadMap.get(dia) ?? 0) + 1)
   }
-  const ActivityChart = dynamic(
-  () => import('@/components/admin/activity-chart').then(m => ({ default: m.ActivityChart })),
-  {
-    ssr: false,
-    loading: () => <div style={{ height: 300, borderRadius: 16, background: 'var(--color-brand)' }} />,
-  }
-)
   const actividadChart = Array.from(actividadMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([fecha, calculos]) => ({

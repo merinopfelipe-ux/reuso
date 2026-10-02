@@ -1,5 +1,4 @@
 'use client'
-/* eslint-disable @next/next/no-img-element */
 
 import { useMemo } from 'react'
 import { Trash2 as Trash, Leaf, Plus, TriangleAlert as Warning } from '@/components/ui/icons'

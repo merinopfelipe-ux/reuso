@@ -6,7 +6,7 @@ import type { Rol } from '@/types'
 const LIMITE_USUARIO_LIBRE = 15
 
 export async function GET(request: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

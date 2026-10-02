@@ -7,7 +7,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { Rol } from '@/types'
 
 export default async function EmpresaObjetosPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

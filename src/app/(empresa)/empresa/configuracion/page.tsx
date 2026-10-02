@@ -25,7 +25,7 @@ const BORDER = 'var(--border)'
 const TEXT_MED = 'var(--text-secondary)'
 
 export default async function EmpresaConfiguracionPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

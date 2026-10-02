@@ -15,7 +15,7 @@ export type DppAuthResult =
 export async function dppAuthCheck(
   rolesPermitidos: string[]
 ): Promise<DppAuthResult> {
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

@@ -7,7 +7,7 @@
     "dev:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "build": "npm run check-backgrounds && next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "check-backgrounds": "node scripts/check-backgrounds.js",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "db:seed": "node --env-file=.env.local scripts/seed-ecosistema.mjs",
@@ -24,10 +24,10 @@
     "qa:clean": "node --env-file=.env.local scripts/limpiar-datos-qa.mjs"
   },
   "dependencies": {
-    "@lucide/lab": "^0.1.2",
+    "@lucide/lab": "^0.7.0",
     "@marsidev/react-turnstile": "^1.6.1",
     "@phosphor-icons/react": "^2.1.10",
-    "@supabase/ssr": "^0.10.0",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
@@ -36,7 +36,7 @@
     "jspdf-autotable": "^5.0.8",
     "lucide-react": "^1.49.0",
     "motion": "^13.5.0",
-    "next": "^15.5.27",
+    "next": "^16.3.8",
     "nextjs-toploader": "^3.9.17",
     "pdf-parse": "^2.4.5",
     "qrcode": "^1.5.4",
@@ -50,20 +50,20 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@types/node": "^20",
+    "@types/node": "^24.19.1",
     "@types/pdf-parse": "^1.1.5",
     "@types/pngjs": "^6.0.5",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "eslint": "^8",
-    "eslint-config-next": "^15.5.27",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.8",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5",
-    "vitest": "^4.1.11"
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.3"
   },
   "overrides": {
     "next": {

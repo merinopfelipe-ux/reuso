@@ -1,18 +1,14 @@
-import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { puedeAccederModulo } from '@/lib/permisos/modulos'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { ReportesClient } from './diferidos'
 
-const ReportesClient = dynamic(
-  () => import('./components/reportes-client').then(m => ({ default: m.ReportesClient })),
-  { ssr: false, loading: () => <div style={{ height: 400, borderRadius: 12, background: 'var(--bg-hover)' }} /> }
-)
 
 export default async function EmpresaReportesPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ListaTickets } from '@/components/soporte/lista-tickets'
 
 export default async function DashboardSoportePage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

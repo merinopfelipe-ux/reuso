@@ -60,7 +60,7 @@ const REDIRECT_BY_ROL: Record<Rol, string> = {
   usuario_libre: '/dashboard',
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   request.headers.set('x-pathname', pathname)
 

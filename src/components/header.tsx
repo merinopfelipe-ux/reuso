@@ -53,7 +53,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const mobileDropdownRef = useRef<HTMLDivElement>(null)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [isDark, setIsDark] = useState(false)
   const [modoEmpleado, setModoEmpleado] = useState(false)
 

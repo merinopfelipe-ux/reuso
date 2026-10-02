@@ -472,7 +472,6 @@ export function SalesDashboard({
       if (!c.created_at) return true
       return enRango(c, fechaInicio, fechaFin)
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cotizacionesReales, fechaInicio, fechaFin])
 
   // Periodo inmediatamente anterior, de la misma duración — única forma
@@ -504,7 +503,6 @@ export function SalesDashboard({
 
   const cotsPeriodoPrevio = useMemo(() => {
     return cotizacionesReales.filter(c => enRango(c, fechaInicioPrevia, fechaFinPrevia))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cotizacionesReales, fechaInicioPrevia, fechaFinPrevia])
 
   function metricas(cots: CotizacionResumen[], isGlobal: boolean = false) {

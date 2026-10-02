@@ -50,7 +50,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   const [, startTransition] = useTransition()
   const [cambiando, setCambiando] = useState<string | null>(null)
   const [busquedaLocal, setBusquedaLocal] = useState(search)
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const [modalOpen, setModalOpen] = useState(false)
   const [formNuevo, setFormNuevo] = useState(EMPTY_FORM)
   const [creando, setCreando] = useState(false)

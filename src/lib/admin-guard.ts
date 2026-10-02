@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { User } from '@supabase/supabase-js'
 
-type SupabaseClient = ReturnType<typeof createClient>
+type SupabaseClient = Awaited<ReturnType<typeof createClient>>
 type AdminClient = Awaited<ReturnType<typeof createAdminClient>>
 
 type GuardSuccess = {
@@ -30,7 +30,7 @@ export async function requireSuperAdmin(
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

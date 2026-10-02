@@ -8,7 +8,7 @@ import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/type
 // niveles del cliente arma la vista de cada nodo al vuelo a partir de
 // parent_id/categoria_id, lo que soporta profundidad ilimitada sin cambios.
 export default async function CategoriasPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

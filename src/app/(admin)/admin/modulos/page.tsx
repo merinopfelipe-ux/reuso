@@ -8,7 +8,7 @@ import { LineasNegocioClient } from './components/lineas-negocio-client'
 import type { ModuloConCategorias, LineaNegocio } from '@/types'
 
 export default async function PlataformaPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

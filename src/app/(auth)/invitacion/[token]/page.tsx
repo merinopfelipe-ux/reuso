@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createHash } from 'crypto'
 import { ShieldWarning, Leaf } from '@/components/ui/icons'
@@ -58,7 +59,7 @@ export default async function InvitacionPage(props: Props) {
           <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: 15 }}>
             {mensaje}
           </p>
-          <a
+          <Link
             href="/"
             style={{
               display: 'inline-block',
@@ -69,7 +70,7 @@ export default async function InvitacionPage(props: Props) {
             }}
           >
             Volver al inicio
-          </a>
+          </Link>
           <p style={{ marginTop: 24, fontSize: 12, color: 'var(--text-secondary)' }}>
             <Leaf size={12} style={{ verticalAlign: 'middle', marginRight: 3, color: BRAND }} />
             © Grupo MLP S.A.S.

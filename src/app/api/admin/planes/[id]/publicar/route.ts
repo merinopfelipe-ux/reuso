@@ -19,7 +19,7 @@ const PLANES_VALIDOS = ['free', 'lab', 'impulso', 'ilimitado']
 // ven afectadas nunca por esto, ver sql/115.
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
 

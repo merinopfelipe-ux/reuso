@@ -17,7 +17,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { ContenidoClient } from './contenido-client'
 
 export default async function AdminContenidoPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

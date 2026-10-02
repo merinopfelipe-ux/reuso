@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   const type = requestUrl.searchParams.get('type') as EmailOtpType | null
   const next = requestUrl.searchParams.get('next') || '/dashboard'
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)

@@ -10,8 +10,8 @@ export function PageTransitionLoader() {
   const [fading, setFading] = useState(false)
   const [isDark, setIsDark] = useState(false)
   const prevPathRef = useRef(pathname)
-  const hideTimer = useRef<ReturnType<typeof setTimeout>>()
-  const fadeTimer = useRef<ReturnType<typeof setTimeout>>()
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const fadeTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   useEffect(() => {
     const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')

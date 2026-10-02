@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 // Marca la tarjeta de bienvenida como vista (terminada u omitida). Checklist
 // de 19 fundamentales, 2026-09-05 — ver sql/123_onboarding_visto.sql.
 export async function POST() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 

@@ -74,7 +74,7 @@ const CONTENT_TYPES: Record<Formato, string> = {
 }
 
 export async function GET(request: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()

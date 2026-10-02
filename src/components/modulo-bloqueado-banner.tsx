@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Modal } from '@/components/ui/modal'
 
-// Lee ?modulo_bloqueado=cotizador|dpp|calculo (lo pone src/middleware.ts al
+// Lee ?modulo_bloqueado=cotizador|dpp|calculo (lo pone src/proxy.ts al
 // bloquear el acceso a un módulo sin plan) y muestra el Modal del sistema de
 // diseño explicando qué se gana con ese módulo, en vez de perderse en
 // silencio como pasaba antes (el query param existía pero nada lo leía).

@@ -15,7 +15,7 @@ function maskPhone(p: string) {
 }
 
 export async function GET() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
@@ -82,7 +82,7 @@ const patchSchema = z.object({
 })
 
 export async function PATCH(request: NextRequest) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })

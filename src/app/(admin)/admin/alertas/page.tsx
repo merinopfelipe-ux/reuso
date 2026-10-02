@@ -5,7 +5,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { AlertasClient } from './components/alertas-client'
 
 export default async function AlertasPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

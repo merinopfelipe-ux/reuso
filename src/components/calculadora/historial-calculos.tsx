@@ -92,7 +92,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
 
   const totalPages = Math.ceil(total / pageSize)
   const hayFiltros = desde || hasta || categoria || empresaFiltro
-  const debounceTimer = useRef<NodeJS.Timeout>()
+  const debounceTimer = useRef<NodeJS.Timeout>(undefined)
 
   function sincronizarURL(params: {
     page?: number; desde?: string; hasta?: string

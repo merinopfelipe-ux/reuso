@@ -11,7 +11,7 @@ export default async function NuevaEmpresaPage(
 ) {
   const searchParams = await props.searchParams;
   const isPreview = searchParams?.preview === 'true'
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user && !isPreview) redirect('/login')

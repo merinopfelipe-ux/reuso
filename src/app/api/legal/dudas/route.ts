@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   }
 
   const adminClient = await createAdminClient()
-  const userClient = createClient()
+  const userClient = await createClient()
   const { data: { user } } = await userClient.auth.getUser()
 
   // 1. Crear el ticket oficial de soporte en la base de datos

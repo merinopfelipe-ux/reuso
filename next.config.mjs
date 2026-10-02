@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   // Migración de dominio (2026-09-05): reuso.lurdes.co sigue apuntando al
   // mismo proyecto de Vercel, así que en vez de servir la app ahí también,
   // cualquier visita a ese host redirige de forma permanente al dominio de

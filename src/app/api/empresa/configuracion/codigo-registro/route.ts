@@ -10,7 +10,7 @@ function generarCodigo(): string {
 }
 
 export async function POST() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
 
@@ -52,7 +52,7 @@ export async function POST() {
 }
 
 export async function DELETE() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
 

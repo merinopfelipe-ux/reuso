@@ -10,7 +10,7 @@ import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
 import type { Rol } from '@/types'
 
 export default async function EmpresaCalculosPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

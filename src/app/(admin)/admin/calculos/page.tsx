@@ -9,7 +9,7 @@ import { CalculosAdminClient } from './calculos-client'
 import { resolverAutores } from '@/lib/resolver-autores'
 
 export default async function AdminCalculosPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

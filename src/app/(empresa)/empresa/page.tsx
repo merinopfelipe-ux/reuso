@@ -7,14 +7,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { Calculadora } from '@/components/calculadora/calculadora'
 import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
 import { PanelInformes } from '@/components/informes/panel-informes'
-import dynamic from 'next/dynamic'
 import RankingEmpleados from '@/components/empresa/ranking-empleados'
 import { BannerDatosPendientes } from '@/components/empresa/banner-datos-pendientes'
 
-const GraficaCO2Mensual = dynamic(() => import('@/components/empresa/grafica-co2-mensual'), {
-  ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: '#EBF5F4' }} />, })
-const DonutCategorias = dynamic(() => import('@/components/empresa/donut-categorias'), {
-  ssr: false, loading: () => <div style={{ height: 220, borderRadius: 12, background: '#EBF5F4' }} />, })
 import BotonExportarCSV from '@/components/empresa/boton-exportar-csv'
 import { obtenerLimitesEfectivos } from '@/lib/plan-limits'
 import { ListaMetas } from '@/components/empresa/lista-metas'
@@ -24,6 +19,7 @@ import { displayName } from '@/lib/display-name'
 import type { PuntoMensual } from '@/components/empresa/grafica-co2-mensual'
 import type { ItemDonut } from '@/components/empresa/donut-categorias'
 import type { ItemRanking } from '@/components/empresa/ranking-empleados'
+import { GraficaCO2Mensual, DonutCategorias } from './diferidos'
 
 function KpiCard({ titulo, valor, unidad, icono: Icon, color }: {
   titulo: string; valor: string; unidad?: string
@@ -130,7 +126,7 @@ function calcularDonut(calculos: { detalle_json: unknown }[]): ItemDonut[] {
 // ── Page ─────────────────────────────────────────────────────────
 
 export default async function EmpresaPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

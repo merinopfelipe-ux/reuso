@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
-async function getPerfilYEmpresa(supabase: ReturnType<typeof createClient>) {
+async function getPerfilYEmpresa(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const { data: perfil } = await supabase
@@ -15,7 +15,7 @@ async function getPerfilYEmpresa(supabase: ReturnType<typeof createClient>) {
 
 export async function DELETE(_: Request, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const supabase = createClient()
+  const supabase = await createClient()
   const perfil = await getPerfilYEmpresa(supabase)
   if (!perfil) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
   if (perfil.rol !== 'empresa_admin' && perfil.rol !== 'super_admin') {
@@ -50,7 +50,7 @@ export async function DELETE(_: Request, props: { params: Promise<{ id: string }
 
 export async function PATCH(req: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const supabase = createClient()
+  const supabase = await createClient()
   const perfil = await getPerfilYEmpresa(supabase)
   if (!perfil) return NextResponse.json({ error: 'No autorizado.' }, { status: 401 })
   if (perfil.rol !== 'empresa_admin' && perfil.rol !== 'super_admin') {

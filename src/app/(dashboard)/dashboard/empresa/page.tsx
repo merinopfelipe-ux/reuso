@@ -5,7 +5,7 @@ import ConfiguracionClient from '@/app/(empresa)/empresa/configuracion/component
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 
 export default async function DashboardEmpresaPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

@@ -340,7 +340,6 @@ function ContenidoSuperAdmin() {
     fetch('/api/cotizador/empresas')
       .then(r => r.ok ? r.json() : null)
       .then(d => { if (d?.empresas) setEmpresas(d.empresas) })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filtroEmpresa])
 
   async function enviarPqr() {

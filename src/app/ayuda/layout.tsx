@@ -10,7 +10,7 @@ import type { Rol } from '@/types'
 export const metadata: Metadata = { title: 'Ayuda' }
 
 export default async function AyudaLayout({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 

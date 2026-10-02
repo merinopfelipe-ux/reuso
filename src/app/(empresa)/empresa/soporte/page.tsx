@@ -7,7 +7,7 @@ import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { ListaTickets } from '@/components/soporte/lista-tickets'
 
 export default async function EmpresaSoportePage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
