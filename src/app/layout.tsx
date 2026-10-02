@@ -47,9 +47,16 @@ export default function RootLayout({
             media="print" y pasa a "all" al cargar. Mientras llega, el texto usa
             Open Sans (ya es propia) y luego cambia a Seravek. */}
         <script dangerouslySetInnerHTML={{ __html: `
-          (function(){var l=document.createElement('link');l.rel='stylesheet';
-          l.href='https://use.typekit.net/ggf2dir.css';l.media='print';
-          l.onload=function(){l.media='all'};document.head.appendChild(l)})();
+          (function(){
+            function cargar(){
+              var l=document.createElement('link');l.rel='stylesheet';
+              l.href='https://use.typekit.net/ggf2dir.css';l.media='print';
+              l.onload=function(){l.media='all'};
+              document.head.appendChild(l);
+            }
+            if ('requestIdleCallback' in window) { window.requestIdleCallback(cargar, { timeout: 2000 }); }
+            else { window.addEventListener('load', cargar, { once: true }); }
+          })()
         ` }} />
         <noscript><link rel="stylesheet" href="https://use.typekit.net/ggf2dir.css" /></noscript>
         <script dangerouslySetInnerHTML={{ __html: `

@@ -53,8 +53,8 @@ const nextConfig = {
               // (Clarity nunca arrancaba, GA4 tampoco enviaba datos). 2026-09-21.
               "default-src 'self'",
               process.env.NODE_ENV === 'development'
-              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms"
-              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms",
+              ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://va.vercel-scripts.com"
+              : "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.clarity.ms https://scripts.clarity.ms https://va.vercel-scripts.com",
               // p.typekit.net es de donde Typekit sirve el CSS real, no
               // use.typekit.net (esa es solo el link inicial que lo pide) —
               // sin esto, el navegador bloquea la hoja de estilos real y la

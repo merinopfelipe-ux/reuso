@@ -258,7 +258,7 @@ const CATEGORIAS = {
     card1HoverDark: 'bg-[#00827C]/25 border-[#00827C]/60 shadow-[0_12px_30px_rgba(0,130,124,0.30)]',
     card1IconLight: 'text-[#00827C]',
     card1IconDark: 'text-[#8AD0B2]',
-    card1LabelLight: 'text-[#00827C]',
+    card1LabelLight: 'text-[#00605B]',
     card1LabelDark: 'text-[#8AD0B2]',
     card1NumberLight: 'text-[#00827C]',
     card1NumberDark: 'text-white',
@@ -269,7 +269,7 @@ const CATEGORIAS = {
     card2HoverDark: ' border-[#8AD0B2]/50 shadow-[0_12px_30px_rgba(138,208,178,0.25)]',
     card2IconLight: 'text-[#00827C]',
     card2IconDark: 'text-[#8AD0B2]',
-    card2LabelLight: 'text-[#00827C]',
+    card2LabelLight: 'text-[#00605B]',
     card2LabelDark: 'text-[#8AD0B2]',
     card2NumberLight: 'text-[#00827C]',
     card2NumberDark: 'text-[#8AD0B2]',
@@ -455,7 +455,7 @@ const PLAN_THEMES: Record<string, {
     cardDark: 'border-[#985fa1]/25 bg-white/4',
     cardHoverLight: 'hover:border-[#985fa1]/70 hover:shadow-[0_20px_45px_rgba(152,95,161,0.22)] hover:bg-[#985fa1]/[0.07]',
     cardHoverDark: 'hover:border-[#F3BBD3]/50 hover:shadow-[0_20px_45px_rgba(152,95,161,0.20)] hover:bg-[#985fa1]/8',
-    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    taglineQuiet: 'text-[#474747]/90 dark:text-white/80',
     titleHoverLight: 'group-hover:text-[#763B7F]',
     titleHoverDark: 'group-hover:text-[#F3BBD3]',
     priceHoverLight: 'group-hover:text-[#763B7F]',
@@ -478,7 +478,7 @@ const PLAN_THEMES: Record<string, {
     cardDark: 'border-[#00827C]/25 bg-white/4',
     cardHoverLight: 'hover:border-[#00827C]/65 hover:shadow-[0_20px_45px_rgba(0,130,124,0.18)] hover:bg-[#00827C]/[0.07]',
     cardHoverDark: 'hover:border-[#8AD0B2]/50 hover:shadow-[0_20px_45px_rgba(0,130,124,0.22)] hover:bg-[#00827C]/9',
-    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    taglineQuiet: 'text-[#474747]/90 dark:text-white/80',
     titleHoverLight: 'group-hover:text-[#00827C]',
     titleHoverDark: 'group-hover:text-[#8AD0B2]',
     priceHoverLight: 'group-hover:text-[#00827C]',
@@ -501,21 +501,21 @@ const PLAN_THEMES: Record<string, {
     cardDark: 'border-[#59A6E4]/45 bg-[#59A6E4]/10 shadow-[0_16px_40px_rgba(89,166,228,0.18)]',
     cardHoverLight: 'hover:border-[#59A6E4]/80 hover:shadow-[0_26px_55px_rgba(89,166,228,0.28)] hover:bg-[#59A6E4]/12',
     cardHoverDark: 'hover:border-[#59A6E4]/75 hover:shadow-[0_26px_55px_rgba(89,166,228,0.30)] hover:bg-[#59A6E4]/[0.14]',
-    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    taglineQuiet: 'text-[#474747]/90 dark:text-white/80',
     titleHoverLight: 'group-hover:text-[#59A6E4]',
     titleHoverDark: 'group-hover:text-[#59A6E4]',
     priceHoverLight: 'group-hover:text-[#59A6E4]',
     priceHoverDark: 'group-hover:text-[#59A6E4]',
     dividerLight: 'border-[#59A6E4]/25',
     dividerDark: 'border-[#59A6E4]/25',
-    badgeBg: 'bg-[#59A6E4]',
+    badgeBg: 'bg-[#1864A5]',
     badgeText: 'text-white',
     checkQuietLight: 'bg-[#59A6E4]/15 border border-[#59A6E4]/25 text-[#1E5D8F]',
     checkQuietDark: 'bg-[#59A6E4]/25 border border-[#59A6E4]/30 text-[#59A6E4]',
     checkHoverLight: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.4)]',
     checkHoverDark: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.45)]',
-    btnPopularLight: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/25 hover:shadow-[0_8px_20px_rgba(89,166,228,0.4)]',
-    btnPopularDark: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/30 hover:shadow-[0_8px_20px_rgba(89,166,228,0.45)]',
+    btnPopularLight: 'bg-[#1864A5] text-white hover:bg-[#124E82] shadow-md shadow-[#1864A5]/25 hover:shadow-[0_8px_20px_rgba(24,100,165,0.4)]',
+    btnPopularDark: 'bg-[#1864A5] text-white hover:bg-[#124E82] shadow-md shadow-[#1864A5]/30 hover:shadow-[0_8px_20px_rgba(24,100,165,0.45)]',
     btnOutlineLight: 'border border-[#59A6E4]/45 text-[#1E5D8F] bg-white hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4] shadow-xs hover:shadow-[0_8px_20px_rgba(89,166,228,0.25)]',
     btnOutlineDark: 'border border-[#59A6E4]/45 text-[#59A6E4] bg-[#59A6E4]/15 hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4]',
   },
@@ -524,7 +524,7 @@ const PLAN_THEMES: Record<string, {
     cardDark: 'border-[#F6BF3E]/25 bg-white/4',
     cardHoverLight: 'hover:border-[#F6BF3E]/75 hover:shadow-[0_20px_45px_rgba(246,191,62,0.22)] hover:bg-[#F6BF3E]/8',
     cardHoverDark: 'hover:border-[#F6BF3E]/60 hover:shadow-[0_20px_45px_rgba(246,191,62,0.20)] hover:bg-[#F6BF3E]/9',
-    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    taglineQuiet: 'text-[#474747]/90 dark:text-white/80',
     titleHoverLight: 'group-hover:text-[#B8871B]',
     titleHoverDark: 'group-hover:text-[#F6BF3E]',
     priceHoverLight: 'group-hover:text-[#B8871B]',
@@ -532,14 +532,14 @@ const PLAN_THEMES: Record<string, {
     dividerLight: 'border-[#F6BF3E]/20',
     dividerDark: 'border-[#F6BF3E]/20',
     badgeBg: 'bg-[#F6BF3E]',
-    badgeText: 'text-white',
+    badgeText: 'text-[#3E2B04]',
     checkQuietLight: 'bg-[#F6BF3E]/20 border border-[#F6BF3E]/25 text-[#B8871B]',
     checkQuietDark: 'bg-[#F6BF3E]/25 border border-[#F6BF3E]/30 text-[#F6BF3E]',
     checkHoverLight: 'group-hover/item:bg-[#F6BF3E] group-hover/item:border-[#F6BF3E] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(246,191,62,0.4)]',
     checkHoverDark: 'group-hover/item:bg-[#F6BF3E] group-hover/item:border-[#F6BF3E] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(246,191,62,0.45)]',
     btnPopularLight: 'bg-[#F6BF3E] text-white hover:bg-[#e0ac34] shadow-md shadow-[#F6BF3E]/25',
     btnPopularDark: 'bg-[#F6BF3E] text-white hover:bg-[#e0ac34] shadow-md shadow-[#F6BF3E]/30',
-    btnOutlineLight: 'border border-[#F6BF3E]/50 text-[#B8871B] bg-white hover:bg-[#F6BF3E] hover:text-white hover:border-[#F6BF3E] shadow-xs hover:shadow-[0_8px_20px_rgba(246,191,62,0.3)]',
+    btnOutlineLight: 'border border-[#F6BF3E]/60 text-[#825D0B] bg-white hover:bg-[#F6BF3E] hover:text-white hover:border-[#F6BF3E] shadow-xs hover:shadow-[0_8px_20px_rgba(246,191,62,0.3)]',
     btnOutlineDark: 'border border-[#F6BF3E]/45 text-[#F6BF3E] bg-[#F6BF3E]/15 hover:bg-[#F6BF3E] hover:text-white hover:border-[#F6BF3E]',
   },
 }
@@ -750,9 +750,9 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
           boxShadow: isDark ? `0 20px 50px rgba(71,71,71,0.55), 0 0 0 1px ${pasoActivo.color}26` : `0 20px 50px ${pasoActivo.color}33, inset 0 1px 0 rgba(255,255,255,0.9)`,
         }}
       >
-        <p className="text-[10px] lg:text-[11px] font-semibold opacity-60 text-(--text-primary)">Pasaporte Digital de Producto</p>
+        <p className="text-[10px] lg:text-[11px] font-semibold opacity-80 text-(--text-primary)">Pasaporte Digital de Producto</p>
         <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-(--text-primary) mt-0.5 lg:leading-[1.5rem] xl:leading-[1.75rem]">Activo circular</p>
-        <p className="text-[10px] lg:text-[11px] font-mono opacity-50 text-(--text-primary) mt-0.5">DPP-7F3A-2026</p>
+        <p className="text-[10px] lg:text-[11px] font-mono opacity-80 text-(--text-primary) mt-0.5">DPP-7F3A-2026</p>
         <div className="h-px my-[4%]" style={{ background: 'var(--border)' }} />
 
         <div className="flex-1 flex flex-col justify-between gap-1.5">
@@ -781,7 +781,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
                 >
                   {hecho && <Check size={12} strokeWidth={3} sinAnimacion />}
                 </div>
-                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-(--text-primary) transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-45'} lg:leading-[1rem]`}>
+                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-(--text-primary) transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-80'} lg:leading-[1rem]`}>
                   {paso.label}
                 </span>
               </div>
@@ -791,7 +791,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
 
         <div className="mt-[4%] rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 transition-colors duration-500" style={{ background: `${pasoActivo.color}${isDark ? '1F' : '1A'}` }}>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold opacity-60 text-(--text-primary)">Huella SHA-256 encadenada</p>
+            <p className="text-[10px] font-semibold opacity-80 text-(--text-primary)">Huella SHA-256 encadenada</p>
             <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-(--text-primary)">{DPP_HASHES[activo]}…</p>
           </div>
           <QrCode size={22} strokeWidth={1.8} className="shrink-0 text-(--text-primary) opacity-70" sinAnimacion />
@@ -1138,7 +1138,7 @@ export const COMPARATIVA_DEFAULT: CategoriaComparativa[] = [
     filas: [
       { label: 'Personas en el equipo', tipo: 'texto', valores: { free: '1 persona', lab: '5 personas', impulso: '10 personas', ilimitado: 'Ilimitado' }, descripcion: 'Usuarios con acceso simultáneo a la plataforma' },
       { label: 'Puesta en marcha guiada', tipo: 'check', valores: { free: true, lab: true, impulso: true, ilimitado: true }, descripcion: 'Acompañamiento inicial para configurar tu cuenta' },
-      { label: 'Canal de soporte', tipo: 'texto', valores: { free: 'Email', lab: 'Email', impulso: 'Email', ilimitado: 'Prioritario 24/7' } },
+      { label: 'Canal de soporte', tipo: 'texto', valores: { free: false, lab: 'Formulario', impulso: 'Formulario', ilimitado: 'Prioritario 24/7' } },
     ]
   },
   {
@@ -1924,7 +1924,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div
                     key={texto}
                     style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
-                    className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-(--c) hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
+                    className="group flex gap-2.5 items-center sm:items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-(--c) hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
                   >
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-(--ic) group-hover:bg-(--c) group-hover:text-(--sobre)">
                       <Icono size={16} strokeWidth={2} sinAnimacion />
@@ -2199,8 +2199,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <div
                 className={`shrink-0 flex items-center px-3.5 py-1.5 rounded-full border border-dashed text-xs font-semibold select-none ${
                   isDark
-                    ? 'border-white/15 text-white/50 bg-white/2'
-                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/2'
+                    ? 'border-white/15 text-white/70 bg-white/2'
+                    : 'border-[#00827C]/20 text-[#474747]/80 bg-[#00827C]/2'
                 }`}
               >
                 <span>El desarrollo que tú necesites</span>
@@ -2247,8 +2247,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <div
                 className={`w-full flex items-center justify-center gap-2 px-3.5 py-2.5 lg:px-4 lg:py-3 rounded-xl md:rounded-2xl text-center text-xs md:text-xs font-semibold border border-dashed select-none transition-colors ${
                   isDark
-                    ? 'border-white/15 text-white/50 bg-white/2'
-                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/2'
+                    ? 'border-white/15 text-white/70 bg-white/2'
+                    : 'border-[#00827C]/20 text-[#474747]/80 bg-[#00827C]/2'
                 }`}
               >
                 <span className="leading-snug">El desarrollo que tú necesites</span>
@@ -2361,6 +2361,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     src={paso.image}
                     alt={paso.titulo}
                     fill
+                    loading="lazy"
+                    decoding="async"
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -2458,7 +2460,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {cuotasPlan(plan).map((c, k) => (
                       <div key={k}>
                         <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
-                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
+                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp} flex items-center min-h-[16px]`}>
+                          {(c.valor && !['x', 'no incluye', '—', '-'].includes(String(c.valor).trim().toLowerCase())) ? (
+                            c.valor
+                          ) : (
+                            <X size={12} strokeWidth={3} className={isDark ? 'text-white/20' : 'text-[#474747]/20'} />
+                          )}
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -2551,6 +2559,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               )
               return { ...fila, valores: { ...fila.valores, ...valoresReales } }
             }
+            if (/soporte/i.test(fila.label)) {
+              const nuevosValores = { ...fila.valores }
+              if (nuevosValores.free === 'Comunidad' || nuevosValores.free === 'No incluye') {
+                nuevosValores.free = ''
+              }
+              if (nuevosValores.lab === 'Email') nuevosValores.lab = 'Formulario'
+              if (nuevosValores.impulso === 'Email') nuevosValores.impulso = 'Formulario'
+              return { ...fila, valores: nuevosValores }
+            }
             return fila
           }),
         }))
@@ -2635,7 +2652,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                           ) : (
                                             <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
                                           )
-                                        ) : val ? (
+                                        ) : (val && !['x', 'no incluye', '—', '-'].includes(String(val).trim().toLowerCase())) ? (
                                           <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp} sm:leading-[1.25rem]`}>{val as string}</span>
                                         ) : (
                                           <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
@@ -2855,7 +2872,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   className={`group relative p-6 sm:p-8 rounded-4xl overflow-hidden flex flex-col justify-between hover-card-interactive shadow-lg hover:shadow-2xl transition-all duration-300 border ${isDark ? col.borderColorDark : col.borderColorLight}`}
                 >
                   <div className="absolute inset-0 z-0">
-                    <Image src={col.image} alt={col.titulo} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500 mix-blend-luminosity" />
+                    <Image src={col.image} alt={col.titulo} fill loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500 mix-blend-luminosity" />
                     <div className={`absolute inset-0 bg-linear-to-br/srgb ${isDark ? col.bgGradientDark : col.bgGradientLight} opacity-95`} />
                   </div>
 
