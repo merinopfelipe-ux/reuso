@@ -20,10 +20,10 @@ const SIZES: Record<ButtonSize, string> = {
 }
 
 const VARIANTS: Record<ButtonVariant, string> = {
-  primary: 'bg-[var(--color-brand)] text-[var(--text-on-brand)]',
-  secondary: 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)]',
-  danger: 'bg-[var(--color-error)] text-white',
-  ghost: 'bg-transparent text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]',
+  primary: 'bg-brand text-(--text-on-brand)',
+  secondary: 'bg-(--bg-card) border border-(--border) text-(--text-secondary)',
+  danger: 'bg-error text-white',
+  ghost: 'bg-transparent text-(--text-secondary) hover:bg-(--bg-hover)',
 }
 
 /**

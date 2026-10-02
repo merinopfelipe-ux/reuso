@@ -35,7 +35,7 @@ export function ModalImagenZoom({ imagenUrl, onClose }: Props) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-9999 flex items-center justify-center p-4 md:p-8 backdrop-blur-xs animate-in fade-in duration-200"
       style={{ background: 'var(--overlay-zoom)' }}
       onClick={onClose}
     >
@@ -46,10 +46,10 @@ export function ModalImagenZoom({ imagenUrl, onClose }: Props) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full bg-[#474747]/75 hover:bg-[#474747]/95 text-white flex items-center justify-center border border-white/25 shadow-xl transition-all duration-150 hover:scale-105 active:scale-95 flex-shrink-0 cursor-pointer"
+          className="absolute top-3 right-3 z-50 w-9 h-9 rounded-full bg-[#474747]/75 hover:bg-[#474747]/95 text-white flex items-center justify-center border border-white/25 shadow-xl transition-all duration-150 hover:scale-105 active:scale-95 shrink-0 cursor-pointer"
           aria-label="Cerrar imagen"
         >
-          <X size={18} className="text-white flex-shrink-0" sinAnimacion />
+          <X size={18} className="text-white shrink-0" sinAnimacion />
         </button>
 
         {/* eslint-disable-next-line @next/next/no-img-element */}

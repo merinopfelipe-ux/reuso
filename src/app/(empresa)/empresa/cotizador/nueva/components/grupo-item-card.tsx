@@ -71,9 +71,9 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
 
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
 
-  const ts = 'text-[var(--text-secondary)]'
-  const tp = 'text-[var(--text-primary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const ts = 'text-(--text-secondary)'
+  const tp = 'text-(--text-primary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   // Autoseleccionar la categoría la primera vez que el catálogo está listo
   useEffect(() => {
@@ -154,7 +154,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 min-w-0">
       {/* ── Tarjeta 1: Foto + identificación ── */}
-      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-xs min-w-0 ${cardBg}`}>
+      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-2xs min-w-0 ${cardBg}`}>
         <div className="flex items-center justify-between gap-2">
           {item.manual && (
             <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[#59A6E4]/15 text-[#59A6E4]">
@@ -162,7 +162,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
             </span>
           )}
           {!item.manual && <span />}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {onElegir && (
               <button
                 type="button"
@@ -188,7 +188,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
           <ImagenAmpliable
             src={item.imagenPreview}
             alt={item.titulo || 'Ítem detectado'}
-            wrapperClassName="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)]"
+            wrapperClassName="w-full flex items-center justify-center rounded-card bg-(--bg-input)"
             imgClassName="h-48 w-auto max-w-full object-contain"
           />
         )}
@@ -202,11 +202,11 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                 // aparte, chico, en la esquina, es lo que amplía. Nunca se
                 // fusionan los dos gestos: cambiar el comportamiento del
                 // clic principal rompería la selección que ya funcionaba.
-                <div key={idx} className="relative flex-shrink-0 group">
+                <div key={idx} className="relative shrink-0 group">
                   <button
                     type="button"
                     onClick={() => onChange({ ...item, imagenPreview: f.preview, imagenBase64: f.base64 })}
-                    className={`block rounded-[8px] overflow-hidden border-2 transition-colors ${
+                    className={`block rounded-input overflow-hidden border-2 transition-colors ${
                       item.imagenPreview === f.preview ? 'border-[#00827C]' : 'border-transparent'
                     }`}
                     title="Usar esta foto como principal"
@@ -288,7 +288,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
       </div>
 
       {/* ── Tarjeta 2: Costos ── */}
-      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-xs min-w-0 ${cardBg}`}>
+      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-2xs min-w-0 ${cardBg}`}>
         <p className="flex items-center gap-2 text-sm font-bold text-[#00827C]">
           <CircleDollarSign size={18} /> Costos
         </p>
@@ -300,16 +300,16 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
               {(s as { _esNuevo?: boolean })._esNuevo ? (
                 <input value={s.nombre} onChange={e => actualizarServicio(i, { nombre: e.target.value })} placeholder="Ej: Pintor" className={`flex-1 ${rowInputSt}`} />
               ) : (
-                <span className="flex-1 text-sm font-medium text-[var(--text-primary)] min-w-[80px] line-clamp-2 leading-tight" title={s.nombre}>{s.nombre}</span>
+                <span className="flex-1 text-sm font-medium text-(--text-primary) min-w-[80px] line-clamp-2 leading-tight" title={s.nombre}>{s.nombre}</span>
               )}
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 <span className={`text-sm font-medium ${ts}`}>$</span>
-                <input type="number" min={0} value={s.precio} onChange={e => actualizarServicio(i, { precio: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+                <input type="number" min={0} value={s.precio} onChange={e => actualizarServicio(i, { precio: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent text-right text-sm outline-hidden focus:border-[#00827C]" />
               </div>
-              <button type="button" onClick={() => quitarServicio(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar servicio"><Trash size={16} /></button>
+              <button type="button" onClick={() => quitarServicio(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 shrink-0 cursor-pointer" title="Quitar servicio"><Trash size={16} /></button>
             </div>
           ))}
-          <button type="button" onClick={agregarServicio} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
+          <button type="button" onClick={agregarServicio} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-(--text-secondary) hover:bg-(--bg-hover) border border-(--border) rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
             <Plus size={13} /> Añadir servicio
           </button>
         </div>
@@ -324,18 +324,18 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                 {(ins as { _esNuevo?: boolean })._esNuevo ? (
                   <input value={ins.nombre} onChange={e => actualizarInsumo(i, { nombre: e.target.value })} placeholder="Ej: Tela" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
                 ) : (
-                  <span className={`flex-1 min-w-[80px] text-sm line-clamp-2 leading-tight transition-colors ${esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'}`} title={ins.nombre}>
+                  <span className={`flex-1 min-w-[80px] text-sm line-clamp-2 leading-tight transition-colors ${esCero ? 'text-(--text-secondary) opacity-70 font-normal' : 'text-(--text-primary) font-medium'}`} title={ins.nombre}>
                     {ins.nombre}
                   </span>
                 )}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                   <InputCantidadInsumo
                     value={ins.cantidad}
                     onChange={cantidad => actualizarInsumo(i, { cantidad })}
                     unidad={ins.unidad || 'und'}
                   />
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent">
-                    <input type="number" min={0} step="0.001" value={ins.peso_kg ?? ''} onChange={e => actualizarInsumo(i, { peso_kg: parseNumero(e.target.value) })} className="w-14 text-right text-sm outline-none border-none p-0 bg-transparent" placeholder="peso" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent">
+                    <input type="number" min={0} step="0.001" value={ins.peso_kg ?? ''} onChange={e => actualizarInsumo(i, { peso_kg: parseNumero(e.target.value) })} className="w-14 text-right text-sm outline-hidden border-none p-0 bg-transparent" placeholder="peso" />
                     <span className={`text-xs ${ts}`}>kg</span>
                   </div>
                   {incluyeIA && (
@@ -351,7 +351,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                         const data = await res.json()
                         if (res.ok && data.ok) actualizarInsumo(i, { peso_kg: data.peso_kg })
                       }}
-                      className="p-1.5 rounded-lg text-[#00827C] hover:opacity-70 flex-shrink-0"
+                      className="p-1.5 rounded-lg text-[#00827C] hover:opacity-70 shrink-0"
                       title="Sugerir peso con IA"
                     >
                       <Sparkles size={16} />
@@ -359,14 +359,14 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
                   )}
                   <div className={`flex items-center gap-1 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
                     <span className={`text-sm font-medium ${ts}`}>$</span>
-                    <input type="number" min={0} value={ins.precio_unitario} onChange={e => actualizarInsumo(i, { precio_unitario: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-right text-sm outline-none focus:border-[#00827C]" />
+                    <input type="number" min={0} value={ins.precio_unitario} onChange={e => actualizarInsumo(i, { precio_unitario: parseNumero(e.target.value) })} className="w-24 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent text-right text-sm outline-hidden focus:border-[#00827C]" />
                   </div>
                 </div>
-                <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
+                <button type="button" onClick={() => quitarInsumo(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 shrink-0 cursor-pointer" title="Quitar insumo"><Trash size={16} /></button>
               </div>
             )
           })}
-          <button type="button" onClick={agregarInsumo} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
+          <button type="button" onClick={agregarInsumo} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-(--text-secondary) hover:bg-(--bg-hover) border border-(--border) rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
             <Plus size={13} /> Añadir insumo
           </button>
 
@@ -381,14 +381,14 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
             <span className={`text-sm ${ts}`}>Factor de rentabilidad</span>
             <div className="flex items-center gap-2">
               <span className={`text-sm ${ts}`}>x</span>
-              <input type="number" min={0} step="0.1" value={item.factor_rentabilidad} onChange={e => onChange({ ...item, factor_rentabilidad: parseFloat(e.target.value) || 0 })} className="w-16 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-center text-sm outline-none focus:border-[#00827C]" />
+              <input type="number" min={0} step="0.1" value={item.factor_rentabilidad} onChange={e => onChange({ ...item, factor_rentabilidad: parseFloat(e.target.value) || 0 })} className="w-16 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent text-center text-sm outline-hidden focus:border-[#00827C]" />
             </div>
           </div>
           <div className="flex items-center justify-between">
             <span className={`text-sm ${ts}`}>Cantidad</span>
-            <input type="number" min={1} value={item.cantidad} onChange={e => onChange({ ...item, cantidad: Math.max(1, parseInt(e.target.value, 10) || 1) })} className="w-16 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent text-center text-sm outline-none focus:border-[#00827C]" />
+            <input type="number" min={1} value={item.cantidad} onChange={e => onChange({ ...item, cantidad: Math.max(1, parseInt(e.target.value, 10) || 1) })} className="w-16 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent text-center text-sm outline-hidden focus:border-[#00827C]" />
           </div>
-          <div className="flex justify-between items-center pt-2 border-t border-[var(--border)]">
+          <div className="flex justify-between items-center pt-2 border-t border-(--border)">
             <span className={`text-sm font-bold ${tp}`}>Total del ítem</span>
             <span className="text-base font-extrabold text-[#00827C]">{formatCOP(precioTotalItem)}</span>
           </div>
@@ -396,7 +396,7 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
       </div>
 
       {/* ── Tarjeta 3: Cálculo ambiental ── */}
-      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-xs min-w-0 ${cardBg}`}>
+      <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-2xs min-w-0 ${cardBg}`}>
         <p className="flex items-center gap-2 text-sm font-bold text-[#00827C]">
           <Leaf size={18} /> Cálculo ambiental
         </p>
@@ -408,25 +408,25 @@ export function GrupoItemCard({ item, catalogo, conEmpresa, onChange, onQuitar, 
               {(m as { _esNuevo?: boolean })._esNuevo ? (
                 <input value={m.nombre} onChange={e => actualizarMaterial(i, { nombre: e.target.value })} placeholder="Ej: Hierro" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
               ) : (
-                <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
+                <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-(--text-primary)">
                   <span className="line-clamp-2 leading-tight" title={m.nombre}>{m.nombre}</span>
                   <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
                 </span>
               )}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent flex-shrink-0">
-                <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseNumero(e.target.value) })} className="w-16 text-right text-sm outline-none border-none p-0 bg-transparent" />
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent shrink-0">
+                <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseNumero(e.target.value) })} className="w-16 text-right text-sm outline-hidden border-none p-0 bg-transparent" />
                 <span className={`text-xs ${ts}`}>kg</span>
               </div>
-              <button type="button" onClick={() => quitarMaterial(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
+              <button type="button" onClick={() => quitarMaterial(i)} className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
             </div>
           ))}
           {materiales.length === 0 && <p className={`text-xs italic py-1 ${ts}`}>Sin materiales asignados.</p>}
-          <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
+          <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-(--text-secondary) hover:bg-(--bg-hover) border border-(--border) rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
             <Plus size={13} /> Añadir material
           </button>
         </div>
 
-        <div className="flex flex-col gap-3 mt-auto pt-4 border-t border-[var(--border)]/50">
+        <div className="flex flex-col gap-3 mt-auto pt-4 border-t ">
           <div className="flex justify-between items-center">
             <span className={`text-sm font-bold ${tp}`}>Total CO₂ eq evitado</span>
             <span className="text-sm font-bold text-[#00827C]">{formatNumero(co2Total, { unidad: 'kg CO₂ eq' })}</span>

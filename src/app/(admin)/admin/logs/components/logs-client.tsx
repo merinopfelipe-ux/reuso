@@ -81,11 +81,11 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
         </span>
       </div>
 
-      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+      <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+              <tr className="bg-(--bg-table-header) text-brand">
                 <SortTh col="created_at" sort={sort} onToggle={toggleSort} align="center">Fecha</SortTh>
                 <SortTh col="accion" sort={sort} onToggle={toggleSort}>Acción</SortTh>
                 <SortTh col="user_id" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
@@ -103,26 +103,26 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
                 return (
                   <tr
                     key={log.id}
-                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                   >
-                    <td className="px-4 py-3 whitespace-nowrap text-center text-[var(--text-secondary)]">
+                    <td className="px-4 py-3 whitespace-nowrap text-center text-(--text-secondary)">
                       {formatFecha(log.created_at)}
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-[11px] bg-[var(--bg-hover)] px-1.5 py-0.5 rounded-[4px] text-[var(--text-primary)]">
+                      <code className="text-[11px] bg-(--bg-hover) px-1.5 py-0.5 rounded-[4px] text-(--text-primary)">
                         {log.accion}
                       </code>
                     </td>
                     <td className="px-4 py-3 font-mono text-[11px]">
                       {log.user_id?.slice(0, 8) ?? '-'}...
                     </td>
-                    <td className="px-4 py-3 text-xs text-center text-[var(--text-secondary)]">
+                    <td className="px-4 py-3 text-xs text-center text-(--text-secondary)">
                       {log.ip ?? '-'}
                     </td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
+                    <td className="px-4 py-3 text-(--text-secondary) max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
                       {JSON.stringify(log.detalle_json)}
                     </td>
                   </tr>
@@ -136,8 +136,8 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
             de la última fila. El conteo se acorta primero (min-width:0 +
             ellipsis) para que el paginador nunca se comprima ni quede
             oculto detrás de un scroll. */}
-        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
-          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
+        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-(--border-light)">
+          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-(--text-secondary)" style={{ flexShrink: 1 }}>
             {total} registros · Página {page} de {Math.max(1, totalPages)}
           </span>
           <div className="min-w-0 max-w-full overflow-x-auto">

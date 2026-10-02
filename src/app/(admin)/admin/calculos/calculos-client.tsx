@@ -86,11 +86,11 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
           <p style={{ fontSize: 15, fontWeight: 600, color: C.dark }}>Sin resultados</p>
         </div>
       ) : (
-        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+        <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Usuario</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
@@ -106,20 +106,20 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                 return (
                   <tr
                     key={c.id}
-                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none', opacity: activo ? 1 : 0.55 }}
                   >
-                    <td className="px-4 py-3 whitespace-nowrap text-[var(--text-secondary)] text-center">
+                    <td className="px-4 py-3 whitespace-nowrap text-(--text-secondary) text-center">
                       {formatFecha(c.fecha)}
                     </td>
-                    <td className="px-4 py-3 text-[var(--text-primary)]">
+                    <td className="px-4 py-3 text-(--text-primary)">
                       {c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '-'}
                     </td>
-                    <td className="px-4 py-3 text-[var(--color-brand)]">{c.empresas?.nombre ?? '-'}</td>
-                    <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(c.total_co2, { unidad: 'kg CO₂' })}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(c.total_agua / 1000, { unidad: 'm³' })}</td>
+                    <td className="px-4 py-3 text-brand">{c.empresas?.nombre ?? '-'}</td>
+                    <td className="px-4 py-3 font-semibold text-brand text-right whitespace-nowrap">{formatNumero(c.total_co2, { unidad: 'kg CO₂' })}</td>
+                    <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">{formatNumero(c.total_agua / 1000, { unidad: 'm³' })}</td>
                     <td className="px-4 py-3 text-center">
                       {activo ? (
                         <span style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(56,185,142,0.12)', color: '#1F8C65' }}>Activo</span>

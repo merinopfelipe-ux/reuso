@@ -104,7 +104,7 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
   return (
     <span
       ref={containerRef}
-      className={`group/tt relative inline-flex flex-shrink-0 cursor-pointer ${className ?? ''}`}
+      className={`group/tt relative inline-flex shrink-0 cursor-pointer ${className ?? ''}`}
       onClick={(e) => {
         e.stopPropagation()
         setActivo(prev => {

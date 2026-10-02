@@ -32,7 +32,7 @@ export function InputPrecio({
 
   return (
     <div className={`flex items-center gap-1 rounded-lg px-2 ${className}`} style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
-      <span className="text-xs text-[var(--text-secondary)] flex-shrink-0 font-medium">$ </span>
+      <span className="text-xs text-(--text-secondary) shrink-0 font-medium">$ </span>
       <input
         ref={inputRef}
         type="text"
@@ -181,7 +181,7 @@ export function InputConUnidad({
         placeholder="0"
         style={{ textAlign: 'right', padding: '10px 2px', border: 'none', background: 'transparent', outline: 'none', color: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 'var(--text-secondary)' : 'var(--text-primary)', opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1, fontSize: 14, width: '100%', minWidth: 0, flex: 1, fontWeight: 600 }}
       />
-      <span className="text-xs text-[var(--text-secondary)] flex-shrink-0 font-medium whitespace-nowrap" style={{ opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1 }}>{unidad}</span>
+      <span className="text-xs text-(--text-secondary) shrink-0 font-medium whitespace-nowrap" style={{ opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1 }}>{unidad}</span>
     </div>
   )
 }
@@ -230,8 +230,8 @@ export function InputCantidadInsumo({
     <div
       className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all focus-within:border-[#00827C] focus-within:opacity-100 ${
         esCero
-          ? 'border-[var(--border)] bg-[var(--bg-hover)]/30 opacity-60'
-          : 'border-[var(--border)] bg-transparent opacity-100'
+          ? 'border-(--border)  opacity-60'
+          : 'border-(--border) bg-transparent opacity-100'
       } ${className}`}
     >
       <input
@@ -276,14 +276,14 @@ export function InputCantidadInsumo({
           }
         }}
         placeholder="0"
-        className={`flex-1 min-w-[20px] text-right text-sm outline-none border-none p-0 bg-transparent transition-opacity ${
-          esCero ? 'text-[var(--text-secondary)] opacity-50 font-normal' : 'text-[var(--text-primary)] font-semibold opacity-100'
+        className={`flex-1 min-w-[20px] text-right text-sm outline-hidden border-none p-0 bg-transparent transition-opacity ${
+          esCero ? 'text-(--text-secondary) opacity-50 font-normal' : 'text-(--text-primary) font-semibold opacity-100'
         }`}
       />
       {unidad && (
         <span
-          className={`text-xs flex-shrink-0 font-medium whitespace-nowrap transition-opacity ${
-            esCero ? 'text-[var(--text-secondary)] opacity-50' : 'text-[var(--text-secondary)] opacity-100'
+          className={`text-xs shrink-0 font-medium whitespace-nowrap transition-opacity ${
+            esCero ? 'text-(--text-secondary) opacity-50' : 'text-(--text-secondary) opacity-100'
           }`}
         >
           {unidad}

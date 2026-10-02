@@ -46,11 +46,11 @@ export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Sele
       <button
         type="button"
         onClick={() => setAbierto(!abierto)}
-        className="flex w-full items-center justify-between gap-2 text-sm font-semibold outline-none cursor-pointer"
+        className="flex w-full items-center justify-between gap-2 text-sm font-semibold outline-hidden cursor-pointer"
         style={{ color: 'var(--text-primary)' }}
       >
         <span className="truncate">{seleccionada?.nombre ?? placeholder}</span>
-        <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <ChevronDown size={16} className="text-(--text-secondary) shrink-0" />
       </button>
 
       {abierto && (
@@ -63,14 +63,14 @@ export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Sele
             {empresas.length >= 5 && (
               <div className="p-2 border-b" style={{ borderColor: 'var(--border)' }}>
                 <div className="relative">
-                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)]" />
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder)" />
                   <input
                     autoFocus
                     type="text"
                     placeholder="Buscar empresa..."
                     value={busqueda}
                     onChange={e => setBusqueda(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-none"
+                    className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-hidden"
                     style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                   />
                 </div>
@@ -78,14 +78,14 @@ export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Sele
             )}
             <div className="overflow-y-auto flex-1 p-1">
               {empresasFiltradas.length === 0 ? (
-                <p className="text-xs text-center p-3 text-[var(--text-secondary)]">No se encontraron empresas.</p>
+                <p className="text-xs text-center p-3 text-(--text-secondary)">No se encontraron empresas.</p>
               ) : (
                 empresasFiltradas.map(e => (
                   <button
                     key={e.id}
                     type="button"
                     onClick={() => { onChange(e.id); setAbierto(false) }}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)] ${value === e.id ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-(--bg-hover) ${value === e.id ? 'bg-(--bg-hover) font-semibold' : ''}`}
                     style={{ color: 'var(--text-primary)' }}
                   >
                     {e.nombre}

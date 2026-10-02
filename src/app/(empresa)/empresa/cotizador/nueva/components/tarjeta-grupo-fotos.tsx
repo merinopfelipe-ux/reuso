@@ -37,9 +37,9 @@ interface Props {
 export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, onCambiarModo, onAgregarFotos, onQuitarFoto, onQuitarGrupo }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [zoomUrl, setZoomUrl] = useState<string | null>(null)
-  const ts = 'text-[var(--text-secondary)]'
-  const tp = 'text-[var(--text-primary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const ts = 'text-(--text-secondary)'
+  const tp = 'text-(--text-primary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   function handleFotoSeleccionada(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
@@ -48,7 +48,7 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
   }
 
   return (
-    <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
+    <div className={`rounded-card border p-6 text-center ${cardBg}`}>
       <div className="flex items-center justify-between mb-3">
         <p className={`text-xs font-semibold ${ts}`}>Ítem {numero}</p>
         {onQuitarGrupo && (
@@ -100,20 +100,20 @@ export function TarjetaGrupoFotos({ grupo, numero, esPrimero, maxFotos, error, o
               : `Elige tú la categoría y llena todo a mano, hasta ${maxFotos} fotos a la vez`}
           </p>
           <p className={`text-xs mb-4 flex items-center justify-center gap-1 text-center ${ts}`}>
-            <Clipboard size={13} className="flex-shrink-0" sinAnimacion /> También puedes pegar imágenes copiadas: ⌘V en Mac, Ctrl+V en PC
+            <Clipboard size={13} className="shrink-0" sinAnimacion /> También puedes pegar imágenes copiadas: ⌘V en Mac, Ctrl+V en PC
           </p>
         </>
       ) : (
         <div className="flex gap-2 overflow-x-auto mb-4">
           {grupo.fotos.map((f, i) => (
-            <div key={i} className="relative flex-shrink-0">
+            <div key={i} className="relative shrink-0">
               <button
                 type="button"
                 onClick={() => setZoomUrl(f.preview)}
-                className="group relative block overflow-hidden rounded-[10px] cursor-zoom-in"
+                className="group relative block overflow-hidden rounded-btn cursor-zoom-in"
                 title="Ampliar imagen"
               >
-                <img src={f.preview} alt="" className="h-24 rounded-[10px] object-cover bg-[var(--bg-input)]" />
+                <img src={f.preview} alt="" className="h-24 rounded-btn object-cover bg-(--bg-input)" />
                 <span className="absolute inset-0 flex items-center justify-center bg-[#474747]/0 group-hover:bg-[#474747]/35 transition-colors duration-150">
                   <span className="w-7 h-7 rounded-full bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-150 shadow-lg">
                     <ZoomIn size={14} className="text-[#474747]" sinAnimacion />

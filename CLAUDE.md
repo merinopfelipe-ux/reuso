@@ -58,7 +58,7 @@ Empresas o personas con negocio en **restauración**, **diseño interior** o **p
 4. **Skeleton de carga obligatorio, nunca texto plano ni spinner improvisado.** Toda pantalla o sección con su propio `fetch` usa `<Skeleton>`/`<SkeletonCard>`/`<SkeletonLista>` (detalle completo y ejemplos en skill `design-system`).
 
 ## STACK, COMANDOS Y ARQUITECTURA
-- **Stack**: Next.js 14 App Router, TS, Tailwind, Supabase (Auth/Storage/RLS), jsPDF, Recharts, Zod.
+- **Stack**: Next.js 16 App Router (React 19, `src/proxy.ts` en vez de middleware), TS 6, Tailwind 4 (config en `globals.css`, sin `tailwind.config`), Supabase (Auth/Storage/RLS), jsPDF, Recharts, Zod. `createClient()` de servidor es async: siempre `await createClient()`.
 - **Comandos**: `npm run dev` / `npm run dev:clean`. Build `npm run build`. Deploy `vercel`.
 - **Arquitectura**: `(auth)` login/registro/recuperar, `(dashboard)` /dashboard, `(empresa)` /empresa, `(admin)` /admin, públicas sueltas `/verificar/[codigo]`, `/pasaporte/[codigo]`, `/propuesta/[token]`.
 - **Arquitectura de Permisos (3 capas)**:

@@ -92,16 +92,16 @@ export default function ConfigModulosPage() {
     setToggling(null)
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   // Módulos que NO tiene la empresa (para mostrar oportunidad de compra)
   // (la API solo devuelve los activos - si hay módulos conocidos que faltan, se muestran bloqueados)
   const tieneCoizador = modulos.some(m => m.clave === 'cotizador_crm')
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AdminPageHeader titulo="Acceso a módulos" showBack />
         <p className={`text-sm mb-6 ${ts}`}>
@@ -119,8 +119,8 @@ export default function ConfigModulosPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Módulos activos */}
             {modulos.map(modulo => (
-              <div key={modulo.id} className={`rounded-[12px] border ${cardBg}`}>
-                <div className="p-4 border-b border-[var(--border)]">
+              <div key={modulo.id} className={`rounded-card border ${cardBg}`}>
+                <div className="p-4 border-b border-(--border)">
                   <div className="flex items-center gap-2">
                     <Leaf size={18} className="text-[#00827C]" />
                     <p className={`text-sm font-bold ${tp}`}>{modulo.nombre}</p>
@@ -136,13 +136,13 @@ export default function ConfigModulosPage() {
                     <p className={`text-xs ${ts}`}>No hay miembros del equipo aún.</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-[var(--border)]">
+                  <div className="divide-y divide-(--border)">
                     {perfiles.map(p => {
                       const acceso = tieneAcceso(p.user_id, modulo.id)
                       const key = `${p.user_id}-${modulo.id}`
                       return (
                         <div key={p.user_id} className="flex items-center gap-3 px-4 py-3">
-                          <div className="w-8 h-8 rounded-full bg-[#00827C]/10 flex items-center justify-center flex-shrink-0">
+                          <div className="w-8 h-8 rounded-full bg-[#00827C]/10 flex items-center justify-center shrink-0">
                             <UserCircle size={18} className="text-[#00827C]" />
                           </div>
                           <div className="flex-1 min-w-0">
@@ -173,12 +173,12 @@ export default function ConfigModulosPage() {
 
             {/* Módulo Cotizador NO activo → oportunidad de venta */}
             {!tieneCoizador && (
-              <div className="rounded-[12px] border bg-[var(--bg-card)] border-[var(--border)]">
-                <div className="p-4 border-b border-[var(--border)]">
+              <div className="rounded-card border bg-(--bg-card) border-(--border)">
+                <div className="p-4 border-b border-(--border)">
                   <div className="flex items-center gap-2">
                     <Lock size={18} className={ts} />
                     <p className={`text-sm font-bold ${tp}`}>Cotizador CRM</p>
-                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium bg-[var(--bg-active)] text-[var(--text-secondary)]">
+                    <span className="ml-auto text-xs px-2 py-0.5 rounded-full font-medium bg-(--bg-active) text-(--text-secondary)">
                       No adquirido
                     </span>
                   </div>
@@ -204,7 +204,7 @@ export default function ConfigModulosPage() {
             )}
 
             {modulos.length === 0 && tieneCoizador === false && (
-              <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
+              <div className={`rounded-card border p-6 text-center ${cardBg}`}>
                 <Lock size={28} className={`mx-auto mb-2 ${ts}`} />
                 <p className={`text-sm font-semibold mb-1 ${tp}`}>Sin módulos adquiridos</p>
                 <p className={`text-xs ${ts}`}>
@@ -214,7 +214,7 @@ export default function ConfigModulosPage() {
                   href="https://wa.me/573214567890?text=Hola%2C%20quiero%20saber%20sobre%20los%20m%C3%B3dulos%20de%20Re%C3%BAso%20Lurdes."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] text-sm font-semibold hover:opacity-90 transition-colors hover-pop"
+                  className="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand text-(--text-on-brand) text-sm font-semibold hover:opacity-90 transition-colors hover-pop"
                 >
                   <WhatsappLogo size={14} />
                   Contáctanos

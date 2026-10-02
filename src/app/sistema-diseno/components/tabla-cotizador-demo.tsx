@@ -22,7 +22,7 @@ import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
 import { Modal } from '@/components/ui/modal'
 
 const ESTADOS: { key: string; label: string; color: string }[] = [
-  { key: 'por_cotizar', label: 'Por cotizar', color: 'text-[#474747]/60 bg-[#474747]/08' },
+  { key: 'por_cotizar', label: 'Por cotizar', color: 'text-[#474747]/60 ' },
   { key: 'enviada', label: 'Enviada', color: 'text-[#59A6E4] bg-[#59A6E4]/10' },
   { key: 'en_negociacion', label: 'En negociación', color: 'text-[#F6BF3E] bg-[#F6BF3E]/10' },
   { key: 'esperando_anticipo', label: 'Esperando anticipo', color: 'text-[#38B98E] bg-[#38B98E]/10' },
@@ -254,9 +254,9 @@ export function TablaCotizadorDemo() {
   const [datos, setDatos] = useState<CotizacionParaVista[]>(COTIZACIONES_DEMO)
 
   const paddingY = densidad === 'compacta' ? 'py-1' : 'py-2.5'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const tp = 'text-[var(--text-primary)]'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
+  const ts = 'text-(--text-secondary)'
+  const tp = 'text-(--text-primary)'
 
   const columnasVisibles = borrador.columnas
 
@@ -386,8 +386,8 @@ export function TablaCotizadorDemo() {
 
       {/* 2. Barra de acción masiva — solo aparece con selección activa */}
       {seleccionadas.size > 0 && (
-        <div className="flex items-center justify-between rounded-[10px] border border-[var(--color-brand)]/20 bg-[var(--color-brand-light)] px-4 py-2.5 mb-3">
-          <span className="text-sm font-semibold text-[var(--color-brand)]">
+        <div className="flex items-center justify-between rounded-btn border  bg-brand-light px-4 py-2.5 mb-3">
+          <span className="text-sm font-semibold text-brand">
             {seleccionadas.size} cotización{seleccionadas.size === 1 ? '' : 'es'} seleccionada{seleccionadas.size === 1 ? '' : 's'}
           </span>
           <div className="flex gap-2">
@@ -401,7 +401,7 @@ export function TablaCotizadorDemo() {
             <button
               type="button"
               onClick={() => setConfirmandoBorrado(true)}
-              className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+              className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
             >
               <Trash size={15} sinAnimacion /> Eliminar
             </button>
@@ -410,15 +410,15 @@ export function TablaCotizadorDemo() {
       )}
 
       {/* 3. Tabla real idéntica a /empresa/cotizador */}
-      <div className={`rounded-[12px] border ${cardBg}`}>
+      <div className={`rounded-card border ${cardBg}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+              <tr className="bg-(--bg-table-header) text-brand">
                 <th className={`px-1.5 xl:px-4 ${paddingY} w-10`}>
                   <button type="button" onClick={toggleSeleccionarTodas} className="flex">
                     {todasSeleccionadas
-                      ? <SquareCheck size={20} className="text-[var(--color-brand)]" sinAnimacion />
+                      ? <SquareCheck size={20} className="text-brand" sinAnimacion />
                       : <Square size={20} className={ts} sinAnimacion />}
                   </button>
                 </th>
@@ -439,13 +439,13 @@ export function TablaCotizadorDemo() {
               {cotsPagina.map((c, idx) => (
                 <tr
                   key={c.id}
-                  className={`hover:bg-[var(--bg-table-hover)] ${idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'}`}
+                  className={`hover:bg-(--bg-table-hover) ${idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'}`}
                   style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                 >
                   <td className={`px-1.5 xl:px-4 ${paddingY}`} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     <button type="button" onClick={() => toggleSeleccionada(c.id)} className="flex">
                       {seleccionadas.has(c.id)
-                        ? <SquareCheck size={20} className="text-[var(--color-brand)]" sinAnimacion />
+                        ? <SquareCheck size={20} className="text-brand" sinAnimacion />
                         : <Square size={20} className={ts} sinAnimacion />}
                     </button>
                   </td>
@@ -465,21 +465,21 @@ export function TablaCotizadorDemo() {
                       >
                         {clave === 'cliente_nombre' ? (
                           <span className="flex items-center gap-1 xl:gap-2 cursor-pointer">
-                            <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 break-words`}>
+                            <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                               {renderCeldaColumna(clave, c)}
                             </span>
-                            <CaretRight size={14} className={`${ts} flex-shrink-0`} sinAnimacion />
+                            <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                           </span>
                         ) : clave === 'codigo_cotizacion' ? (
                           <span className={`flex items-center gap-1 xl:gap-2 cursor-pointer ${alineacion === 'text-center' ? 'justify-center mx-auto' : ''}`}>
-                            <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 break-words`}>
+                            <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                               {renderCeldaColumna(clave, c)}
                             </span>
-                            <CaretRight size={14} className={`${ts} flex-shrink-0`} sinAnimacion />
+                            <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                           </span>
                         ) : (
                           <span className={
-                            colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} ${clave === 'total' ? 'whitespace-nowrap' : 'line-clamp-2 break-words'}`
+                            colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} ${clave === 'total' ? 'whitespace-nowrap' : 'line-clamp-2 wrap-break-word'}`
                             : definicionDe(clave).tipo === 'fecha' ? `block ${alineacion === 'text-center' ? 'mx-auto' : alineacion === 'text-right' ? 'ml-auto' : ''} ${margen} ${anchoColumna(clave).celda}`
                             : clave === 'cliente_telefono' ? `block ${alineacion === 'text-center' ? 'mx-auto' : alineacion === 'text-right' ? 'ml-auto' : ''} ${margen} ${anchoColumna(clave).celda} overflow-visible`
                             : clave === 'total' ? `block ${margen} ${anchoColumna(clave).celda} whitespace-nowrap`
@@ -498,7 +498,7 @@ export function TablaCotizadorDemo() {
         </div>
 
         {/* 4. Paginación EXACTA de /empresa/cotizador */}
-        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
+        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-(--border-light)">
           <span className={`text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 ${ts}`} style={{ flexShrink: 1 }}>
             {cotsFiltradas.length} cotizaciones · Página {paginaSegura} de {totalPaginas}
           </span>

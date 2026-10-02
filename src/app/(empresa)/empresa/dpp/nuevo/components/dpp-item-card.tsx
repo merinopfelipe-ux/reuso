@@ -64,9 +64,9 @@ const UMBRAL_CONFIANZA_BAJA = 0.5
 
 export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar, clienteVinculado }: Props) {
   const descripcionesMaterial = useMaterialDescripciones(conEmpresa)
-  const ts = 'text-[var(--text-secondary)]'
-  const tp = 'text-[var(--text-primary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const ts = 'text-(--text-secondary)'
+  const tp = 'text-(--text-primary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   const co2Total = useMemo(
     () => item.materiales.reduce((s, m) => s + m.peso_kg * m.factor_co2_kg, 0),
@@ -90,7 +90,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
   const puedeConfirmar = item.titulo.trim().length > 0 && pesoTotal > 0 && !item.creando
 
   return (
-    <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-xs ${cardBg}`}>
+    <div className={`rounded-2xl p-4 border flex flex-col gap-3 shadow-2xs ${cardBg}`}>
       <div className="flex items-center justify-between gap-2">
         {item.manual ? (
           <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-[#59A6E4]/15 text-[#59A6E4]">Manual</span>
@@ -108,7 +108,7 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
         <ImagenAmpliable
           src={item.imagenPreview}
           alt={item.titulo || 'Ítem detectado'}
-          wrapperClassName="w-full flex items-center justify-center rounded-[12px] bg-[var(--bg-input)]"
+          wrapperClassName="w-full flex items-center justify-center rounded-card bg-(--bg-input)"
           imgClassName="h-40 w-auto max-w-full object-contain"
         />
       )}
@@ -143,25 +143,25 @@ export function DppItemCard({ item, conEmpresa, onChange, onQuitar, onConfirmar,
             {m._esNuevo ? (
               <input value={m.nombre} onChange={e => actualizarMaterial(i, { nombre: e.target.value })} placeholder="Ej: Hierro" className={`flex-1 min-w-[80px] ${rowInputSt}`} />
             ) : (
-              <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-[var(--text-primary)]">
+              <span className="flex-1 min-w-[80px] flex items-center gap-1 text-sm font-medium text-(--text-primary)">
                 <span className="line-clamp-2 leading-tight" title={m.nombre}>{m.nombre}</span>
                 <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
               </span>
             )}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] bg-transparent flex-shrink-0">
-              <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseFloat(e.target.value) || 0 })} className="w-16 text-right text-sm outline-none border-none p-0 bg-transparent" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-(--border) bg-transparent shrink-0">
+              <input type="number" min={0} step="0.01" value={m.peso_kg} onChange={e => actualizarMaterial(i, { peso_kg: parseFloat(e.target.value) || 0 })} className="w-16 text-right text-sm outline-hidden border-none p-0 bg-transparent" />
               <span className={`text-xs ${ts}`}>kg</span>
             </div>
-            <button type="button" onClick={() => quitarMaterial(i)} aria-label="Quitar material" className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 flex-shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
+            <button type="button" onClick={() => quitarMaterial(i)} aria-label="Quitar material" className="p-1 text-[#E07D7D] bg-transparent transition-opacity duration-200 hover:opacity-50 shrink-0 cursor-pointer" title="Quitar material"><Trash size={16} /></button>
           </div>
         ))}
         {item.materiales.length === 0 && <p className={`text-xs italic py-1 ${ts}`}>Sin materiales asignados todavía.</p>}
-        <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] border border-[var(--border)] rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
+        <button type="button" onClick={agregarMaterial} className="self-start inline-flex items-center gap-1 text-xs font-semibold text-(--text-secondary) hover:bg-(--bg-hover) border border-(--border) rounded-full px-3 py-1.5 transition-colors cursor-pointer mt-1">
           <Plus size={13} /> Añadir material
         </button>
       </div>
 
-      <div className="flex justify-between items-center pt-2 border-t border-[var(--border)]">
+      <div className="flex justify-between items-center pt-2 border-t border-(--border)">
         <span className={`text-sm font-bold ${tp}`}>Huella de manufactura</span>
         <span className="text-sm font-bold text-[#00827C]">{formatNumero(co2Total, { unidad: 'kg CO₂ eq' })}</span>
       </div>

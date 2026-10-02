@@ -71,7 +71,7 @@ Cuando un test falla por texto o redirect, verificar estos valores exactos:
 | Login 429 (rate limit) | `src/app/api/auth/login/route.ts` | 97 |
 | Login 401 (credenciales) | `src/app/api/auth/login/route.ts` | 116 |
 | Sensitive rate limit | `src/app/api/profile/update-sensitive/route.ts` | 79 |
-| Redirect por rol | `src/middleware.ts` | 49–54 |
+| Redirect por rol | `src/proxy.ts` (función `proxy`, Next 16) | — |
 | Redirect empresa sin empresa_id | `src/app/(empresa)/empresa/page.tsx` | 141 |
 | Fail-open Turnstile registro | `src/app/(auth)/registro/page.tsx` · `src/app/api/auth/registro/route.ts` | — |
 

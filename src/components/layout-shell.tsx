@@ -78,7 +78,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
 
         {/* Workspace Central V13.22 */}
         <div
-          className={`flex-1 flex flex-col min-w-0 bg-[var(--bg-primary)] transition-[margin-left] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] ml-0 ${isExpanded ? 'md:ml-[220px]' : 'md:ml-[70px]'}`}
+          className={`flex-1 flex flex-col min-w-0 bg-(--bg-primary) transition-[margin-left] duration-600 ease-[cubic-bezier(0.22,1,0.36,1)] ml-0 ${isExpanded ? 'md:ml-[220px]' : 'md:ml-[70px]'}`}
         >
           {/* Main Content */}
           <BannerAlerta />

@@ -139,7 +139,7 @@ export function SelectorCiudad({ value, onChange, disabled, className = '', pais
         }}
       >
         <span className="truncate">{value || 'Seleccionar ciudad'}</span>
-        <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <ChevronDown size={16} className="text-(--text-secondary) shrink-0" />
       </button>
 
       {abierto && !disabled && (
@@ -155,14 +155,14 @@ export function SelectorCiudad({ value, onChange, disabled, className = '', pais
           >
             <div className="p-2 border-b" style={{ borderColor: 'var(--border)' }}>
               <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)]" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder)" />
                 <input
                   autoFocus
                   type="text"
                   placeholder="Buscar o escribir ciudad..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-none"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-hidden"
                   style={{
                     background: 'var(--bg-input)',
                     border: '1px solid var(--border)',
@@ -180,14 +180,14 @@ export function SelectorCiudad({ value, onChange, disabled, className = '', pais
                     onChange(busqueda.trim())
                     setAbierto(false)
                   }}
-                  className="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                  className="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors hover:bg-(--bg-hover)"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   Usar &quot;{busqueda}&quot;
                 </button>
               )}
               {ciudadesFiltradas.length === 0 && !busquedaEsValida ? (
-                <p className="text-xs text-center p-3 text-[var(--text-secondary)]">No se encontraron ciudades.</p>
+                <p className="text-xs text-center p-3 text-(--text-secondary)">No se encontraron ciudades.</p>
               ) : (
                 ciudadesFiltradas.map((ciudad) => (
                   <button
@@ -197,7 +197,7 @@ export function SelectorCiudad({ value, onChange, disabled, className = '', pais
                       onChange(ciudad)
                       setAbierto(false)
                     }}
-                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--bg-hover)] ${value === ciudad ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                    className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-(--bg-hover) ${value === ciudad ? 'bg-(--bg-hover) font-semibold' : ''}`}
                     style={{ 
                       color: 'var(--text-primary)'
                     }}

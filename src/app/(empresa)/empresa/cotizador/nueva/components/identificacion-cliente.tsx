@@ -135,10 +135,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-  const inputSt = 'w-full px-4 py-3 rounded-2xl border text-sm outline-none bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
+  const inputSt = 'w-full px-4 py-3 rounded-2xl border text-sm outline-hidden bg-(--bg-input) border-(--border) text-(--text-primary)'
 
   // Reutiliza lo que el vendedor ya escribió en el buscador en vez de
   // descartarlo: si son solo dígitos, es NIT (empresa) o teléfono/cédula
@@ -378,13 +378,13 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
     })
 
     return (
-      <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+      <div className={`rounded-card border p-5 ${cardBg}`}>
         <p className={`text-sm font-semibold mb-1 ${tp}`}>Resultados de búsqueda</p>
         <p className={`text-xs mb-4 ${ts}`}>Se encontraron {resultados.length} resultado{resultados.length !== 1 ? 's' : ''} para &quot;{q}&quot;</p>
 
         <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1 mb-4">
           {Array.from(empresasAgrupadas.values()).map(({ emp, contactos: contactosEmp }) => (
-            <div key={emp.id} className="rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] p-3">
+            <div key={emp.id} className="rounded-btn border border-(--border) bg-(--bg-card) p-3">
               <button
                 onClick={() => seleccionarCliente(contactosEmp[0])}
                 className="w-full text-left"
@@ -397,7 +397,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                   (el de la empresa) haría que "Convertir en cliente B2C"
                   no tuviera sentido sobre ella. */}
               {contactosEmp.filter(c => c.es_contacto_real).length > 0 && (
-                <div className="mt-2 pt-2 border-t border-[var(--border)] space-y-1.5">
+                <div className="mt-2 pt-2 border-t border-(--border) space-y-1.5">
                   {contactosEmp.filter(c => c.es_contacto_real).map(c => (
                     <div key={c.id} className="flex items-center justify-between gap-2">
                       <button onClick={() => seleccionarCliente(c)} className="text-left flex-1 min-w-0">
@@ -407,7 +407,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                       <button
                         type="button"
                         onClick={() => abrirConvertirB2C(c)}
-                        className="text-[11px] font-semibold px-2 py-1 rounded-full border border-[var(--border)] hover-pop flex-shrink-0"
+                        className="text-[11px] font-semibold px-2 py-1 rounded-full border border-(--border) hover-pop shrink-0"
                         style={{ color: 'var(--color-brand)' }}
                       >
                         Convertir en cliente independiente
@@ -422,7 +422,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             <button
               key={c.id}
               onClick={() => seleccionarCliente(c)}
-              className="w-full text-left p-3 rounded-[10px] border border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] transition-colors"
+              className="w-full text-left p-3 rounded-btn border border-(--border) bg-(--bg-card) hover:bg-(--bg-hover) transition-colors"
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -476,7 +476,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   if (paso === 'encontrado' && encontrado) {
     const empresaCliente = Array.isArray(encontrado.crm_empresas_clientes) ? encontrado.crm_empresas_clientes[0] : encontrado.crm_empresas_clientes
     return (
-      <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+      <div className={`rounded-card border p-5 ${cardBg}`}>
         <div className="flex items-center gap-2 mb-3">
           <CheckCircle size={18} className="text-[#38B98E]" />
           <p className={`text-sm font-semibold ${tp}`}>Cliente encontrado</p>
@@ -533,7 +533,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
 
   if (paso === 'crear') {
     return (
-      <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+      <div className={`rounded-card border p-5 ${cardBg}`}>
         <p className={`text-sm font-semibold mb-1 ${tp}`}>Cliente nuevo</p>
         <p className={`text-xs mb-4 ${ts}`}>&quot;{q}&quot; — no está registrado, crea su perfil.</p>
 
@@ -614,7 +614,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
                 )}
                 <div className="flex flex-col gap-3">
                   {contactos.map((c, idx) => (
-                    <div key={idx} className="rounded-xl p-3 border border-[var(--border)] bg-[var(--bg-card)]">
+                    <div key={idx} className="rounded-xl p-3 border border-(--border) bg-(--bg-card)">
                       <div className="flex items-center justify-between mb-2">
                         <p className={`text-[11px] font-semibold ${ts}`}>Contacto {idx + 1}</p>
                         <button type="button" onClick={() => quitarContacto(idx)} className={`text-xs font-semibold ${ts}`}>
@@ -710,10 +710,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
   }
 
   return (
-    <div className={`rounded-[12px] border p-5 shadow-sm ${cardBg}`}>
+    <div className={`rounded-card border p-5 shadow-xs ${cardBg}`}>
       <div className="flex items-center gap-2 mb-1">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-[var(--color-brand-light)]">
-          <MagnifyingGlass size={15} className="text-[var(--color-brand)]" sinAnimacion />
+        <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-brand-light">
+          <MagnifyingGlass size={15} className="text-brand" sinAnimacion />
         </div>
         <p className={`text-sm font-semibold ${tp}`}>¿A quién le cotizas?</p>
       </div>
@@ -733,10 +733,10 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             aria-pressed={filtroTipo === t}
             title={t === 'persona' ? 'Buscar solo personas' : 'Buscar solo empresas'}
             onClick={() => setFiltroTipo(filtroTipo === t ? 'todos' : t)}
-            className={`group flex-shrink-0 w-[64px] h-[46px] rounded-2xl border flex flex-col items-center justify-center gap-0.5 transition-all duration-200 hover:scale-105 active:scale-95 ${
+            className={`group shrink-0 w-[64px] h-[46px] rounded-2xl border flex flex-col items-center justify-center gap-0.5 transition-all duration-200 hover:scale-105 active:scale-95 ${
               filtroTipo === t
-                ? 'bg-[var(--color-brand)] border-[var(--color-brand)] text-[var(--text-on-brand)] shadow-md scale-105'
-                : 'bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--color-brand)]/50'
+                ? 'bg-brand border-brand text-(--text-on-brand) shadow-md scale-105'
+                : 'bg-(--bg-input) border-(--border) text-(--text-secondary) '
             }`}
           >
             {t === 'persona' ? <User size={16} /> : <Buildings size={16} />}
@@ -751,7 +751,7 @@ export function IdentificacionCliente({ conEmpresa, onClienteListo }: Props) {
             type="button"
             onClick={() => setFiltroTipo('todos')}
             title="Quitar filtro y volver a buscar en ambos"
-            className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-[var(--color-brand-light)] text-[var(--color-brand)] text-[11px] font-semibold hover:opacity-70 transition-opacity"
+            className="flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full bg-brand-light text-brand text-[11px] font-semibold hover:opacity-70 transition-opacity"
           >
             {filtroTipo === 'persona' ? 'Personas' : 'Empresa'}
             <X size={11} sinAnimacion />

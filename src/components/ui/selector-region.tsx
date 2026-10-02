@@ -94,7 +94,7 @@ export function SelectorRegion({ pais, value, onChange, disabled, className = ''
             }}
           >
             <div className="p-2 border-b" style={{ borderColor: 'var(--border)' }}>
-              <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--bg-input)]">
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-(--bg-input)">
                 <Search size={14} style={{ color: 'var(--text-secondary)' }} />
                 <input
                   autoFocus
@@ -102,7 +102,7 @@ export function SelectorRegion({ pais, value, onChange, disabled, className = ''
                   placeholder="Buscar región..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-sm"
+                  className="w-full bg-transparent border-none outline-hidden text-sm"
                   style={{ color: 'var(--text-primary)' }}
                 />
               </div>
@@ -123,7 +123,7 @@ export function SelectorRegion({ pais, value, onChange, disabled, className = ''
                         onChange(dep)
                         setAbierto(false)
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--bg-hover)] ${value === dep ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                      className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-(--bg-hover) ${value === dep ? 'bg-(--bg-hover) font-semibold' : ''}`}
                       style={{ 
                         color: 'var(--text-primary)'
                       }}
@@ -139,7 +139,7 @@ export function SelectorRegion({ pais, value, onChange, disabled, className = ''
                         onChange(busqueda.trim())
                         setAbierto(false)
                       }}
-                      className="w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-[var(--bg-hover)] border-t border-dashed mt-1"
+                      className="w-full text-left px-3 py-2 text-sm rounded-md transition-colors hover:bg-(--bg-hover) border-t border-dashed mt-1"
                       style={{ color: 'var(--text-primary)', borderColor: 'var(--border)' }}
                     >
                       <span className="opacity-70">Usar:</span> <span className="font-semibold">{busqueda.trim()}</span>

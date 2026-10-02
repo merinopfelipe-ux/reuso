@@ -4,6 +4,10 @@ try {
   ;(process as unknown as { loadEnvFile?: (path: string) => void }).loadEnvFile?.('.env.local')
 } catch {}
 
+// E2E_BASE_URL permite correr la suite contra otro servidor (ej. un build de
+// producción local) sin tocar el de desarrollo del puerto 3000.
+const BASE_URL = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
+
 export default defineConfig({
   testDir: './e2e',
   globalTeardown: './e2e/global-teardown.ts',
@@ -21,7 +25,7 @@ export default defineConfig({
   timeout: 60_000,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: BASE_URL,
     trace: 'on-first-retry',
     locale: 'es-ES',
   },
@@ -40,7 +44,7 @@ export default defineConfig({
   ],
   webServer: {
     command: 'SKIP_RATE_LIMIT=true SKIP_TEST_EMAILS=true npm run dev',
-    url: 'http://localhost:3000',
+    url: BASE_URL,
     reuseExistingServer: true,
     timeout: 120_000,
   },

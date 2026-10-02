@@ -87,7 +87,7 @@ export function LegalHeader() {
           background: var(--bg-card);
           color: var(--text-primary);
           cursor: pointer;
-          flex-shrink: 0;
+          shrink: 0;
           position: relative;
         }
 

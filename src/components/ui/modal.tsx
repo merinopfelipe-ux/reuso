@@ -93,18 +93,18 @@ export function Modal({
   if (!abierto || !mounted) return null
 
   const contenidoModal = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-[#474747]/60 backdrop-blur-xs animate-in fade-in duration-200" onClick={onClose}>
+    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 bg-[#474747]/60 backdrop-blur-xs animate-in fade-in duration-200" onClick={onClose}>
       <div
-        className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-[var(--bg-card)] border border-[var(--border)] shadow-2xl animate-in zoom-in-95 duration-150`}
+        className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-(--bg-card) border border-(--border) shadow-2xl animate-in zoom-in-95 duration-150`}
         onClick={e => e.stopPropagation()}
       >
         {/* Botón X de cierre: flotante con backdrop cuando sinEncabezado, o en esquina del header */}
         <button
           type="button"
           onClick={onClose}
-          className={`rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] hover-pop transition-all cursor-pointer z-30 ${
+          className={`rounded-full text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-hover) hover-pop transition-all cursor-pointer z-30 ${
             sinEncabezado
-              ? 'absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5 bg-[var(--bg-card)]/90 backdrop-blur-md border border-[var(--border)]/50 shadow-xs'
+              ? 'absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5  backdrop-blur-md border  shadow-2xs'
               : 'absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5'
           }`}
           aria-label="Cerrar modal"
@@ -114,11 +114,11 @@ export function Modal({
 
         {/* Encabezado Fijo — Solo se renderiza cuando sinEncabezado es false */}
         {!sinEncabezado && (
-          <div className="flex-shrink-0 p-5 sm:p-6 pb-2 relative">
+          <div className="shrink-0 p-5 sm:p-6 pb-2 relative">
             <div className={`flex ${descripcion ? 'items-start' : 'items-center'} gap-3 pr-8 ${tituloCentrado ? 'justify-center w-full' : ''}`}>
               {icono && !tituloCentrado && (
                 <div
-                  className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0"
+                  className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0"
                   style={colorIcono ? {
                     color: colorIcono,
                     backgroundColor: `color-mix(in srgb, ${colorIcono} 10%, transparent)`,
@@ -131,9 +131,9 @@ export function Modal({
                 </div>
               )}
               <div className={`flex flex-col gap-0.5 ${tituloCentrado ? 'w-full items-center text-center' : ''}`}>
-                <h3 className={`${tituloCentrado ? 'text-lg sm:text-xl' : 'text-base'} font-bold text-[var(--text-primary)] leading-snug`}>{titulo}</h3>
+                <h3 className={`${tituloCentrado ? 'text-lg sm:text-xl' : 'text-base'} font-bold text-(--text-primary) leading-snug`}>{titulo}</h3>
                 {descripcion && (
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                  <p className="text-xs text-(--text-secondary) leading-relaxed">
                     {descripcion}
                   </p>
                 )}
@@ -153,7 +153,7 @@ export function Modal({
             (contenido puramente informativo, sin ninguna acción que confirmar
             o cancelar; cerrar sigue disponible por la X, Escape o clic afuera) */}
         {!sinPie && (
-          <div className="flex-shrink-0 p-5 sm:p-6 pt-3 mt-1">
+          <div className="shrink-0 p-5 sm:p-6 pt-3 mt-1">
             <div className="flex items-center justify-end gap-2.5">
               {!soloBotonConfirmar && (
                 <Button variant="secondary" size="sm" onClick={onCancelar || onClose}>

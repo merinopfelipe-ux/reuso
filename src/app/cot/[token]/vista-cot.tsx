@@ -181,7 +181,7 @@ export function VistaCot({
         </div>
 
         {/* Derecha: Código COT + Fecha */}
-        <div className="text-right flex-shrink-0 flex flex-col items-end">
+        <div className="text-right shrink-0 flex flex-col items-end">
           <p className="text-[22px] md:text-[26px] font-black leading-tight tracking-tight">
             {codigoCotizacion.toUpperCase().startsWith('COT')
               ? codigoCotizacion.toUpperCase()
@@ -219,14 +219,14 @@ export function VistaCot({
                   // original (incluido print:h-auto para el PDF) — la lupa
                   // es un overlay puramente visual con pointer-events-none,
                   // el clic lo sigue recibiendo la imagen de siempre.
-                  <div className="relative group flex-shrink-0">
+                  <div className="relative group shrink-0">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       draggable={false}
                       src={m.imagen_url}
                       alt={tituloMueble}
                       onClick={() => onVerImagen && onVerImagen(m.imagen_url!, tituloMueble)}
-                      className="w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-auto print:max-h-16 rounded-[8px] object-cover print:object-contain object-center cursor-zoom-in hover:opacity-90 transition-opacity print:cursor-auto"
+                      className="w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-auto print:max-h-16 rounded-input object-cover print:object-contain object-center cursor-zoom-in hover:opacity-90 transition-opacity print:cursor-auto"
                     />
                     <span className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150 print:hidden">
                       <span className="w-7 h-7 rounded-full bg-white/95 flex items-center justify-center shadow-lg">
@@ -235,7 +235,7 @@ export function VistaCot({
                     </span>
                   </div>
                 ) : (
-                  <div className={`w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-16 rounded-[8px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 print:w-16 print:h-16 rounded-input shrink-0 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-black/5'}`}>
                     <ArrowsCounterClockwise size={16} className="text-[#00827C]/30" />
                   </div>
                 )}
@@ -246,7 +246,7 @@ export function VistaCot({
               </div>
 
               {/* 2. Valores en Mobile vs Desktop */}
-              <div className="flex sm:contents print:contents items-center justify-between mt-2 sm:mt-0 pl-[4.25rem] sm:pl-0">
+              <div className="flex sm:contents print:contents items-center justify-between mt-2 sm:mt-0 pl-17 sm:pl-0">
                 {/* En desktop no mostramos "Cant:", por lo que usamos text-center y ocultamos el texto extra. En mobile usamos flex y text-sm. */}
                 <span className={`text-sm sm:text-center print:text-center ${ts}`}>
                   <span className="sm:hidden print:hidden text-xs opacity-70 mr-1">Cant:</span>
@@ -313,7 +313,7 @@ export function VistaCot({
         {/* 1. Nota: empieza en la misma línea después de los dos puntos (sin punto forzado al final) */}
         {observaciones && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <ChatCircle size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <ChatCircle size={15} className={`${ts} shrink-0 self-center`} />
             <span className="font-semibold">Nota:</span>
             <span
               className={ts}
@@ -325,7 +325,7 @@ export function VistaCot({
         {/* 1b. Recogemos y entregamos gratis: mismo formato negro/gris que el resto, sin color especial */}
         {envioGratisActivo && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <DynamicIcon nombre={envioGratisIcono} size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <DynamicIcon nombre={envioGratisIcono} size={15} className={`${ts} shrink-0 self-center`} />
             <span
               className={tp}
               dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(conPuntoFinal(envioGratisTexto || 'Recogemos y entregamos Gratis')), NOTA_SANITIZE_CONFIG) }}
@@ -336,7 +336,7 @@ export function VistaCot({
         {/* 2. Forma de pago: sin slash (/), texto plano, con punto al final */}
         {formaPagoActivo && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <CreditCard size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <CreditCard size={15} className={`${ts} shrink-0 self-center`} />
             <span className="font-semibold">Forma de pago:</span>
             <span className={ts}>
               {formaPagoTipo === 'dias'
@@ -351,7 +351,7 @@ export function VistaCot({
         {/* 3. Validez de la oferta: con punto al final */}
         {validezActiva && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <Calendar size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <Calendar size={15} className={`${ts} shrink-0 self-center`} />
             <span className="font-semibold">Validez de la oferta:</span>
             <span className={ts}>Válida hasta el {fechaValidezLarga}.</span>
           </div>
@@ -360,7 +360,7 @@ export function VistaCot({
         {/* 4. Tiempo de la entrega: por defecto "25 a 30 días hábiles", con punto al final */}
         {tiempoEntregaActivo && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <Clock size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <Clock size={15} className={`${ts} shrink-0 self-center`} />
             <span className="font-semibold">Tiempo de la entrega:</span>
             <span className={ts}>
               {(tiempoEntrega || '25 a 30 días hábiles').endsWith('.')
@@ -373,7 +373,7 @@ export function VistaCot({
         {/* 5. Garantía: por defecto "Materiales de alta calidad, mano de obra calificada.", sin punto forzado al final */}
         {garantiaActivo && (
           <div className="flex flex-wrap items-baseline gap-2">
-            <ShieldCheck size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <ShieldCheck size={15} className={`${ts} shrink-0 self-center`} />
             <span className="font-semibold">Garantía:</span>
             <span className={ts}>{garantiaTexto || 'Materiales de alta calidad, mano de obra calificada.'}</span>
           </div>
@@ -382,7 +382,7 @@ export function VistaCot({
         {/* 6. Mensajes destacados: lista común, va al final, debajo de lo preestablecido */}
         {destacados.map((d, i) => (
           <div key={i} className="flex flex-wrap items-baseline gap-2">
-            <DynamicIcon nombre={d.icono} size={15} className={`${ts} flex-shrink-0 self-center`} />
+            <DynamicIcon nombre={d.icono} size={15} className={`${ts} shrink-0 self-center`} />
             <span className={ts} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(d.texto), NOTA_SANITIZE_CONFIG) }} />
           </div>
         ))}

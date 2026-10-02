@@ -1,255 +1,402 @@
 /* Open Sans alojada aquí (misma familia, mismo aspecto): evita pedirla a Google
    antes de pintar la pantalla (bloqueaba el render). Fuente variable 400 a 700. */
 /* latin-ext */
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/open-sans-latin-ext.woff2') format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+/* Paridad con Tailwind 3: en v4 hover solo aplica en dispositivos con puntero.
+   Se restaura el comportamiento de v3 (también al tocar en pantallas táctiles). */
+@custom-variant hover (&:hover);
+
+/* Paridad con el preflight de Tailwind 3 (migración 2026-10-01): v4 cambió el
+   color del placeholder, el cursor de los botones y dejó los campos transparentes. */
+@layer base {
+  input::placeholder,
+  textarea::placeholder {
+    opacity: 1;
+    color: #9ca3af;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Fondo y relleno nativos del navegador, como en v3 (v4 los anula). */
+  input:where(:not([type="button"], [type="reset"], [type="submit"])),
+  select,
+  textarea {
+    background-color: revert;
+  }
+  option {
+    padding: revert;
+  }
+}
+
+@theme {
+  --font-sans: 'Open Sans', sans-serif;
+  --font-seravek: seravek, ui-sans-serif, sans-serif;
+
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-brand-light: var(--color-brand-light);
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-warning: var(--color-warning);
+  --color-info: var(--color-info);
+  --color-pistacho: var(--color-pistacho);
+  --color-menta: var(--color-menta);
+  --color-nogal: var(--color-nogal);
+  --color-rosa: var(--color-rosa);
+  --color-violeta: var(--color-violeta);
+
+  --background-color-primary: var(--bg-primary);
+  --background-color-secondary: var(--bg-secondary);
+  --background-color-card: var(--bg-card);
+  --background-color-sidebar: var(--bg-sidebar);
+  --background-color-hover: var(--bg-hover);
+  --background-color-input: var(--bg-input);
+  --background-color-active: var(--bg-active);
+
+  --text-color-primary: var(--text-primary);
+  --text-color-secondary: var(--text-secondary);
+  --text-color-placeholder: var(--text-placeholder);
+  --border-color-light: var(--border-light);
+  --border-color-divider: var(--divider);
+
+  --shadow-card: var(--shadow);
+
+  --radius-card: 12px;
+  --radius-btn: 10px;
+  --radius-input: 8px;
+  --radius-badge: 100px;
+
+  --transition-duration-hover: 200ms;
+  --transition-duration-sidebar: 300ms;
+  --transition-duration-theme: 300ms;
+
+  /* Paridad visual con Tailwind 3 (migración 2026-10-01). Tailwind 4 calcula el
+     interlineado de text-* como proporción del tamaño y cambió la paleta a
+     oklch. Se fijan los valores de v3 para que la interfaz aprobada se vea igual. */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  --color-amber-200: #fde68a;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-gray-100: #f3f4f6;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #4b5563;
+  --color-gray-800: #1f2937;
+  --color-green-500: #22c55e;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-50: #eef2ff;
+  --color-indigo-700: #4338ca;
+  --color-red-100: #fee2e2;
+  --color-red-500: #ef4444;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
+  --color-rose-600: #e11d48;
+  --color-slate-200: #e2e8f0;
+  --color-slate-500: #64748b;
+  --color-slate-700: #334155;
+  --color-teal-500: #14b8a6;
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--border);
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@layer base {
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/open-sans-latin-ext.woff2') format('woff2');
+    unicode-range:
+      U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+      U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+      U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  }
+  @font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/open-sans-latin.woff2') format('woff2');
+    unicode-range:
+      U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+      U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+      U+2212, U+2215, U+FEFF, U+FFFD;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: seravek, 'Open Sans', ui-sans-serif, sans-serif;
+  }
 }
 /* latin */
-@font-face {
-  font-family: 'Open Sans';
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url('/fonts/open-sans-latin.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
 
-h1,
-h2,
-h3 {
-  font-family: seravek, 'Open Sans', ui-sans-serif, sans-serif;
-}
+@layer utilities {
+  /* ─── Tema claro (default) ─── */
+  :root,
+  [data-theme='light'] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-integrated: rgba(0, 130, 124, 0.02);
+    --bg-sidebar: #ffffff;
+    --bg-hover: rgba(0, 130, 124, 0.06);
+    --bg-input: #ffffff;
+    --bg-active: rgba(0, 130, 124, 0.1);
+    --bg-zebra: rgba(0, 0, 0, 0.01);
+    --bg-table-hover: rgba(0, 0, 0, 0.03);
+    --bg-table-header: rgba(0, 130, 124, 0.04);
+    --table-accent: var(--text-primary);
+    --table-accent-weight: normal;
+    --dot-display: none;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+    --text-primary: #474747;
+    --text-secondary: #474747;
+    --text-placeholder: #577c79;
 
-/* ─── Tema claro (default) ─── */
-:root,
-[data-theme="light"] {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-integrated: rgba(0, 130, 124, 0.02);
-  --bg-sidebar: #FFFFFF;
-  --bg-hover: rgba(0, 130, 124, 0.06);
-  --bg-input: #FFFFFF;
-  --bg-active: rgba(0, 130, 124, 0.10);
-  --bg-zebra: rgba(0, 0, 0, 0.01);
-  --bg-table-hover: rgba(0, 0, 0, 0.03);
-  --bg-table-header: rgba(0, 130, 124, 0.04);
-  --table-accent: var(--text-primary);
-  --table-accent-weight: normal;
-  --dot-display: none;
+    --border: rgba(0, 130, 124, 0.12);
+    --border-light: rgba(0, 130, 124, 0.06);
+    --shadow: 0 1px 3px rgba(0, 130, 124, 0.06);
+    --skeleton-base: #ebf5f4;
+    --skeleton-shine: #f2f9f8;
+    --divider: rgba(0, 130, 124, 0.08);
 
-  --text-primary: #474747;
-  --text-secondary: #474747;
-  --text-placeholder: #577C79;
-
-  --border: rgba(0, 130, 124, 0.12);
-  --border-light: rgba(0, 130, 124, 0.06);
-  --shadow: 0 1px 3px rgba(0, 130, 124, 0.06);
-  --skeleton-base: #EBF5F4;
-  --skeleton-shine: #F2F9F8;
-  --divider: rgba(0, 130, 124, 0.08);
-
-  --color-brand: #00827C;
-  --color-brand-hover: #006B66;
-  --color-brand-light: rgba(0, 130, 124, 0.08);
-  --color-success: #38B98E;
-  --color-error: #FF5E4B;
-  --color-warning: #F6BF3E;
-  --color-info: #59A6E4;
-  --color-pistacho: #D6F391;
-  /* Gris "muy tenue" para marcar la columna activa de orden en tablas —
+    --color-brand: #00827c;
+    --color-brand-hover: #006b66;
+    --color-brand-light: rgba(0, 130, 124, 0.08);
+    --color-success: #38b98e;
+    --color-error: #ff5e4b;
+    --color-warning: #f6bf3e;
+    --color-info: #59a6e4;
+    --color-pistacho: #d6f391;
+    /* Gris "muy tenue" para marcar la columna activa de orden en tablas —
      NUNCA un gris genérico suelto, sale de Negro Lurdes a 5% (mismo
      criterio ya usado en /admin/status para "Incidencias Activas"). */
-  --table-orden-activo: rgba(71, 71, 71, 0.015);
-  --table-orden-hover: rgba(71, 71, 71, 0.01);
-  --color-menta: #8AD0B2;
-  --color-nogal: #AD7C43;
-  --color-rosa: #F3BBD3;
-  --color-violeta: #985fa1;
+    --table-orden-activo: rgba(71, 71, 71, 0.015);
+    --table-orden-hover: rgba(71, 71, 71, 0.01);
+    --color-menta: #8ad0b2;
+    --color-nogal: #ad7c43;
+    --color-rosa: #f3bbd3;
+    --color-violeta: #985fa1;
 
-  --text-on-brand: #FFFFFF;
-  --color-success-content: #1F8C65;
-  --color-error-content: #CC3C2A;
-  --color-warning-content: #AD7C43;
-  --color-info-content: #2B7FBF;
-  --scrollbar-thumb-hover: rgba(0, 130, 124, 0.25);
-  /* Overlay de modales de imagen ampliada (ModalImagenZoom): blanco en
+    --text-on-brand: #ffffff;
+    --color-success-content: #1f8c65;
+    --color-error-content: #cc3c2a;
+    --color-warning-content: #ad7c43;
+    --color-info-content: #2b7fbf;
+    --scrollbar-thumb-hover: rgba(0, 130, 124, 0.25);
+    /* Overlay de modales de imagen ampliada (ModalImagenZoom): blanco en
      día, deja ver algo del fondo detrás en vez de taparlo por completo. */
-  --overlay-zoom: rgba(255, 255, 255, 0.55);
-}
+    --overlay-zoom: rgba(255, 255, 255, 0.55);
+  }
 
-/* ─── Tema oscuro (Protocolo Lurdes V12.3) ─── */
-[data-theme="dark"] {
-  --bg-primary: #474747;
-  /* Negro Lurdes (Noche) */
-  --bg-secondary: #525252;
-  /* Nivel 1 - cards y paneles */
-  --bg-card: #525252;
-  --bg-integrated: rgba(255, 255, 255, 0.04);
-  --bg-sidebar: #474747;
-  --bg-hover: rgba(214, 243, 145, 0.06);
-  --bg-input: #5A5A5A;
-  --bg-active: rgba(214, 243, 145, 0.10);
-  --bg-zebra: rgba(255, 255, 255, 0.01);
-  --bg-table-hover: rgba(255, 255, 255, 0.03);
-  --bg-table-header: rgba(214, 243, 145, 0.04);
-  --table-accent: #D6F391;
-  --table-accent-weight: bold;
-  --dot-display: inline-block;
+  /* ─── Tema oscuro (Protocolo Lurdes V12.3) ─── */
+  [data-theme='dark'] {
+    --bg-primary: #474747;
+    /* Negro Lurdes (Noche) */
+    --bg-secondary: #525252;
+    /* Nivel 1 - cards y paneles */
+    --bg-card: #525252;
+    --bg-integrated: rgba(255, 255, 255, 0.04);
+    --bg-sidebar: #474747;
+    --bg-hover: rgba(214, 243, 145, 0.06);
+    --bg-input: #5a5a5a;
+    --bg-active: rgba(214, 243, 145, 0.1);
+    --bg-zebra: rgba(255, 255, 255, 0.01);
+    --bg-table-hover: rgba(255, 255, 255, 0.03);
+    --bg-table-header: rgba(214, 243, 145, 0.04);
+    --table-accent: #d6f391;
+    --table-accent-weight: bold;
+    --dot-display: inline-block;
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #E0E0E0;
-  --text-placeholder: #888888;
-  --text-on-brand: #474747;
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-placeholder: #888888;
+    --text-on-brand: #474747;
 
-  --border: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.04);
-  --shadow: 0 12px 60px rgba(71, 71, 71, 0.4);
-  /* Antes #525252/#5A5A5A — el mismo tono que las tarjetas normales
+    --border: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(255, 255, 255, 0.04);
+    --shadow: 0 12px 60px rgba(71, 71, 71, 0.4);
+    /* Antes #525252/#5A5A5A — el mismo tono que las tarjetas normales
      (--bg-secondary/--bg-input), sin ningún matiz que dijera "esto está
      cargando". Se veía como un bloque plano oscuro, reportado como "se ve
      como un bloque negro" (2026-09-04). Ahora usa pistacho translúcido —
      el mismo acento de marca que ya usa el resto del sistema en modo
      noche — bien visible sobre --bg-primary, con contraste real entre
      base y brillo. */
-  --skeleton-base: rgba(214, 243, 145, 0.08);
-  --skeleton-shine: rgba(214, 243, 145, 0.18);
-  --divider: rgba(255, 255, 255, 0.06);
+    --skeleton-base: rgba(214, 243, 145, 0.08);
+    --skeleton-shine: rgba(214, 243, 145, 0.18);
+    --divider: rgba(255, 255, 255, 0.06);
 
-  --color-brand: #D6F391;
-  --color-brand-light: rgba(214, 243, 145, 0.15);
-  --table-orden-activo: rgba(255, 255, 255, 0.015);
-  --table-orden-hover: rgba(255, 255, 255, 0.01);
+    --color-brand: #d6f391;
+    --color-brand-light: rgba(214, 243, 145, 0.15);
+    --table-orden-activo: rgba(255, 255, 255, 0.015);
+    --table-orden-hover: rgba(255, 255, 255, 0.01);
 
-  --color-success-content: #D6F391;
-  --color-error-content: #FF9B9B;
-  --color-warning-content: #F6BF3E;
-  --color-info-content: #A0D2F9;
+    --color-success-content: #d6f391;
+    --color-error-content: #ff9b9b;
+    --color-warning-content: #f6bf3e;
+    --color-info-content: #a0d2f9;
 
-  --btn-error-text: #474747;
-  --scrollbar-thumb-hover: rgba(214, 243, 145, 0.3);
-  --overlay-zoom: rgba(71, 71, 71, 0.55);
-}
+    --btn-error-text: #474747;
+    --scrollbar-thumb-hover: rgba(214, 243, 145, 0.3);
+    --overlay-zoom: rgba(71, 71, 71, 0.55);
+  }
 
-[data-theme="dark"] .logo-dark-invert {
-  filter: brightness(0) invert(1) !important;
-}
+  [data-theme='dark'] .logo-dark-invert {
+    filter: brightness(0) invert(1) !important;
+  }
 
-/* ─── Base ─── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  /* ─── Base ─── */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-html {
-  font-family: 'Open Sans', sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
+  html {
+    font-family: 'Open Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-  margin: 0;
-}
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      border-color 0.3s;
+    margin: 0;
+  }
 
-/* ─── Copy-paste permitido para super_admin ─── */
-.allow-select,
-.allow-select * {
-  -webkit-user-select: text;
-  user-select: text;
-}
+  /* ─── Copy-paste permitido para super_admin ─── */
+  .allow-select,
+  .allow-select * {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 
-/* ─── Focus accesible ─── */
-:focus-visible {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 2px;
-}
+  /* ─── Focus accesible ─── */
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
 
-/* ─── Scrollbar sutil ─── */
-/* ─── Esqueletos y Animaciones V7.0 ─── */
-@keyframes shimmer {
-  0% {
+  /* ─── Scrollbar sutil ─── */
+  /* ─── Esqueletos y Animaciones V7.0 ─── */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .skeleton-shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--skeleton-base);
+    border-radius: 8px;
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     transform: translateX(-100%);
-  }
-
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.skeleton-shimmer {
-  position: relative;
-  overflow: hidden;
-  background-color: var(--skeleton-base);
-  border-radius: 8px;
-}
-
-.skeleton-shimmer::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  transform: translateX(-100%);
-  background-image: linear-gradient(90deg,
+    background-image: linear-gradient(
+      90deg,
       transparent 0,
       var(--skeleton-shine) 50%,
-      transparent 100%);
-  animation: shimmer 1.5s infinite;
-}
-
-/* ─── Preloader Animación V7.1 ─── */
-@keyframes pulse-logo {
-
-  0%,
-  100% {
-    transform: scale(0.95);
-    opacity: 0.8;
+      transparent 100%
+    );
+    animation: shimmer 1.5s infinite;
   }
 
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
+  /* ─── Preloader Animación V7.1 ─── */
+  @keyframes pulse-logo {
+    0%,
+    100% {
+      transform: scale(0.95);
+      opacity: 0.8;
+    }
+
+    50% {
+      transform: scale(1.05);
+      opacity: 1;
+    }
   }
-}
 
-.pulse-logo {
-  animation: pulse-logo 2s ease-in-out infinite;
-}
+  .pulse-logo {
+    animation: pulse-logo 2s ease-in-out infinite;
+  }
 
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
+  ::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 3px;
-}
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
   }
 }
 @keyframes modalIn {

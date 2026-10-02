@@ -76,7 +76,7 @@ export function LineasEmpresaClient({
         abierto={!!pendiente}
         onClose={() => setPendiente(null)}
         titulo={`¿Desactivar línea ${pendiente?.nombre}?`}
-        icono={<Warning size={22} className="text-[var(--color-warning)]" />}
+        icono={<Warning size={22} className="text-warning" />}
         descripcion="La empresa dejará de poder usar esta línea de productos/servicios en cualquiera de los módulos base (Cotizador, DPP, Cálculo)."
         textoCancelar="Cancelar"
         textoConfirmar="Apagar Línea"

@@ -190,11 +190,11 @@ function ModalResultadosIA({
         {campos.length === 0 ? (
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>La IA no encontró datos extraíbles. Ingresa los valores manualmente en el tab de Métricas.</p>
         ) : (
-          <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden mb-5">
+          <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden mb-5">
             <div className="overflow-x-auto">
               <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                  <tr className="bg-(--bg-table-header) text-brand">
                     <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Campo en doc</th>
                     <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Valor extraído</th>
                     <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Confianza</th>
@@ -206,23 +206,23 @@ function ModalResultadosIA({
                   return (
                     <tr
                       key={idx}
-                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
-                      <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">
+                      <td className="px-4 py-3 text-(--text-secondary) text-xs">
                         <div className="flex items-center gap-2">
                           <span>{c.campo_original}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">{c.valor_extraido}{c.unidad ? ` ${c.unidad}` : ''}</td>
+                      <td className="px-4 py-3 font-semibold text-(--text-primary)">{c.valor_extraido}{c.unidad ? ` ${c.unidad}` : ''}</td>
                       <td className="px-4 py-3 text-center">
                         <span style={{ color: c.confianza >= 0.85 ? 'var(--color-brand)' : c.confianza >= 0.6 ? '#F6BF3E' : '#FF5E4B', fontWeight: 700 }}>
                           {Math.round(c.confianza * 100)} %
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-[var(--text-secondary)]">{c.campo_destino_dpp}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-(--text-secondary)">{c.campo_destino_dpp}</td>
                     </tr>
                   )
                 })}
@@ -649,7 +649,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
             </div>
             {activo.peso_foto_sugerido_kg != null && (
               <div className="flex flex-col gap-2 p-3 rounded-xl mb-4" style={{ background: 'rgba(246,191,62,0.1)', border: '1px solid rgba(246,191,62,0.3)' }}>
-                <p className="text-xs text-[var(--text-primary)]">
+                <p className="text-xs text-(--text-primary)">
                   La foto sugiere <strong>{activo.peso_foto_sugerido_kg} kg</strong> en total. El catálogo estima {activo.peso_total_kg ?? 0} kg.
                 </p>
                 <div className="flex gap-2">
@@ -674,11 +674,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               <p style={{ margin: '0 0 12px', fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>
                 Composición de materiales
               </p>
-              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+              <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                      <tr className="bg-(--bg-table-header) text-brand">
                         <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Material</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Peso</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ eq/kg</th>
@@ -691,15 +691,15 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                       return (
                         <tr
                           key={idx}
-                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                            idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                         >
-                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                          <td className="px-4 py-3 font-semibold text-(--text-primary)">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span>{m.material}</span>
-                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-xs ring-1 inset-ring ${
+                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-2xs ring-1 inset-ring ${
                                 m.rol_conservacion === 'se_reemplaza'
                                   ? 'bg-gray-100 text-gray-600 ring-gray-500/20' 
                                   : 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
@@ -708,9 +708,9 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(m.factor_co2_kg)}</td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-xs">{m.origen_fuente ?? '-'}</td>
+                          <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">{formatNumero(m.peso_kg, { unidad: 'kg' })}</td>
+                          <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">{formatNumero(m.factor_co2_kg)}</td>
+                          <td className="px-4 py-3 text-(--text-secondary) text-xs">{m.origen_fuente ?? '-'}</td>
                           <td className="px-4 py-3 text-center">
                             {m.nivel_confianza ? (
                               <span style={{ background: `${CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2'}1A`, color: CONFIANZA_COLOR[m.nivel_confianza] ?? '#8AD0B2', padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 700 }}>
@@ -1036,11 +1036,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '0.05em', margin: '0 0 12px' }}>
                 Historial de métricas
               </p>
-              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+              <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                      <tr className="bg-(--bg-table-header) text-brand">
                         <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">TCO</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Costo evitado</th>
@@ -1054,19 +1054,19 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                       return (
                         <tr
                           key={m.id}
-                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                            idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                         >
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-xs text-center">
+                          <td className="px-4 py-3 text-(--text-secondary) text-xs text-center">
                             {formatFecha(m.calculado_at)}
                           </td>
-                          <td className="px-4 py-3 font-semibold text-[var(--text-primary)] text-right whitespace-nowrap">{formatMoneda(m.tco, 'COP')}</td>
-                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">{formatMoneda(m.costo_evitado, 'COP')}</td>
-                          <td className="px-4 py-3 text-[var(--text-primary)] text-right whitespace-nowrap">{m.e_roi != null ? `${formatNumero(m.e_roi)} %` : '-'}</td>
-                          <td className="px-4 py-3 text-[var(--text-primary)] text-right whitespace-nowrap">{m.inflow_circular_pct != null ? `${formatNumero(m.inflow_circular_pct)} %` : '-'}</td>
-                          <td className="px-4 py-3 font-mono text-xs text-[var(--text-secondary)] text-center">{m.version ?? '-'}</td>
+                          <td className="px-4 py-3 font-semibold text-(--text-primary) text-right whitespace-nowrap">{formatMoneda(m.tco, 'COP')}</td>
+                          <td className="px-4 py-3 font-semibold text-brand text-right whitespace-nowrap">{formatMoneda(m.costo_evitado, 'COP')}</td>
+                          <td className="px-4 py-3 text-(--text-primary) text-right whitespace-nowrap">{m.e_roi != null ? `${formatNumero(m.e_roi)} %` : '-'}</td>
+                          <td className="px-4 py-3 text-(--text-primary) text-right whitespace-nowrap">{m.inflow_circular_pct != null ? `${formatNumero(m.inflow_circular_pct)} %` : '-'}</td>
+                          <td className="px-4 py-3 font-mono text-xs text-(--text-secondary) text-center">{m.version ?? '-'}</td>
                         </tr>
                       )
                     })}

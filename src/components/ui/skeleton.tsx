@@ -12,7 +12,7 @@ export function Skeleton({ className = '', style }: { className?: string; style?
 export function SkeletonCard({ lineas = 3, className = '' }: { lineas?: number; className?: string }) {
   const anchos = ['100%', '80%', '60%', '90%', '70%']
   return (
-    <div className={`rounded-[12px] border p-4 bg-[var(--bg-card)] border-[var(--border)] space-y-2.5 ${className}`}>
+    <div className={`rounded-card border p-4 bg-(--bg-card) border-(--border) space-y-2.5 ${className}`}>
       {Array.from({ length: lineas }).map((_, i) => (
         <Skeleton key={i} style={{ width: anchos[i % anchos.length], height: i === 0 ? 16 : 12 }} />
       ))}

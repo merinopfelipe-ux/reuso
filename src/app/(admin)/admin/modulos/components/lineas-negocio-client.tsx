@@ -180,7 +180,7 @@ export function LineasNegocioClient({ lineas }: { lineas: LineaNegocioConStats[]
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {lineas.map((m) => (
-          <div key={m.id} className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]" style={{ opacity: m.activa ? 1 : 0.55 }}>
+          <div key={m.id} className="rounded-card border border-(--border) p-4 bg-(--bg-card)" style={{ opacity: m.activa ? 1 : 0.55 }}>
             {editandoId === m.id ? (
               /* Modo edición */
               <div>

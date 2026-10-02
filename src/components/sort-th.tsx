@@ -30,7 +30,7 @@ export function SortTh({ col, sort, onToggle, children, align = 'left', style }:
   return (
     <th
       onClick={() => onToggle(col)}
-      className="group hover:bg-[var(--table-orden-hover)]"
+      className="group hover:bg-(--table-orden-hover)"
       style={{
         padding: '10px 16px',
         textAlign,

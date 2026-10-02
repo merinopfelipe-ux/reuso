@@ -131,9 +131,9 @@ export function ModuloTrazabilidad({ cotizacionId, conEmpresa }: { cotizacionId:
       .finally(() => setCargando(false))
   }, [cotizacionId, conEmpresa])
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   if (cargando) return null
 
@@ -142,7 +142,7 @@ export function ModuloTrazabilidad({ cotizacionId, conEmpresa }: { cotizacionId:
   const itemsAMostrar = mostrarTodas ? listaUnificada : listaUnificada.slice(0, 3)
 
   return (
-    <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+    <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
       <p className={`text-xs font-semibold mb-3 ${ts}`}>Trazabilidad</p>
 
       {listaUnificada.length === 0 ? (
@@ -156,7 +156,7 @@ export function ModuloTrazabilidad({ cotizacionId, conEmpresa }: { cotizacionId:
               const metaText = [...det, formatFechaHora(a.created_at)].filter(Boolean).join(' · ')
               return (
                 <div key={a.id} className="flex items-start gap-2">
-                  <span className={`mt-0.5 flex-shrink-0 ${ts}`}>{info.icon}</span>
+                  <span className={`mt-0.5 shrink-0 ${ts}`}>{info.icon}</span>
                   <div className="flex-1 min-w-0">
                     <p className={`text-[13px] font-normal ${tp}`}>{info.label}</p>
                     <p className={`text-[10px] mt-0.5 ${ts}`}>{metaText}</p>

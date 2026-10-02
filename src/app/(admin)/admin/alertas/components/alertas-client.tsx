@@ -153,7 +153,7 @@ export function AlertasClient({ alertas, empresas }: { alertas: Alerta[], empres
         {alertas.map(a => {
           const cfg = TIPO_CONFIG[a.tipo]
           return (
-            <div key={a.id} className="flex items-start gap-3.5 rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
+            <div key={a.id} className="flex items-start gap-3.5 rounded-card border border-(--border) p-4 bg-(--bg-card)">
               <span style={{ padding: '3px 10px', borderRadius: 100, fontSize: 11, fontWeight: 600, background: cfg.bg, color: cfg.color, whiteSpace: 'nowrap', flexShrink: 0 }}>{cfg.label}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>{a.titulo}</p>

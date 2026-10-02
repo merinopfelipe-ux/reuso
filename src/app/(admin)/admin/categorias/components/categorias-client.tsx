@@ -17,17 +17,17 @@ import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/type
 import { formatNumero, formatCOP } from '@/lib/format'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 
-const cardBg = 'bg-[var(--bg-card)] border border-[var(--border)]'
+const cardBg = 'bg-(--bg-card) border border-(--border)'
 const inputSt: React.CSSProperties = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
   border: '1px solid var(--border)', background: 'var(--bg-input)',
   color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box',
 }
-const btnPrimario = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] text-sm font-semibold hover-pop hover-press'
-const btnSecundario = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] text-xs font-semibold shadow-xs hover-pop hover-press cursor-pointer transition-all'
-const btnChico = 'inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] text-xs font-semibold shadow-xs hover-pop hover-press cursor-pointer transition-all'
-const labelSt = 'block text-xs font-semibold text-[var(--text-secondary)] mb-1.5'
-const labelSeccion = 'block text-xs font-bold text-[var(--text-primary)] mb-2.5'
+const btnPrimario = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-brand text-(--text-on-brand) text-sm font-semibold hover-pop hover-press'
+const btnSecundario = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
+const btnChico = 'inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
+const labelSt = 'block text-xs font-semibold text-(--text-secondary) mb-1.5'
+const labelSeccion = 'block text-xs font-bold text-(--text-primary) mb-2.5'
 
 // ── Filas para los editores LIBRES (esquema base / extras: se puede añadir/quitar) ──
 interface MaterialRow { id?: string; nombre: string; peso_kg: string; factor_co2_kg: string; factor_agua_l_kg: string; categoria_material: string; origen_fuente: string; detalle_fuente: string; rol_conservacion?: string }
@@ -183,35 +183,35 @@ function MenuTresPuntos({
   }, [abierto])
 
   return (
-    <div ref={ref} className="relative flex-shrink-0" onClick={e => e.stopPropagation()}>
+    <div ref={ref} className="relative shrink-0" onClick={e => e.stopPropagation()}>
       <button onClick={() => setAbierto(v => !v)} className="p-2 rounded-lg hover-pop hover-press" style={{ color: 'var(--color-brand)' }}>
         <DotsThree size={18} />
       </button>
       {abierto && (
-        <div className="absolute right-0 top-full mt-1 z-20 w-44 rounded-[12px] overflow-hidden border border-[var(--border)] bg-[var(--bg-card)] shadow-lg">
+        <div className="absolute right-0 top-full mt-1 z-20 w-44 rounded-card overflow-hidden border border-(--border) bg-(--bg-card) shadow-lg">
           <button onClick={() => { setAbierto(false); onEditar() }}
-            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-(--text-primary)">
             <Pencil size={14} /> Editar
           </button>
           {onDuplicar && (
             <button onClick={() => { setAbierto(false); onDuplicar() }}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-(--text-primary)">
               <Copy size={14} /> Duplicar
             </button>
           )}
           <button onClick={() => { setAbierto(false); onToggleActiva() }}
-            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-(--text-primary)">
             <Power size={14} /> {activa ? 'Desactivar' : 'Activar'}
           </button>
           {onToggleVisibilidad && (
             <button onClick={() => { setAbierto(false); onToggleVisibilidad() }}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--text-primary)]">
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-(--text-primary)">
               {visibilidad === 'restringido' ? <><LockOpen size={14} /> Volver a global</> : <><Lock size={14} /> Restringir visibilidad</>}
             </button>
           )}
           {onEliminar && (
             <button onClick={() => { setAbierto(false); onEliminar() }}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-[var(--color-error)]">
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-sm hover-pop text-error">
               <Trash size={14} /> Eliminar
             </button>
           )}
@@ -245,7 +245,7 @@ function TooltipEditable({ nombre, texto, conEmpresa, onGuardado }: {
           onChange={e => setValor(e.target.value)}
           maxLength={500}
           rows={3}
-          className="w-full px-2.5 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-xs text-[var(--text-primary)] resize-none"
+          className="w-full px-2.5 py-2 rounded-lg border border-(--border) bg-(--bg-input) text-xs text-(--text-primary) resize-none"
           placeholder={`Describe qué es "${nombre}"...`}
         />
         <div className="flex gap-2">
@@ -262,11 +262,11 @@ function TooltipEditable({ nombre, texto, conEmpresa, onGuardado }: {
               setGuardando(false)
               if (res.ok) { onGuardado(nombre, valor); setEditando(false) }
             }}
-            className="text-xs font-semibold text-[var(--color-brand)] hover-pop"
+            className="text-xs font-semibold text-brand hover-pop"
           >
             {guardando ? 'Guardando...' : 'Guardar'}
           </button>
-          <button type="button" onClick={() => { setValor(texto); setEditando(false) }} className="text-xs text-[var(--text-secondary)] hover-pop">
+          <button type="button" onClick={() => { setValor(texto); setEditando(false) }} className="text-xs text-(--text-secondary) hover-pop">
             Cancelar
           </button>
         </div>
@@ -277,7 +277,7 @@ function TooltipEditable({ nombre, texto, conEmpresa, onGuardado }: {
   return (
     <span className="inline-flex items-center gap-1">
       <TooltipInfo texto={texto} />
-      <button type="button" onClick={() => setEditando(true)} title="Editar descripción" className="p-0.5 text-[var(--text-secondary)] hover:text-[var(--color-brand)] hover-pop">
+      <button type="button" onClick={() => setEditando(true)} title="Editar descripción" className="p-0.5 text-(--text-secondary) hover:text-brand hover-pop">
         <Pencil size={12} sinAnimacion />
       </button>
     </span>
@@ -440,7 +440,7 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
 
   const content = (
     <>
-      {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)] mb-3"><Leaf size={16} /> {titulo}</p> : null}
+      {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-brand mb-3"><Leaf size={16} /> {titulo}</p> : null}
       <label className={labelSeccion}>Materiales</label>
       <div className="flex flex-col gap-3 mt-1">
         {materiales.map((m, i) => (
@@ -491,7 +491,7 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
             </div>
             {discrepanciasFactor[m.nombre] && (
               <div className="flex flex-col gap-2 p-3 rounded-xl" style={{ background: 'rgba(246,191,62,0.1)', border: '1px solid rgba(246,191,62,0.3)' }}>
-                <p className="text-xs text-[var(--text-primary)]">
+                <p className="text-xs text-(--text-primary)">
                   La IA encontró un valor distinto: <strong>{discrepanciasFactor[m.nombre].factor_co2_kg} kg CO₂ eq/kg</strong>
                   {discrepanciasFactor[m.nombre].fuente_titulo ? ` según ${discrepanciasFactor[m.nombre].fuente_titulo}` : ''}. ¿Reemplazar el valor actual?
                 </p>
@@ -502,7 +502,7 @@ function EditorMateriales({ titulo, materiales, setMateriales, mostrarPeso, conE
               </div>
             )}
             <div className="flex justify-end mt-1">
-              <button type="button" onClick={() => setMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+              <button type="button" onClick={() => setMateriales(r => r.filter((_, j) => j !== i))} className="flex items-center gap-1.5 text-xs font-bold text-error transition-opacity duration-200 hover:opacity-50">
                 <Trash size={14} /> Eliminar
               </button>
             </div>
@@ -562,7 +562,7 @@ function BotonSugerirPeso({ nombre, unidad, endpoint, onSugerido, contextoItem }
       onClick={sugerir}
       disabled={cargando || !nombre.trim()}
       title="Sugerir peso con IA"
-      className="p-1.5 rounded-lg text-[var(--color-brand)] hover-pop hover-press disabled:opacity-40"
+      className="p-1.5 rounded-lg text-brand hover-pop hover-press disabled:opacity-40"
       style={{ background: 'var(--color-brand-light)' }}
     >
       <Sparkles size={14} sinAnimacion />
@@ -679,8 +679,8 @@ function BotonCompletarMaterialesIA({ nombreItem, categoriaNombre, materiales, o
         <div
           className={`text-xs px-3 py-2 rounded-lg border flex items-center justify-between gap-2 ${
             feedback.tipo === 'success'
-              ? 'bg-[#F0FBF7] text-[var(--color-brand)] border-[var(--color-brand)]/20'
-              : 'bg-[#FFF4F3] text-[var(--color-error)] border-[var(--color-error)]/20'
+              ? 'bg-[#F0FBF7] text-brand '
+              : 'bg-[#FFF4F3] text-error '
           }`}
         >
           <span>{feedback.texto}</span>
@@ -712,14 +712,14 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
 }) {
   const content = (
     <>
-      {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)] mb-3"><CircleDollarSign size={16} /> {titulo}</p> : null}
+      {titulo ? <p className="flex items-center gap-2 text-sm font-bold text-brand mb-3"><CircleDollarSign size={16} /> {titulo}</p> : null}
 
       <label className={labelSeccion}>Servicios</label>
       <div className="flex flex-col gap-2 mb-2">
         {servicios.map((s, i) => (
           <div key={i} className="grid grid-cols-[2fr_auto] gap-2 items-center">
             <input style={inputSt} placeholder="Servicio (ej: Pintor)" value={s.nombre} onChange={e => setServicios(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))} />
-            <button type="button" onClick={() => setServicios(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+            <button type="button" onClick={() => setServicios(r => r.filter((_, j) => j !== i))} className="p-1 text-error transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
           </div>
         ))}
       </div>
@@ -735,7 +735,7 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
               <InputConUnidad value={ins.peso_kg} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: v } : x))} unidad="kg" paso="0.001" />
               <InputPrecio value={ins.precio_unitario} onChange={v => setInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))} />
               <BotonSugerirPeso nombre={ins.nombre} unidad={ins.unidad} endpoint="/api/admin/insumos/peso-sugerido" onSugerido={pesoKg => setInsumos(r => r.map((x, j) => j === i ? { ...x, peso_kg: String(pesoKg) } : x))} contextoItem={categoriaNombre ? `categoría "${categoriaNombre}"` : undefined} />
-              <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
+              <button type="button" onClick={() => setInsumos(r => r.filter((_, j) => j !== i))} className="p-1 text-error transition-opacity duration-200 hover:opacity-50" title="Eliminar"><Trash size={16} /></button>
             </div>
             {mostrarAplicarExistentes && ins.nombre.trim() && (
               <label className="flex items-center gap-1.5 cursor-pointer pl-1">
@@ -745,7 +745,7 @@ function EditorFinanciero({ titulo, servicios, setServicios, insumos, setInsumos
                   onChange={e => setAplicarExistentes?.(prev => ({ ...prev, [ins.nombre]: e.target.checked }))}
                   style={{ accentColor: 'var(--color-brand)' }}
                 />
-                <span className="text-[11px] font-semibold text-[var(--text-secondary)]">Guardar global</span>
+                <span className="text-[11px] font-semibold text-(--text-secondary)">Guardar global</span>
                 <TooltipInfo texto="Al guardar, aplica el precio de este insumo también a los ítems que ya existen en esta categoría y sus subcategorías (cada uno guardó su propia copia, no se actualiza solo)." />
               </label>
             )}
@@ -1007,7 +1007,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
         titulo={
           <span className="flex items-center gap-2">
             {titulo}
-            {isPending && <Loader2 size={16} className="animate-spin text-[var(--color-brand)] opacity-70" />}
+            {isPending && <Loader2 size={16} className="animate-spin text-brand opacity-70" />}
           </span>
         } 
         showBack 
@@ -1042,18 +1042,18 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
       >
         <div className="space-y-2">
           {errorEliminarItems && (
-            <p className="text-xs text-[var(--color-error)] font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
+            <p className="text-xs text-error font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
               {errorEliminarItems}
             </p>
           )}
-          <p className="text-sm text-[var(--text-primary)]">
+          <p className="text-sm text-(--text-primary)">
             {itemsAEliminar?.length === 1 ? (
               <>Vas a eliminar el ítem <strong>{itemsAEliminar[0].nombre}</strong> de forma permanente.</>
             ) : (
               <>Vas a eliminar <strong>{itemsAEliminar?.length} ítems</strong> seleccionados de forma permanente.</>
             )}
           </p>
-          <p className="text-xs text-[var(--text-secondary)]">
+          <p className="text-xs text-(--text-secondary)">
             Esta acción no se puede deshacer y eliminará sus materiales, servicios e insumos asociados.
           </p>
         </div>
@@ -1078,14 +1078,14 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
       >
         <div className="space-y-2">
           {errorEliminarCategoria && (
-            <p className="text-xs text-[var(--color-error)] font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
+            <p className="text-xs text-error font-medium p-2 rounded-lg bg-[rgba(255,94,75,0.1)]">
               {errorEliminarCategoria}
             </p>
           )}
-          <p className="text-sm text-[var(--text-primary)]">
+          <p className="text-sm text-(--text-primary)">
             Vas a eliminar la categoría <strong>{categoriaAEliminar?.nombre}</strong> de forma permanente. Todos sus ítems se perderán.
           </p>
-          <p className="text-xs text-[var(--text-secondary)]">
+          <p className="text-xs text-(--text-secondary)">
             Esta acción no se puede deshacer.
           </p>
         </div>
@@ -1130,12 +1130,12 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                 const total = contarDescendientes(categorias, items, h.id)
                 return (
                   <div key={h.id} onClick={() => irANodo(h.id)}
-                    className={`flex flex-col h-full p-4 rounded-xl cursor-pointer transition-colors hover-pop ${cardBg} ${isPending && targetLoading === 'nodo:' + h.id ? 'opacity-50 ring-2 ring-[var(--color-brand)] ring-offset-1' : 'hover:border-[var(--color-brand)]/30'}`}>
+                    className={`flex flex-col h-full p-4 rounded-xl cursor-pointer transition-colors hover-pop ${cardBg} ${isPending && targetLoading === 'nodo:' + h.id ? 'opacity-50 ring-2 ring-brand ring-offset-1' : ''}`}>
                     <div className="flex items-start justify-between mb-3">
                       {isPending && targetLoading === 'nodo:' + h.id ? (
-                        <Loader2 size={20} className="animate-spin text-[var(--color-brand)]" />
+                        <Loader2 size={20} className="animate-spin text-brand" />
                       ) : (
-                        <IconoDe nombre={h.icono_lucide} className="text-[var(--color-brand)]" size={20} bg />
+                        <IconoDe nombre={h.icono_lucide} className="text-brand" size={20} bg />
                       )}
                       <div className="flex items-center gap-1">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={{
@@ -1155,17 +1155,17 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                         />
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-[var(--text-primary)] leading-snug truncate mb-1" title={h.nombre}>{h.nombre}</p>
-                    <p className="text-xs text-[var(--text-secondary)] line-clamp-2 mb-4 flex-1" title={h.descripcion || ''}>
+                    <p className="text-sm font-bold text-(--text-primary) leading-snug truncate mb-1" title={h.nombre}>{h.nombre}</p>
+                    <p className="text-xs text-(--text-secondary) line-clamp-2 mb-4 flex-1" title={h.descripcion || ''}>
                       {h.descripcion || 'Mobiliario y activos circulares.'}
                     </p>
                     <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid var(--border)' }}>
                       <div>
-                        <p className="text-[11px] text-[var(--text-secondary)]">Ítems</p>
-                        <p className="text-base font-bold text-[var(--text-primary)]">{total}</p>
+                        <p className="text-[11px] text-(--text-secondary)">Ítems</p>
+                        <p className="text-base font-bold text-(--text-primary)">{total}</p>
                       </div>
                       <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--bg-hover)' }}>
-                        <CaretRight size={14} className="text-[var(--text-secondary)]" />
+                        <CaretRight size={14} className="text-(--text-secondary)" />
                       </div>
                     </div>
                   </div>
@@ -1196,19 +1196,19 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                 <div className="relative flex-1 max-w-sm min-w-[200px]">
                   <MagnifyingGlass
                     size={14}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] pointer-events-none"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder) pointer-events-none"
                   />
                   <input
                     type="text"
                     placeholder="Buscar ítems..."
                     value={busquedaItem}
                     onChange={e => setBusquedaItem(e.target.value)}
-                    className="w-full h-9 pl-8 pr-3 text-xs rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] transition-colors box-border"
+                    className="w-full h-9 pl-8 pr-3 text-xs rounded-lg border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden focus:border-brand transition-colors box-border"
                   />
                 </div>
 
                 {/* Filtro por estado */}
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <Selector
                     value={filtroEstado}
                     onChange={setFiltroEstado}
@@ -1234,15 +1234,15 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                       setBusquedaItem('')
                       setFiltroEstado('')
                     }}
-                    className="h-9 px-3 rounded-lg text-xs font-medium border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0"
+                    className="h-9 px-3 rounded-lg text-xs font-medium border border-(--border) bg-(--bg-card) text-(--text-secondary) hover:bg-(--bg-hover) transition-colors cursor-pointer shrink-0"
                   >
                     Limpiar
                   </button>
                 )}
 
                 {/* Contador y botón Nuevo ítem */}
-                <div className="ml-auto flex items-center gap-3 flex-shrink-0">
-                  <span className="text-xs text-[var(--text-secondary)] whitespace-nowrap">
+                <div className="ml-auto flex items-center gap-3 shrink-0">
+                  <span className="text-xs text-(--text-secondary) whitespace-nowrap">
                     {itemsOrdenados.length === itemsAqui.length
                       ? `${itemsAqui.length} ${itemsAqui.length === 1 ? 'ítem' : 'ítems'}`
                       : `${itemsOrdenados.length} de ${itemsAqui.length} ítems`}
@@ -1259,15 +1259,15 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
               {/* Barra de acción masiva de selección */}
               {seleccionados.size > 0 && (
-                <div className="flex items-center justify-between rounded-[10px] border border-[var(--color-brand)]/20 bg-[var(--color-brand-light)] px-4 py-2.5">
-                  <span className="text-xs font-semibold text-[var(--color-brand)]">
+                <div className="flex items-center justify-between rounded-btn border  bg-brand-light px-4 py-2.5">
+                  <span className="text-xs font-semibold text-brand">
                     {seleccionados.size} {seleccionados.size === 1 ? 'ítem seleccionado' : 'ítems seleccionados'}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setSeleccionados(new Set())}
-                      className="text-xs font-medium px-2.5 py-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                      className="text-xs font-medium px-2.5 py-1 text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
                     >
                       Deseleccionar
                     </button>
@@ -1277,7 +1277,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                         setItemsAEliminar(itemsAqui.filter(it => seleccionados.has(it.id)))
                         setErrorEliminarItems('')
                       }}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[var(--bg-card)] border border-[var(--border)] text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-(--bg-card) border border-(--border) text-error transition-opacity duration-200 hover:opacity-50 cursor-pointer shadow-2xs"
                     >
                       <Trash size={14} sinAnimacion /> Eliminar
                     </button>
@@ -1286,11 +1286,11 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
               )}
 
               {/* Tabla Canónica del Sistema de Diseño con SortTh y Zebra */}
-              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+              <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                      <tr className="bg-(--bg-table-header) text-brand">
                         <th className="px-3 py-2.5 w-10 text-center">
                           <button
                             type="button"
@@ -1299,8 +1299,8 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                             title={todasSeleccionadas ? 'Deseleccionar todos' : 'Seleccionar todos'}
                           >
                             {todasSeleccionadas
-                              ? <SquareCheck size={18} className="text-[var(--color-brand)]" sinAnimacion />
-                              : <Square size={18} className="text-[var(--text-secondary)] opacity-60 hover:opacity-100 transition-opacity" sinAnimacion />}
+                              ? <SquareCheck size={18} className="text-brand" sinAnimacion />
+                              : <Square size={18} className="text-(--text-secondary) opacity-60 hover:opacity-100 transition-opacity" sinAnimacion />}
                           </button>
                         </th>
                         <SortTh col="nombre" sort={sortItems} onToggle={toggleSortItems}>
@@ -1320,7 +1320,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                         <tr>
                           <td
                             colSpan={5}
-                            className="px-4 py-8 text-center text-xs text-[var(--text-secondary)]"
+                            className="px-4 py-8 text-center text-xs text-(--text-secondary)"
                           >
                             {itemsAqui.length === 0
                               ? 'No hay ítems registrados en esta categoría.'
@@ -1331,8 +1331,8 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                       {itemsOrdenados.map((it, idx) => (
                         <tr
                           key={it.id}
-                          className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
-                            idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`transition-colors duration-150 cursor-pointer hover:bg-(--bg-table-hover) ${
+                            idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                           onClick={() => abrirItem(it.id)}
@@ -1345,22 +1345,22 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                               title={seleccionados.has(it.id) ? 'Deseleccionar ítem' : 'Seleccionar ítem'}
                             >
                               {seleccionados.has(it.id)
-                                ? <SquareCheck size={18} className="text-[var(--color-brand)]" sinAnimacion />
-                                : <Square size={18} className="text-[var(--text-secondary)] opacity-50 hover:opacity-100 transition-opacity" sinAnimacion />}
+                                ? <SquareCheck size={18} className="text-brand" sinAnimacion />
+                                : <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" sinAnimacion />}
                             </button>
                           </td>
-                          <td className="px-4 py-3 text-[var(--text-primary)]">
+                          <td className="px-4 py-3 text-(--text-primary)">
                             <span className={`inline-flex items-center gap-1.5 font-medium ${isPending && targetLoading === 'item:' + it.id ? 'opacity-50' : ''}`}>
-                              {it.visibilidad === 'restringido' && <Lock size={12} className="text-[var(--color-brand)] flex-shrink-0" />}
-                              {isPending && targetLoading === 'item:' + it.id && <Loader2 size={12} className="animate-spin text-[var(--color-brand)] flex-shrink-0" />}
+                              {it.visibilidad === 'restringido' && <Lock size={12} className="text-brand shrink-0" />}
+                              {isPending && targetLoading === 'item:' + it.id && <Loader2 size={12} className="animate-spin text-brand shrink-0" />}
                               {it.nombre}
                               {esItemPerplexity(it) && <BadgePerplexity />}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
+                          <td className="px-4 py-3 text-right text-(--text-primary) whitespace-nowrap">
                             {formatNumero(it.totalCo2, { unidad: 'kg CO₂ eq' })}
                           </td>
-                          <td className="px-4 py-3 text-right text-[var(--text-primary)] whitespace-nowrap">
+                          <td className="px-4 py-3 text-right text-(--text-primary) whitespace-nowrap">
                             {formatCOP(it.precioTotal)}
                           </td>
                           <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
@@ -1413,7 +1413,7 @@ function IconoDe({ nombre, size = 18, className, bg }: { nombre: string; size?: 
   const contenido = Comp ? <Comp size={size} className={className} {...propsLibreria} /> : <Folder size={size} className={className} strokeWidth={1.3} />
   if (!bg) return contenido
   return (
-    <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-brand-light)' }}>
+    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--color-brand-light)' }}>
       {contenido}
     </div>
   )
@@ -1506,7 +1506,7 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         <div>
           <div className="flex justify-between items-center mb-1">
             <label className={labelSt}>Descripción (máx. 140 caracteres)</label>
-            <span className="text-[11px] text-[var(--text-secondary)]">{descripcion.length}/140</span>
+            <span className="text-[11px] text-(--text-secondary)">{descripcion.length}/140</span>
           </div>
           <input
             style={inputSt}
@@ -1524,9 +1524,9 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         )}
       </div>
 
-      {error && <p className="text-sm text-[var(--color-error)]">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
       {modo === 'crear' && nodoPadre && (
-        <p className="text-xs text-[var(--text-secondary)] px-1">Esquema base pre-llenado desde &ldquo;{nodoPadre.nombre}&rdquo; — ajústalo antes de guardar.</p>
+        <p className="text-xs text-(--text-secondary) px-1">Esquema base pre-llenado desde &ldquo;{nodoPadre.nombre}&rdquo; — ajústalo antes de guardar.</p>
       )}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <EditorFinanciero
@@ -1541,10 +1541,10 @@ function FormNodo({ modo, nodo, parentId, nodoPadre, modulos, onListo, onCancela
         <EditorMateriales titulo="Cálculo ambiental (obligatorio)" materiales={materiales} setMateriales={setMateriales} conEmpresa={(url: string) => url} categoriaNombre={nombre || nodoPadre?.nombre || undefined} />
       </div>
 
-      <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 px-4 flex items-center justify-center gap-3 mt-3">
+      <div className="sticky bottom-0 z-30 w-full bg-(--bg-primary) py-3 px-4 flex items-center justify-center gap-3 mt-3">
         <div
           aria-hidden="true"
-          className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent"
+          className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-linear-to-t/srgb from-(--bg-primary) to-transparent"
         />
         {onCancelar && (
           <button type="button" onClick={onCancelar} className={btnSecundario}>
@@ -1591,7 +1591,7 @@ function BadgeRolConservacion({
       type="button"
       onClick={handleToggle}
       title="Haz clic para alternar entre 'Se conserva' y 'Se reemplaza'"
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold flex-shrink-0 select-none shadow-xs transition-transform active:scale-95 cursor-pointer border ${
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold shrink-0 select-none shadow-2xs transition-transform active:scale-95 cursor-pointer border ${
         esConserva
           ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
           : 'bg-amber-500/15 border-amber-500/30 text-amber-800 dark:text-amber-200'
@@ -1622,10 +1622,10 @@ export function IconoPerplexity({ className = '', size = 13 }: { className?: str
 export function BadgePerplexity({ title = 'Estimado con Perplexity AI' }: { title?: string; compacto?: boolean }) {
   return (
     <span
-      className="inline-flex items-center text-[#00827C] dark:text-[#2DD4BF] hover:opacity-80 transition-opacity flex-shrink-0 cursor-default"
+      className="inline-flex items-center text-[#00827C] dark:text-[#2DD4BF] hover:opacity-80 transition-opacity shrink-0 cursor-default"
       title={title}
     >
-      <IconoPerplexity size={14} className="flex-shrink-0" />
+      <IconoPerplexity size={14} className="shrink-0" />
     </span>
   )
 }
@@ -1813,7 +1813,7 @@ function BotonInfoPerplexity({
         ref={triggerRef}
         type="button"
         onClick={alternar}
-        className={`inline-flex items-center justify-center p-0.5 text-[#00827C] dark:text-[#2DD4BF] hover:text-[#0891b2] dark:hover:text-[#5eead4] transition-all flex-shrink-0 cursor-pointer ${
+        className={`inline-flex items-center justify-center p-0.5 text-[#00827C] dark:text-[#2DD4BF] hover:text-[#0891b2] dark:hover:text-[#5eead4] transition-all shrink-0 cursor-pointer ${
           abierto ? 'scale-115 opacity-100' : 'opacity-85 hover:opacity-100 hover:scale-110 active:scale-95'
         }`}
         title="Ver especificaciones y fuentes técnicas de Perplexity"
@@ -1824,7 +1824,7 @@ function BotonInfoPerplexity({
       {abierto && montado && coords && createPortal(
         <div
           ref={popoverRef}
-          className="fixed z-[9999] rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-150 text-[var(--text-primary)]"
+          className="fixed z-9999 rounded-xl border border-(--border) bg-(--bg-card) p-3.5 shadow-xl animate-in fade-in zoom-in-95 duration-150 text-(--text-primary)"
           style={{
             width: Math.min(340, typeof window !== 'undefined' ? window.innerWidth - 24 : 340),
             top: coords.top,
@@ -1833,15 +1833,15 @@ function BotonInfoPerplexity({
           }}
         >
           {/* Cabecera compacta del popover */}
-          <div className="flex items-center justify-between pb-2 border-b border-[var(--border)]">
+          <div className="flex items-center justify-between pb-2 border-b border-(--border)">
             <div className="flex items-center gap-1.5">
               <span
-                className="w-5 h-5 rounded flex items-center justify-center text-[#00827C] dark:text-[#2DD4BF]"
+                className="w-5 h-5 rounded-sm flex items-center justify-center text-[#00827C] dark:text-[#2DD4BF]"
                 style={{ background: 'rgba(45, 212, 191, 0.14)' }}
               >
                 <IconoPerplexity size={11} />
               </span>
-              <span className="text-xs font-bold tracking-tight text-[var(--text-primary)]">
+              <span className="text-xs font-bold tracking-tight text-(--text-primary)">
                 Perplexity AI
               </span>
             </div>
@@ -1863,7 +1863,7 @@ function BotonInfoPerplexity({
               <button
                 type="button"
                 onClick={() => setAbierto(false)}
-                className="w-5 h-5 rounded flex items-center justify-center text-[var(--text-placeholder)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-xs"
+                className="w-5 h-5 rounded-sm flex items-center justify-center text-(--text-placeholder) hover:text-(--text-primary) hover:bg-(--bg-hover) transition-colors cursor-pointer text-xs"
                 title="Cerrar"
               >
                 ✕
@@ -1873,12 +1873,12 @@ function BotonInfoPerplexity({
 
           {/* Contenido contextual */}
           <div className="pt-2 flex flex-col gap-2">
-            <p className="text-xs font-bold text-[var(--text-primary)] leading-tight">
+            <p className="text-xs font-bold text-(--text-primary) leading-tight">
               {nombreMaterial}
             </p>
 
             {info.fuente_titulo && (
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed italic bg-[var(--bg-input)] p-2.5 rounded-lg border border-[var(--border)]">
+              <p className="text-xs text-(--text-secondary) leading-relaxed italic bg-(--bg-input) p-2.5 rounded-lg border border-(--border)">
                 «{info.fuente_titulo}»
               </p>
             )}
@@ -1932,41 +1932,41 @@ function ModalConfirmacionAjustePerplexity({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-10000 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={e => {
         if (e.target === e.currentTarget) onCancelar()
       }}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-[var(--text-primary)]"
+        className="w-full max-w-md rounded-2xl border border-(--border) bg-(--bg-card) p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-(--text-primary)"
         role="dialog"
         aria-modal="true"
       >
-        <div className="flex items-center gap-3 pb-3 border-b border-[var(--border)] mb-4">
+        <div className="flex items-center gap-3 pb-3 border-b border-(--border) mb-4">
           <span
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[#00827C] dark:text-[#2DD4BF]"
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-[#00827C] dark:text-[#2DD4BF]"
             style={{ background: 'rgba(45, 212, 191, 0.14)' }}
           >
             <IconoPerplexity size={18} />
           </span>
           <div>
-            <h3 className="text-base font-bold leading-tight text-[var(--text-primary)]">
+            <h3 className="text-base font-bold leading-tight text-(--text-primary)">
               ¿Ajustar peso estimado por IA?
             </h3>
-            <p className="text-xs text-[var(--text-secondary)]">
+            <p className="text-xs text-(--text-secondary)">
               {nombreMaterial}
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+        <div className="flex flex-col gap-3 text-sm text-(--text-secondary) leading-relaxed mb-6">
           <p>
-            El peso de este material (<strong className="text-[var(--text-primary)]">{pesoOriginal} kg</strong>) fue calculado con <strong>Perplexity AI</strong>.
+            El peso de este material (<strong className="text-(--text-primary)">{pesoOriginal} kg</strong>) fue calculado con <strong>Perplexity AI</strong>.
           </p>
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200">
             Si ajustas este número a <strong className="font-bold">{nuevoPeso} kg</strong>, se eliminará la referencia de Perplexity <strong>únicamente de {nombreMaterial}</strong>.
           </div>
-          <p className="text-xs text-[var(--text-placeholder)]">
+          <p className="text-xs text-(--text-placeholder)">
             Los demás materiales conservarán intactas sus fuentes, justificaciones técnicas y vínculos con Perplexity.
           </p>
         </div>
@@ -1975,14 +1975,14 @@ function ModalConfirmacionAjustePerplexity({
           <button
             type="button"
             onClick={onCancelar}
-            className="px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-semibold border border-(--border) hover:bg-(--bg-hover) text-(--text-secondary) transition-all cursor-pointer"
           >
             Cancelar (mantener {pesoOriginal} kg)
           </button>
           <button
             type="button"
             onClick={onConfirmar}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--color-brand)] text-white hover:opacity-90 transition-all shadow-xs cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-brand text-white hover:opacity-90 transition-all shadow-2xs cursor-pointer"
           >
             Ajustar solo este número
           </button>
@@ -2144,43 +2144,43 @@ function ModalDuplicarItemCiudad({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-10000 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={e => {
         if (e.target === e.currentTarget && !duplicando) onCancelar()
       }}
     >
       <div
-        className="w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-[var(--text-primary)] flex flex-col gap-4"
+        className="w-full max-w-lg rounded-2xl border border-(--border) bg-(--bg-card) p-6 shadow-2xl animate-in zoom-in-95 duration-150 text-(--text-primary) flex flex-col gap-4"
         role="dialog"
         aria-modal="true"
       >
-        <div className="flex items-center gap-3 pb-3 border-b border-[var(--border)]">
+        <div className="flex items-center gap-3 pb-3 border-b border-(--border)">
           <span
-            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-[var(--color-brand)]"
+            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-brand"
             style={{ background: 'rgba(0, 130, 124, 0.12)' }}
           >
             <Copy size={18} />
           </span>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base font-bold leading-tight text-[var(--text-primary)]">
+            <h3 className="text-base font-bold leading-tight text-(--text-primary)">
               Duplicar ítem por ciudad
             </h3>
-            <p className="text-xs text-[var(--text-secondary)] truncate">
-              Origen: <strong className="text-[var(--text-primary)]">{item.nombre}</strong>
+            <p className="text-xs text-(--text-secondary) truncate">
+              Origen: <strong className="text-(--text-primary)">{item.nombre}</strong>
               {ciudadActual && <span> ({ciudadActual})</span>}
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-[var(--color-error)]">
+          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-error">
             {error}
           </div>
         )}
 
         <div className="flex flex-col gap-3">
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+            <label className="block text-xs font-semibold text-(--text-secondary) mb-1.5">
               Ciudad de destino
             </label>
             <input
@@ -2201,8 +2201,8 @@ function ModalDuplicarItemCiudad({
                     onClick={() => aplicarCiudad(c, false)}
                     className={`px-2.5 py-1 text-xs rounded-full border transition-all cursor-pointer ${
                       esActiva
-                        ? 'bg-[var(--color-brand)] text-white border-transparent font-bold'
-                        : 'bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--color-brand)]'
+                        ? 'bg-brand text-white border-transparent font-bold'
+                        : 'bg-(--bg-input) border-(--border) text-(--text-secondary) hover:border-brand'
                     }`}
                   >
                     {c}
@@ -2213,7 +2213,7 @@ function ModalDuplicarItemCiudad({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">
+            <label className="block text-xs font-semibold text-(--text-secondary) mb-1.5">
               Nombre para el nuevo ítem
             </label>
             <input
@@ -2225,14 +2225,14 @@ function ModalDuplicarItemCiudad({
               }}
               style={inputSt}
             />
-            <p className="text-[11px] text-[var(--text-placeholder)] mt-1">
+            <p className="text-[11px] text-(--text-placeholder) mt-1">
               Se ajusta automáticamente con la ciudad seleccionada y puedes editarlo si deseas
             </p>
           </div>
 
           {itemExistenteConMismoNombre && (
             <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200 flex items-start gap-2.5 leading-relaxed">
-              <Sparkles size={16} className="flex-shrink-0 mt-0.5 text-amber-600" />
+              <Sparkles size={16} className="shrink-0 mt-0.5 text-amber-600" />
               <div>
                 Ya existe el ítem <strong>{itemExistenteConMismoNombre.nombre}</strong> en el catálogo. Al confirmar, se actualizarán sus materiales y fuentes de Perplexity para que sea idéntico al de origen, sin crear un duplicado repetido.
               </div>
@@ -2240,19 +2240,19 @@ function ModalDuplicarItemCiudad({
           )}
 
           <div className="p-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-[#00827C] dark:text-[#2DD4BF] flex items-start gap-2.5 leading-relaxed">
-            <Sparkles size={16} className="flex-shrink-0 mt-0.5" />
+            <Sparkles size={16} className="shrink-0 mt-0.5" />
             <div>
               Se duplican todos los materiales, pesos y datos técnicos idénticos sin consultar a Perplexity, ahorrando tokens. Los servicios y precios quedan listos para ajustar según la ciudad.
             </div>
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-2 border-t border-[var(--border)]">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-(--border)">
           <button
             type="button"
             onClick={onCancelar}
             disabled={duplicando}
-            className="px-4 py-2 rounded-xl text-xs font-semibold border border-[var(--border)] hover:bg-[var(--bg-hover)] text-[var(--text-secondary)] transition-all cursor-pointer disabled:opacity-50"
+            className="px-4 py-2 rounded-xl text-xs font-semibold border border-(--border) hover:bg-(--bg-hover) text-(--text-secondary) transition-all cursor-pointer disabled:opacity-50"
           >
             Cancelar
           </button>
@@ -2260,7 +2260,7 @@ function ModalDuplicarItemCiudad({
             type="button"
             onClick={handleDuplicar}
             disabled={duplicando}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[var(--color-brand)] text-white hover:opacity-90 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-brand text-white hover:opacity-90 transition-all shadow-2xs cursor-pointer disabled:opacity-50"
           >
             {duplicando ? (
               <>
@@ -3255,7 +3255,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
         {hermanoConPesos && (
           <div className="mt-3 flex items-center justify-between p-2.5 px-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-[#00827C] dark:text-[#2DD4BF]">
             <div className="flex items-center gap-2 min-w-0">
-              <Sparkles size={14} className="flex-shrink-0" />
+              <Sparkles size={14} className="shrink-0" />
               <span className="truncate">
                 Especificaciones compartidas con <strong>{hermanoConPesos.nombre}</strong> (pesos y fuentes sincronizados para ahorrar tokens).
               </span>
@@ -3263,7 +3263,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
             <button
               type="button"
               onClick={() => copiarPesosDeHermano(hermanoConPesos)}
-              className="underline hover:opacity-80 font-medium ml-2 flex-shrink-0 cursor-pointer text-xs"
+              className="underline hover:opacity-80 font-medium ml-2 shrink-0 cursor-pointer text-xs"
             >
               Copiar de nuevo
             </button>
@@ -3276,12 +3276,12 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
         <div className={`rounded-2xl p-4 ${cardBg}`}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)]"><CircleDollarSign size={16} /> Costos</p>
+              <p className="flex items-center gap-2 text-sm font-bold text-brand"><CircleDollarSign size={16} /> Costos</p>
             </div>
 
             <label className={labelSeccion}>Servicios</label>
             {esquemaServVisibles.length === 0 && extraServicios.length === 0 && (
-              <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin servicios asignados.</p>
+              <p className="text-xs text-(--text-placeholder) italic mb-2">Sin servicios asignados.</p>
             )}
 
             {esquemaServVisibles.length > 0 && (
@@ -3289,15 +3289,15 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                 {esquemaServVisibles.map(fila => (
                   <div key={fila.id} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                      <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-(--text-primary)">
                         <span>{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                       </p>
-                      <div className="w-28 flex-shrink-0">
+                      <div className="w-28 shrink-0">
                         <InputPrecio value={precios[fila.nombre] ?? ''} onChange={v => setPrecios(p => ({ ...p, [fila.nombre]: v }))} />
                       </div>
                       <button type="button" onClick={() => alternarFila(fila.id)}
-                        className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                        className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                         title="Editar servicio">
                         <Pencil size={15} sinAnimacion />
                       </button>
@@ -3307,14 +3307,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           setServiciosEliminados(prev => new Set(prev).add(fila.id))
                           setPrecios(p => ({ ...p, [fila.nombre]: '' }))
                         }}
-                        className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                        className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                         title="Eliminar servicio"
                       >
                         <Trash size={16} sinAnimacion />
                       </button>
                     </div>
                     {filaAbierta === fila.id && (
-                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                         <div>
                           <label className={labelSt}>Servicio</label>
                           <input style={inputSt} placeholder="Ej: Pintor" value={fila.nombre}
@@ -3325,7 +3325,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           <button
                             type="button"
                             onClick={() => setFilaAbierta(null)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                           >
                             <Check size={13} /> Guardar
                           </button>
@@ -3345,11 +3345,11 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                   return (
                     <div key={sId} className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-[var(--text-primary)]">
+                        <p className="flex-1 min-w-0 flex items-center gap-1 text-sm text-(--text-primary)">
                           <span>{s.nombre.trim() || '(Servicio adicional)'}</span>
                           {s.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[s.nombre] ?? ''} />}
                         </p>
-                        <div className="w-28 flex-shrink-0">
+                        <div className="w-28 shrink-0">
                           <InputPrecio
                             value={s.precio}
                             onChange={v => setExtraServicios(r => r.map((x, j) => j === i ? { ...x, precio: v } : x))}
@@ -3358,7 +3358,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         <button
                           type="button"
                           onClick={() => alternarFila(sId)}
-                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                           title="Editar servicio"
                         >
                           <Pencil size={15} sinAnimacion />
@@ -3369,14 +3369,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             setExtraServicios(r => r.filter((_, j) => j !== i))
                             if (filaAbierta === sId) setFilaAbierta(null)
                           }}
-                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                           title="Eliminar servicio"
                         >
                           <Trash size={16} sinAnimacion />
                         </button>
                       </div>
                       {abierto && (
-                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                               <label className={labelSt}>Servicio</label>
@@ -3403,14 +3403,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                                 setExtraServicios(r => r.filter((_, j) => j !== i))
                                 setFilaAbierta(null)
                               }}
-                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                              className="flex items-center gap-1.5 text-xs font-bold text-error transition-opacity duration-200 hover:opacity-50"
                             >
                               <Trash size={14} /> Eliminar
                             </button>
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>
@@ -3437,7 +3437,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
 
             <label className={`${labelSeccion} mt-2`}>Insumos</label>
             {esquemaInsVisibles.length === 0 && extraInsumos.length === 0 && (
-              <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin insumos asignados.</p>
+              <p className="text-xs text-(--text-placeholder) italic mb-2">Sin insumos asignados.</p>
             )}
 
             {esquemaInsVisibles.map(fila => {
@@ -3453,24 +3453,24 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                   <div className="flex items-center gap-2">
                     <p
                       className={`flex-1 min-w-0 flex items-center gap-1.5 text-sm transition-colors ${
-                        esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'
+                        esCero ? 'text-(--text-secondary) opacity-70 font-normal' : 'text-(--text-primary) font-medium'
                       }`}
                     >
                       <span>{fila.nombre}</span>
                       <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                     </p>
-                    <div className="w-32 flex-shrink-0">
+                    <div className="w-32 shrink-0">
                       <InputCantidadInsumo
                         value={cantidades[fila.nombre] ?? 0}
                         onChange={v => setCantidades(p => ({ ...p, [fila.nombre]: String(v) }))}
                         unidad={fila.unidad || 'ud'}
                       />
                     </div>
-                    <div className={`w-28 flex-shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                    <div className={`w-28 shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
                       <InputPrecio value={preciosUnitarios[fila.nombre] ?? ''} onChange={v => setPreciosUnitarios(p => ({ ...p, [fila.nombre]: v }))} />
                     </div>
                     <button type="button" onClick={() => alternarFila(fila.id)}
-                      className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                      className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                       title="Editar insumo">
                       <Pencil size={15} sinAnimacion />
                     </button>
@@ -3482,14 +3482,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         setPreciosUnitarios(p => ({ ...p, [fila.nombre]: '' }))
                         setPesosInsumo(p => ({ ...p, [fila.nombre]: '' }))
                       }}
-                      className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                      className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                       title="Eliminar insumo"
                     >
                       <Trash size={16} sinAnimacion />
                     </button>
                   </div>
                   {filaAbierta === fila.id && (
-                    <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                    <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label className={labelSt}>Insumo</label>
@@ -3516,7 +3516,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         <button
                           type="button"
                           onClick={() => setFilaAbierta(null)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                         >
                           <Check size={13} /> Guardar
                         </button>
@@ -3544,20 +3544,20 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                       <div className="flex items-center gap-2">
                         <p
                           className={`flex-1 min-w-0 flex items-center gap-1.5 text-sm transition-colors ${
-                            esCero ? 'text-[var(--text-secondary)] opacity-70 font-normal' : 'text-[var(--text-primary)] font-medium'
+                            esCero ? 'text-(--text-secondary) opacity-70 font-normal' : 'text-(--text-primary) font-medium'
                           }`}
                         >
                           <span>{ins.nombre.trim() || '(Insumo adicional)'}</span>
                           {ins.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[ins.nombre] ?? ''} />}
                         </p>
-                        <div className="w-32 flex-shrink-0">
+                        <div className="w-32 shrink-0">
                           <InputCantidadInsumo
                             value={ins.cantidad}
                             onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, cantidad: String(v) } : x))}
                             unidad={ins.unidad || 'ud'}
                           />
                         </div>
-                        <div className={`w-28 flex-shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
+                        <div className={`w-28 shrink-0 transition-opacity ${esCero ? 'opacity-55' : 'opacity-100'}`}>
                           <InputPrecio
                             value={ins.precio_unitario}
                             onChange={v => setExtraInsumos(r => r.map((x, j) => j === i ? { ...x, precio_unitario: v } : x))}
@@ -3566,7 +3566,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         <button
                           type="button"
                           onClick={() => alternarFila(insId)}
-                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                           title="Editar insumo"
                         >
                           <Pencil size={15} sinAnimacion />
@@ -3577,14 +3577,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             setExtraInsumos(r => r.filter((_, j) => j !== i))
                             if (filaAbierta === insId) setFilaAbierta(null)
                           }}
-                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                           title="Eliminar insumo"
                         >
                           <Trash size={16} sinAnimacion />
                         </button>
                       </div>
                       {abierto && (
-                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
                               <label className={labelSt}>Insumo</label>
@@ -3612,14 +3612,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                                 setExtraInsumos(r => r.filter((_, j) => j !== i))
                                 setFilaAbierta(null)
                               }}
-                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                              className="flex items-center gap-1.5 text-xs font-bold text-error transition-opacity duration-200 hover:opacity-50"
                             >
                               <Trash size={14} /> Eliminar
                             </button>
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>
@@ -3647,22 +3647,22 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
 
           <div className="mt-4 pt-4 flex flex-col gap-2.5" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--text-secondary)]">Subtotal</span>
-              <span className="text-[var(--text-primary)] font-semibold text-right whitespace-nowrap">{formatNumero(subtotal, { moneda: true })}</span>
+              <span className="text-(--text-secondary)">Subtotal</span>
+              <span className="text-(--text-primary) font-semibold text-right whitespace-nowrap">{formatNumero(subtotal, { moneda: true })}</span>
             </div>
             <div className="flex items-center justify-between text-sm">
-              <span className="text-[var(--text-secondary)]">Factor de rentabilidad</span>
+              <span className="text-(--text-secondary)">Factor de rentabilidad</span>
               <div className="w-20">
                 <div className="flex items-center gap-1 rounded-lg px-2" style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
-                  <span className="text-xs text-[var(--text-secondary)]">x</span>
+                  <span className="text-xs text-(--text-secondary)">x</span>
                   <input type="number" step="0.1" value={factorRentabilidad} onChange={e => setFactorRentabilidad(e.target.value)}
                     style={{ textAlign: 'right', padding: '8px 2px', border: 'none', background: 'transparent', outline: 'none', color: 'var(--text-primary)', fontSize: 14, width: '100%' }} />
                 </div>
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[var(--text-primary)]">Total del ítem</span>
-              <span className="text-base font-bold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(totalPrecio, { moneda: true })}</span>
+              <span className="text-sm font-bold text-(--text-primary)">Total del ítem</span>
+              <span className="text-base font-bold text-brand text-right whitespace-nowrap">{formatNumero(totalPrecio, { moneda: true })}</span>
             </div>
           </div>
         </div>
@@ -3671,25 +3671,25 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
         <div className={`rounded-2xl p-4 ${cardBg}`}>
           <div>
             <div className="flex items-center justify-between mb-3">
-              <p className="flex items-center gap-2 text-sm font-bold text-[var(--color-brand)]"><Leaf size={16} /> Cálculo ambiental</p>
+              <p className="flex items-center gap-2 text-sm font-bold text-brand"><Leaf size={16} /> Cálculo ambiental</p>
             </div>
 
             <div className="flex items-center gap-1.5 mb-2.5">
-              <label className="text-xs font-bold text-[var(--text-primary)]">Materiales</label>
+              <label className="text-xs font-bold text-(--text-primary)">Materiales</label>
               <button
                 type="button"
                 onClick={limpiarTodosMateriales}
                 title="Limpiar"
-                className="inline-flex items-center gap-1 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors p-1 -my-1 rounded cursor-pointer group"
+                className="inline-flex items-center gap-1 text-(--text-placeholder) hover:text-brand transition-colors p-1 -my-1 rounded-sm cursor-pointer group"
               >
                 <BrushCleaning size={15} />
-                <span className="hidden group-hover:inline-block text-[11px] font-medium text-[var(--text-secondary)]">
+                <span className="hidden group-hover:inline-block text-[11px] font-medium text-(--text-secondary)">
                   limpiar
                 </span>
               </button>
             </div>
             {esquemaMatVisibles.length === 0 && extraMateriales.length === 0 && (
-              <p className="text-xs text-[var(--text-placeholder)] italic mb-2">Sin materiales asignados.</p>
+              <p className="text-xs text-(--text-placeholder) italic mb-2">Sin materiales asignados.</p>
             )}
 
             {esquemaMatVisibles.length > 0 && (
@@ -3697,7 +3697,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                 {esquemaMatVisibles.map(fila => (
                   <div key={fila.id} className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <p className="flex-1 min-w-0 flex items-center flex-wrap gap-1.5 text-sm font-medium text-[var(--text-primary)]">
+                      <p className="flex-1 min-w-0 flex items-center flex-wrap gap-1.5 text-sm font-medium text-(--text-primary)">
                         <span>{fila.nombre}</span>
                         <TooltipInfo texto={descripcionesMaterial[fila.nombre] ?? ''} />
                         <BotonInfoPerplexity
@@ -3711,9 +3711,9 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           onCambiar={nuevoRol => setRolesConservacion(p => ({ ...p, [fila.nombre]: nuevoRol }))}
                         />
                       </p>
-                      <div className="w-28 flex-shrink-0">
+                      <div className="w-28 shrink-0">
                         {cargandoMaterialesIA ? (
-                          <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-[var(--color-brand)] border border-[var(--border)]">
+                          <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-brand border border-(--border)">
                             <span className="animate-pulse">calculando...</span>
                           </div>
                         ) : (
@@ -3727,7 +3727,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         )}
                       </div>
                       <button type="button" onClick={() => alternarFila(fila.id)}
-                        className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                        className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                         title="Editar material">
                         <Pencil size={15} sinAnimacion />
                       </button>
@@ -3737,14 +3737,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           setMaterialesEliminados(prev => new Set(prev).add(fila.id))
                           setPesos(p => ({ ...p, [fila.nombre]: '' }))
                         }}
-                        className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                        className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                         title="Eliminar material"
                       >
                         <Trash size={16} sinAnimacion />
                       </button>
                     </div>
                     {filaAbierta === fila.id && (
-                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                      <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                           <div>
                             <label className={labelSt}>Material</label>
@@ -3776,7 +3776,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           <button
                             type="button"
                             onClick={() => setFilaAbierta(null)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                           >
                             <Check size={13} /> Guardar
                           </button>
@@ -3796,7 +3796,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                   return (
                     <div key={matId} className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <div className="flex-1 min-w-0 flex items-center gap-1.5 text-sm text-[var(--text-primary)]">
+                        <div className="flex-1 min-w-0 flex items-center gap-1.5 text-sm text-(--text-primary)">
                           <span className="truncate">{m.nombre.trim() || '(Material adicional)'}</span>
                           {m.nombre.trim() && <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />}
                           <BotonInfoPerplexity
@@ -3810,9 +3810,9 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             onCambiar={nuevoRol => setExtraMateriales(r => r.map((x, j) => j === i ? { ...x, rol_conservacion: nuevoRol } : x))}
                           />
                         </div>
-                        <div className="w-28 flex-shrink-0">
+                        <div className="w-28 shrink-0">
                           {cargandoMaterialesIA ? (
-                            <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-[var(--color-brand)] border border-[var(--border)]">
+                            <div className="h-9 w-full rounded-lg skeleton-shimmer flex items-center justify-end px-3 text-xs font-semibold text-brand border border-(--border)">
                               <span className="animate-pulse">calculando...</span>
                             </div>
                           ) : (
@@ -3828,7 +3828,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         <button
                           type="button"
                           onClick={() => alternarFila(matId)}
-                          className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)] transition-colors flex-shrink-0"
+                          className="p-1 text-(--text-secondary) hover:text-brand transition-colors shrink-0"
                           title="Editar material"
                         >
                           <Pencil size={15} sinAnimacion />
@@ -3839,14 +3839,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             setExtraMateriales(r => r.filter((_, j) => j !== i))
                             if (filaAbierta === matId) setFilaAbierta(null)
                           }}
-                          className="p-1 text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 flex-shrink-0"
+                          className="p-1 text-error transition-opacity duration-200 hover:opacity-50 shrink-0"
                           title="Eliminar material"
                         >
                           <Trash size={16} sinAnimacion />
                         </button>
                       </div>
                       {abierto && (
-                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-[var(--border)]">
+                        <div className="flex flex-col gap-2 pl-1 pb-3 border-b border-(--border)">
                           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                             <div>
                               <label className={labelSt}>Material adicional</label>
@@ -3865,12 +3865,12 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             </div>
                             <div>
                               <div className="flex items-center justify-between mb-1.5">
-                                <label className="block text-xs font-semibold text-[var(--text-secondary)]">Factor CO₂ eq</label>
+                                <label className="block text-xs font-semibold text-(--text-secondary)">Factor CO₂ eq</label>
                                 <button
                                   type="button"
                                   disabled={!m.nombre.trim() || !!cargandoFactorExtra[matId]}
                                   onClick={() => sugerirFactorMaterialExtra(matId, m.nombre)}
-                                  className="text-[11px] font-semibold text-[var(--color-brand)] hover:opacity-75 disabled:opacity-40 inline-flex items-center gap-1 cursor-pointer"
+                                  className="text-[11px] font-semibold text-brand hover:opacity-75 disabled:opacity-40 inline-flex items-center gap-1 cursor-pointer"
                                   title="Buscar factor de emisión con IA"
                                 >
                                   {cargandoFactorExtra[matId] ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
@@ -3892,14 +3892,14 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                                 setExtraMateriales(r => r.filter((_, j) => j !== i))
                                 setFilaAbierta(null)
                               }}
-                              className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                              className="flex items-center gap-1.5 text-xs font-bold text-error transition-opacity duration-200 hover:opacity-50"
                             >
                               <Trash size={14} /> Eliminar
                             </button>
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-brand)] text-white hover:opacity-90 shadow-xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>
@@ -4009,23 +4009,23 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
 
           <div className="mt-4 pt-4 flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[var(--text-primary)]">Total CO₂ eq evitado</span>
-              <span className="text-sm font-bold text-[var(--color-brand)] text-right whitespace-nowrap">{formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}</span>
+              <span className="text-sm font-bold text-(--text-primary)">Total CO₂ eq evitado</span>
+              <span className="text-sm font-bold text-brand text-right whitespace-nowrap">{formatNumero(totalCo2, { unidad: 'kg CO₂ eq' })}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-[var(--text-primary)]">Total agua evitada</span>
+              <span className="text-sm font-bold text-(--text-primary)">Total agua evitada</span>
               <span className="text-sm font-bold text-[#59A6E4] text-right whitespace-nowrap">{formatNumero(totalAgua, { unidad: 'L' })}</span>
             </div>
           </div>
         </div>
       </div>
 
-      {error && <p className="text-sm text-[var(--color-error)]">{error}</p>}
+      {error && <p className="text-sm text-error">{error}</p>}
 
-      <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 px-4 flex items-center justify-center gap-3 mt-3">
+      <div className="sticky bottom-0 z-30 w-full bg-(--bg-primary) py-3 px-4 flex items-center justify-center gap-3 mt-3">
         <div
           aria-hidden="true"
-          className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent"
+          className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-linear-to-t/srgb from-(--bg-primary) to-transparent"
         />
         {onCancelar && (
           <button type="button" onClick={onCancelar} className={btnSecundario}>

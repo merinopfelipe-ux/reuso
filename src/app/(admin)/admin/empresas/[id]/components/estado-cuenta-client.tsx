@@ -76,7 +76,7 @@ function KpiCard({
 }) {
   const limiteStr = isFinite(limite) ? String(limite) : '∞'
   return (
-    <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
+    <div className="rounded-card border border-(--border) p-4 bg-(--bg-card)">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
         <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: `${color}18`, flexShrink: 0 }}>
           <Icono size={16} color={color} />
@@ -279,8 +279,8 @@ export function EstadoCuentaClient({
         >
           <span style={{ fontSize: 18 }}>⚠️</span>
           <div className="flex-1">
-            <p className="text-xs font-bold text-[var(--text-primary)] m-0">Datos operativos incompletos</p>
-            <p className="text-[11px] text-[var(--text-secondary)] m-0.5">
+            <p className="text-xs font-bold text-(--text-primary) m-0">Datos operativos incompletos</p>
+            <p className="text-[11px] text-(--text-secondary) m-0.5">
               Esta empresa fue registrada previamente y no cuenta con todos los datos obligatorios. Completa el NIT, teléfono y ubicación en la sección &quot;Información general&quot; para normalizar su estado.
             </p>
           </div>
@@ -291,7 +291,7 @@ export function EstadoCuentaClient({
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 24 }}>
         <KpiCard titulo="Empleados" valor={totalEmpleados} limite={planReal.limite_empleados ?? Infinity} icono={Users} color="#00827C" />
         <KpiCard titulo="Cálculos este mes" valor={calculosMes} limite={planReal.limite_calculos_mes ?? Infinity} icono={Calculator} color="#59A6E4" />
-        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] relative">
+        <div className="rounded-card border border-(--border) p-4 bg-(--bg-card) relative">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: PLAN_CONFIG[plan]?.bg ?? 'rgba(160,130,200,0.12)', transition: 'background 0.3s', flexShrink: 0 }}>
               <Sparkles size={16} style={{ color: PLAN_CONFIG[plan]?.color ?? '#9B6DD6', transition: 'color 0.3s' }} />
@@ -303,7 +303,7 @@ export function EstadoCuentaClient({
               type="button"
               onClick={() => setMenuPlanAbierto(v => !v)}
               disabled={guardandoPlan}
-              className="flex items-center gap-2 p-1.5 rounded-full border transition-all cursor-pointer text-left hover:bg-[var(--bg-hover)]"
+              className="flex items-center gap-2 p-1.5 rounded-full border transition-all cursor-pointer text-left hover:bg-(--bg-hover)"
               style={{
                 background: 'var(--bg-card)',
                 borderColor: 'var(--border)',
@@ -311,7 +311,7 @@ export function EstadoCuentaClient({
               }}
             >
               <PlanBadge plan={plan} />
-              <ChevronDown size={14} className="text-[var(--text-secondary)]" />
+              <ChevronDown size={14} className="text-(--text-secondary)" />
             </button>
 
             {menuPlanAbierto && (
@@ -334,11 +334,11 @@ export function EstadoCuentaClient({
                           key={p}
                           type="button"
                           onClick={() => cambiarPlan(p)}
-                          className="flex items-center justify-between w-full text-left px-3 py-2 rounded-lg hover:bg-[var(--bg-hover)] transition-colors"
+                          className="flex items-center justify-between w-full text-left px-3 py-2 rounded-lg hover:bg-(--bg-hover) transition-colors"
                         >
                           <div className="flex items-center gap-2">
                             <Icono size={14} color={cfg.color} />
-                            <span className="text-xs font-bold text-[var(--text-primary)]">{cfg.label}</span>
+                            <span className="text-xs font-bold text-(--text-primary)">{cfg.label}</span>
                           </div>
                           {activo && <CheckCircle size={14} color={cfg.color} />}
                         </button>
@@ -349,7 +349,7 @@ export function EstadoCuentaClient({
               </>
             )}
           </div>
-          {guardandoPlan && <p className="text-xs mt-2 text-[var(--text-secondary)] font-semibold animate-pulse">Guardando cambio...</p>}
+          {guardandoPlan && <p className="text-xs mt-2 text-(--text-secondary) font-semibold animate-pulse">Guardando cambio...</p>}
 
           {/* Qué incluye el plan — debajo del nombre del plan, colapsado
               detrás de un "+" (lista, no un párrafo de texto plano), a
@@ -427,8 +427,8 @@ export function EstadoCuentaClient({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full items-stretch">
         {/* Notas admin */}
-        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] flex flex-col h-full">
-          <p className="text-xs font-semibold mb-3 text-[var(--text-secondary)]">Notas privadas</p>
+        <div className="rounded-card border border-(--border) p-4 bg-(--bg-card) flex flex-col h-full">
+          <p className="text-xs font-semibold mb-3 text-(--text-secondary)">Notas privadas</p>
           <div className="flex flex-col gap-2 mb-3 max-h-[300px] overflow-y-auto">
             {notasFeed.map(n => {
               const autorLimpio = n.autor ? n.autor.split('·')[0].trim() : 'Equipo Interno'
@@ -437,12 +437,12 @@ export function EstadoCuentaClient({
                 ? new Date(n.fecha).toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                 : ''
               return (
-                <div key={n.id} className="rounded-xl p-2.5 bg-[var(--bg-input)]">
+                <div key={n.id} className="rounded-xl p-2.5 bg-(--bg-input)">
                   <div
-                    className="text-[13px] font-normal break-words whitespace-pre-wrap text-[var(--text-primary)]"
+                    className="text-[13px] font-normal wrap-break-word whitespace-pre-wrap text-(--text-primary)"
                     dangerouslySetInnerHTML={{ __html: n.nota }}
                   />
-                  <p className="text-[10px] mt-1 text-[var(--text-secondary)]">
+                  <p className="text-[10px] mt-1 text-(--text-secondary)">
                     {autorLimpio}{fechaTexto ? ` · ${fechaTexto}` : ''}
                   </p>
                 </div>
@@ -473,8 +473,8 @@ export function EstadoCuentaClient({
         </div>
 
         {/* Actividad / Historial de cambios */}
-        <div className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)] flex flex-col h-full">
-          <p className="text-xs font-semibold mb-3 text-[var(--text-secondary)]">Actividad</p>
+        <div className="rounded-card border border-(--border) p-4 bg-(--bg-card) flex flex-col h-full">
+          <p className="text-xs font-semibold mb-3 text-(--text-secondary)">Actividad</p>
 
           {(() => {
             const actividadesFiltradas = historialPlan.filter((entry) => {
@@ -537,8 +537,8 @@ export function EstadoCuentaClient({
 
                     return (
                       <div key={i} className="py-0.5">
-                        <p className="text-[13px] font-normal text-[var(--text-primary)] whitespace-normal break-words">{label}</p>
-                        <p className="text-[10px] text-[var(--text-secondary)] mt-0.5">
+                        <p className="text-[13px] font-normal text-(--text-primary) whitespace-normal wrap-break-word">{label}</p>
+                        <p className="text-[10px] text-(--text-secondary) mt-0.5">
                           {metaText}
                         </p>
                       </div>
@@ -550,7 +550,7 @@ export function EstadoCuentaClient({
                   <button
                     type="button"
                     onClick={() => setMostrarTodasActividades(v => !v)}
-                    className="mt-3 text-xs font-medium text-[var(--text-primary)] hover:underline text-left cursor-pointer pt-1"
+                    className="mt-3 text-xs font-medium text-(--text-primary) hover:underline text-left cursor-pointer pt-1"
                   >
                     {mostrarTodasActividades 
                       ? 'Ver menos' 

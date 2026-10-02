@@ -83,7 +83,7 @@ export function Popover({ trigger, children, ancho = 260, alinear = 'right' }: {
       {abierto && montado && coords && createPortal(
         <div
           ref={panelRef}
-          className="fixed rounded-[10px] border p-3 z-[9999] bg-[var(--bg-card)] border-[var(--border)] shadow-lg"
+          className="fixed rounded-btn border p-3 z-9999 bg-(--bg-card) border-(--border) shadow-lg"
           style={{ width: ancho, top: coords.top, left: coords.left }}
         >
           {children}
@@ -99,10 +99,10 @@ function BotonBarra({ children, onClick, activo }: { children: React.ReactNode; 
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold whitespace-nowrap flex-shrink-0 ${
+      className={`flex items-center gap-1.5 px-3 py-2 rounded-input text-xs font-semibold whitespace-nowrap shrink-0 ${
         activo
-          ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)]'
-          : 'bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]'
+          ? 'bg-brand-light text-brand'
+          : 'bg-(--bg-input) border border-(--border) text-(--text-secondary) hover:bg-(--bg-hover)'
       }`}
     >
       {children}
@@ -138,7 +138,7 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
 }) {
   const { vistas, vistaActivaId, borrador, setBorrador, sinGuardar, guardar, cambiarVistaActiva, crear, duplicar, eliminar, renombrar } = vistasHook
 
-  const ts = 'text-[var(--text-secondary)]'
+  const ts = 'text-(--text-secondary)'
 
   // Selector de vistas guardadas — crear/renombrar usan un input inline
   // dentro del propio panel en vez de prompt() nativo (prohibido en el
@@ -244,14 +244,14 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           </BotonBarra>
         )}
       >
-        <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Vistas guardadas</p>
+        <p className="text-xs font-semibold text-(--text-secondary) mb-2">Vistas guardadas</p>
         <div className="flex flex-col gap-0.5 max-h-56 overflow-y-auto mb-2">
           {vistas.map(v => (
             <div key={v.id} className="flex items-center gap-1 group">
               {renombrandoId === v.id ? (
                 <input
                   autoFocus
-                  className="flex-1 text-xs px-2 py-1.5 rounded-[6px] border border-[var(--color-brand)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                  className="flex-1 text-xs px-2 py-1.5 rounded-[6px] border border-brand bg-(--bg-input) text-(--text-primary) outline-hidden"
                   value={nombreRenombrar}
                   onChange={e => setNombreRenombrar(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter') confirmarRenombrar(v.id); if (e.key === 'Escape') setRenombrandoId(null) }}
@@ -261,18 +261,18 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
                 <button
                   type="button"
                   onClick={() => cambiarVistaActiva(v.id)}
-                  className={`flex-1 text-left px-2 py-1.5 rounded-[6px] text-xs font-medium truncate ${v.id === vistaActivaId ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}
+                  className={`flex-1 text-left px-2 py-1.5 rounded-[6px] text-xs font-medium truncate ${v.id === vistaActivaId ? 'bg-brand-light text-brand' : 'text-(--text-primary) hover:bg-(--bg-hover)'}`}
                 >
                   {v.nombre}
                 </button>
               )}
               {renombrandoId !== v.id && (
-                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-                  <button type="button" onClick={() => { setRenombrandoId(v.id); setNombreRenombrar(v.nombre) }} className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-brand)]" aria-label="Renombrar vista">
+                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                  <button type="button" onClick={() => { setRenombrandoId(v.id); setNombreRenombrar(v.nombre) }} className="p-1 text-(--text-secondary) hover:text-brand" aria-label="Renombrar vista">
                     <Pencil size={12} sinAnimacion />
                   </button>
                   {v.id !== 'default' && (
-                    <button type="button" onClick={() => setEliminandoId(v.id)} className="p-1 text-[var(--text-secondary)] hover:text-[var(--color-error)]" aria-label="Eliminar vista">
+                    <button type="button" onClick={() => setEliminandoId(v.id)} className="p-1 text-(--text-secondary) hover:text-error" aria-label="Eliminar vista">
                       <Trash size={12} sinAnimacion />
                     </button>
                   )}
@@ -281,14 +281,14 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-1.5 pt-2 border-t border-[var(--border)]">
-          <button type="button" onClick={duplicar} className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--color-brand)] px-1 py-1">
+        <div className="flex flex-col gap-1.5 pt-2 border-t border-(--border)">
+          <button type="button" onClick={duplicar} className="flex items-center gap-1.5 text-xs font-medium text-(--text-secondary) hover:text-brand px-1 py-1">
             <Copy size={13} sinAnimacion /> Duplicar vista actual
           </button>
           {creandoVista ? (
             <input
               autoFocus
-              className="text-xs px-2 py-1.5 rounded-[6px] border border-[var(--color-brand)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+              className="text-xs px-2 py-1.5 rounded-[6px] border border-brand bg-(--bg-input) text-(--text-primary) outline-hidden"
               placeholder="Nombre de la vista nueva"
               value={nombreNuevaVista}
               onChange={e => setNombreNuevaVista(e.target.value)}
@@ -310,11 +310,11 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           <BotonBarra onClick={abrir} activo={abierto}><Gear size={14} sinAnimacion /></BotonBarra>
         )}
       >
-        <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Densidad de fila</p>
+        <p className="text-xs font-semibold text-(--text-secondary) mb-2">Densidad de fila</p>
         {(['comoda', 'compacta'] as const).map(d => (
           <label key={d} className="flex items-center gap-2 py-1.5 cursor-pointer select-none" onClick={() => setDensidad(d)}>
-            {densidad === d ? <SquareCheck size={18} className="text-[var(--color-brand)]" sinAnimacion /> : <Square size={18} className="text-[var(--text-secondary)]" sinAnimacion />}
-            <span className="text-xs text-[var(--text-primary)] capitalize">{d === 'comoda' ? 'Cómoda' : 'Compacta'}</span>
+            {densidad === d ? <SquareCheck size={18} className="text-brand" sinAnimacion /> : <Square size={18} className="text-(--text-secondary)" sinAnimacion />}
+            <span className="text-xs text-(--text-primary) capitalize">{d === 'comoda' ? 'Cómoda' : 'Compacta'}</span>
           </label>
         ))}
       </Popover>
@@ -326,21 +326,21 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           <BotonBarra onClick={abrir} activo={abierto}><Columns3 size={14} sinAnimacion /> Editar columnas</BotonBarra>
         )}
       >
-        <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Columnas visibles</p>
+        <p className="text-xs font-semibold text-(--text-secondary) mb-2">Columnas visibles</p>
         <div className="flex flex-col gap-1 max-h-64 overflow-y-auto pr-1">
           {borrador.columnas.map((clave, idx) => {
             const def = definicionDe(clave)
             return (
-              <div key={clave} className="flex items-center justify-between py-1 hover:bg-[var(--bg-hover)] rounded px-1 -mx-1 group">
+              <div key={clave} className="flex items-center justify-between py-1 hover:bg-(--bg-hover) rounded-sm px-1 -mx-1 group">
                 <label className="flex items-center gap-2 cursor-pointer select-none flex-1" onClick={() => toggleColumna(clave)}>
-                  <SquareCheck size={20} className="text-[var(--color-brand)] flex-shrink-0" sinAnimacion />
-                  <span className="text-xs text-[var(--text-primary)]">{def.label}</span>
+                  <SquareCheck size={20} className="text-brand shrink-0" sinAnimacion />
+                  <span className="text-xs text-(--text-primary)">{def.label}</span>
                 </label>
                 <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button type="button" onClick={(e) => moverColumna(e, idx, -1)} disabled={idx === 0} className="p-1 disabled:opacity-30 hover:text-[var(--color-brand)] text-[var(--text-secondary)]" aria-label="Mover arriba">
+                  <button type="button" onClick={(e) => moverColumna(e, idx, -1)} disabled={idx === 0} className="p-1 disabled:opacity-30 hover:text-brand text-(--text-secondary)" aria-label="Mover arriba">
                     <ArrowUp size={12} sinAnimacion />
                   </button>
-                  <button type="button" onClick={(e) => moverColumna(e, idx, 1)} disabled={idx === borrador.columnas.length - 1} className="p-1 disabled:opacity-30 hover:text-[var(--color-brand)] text-[var(--text-secondary)]" aria-label="Mover abajo">
+                  <button type="button" onClick={(e) => moverColumna(e, idx, 1)} disabled={idx === borrador.columnas.length - 1} className="p-1 disabled:opacity-30 hover:text-brand text-(--text-secondary)" aria-label="Mover abajo">
                     <ArrowDown size={12} sinAnimacion />
                   </button>
                 </div>
@@ -351,9 +351,9 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
             <div className="pt-2 mt-1" />
           )}
           {COLUMNAS_DISPONIBLES.filter(d => !borrador.columnas.includes(d.clave)).map(def => (
-            <label key={def.clave} className="flex items-center gap-2 py-1.5 cursor-pointer select-none hover:bg-[var(--bg-hover)] rounded px-1 -mx-1" onClick={() => toggleColumna(def.clave)}>
-              <Square size={20} className="text-[var(--text-secondary)] flex-shrink-0" sinAnimacion />
-              <span className="text-xs text-[var(--text-primary)]">{def.label}</span>
+            <label key={def.clave} className="flex items-center gap-2 py-1.5 cursor-pointer select-none hover:bg-(--bg-hover) rounded-sm px-1 -mx-1" onClick={() => toggleColumna(def.clave)}>
+              <Square size={20} className="text-(--text-secondary) shrink-0" sinAnimacion />
+              <span className="text-xs text-(--text-primary)">{def.label}</span>
             </label>
           ))}
         </div>
@@ -368,21 +368,21 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           </BotonBarra>
         )}
       >
-        <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Condiciones (todas deben cumplirse)</p>
+        <p className="text-xs font-semibold text-(--text-secondary) mb-2">Condiciones (todas deben cumplirse)</p>
         <div className="flex flex-col gap-3">
           {borrador.filtros.map((f, idx) => {
             const def = definicionDe(f.campo)
             return (
-              <div key={idx} className="rounded-[8px] border border-[var(--border)] p-2">
+              <div key={idx} className="rounded-input border border-(--border) p-2">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-semibold text-[var(--text-primary)]">{def.label}</span>
+                  <span className="text-xs font-semibold text-(--text-primary)">{def.label}</span>
                   <button type="button" onClick={() => quitarFiltro(idx)}>
-                    <X size={13} className="text-[var(--text-secondary)]" sinAnimacion />
+                    <X size={13} className="text-(--text-secondary)" sinAnimacion />
                   </button>
                 </div>
                 {f.tipo === 'texto' && (
                   <input
-                    className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                    className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden"
                     placeholder="Contiene..."
                     value={f.contiene}
                     onChange={e => setBorrador(prev => ({ ...prev, filtros: prev.filtros.map((x, i) => i === idx ? { ...f, contiene: e.target.value } : x) }))}
@@ -390,17 +390,17 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
                 )}
                 {f.tipo === 'fecha' && (
                   <div className="flex gap-1.5">
-                    <input type="date" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                    <input type="date" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden"
                       value={f.desde ?? ''} onChange={e => setBorrador(prev => ({ ...prev, filtros: prev.filtros.map((x, i) => i === idx ? { ...f, desde: e.target.value || undefined } : x) }))} />
-                    <input type="date" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                    <input type="date" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden"
                       value={f.hasta ?? ''} onChange={e => setBorrador(prev => ({ ...prev, filtros: prev.filtros.map((x, i) => i === idx ? { ...f, hasta: e.target.value || undefined } : x) }))} />
                   </div>
                 )}
                 {f.tipo === 'numero' && (
                   <div className="flex gap-1.5">
-                    <input type="number" placeholder="Mín" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                    <input type="number" placeholder="Mín" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden"
                       value={f.min ?? ''} onChange={e => setBorrador(prev => ({ ...prev, filtros: prev.filtros.map((x, i) => i === idx ? { ...f, min: e.target.value ? Number(e.target.value) : undefined } : x) }))} />
-                    <input type="number" placeholder="Máx" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] outline-none"
+                    <input type="number" placeholder="Máx" className="w-full text-xs px-2 py-1.5 rounded-[6px] border border-(--border) bg-(--bg-input) text-(--text-primary) outline-hidden"
                       value={f.max ?? ''} onChange={e => setBorrador(prev => ({ ...prev, filtros: prev.filtros.map((x, i) => i === idx ? { ...f, max: e.target.value ? Number(e.target.value) : undefined } : x) }))} />
                   </div>
                 )}
@@ -409,7 +409,7 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           })}
           {COLUMNAS_DISPONIBLES.filter(d => !borrador.filtros.some(f => f.campo === d.clave)).length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Agregar condición</p>
+              <p className="text-xs font-semibold text-(--text-secondary) mb-1.5">Agregar condición</p>
               <div className="flex flex-wrap gap-1.5">
                 {/* Solo campos sin condición activa todavía — evita duplicar
                     la misma condición dos veces (ver guard en agregarFiltro). */}
@@ -418,7 +418,7 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
                     key={def.clave}
                     type="button"
                     onClick={() => agregarFiltro(def.clave)}
-                    className="px-2 py-1 rounded-full text-[11px] font-medium border border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
+                    className="px-2 py-1 rounded-full text-[11px] font-medium border border-(--border) text-(--text-secondary) hover:bg-(--bg-hover)"
                   >
                     + {def.label}
                   </button>
@@ -436,22 +436,22 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
           <BotonBarra onClick={abrir} activo={abierto}><ArrowsDownUp size={14} sinAnimacion /> Ordenar</BotonBarra>
         )}
       >
-        <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">Ordenar por</p>
+        <p className="text-xs font-semibold text-(--text-secondary) mb-2">Ordenar por</p>
         <div className="flex flex-col gap-1 mb-3">
           {COLUMNAS_DISPONIBLES.map(def => (
             <label key={def.clave} className="flex items-center gap-2 py-1 cursor-pointer select-none" onClick={() => actualizarOrden({ campo: def.clave, dir: borrador.orden.dir })}>
-              {borrador.orden.campo === def.clave ? <SquareCheck size={20} className="text-[var(--color-brand)] flex-shrink-0" sinAnimacion /> : <Square size={20} className="text-[var(--text-secondary)] flex-shrink-0" sinAnimacion />}
-              <span className="text-xs text-[var(--text-primary)]">{def.label}</span>
+              {borrador.orden.campo === def.clave ? <SquareCheck size={20} className="text-brand shrink-0" sinAnimacion /> : <Square size={20} className="text-(--text-secondary) shrink-0" sinAnimacion />}
+              <span className="text-xs text-(--text-primary)">{def.label}</span>
             </label>
           ))}
         </div>
         <div className="flex gap-1.5">
           <button type="button" onClick={() => actualizarOrden({ ...borrador.orden, dir: 'asc' })}
-            className={`flex-1 text-xs font-semibold py-1.5 rounded-[6px] ${borrador.orden.dir === 'asc' ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)]' : 'border border-[var(--border)] text-[var(--text-secondary)]'}`}>
+            className={`flex-1 text-xs font-semibold py-1.5 rounded-[6px] ${borrador.orden.dir === 'asc' ? 'bg-brand-light text-brand' : 'border border-(--border) text-(--text-secondary)'}`}>
             Ascendente
           </button>
           <button type="button" onClick={() => actualizarOrden({ ...borrador.orden, dir: 'desc' })}
-            className={`flex-1 text-xs font-semibold py-1.5 rounded-[6px] ${borrador.orden.dir === 'desc' ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)]' : 'border border-[var(--border)] text-[var(--text-secondary)]'}`}>
+            className={`flex-1 text-xs font-semibold py-1.5 rounded-[6px] ${borrador.orden.dir === 'desc' ? 'bg-brand-light text-brand' : 'border border-(--border) text-(--text-secondary)'}`}>
             Descendente
           </button>
         </div>
@@ -478,10 +478,10 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
         type="button"
         onClick={guardar}
         disabled={!sinGuardar}
-        className={`flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold whitespace-nowrap flex-shrink-0 ${
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-input text-xs font-semibold whitespace-nowrap shrink-0 ${
           sinGuardar
-            ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] cursor-pointer'
-            : 'bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-placeholder)] cursor-not-allowed'
+            ? 'bg-brand text-(--text-on-brand) cursor-pointer'
+            : 'bg-(--bg-input) border border-(--border) text-(--text-placeholder) cursor-not-allowed'
         }`}
       >
         <FloppyDisk size={14} sinAnimacion /> Guardar
@@ -492,10 +492,10 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
   return (
     <div className="flex flex-wrap items-center gap-2 mb-4">
       {/* Buscar — siempre visible, incluso en mobile */}
-      <div className="flex items-center gap-2 flex-1 min-w-[160px] rounded-[8px] border border-[var(--border)] px-3 py-2 bg-[var(--bg-input)] flex-shrink-0">
+      <div className="flex items-center gap-2 flex-1 min-w-[160px] rounded-input border border-(--border) px-3 py-2 bg-(--bg-input) shrink-0">
         <MagnifyingGlass size={16} className={ts} sinAnimacion />
         <input
-          className={`flex-1 bg-transparent text-sm outline-none text-[var(--text-primary)] placeholder:opacity-40`}
+          className={`flex-1 bg-transparent text-sm outline-hidden text-(--text-primary) placeholder:opacity-40`}
           placeholder="Busca por cliente o código"
           value={busqueda}
           onChange={e => onBusquedaChange(e.target.value)}
@@ -516,7 +516,7 @@ export function ToolbarVistas<T extends CotizacionParaVista>({
       <button
         type="button"
         onClick={() => setMasAbierto(true)}
-        className="sm:hidden flex items-center gap-1.5 px-3 py-2 rounded-[8px] text-xs font-semibold whitespace-nowrap flex-shrink-0 bg-[var(--bg-input)] border border-[var(--border)] text-[var(--text-secondary)]"
+        className="sm:hidden flex items-center gap-1.5 px-3 py-2 rounded-input text-xs font-semibold whitespace-nowrap shrink-0 bg-(--bg-input) border border-(--border) text-(--text-secondary)"
       >
         <MoreHorizontal size={14} sinAnimacion /> Más
       </button>
@@ -597,7 +597,7 @@ export function ColumnaHeaderMenu({ clave, borrador, setBorrador, columnaFija, s
 
   // Sin hover-pop/animación — directriz explícita: nada de zoom en íconos
   // dentro de las tablas.
-  const itemStyle = 'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-[6px] text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'
+  const itemStyle = 'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-[6px] text-xs font-medium text-(--text-primary) hover:bg-(--bg-hover)'
 
   return (
     <th
@@ -619,7 +619,7 @@ export function ColumnaHeaderMenu({ clave, borrador, setBorrador, columnaFija, s
       <div className="flex items-center gap-1">
         <button type="button" onClick={() => ordenar(activa && borrador.orden.dir === 'asc' ? 'desc' : 'asc')} className="flex items-center gap-1 text-xs font-semibold rounded-[4px] px-1 -mx-1 py-0.5 min-w-0">
           {/* Título de columna alineado siempre a la izquierda, directriz explícita del usuario. */}
-          <span className={`${anchoColumna(clave).encabezado} ${clave === 'tipo_cliente' ? 'whitespace-pre' : 'whitespace-normal break-words'} leading-tight text-left`} style={{ color: 'var(--color-brand)' }}>{def.label}</span>
+          <span className={`${anchoColumna(clave).encabezado} ${clave === 'tipo_cliente' ? 'whitespace-pre' : 'whitespace-normal wrap-break-word'} leading-tight text-left`} style={{ color: 'var(--color-brand)' }}>{def.label}</span>
           {/* El ícono de orden NO se ve en reposo si esta columna no es la
               activa — solo aparece al pasar el cursor sobre el encabezado
               (group-hover). Si es la activa, siempre visible. */}
@@ -642,7 +642,7 @@ export function ColumnaHeaderMenu({ clave, borrador, setBorrador, columnaFija, s
             <button
               type="button"
               onClick={abrir}
-              className={`p-1 rounded-[4px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] ${abierto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+              className={`p-1 rounded-[4px] text-(--text-secondary) hover:bg-(--bg-hover) ${abierto ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
             >
               <EllipsisVertical size={14} sinAnimacion />
             </button>
@@ -661,15 +661,15 @@ export function ColumnaHeaderMenu({ clave, borrador, setBorrador, columnaFija, s
             {mostrarAgregar && (
               <div className="pl-4 flex flex-col gap-0.5 max-h-40 overflow-y-auto">
                 {columnasOcultas.length === 0
-                  ? <p className="text-[11px] text-[var(--text-secondary)] px-2 py-1">Ya están todas visibles.</p>
+                  ? <p className="text-[11px] text-(--text-secondary) px-2 py-1">Ya están todas visibles.</p>
                   : columnasOcultas.map(d => (
-                    <button key={d.clave} type="button" onClick={() => agregarColumna(d.clave)} className="text-left px-2 py-1.5 rounded-[6px] text-[11px] font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]">
+                    <button key={d.clave} type="button" onClick={() => agregarColumna(d.clave)} className="text-left px-2 py-1.5 rounded-[6px] text-[11px] font-medium text-(--text-secondary) hover:bg-(--bg-hover)">
                       {d.label}
                     </button>
                   ))}
               </div>
             )}
-            <button type="button" onClick={eliminarColumna} className="flex items-center gap-2 w-full text-left px-2.5 py-2 text-xs font-medium bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50">
+            <button type="button" onClick={eliminarColumna} className="flex items-center gap-2 w-full text-left px-2.5 py-2 text-xs font-medium bg-transparent text-error transition-opacity duration-200 hover:opacity-50">
               <Trash size={14} sinAnimacion /> Eliminar columna
             </button>
           </div>

@@ -84,7 +84,7 @@ export function ListaTickets({ esAdmin }: Props) {
           )}
         </div>
 
-        <div className="overflow-x-auto border-t border-[var(--border)]">
+        <div className="overflow-x-auto border-t border-(--border)">
           {loading ? (
             <div style={{ padding: '60px 0', textAlign: 'center' }}>
               <CircleNotch size={24} className="pulse-logo" style={{ color: 'var(--color-brand)', margin: '0 auto' }} />
@@ -97,7 +97,7 @@ export function ListaTickets({ esAdmin }: Props) {
           ) : (
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Asunto</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Actualizado</th>
@@ -109,12 +109,12 @@ export function ListaTickets({ esAdmin }: Props) {
                     <tr
                       key={ticket.id}
                       onClick={() => setTicketAbierto(ticket)}
-                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
-                      <td className="px-4 py-3 text-[var(--text-primary)]">
+                      <td className="px-4 py-3 text-(--text-primary)">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div>
                             <p style={{ fontWeight: 600, margin: '0 0 4px' }} >{ticket.titulo}</p>
@@ -133,7 +133,7 @@ export function ListaTickets({ esAdmin }: Props) {
                           {ticket.estado.replace('_', ' ')}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-center text-[var(--text-secondary)] text-xs">
+                      <td className="px-4 py-3 text-center text-(--text-secondary) text-xs">
                         {formatFecha(ticket.updated_at)}
                       </td>
                     </tr>

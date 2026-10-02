@@ -30,10 +30,10 @@ const TIPO_TICKET_LABELS: Record<TipoTicket, string> = {
 }
 
 const ESTADO_TICKET_COLOR: Record<EstadoTicket, string> = {
-  abierto: 'text-[var(--color-brand)] bg-[var(--color-brand-light)]',
+  abierto: 'text-brand bg-brand-light',
   en_proceso: 'text-[#AD7C43] bg-[rgba(173,124,67,0.1)]',
-  resuelto: 'text-[var(--color-success-content)] bg-[rgba(56,185,142,0.1)]',
-  cerrado: 'text-[var(--text-secondary)] bg-[var(--bg-hover)]',
+  resuelto: 'text-(--color-success-content) bg-[rgba(56,185,142,0.1)]',
+  cerrado: 'text-(--text-secondary) bg-(--bg-hover)',
 }
 
 interface EmpresaClienteDetalle {
@@ -83,7 +83,7 @@ interface Atributo { id: string; clave: string; valor: string | null }
 // Mismos 7 estados y colores que ya usa /empresa/cotizador — nunca se
 // inventan colores nuevos para el mismo dato.
 const ESTADOS_COTIZACION: Record<string, { label: string; color: string }> = {
-  por_cotizar: { label: 'Por cotizar', color: 'text-[#474747]/60 bg-[#474747]/08' },
+  por_cotizar: { label: 'Por cotizar', color: 'text-[#474747]/60 ' },
   enviada: { label: 'Enviada', color: 'text-[#59A6E4] bg-[#59A6E4]/10' },
   en_negociacion: { label: 'En negociación', color: 'text-[#F6BF3E] bg-[#F6BF3E]/10' },
   esperando_anticipo: { label: 'Esperando anticipo', color: 'text-[#38B98E] bg-[#38B98E]/10' },
@@ -95,7 +95,7 @@ const ESTADOS_COTIZACION: Record<string, { label: string; color: string }> = {
 
 export default function DetalleClientePage() {
   return (
-    <Suspense fallback={<div className="h-full min-h-[60vh] bg-[var(--bg-primary)]" />}>
+    <Suspense fallback={<div className="h-full min-h-[60vh] bg-(--bg-primary)" />}>
       <DetalleClienteContent />
     </Suspense>
   )
@@ -327,14 +327,14 @@ function DetalleClienteContent() {
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-  const inputSt = 'w-full px-3 py-2.5 rounded-xl border text-sm bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
+  const inputSt = 'w-full px-3 py-2.5 rounded-xl border text-sm bg-(--bg-input) border-(--border) text-(--text-primary)'
 
   if (cargando) {
     return (
-      <div className="h-full min-h-[60vh] bg-[var(--bg-primary)]">
+      <div className="h-full min-h-[60vh] bg-(--bg-primary)">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <SkeletonLista filas={3} />
         </div>
@@ -344,7 +344,7 @@ function DetalleClienteContent() {
 
   if (!cliente) {
     return (
-      <div className="h-full min-h-[60vh] flex items-center justify-center bg-[var(--bg-primary)]">
+      <div className="h-full min-h-[60vh] flex items-center justify-center bg-(--bg-primary)">
         <p className={ts}>{error ?? 'Cliente no encontrado.'}</p>
       </div>
     )
@@ -353,10 +353,10 @@ function DetalleClienteContent() {
   const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push(conEmpresa('/empresa/clientes'))} className="p-2 rounded-full hover-pop hover-press hover:bg-[#00827C]/08 transition-colors">
+          <button onClick={() => router.push(conEmpresa('/empresa/clientes'))} className="p-2 rounded-full hover-pop hover-press  transition-colors">
             <ArrowLeft size={20} className={tp} />
           </button>
           <div className="flex-1 min-w-0">
@@ -373,7 +373,7 @@ function DetalleClienteContent() {
         <div className="flex flex-col gap-4">
         {/* Datos de empresa (B2B) — primero, es el cliente real */}
         {emp && (
-          <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+          <div className={`rounded-card border p-4 ${cardBg}`}>
             <p className={`text-xs font-semibold mb-3 ${ts}`}>Empresa cliente · NIT {emp.nit}</p>
             <div className="mb-3">
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Razón social</label>
@@ -392,7 +392,7 @@ function DetalleClienteContent() {
 
         {/* Otros contactos de esta empresa + agregar uno nuevo */}
         {emp && (
-          <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+          <div className={`rounded-card border p-4 ${cardBg}`}>
             <div className="flex items-center justify-between mb-3">
               <p className={`text-xs font-semibold ${ts}`}>Otros contactos de esta empresa</p>
               <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
@@ -408,7 +408,7 @@ function DetalleClienteContent() {
                     key={h.id}
                     type="button"
                     onClick={() => router.push(conEmpresa(`/empresa/clientes/${h.id}`))}
-                    className="w-full text-left p-2.5 rounded-[8px] bg-[var(--bg-input)] border border-[var(--border)] hover:bg-[var(--bg-hover)] transition-colors"
+                    className="w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors"
                   >
                     <p className={`text-xs font-semibold ${tp}`}>{h.nombre} {h.apellido ?? ''}</p>
                     {h.telefono && <p className={`text-[11px] ${ts}`}>{formatTelefonoVista(h.telefono, h.telefono_indicativo)}</p>}
@@ -420,7 +420,7 @@ function DetalleClienteContent() {
         )}
 
         {/* Datos del contacto actual — segundo, es opcional para B2B */}
-        <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+        <div className={`rounded-card border p-4 ${cardBg}`}>
           <p className={`text-xs font-semibold mb-3 ${ts}`}>{emp ? 'Este contacto (opcional)' : 'Datos del contacto'}</p>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div>
@@ -483,7 +483,7 @@ function DetalleClienteContent() {
           </Button>
         </div>
         {/* Atributos personalizados */}
-        <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+        <div className={`rounded-card border p-4 ${cardBg}`}>
           <p className={`text-xs font-semibold mb-3 ${ts}`}>Atributos personalizados</p>
           {atributos.length === 0 && <p className={`text-xs italic mb-3 ${ts}`}>Sin atributos todavía.</p>}
           <div className="space-y-2 mb-3">
@@ -497,7 +497,7 @@ function DetalleClienteContent() {
           <div className="flex gap-2">
             <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${inputSt} flex-1`} />
             <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${inputSt} flex-1`} />
-            <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 flex-shrink-0" title="Agregar">
+            <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
               <Plus size={16} className="text-[#00827C]" />
             </button>
           </div>
@@ -509,7 +509,7 @@ function DetalleClienteContent() {
             kanban), fecha y total, para que se pueda leer el recorrido sin
             tener que abrir cada una. */}
         {cotizaciones.length > 0 && (
-          <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+          <div className={`rounded-card border p-4 ${cardBg}`}>
             <p className={`text-xs font-semibold mb-3 ${ts}`}>Historial de cotizaciones</p>
             <div className="space-y-2">
               {cotizaciones.map(c => {
@@ -518,11 +518,11 @@ function DetalleClienteContent() {
                   <button
                     key={c.id}
                     onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
-                    className={`w-full text-left p-3 rounded-[10px] border transition-colors hover-pop ${cardBg} hover:bg-[var(--bg-hover)]`}
+                    className={`w-full text-left p-3 rounded-btn border transition-colors hover-pop ${cardBg} hover:bg-(--bg-hover)`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className={`text-sm font-semibold ${tp}`}>{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${est.color}`}>{est.label}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
                       <span className={`text-xs ${ts}`}>{formatFecha(c.created_at)}</span>
@@ -538,13 +538,13 @@ function DetalleClienteContent() {
         {/* Tickets de soporte relacionados con este cliente — la empresa
             puede registrar un caso puntual sobre él y verlo aparecer aquí,
             sin que tenga que buscarlo entre todos los tickets de /ayuda. */}
-        <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+        <div className={`rounded-card border p-4 ${cardBg}`}>
           <div className="flex items-center justify-between mb-3">
             <p className={`text-xs font-semibold ${ts}`}>Tickets de soporte</p>
             <button
               type="button"
               onClick={() => setMostrandoCrearTicket(true)}
-              className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-[var(--bg-hover)]"
+              className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
               style={{ color: 'var(--color-brand)' }}
             >
               <Plus size={14} sinAnimacion /> Nuevo
@@ -555,10 +555,10 @@ function DetalleClienteContent() {
           ) : (
             <div className="space-y-2">
               {tickets.map(t => (
-                <div key={t.id} className={`p-3 rounded-[10px] border ${cardBg}`}>
+                <div key={t.id} className={`p-3 rounded-btn border ${cardBg}`}>
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <span className={`text-sm font-semibold ${tp}`}>{t.titulo}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
                       {t.estado.replace('_', ' ')}
                     </span>
                   </div>
@@ -575,7 +575,7 @@ function DetalleClienteContent() {
         {/* Pasaportes DPP de los ítems de este cliente — siempre opcional, un
             cliente puede no tener ninguno todavía. */}
         {dppActivos.length > 0 && (
-          <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+          <div className={`rounded-card border p-4 ${cardBg}`}>
             <p className={`text-xs font-semibold mb-3 ${ts}`}>Pasaportes DPP</p>
             <div className="space-y-2">
               {dppActivos.map(a => (
@@ -593,7 +593,7 @@ function DetalleClienteContent() {
         )}
 
         {/* Notas privadas del cliente */}
-        <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+        <div className={`rounded-card border p-4 ${cardBg}`}>
           <p className={`text-xs font-semibold mb-3 ${ts}`}>Notas privadas</p>
           <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
         </div>

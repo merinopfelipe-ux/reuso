@@ -126,7 +126,7 @@ function mensajesAnalizando(nFotos: number): string[] {
 
 export default function NuevaCotizacionPage() {
   return (
-    <Suspense fallback={<div className="h-full min-h-[60vh] bg-[var(--bg-primary)]" />}>
+    <Suspense fallback={<div className="h-full min-h-[60vh] bg-(--bg-primary)" />}>
       <NuevaCotizacionContent />
     </Suspense>
   )
@@ -828,9 +828,9 @@ function NuevaCotizacionContent() {
 
   // ── Colores tema ──────────────────────────────────────────────────────────────
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   const totalPrecio = muebles.reduce((s, m) => s + m.precio_mueble, 0)
   const totalCo2 = muebles.reduce((s, m) => s + m.co2_evitado_kg, 0)
@@ -838,12 +838,12 @@ function NuevaCotizacionContent() {
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)] overflow-x-hidden">
+    <div className="pb-6 bg-(--bg-primary) overflow-x-hidden">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AdminPageHeader titulo={cotizacionIdParam ? 'Agregar ítems' : 'Nueva cotización'} showBack />
 
         {cargandoExistente ? (
-          <div className={`rounded-[12px] border p-6 text-center ${cardBg}`}>
+          <div className={`rounded-card border p-6 text-center ${cardBg}`}>
             <p className={`text-sm ${ts}`}>Cargando la cotización...</p>
           </div>
         ) : (
@@ -854,7 +854,7 @@ function NuevaCotizacionContent() {
             )}
 
             {cliente && (
-              <div className={`rounded-[12px] border p-3 mb-4 flex items-center justify-between gap-2 ${cardBg}`}>
+              <div className={`rounded-card border p-3 mb-4 flex items-center justify-between gap-2 ${cardBg}`}>
                 <div className="min-w-0">
                   {(() => {
                     const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
@@ -880,7 +880,7 @@ function NuevaCotizacionContent() {
                   })()}
                 </div>
                 {muebles.length === 0 && (
-                  <button onClick={() => setCliente(null)} className="text-xs font-semibold text-[var(--color-brand)] hover-pop hover-press flex-shrink-0">
+                  <button onClick={() => setCliente(null)} className="text-xs font-semibold text-brand hover-pop hover-press shrink-0">
                     Cambiar
                   </button>
                 )}
@@ -889,7 +889,7 @@ function NuevaCotizacionContent() {
 
             {/* Lista de muebles ya agregados a la cotización */}
             {cliente && muebles.length > 0 && (
-              <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+              <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
                 <p className={`text-xs font-semibold mb-3 ${ts}`}>
                   {formatNumero(muebles.length)} ítem{muebles.length === 1 ? '' : 's'} agregado{muebles.length === 1 ? '' : 's'}
                 </p>
@@ -897,7 +897,7 @@ function NuevaCotizacionContent() {
                   {muebles.map((m, i) => (
                     <div key={i} className="flex items-center gap-3">
                       {m.imagen_preview && (
-                        <ImagenAmpliable src={m.imagen_preview} alt={m.titulo} wrapperClassName="w-10 h-10 rounded-[8px] flex-shrink-0" />
+                        <ImagenAmpliable src={m.imagen_preview} alt={m.titulo} wrapperClassName="w-10 h-10 rounded-input shrink-0" />
                       )}
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-semibold truncate ${tp}`}>{m.titulo}{m.cantidad > 1 ? ` × ${m.cantidad}` : ''}</p>
@@ -954,7 +954,7 @@ function NuevaCotizacionContent() {
             )}
 
             {procesando && (
-              <div className={`rounded-[12px] border p-6 ${cardBg}`}>
+              <div className={`rounded-card border p-6 ${cardBg}`}>
                 <SkeletonCard lineas={3} className="border-0 p-0" />
                 <p className={`text-sm text-center mt-4 ${ts}`}>
                   {(() => {
@@ -1018,11 +1018,11 @@ function NuevaCotizacionContent() {
             {sinMatch.length > 0 && (
               <div className="space-y-3 mt-4">
                 {sinMatch.map((pieza, i) => (
-                  <div key={i} className={`rounded-[12px] border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
+                  <div key={i} className={`rounded-card border p-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : ' border-[#F6BF3E]/20'}`}>
                     <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>Se detectó algo más en las fotos</p>
                     <div className="flex items-center gap-3 mb-3">
                       {pieza.imagenPreview && (
-                        <ImagenAmpliable src={pieza.imagenPreview} alt="Pieza sin identificar" wrapperClassName="w-16 h-16 rounded-[8px] flex-shrink-0" />
+                        <ImagenAmpliable src={pieza.imagenPreview} alt="Pieza sin identificar" wrapperClassName="w-16 h-16 rounded-input shrink-0" />
                       )}
                       <div className="flex-1 min-w-0 text-left">
                         <p className={`text-sm font-semibold ${tp}`}>{pieza.titulo}</p>
@@ -1040,7 +1040,7 @@ function NuevaCotizacionContent() {
             )}
 
             {noIdentificados.length > 0 && (
-              <div className={`rounded-[12px] border p-4 mt-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : 'bg-[#F6BF3E]/08 border-[#F6BF3E]/20'}`}>
+              <div className={`rounded-card border p-4 mt-4 ${isDark ? 'bg-[#F6BF3E]/10 border-[#F6BF3E]/25' : ' border-[#F6BF3E]/20'}`}>
                 <p className={`text-xs font-semibold mb-3 ${isDark ? 'text-[#F6BF3E]' : 'text-[#8a6d1f]'}`}>No reconocidos en el catálogo</p>
                 <div className="flex flex-col gap-3">
                   {noIdentificados.map((n, i) => (
@@ -1049,7 +1049,7 @@ function NuevaCotizacionContent() {
                       <button
                         type="button"
                         onClick={() => buscarEnCatalogoDesdeTexto(i)}
-                        className="text-xs font-semibold text-[#00827C] hover-pop hover-press flex-shrink-0 px-2 py-1"
+                        className="text-xs font-semibold text-[#00827C] hover-pop hover-press shrink-0 px-2 py-1"
                       >
                         Buscar en catálogo
                       </button>
@@ -1071,8 +1071,8 @@ function NuevaCotizacionContent() {
       {/* Barra de acciones sticky — mismo patrón que /admin/categorias: degradado de
           desvanecido, nunca línea divisoria dura ni position:fixed. */}
       {!cargandoExistente && cliente && (
-        <div className="sticky bottom-0 z-30 w-full bg-[var(--bg-primary)] py-3 border-t border-[var(--border)] -mt-5">
-          <div aria-hidden="true" className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-gradient-to-t from-[var(--bg-primary)] to-transparent" />
+        <div className="sticky bottom-0 z-30 w-full bg-(--bg-primary) py-3 border-t border-(--border) -mt-5">
+          <div aria-hidden="true" className="absolute -top-6 left-0 right-0 h-6 pointer-events-none bg-linear-to-t/srgb from-(--bg-primary) to-transparent" />
           <div className="w-full max-w-[1440px] mx-auto flex flex-col sm:flex-row gap-3 px-4 sm:px-6 lg:px-8">
             {!procesando && mostrandoTarjeta && (
               <Button
@@ -1125,7 +1125,7 @@ function NuevaCotizacionContent() {
         <div className="flex flex-col gap-3">
           <div>
             <label className={`text-xs font-semibold mb-1 block ${ts}`}>Nombre del ítem</label>
-            <input value={rescateNombre} onChange={e => setRescateNombre(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]" placeholder="Ej. Silla auxiliar" />
+            <input value={rescateNombre} onChange={e => setRescateNombre(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)" placeholder="Ej. Silla auxiliar" />
           </div>
           <div>
             <label className={`text-xs font-semibold mb-1 block ${ts}`}>Categoría</label>
@@ -1141,11 +1141,11 @@ function NuevaCotizacionContent() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>Precio estimado</label>
-              <input type="number" min={0} value={rescatePrecio} onChange={e => setRescatePrecio(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]" placeholder="$" />
+              <input type="number" min={0} value={rescatePrecio} onChange={e => setRescatePrecio(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)" placeholder="$" />
             </div>
             <div>
               <label className={`text-xs font-semibold mb-1 block ${ts}`}>kg CO2 eq evitado</label>
-              <input type="number" min={0} step="0.01" value={rescateCo2} onChange={e => setRescateCo2(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]" placeholder="kg" />
+              <input type="number" min={0} step="0.01" value={rescateCo2} onChange={e => setRescateCo2(e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)" placeholder="kg" />
             </div>
           </div>
           {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
@@ -1190,7 +1190,7 @@ function NuevaCotizacionContent() {
         <input
           type="number" min={0} value={precioEditadoInput}
           onChange={e => setPrecioEditadoInput(e.target.value)}
-          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+          className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
           placeholder="$"
         />
       </Modal>

@@ -159,7 +159,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                   opacity: procesando ? 0.6 : 1,
                 }}
               >
-                <Trash size={12} className="text-[var(--color-error)] opacity-80 hover:opacity-100" /> Quitar acceso a seleccionados
+                <Trash size={12} className="text-error opacity-80 hover:opacity-100" /> Quitar acceso a seleccionados
               </button>
             </div>
           )}
@@ -220,7 +220,7 @@ export function CatalogoRestringidoEmpresaClient({ empresaId }: { empresaId: str
                                 opacity: procesando ? 0.6 : 1,
                               }}
                             >
-                              <Trash size={12} className="text-[var(--color-error)] opacity-80 hover:opacity-100" /> Quitar acceso
+                              <Trash size={12} className="text-error opacity-80 hover:opacity-100" /> Quitar acceso
                             </button>
                           )}
                         </div>

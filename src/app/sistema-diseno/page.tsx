@@ -103,8 +103,8 @@ const DESIGN_TOKENS = [
   {
     category: 'Liquid Glass',
     tokens: [
-      { name: 'liquidGlassDay',   value: 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%]',    preview: 'glass-day',        desc: 'Cristal diurno completo' },
-      { name: 'liquidGlassNight', value: 'bg-[#D6F391]/08 backdrop-blur-[60px] backdrop-saturate-[200%]',   preview: 'glass-night',      desc: 'Cristal nocturno completo' },
+      { name: 'liquidGlassDay',   value: 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-180',    preview: 'glass-day',        desc: 'Cristal diurno completo' },
+      { name: 'liquidGlassNight', value: ' backdrop-blur-[60px] backdrop-saturate-200',   preview: 'glass-night',      desc: 'Cristal nocturno completo' },
       { name: 'blobAzul',         value: 'bg-[#59A6E4]/40 blur-[100px] rounded-full',   preview: 'color:#59A6E4',   desc: 'Reflejo azul de los banners' },
       { name: 'blobMenta',        value: 'bg-[#8AD0B2]/35 blur-[90px] rounded-full',    preview: 'color:#8AD0B2',   desc: 'Reflejo menta central' },
       { name: 'blobRosa',         value: 'bg-[#F3BBD3]/40 blur-[100px] rounded-full',   preview: 'color:#F3BBD3',   desc: 'Reflejo rosa de los banners' },
@@ -290,8 +290,8 @@ export default function ManualDisenoPage() {
 
   // Clases comunes de Liquid Glass - Transparencia 50% + Blur 40px
   const liquidGlassClass = isDark 
-    ? 'bg-[#D6F391]/08 backdrop-blur-[60px] backdrop-saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+    ? ' backdrop-blur-[60px] backdrop-saturate-200 border border-white/10 shadow-2xl'
+    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-180 border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   const searchResults = [
     { title: 'Arquitectura de color', link: '#s01-color' },
@@ -430,7 +430,7 @@ export default function ManualDisenoPage() {
                 Catálogo Maestro &middot; Guía Oficial
               </span>
             </div>
-            <h1 className={`text-4xl sm:text-5xl md:text-[5rem] font-bold tracking-tighter leading-[1.05] mb-8 text-primary`}>
+            <h1 className={`text-4xl sm:text-5xl md:text-[5rem] font-bold tracking-tighter leading-[1.05] mb-8 text-primary sm:leading-[1]`}>
               Identidad de la<br/>Calculadora de Reúso
             </h1>
             <p className={`${isDark ? 'text-white/60' : 'text-[#474747]'} text-xl leading-relaxed max-w-2xl font-medium`}>
@@ -457,7 +457,7 @@ export default function ManualDisenoPage() {
                   { name: 'Verde Sostenible', hex: '#00827C' },
                 ].map(color => (
                   <div key={color.name} className="flex flex-col gap-4">
-                    <div className={`h-28 w-full rounded-[2rem] shadow-lg transition-transform hover:scale-105 ${color.border ? 'border border-[#00827C]/10' : ''}`} style={{ backgroundColor: color.hex }} />
+                    <div className={`h-28 w-full rounded-4xl shadow-lg transition-transform hover:scale-105 ${color.border ? 'border border-[#00827C]/10' : ''}`} style={{ backgroundColor: color.hex }} />
                     <div className="px-1 flex items-center justify-between group/hex">
                       <div>
                         <div className={`text-[13px] font-bold text-primary`}>{color.name}</div>
@@ -547,7 +547,7 @@ export default function ManualDisenoPage() {
                   <div className="glass-stat flex flex-col gap-2">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Transparencia</span>
                     <span className={`glass-number text-4xl font-black text-primary`}>65%</span>
-                    <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>bg-white/35 (Día) · bg-[#D6F391]/08 (Noche)</span>
+                    <span className={`text-xs ${isDark ? 'text-white/40' : 'text-[#00827C]/50'}`}>bg-white/35 (Día) ·  (Noche)</span>
                     </div>
                     <div className="glass-stat flex flex-col gap-2">
                     <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Blur</span>
@@ -744,7 +744,7 @@ export default function ManualDisenoPage() {
                 { title: 'Cálculos realizados', val: '33', icon: Calculator, c: 'bg-[#F6BF3E]' },
                 { title: 'Total evitado', val: '0.60 t CO₂ eq', icon: Leaf, c: 'bg-[#38B98E]', extra: undefined },
               ].map((k, i) => (
-                <div key={i} className={`p-6 rounded-[1.5rem] flex items-start gap-4 transition-all hover:-translate-y-2 hover:shadow-xl ${liquidGlassClass}`}>
+                <div key={i} className={`p-6 rounded-3xl flex items-start gap-4 transition-all hover:-translate-y-2 hover:shadow-xl ${liquidGlassClass}`}>
                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0`}>
                      <k.icon size={24} className={isDark ? 'text-white' : ''} style={{ color: !isDark ? k.c.replace('bg-[', '').replace(']', '') : '' }} />
                    </div>
@@ -771,16 +771,16 @@ export default function ManualDisenoPage() {
              <form className="grid grid-cols-1 md:grid-cols-2 gap-8">
                <div className="flex flex-col gap-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Nombre Completo</span>
-                 <input type="text" placeholder="Ej. Juan Pérez" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <input type="text" placeholder="Ej. Juan Pérez" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
                </div>
                <div className="flex flex-col gap-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Correo Institucional</span>
-                 <input type="email" placeholder="usuario@calculadoradereuso.com" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <input type="email" placeholder="usuario@calculadoradereuso.com" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
                </div>
                <div className="flex flex-col gap-2 relative">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Contraseña Institucional</span>
                  <div className="relative">
-                   <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                   <input type={showPwd ? "text" : "password"} placeholder="•••••••••" className={`w-full px-6 py-4 rounded-full border transition-all font-sans tracking-widest ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
                    <button type="button" onClick={() => setShowPwd(!showPwd)} className={`absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full transition-all ${isDark ? 'text-[#D6F391]/60 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#00827C]/50 hover:bg-[#00827C]/10 hover:text-[#00827C]'}`}>
                      {showPwd ? <EyeSlash size={22} strokeWidth={1.5}/> : <Eye size={22} strokeWidth={1.5}/>}
                    </button>
@@ -791,7 +791,7 @@ export default function ManualDisenoPage() {
                </div>
                <div className="flex flex-col gap-2 md:col-span-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Mensaje de Impacto</span>
-                 <textarea placeholder="Cuéntanos tu objetivo..." className={`p-4 rounded-2xl border transition-all h-32 resize-none ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-none`} />
+                 <textarea placeholder="Cuéntanos tu objetivo..." className={`p-4 rounded-2xl border transition-all h-32 resize-none ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
                </div>
              </form>
           </div>
@@ -804,12 +804,12 @@ export default function ManualDisenoPage() {
             <div className="flex items-center gap-4 mb-10">
               <h2 className={`text-3xl font-bold tracking-tight text-primary`}>Escala de radios</h2>
             </div>
-            <div className={`grid grid-cols-2 lg:grid-cols-3 gap-6 p-10 rounded-[2.5rem] border border-[#00827C]/10 ${isDark ? 'bg-white/5' : 'bg-[#00827C]/[0.02]'}`}>
+            <div className={`grid grid-cols-2 lg:grid-cols-3 gap-6 p-10 rounded-[2.5rem] border border-[#00827C]/10 ${isDark ? 'bg-white/5' : 'bg-[#00827C]/2'}`}>
               {[
-                  { r: '2px', cls: 'rounded-sm', label: 'Micro validación' },
+                  { r: '2px', cls: 'rounded-xs', label: 'Micro validación' },
                   { r: '8px', cls: 'rounded-lg', label: 'Desplegables' },
                   { r: '16px', cls: 'rounded-2xl', label: 'Tablas e Interior' },
-                  { r: '24px', cls: 'rounded-[1.5rem]', label: 'Widgets Base' },
+                  { r: '24px', cls: 'rounded-3xl', label: 'Widgets Base' },
                   { r: '40px', cls: 'rounded-[2.5rem]', label: 'Tarjetas y Paneles' },
                   { r: '999px', cls: 'rounded-full', label: 'Botones y Etiquetas' },
               ].map(rad => (
@@ -830,12 +830,12 @@ export default function ManualDisenoPage() {
             </div>
             <div className="space-y-6">
               {[
-                { name: 'Plano (shadow-sm)', base: 'shadow-sm', text: 'Base de campos de texto' },
+                { name: 'Plano (shadow-sm)', base: 'shadow-xs', text: 'Base de campos de texto' },
                 { name: 'Tarjeta Flotante (shadow-lg)', base: 'shadow-[0_12px_24px_rgba(0,130,124,0.06)]', text: 'Tarjetas en lienzo puro' },
                 { name: 'Cristal Profundo Liquid (shadow-2xl)', base: 'shadow-[0_32px_64px_rgba(0,130,124,0.15),inset_2px_2px_0_rgba(255,255,255,0.7)]', text: 'Paneles Maestros de Cristal' },
               ].map(el => (
-                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] backdrop-saturate-[180%]' : 'bg-primary border border-[#00827C]/10'} ${el.base}`}>
-                  {isDark && <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/[0.05] to-transparent pointer-events-none" />}
+                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/3 border border-white/10 backdrop-blur-[20px] backdrop-saturate-180' : 'bg-primary border border-[#00827C]/10'} ${el.base}`}>
+                  {isDark && <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l/srgb from-white/5 to-transparent pointer-events-none" />}
                   <h4 className={`font-bold text-primary select-all relative z-10`}>{el.name}</h4>
                   <p className={`text-sm ${isDark ? 'text-white/60' : 'text-[#474747]'} relative z-10`}>{el.text}</p>
                 </div>
@@ -878,7 +878,7 @@ export default function ManualDisenoPage() {
             <div className={`p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] ${liquidGlassClass} aspect-video flex items-center justify-center relative overflow-hidden group border shadow-2xl`}>
                 {/* Reflejos de Liquid Glass - Tríada Bio Expansiva (Mouse o Scroll) */}
                 <div
-                  className="absolute -top-20 -right-20 w-[70%] md:w-[55%] h-[70%] md:h-[55%] bg-[#59A6E4]/40 blur-[40px] md:blur-[100px] rounded-full pointer-events-none"
+                  className="absolute -top-20 -right-20 w-[70%] md:w-[55%] h-[70%] md:h-[55%] bg-[#59A6E4]/40 blur-2xl md:blur-[100px] rounded-full pointer-events-none"
                   style={{ transform: `translate(${mouseX * 0.09 + (scrollY * 0.08)}px, ${mouseY * 0.08}px)`, transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1)', willChange: 'transform' }}
                 />
                 <div
@@ -886,7 +886,7 @@ export default function ManualDisenoPage() {
                   style={{ transform: `translate(calc(-50% + ${-mouseX * 0.07}px), calc(-50% + ${-mouseY * 0.07 + (scrollY * 0.05)}px))`, transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1)', willChange: 'transform' }}
                 />
                 <div
-                  className="absolute -bottom-20 -left-20 w-[70%] md:w-[55%] h-[70%] md:h-[55%] bg-[#F3BBD3]/40 blur-[40px] md:blur-[100px] rounded-full pointer-events-none"
+                  className="absolute -bottom-20 -left-20 w-[70%] md:w-[55%] h-[70%] md:h-[55%] bg-[#F3BBD3]/40 blur-2xl md:blur-[100px] rounded-full pointer-events-none"
                   style={{ transform: `translate(${-mouseX * 0.09 - (scrollY * 0.08)}px, ${-mouseY * 0.08}px)`, transition: 'transform 0.2s cubic-bezier(0.22,1,0.36,1)', willChange: 'transform' }}
                 />
                {/* Contenido central */}
@@ -917,31 +917,31 @@ export default function ManualDisenoPage() {
             </h3>
             <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-medium leading-relaxed">
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Prohibición de mayúsculas sostenidas:</strong> Nunca uses texto en mayúsculas completas en títulos, botones o tablas, salvo siglas normativas (NIT, CO₂, UUID, PDF, QA, IA, ARCO, RGPD, CCPA).</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>ThemeToggle en footer:</strong> El interruptor de tema (Modo Día / Modo Noche) debe ubicarse siempre en la primera línea del pie de página a la derecha.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Colores inmutables vs adaptables:</strong> Los colores semánticos (#00827C, #38B98E, #D6F391, #F6BF3E, #FF5E4B) mantienen su identidad visual pero adaptan su contraste sobre fondo oscuro #474747.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Microanimaciones táctiles:</strong> Todos los elementos interactivos deben incluir clases de transición suave (<code>hover-pop</code>, <code>hover-press</code>, microescalas de 1.05x).</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Formato de números en Colombia:</strong> En COP y números de plataforma, los millones se separan con apóstrofo (<code>&apos;</code>), ej. <code>$1&apos;490.000</code> o <code>$14&apos;900.000</code>. Los miles con punto (<code>.</code>), ej. <code>$49.000</code>. Los decimales/centavos con coma (<code>,</code>), ej. <code>,67</code>, ubicados <strong>en la misma línea horizontal</strong> pero visualmente más pequeños (como en <code>/admin/contenido</code>, tamaño aprox. <code>0.8em</code>, <strong>heredando siempre el mismo peso tipográfico del número, nunca en negrita</strong>). Prohibido usar comas anglosajonas para miles (<code>$1,490,000</code>) o puntos para millones (<code>$1.490.000</code>).</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Regla de redondeo:</strong> El redondeo solo existe como sugerencia editable en <code>/admin/contenido</code>. De resto, en ninguna pantalla pública ni cotización hay redondeo: el precio real que es es el que se muestra.</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 flex-shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00827C] mt-1.5 shrink-0" />
                 <span><strong>Alineación y edición monetaria:</strong> Todo número o precio va alineado a la derecha en tablas y reportes, con el símbolo de moneda <code>$</code> a la izquierda. Los inputs deben formatear en vivo sin alterar el cursor ni duplicar cajas de texto.</span>
               </li>
             </ul>
@@ -959,7 +959,7 @@ export default function ManualDisenoPage() {
           <p className={`text-lg ${isDark ? 'text-white/50' : 'text-[#474747]'} font-medium mb-3 max-w-2xl`}>
             Cada elemento del manual tiene un nombre. Úsalos para dar instrucciones exactas.
           </p>
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-12 ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : 'bg-[#00827C]/8 text-[#00827C]'}`}>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-12 ${isDark ? 'bg-[#D6F391]/10 text-[#D6F391]' : ' text-[#00827C]'}`}>
             <Copy size={13} strokeWidth={2.5} /> Toca el nombre de cualquier token para copiarlo
           </div>
 
@@ -989,19 +989,19 @@ export default function ManualDisenoPage() {
                         {/* Preview visual */}
                         <div className="mb-4 h-10 flex items-center">
                           {previewType === 'color' && (
-                            <div className="w-10 h-10 rounded-xl shadow-sm border border-black/5 flex-shrink-0" style={{ backgroundColor: previewValue }} />
+                            <div className="w-10 h-10 rounded-xl shadow-xs border border-black/5 shrink-0" style={{ backgroundColor: previewValue }} />
                           )}
                           {previewType === 'glass-day' && (
                             <div className="w-10 h-10 rounded-xl bg-white/35 backdrop-blur-[20px] border border-[#00827C]/15 shadow-md" />
                           )}
                           {previewType === 'glass-night' && (
-                             <div className="w-10 h-10 rounded-xl bg-[#D6F391]/08 backdrop-blur-[20px] border border-white/15 shadow-md" />
+                             <div className="w-10 h-10 rounded-xl  backdrop-blur-[20px] border border-white/15 shadow-md" />
                           )}
                           {previewType === 'radius' && (
-                            <div className={`w-10 h-10 flex-shrink-0 ${isDark ? 'bg-white/20 border border-white/30' : 'bg-[#00827C]/15 border border-[#00827C]/30'}`}
+                            <div className={`w-10 h-10 shrink-0 ${isDark ? 'bg-white/20 border border-white/30' : 'bg-[#00827C]/15 border border-[#00827C]/30'}`}
                               style={{ borderRadius: previewValue === '999' ? '999px' : `${previewValue}px` }} />
                           )}
-                          {previewType === 'shadow' && (
+                          {previewType === 'shadow-sm' && (
                             <div className="w-10 h-10 rounded-xl bg-primary"
                               style={{ boxShadow: previewValue === '15' ? '0 32px 64px rgba(0,130,124,0.15)' : previewValue === '6' ? '0 12px 24px rgba(0,130,124,0.06)' : '0 4px 20px rgba(0,130,124,0.06)' }} />
                           )}
@@ -1022,7 +1022,7 @@ export default function ManualDisenoPage() {
                           <code className={`text-sm font-black tracking-tight ${isCopied ? 'text-[#38B98E]' : isDark ? 'text-white' : 'text-[#474747]'}`}>
                             {isCopied ? '¡Copiado!' : token.name}
                           </code>
-                          <Copy size={12} strokeWidth={2.5} className={`flex-shrink-0 opacity-0 group-hover:opacity-40 transition-opacity text-primary`} />
+                          <Copy size={12} strokeWidth={2.5} className={`shrink-0 opacity-0 group-hover:opacity-40 transition-opacity text-primary`} />
                         </div>
 
                         {/* Valor */}
@@ -1175,14 +1175,14 @@ export default function ManualDisenoPage() {
 
           {/* Reglas de Uso de Iconografía y Marcas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-12">
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Grosor Unificado (1.3 / Regular)</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 Para que toda la plataforma se perciba bajo un único sistema iconográfico armónico, <strong>todo ícono de Lucide se renderiza con <code>strokeWidth=1.3</code></strong> (inyectado automáticamente por el wrapper <code>wrapIcon</code> de <code>@/components/ui/icons</code>). Los íconos de <strong>Phosphor Icons</strong> deben utilizar su peso nativo <code>weight=&quot;regular&quot;</code>. Queda prohibido el uso de valores de trazo superiores a 1.5 en elementos de navegación o botones estándar para evitar saturación visual.
               </p>
             </div>
 
-            <div className={`p-8 rounded-[2rem] border border-[#00827C]/30 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/[0.03]'}`}>
+            <div className={`p-8 rounded-4xl border border-[#00827C]/30 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/3'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Regla de Importación Centralizada Única</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/70' : 'text-[#474747]/85'} mb-3`}>
                 <strong>Queda estrictamente prohibido importar íconos directamente desde <code>lucide-react</code> o <code>@phosphor-icons/react</code> en las vistas del sistema.</strong>
@@ -1192,7 +1192,7 @@ export default function ManualDisenoPage() {
               </p>
             </div>
 
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Logotipos de Marca y Phosphor Icons</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
                 Está estrictamente prohibido utilizar iconos vectoriales genéricos o de Lucide para representar redes sociales y logotipos comerciales (WhatsApp, Instagram, LinkedIn, Facebook, X, YouTube). Para estos casos, <strong>se debe utilizar siempre la librería Phosphor Icons sin animación</strong> con sus colores oficiales:
@@ -1206,39 +1206,39 @@ export default function ManualDisenoPage() {
               </div>
             </div>
 
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos Dinámicos y Selector de Categorías</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 Para campos dinámicos donde el usuario o administrador selecciona un ícono (ej. categorías de productos, líneas de negocio, módulos), se utiliza el componente <code>&lt;DynamicIcon /&gt;</code> junto con <code>&lt;IconPicker /&gt;</code>. Los nombres de Lucide se almacenan directamente (ej. <code>&quot;Armchair&quot;</code>) y los de Phosphor con prefijo (ej. <code>&quot;phosphor:Sofa&quot;</code>). <code>DynamicIcon</code> aplica de forma transparente <code>strokeWidth=1.3</code> o <code>weight=&quot;regular&quot;</code> con carga diferida vía <code>next/dynamic</code>.
               </p>
             </div>
             
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos Contenidos</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'} mb-4`}>
                 Para íconos informativos que llevan fondo (squircle), aplica la <strong>Regla del Color Coincidente</strong>:
                 <br /><br />
                 <strong>1. Prohibido usar negro o grises puros</strong> para el ícono. Debe heredar el color semántico (ej. <code>text-brand</code>, <code>text-success</code>).
                 <br />
-                <strong>2. Fondo Translúcido:</strong> El contenedor debe usar el fondo translúcido correspondiente al color (ej. <code>bg-brand-light</code> para marca, <code>bg-success/10</code> para éxito). Nunca usar bg-gray-* o similares.
+                <strong>2. Fondo Translúcido:</strong> El contenedor debe usar el fondo translúcido correspondiente al color (ej. <code>bg-brand-light</code> para marca, <code></code> para éxito). Nunca usar bg-gray-* o similares.
                 <br />
                 <strong>3. Forma y Espaciado:</strong> Debe ser un cuadrado redondeado (<code>rounded-xl</code> o <code>rounded-2xl</code>) con padding uniforme, por ejemplo: <code>flex items-center justify-center w-10 h-10 bg-brand-light rounded-xl text-brand</code>.
               </p>
             </div>
 
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Íconos de Eliminación</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
-                <strong>Prohibido usar &quot;X&quot; o &quot;×&quot;:</strong> Para acciones de borrar o eliminar ítems, se debe usar siempre el bote de basura <code>&lt;Trash /&gt;</code> de Lucide. Este botón no debe tener bordes, y debe utilizar el color rojo de error <code>text-[var(--color-error)]</code>. Al hacer hover, se debe aplicar una reducción de opacidad al 50% (<code>hover:opacity-50</code>) sin cambiar el fondo. El texto &quot;Eliminar&quot; puede acompañar al ícono si el espacio lo permite.
+                <strong>Prohibido usar &quot;X&quot; o &quot;×&quot;:</strong> Para acciones de borrar o eliminar ítems, se debe usar siempre el bote de basura <code>&lt;Trash /&gt;</code> de Lucide. Este botón no debe tener bordes, y debe utilizar el color rojo de error <code>text-error</code>. Al hacer hover, se debe aplicar una reducción de opacidad al 50% (<code>hover:opacity-50</code>) sin cambiar el fondo. El texto &quot;Eliminar&quot; puede acompañar al ícono si el espacio lo permite.
               </p>
             </div>
-            <div className={`p-8 rounded-[2rem] border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Color Sostenible</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 <strong>Cálculo Ambiental y Énfasis:</strong> Todo lo referente a &quot;Cálculo ambiental&quot;, totales de CO₂, o elementos principales de la marca, debe usar ESTRICTAMENTE el verde sostenible mediante la variable global <code>var(--color-brand)</code>. Se prohíbe usar verdes &quot;raros&quot; o genéricos (como <code>text-green-500</code> o <code>color-success</code>) para el branding principal.
               </p>
             </div>
-            <div className={`p-8 rounded-[2rem] border border-[#FF5E4B]/20 ${isDark ? 'bg-[#FF5E4B]/5' : 'bg-[#FF5E4B]/[0.02]'}`}>
+            <div className={`p-8 rounded-4xl border border-[#FF5E4B]/20 ${isDark ? 'bg-[#FF5E4B]/5' : 'bg-[#FF5E4B]/2'}`}>
               <h4 className="text-sm font-black mb-3 text-[#FF5E4B]">Ícono Prohibido: Target (Círculos Concéntricos)</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/70' : 'text-[#474747]/85'} mb-3`}>
                 <strong>Queda terminantemente prohibido el uso del ícono <code>Target</code> (diana o círculos concéntricos)</strong> en toda la plataforma, landings y flujos de DDP. Es un ícono ambiguo que genera confusión semántica y no comunica con claridad los conceptos de cálculo, algoritmos o sectores.
@@ -1250,7 +1250,7 @@ export default function ManualDisenoPage() {
                 <div>• <strong>Trazabilidad y DDP:</strong> <code>&lt;ShieldCheck /&gt;</code> o <code>&lt;ArrowsClockwise /&gt;</code>.</div>
               </div>
             </div>
-            <div className={`p-8 rounded-[2rem] border md:col-span-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
+            <div className={`p-8 rounded-4xl border md:col-span-2 ${isDark ? 'bg-white/5 border-white/10' : 'bg-[#FCFBFA] border-[#474747]/10'}`}>
               <h4 className={`text-sm font-black mb-3 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>Regla de Diferenciación: Botones vs. Etiquetas (Lo que no es botón, no parece botón)</h4>
               <p className={`text-xs leading-relaxed ${isDark ? 'text-white/60' : 'text-[#474747]/80'}`}>
                 <strong>Claridad visual estricta:</strong> los subtítulos, encabezados de sección, kickers y etiquetas informativas nunca deben presentarse con forma de cápsula (<code>rounded-full</code>) con borde cerrado y fondo relleno que imite la anatomía de un botón. Para kickers y etiquetas estáticas se usa tipografía pequeña y con peso (<code>text-xs font-bold tracking-wide</code>) en Sentence case (nunca <code>uppercase</code>, regla dura del sistema) con un ícono plano sin fondo ni borde. Las cápsulas con borde y fondo se reservan para lo accionable (<code>&lt;button&gt;</code> y <code>&lt;Link&gt;</code>).
@@ -1307,14 +1307,14 @@ export default function ManualDisenoPage() {
               ].map((item, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-hidden group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
                 >
                   <div className={`${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} mb-4 transition-colors`}>
                     <item.i size={28} />
                   </div>
                   <span className={`text-[11px] font-bold block text-primary`}>{item.n}</span>
                   <span className={`text-[9px] font-medium mt-1 block opacity-50 ${isDark ? 'text-white/50' : 'text-[#00827C]/50'}`}>{item.d}</span>
-                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">lucide-animated.com</code>
+                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded-sm opacity-40">lucide-animated.com</code>
                 </div>
               ))}
             </div>
@@ -1338,13 +1338,13 @@ export default function ManualDisenoPage() {
               ].map((item, idx) => (
                 <div 
                   key={idx} 
-                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-none group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
+                  className={`flex flex-col items-center justify-center p-6 border rounded-2xl transition-all cursor-pointer text-center outline-hidden group ${isDark ? 'bg-white/5 border-white/10 hover:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/10 hover:border-[#00827C]/30'}`}
                 >
                   <div className={`${isDark ? 'text-[#D6F391] group-hover:scale-110' : 'text-[#00827C] group-hover:scale-110'} mb-4 transition-transform duration-200`}>
                     <Icon iconNode={item.node} size={32} />
                   </div>
                   <span className={`text-[11px] font-bold block text-primary`}>{item.n}</span>
-                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded opacity-40">@lucide/lab</code>
+                  <code className="text-[8px] font-mono mt-2 bg-[#474747]/10 px-1.5 py-0.5 rounded-sm opacity-40">@lucide/lab</code>
                 </div>
               ))}
             </div>
@@ -1375,8 +1375,8 @@ export default function ManualDisenoPage() {
                 { title: 'Logística Verde', desc: 'Gestión in situ de materiales para maximizar el ahorro de CO₂.', btn: 'Pide tu seguro', gradient: 'from-[#8AD0B2] via-[#59A6E4] to-[#59A6E4]' },
                 { title: 'Trazabilidad Tokenizada', desc: 'Cada gramo cuenta. Registro inmutable en el historial Reúso.', btn: 'Empieza aquí', gradient: 'from-[#D6F391] via-[#8AD0B2] to-[#00827C]' },
               ].map((card, i) => (
-                <div key={i} className={`group shrink-0 w-[calc(100vw-80px)] max-w-xs md:w-auto snap-center overflow-hidden rounded-[2rem] hover:-translate-y-2 transition-all duration-500 ${isDark ? 'bg-[#D6F391]/05 border border-white/10' : 'bg-primary shadow-[0_8px_32px_rgba(0,130,124,0.08)] border border-[#00827C]/8'}`}>
-                  <div className={`w-full h-48 bg-gradient-to-br ${card.gradient} relative overflow-hidden`}>
+                <div key={i} className={`group shrink-0 w-[calc(100vw-80px)] max-w-xs md:w-auto snap-center overflow-hidden rounded-4xl hover:-translate-y-2 transition-all duration-500 ${isDark ? 'bg-[#D6F391]/05 border border-white/10' : 'bg-primary shadow-[0_8px_32px_rgba(0,130,124,0.08)] border '}`}>
+                  <div className={`w-full h-48 bg-linear-to-br/srgb ${card.gradient} relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-[#474747]/5 group-hover:bg-[#474747]/0 transition-all duration-500" />
                     <div className="absolute bottom-4 right-4 w-10 h-10 bg-white/20 rounded-full backdrop-blur-md flex items-center justify-center">
                       <Leaf size={20} className="text-white" />
@@ -1474,7 +1474,7 @@ export default function ManualDisenoPage() {
                   <p className={`text-sm ${isDark ? 'text-white/50' : 'opacity-60'}`}>Submenús que &ldquo;expulsan&rdquo; islas de cristal a la derecha. Sin mover el contenido, sin interrumpir el flujo.</p>
                </div>
             </div>
-            <div className="absolute top-0 right-0 h-full w-1/2 bg-gradient-to-l from-[#00827C]/10 to-transparent pointer-events-none" />
+            <div className="absolute top-0 right-0 h-full w-1/2 bg-linear-to-l/srgb from-[#00827C]/10 to-transparent pointer-events-none" />
           </div>
         </section>
 
@@ -1485,12 +1485,12 @@ export default function ManualDisenoPage() {
           </div>
           
           <div className={`flex flex-col md:flex-row items-center justify-center gap-8 mb-8`}>
-            <div className={`flex rounded-full p-1.5 backdrop-blur-[40px] backdrop-saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
+            <div className={`flex rounded-full p-1.5 backdrop-blur-2xl backdrop-saturate-150 border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
               {(['USD', 'EUR', 'COP'] as const).map(cur => (
                 <button key={cur} onClick={() => setSelectedCurrency(cur)} className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${selectedCurrency === cur ? 'bg-[#00827C] text-white shadow-lg' : isDark ? 'text-white/60 hover:text-white hover:bg-white/5' : 'text-[#00827C]/60 hover:text-[#474747] hover:bg-[#00827C]/5'}`}>{cur}</button>
               ))}
             </div>
-            <div className={`flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-[40px] backdrop-saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
+            <div className={`flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-2xl backdrop-saturate-150 border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
               <span className={`text-sm font-bold ${!isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Mensual</span>
               <button onClick={() => setIsYearly(!isYearly)} className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${isYearly ? 'bg-[#00827C]' : isDark ? 'bg-white/20' : 'bg-[#474747]/15'}`}><div className={`absolute top-1 w-6 h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-7' : 'translate-x-1'}`} /></button>
               <span className={`text-sm font-bold ${isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Anual</span>
@@ -1539,23 +1539,23 @@ export default function ManualDisenoPage() {
                   </div>
                   <p className={`text-sm leading-relaxed mb-8 font-medium ${isDark ? 'text-white/60' : 'text-[#474747]'}`}>{plan.id === 'free' ? 'Para individuos que inician su viaje circular.' : plan.tagline}</p>
                   <div className={`w-full h-px mb-8 bg-active`} />
-                  <ul className="space-y-4 mb-10 flex-grow">{plan.features.map((feat: string, idx: number) => (<li key={idx} className="flex items-start gap-3"><div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}><span className="text-[10px] font-bold">&#10003;</span></div><span className={`text-sm text-primary`}>{feat}</span></li>))}</ul>
+                  <ul className="space-y-4 mb-10 grow">{plan.features.map((feat: string, idx: number) => (<li key={idx} className="flex items-start gap-3"><div className={`mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}><span className="text-[10px] font-bold">&#10003;</span></div><span className={`text-sm text-primary`}>{feat}</span></li>))}</ul>
                   <button className={`w-full py-4 rounded-2xl font-bold text-sm transition-all duration-300 ${plan.popular ? 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg hover:shadow-[#00827C]/20' : (isDark ? 'border border-white/20 text-white hover:bg-white/5' : 'border border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/5')}`}>{plan.cta || 'Seleccionar Plan'}</button>
                 </div>
               );
             })}
           </div>
 
-          <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden shadow-sm">
+          <div className="flex-1 min-w-0 rounded-card border border-(--border) bg-(--bg-card) overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[800px]" style={{ borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)] border-b border-[var(--border)]">
+                  <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
                     <th className="px-6 py-5 text-left font-bold text-xs tracking-wide">Característica</th>
                   {PRICING_PLANS.map((p: typeof PLANS[0]) => (
                     <th key={p.id} className="px-4 py-5 text-center">
                       <div className="font-bold text-xs">{p.name}</div>
-                      <div className={`text-[10px] font-normal mt-1 ${isDark ? 'text-white/50' : 'text-[var(--text-secondary)]'}`}>
+                      <div className={`text-[10px] font-normal mt-1 ${isDark ? 'text-white/50' : 'text-(--text-secondary)'}`}>
                         {p.id === 'free' ? 'Gratis' : `${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].symbol}${CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].format((p.priceMonthlyCOP * CURRENCIES[selectedCurrency as keyof typeof CURRENCIES].rate) * (isYearly ? 10 : 1))}/${isYearly ? 'año' : 'mes'}`}
                       </div>
                     </th>
@@ -1574,22 +1574,22 @@ export default function ManualDisenoPage() {
                 ].map((row, i) => (
                   <tr
                     key={i}
-                    className={`transition-colors duration-150 cursor-pointer hover:bg-[var(--bg-table-hover)] ${
-                      i % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`transition-colors duration-150 cursor-pointer hover:bg-(--bg-table-hover) ${
+                      i % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
                   >
                     <td className={`px-6 py-4 font-medium flex items-start gap-2`}>
                       <div>
-                        <div className="font-bold text-[var(--text-primary)]">
+                        <div className="font-bold text-(--text-primary)">
                           {row.feature}
                         </div>
-                        {row.desc && <div className="text-[10px] font-normal mt-0.5 text-[var(--text-secondary)] opacity-80">{row.desc}</div>}
+                        {row.desc && <div className="text-[10px] font-normal mt-0.5 text-(--text-secondary) opacity-80">{row.desc}</div>}
                       </div>
                     </td>
                     {row.vals.map((v, vi) => (
-                      <td key={vi} className={`px-4 py-4 text-center font-semibold text-[var(--text-primary)]`}>
-                        {v === 'yes' ? <span className="text-[var(--color-brand)]">&#10003;</span> : v === 'no' ? <span className="opacity-30">&mdash;</span> : v}
+                      <td key={vi} className={`px-4 py-4 text-center font-semibold text-(--text-primary)`}>
+                        {v === 'yes' ? <span className="text-brand">&#10003;</span> : v === 'no' ? <span className="opacity-30">&mdash;</span> : v}
                       </td>
                     ))}
                   </tr>
@@ -1807,7 +1807,7 @@ export default function ManualDisenoPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-2xl border mb-4" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,130,124,0.03)', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,130,124,0.12)' }}>
                 {/* Input interactivo */}
                 <div className="space-y-3">
-                  <label className="text-xs font-bold block text-[var(--text-primary)]">
+                  <label className="text-xs font-bold block text-(--text-primary)">
                     Prueba el autoformato en tiempo real (escribe cualquier cifra):
                   </label>
                   <InputPrecio
@@ -1816,23 +1816,23 @@ export default function ManualDisenoPage() {
                     className="w-full"
                   />
                   <div className="flex gap-2 flex-wrap text-[11px] items-center pt-1">
-                    <span className="text-[var(--text-secondary)] font-medium">Ejemplos rápidos:</span>
-                    <button type="button" onClick={() => setDemoPrecioCOP('49000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 49.000</button>
-                    <button type="button" onClick={() => setDemoPrecioCOP('349000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 349.000</button>
-                    <button type="button" onClick={() => setDemoPrecioCOP('1490000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 1&apos;490.000</button>
-                    <button type="button" onClick={() => setDemoPrecioCOP('14900000')} className="px-2 py-0.5 rounded border border-[var(--border)] hover:bg-[var(--bg-table-hover)] transition-colors">$ 14&apos;900.000</button>
+                    <span className="text-(--text-secondary) font-medium">Ejemplos rápidos:</span>
+                    <button type="button" onClick={() => setDemoPrecioCOP('49000')} className="px-2 py-0.5 rounded-sm border border-(--border) hover:bg-(--bg-table-hover) transition-colors">$ 49.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('349000')} className="px-2 py-0.5 rounded-sm border border-(--border) hover:bg-(--bg-table-hover) transition-colors">$ 349.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('1490000')} className="px-2 py-0.5 rounded-sm border border-(--border) hover:bg-(--bg-table-hover) transition-colors">$ 1&apos;490.000</button>
+                    <button type="button" onClick={() => setDemoPrecioCOP('14900000')} className="px-2 py-0.5 rounded-sm border border-(--border) hover:bg-(--bg-table-hover) transition-colors">$ 14&apos;900.000</button>
                   </div>
                 </div>
 
                 {/* Renderizado de Display con jerarquía */}
                 <div className="flex flex-col justify-center rounded-xl p-4 border" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
-                  <span className="text-[10px] font-bold tracking-wider text-[var(--text-secondary)] mb-1">
+                  <span className="text-[10px] font-bold tracking-wider text-(--text-secondary) mb-1">
                     Visualización en tarjeta / encabezado de precio:
                   </span>
                   <div className="text-3xl font-black text-primary flex items-baseline">
                     ${formatearPrecioColombiano(demoPrecioCOP, false)}
                   </div>
-                  <span className="text-[11px] text-[var(--text-secondary)] mt-2">
+                  <span className="text-[11px] text-(--text-secondary) mt-2">
                     Con centavos reducidos: ${formatearPrecioColombiano(Number(demoPrecioCOP || 0) / 12, true).split(',')[0]}
                     {formatearPrecioColombiano(Number(demoPrecioCOP || 0) / 12, true).includes(',') && (
                       <span style={{ fontSize: '0.8em', fontWeight: 'inherit' }}>
@@ -1848,18 +1848,18 @@ export default function ManualDisenoPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                 <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
                   <div className="text-[10px] font-black tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">✓ CORRECTO (COLOMBIA)</div>
-                  <div className="text-base font-bold text-[var(--text-primary)]">$ 1&apos;490.000</div>
-                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">Apóstrofo (&apos;) en millones, punto (.) en miles.</p>
+                  <div className="text-base font-bold text-(--text-primary)">$ 1&apos;490.000</div>
+                  <p className="text-[11px] text-(--text-secondary) mt-1">Apóstrofo (&apos;) en millones, punto (.) en miles.</p>
                 </div>
                 <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5">
                   <div className="text-[10px] font-black tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ PROHIBIDO (PUNTOS DOBLES)</div>
                   <div className="text-base font-bold text-rose-600 dark:text-rose-400 line-through">$ 1.490.000</div>
-                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">No usar punto para millones; confunde millones con miles.</p>
+                  <p className="text-[11px] text-(--text-secondary) mt-1">No usar punto para millones; confunde millones con miles.</p>
                 </div>
                 <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5">
                   <div className="text-[10px] font-black tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ PROHIBIDO (ANGLOSAJÓN)</div>
                   <div className="text-base font-bold text-rose-600 dark:text-rose-400 line-through">$ 1,490,000</div>
-                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">No usar comas para miles o millones en moneda local.</p>
+                  <p className="text-[11px] text-(--text-secondary) mt-1">No usar comas para miles o millones en moneda local.</p>
                 </div>
               </div>
 

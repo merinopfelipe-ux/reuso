@@ -38,10 +38,10 @@ export function SelectorCiiu({ value, onChange, className }: Props) {
       <button
         type="button"
         onClick={() => { setAbierto(v => !v); setBusqueda('') }}
-        className={className ?? 'w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)] flex items-center justify-between gap-2'}
+        className={className ?? 'w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary) flex items-center justify-between gap-2'}
       >
         <span className="truncate">{value || 'Selecciona una actividad (CIIU)'}</span>
-        <CaretDown size={14} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <CaretDown size={14} className="text-(--text-secondary) shrink-0" />
       </button>
 
       {abierto && (
@@ -58,7 +58,7 @@ export function SelectorCiiu({ value, onChange, className }: Props) {
                 value={busqueda}
                 onChange={e => setBusqueda(e.target.value)}
                 placeholder="Busca por código o palabra clave..."
-                className="w-full px-3 py-2 rounded-xl border text-xs outline-none"
+                className="w-full px-3 py-2 rounded-xl border text-xs outline-hidden"
                 style={{ borderColor: 'var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
               />
             </div>
@@ -69,7 +69,7 @@ export function SelectorCiiu({ value, onChange, className }: Props) {
                   key={c}
                   type="button"
                   onClick={() => elegir(c)}
-                  className="w-full text-left px-3.5 py-2 text-xs font-medium transition-colors hover:bg-[var(--bg-hover)]"
+                  className="w-full text-left px-3.5 py-2 text-xs font-medium transition-colors hover:bg-(--bg-hover)"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {c}
@@ -79,13 +79,13 @@ export function SelectorCiiu({ value, onChange, className }: Props) {
                 <button
                   type="button"
                   onClick={() => elegir(busqueda.trim())}
-                  className="w-full text-left px-3.5 py-2 text-xs font-medium transition-colors hover:bg-[var(--bg-hover)] text-[var(--color-brand)]"
+                  className="w-full text-left px-3.5 py-2 text-xs font-medium transition-colors hover:bg-(--bg-hover) text-brand"
                 >
                   Usar &quot;{busqueda.trim()}&quot;
                 </button>
               )}
               {!busqueda.trim() && resultados.length === 0 && (
-                <p className="px-3.5 py-2 text-xs text-[var(--text-secondary)]">Sin resultados</p>
+                <p className="px-3.5 py-2 text-xs text-(--text-secondary)">Sin resultados</p>
               )}
             </div>
           </div>

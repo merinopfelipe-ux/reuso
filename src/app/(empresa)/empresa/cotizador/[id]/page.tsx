@@ -120,15 +120,15 @@ function ChecksVista({ galeria, lista, onGaleria, onLista }: { galeria: boolean;
     <div className="flex items-center gap-3 mt-1.5 mb-1 pl-6">
       <label className="flex items-center gap-1.5 cursor-pointer select-none" onClick={onGaleria}>
         {galeria
-          ? <SquareCheck size={14} className="text-[var(--color-brand)] flex-shrink-0" />
-          : <Square size={14} className="text-[var(--text-secondary)] flex-shrink-0" />}
-        <span className="text-xs text-[var(--text-secondary)]">Galería</span>
+          ? <SquareCheck size={14} className="text-brand shrink-0" />
+          : <Square size={14} className="text-(--text-secondary) shrink-0" />}
+        <span className="text-xs text-(--text-secondary)">Galería</span>
       </label>
       <label className="flex items-center gap-1.5 cursor-pointer select-none" onClick={onLista}>
         {lista
-          ? <SquareCheck size={14} className="text-[var(--color-brand)] flex-shrink-0" />
-          : <Square size={14} className="text-[var(--text-secondary)] flex-shrink-0" />}
-        <span className="text-xs text-[var(--text-secondary)]">Lista</span>
+          ? <SquareCheck size={14} className="text-brand shrink-0" />
+          : <Square size={14} className="text-(--text-secondary) shrink-0" />}
+        <span className="text-xs text-(--text-secondary)">Lista</span>
       </label>
     </div>
   )
@@ -147,7 +147,7 @@ function formatFechaValidez(cot: Cotizacion): string {
 
 export default function DetalleCotizacionPage() {
   return (
-    <Suspense fallback={<div className="h-full min-h-[60vh] bg-[var(--bg-primary)]" />}>
+    <Suspense fallback={<div className="h-full min-h-[60vh] bg-(--bg-primary)" />}>
       <DetalleCotizacionContent />
     </Suspense>
   )
@@ -746,9 +746,9 @@ function DetalleCotizacionContent() {
     setCot(c => c ? { ...c, ...totales } : c)
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   if (cargando) {
     // Mismo tratamiento exacto que loading.tsx de esta ruta (solo ícono y
@@ -756,7 +756,7 @@ function DetalleCotizacionContent() {
     // veían uno detrás del otro al entrar (bug real reportado: "aparecen
     // muchas cosas y textos que dicen cargando").
     return (
-      <div className="h-full min-h-[60vh] flex items-center justify-center bg-[var(--bg-primary)]">
+      <div className="h-full min-h-[60vh] flex items-center justify-center bg-(--bg-primary)">
         <LogoSpinner size={96} />
       </div>
     )
@@ -764,7 +764,7 @@ function DetalleCotizacionContent() {
 
   if (!cot) {
     return (
-      <div className="h-full min-h-[60vh] flex items-center justify-center bg-[var(--bg-primary)]">
+      <div className="h-full min-h-[60vh] flex items-center justify-center bg-(--bg-primary)">
         <p className={ts}>{error ?? 'Cotización no encontrada.'}</p>
       </div>
     )
@@ -774,7 +774,7 @@ function DetalleCotizacionContent() {
     Math.floor((Date.now() - new Date(cot.updated_at).getTime()) / 86_400_000) >= 2
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Cabecero */}
@@ -799,10 +799,10 @@ function DetalleCotizacionContent() {
             onClick={ejecutarGuardadoGlobal}
             disabled={guardandoGlobal}
             title="Forzar sincronización con la propuesta pública"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-[10px] text-xs font-semibold transition-all duration-200 cursor-pointer hover-pop hover-press ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-btn text-xs font-semibold transition-all duration-200 cursor-pointer hover-pop hover-press ${
               guardadoExitoso
-                ? 'bg-[#38B98E] text-white shadow-xs'
-                : 'bg-[var(--color-brand)] text-[var(--text-on-brand)] shadow-xs hover:opacity-90'
+                ? 'bg-[#38B98E] text-white shadow-2xs'
+                : 'bg-brand text-(--text-on-brand) shadow-2xs hover:opacity-90'
             }`}
           >
             {guardadoExitoso ? (
@@ -834,7 +834,7 @@ function DetalleCotizacionContent() {
 
         {/* Banner de error */}
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
+          <div className="mb-4 px-4 py-3 rounded-btn bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
             <Warning size={16} />
             {error}
           </div>
@@ -852,7 +852,7 @@ function DetalleCotizacionContent() {
                 cotización (además de /empresa/clientes/[id], que sigue existiendo).
                 El lápiz despliega la edición ahí mismo, sin popup. */}
             {cot.crm_clientes && (
-              <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+              <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
                 <div className="flex items-center justify-between mb-3">
                   <p className={`text-xs font-semibold ${ts}`}>Cliente</p>
                   {!editandoCliente && (
@@ -893,7 +893,7 @@ function DetalleCotizacionContent() {
                         <input
                           value={clienteForm.nombre}
                           onChange={e => setClienteForm(p => ({ ...p, nombre: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                          className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         />
                       </div>
                       <div>
@@ -901,7 +901,7 @@ function DetalleCotizacionContent() {
                         <input
                           value={clienteForm.apellido}
                           onChange={e => setClienteForm(p => ({ ...p, apellido: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                          className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                           placeholder="Opcional"
                         />
                       </div>
@@ -912,7 +912,7 @@ function DetalleCotizacionContent() {
                         <input
                           value={clienteForm.identificacion}
                           onChange={e => setClienteForm(p => ({ ...p, identificacion: e.target.value }))}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                          className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                           placeholder="Opcional"
                           inputMode="numeric"
                         />
@@ -924,7 +924,7 @@ function DetalleCotizacionContent() {
                         type="email"
                         value={clienteForm.email}
                         onChange={e => setClienteForm(p => ({ ...p, email: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         placeholder="Opcional"
                       />
                     </div>
@@ -953,7 +953,7 @@ function DetalleCotizacionContent() {
                       <input
                         value={clienteForm.direccion_notas}
                         onChange={e => setClienteForm(p => ({ ...p, direccion_notas: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         placeholder="Ej. torre, apto, punto de referencia"
                       />
                     </div>
@@ -967,7 +967,7 @@ function DetalleCotizacionContent() {
                           <input
                             value={clienteForm.razon_social}
                             onChange={e => setClienteForm(p => ({ ...p, razon_social: e.target.value }))}
-                            className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                            className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
@@ -976,7 +976,7 @@ function DetalleCotizacionContent() {
                             <input
                               value={clienteForm.nombre_comercial}
                               onChange={e => setClienteForm(p => ({ ...p, nombre_comercial: e.target.value }))}
-                              className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                              className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                               placeholder="Opcional"
                             />
                           </div>
@@ -1007,14 +1007,14 @@ function DetalleCotizacionContent() {
             )}
 
             {/* Compartir — enlace directo, descarga y envío por correo, sin salir de /empresa. */}
-            <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
               <p className={`text-xs font-semibold mb-3 ${ts}`}>Compartir</p>
-              <div className="flex items-center gap-2 rounded-[8px] border px-3 py-2 border-[var(--border)] bg-[var(--bg-input)] mb-3">
+              <div className="flex items-center gap-2 rounded-input border px-3 py-2 border-(--border) bg-(--bg-input) mb-3">
                 <Link size={14} className={tp} />
                 <span className={`text-xs flex-1 truncate ${tp}`}>
                   {enlace ?? 'Generando enlace...'}
                 </span>
-                <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 flex-shrink-0 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
+                <button onClick={copiarEnlace} className={`text-xs font-medium flex items-center gap-1 shrink-0 hover-copy hover-press ${copiado ? 'text-[#38B98E]' : 'text-[#00827C]'}`}>
                   <Copy size={14} />
                   {copiado ? 'Copiado' : 'Copiar'}
                 </button>
@@ -1057,7 +1057,7 @@ function DetalleCotizacionContent() {
                 (no editable), descuento e IVA, en ese orden, tanto en la
                 vista como en el editor. El lápiz despliega la edición ahí
                 mismo, sin popup. */}
-            <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
               <div className="flex items-center justify-between mb-2">
                 <p className={`text-xs font-semibold ${ts}`}>Totales</p>
                 {!editandoTotales && (
@@ -1117,8 +1117,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setTransporteActivoInput(v => !v)}>
                       {transporteActivoInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Transporte</span>
                     </label>
@@ -1134,8 +1134,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setDescuentoActivoInput(v => !v)}>
                       {descuentoActivoInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Descuento</span>
                     </label>
@@ -1146,14 +1146,14 @@ function DetalleCotizacionContent() {
                             <button
                               type="button"
                               onClick={() => setDescuentoTipoInput('valor')}
-                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${descuentoTipoInput === 'valor' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${descuentoTipoInput === 'valor' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                             >
                               $
                             </button>
                             <button
                               type="button"
                               onClick={() => setDescuentoTipoInput('porcentaje')}
-                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${descuentoTipoInput === 'porcentaje' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                              className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${descuentoTipoInput === 'porcentaje' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                             >
                               %
                             </button>
@@ -1180,8 +1180,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className={`flex items-center gap-2 select-none mb-2 ${!!cot?.crm_clientes?.crm_empresas_clientes ? 'cursor-not-allowed opacity-80' : 'cursor-pointer group'}`} onClick={() => !cot?.crm_clientes?.crm_empresas_clientes && setIvaActivoInput(v => !v)} title={!!cot?.crm_clientes?.crm_empresas_clientes ? "Los clientes B2B siempre requieren IVA" : ""}>
                       {ivaActivoInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>IVA</span>
                     </label>
@@ -1213,7 +1213,7 @@ function DetalleCotizacionContent() {
                 el formulario completo con una casilla por detalle para
                 agregarlo o quitarlo. Un solo Guardar para todo salvo la nota
                 (que ya tenía su propio guardado). */}
-            <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
               <div className="flex items-center justify-between mb-2">
                 <p className={`text-xs font-semibold ${ts}`}>Detalles</p>
                 {!editandoDetalles && (
@@ -1228,7 +1228,7 @@ function DetalleCotizacionContent() {
                   {/* 0. Recogemos y entregamos gratis: ubicación fija en la vista pública */}
                   {cot.envio_gratis_activo && (
                     <div className="flex items-center gap-2">
-                      <DynamicIcon nombre={cot.envio_gratis_icono} size={15} className={`${ts} flex-shrink-0`} />
+                      <DynamicIcon nombre={cot.envio_gratis_icono} size={15} className={`${ts} shrink-0`} />
                       <span
                         className={ts}
                         dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(conPuntoFinal(cot.envio_gratis_texto || 'Recogemos y entregamos Gratis')), NOTA_SANITIZE_CONFIG) }}
@@ -1239,7 +1239,7 @@ function DetalleCotizacionContent() {
                   {/* 1. Forma de pago: sin slash (/), texto plano, con punto al final */}
                   {cot.forma_pago_activo && (
                     <div className="flex items-center gap-2">
-                      <CreditCard size={15} className={`${ts} flex-shrink-0`} />
+                      <CreditCard size={15} className={`${ts} shrink-0`} />
                       <div className="min-w-0">
                         <strong className={`font-semibold ${tp}`}>Forma de pago:</strong>{' '}
                         <span className={ts}>
@@ -1256,7 +1256,7 @@ function DetalleCotizacionContent() {
                   {/* 2. Nota: empieza en la misma línea después de los dos puntos (sin punto forzado al final) */}
                   {cot.observaciones && (
                     <div className="flex items-start gap-2">
-                      <ChatCircle size={15} className={`${ts} flex-shrink-0 mt-0.5`} />
+                      <ChatCircle size={15} className={`${ts} shrink-0 mt-0.5`} />
                       <div className="min-w-0 flex-1">
                         <strong className={`font-semibold ${tp}`}>Nota:</strong>{' '}
                         <span className={ts}>{cot.observaciones}</span>
@@ -1267,7 +1267,7 @@ function DetalleCotizacionContent() {
                   {/* 3. Validez de la oferta: con punto al final */}
                   {cot.validez_activa && (
                     <div className="flex items-center gap-2">
-                      <Calendar size={15} className={`${ts} flex-shrink-0`} />
+                      <Calendar size={15} className={`${ts} shrink-0`} />
                       <div className="min-w-0">
                         <strong className={`font-semibold ${tp}`}>Validez de la oferta:</strong>{' '}
                         <span className={ts}>Válida hasta el {formatFechaValidez(cot)}.</span>
@@ -1278,7 +1278,7 @@ function DetalleCotizacionContent() {
                   {/* 4. Tiempo de la entrega: con punto al final */}
                   {cot.tiempo_entrega_activo && (
                     <div className="flex items-center gap-2">
-                      <Clock size={15} className={`${ts} flex-shrink-0`} />
+                      <Clock size={15} className={`${ts} shrink-0`} />
                       <div className="min-w-0">
                         <strong className={`font-semibold ${tp}`}>Tiempo de la entrega:</strong>{' '}
                         <span className={ts}>
@@ -1293,7 +1293,7 @@ function DetalleCotizacionContent() {
                   {/* 5. Garantía: sin punto forzado al final */}
                   {cot.garantia_activo && (
                     <div className="flex items-center gap-2">
-                      <ShieldCheck size={15} className={`${ts} flex-shrink-0`} />
+                      <ShieldCheck size={15} className={`${ts} shrink-0`} />
                       <div className="min-w-0">
                         <strong className={`font-semibold ${tp}`}>Garantía:</strong>{' '}
                         <span className={ts}>{cot.garantia || 'Materiales de alta calidad, mano de obra calificada.'}</span>
@@ -1304,7 +1304,7 @@ function DetalleCotizacionContent() {
                   {/* 6. Mensajes destacados: lista común, va al final, debajo de lo preestablecido */}
                   {cot.destacados_json?.map((d, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <DynamicIcon nombre={d.icono} size={15} className={`${ts} flex-shrink-0`} />
+                      <DynamicIcon nombre={d.icono} size={15} className={`${ts} shrink-0`} />
                       <span className={ts} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(d.texto), NOTA_SANITIZE_CONFIG) }} />
                     </div>
                   ))}
@@ -1318,8 +1318,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setEnvioGratisActivoInput(v => !v)}>
                       {envioGratisActivoInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Transporte</span>
                     </label>
@@ -1337,7 +1337,7 @@ function DetalleCotizacionContent() {
                           type="text"
                           value={envioGratisTextoInput}
                           onChange={e => setEnvioGratisTextoInput(e.target.value)}
-                          className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                          className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                           placeholder="Recogemos y entregamos **Gratis**"
                         />
                         <p className={`text-xs ${ts}`}>Usa **así** para poner una palabra en negrita, ej. **Gratis**.</p>
@@ -1349,8 +1349,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setFormaPagoActivaInput(v => !v)}>
                       {formaPagoActivaInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Forma de pago</span>
                     </label>
@@ -1368,14 +1368,14 @@ function DetalleCotizacionContent() {
                           <button
                             type="button"
                             onClick={() => setFormaPagoTipoInput('anticipo')}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${formaPagoTipoInput === 'anticipo' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${formaPagoTipoInput === 'anticipo' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                           >
                             Anticipo
                           </button>
                           <button
                             type="button"
                             onClick={() => setFormaPagoTipoInput('dias')}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${formaPagoTipoInput === 'dias' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${formaPagoTipoInput === 'dias' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                           >
                             A días
                           </button>
@@ -1386,7 +1386,7 @@ function DetalleCotizacionContent() {
                               value={anticipoPorcentajeInput}
                               onChange={setAnticipoPorcentajeInput}
                               unidad="%"
-                              className="w-28 flex-shrink-0"
+                              className="w-28 shrink-0"
                             />
                             <span className={`text-sm ${ts}`}>de anticipo, resto a la entrega</span>
                           </div>
@@ -1406,8 +1406,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setNotaActivaInput(v => !v)}>
                       {notaActivaInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Nota</span>
                     </label>
@@ -1425,7 +1425,7 @@ function DetalleCotizacionContent() {
                         value={notaTextoInput}
                         onChange={e => setNotaTextoInput(e.target.value)}
                         placeholder="Opcional (sin nota por defecto)"
-                        className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                       />
                     )}
                   </div>
@@ -1434,8 +1434,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setValidezActivaInput(v => !v)}>
                       {validezActivaInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Validez de la oferta</span>
                     </label>
@@ -1453,14 +1453,14 @@ function DetalleCotizacionContent() {
                           <button
                             type="button"
                             onClick={() => setValidezModoInput('dias')}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${validezModoInput === 'dias' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${validezModoInput === 'dias' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                           >
                             Días calendario
                           </button>
                           <button
                             type="button"
                             onClick={() => setValidezModoInput('fecha')}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${validezModoInput === 'fecha' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                            className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${validezModoInput === 'fecha' ? 'bg-brand text-(--text-on-brand)' : ts}`}
                           >
                             Fecha específica
                           </button>
@@ -1477,7 +1477,7 @@ function DetalleCotizacionContent() {
                             type="date"
                             value={validezFechaInput}
                             onChange={e => setValidezFechaInput(e.target.value)}
-                            className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                            className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                           />
                         )}
                       </div>
@@ -1488,8 +1488,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setTiempoEntregaActivaInput(v => !v)}>
                       {tiempoEntregaActivaInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Tiempo de la entrega</span>
                     </label>
@@ -1506,7 +1506,7 @@ function DetalleCotizacionContent() {
                         type="text"
                         value={tiempoEntregaInput}
                         onChange={e => setTiempoEntregaInput(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         placeholder="25 a 30 días hábiles"
                       />
                     )}
@@ -1516,8 +1516,8 @@ function DetalleCotizacionContent() {
                   <div>
                     <label className="flex items-center gap-2 cursor-pointer group select-none mb-2" onClick={() => setGarantiaActivaInput(v => !v)}>
                       {garantiaActivaInput
-                        ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-                        : <Square size={18} className={`${ts} flex-shrink-0`} />
+                        ? <SquareCheck size={18} className="text-brand shrink-0" />
+                        : <Square size={18} className={`${ts} shrink-0`} />
                       }
                       <span className={`text-sm font-medium ${tp}`}>Garantía</span>
                     </label>
@@ -1534,7 +1534,7 @@ function DetalleCotizacionContent() {
                         type="text"
                         value={garantiaInput}
                         onChange={e => setGarantiaInput(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         placeholder="Materiales de alta calidad, mano de obra calificada."
                       />
                     )}
@@ -1567,7 +1567,7 @@ function DetalleCotizacionContent() {
                             type="text"
                             value={d.texto}
                             onChange={e => setDestacadosInput(prev => prev.map((x, j) => j === i ? { ...x, texto: e.target.value } : x))}
-                            className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                            className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                             placeholder="Ej. Envíos a nivel nacional"
                           />
                           <ChecksVista
@@ -1602,7 +1602,7 @@ function DetalleCotizacionContent() {
 
             {/* Legales — párrafos libres sin ícono, van antes del pie de
                 página en la cotización pública, iguales en ambas vistas. */}
-            <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
               <div className="flex items-center justify-between mb-2">
                 <p className={`text-xs font-semibold ${ts}`}>Legales</p>
                 {!editandoLegales && (
@@ -1626,13 +1626,13 @@ function DetalleCotizacionContent() {
                         type="text"
                         value={texto}
                         onChange={e => setLegalesInput(prev => prev.map((x, j) => j === i ? e.target.value : x))}
-                        className="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                        className="flex-1 min-w-0 px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                         placeholder='Ej. Los precios no incluyen instalación eléctrica. Para enlazar: [texto](/legal/terminos)'
                       />
                       <button
                         type="button"
                         onClick={() => setLegalesInput(prev => prev.filter((_, j) => j !== i))}
-                        className="hover-pop hover-press p-1 flex-shrink-0"
+                        className="hover-pop hover-press p-1 shrink-0"
                         title="Quitar texto legal"
                       >
                         <Trash size={14} className="text-[#FF5E4B]" />
@@ -1666,7 +1666,7 @@ function DetalleCotizacionContent() {
                 selector (libre en cualquier dirección entre los 6 estados),
                 abajo el registro real de cada cambio. Solo estado del
                 embudo — las aperturas del cliente viven en Trazabilidad. */}
-            <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
               <p className={`text-xs font-semibold mb-3 ${ts}`}>Estado del embudo</p>
               <div className="flex flex-wrap gap-2">
                 {ESTADOS_EMBUDO.map(e => {
@@ -1678,8 +1678,8 @@ function DetalleCotizacionContent() {
                       onClick={() => solicitarCambioEstado(e.key)}
                       className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover-pop hover-press ${
                         esActual
-                          ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] shadow-sm'
-                          : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border)] hover:bg-[var(--bg-hover)]'
+                          ? 'bg-brand text-(--text-on-brand) shadow-xs'
+                          : 'bg-(--bg-primary) text-(--text-secondary) border border-(--border) hover:bg-(--bg-hover)'
                       }`}
                     >
                       {e.label}
@@ -1773,7 +1773,7 @@ function DetalleCotizacionContent() {
         onClose={() => setModalCorreoAbierto(false)}
         titulo="Enviar propuesta por correo"
         descripcion="El cliente recibe el enlace de la propuesta y el PDF adjunto."
-        icono={<Mail size={22} className="text-[var(--color-brand)]" />}
+        icono={<Mail size={22} className="text-brand" />}
         textoCancelar="Cancelar"
         textoConfirmar={enviandoCorreo ? 'Enviando...' : 'Enviar'}
         onCancelar={() => setModalCorreoAbierto(false)}
@@ -1788,7 +1788,7 @@ function DetalleCotizacionContent() {
                   key={c.id}
                   type="button"
                   onClick={() => { setCorreoDestino(c.email!); setContactoIdSeleccionado(c.id) }}
-                  className={`text-left px-3 py-2 rounded-xl border text-sm transition-colors ${contactoIdSeleccionado === c.id ? 'border-[var(--color-brand)] bg-[var(--color-brand-light)]' : 'border-[var(--border)] hover:bg-[var(--bg-hover)]'}`}
+                  className={`text-left px-3 py-2 rounded-xl border text-sm transition-colors ${contactoIdSeleccionado === c.id ? 'border-brand bg-brand-light' : 'border-(--border) hover:bg-(--bg-hover)'}`}
                 >
                   <span className={`font-semibold ${tp}`}>{c.nombre} {c.apellido ?? ''}</span>
                   <span className={`ml-2 ${ts}`}>{c.email}</span>
@@ -1804,7 +1804,7 @@ function DetalleCotizacionContent() {
             value={correoDestino}
             onChange={e => { setCorreoDestino(e.target.value); setContactoIdSeleccionado(null) }}
             placeholder="cliente@correo.com"
-            className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+            className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
           />
         </div>
         <div>
@@ -1815,7 +1815,7 @@ function DetalleCotizacionContent() {
             placeholder="Escribe una nota corta para el cliente"
             rows={3}
             maxLength={500}
-            className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)] resize-none"
+            className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary) resize-none"
           />
         </div>
         <label
@@ -1823,8 +1823,8 @@ function DetalleCotizacionContent() {
           onClick={() => setGuardarCorreo(v => !v)}
         >
           {guardarCorreo
-            ? <SquareCheck size={18} className="text-[var(--color-brand)] flex-shrink-0" />
-            : <Square size={18} className={`${ts} flex-shrink-0`} />
+            ? <SquareCheck size={18} className="text-brand shrink-0" />
+            : <Square size={18} className={`${ts} shrink-0`} />
           }
           <span className={`text-xs font-medium ${ts}`}>Guardar este correo en la ficha del cliente</span>
         </label>
@@ -1839,11 +1839,11 @@ function DetalleCotizacionContent() {
 function TimelineItem({ icon, label, fecha }: { icon: React.ReactNode; label: string; fecha: string }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-shrink-0">{icon}</div>
+      <div className="shrink-0">{icon}</div>
       <div className="flex-1 min-w-0">
         <span className={`text-xs text-secondary`}>{label}</span>
       </div>
-      <span className={`text-xs flex-shrink-0 text-placeholder`}>
+      <span className={`text-xs shrink-0 text-placeholder`}>
         {formatFecha(fecha)}
       </span>
     </div>

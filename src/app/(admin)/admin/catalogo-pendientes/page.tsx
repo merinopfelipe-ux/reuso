@@ -50,16 +50,16 @@ export default function CatalogoPendientesPage() {
   return (
     <div>
       <AdminPageHeader titulo="Catálogo pendiente de revisión CO2" />
-      <p className="text-sm text-[var(--text-secondary)] mb-6">
+      <p className="text-sm text-(--text-secondary) mb-6">
         Ítems Maestro creados por vendedores, ya en uso, con factores ambientales provisionales. Complétalos o corrígelos aquí para quitarles la alerta.
       </p>
 
       {cargando ? (
         <SkeletonLista filas={3} />
       ) : items.length === 0 ? (
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-8 text-center">
+        <div className="rounded-2xl border border-(--border) bg-(--bg-card) p-8 text-center">
           <CheckCircle size={28} className="text-[#38B98E] mx-auto mb-2" />
-          <p className="text-sm text-[var(--text-secondary)]">No hay ítems pendientes de revisión.</p>
+          <p className="text-sm text-(--text-secondary)">No hay ítems pendientes de revisión.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-3">
@@ -127,18 +127,18 @@ function ItemPendienteCard({ item, empresaNombre, abierto, onToggle, onGuardado 
   }
 
   return (
-    <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+    <div className="rounded-2xl border border-(--border) bg-(--bg-card) overflow-hidden">
       <button onClick={onToggle} className="w-full flex items-center justify-between gap-3 p-4 text-left hover-pop">
         <div className="flex items-center gap-3 min-w-0">
-          <Warning size={18} className="text-[#F6BF3E] flex-shrink-0" />
+          <Warning size={18} className="text-[#F6BF3E] shrink-0" />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{item.nombre}</p>
-            <p className="text-xs text-[var(--text-secondary)]">{empresaNombre} · {formatNumero(item.co2_por_unidad, { unidad: 'kg CO2 eq' })} actual</p>
+            <p className="text-sm font-semibold text-(--text-primary) truncate">{item.nombre}</p>
+            <p className="text-xs text-(--text-secondary)">{empresaNombre} · {formatNumero(item.co2_por_unidad, { unidad: 'kg CO2 eq' })} actual</p>
           </div>
         </div>
       </button>
       {abierto && (
-        <div className="px-4 pb-4 border-t border-[var(--border)] pt-4">
+        <div className="px-4 pb-4 border-t border-(--border) pt-4">
           <div className="flex flex-col gap-3">
             {materiales.map((m, i) => (
               <div key={m.id} className="grid grid-cols-1 sm:grid-cols-[2fr_1fr_1fr] gap-2 items-start">
@@ -147,7 +147,7 @@ function ItemPendienteCard({ item, empresaNombre, abierto, onToggle, onGuardado 
                     value={m.nombre}
                     onChange={e => setMateriales(r => r.map((x, j) => j === i ? { ...x, nombre: e.target.value } : x))}
                     placeholder="Material"
-                    className="w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                    className="w-full px-3 py-2 rounded-lg border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                   />
                   <TooltipInfo texto={descripcionesMaterial[m.nombre] ?? ''} />
                 </span>
@@ -158,7 +158,7 @@ function ItemPendienteCard({ item, empresaNombre, abierto, onToggle, onGuardado 
             <button
               type="button"
               onClick={() => setMateriales(r => [...r, { id: `nuevo-${r.length}`, nombre: '', peso_kg: '', factor_co2_kg: '', origen_fuente: null, detalle_fuente: null, nivel_confianza: 'media' }])}
-              className="text-xs font-semibold text-[var(--color-brand)] self-start hover-pop"
+              className="text-xs font-semibold text-brand self-start hover-pop"
             >
               + Añadir material
             </button>

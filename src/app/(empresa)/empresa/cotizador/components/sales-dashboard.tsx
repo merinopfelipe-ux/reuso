@@ -678,9 +678,9 @@ export function SalesDashboard({
       .sort((a, b) => (pesoPorGrupo[b.titulo] ?? 0) - (pesoPorGrupo[a.titulo] ?? 0))
   }, [ciudadesAgrupadas, pesoPorGrupo])
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   return (
     <div className="mb-8">
@@ -721,18 +721,18 @@ export function SalesDashboard({
 
         {/* 1. Embudo (2.5 de 6 columnas = 41.7%) */}
         <div
-          className={`group rounded-[12px] border ${cardBg} p-3 xl:p-5 flex flex-col relative items-center transition-all duration-500`}
+          className={`group rounded-card border ${cardBg} p-3 xl:p-5 flex flex-col relative items-center transition-all duration-500`}
           style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)' }}
         >
           <button
             onClick={() => setModalEtapasAbierto(true)}
-            className={`absolute top-3 right-3 xl:top-4 xl:right-4 p-1.5 rounded-md hover-pop hover:bg-[var(--bg-hover)] transition-colors ${ts}`}
+            className={`absolute top-3 right-3 xl:top-4 xl:right-4 p-1.5 rounded-md hover-pop hover:bg-(--bg-hover) transition-colors ${ts}`}
             title="Editar etapas del embudo"
           >
             <Pencil size={12} />
           </button>
           <div className="flex items-center gap-1.5 mb-3 lg:mb-2 xl:mb-3 z-10 w-full text-left">
-            <Funnel size={14} className="text-[var(--color-brand)] flex-shrink-0" />
+            <Funnel size={14} className="text-brand shrink-0" />
             <h3 className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
               Funnel de conversión
             </h3>
@@ -760,7 +760,7 @@ export function SalesDashboard({
                     key={etapa.estado_key}
                     onClick={() => onFiltrarEtapa?.(etapa.estado_key)}
                     title={`Filtrar la lista por "${etapa.nombre}"`}
-                    className={`flex items-center justify-between px-2.5 py-2 xl:px-4 xl:py-3 rounded-sm hover:brightness-110 cursor-pointer origin-left mb-1 transition-all ${isActive ? 'ring-2 ring-inset ring-white/80 brightness-110' : 'hover:scale-[1.015]'}`}
+                    className={`flex items-center justify-between px-2.5 py-2 xl:px-4 xl:py-3 rounded-xs hover:brightness-110 cursor-pointer origin-left mb-1 transition-all ${isActive ? 'ring-2 ring-inset ring-white/80 brightness-110' : 'hover:scale-[1.015]'}`}
                     style={{
                       width: etapasAnimadas ? `${width}%` : '0%',
                       backgroundColor: etapa.color,
@@ -770,8 +770,8 @@ export function SalesDashboard({
                     }}
                   >
                     <span className="text-white text-[11px] xl:text-xs font-bold truncate pr-2">{etapa.nombre}</span>
-                    <span className="text-right flex-shrink-0">
-                      <span className="block text-white text-[11px] xl:text-xs font-bold leading-tight">{formatCOP(valor)}</span>
+                    <span className="text-right shrink-0">
+                      <span className="block text-white text-[11px] xl:text-xs font-bold leading-tight xl:leading-[1rem]">{formatCOP(valor)}</span>
                       <span className="block text-white/80 text-[10px] xl:text-[11px] leading-tight font-medium">
                         {count} COT{pctDelTotal !== null && ` · ${pctDelTotal} %`}
                       </span>
@@ -796,15 +796,15 @@ export function SalesDashboard({
                   valor nunca debe partirse. */}
               <div className="flex items-center justify-between gap-1 lg:flex-col lg:items-center lg:justify-center lg:text-center xl:flex-row xl:items-center xl:justify-between xl:text-left">
                 <span className={`flex items-center gap-1.5 text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
-                  <Handshake size={14} className="text-[var(--color-brand)] flex-shrink-0" />
+                  <Handshake size={14} className="text-brand shrink-0" />
                   Tasa de cierre
                   <span className="group/tt relative inline-flex">
                     <Question size={12} className="cursor-help" />
-                    {/* z-[60]: el z-30 anterior quedaba tapado por las 4
+                    {/* z-60: el z-30 anterior quedaba tapado por las 4
                         cards de KPIs de al lado (cada una con su propio
                         z-10 en la cabecera) — bug real reportado ("el de
                         Ticket promedio está por debajo de las 4 cards"). */}
-                    <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-[60] w-44 rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 text-[11px] font-normal leading-snug text-[var(--bg-primary)] opacity-0 scale-95 transition-all group-hover/tt:opacity-100 group-hover/tt:scale-100 text-center">
+                    <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-60 w-44 rounded-lg bg-(--text-primary) px-2.5 py-1.5 text-[11px] font-normal leading-snug text-(--bg-primary) opacity-0 scale-95 transition-all group-hover/tt:opacity-100 group-hover/tt:scale-100 text-center">
                       % de todas las cotizaciones del periodo que terminaron cerrado ganado.
                     </span>
                   </span>
@@ -821,20 +821,20 @@ export function SalesDashboard({
         {/* 2. Meta (1.5 de 6 columnas = 25%) y Ticket Promedio */}
         <div className="flex flex-col gap-4 xl:gap-6">
           <div
-            className={`group flex-1 rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-5 flex flex-col relative transition-all duration-300 hover:border-[var(--color-brand)]/40`}
+            className={`group flex-1 rounded-card border border-(--border) ${cardBg} p-3 xl:p-5 flex flex-col relative transition-all duration-300 `}
             style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '90ms' }}
             onMouseEnter={handleMetaMouseEnter}
           >
             <button
               onClick={() => setModalMetaAbierto(true)}
-              className={`absolute top-3 right-3 xl:top-4 xl:right-4 p-1.5 rounded-md hover-pop hover:bg-[var(--bg-hover)] transition-colors ${ts}`}
+              className={`absolute top-3 right-3 xl:top-4 xl:right-4 p-1.5 rounded-md hover-pop hover:bg-(--bg-hover) transition-colors ${ts}`}
               title="Configurar meta de ventas"
             >
               <Pencil size={12} />
             </button>
 
             <div className="flex items-center gap-1.5 mb-3 lg:mb-2 xl:mb-3 z-10 w-full text-left">
-              <ChartLine size={14} className="text-[var(--color-error)] flex-shrink-0" />
+              <ChartLine size={14} className="text-error shrink-0" />
               <h3 className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
                 Meta
               </h3>
@@ -842,14 +842,14 @@ export function SalesDashboard({
 
             {!configListo ? (
               <div className="flex-1 w-full flex flex-col items-center justify-center gap-3">
-                <div className="w-[80%] max-w-[140px] sm:max-w-[160px] xl:max-w-[200px] aspect-[5/3] rounded-t-full skeleton-shimmer" />
+                <div className="w-[80%] max-w-[140px] sm:max-w-[160px] xl:max-w-[200px] aspect-5/3 rounded-t-full skeleton-shimmer" />
                 <Skeleton style={{ width: 96, height: 16, borderRadius: 2 }} />
               </div>
             ) : (
               <div className="flex-1 w-full flex flex-col items-center justify-center gap-1 transition-opacity duration-500" style={{ opacity: configListo ? 1 : 0 }}>
                 {metaAComparar > 0 ? (
                   <>
-                    <div className="relative w-[80%] max-w-[140px] sm:max-w-[160px] xl:max-w-[200px] aspect-[5/3] overflow-visible mx-auto mt-2">
+                    <div className="relative w-[80%] max-w-[140px] sm:max-w-[160px] xl:max-w-[200px] aspect-5/3 overflow-visible mx-auto mt-2">
                       <svg viewBox="0 0 100 60" className="w-full h-full overflow-visible">
                         <defs>
                           <linearGradient id="metaGaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -879,7 +879,7 @@ export function SalesDashboard({
                         )}
                       </svg>
                       <div className="absolute inset-x-0 top-[70%] -translate-y-1/2 flex justify-center">
-                        <span className={`text-xl sm:text-2xl xl:text-3xl font-black leading-none ${tp}`}>
+                        <span className={`text-xl sm:text-2xl xl:text-3xl font-black leading-none ${tp} sm:leading-[2rem] xl:leading-[2.25rem]`}>
                           {Math.round(metaPctAnimado)} %
                         </span>
                       </div>
@@ -898,17 +898,17 @@ export function SalesDashboard({
 
           {configListo && (
             <div
-              className={`group rounded-[12px] border border-[var(--border)] ${cardBg} p-3 xl:p-4 flex flex-col justify-center transition-all duration-300 hover:border-[var(--color-brand)]/40`}
+              className={`group rounded-card border border-(--border) ${cardBg} p-3 xl:p-4 flex flex-col justify-center transition-all duration-300 `}
               style={{ opacity: entradaAnimada ? 1 : 0, transform: entradaAnimada ? 'translateY(0)' : 'translateY(12px)', transitionDelay: '120ms' }}
             >
               <div className="flex items-center gap-1.5 mb-2 z-10 w-full text-left">
-                <Receipt size={14} className="text-[var(--color-success)] flex-shrink-0" />
+                <Receipt size={14} className="text-success shrink-0" />
                 <h3 className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
                   Ticket promedio
                 </h3>
                 <span className="group/tt relative inline-flex">
                   <Question size={12} className="cursor-help" />
-                  <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-[60] w-44 rounded-lg bg-[var(--text-primary)] px-2.5 py-1.5 text-[11px] font-normal leading-snug text-[var(--bg-primary)] opacity-0 scale-95 transition-all group-hover/tt:opacity-100 group-hover/tt:scale-100 text-center">
+                  <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-60 w-44 rounded-lg bg-(--text-primary) px-2.5 py-1.5 text-[11px] font-normal leading-snug text-(--bg-primary) opacity-0 scale-95 transition-all group-hover/tt:opacity-100 group-hover/tt:scale-100 text-center">
                     {tabEstado === 'todos' 
                       ? 'Promedio del valor de las cotizaciones cerradas ganadas en el periodo.'
                       : 'Promedio del valor de las cotizaciones en esta etapa.'}
@@ -940,7 +940,7 @@ export function SalesDashboard({
           textoConfirmar="Entendido"
           onConfirmar={() => setMetricasAbiertas(false)}
         >
-          <div className="flex flex-col divide-y divide-[var(--divider)]">
+          <div className="flex flex-col divide-y divide-(--divider)">
             {[
               { sigla: 'UPT', descripcion: 'Unidades por ticket. Cuántos ítems lleva en promedio cada cotización.', valor: actual.upt !== null ? `${actual.upt.toFixed(1)} unidades` : 'Sin datos' },
               { sigla: 'AUR', descripcion: 'Precio promedio por unidad. Valor promedio de cada ítem vendido.', valor: actual.aur !== null ? formatCOP(actual.aur) : 'Sin datos' },
@@ -950,7 +950,7 @@ export function SalesDashboard({
                   <p className={`text-sm font-bold ${tp}`}>{m.sigla}</p>
                   <p className={`text-xs ${ts}`}>{m.descripcion}</p>
                 </div>
-                <span className={`text-sm font-bold flex-shrink-0 ${tp}`}>{m.valor}</span>
+                <span className={`text-sm font-bold shrink-0 ${tp}`}>{m.valor}</span>
               </div>
             ))}
           </div>
@@ -983,7 +983,7 @@ export function SalesDashboard({
         abierto={modalMetaAbierto}
         titulo="Configurar meta de ventas"
         descripcion="Define cuánto quieres vender este periodo."
-        icono={<Trophy size={20} className="text-[var(--color-brand)]" />}
+        icono={<Trophy size={20} className="text-brand" />}
         onClose={() => { setModalMetaAbierto(false); setErrorMeta(null); }}
         onConfirmar={guardarMeta}
         onCancelar={() => { setModalMetaAbierto(false); setErrorMeta(null); }}
@@ -992,14 +992,14 @@ export function SalesDashboard({
         <div className="space-y-4 pt-2">
           <div>
             <label className={`block text-sm font-medium ${tp} mb-1.5`}>Tipo de meta</label>
-            <div className="flex bg-[var(--bg-input)] rounded-lg p-1 border border-[var(--border)]">
+            <div className="flex bg-(--bg-input) rounded-lg p-1 border border-(--border)">
               <button
                 onClick={() => { setMetaValorMensual(Math.round(metaValorAnual / 12)); setMetaTipo('mensual') }}
-                className={`flex-1 py-1.5 text-sm rounded-md transition-colors ${metaTipo === 'mensual' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                className={`flex-1 py-1.5 text-sm rounded-md transition-colors ${metaTipo === 'mensual' ? 'bg-brand text-(--text-on-brand)' : ts}`}
               >Mensual</button>
               <button
                 onClick={() => { setMetaValorAnual(metaValorMensual * 12); setMetaTipo('anual') }}
-                className={`flex-1 py-1.5 text-sm rounded-md transition-colors ${metaTipo === 'anual' ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)]' : ts}`}
+                className={`flex-1 py-1.5 text-sm rounded-md transition-colors ${metaTipo === 'anual' ? 'bg-brand text-(--text-on-brand)' : ts}`}
               >Anual</button>
             </div>
           </div>
@@ -1013,7 +1013,7 @@ export function SalesDashboard({
               <InputMoneda
                 value={metaTipo === 'mensual' ? metaValorMensual : metaValorAnual}
                 onChange={(val) => metaTipo === 'mensual' ? setMetaValorMensual(val) : setMetaValorAnual(val)}
-                className={`w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-lg pl-8 pr-3 py-2 outline-none ${tp}`}
+                className={`w-full bg-(--bg-input) border border-(--border) rounded-lg pl-8 pr-3 py-2 outline-hidden ${tp}`}
               />
             </div>
             <p className={`text-xs mt-1.5 ${ts}`}>
@@ -1045,7 +1045,7 @@ export function SalesDashboard({
         abierto={modalEtapasAbierto}
         titulo="Etapas del Embudo"
         descripcion="Personaliza, oculta o quita cada etapa del embudo."
-        icono={<Crosshair size={20} className="text-[var(--color-brand)]" />}
+        icono={<Crosshair size={20} className="text-brand" />}
         onClose={() => { setModalEtapasAbierto(false); setErrorEtapas(null); }}
         onConfirmar={guardarEtapas}
         onCancelar={() => { setModalEtapasAbierto(false); setErrorEtapas(null); }}
@@ -1065,25 +1065,25 @@ export function SalesDashboard({
                   setDragIndex(null)
                 }}
                 onDragEnd={() => setDragIndex(null)}
-                className={`flex items-center gap-2 px-3 py-2 border border-[var(--border)] rounded-lg transition-opacity ${cardBg} ${etapa.visible ? '' : 'opacity-50'} ${dragIndex === i ? 'opacity-30' : ''}`}
+                className={`flex items-center gap-2 px-3 py-2 border border-(--border) rounded-lg transition-opacity ${cardBg} ${etapa.visible ? '' : 'opacity-50'} ${dragIndex === i ? 'opacity-30' : ''}`}
               >
-                <GripVertical size={14} className={`${ts} cursor-grab flex-shrink-0`} />
+                <GripVertical size={14} className={`${ts} cursor-grab shrink-0`} />
                 <input
                   type="color"
                   value={etapa.color}
                   onChange={(e) => actualizarEtapa(i, { color: e.target.value })}
-                  className="w-6 h-6 rounded cursor-pointer border-none p-0 outline-none flex-shrink-0"
+                  className="w-6 h-6 rounded-sm cursor-pointer border-none p-0 outline-hidden shrink-0"
                   title="Color"
                 />
                 <input
                   type="text"
                   value={etapa.nombre}
                   onChange={(e) => actualizarEtapa(i, { nombre: e.target.value })}
-                  className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-medium ${tp}`}
+                  className={`flex-1 min-w-0 bg-transparent outline-hidden text-sm font-medium ${tp}`}
                 />
                 <button
                   onClick={() => actualizarEtapa(i, { visible: !etapa.visible })}
-                  className="p-1.5 rounded-md hover-pop hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0"
+                  className="p-1.5 rounded-md hover-pop hover:bg-(--bg-hover) transition-colors shrink-0"
                   title={etapa.visible ? 'Ocultar del embudo' : 'Mostrar en el embudo'}
                 >
                   {etapa.visible
@@ -1092,7 +1092,7 @@ export function SalesDashboard({
                 </button>
                 <button
                   onClick={() => quitarEtapa(i)}
-                  className="p-1.5 flex-shrink-0 bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                  className="p-1.5 shrink-0 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
                   title="Quitar esta etapa por completo"
                 >
                   <Trash size={15} />
@@ -1107,7 +1107,7 @@ export function SalesDashboard({
                 <button
                   key={es.key}
                   onClick={() => agregarEtapa(es.key)}
-                  className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border border-dashed border-[var(--border)] bg-[var(--bg-card)] hover:bg-[var(--bg-hover)] transition-colors ${ts}`}
+                  className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full border border-dashed border-(--border) bg-(--bg-card) hover:bg-(--bg-hover) transition-colors ${ts}`}
                 >
                   <Plus size={12} />
                   {es.label}
@@ -1133,7 +1133,7 @@ export function SalesDashboard({
         abierto={modalCiudadesAbierto}
         titulo="Agrupar ciudades"
         descripcion="Junta ciudades vecinas bajo un solo nombre."
-        icono={<MapPinHouse size={20} className="text-[var(--color-rosa)]" />}
+        icono={<MapPinHouse size={20} className="text-rosa" />}
         colorIcono="var(--color-rosa)"
         onClose={() => { setModalCiudadesAbierto(false); setErrorCiudades(null); setNuevoNombreGrupo(''); setGrupoRenombrando(null); }}
         onConfirmar={guardarCiudades}
@@ -1144,7 +1144,7 @@ export function SalesDashboard({
         <div className="space-y-5 pt-2 overflow-x-hidden">
           {errorCiudades && <p className="text-sm text-[#FF5E4B]">{errorCiudades}</p>}
 
-          <div className="flex items-center justify-between border border-[var(--border)] rounded-lg p-3 bg-[var(--bg-card)]">
+          <div className="flex items-center justify-between border border-(--border) rounded-lg p-3 bg-(--bg-card)">
             <div className="pr-4">
               <p className={`text-sm font-semibold ${tp}`}>Agrupar por área metropolitana</p>
               <p className={`text-xs ${ts} mt-0.5`}>
@@ -1157,9 +1157,9 @@ export function SalesDashboard({
               role="switch"
               aria-checked={ciudadesAgruparActivo}
               onClick={() => setCiudadesAgruparActivo(!ciudadesAgruparActivo)}
-              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out border border-[var(--border)] ${ciudadesAgruparActivo ? 'bg-[var(--color-brand)] border-transparent' : 'bg-[var(--bg-hover)]'}`}
+              className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ease-in-out border border-(--border) ${ciudadesAgruparActivo ? 'bg-brand border-transparent' : 'bg-(--bg-hover)'}`}
             >
-              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-primary shadow ring-0 transition duration-200 ease-in-out ${ciudadesAgruparActivo ? 'translate-x-4' : 'translate-x-[1px]'}`} />
+              <span className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-primary shadow-sm ring-0 transition duration-200 ease-in-out ${ciudadesAgruparActivo ? 'translate-x-4' : 'translate-x-px'}`} />
             </button>
           </div>
 
@@ -1177,7 +1177,7 @@ export function SalesDashboard({
                 // gruposOrdenados/pesoPorGrupo arriba.
                 const colorGrupo = colorPorPosicionCiudad(idxGrupo, titulo)
                 return (
-                <div key={grupo} className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-3">
+                <div key={grupo} className="rounded-lg border border-(--border) bg-(--bg-card) p-3">
                   <div className="flex items-center justify-between gap-2 mb-2">
                     {grupoRenombrando === grupo ? (
                       <input
@@ -1189,17 +1189,17 @@ export function SalesDashboard({
                           if (e.key === 'Escape') { setGrupoRenombrando(null); setNombreEnEdicion('') }
                         }}
                         onBlur={confirmarRenombrarGrupo}
-                        className={`flex-1 bg-[var(--bg-input)] border border-[var(--color-brand)] rounded-md px-2 py-1 outline-none text-sm ${tp}`}
+                        className={`flex-1 bg-(--bg-input) border border-brand rounded-md px-2 py-1 outline-hidden text-sm ${tp}`}
                       />
                     ) : (
                       <p className={`text-sm font-bold flex items-center gap-1.5 ${tp}`}>
-                        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: colorGrupo }} />
+                        <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: colorGrupo }} />
                         {grupo} <span className={`font-normal ${ts}`}>({lista.length} {lista.length === 1 ? 'ciudad' : 'ciudades'})</span>
                       </p>
                     )}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <button onClick={() => iniciarRenombrarGrupo(grupo)} className="p-1 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors" title="Renombrar grupo"><Pencil size={12} /></button>
-                      <button onClick={() => setGrupoAEliminar(grupo)} className="p-1 bg-transparent text-[var(--color-rosa)] transition-opacity duration-200 hover:opacity-50" title="Eliminar grupo"><Trash size={14} /></button>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <button onClick={() => iniciarRenombrarGrupo(grupo)} className="p-1 text-(--text-secondary) hover:text-(--text-primary) transition-colors" title="Renombrar grupo"><Pencil size={12} /></button>
+                      <button onClick={() => setGrupoAEliminar(grupo)} className="p-1 bg-transparent text-rosa transition-opacity duration-200 hover:opacity-50" title="Eliminar grupo"><Trash size={14} /></button>
                     </div>
                   </div>
 
@@ -1217,7 +1217,7 @@ export function SalesDashboard({
                           style={{ backgroundColor: `color-mix(in srgb, ${colorGrupo} 15%, transparent)`, border: `1px solid color-mix(in srgb, ${colorGrupo} 35%, transparent)` }}
                         >
                           {c}
-                          <button onClick={() => quitarCiudad(grupo, c)} className="bg-transparent text-[var(--color-rosa)] transition-opacity duration-200 hover:opacity-50">
+                          <button onClick={() => quitarCiudad(grupo, c)} className="bg-transparent text-rosa transition-opacity duration-200 hover:opacity-50">
                             <Trash size={11} />
                           </button>
                         </span>
@@ -1233,7 +1233,7 @@ export function SalesDashboard({
                           <button
                             key={c}
                             onClick={() => agregarCiudadAGrupo(grupo, c)}
-                            className="inline-flex items-center gap-1 bg-[var(--bg-card)] border border-[var(--border)] rounded-full px-2.5 py-1 text-xs font-medium hover-pop hover:border-[var(--color-brand)]/40 transition-colors"
+                            className="inline-flex items-center gap-1 bg-(--bg-card) border border-(--border) rounded-full px-2.5 py-1 text-xs font-medium hover-pop  transition-colors"
                           >
                             <Plus size={11} /> {c}
                           </button>
@@ -1258,7 +1258,7 @@ export function SalesDashboard({
                 onChange={e => setNuevoNombreGrupo(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && crearGrupo()}
                 placeholder="nombre (ej. eje cafetero)"
-                className={`w-full bg-[var(--bg-input)] border border-[var(--border)] rounded-lg px-3 py-2 outline-none text-sm ${tp}`}
+                className={`w-full bg-(--bg-input) border border-(--border) rounded-lg px-3 py-2 outline-hidden text-sm ${tp}`}
               />
               <Button onClick={crearGrupo} variant="secondary" className="px-3 w-full sm:w-auto" disabled={!nuevoNombreGrupo.trim()}>
                 <Plus size={16} /> Crear
@@ -1353,14 +1353,14 @@ function TendenciaBadge({ t }: { t: TendenciaInfo | null }) {
   // comparación existe, solo que hoy no hay con qué calcularla.
   if (t === null) {
     return (
-      <span className={`text-xs font-bold text-[var(--text-secondary)]/40`} title="Sin datos del periodo anterior para comparar">
+      <span className={`text-xs font-bold `} title="Sin datos del periodo anterior para comparar">
         —
       </span>
     )
   }
   if (t.direccion === 'estancado') {
     return (
-      <span className="text-xs font-bold text-[var(--text-secondary)]" title="Igual que el periodo anterior">
+      <span className="text-xs font-bold text-(--text-secondary)" title="Igual que el periodo anterior">
         —
       </span>
     )
@@ -1388,12 +1388,12 @@ function KpiCard({ icon, label, value, t, cardBg, tp, ts, className, style }: {
   style?: React.CSSProperties
 }) {
   return (
-    <div className={`group rounded-[12px] border ${cardBg} p-2 xl:p-3 flex flex-col justify-center h-full cursor-default ${className || ''}`} style={style}>
+    <div className={`group rounded-card border ${cardBg} p-2 xl:p-3 flex flex-col justify-center h-full cursor-default ${className || ''}`} style={style}>
       <div className="flex items-center gap-1.5 mb-1 xl:mb-2">
         {/* El ícono ya trae su propia animación de hover desde el hub
             (lucide-animated.com o zoom estándar vía wrapIcon) — nunca se
             le agrega un segundo scale encima, o el zoom queda doble. */}
-        <span className="flex-shrink-0">{icon}</span>
+        <span className="shrink-0">{icon}</span>
         <p className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
           <span className="block xl:inline">{label[0]}</span>
           <span className="hidden xl:inline"> </span>

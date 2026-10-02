@@ -66,9 +66,9 @@ export default function FirmasPage() {
     if (res.ok && d.url) window.open(d.url, '_blank')
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   return (
     <div>
@@ -80,7 +80,7 @@ export default function FirmasPage() {
       </div>
 
       {mensaje && (
-        <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#00827C]/08 border border-[#00827C]/15 text-sm text-[var(--text-primary)]">
+        <div className="mb-4 px-4 py-3 rounded-btn  border border-[#00827C]/15 text-sm text-(--text-primary)">
           {mensaje}
         </div>
       )}
@@ -92,11 +92,11 @@ export default function FirmasPage() {
           <p className={`text-sm ${ts}`}>Aún no has enviado ninguna solicitud de firma.</p>
         </div>
       ) : (
-        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+        <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Destinatario</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Documento</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Estado</th>
@@ -110,8 +110,8 @@ export default function FirmasPage() {
                   return (
                     <tr 
                       key={s.id} 
-                      className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                        index % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        index % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                       }`}
                       style={{ borderTop: index > 0 ? '1px solid var(--border)' : 'none' }}
                     >

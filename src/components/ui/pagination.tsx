@@ -53,7 +53,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
         type="button"
         onClick={() => onPageChange(page - 1)}
         disabled={page <= 1}
-        className="flex items-center gap-1 px-2 py-1.5 rounded-[8px] text-sm font-semibold hover:bg-[var(--bg-hover)] disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="flex items-center gap-1 px-2 py-1.5 rounded-input text-sm font-semibold hover:bg-(--bg-hover) disabled:cursor-not-allowed disabled:hover:bg-transparent"
         style={{ color: page <= 1 ? 'var(--text-placeholder)' : 'var(--color-brand)' }}
       >
         <CaretLeft size={16} sinAnimacion /> Anterior
@@ -66,7 +66,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
           key={p}
           type="button"
           onClick={() => onPageChange(p)}
-          className="min-w-[30px] h-[30px] px-1.5 rounded-[8px] text-sm font-bold hover:bg-[var(--bg-hover)]"
+          className="min-w-[30px] h-[30px] px-1.5 rounded-input text-sm font-bold hover:bg-(--bg-hover)"
           style={p === page
             ? { color: 'var(--color-brand)', border: '1.5px solid var(--color-brand)', background: 'var(--color-brand-light)' }
             : { color: 'var(--color-brand)' }}
@@ -79,7 +79,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
         type="button"
         onClick={() => onPageChange(page + 1)}
         disabled={page >= totalPages}
-        className="flex items-center gap-1 px-2 py-1.5 rounded-[8px] text-sm font-semibold hover:bg-[var(--bg-hover)] disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="flex items-center gap-1 px-2 py-1.5 rounded-input text-sm font-semibold hover:bg-(--bg-hover) disabled:cursor-not-allowed disabled:hover:bg-transparent"
         style={{ color: page >= totalPages ? 'var(--text-placeholder)' : 'var(--color-brand)' }}
       >
         Siguiente <CaretRight size={16} sinAnimacion />
@@ -90,13 +90,13 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
           <button
             type="button"
             onClick={() => setAbierto(v => !v)}
-            className="flex items-center gap-1 px-2 py-1.5 rounded-[8px] text-sm font-bold hover:bg-[var(--bg-hover)]"
+            className="flex items-center gap-1 px-2 py-1.5 rounded-input text-sm font-bold hover:bg-(--bg-hover)"
             style={{ color: 'var(--color-brand)' }}
           >
             {porPagina} por página <CaretDown size={14} sinAnimacion />
           </button>
           {abierto && (
-            <div className="absolute right-0 top-full mt-1 rounded-[10px] border p-1 z-30 bg-[var(--bg-card)] border-[var(--border)] shadow-lg">
+            <div className="absolute right-0 top-full mt-1 rounded-btn border p-1 z-30 bg-(--bg-card) border-(--border) shadow-lg">
               {/* Solo se muestran las opciones a las que SÍ se puede cambiar
                   — la que ya está activa no aparece en su propia lista,
                   directriz explícita del usuario. */}
@@ -105,7 +105,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
                   key={n}
                   type="button"
                   onClick={() => { onPorPaginaChange(n); setAbierto(false) }}
-                  className="block w-full text-left px-3 py-1.5 rounded-[6px] text-sm text-[var(--text-primary)]"
+                  className="block w-full text-left px-3 py-1.5 rounded-[6px] text-sm text-(--text-primary)"
                 >
                   {n} por página
                 </button>

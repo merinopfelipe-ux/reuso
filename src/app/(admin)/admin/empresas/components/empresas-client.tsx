@@ -105,13 +105,13 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         {/* Buscador */}
         <div className="relative flex-1 w-full sm:max-w-xs">
-          <MagnifyingGlass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] pointer-events-none" />
+          <MagnifyingGlass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder) pointer-events-none" />
           <input
             type="text"
             placeholder="Buscar empresa..."
             value={busquedaLocal}
             onChange={e => onBusquedaChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] text-sm outline-none transition-colors focus:border-[var(--color-brand)]"
+            className="w-full pl-9 pr-3 py-2 rounded-lg border border-(--border) bg-(--bg-input) text-(--text-primary) text-sm outline-hidden transition-colors focus:border-brand"
           />
         </div>
 
@@ -121,20 +121,20 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
             <button
               type="button"
               onClick={() => setAbiertoPlan(v => !v)}
-              className="flex items-center justify-between gap-2 w-full px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-input)] text-xs font-semibold text-[var(--text-primary)] cursor-pointer hover:bg-[var(--bg-hover)] transition-colors"
+              className="flex items-center justify-between gap-2 w-full px-3 py-2 rounded-lg border border-(--border) bg-(--bg-input) text-xs font-semibold text-(--text-primary) cursor-pointer hover:bg-(--bg-hover) transition-colors"
             >
               <span className="truncate">{planFiltro ? `Plan: ${planFiltro.charAt(0).toUpperCase() + planFiltro.slice(1)}` : 'Todos los planes'}</span>
-              <ChevronDown size={14} className="text-[var(--text-secondary)] flex-shrink-0" />
+              <ChevronDown size={14} className="text-(--text-secondary) shrink-0" />
             </button>
             {abiertoPlan && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setAbiertoPlan(false)} />
-                <div className="absolute top-full left-0 mt-1.5 w-full sm:w-48 border border-[var(--border)] rounded-xl shadow-lg z-50 overflow-hidden" style={{ background: 'var(--bg-card)' }}>
+                <div className="absolute top-full left-0 mt-1.5 w-full sm:w-48 border border-(--border) rounded-xl shadow-lg z-50 overflow-hidden" style={{ background: 'var(--bg-card)' }}>
                   <div className="p-1 flex flex-col gap-0.5">
                     <button
                       type="button"
                       onClick={() => { navegar({ search: busquedaLocal, plan: '', page: '1', pageSize: String(pageSize) }); setAbiertoPlan(false) }}
-                      className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--bg-hover)] text-[var(--text-primary)]"
+                      className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-(--bg-hover) text-(--text-primary)"
                     >
                       Todos los planes
                     </button>
@@ -143,7 +143,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                         key={p}
                         type="button"
                         onClick={() => { navegar({ search: busquedaLocal, plan: p, page: '1', pageSize: String(pageSize) }); setAbiertoPlan(false) }}
-                        className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-[var(--bg-hover)] text-[var(--text-primary)]"
+                        className="w-full text-left px-3 py-2 text-xs font-medium rounded-lg transition-colors hover:bg-(--bg-hover) text-(--text-primary)"
                       >
                         {p.charAt(0).toUpperCase() + p.slice(1)}
                       </button>
@@ -175,11 +175,11 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
 
       <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {/* Tabla */}
-        <div className="flex-1 min-w-0 rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+        <div className="flex-1 min-w-0 rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Empresa</SortTh>
                   <SortTh col="plan" sort={sort} onToggle={toggleSort}>Plan</SortTh>
                   <SortTh col="sector" sort={sort} onToggle={toggleSort}>Sector</SortTh>
@@ -196,19 +196,19 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 {(empresasOrdenadas as unknown as EmpresaStat[]).map((emp, idx) => (
                   <tr key={emp.id}
                     onClick={() => router.push(`/admin/empresas/${emp.id}`)}
-                    className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{
                       borderTop: idx > 0 ? '1px solid var(--border)' : 'none',
                       cursor: 'pointer'
                     }}
                   >
-                    <td className="px-4 py-3 text-[var(--text-primary)]">{emp.nombre}</td>
+                    <td className="px-4 py-3 text-(--text-primary)">{emp.nombre}</td>
                     <td className="px-4 py-3"><PlanBadge plan={emp.plan} /></td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)]">{emp.sector ?? '-'}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(emp.total_empleados)}</td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">{formatNumero(emp.total_co2, { unidad: 'kg' })}</td>
+                    <td className="px-4 py-3 text-(--text-secondary)">{emp.sector ?? '-'}</td>
+                    <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">{formatNumero(emp.total_empleados)}</td>
+                    <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">{formatNumero(emp.total_co2, { unidad: 'kg' })}</td>
                     <td className="px-4 py-3 text-center">
                       <span style={{ 
                         padding: '2px 10px', 
@@ -240,8 +240,8 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
               paginador — con el selector "N por página" — nunca se
               comprima ni quede oculto detrás de un scroll (bug real
               reportado: había que scrollear para verlo). */}
-          <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
-            <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
+          <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-(--border-light)">
+            <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-(--text-secondary)" style={{ flexShrink: 1 }}>
               {total} empresas · Página {page} de {Math.max(1, totalPages)}
             </span>
             <div className="min-w-0 max-w-full overflow-x-auto">
@@ -285,7 +285,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 type="email"
                 value={invitarForm.email}
                 onChange={e => setInvitarForm(p => ({ ...p, email: e.target.value }))}
-                className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
                 required
               />
             </div>
@@ -312,7 +312,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                 value={invitarForm.nombre}
                 onChange={e => setInvitarForm(p => ({ ...p, nombre: e.target.value }))}
                 placeholder="Déjalo vacío para que el dueño lo escriba al aceptar"
-                className="w-full px-3 py-2.5 rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-sm text-[var(--text-primary)]"
+                className="w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
               />
             </div>
             {invitarError && (

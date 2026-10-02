@@ -85,11 +85,11 @@ export default async function AdminPage() {
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ margin: 0, color: 'var(--text-primary)' }}>
             Hola, {saludo}
           </h1>
-          <p className="mt-1 text-sm font-bold text-[var(--text-primary)]">
+          <p className="mt-1 text-sm font-bold text-(--text-primary)">
             ¡Juntos recuperamos el planeta!
           </p>
         </div>
-        <Link href="/admin/sistema" className="flex items-center gap-1.5 rounded-full border border-[var(--border)] px-4 py-2 text-[13px] font-semibold text-[var(--color-brand)] bg-[var(--bg-card)] no-underline">
+        <Link href="/admin/sistema" className="flex items-center gap-1.5 rounded-full border border-(--border) px-4 py-2 text-[13px] font-semibold text-brand bg-(--bg-card) no-underline">
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#38B98E', display: 'inline-block' }}></span>
           Estado de sistemas
         </Link>
@@ -136,7 +136,7 @@ export default async function AdminPage() {
       </div>
 
       {/* Últimos cálculos */}
-      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+      <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
         <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
           <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
             Últimos 10 cálculos
@@ -145,7 +145,7 @@ export default async function AdminPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+              <tr className="bg-(--bg-table-header) text-brand">
                 <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
                 <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Usuario</th>
                 <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
@@ -172,21 +172,21 @@ export default async function AdminPage() {
                   return (
                     <tr
                       key={c.id}
-                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
-                      <td className="px-4 py-3 text-[var(--text-secondary)] text-center">
+                      <td className="px-4 py-3 text-(--text-secondary) text-center">
                         {c.fecha ? formatFecha(c.fecha) : '-'}
                       </td>
-                      <td className="px-4 py-3 text-[var(--text-primary)] font-medium">
+                      <td className="px-4 py-3 text-(--text-primary) font-medium">
                         {autores.get(c.user_id) ?? '-'}
                       </td>
-                      <td className="px-4 py-3 text-[var(--text-secondary)]">
+                      <td className="px-4 py-3 text-(--text-secondary)">
                         {(c.empresas as unknown as { nombre: string }[] | null)?.[0]?.nombre ?? '-'}
                       </td>
-                      <td className="px-4 py-3 font-bold text-[var(--color-brand)] text-right">
+                      <td className="px-4 py-3 font-bold text-brand text-right">
                         {formatNumero(c.total_co2, { unidad: 'kg' })}
                       </td>
                     </tr>

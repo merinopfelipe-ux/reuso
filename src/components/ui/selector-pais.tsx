@@ -91,7 +91,7 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
           {currentBandera}
           {displayText}
         </span>
-        <ChevronDown size={16} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <ChevronDown size={16} className="text-(--text-secondary) shrink-0" />
       </button>
 
       {abierto && !disabled && (
@@ -107,14 +107,14 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
           >
             <div className="p-2 border-b" style={{ borderColor: 'var(--border)' }}>
               <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)]" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder)" />
                 <input
                   autoFocus
                   type="text"
                   placeholder="Buscar país o +código..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-none"
+                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs outline-hidden"
                   style={{
                     background: 'var(--bg-input)',
                     border: '1px solid var(--border)',
@@ -126,7 +126,7 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
             
             <div className="overflow-y-auto flex-1 p-1">
               {paisesFiltrados.length === 0 ? (
-                <p className="text-xs text-center p-3 text-[var(--text-secondary)]">No se encontraron países.</p>
+                <p className="text-xs text-center p-3 text-(--text-secondary)">No se encontraron países.</p>
               ) : (
                 paisesFiltrados.map((pais) => {
                   const isSelected = currentPaisObj?.nombre === pais.nombre
@@ -142,7 +142,7 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
                         }
                         setAbierto(false)
                       }}
-                      className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                      className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors hover:bg-(--bg-hover)"
                       style={{
                         color: 'var(--text-primary)', // Siempre gris/texto normal
                         fontWeight: isSelected ? 600 : 400,
@@ -150,11 +150,11 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
                       }}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Bandera codigo={pais.codigo || ''} alt={pais.nombre} className="flex-shrink-0" />
+                        <Bandera codigo={pais.codigo || ''} alt={pais.nombre} className="shrink-0" />
                         <span style={{ fontWeight: isSelected ? 600 : 400 }}>{pais.nombre}</span>
                       </div>
                       {modo === 'indicativo' && (
-                        <span className="text-xs text-[var(--text-secondary)]">{pais.dial}</span>
+                        <span className="text-xs text-(--text-secondary)">{pais.dial}</span>
                       )}
                     </button>
                   )

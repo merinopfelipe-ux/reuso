@@ -17,13 +17,13 @@ interface Props {
   empresa: Empresa
 }
 
-const cardBg = 'bg-[var(--bg-card)] border border-[var(--border)]'
+const cardBg = 'bg-(--bg-card) border border-(--border)'
 const inputSt: React.CSSProperties = {
   width: '100%', padding: '10px 12px', borderRadius: 8,
   border: '1px solid var(--border)', background: 'var(--bg-input)',
   color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box',
 }
-const labelSt = 'block text-xs font-semibold text-[var(--text-secondary)] mb-1.5'
+const labelSt = 'block text-xs font-semibold text-(--text-secondary) mb-1.5'
 
 async function rasterizarSvgAPng(svgTexto: string): Promise<{ base64: string; preview: string }> {
   return new Promise((resolve, reject) => {
@@ -375,7 +375,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
         Nombre, sector, logo y presentación que se usan en la cotización pública y en los reportes descargables.
       </p>
 
-      <div className={`rounded-[12px] p-5 mb-5 ${cardBg}`}>
+      <div className={`rounded-card p-5 mb-5 ${cardBg}`}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Lado Izquierdo: Campos (2/3) */}
           <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -385,9 +385,9 @@ export function MarcaEmpresaClient({ empresa }: Props) {
             </div>
             <div>
               <div className="relative group/tt flex items-center gap-1.5 mb-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Razón social</label>
-                <Info size={13} className="text-[var(--text-secondary)] cursor-help" />
-                <div className="pointer-events-none absolute left-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-2.5 text-xs text-[var(--text-secondary)] shadow-xl normal-case tracking-normal">
+                <label className="text-xs font-semibold text-(--text-secondary)">Razón social</label>
+                <Info size={13} className="text-(--text-secondary) cursor-help" />
+                <div className="pointer-events-none absolute left-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-(--bg-card) border border-(--border) rounded-lg p-2.5 text-xs text-(--text-secondary) shadow-xl normal-case tracking-normal">
                   Se usa solo en el pie legal de la cotización pública. Si la dejas vacía, se usa el nombre comercial.
                 </div>
               </div>
@@ -428,9 +428,9 @@ export function MarcaEmpresaClient({ empresa }: Props) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <div className="relative group/tt flex items-center gap-1.5 mb-1.5">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]">Departamento</label>
-                  <Info size={13} className="text-[var(--text-secondary)] cursor-help" />
-                  <div className="pointer-events-none absolute left-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-2.5 text-xs text-[var(--text-secondary)] shadow-xl normal-case tracking-normal">
+                  <label className="text-xs font-semibold text-(--text-secondary)">Departamento</label>
+                  <Info size={13} className="text-(--text-secondary) cursor-help" />
+                  <div className="pointer-events-none absolute left-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-(--bg-card) border border-(--border) rounded-lg p-2.5 text-xs text-(--text-secondary) shadow-xl normal-case tracking-normal">
                     Fuera de Colombia puedes ingresar el Estado o Provincia.
                   </div>
                 </div>
@@ -455,15 +455,15 @@ export function MarcaEmpresaClient({ empresa }: Props) {
           </div>
 
           {/* Lado Derecho: Logo (1/3) */}
-          <div className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-[var(--border)] pt-5 lg:pt-0 lg:pl-5">
-            <p className="text-sm font-bold text-[var(--text-primary)] mb-3">Logo</p>
+          <div className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-(--border) pt-5 lg:pt-0 lg:pl-5">
+            <p className="text-sm font-bold text-(--text-primary) mb-3">Logo</p>
             <button
               onClick={() => logoInputRef.current?.click()}
               className="text-sm font-medium px-3 py-2 rounded-lg border border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/05 transition-colors"
             >
               {logoSvgPreview ? 'Cambiar logo' : 'Sube el logo'}
             </button>
-            <p className="text-xs mt-1.5 mb-3 text-[var(--text-secondary)]">Recibe SVG, SVGZ y PNG, máximo 2 MB.</p>
+            <p className="text-xs mt-1.5 mb-3 text-(--text-secondary)">Recibe SVG, SVGZ y PNG, máximo 2 MB.</p>
             <input ref={logoInputRef} type="file" accept="image/svg+xml,.svg,.svgz,image/png,.png" className="hidden" onChange={handleLogoChange} />
             {errorLogo && <p className="text-xs text-[#FF5E4B] mb-2">{errorLogo}</p>}
 
@@ -471,14 +471,14 @@ export function MarcaEmpresaClient({ empresa }: Props) {
               <div className="mb-3">
                 <div className="flex flex-col gap-3 mt-3">
                   <div>
-                    <p className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5">Previsualización header día</p>
-                    <div className="w-full max-w-[150px] aspect-video rounded-xl border border-[var(--border)] flex items-center justify-center p-3 bg-primary">
+                    <p className="text-[11px] font-semibold text-(--text-secondary) mb-1.5">Previsualización header día</p>
+                    <div className="w-full max-w-[150px] aspect-video rounded-xl border border-(--border) flex items-center justify-center p-3 bg-primary">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={logoSvgPreview} alt="Logo en el header, modo día" className="w-full h-full object-contain" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5">Previsualización header noche</p>
+                    <p className="text-[11px] font-semibold text-(--text-secondary) mb-1.5">Previsualización header noche</p>
                     <div className="w-full max-w-[150px] aspect-video rounded-xl border border-white/10 flex items-center justify-center p-3 bg-[#474747]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -495,22 +495,22 @@ export function MarcaEmpresaClient({ empresa }: Props) {
 
             <div className="mb-3">
               <div className="relative group/tt flex items-center gap-1.5 mb-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Alto mínimo visual</label>
-                <Info size={13} className="text-[var(--text-secondary)] cursor-help" />
-                <div className="pointer-events-none absolute right-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-[var(--bg-card)] border border-[var(--border)] rounded-lg p-2.5 text-xs text-[var(--text-secondary)] shadow-xl normal-case tracking-normal text-left">
+                <label className="text-xs font-semibold text-(--text-secondary)">Alto mínimo visual</label>
+                <Info size={13} className="text-(--text-secondary) cursor-help" />
+                <div className="pointer-events-none absolute right-0 bottom-full mb-1 z-30 w-[240px] opacity-0 translate-y-1 group-hover/tt:opacity-100 group-hover/tt:translate-y-0 transition-all bg-(--bg-card) border border-(--border) rounded-lg p-2.5 text-xs text-(--text-secondary) shadow-xl normal-case tracking-normal text-left">
                   Mínimo 60 px. El logo reemplaza el nombre en el header y en todos los PDF, nunca aparecen los dos juntos.
                 </div>
               </div>
-              <div className="flex items-center gap-2 border border-[var(--border)] bg-[var(--bg-input)] rounded-lg px-3 py-2 w-[120px]">
+              <div className="flex items-center gap-2 border border-(--border) bg-(--bg-input) rounded-lg px-3 py-2 w-[120px]">
                 <input
                   type="number"
                   min={40}
                   max={200}
                   value={logoAltoMinimoPx}
                   onChange={(e) => setLogoAltoMinimoPx(Number(e.target.value))}
-                  className="w-full bg-transparent outline-none text-[14px] text-[var(--text-primary)] text-right"
+                  className="w-full bg-transparent outline-hidden text-[14px] text-(--text-primary) text-right"
                 />
-                <span className="text-[14px] text-[var(--text-secondary)]">px</span>
+                <span className="text-[14px] text-(--text-secondary)">px</span>
               </div>
             </div>
 
@@ -538,15 +538,15 @@ export function MarcaEmpresaClient({ empresa }: Props) {
         </p>
       </div>
 
-      <div className={`rounded-[12px] p-5 ${cardBg}`}>
+      <div className={`rounded-card p-5 ${cardBg}`}>
         <div className="flex items-center justify-start mb-4">
           <label
-            className="flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)] cursor-pointer select-none"
+            className="flex items-center gap-2 text-xs font-semibold text-(--text-secondary) cursor-pointer select-none"
             onClick={() => setActivarSeccion((v) => !v)}
           >
             {activarSeccion
-              ? <CheckSquare size={18} className="text-[#00827C] flex-shrink-0" />
-              : <Square size={18} className="text-[var(--text-secondary)] flex-shrink-0" />}
+              ? <CheckSquare size={18} className="text-[#00827C] shrink-0" />
+              : <Square size={18} className="text-(--text-secondary) shrink-0" />}
             Personalizar esta sección
           </label>
         </div>
@@ -571,9 +571,9 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                 <div className="flex flex-col gap-2">
                   {bullets.map((b, i) => (
                     <div key={i} className="flex items-center gap-2">
-                      <Check size={15} className="text-[#00827C] flex-shrink-0" />
+                      <Check size={15} className="text-[#00827C] shrink-0" />
                       <input style={inputSt} value={b} onChange={(e) => actualizarBullet(i, e.target.value)} maxLength={150} placeholder={`Razón ${i + 1}`} />
-                      <button onClick={() => quitarBullet(i)} className="flex-shrink-0 text-[var(--color-error)] hover:opacity-50 transition-opacity">
+                      <button onClick={() => quitarBullet(i)} className="shrink-0 text-error hover:opacity-50 transition-opacity">
                         <Trash size={15} />
                       </button>
                     </div>
@@ -589,14 +589,14 @@ export function MarcaEmpresaClient({ empresa }: Props) {
               <label className={labelSt}>Imagen de la sección</label>
               {!editandoImagen && imagenUrl && esUrlPropia && !imagenRota ? (
                 <div>
-                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--bg-input)]">
+                  <div className="w-full aspect-video rounded-xl overflow-hidden border border-(--border) bg-(--bg-input)">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={imagenUrl} alt="" className="w-full h-full object-cover" style={{ objectPosition: objectPositionCSS(imagenPosicion) }} onError={() => setImagenRota(true)} />
                   </div>
 
                   <div className="mt-2.5">
-                    <span className="text-xs font-semibold text-[var(--text-secondary)] mr-2">Encuadre:</span>
-                    <div className="inline-flex items-center rounded-full border border-[var(--border)] p-0.5">
+                    <span className="text-xs font-semibold text-(--text-secondary) mr-2">Encuadre:</span>
+                    <div className="inline-flex items-center rounded-full border border-(--border) p-0.5">
                       {([
                         { valor: 'top', etiqueta: 'Arriba' },
                         { valor: 'center', etiqueta: 'Centro' },
@@ -606,7 +606,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                           key={op.valor}
                           type="button"
                           onClick={() => setImagenPosicion(op.valor)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${imagenPosicion === op.valor ? 'bg-[#00827C] text-white' : 'text-[var(--text-secondary)]'}`}
+                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${imagenPosicion === op.valor ? 'bg-[#00827C] text-white' : 'text-(--text-secondary)'}`}
                         >
                           {op.etiqueta}
                         </button>
@@ -623,7 +623,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                     </button>
                     <button
                       onClick={() => { setImagenUrl(''); setEditandoImagen(true) }}
-                      className="inline-flex items-center gap-1 text-xs text-[var(--color-error)] hover:opacity-50 transition-opacity bg-transparent border-0 cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs text-error hover:opacity-50 transition-opacity bg-transparent border-0 cursor-pointer"
                     >
                       <Trash size={13} /> Eliminar imagen
                     </button>
@@ -631,15 +631,15 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                 </div>
               ) : (
                 <>
-                  <div className="w-full aspect-[16/9] rounded-[8px] overflow-hidden bg-[var(--bg-hover)] mb-3 relative">
+                  <div className="w-full aspect-video rounded-input overflow-hidden bg-(--bg-hover) mb-3 relative">
                     {!imagenUrl ? (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <ImageIcon size={32} className="text-[var(--text-secondary)]" />
+                        <ImageIcon size={32} className="text-(--text-secondary)" />
                       </div>
                     ) : !esUrlPropia || imagenRota ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-2 bg-[var(--bg-input)]">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 p-2 bg-(--bg-input)">
                         <WarningCircle size={22} className="text-[#FF5E4B]" />
-                        <span className="text-xs text-center leading-tight text-[var(--text-secondary)]">No se pudo cargar</span>
+                        <span className="text-xs text-center leading-tight text-(--text-secondary)">No se pudo cargar</span>
                       </div>
                     ) : (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -657,13 +657,13 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                   <div className="flex gap-2 mb-2">
                     <button
                       onClick={() => setImagenModo('url')}
-                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'url' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-[var(--border)] text-[var(--text-secondary)]'}`}
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'url' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
                     >
                       <LinkIcon size={13} /> Usar URL
                     </button>
                     <button
                       onClick={() => setImagenModo('subir')}
-                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'subir' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-[var(--border)] text-[var(--text-secondary)]'}`}
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'subir' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
                     >
                       <Upload size={13} /> Subir archivo
                     </button>
@@ -678,7 +678,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                         placeholder="https://..."
                         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); usarUrlExterna() } }}
                       />
-                      <Button onClick={usarUrlExterna} loading={procesandoUrl} size="sm" className="flex-shrink-0">
+                      <Button onClick={usarUrlExterna} loading={procesandoUrl} size="sm" className="shrink-0">
                         {procesandoUrl ? 'Cargando...' : 'Usar'}
                       </Button>
                     </div>
@@ -697,7 +697,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                   {imagenUrl && esUrlPropia && !imagenRota && (
                     <button
                       onClick={() => setEditandoImagen(false)}
-                      className="w-full mt-3 px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors text-center"
+                      className="w-full mt-3 px-3 py-2 rounded-lg border border-(--border) bg-(--bg-card) text-xs font-semibold text-(--text-secondary) hover:bg-(--bg-hover) transition-colors text-center"
                     >
                       Cancelar
                     </button>

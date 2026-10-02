@@ -268,11 +268,11 @@ export default function PrivacidadPage() {
       leeTabien={t.leeTabien}
     >
       {/* ── 3 Pilares Fundamentales de Privacidad (Inspirado en la estructura de Principios) ── */}
-      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-[var(--bg-card)] border border-[var(--border)] text-left">
-        <h2 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] mb-3">
+      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-(--bg-card) border border-(--border) text-left">
+        <h2 className="text-xl sm:text-2xl font-bold text-(--text-primary) mb-3">
           {t.pilaresTitulo}
         </h2>
-        <p className="text-sm sm:text-[15px] leading-relaxed text-[var(--text-secondary)] mb-8">
+        <p className="text-sm sm:text-[15px] leading-relaxed text-(--text-secondary) mb-8">
           {t.pilaresIntro}
         </p>
 
@@ -280,15 +280,15 @@ export default function PrivacidadPage() {
           {t.pilares.map((pilar) => (
             <div
               key={pilar.num}
-              className="flex flex-col rounded-[12px] border border-[var(--border)] bg-[var(--bg-primary)] p-5 transition-all hover:border-[var(--color-brand)]/40"
+              className="flex flex-col rounded-card border border-(--border) bg-(--bg-primary) p-5 transition-all "
             >
-              <span className="text-2xl sm:text-3xl font-black text-[var(--color-brand)] tracking-tight mb-2">
+              <span className="text-2xl sm:text-3xl font-black text-brand tracking-tight mb-2">
                 {pilar.num}
               </span>
-              <h3 className="text-base font-bold text-[var(--text-primary)] mb-2">
+              <h3 className="text-base font-bold text-(--text-primary) mb-2">
                 {pilar.titulo}
               </h3>
-              <p className="text-xs sm:text-[13px] leading-relaxed text-[var(--text-secondary)]">
+              <p className="text-xs sm:text-[13px] leading-relaxed text-(--text-secondary)">
                 {pilar.descripcion}
               </p>
             </div>

@@ -71,11 +71,11 @@ function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | numbe
     return <p style={{ padding: '20px 0', fontSize: 13, color: TEXT_MED, textAlign: 'center' }}>Sin datos en este período.</p>
   }
   return (
-    <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+    <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
-            <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+            <tr className="bg-(--bg-table-header) text-brand">
               {columnas.map((c, i) => (
                 <th key={c} className={`px-4 py-2.5 font-semibold whitespace-nowrap ${i === 0 ? 'text-left' : 'text-right'}`}>
                   {c}
@@ -87,11 +87,11 @@ function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | numbe
             {filas.map((fila, idx) => (
               <tr 
                 key={idx} 
-                className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'}`}
+                className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'}`}
                 style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
               >
                 {fila.map((v, i) => (
-                  <td key={i} className={`px-4 py-3 text-[var(--text-primary)] ${i === 0 ? 'text-left' : 'text-right whitespace-nowrap'}`}>
+                  <td key={i} className={`px-4 py-3 text-(--text-primary) ${i === 0 ? 'text-left' : 'text-right whitespace-nowrap'}`}>
                     {v}
                   </td>
                 ))}

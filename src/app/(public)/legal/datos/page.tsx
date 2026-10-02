@@ -323,12 +323,12 @@ export default function DatosPage() {
       <p style={p}>{t.intro}</p>
 
       {/* Mapa Conceptual y Ciclo de Vida del Dato */}
-      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-[var(--bg-card)] border border-[var(--border)] text-left shadow-sm">
-        <h3 className="text-lg sm:text-xl font-bold text-[var(--text-primary)] mb-2 flex items-center gap-2">
+      <div className="mb-10 p-6 sm:p-8 rounded-[16px] bg-(--bg-card) border border-(--border) text-left shadow-xs">
+        <h3 className="text-lg sm:text-xl font-bold text-(--text-primary) mb-2 flex items-center gap-2">
           <ShieldCheck size={22} color="var(--color-brand)" />
           {lang === 'ENG' ? 'Personal Data Lifecycle & ARCO Protection' : 'Ciclo de Vida del Dato y Protección ARCO'}
         </h3>
-        <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
+        <p className="text-xs sm:text-sm text-(--text-secondary) leading-relaxed mb-6 sm:leading-[1.25rem]">
           {lang === 'ENG'
             ? 'Visual overview of how your information is collected, safeguarded, and how we support your control over your data at every step.'
             : 'Resumen visual de cómo recolectamos, protegemos y promovemos tu control sobre la información en cada etapa.'}
@@ -366,17 +366,17 @@ export default function DatosPage() {
             return (
               <div
                 key={step.num}
-                className="p-4 rounded-[12px] bg-[var(--bg-primary)] border border-[var(--border)] flex flex-col justify-between"
+                className="p-4 rounded-card bg-(--bg-primary) border border-(--border) flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-bold text-[var(--color-brand)] bg-[var(--color-brand-light)] px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-bold text-brand bg-brand-light px-2 py-0.5 rounded-full">
                       {lang === 'ENG' ? `Step ${step.num}` : `Fase ${step.num}`}
                     </span>
                     <IconComponent size={18} color="var(--color-brand)" />
                   </div>
-                  <h4 className="text-sm font-bold text-[var(--text-primary)] mb-1.5">{step.title}</h4>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed m-0">{step.desc}</p>
+                  <h4 className="text-sm font-bold text-(--text-primary) mb-1.5">{step.title}</h4>
+                  <p className="text-xs text-(--text-secondary) leading-relaxed m-0">{step.desc}</p>
                 </div>
               </div>
             )
@@ -384,26 +384,26 @@ export default function DatosPage() {
         </div>
 
         {/* Matriz ARCO */}
-        <div className="p-4 rounded-[12px] bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20">
-          <div className="text-xs font-bold text-[var(--color-brand)] tracking-wider mb-2">
+        <div className="p-4 rounded-card bg-brand-light border ">
+          <div className="text-xs font-bold text-brand tracking-wider mb-2">
             {lang === 'ENG' ? 'Universal ARCO & GDPR Rights Matrix' : 'Matriz de Derechos ARCO y Soberanía Digital'}
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div>
-              <strong className="text-[var(--text-primary)] block">A · {lang === 'ENG' ? 'Access' : 'Acceso'}</strong>
-              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Know what data is stored' : 'Conoce qué datos guardamos'}</span>
+              <strong className="text-(--text-primary) block">A · {lang === 'ENG' ? 'Access' : 'Acceso'}</strong>
+              <span className="text-(--text-secondary)">{lang === 'ENG' ? 'Know what data is stored' : 'Conoce qué datos guardamos'}</span>
             </div>
             <div>
-              <strong className="text-[var(--text-primary)] block">R · {lang === 'ENG' ? 'Rectify' : 'Rectificación'}</strong>
-              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Update & correct info' : 'Actualiza y corrige tus datos'}</span>
+              <strong className="text-(--text-primary) block">R · {lang === 'ENG' ? 'Rectify' : 'Rectificación'}</strong>
+              <span className="text-(--text-secondary)">{lang === 'ENG' ? 'Update & correct info' : 'Actualiza y corrige tus datos'}</span>
             </div>
             <div>
-              <strong className="text-[var(--text-primary)] block">C · {lang === 'ENG' ? 'Cancel' : 'Cancelación'}</strong>
-              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Delete upon request' : 'Elimina cuando lo decidas'}</span>
+              <strong className="text-(--text-primary) block">C · {lang === 'ENG' ? 'Cancel' : 'Cancelación'}</strong>
+              <span className="text-(--text-secondary)">{lang === 'ENG' ? 'Delete upon request' : 'Elimina cuando lo decidas'}</span>
             </div>
             <div>
-              <strong className="text-[var(--text-primary)] block">O · {lang === 'ENG' ? 'Opposition' : 'Oposición'}</strong>
-              <span className="text-[var(--text-secondary)]">{lang === 'ENG' ? 'Portability & opt-out' : 'Portabilidad y revocación'}</span>
+              <strong className="text-(--text-primary) block">O · {lang === 'ENG' ? 'Opposition' : 'Oposición'}</strong>
+              <span className="text-(--text-secondary)">{lang === 'ENG' ? 'Portability & opt-out' : 'Portabilidad y revocación'}</span>
             </div>
           </div>
         </div>

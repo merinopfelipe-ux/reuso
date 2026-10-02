@@ -214,11 +214,11 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
       className={`scroll-mt-24 rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col ${
         open
           ? isDark
-            ? 'bg-[var(--bg-secondary)]/40'
+            ? ''
             : 'bg-white'
           : isDark
-            ? 'border-white/10 bg-[var(--bg-secondary)]/20 hover:border-white/20 hover:bg-[var(--bg-secondary)]/30'
-            : 'border-[var(--border)] bg-[var(--bg-card)]/80 hover:bg-white'
+            ? 'border-white/10  hover:border-white/20 '
+            : 'border-(--border)  hover:bg-white'
       }`}
     >
       <button
@@ -226,7 +226,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
         onClick={() => setOpen(prev => !prev)}
         aria-expanded={open}
         aria-controls={contentId}
-        className="group w-full flex items-start justify-between gap-4 text-left p-4 sm:p-5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-brand)]"
+        className="group w-full flex items-start justify-between gap-4 text-left p-4 sm:p-5 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-brand"
       >
         <div className="flex-1 min-w-0">
           {/* Pregunta H3 para semántica SEO limpia */}
@@ -240,7 +240,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
                 : isDark
                   ? 'text-white'
                   : 'text-[#474747]'
-            }`}
+            } sm:leading-[1.5rem]`}
           >
             {item.q}
           </h3>
@@ -252,7 +252,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
             background: open ? tokens.btnBg : tokens.badgeBg,
             color: open ? tokens.btnText : tokens.badgeText,
           }}
-          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 mt-0.5 shadow-sm ${
+          className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 mt-0.5 shadow-xs ${
             open ? 'rotate-180' : ''
           }`}
         >
@@ -262,8 +262,8 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
 
       {/* Contenedor colapsable de respuesta */}
       {open && (
-        <div id={contentId} className="px-4 sm:px-5 pb-5 pt-1 border-t border-[var(--border)]/50">
-          <p className={`text-sm sm:text-base leading-relaxed font-normal pt-3 ${isDark ? 'text-white/90' : 'text-[#474747]/95'}`}>
+        <div id={contentId} className="px-4 sm:px-5 pb-5 pt-1 border-t ">
+          <p className={`text-sm sm:text-base leading-relaxed font-normal pt-3 ${isDark ? 'text-white/90' : 'text-[#474747]/95'} sm:leading-[1.5rem]`}>
             {boldBrand(item.a)}
           </p>
           {/* Copiar enlace: solo al desplegar, chico, oculto en mobile. El
@@ -280,7 +280,7 @@ function FAQItem({ item, id, clusterSlug, isDark, defaultOpen = false }: FAQItem
                   ? ''
                   : isDark
                     ? 'text-white/40 hover:text-white'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    : 'text-(--text-secondary) hover:text-(--text-primary)'
               }`}
             >
               {copiado ? <Check size={11} strokeWidth={2.5} /> : <Copy size={11} />}
@@ -375,7 +375,7 @@ export function FaqClient() {
           </Link>
 
           {/* Logo oficial con medidas estándar requeridas */}
-          <Link href="/" className="flex items-center justify-center flex-shrink-0 hover-pop">
+          <Link href="/" className="flex items-center justify-center shrink-0 hover-pop">
             <Image
               src="/logo-completo.svg"
               alt="Calculadora de Reúso"
@@ -393,7 +393,7 @@ export function FaqClient() {
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/#planes"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-[var(--color-brand)] text-white hover-pop shadow-sm transition-transform active:scale-95"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-brand text-white hover-pop shadow-xs transition-transform active:scale-95"
             >
               <Calculator size={14} />
               Calcular impacto
@@ -405,38 +405,38 @@ export function FaqClient() {
       {/* ── CUERPO PRINCIPAL (MOBILE FIRST + MULTICOLUMNA DESKTOP) ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-20">
         {/* Miga de pan semántica */}
-        <nav aria-label="Miga de pan" className="mb-6 flex items-center gap-2 text-xs font-semibold text-[var(--text-secondary)]">
-          <Link href="/" className="hover:text-[var(--color-brand)] transition-colors">Inicio</Link>
+        <nav aria-label="Miga de pan" className="mb-6 flex items-center gap-2 text-xs font-semibold text-(--text-secondary)">
+          <Link href="/" className="hover:text-brand transition-colors">Inicio</Link>
           <span className="opacity-40">/</span>
           <span className={`${tp} font-bold`}>Preguntas frecuentes</span>
         </nav>
 
         {/* H1 SEO y GEO centrado a dos renglones */}
-        <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-[1.2] text-center max-w-4xl mx-auto ${tp}`}>
+        <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-[1.2] text-center max-w-4xl mx-auto ${tp} sm:leading-[2.5rem] lg:leading-[1]`}>
           Preguntas frecuentes sobre sostenibilidad,
           <br className="hidden sm:inline" /> huella de carbono y economía circular
         </h1>
 
         {/* Subtítulo centrado */}
-        <p className={`text-sm sm:text-base lg:text-lg leading-relaxed mb-10 max-w-3xl font-medium text-center mx-auto ${ts}`}>
+        <p className={`text-sm sm:text-base lg:text-lg leading-relaxed mb-10 max-w-3xl font-medium text-center mx-auto ${ts} sm:leading-[1.5rem] lg:leading-[1.75rem]`}>
           Respuestas técnicas para empresas, diseñadores y talleres en Colombia sobre medición de impacto ambiental, cálculo de huella de carbono (CO₂e), mitigación hídrica, responsabilidad social y pasaportes digitales (DPP) con la Calculadora de Reúso.
         </p>
 
         {/* ── BARRA DE BÚSQUEDA Y FILTROS POR CATEGORÍA CON COLORES VIVOS (SIN SCROLL HORIZONTAL) ── */}
-        <div className="mb-8 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t border-[var(--border)]/60 pt-6">
+        <div className="mb-8 flex flex-col md:flex-row gap-4 md:items-center justify-between border-t  pt-6">
           {/* Píldoras de cluster con colores temáticos y salto natural flex-wrap */}
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setClusterActivo('todos')}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-xs ${
                 clusterActivo === 'todos'
                   ? isDark
-                    ? 'bg-white text-[var(--text-primary)]'
-                    : 'bg-[var(--text-primary)] text-white'
+                    ? 'bg-white text-(--text-primary)'
+                    : 'bg-(--text-primary) text-white'
                   : isDark
                     ? 'bg-white/5 text-white/70 hover:bg-white/10'
-                    : 'bg-[var(--text-primary)]/5 text-[var(--text-primary)] hover:bg-[var(--text-primary)]/10'
+                    : ' text-(--text-primary) '
               }`}
             >
               Todas ({totalPreguntas})
@@ -455,11 +455,11 @@ export function FaqClient() {
                     color: activo ? tokens.btnText : tokens.pillText,
                     borderColor: activo ? tokens.btnBg : tokens.badgeBg,
                   }}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border shadow-sm hover:opacity-90"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all border shadow-xs hover:opacity-90"
                 >
                   <span
                     style={{ background: activo ? tokens.btnText : tokens.dotBg }}
-                    className="w-2 h-2 rounded-full flex-shrink-0"
+                    className="w-2 h-2 rounded-full shrink-0"
                   />
                   <span>{theme.labelShort} ({c.items.length})</span>
                 </button>
@@ -468,20 +468,20 @@ export function FaqClient() {
           </div>
 
           {/* Buscador reactivo */}
-          <div className="relative min-w-[240px] md:w-80 flex-shrink-0">
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none" />
+          <div className="relative min-w-[240px] md:w-80 shrink-0">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-(--text-secondary) pointer-events-none" />
             <input
               type="text"
               value={busqueda}
               onChange={(e) => setBusqueda(e.target.value)}
               placeholder="Buscar por término o pregunta..."
-              className="w-full pl-9 pr-8 py-2 rounded-xl text-xs sm:text-sm border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/60 outline-none focus:border-[var(--color-brand)] transition-colors"
+              className="w-full pl-9 pr-8 py-2 rounded-xl text-xs sm:text-sm border border-(--border) bg-(--bg-input) text-(--text-primary)  outline-hidden focus:border-brand transition-colors"
             />
             {busqueda && (
               <button
                 type="button"
                 onClick={() => setBusqueda('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-(--text-secondary) hover:text-(--text-primary)"
               >
                 <X size={14} />
               </button>
@@ -491,14 +491,14 @@ export function FaqClient() {
 
         {/* Indicador de resultados de búsqueda si aplica */}
         {busqueda && (
-          <div className="mb-6 flex items-center justify-between text-xs text-[var(--text-secondary)] px-1">
+          <div className="mb-6 flex items-center justify-between text-xs text-(--text-secondary) px-1">
             <span>
               Mostrando <strong>{preguntasEncontradas}</strong> de {totalPreguntas} preguntas para &ldquo;{busqueda}&rdquo;
             </span>
             <button
               type="button"
               onClick={() => setBusqueda('')}
-              className="font-semibold text-[var(--color-brand)] hover:underline"
+              className="font-semibold text-brand hover:underline"
             >
               Limpiar búsqueda
             </button>
@@ -507,13 +507,13 @@ export function FaqClient() {
 
         {/* ── LISTADO DE CLUSTERS Y PREGUNTAS (GRID DE 2 COLUMNAS EN ESCRITORIO) ── */}
         {clustersFiltrados.length === 0 ? (
-          <div className="p-10 text-center rounded-3xl border border-[var(--border)] bg-[var(--bg-card)]/40 my-8">
+          <div className="p-10 text-center rounded-3xl border border-(--border)  my-8">
             <p className={`text-base font-bold mb-2 ${tp}`}>No encontramos preguntas con ese criterio</p>
             <p className={`text-sm mb-4 ${ts}`}>Prueba con palabras como huella, pasaporte, carbono o pyme.</p>
             <button
               type="button"
               onClick={() => { setBusqueda(''); setClusterActivo('todos') }}
-              className="px-4 py-2 rounded-xl text-xs font-bold bg-[var(--color-brand)] text-white hover-pop"
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-brand text-white hover-pop"
             >
               Ver todas las preguntas
             </button>
@@ -525,11 +525,11 @@ export function FaqClient() {
               return (
                 <section key={cluster.slug} id={cluster.slug} className="scroll-mt-24">
                   {/* Encabezado de sección con acento cromático */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-[var(--border)] pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3 mb-5 border-b border-(--border) pb-3">
                     <div className="flex items-center gap-3">
                       <div
                         style={{ background: tokens.btnBg }}
-                        className="w-2.5 h-6 rounded-full flex-shrink-0"
+                        className="w-2.5 h-6 rounded-full shrink-0"
                       />
                       <h2 className={`text-lg sm:text-2xl font-black tracking-tight ${tp}`}>
                         {cluster.cluster}
@@ -540,7 +540,7 @@ export function FaqClient() {
                         background: tokens.badgeBg,
                         color: tokens.badgeText,
                       }}
-                      className="text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm"
+                      className="text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 shadow-xs"
                     >
                       <span
                         style={{ background: tokens.dotBg }}
@@ -577,8 +577,8 @@ export function FaqClient() {
         <div
           className={`mt-16 sm:mt-20 p-6 sm:p-10 rounded-3xl border text-center relative overflow-hidden ${
             isDark
-              ? 'border-[#D6F391]/20 bg-gradient-to-b from-[var(--bg-secondary)]/40 to-[var(--bg-secondary)]/10'
-              : 'border-[#00827C]/20 bg-gradient-to-b from-[#00827C]/5 to-transparent'
+              ? 'border-[#D6F391]/20 bg-linear-to-b/srgb  '
+              : 'border-[#00827C]/20 bg-linear-to-b/srgb from-[#00827C]/5 to-transparent'
           }`}
         >
           <h2 className={`text-xl sm:text-3xl font-black mb-2.5 ${tp}`}>
@@ -590,7 +590,7 @@ export function FaqClient() {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-[var(--color-brand)] text-white hover-pop shadow-md"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold bg-brand text-white hover-pop shadow-md"
             >
               <Calculator size={16} />
               Calcular impacto gratis
@@ -599,7 +599,7 @@ export function FaqClient() {
               href={`https://wa.me/${WA_NUMBER}?text=Hola,%20tengo%20una%20consulta%20sobre%20la%20Calculadora%20de%20Reúso`}
               target="_blank"
               rel="noopener noreferrer"
-              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold border border-[var(--border)] bg-[var(--bg-card)] hover-pop ${tp}`}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold border border-(--border) bg-(--bg-card) hover-pop ${tp}`}
             >
               <WhatsappLogo size={18} />
               Consultar por WhatsApp

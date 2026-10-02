@@ -78,7 +78,7 @@ export function AdminEmpresaClient({ empresaId, admins }: Props) {
         Quién puede iniciar sesión como <code>empresa_admin</code> de esta empresa. Al crear uno nuevo, le llega un correo para que defina su propia contraseña.
       </p>
 
-      <div className="rounded-[12px] p-5 bg-[var(--bg-card)] border border-[var(--border)]">
+      <div className="rounded-card p-5 bg-(--bg-card) border border-(--border)">
         {admins.length === 0 && !mostrarForm && (
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
             Ningún usuario está vinculado como administrador de esta empresa todavía.
@@ -88,17 +88,17 @@ export function AdminEmpresaClient({ empresaId, admins }: Props) {
         {admins.length > 0 && (
           <div className="flex flex-col gap-2 mb-4">
             {admins.map((a) => (
-              <div key={a.user_id} className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border)] px-3 py-2.5">
+              <div key={a.user_id} className="flex items-center justify-between gap-3 rounded-lg border border-(--border) px-3 py-2.5">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{a.nombre} {a.apellido ?? ''}</p>
-                  <p className="text-xs text-[var(--text-secondary)] truncate">{a.email}</p>
+                  <p className="text-sm font-semibold text-(--text-primary) truncate">{a.nombre} {a.apellido ?? ''}</p>
+                  <p className="text-xs text-(--text-secondary) truncate">{a.email}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => restablecerPassword(a.user_id)}
                   disabled={restableciendo === a.user_id}
                   title="Enviar correo para restablecer contraseña"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--border)] text-xs font-semibold flex-shrink-0 hover:bg-[var(--bg-hover)] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-(--border) text-xs font-semibold shrink-0 hover:bg-(--bg-hover) transition-colors"
                   style={{
                     color: restablecido === a.user_id ? 'var(--color-brand)' : 'var(--text-secondary)',
                     opacity: restableciendo === a.user_id ? 0.5 : 1,
@@ -118,7 +118,7 @@ export function AdminEmpresaClient({ empresaId, admins }: Props) {
             Agregar administrador
           </Button>
         ) : (
-          <form onSubmit={crearAdmin} className="flex flex-col gap-3 pt-2 border-t border-[var(--border)] mt-1">
+          <form onSubmit={crearAdmin} className="flex flex-col gap-3 pt-2 border-t border-(--border) mt-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
               <div className="md:col-span-2">
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 5 }}>Correo electrónico *</label>
@@ -141,7 +141,7 @@ export function AdminEmpresaClient({ empresaId, admins }: Props) {
               <button
                 type="button"
                 onClick={() => { setMostrarForm(false); setError(null) }}
-                className="text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+                className="text-xs font-semibold text-(--text-secondary) hover:text-(--text-primary) transition-colors"
               >
                 Cancelar
               </button>

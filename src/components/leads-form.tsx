@@ -108,7 +108,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
               value={formData.nombre}
               onChange={handleChange}
               placeholder="Ej. Juan Pérez"
-              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -120,7 +120,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
               value={formData.email}
               onChange={handleChange}
               placeholder="juan@empresa.com"
-              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
             value={formData.empresa}
             onChange={handleChange}
             placeholder="Nombre de tu organización"
-            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
+            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
           />
         </div>
 
@@ -165,7 +165,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
             value={formData.mensaje}
             onChange={handleChange}
             placeholder="Cuéntanos cómo podemos ayudarte..."
-            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-none focus:border-[#00827C] dark:focus:border-[#D6F391] resize-none transition-colors"
+            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] resize-none transition-colors"
           />
         </div>
 
@@ -189,7 +189,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
           )}
         </button>
 
-        <p className="text-[11px] text-center text-[var(--text-placeholder)] m-0 mt-1">
+        <p className="text-[11px] text-center text-(--text-placeholder) m-0 mt-1">
           Al enviar, aceptas nuestra{' '}
           <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
             Política de Privacidad

@@ -153,7 +153,7 @@ function ImagenPorQueElegirnos({ url, alt, isDark, posicion, onAmpliar }: { url:
 
   return (
     <div
-      className="w-full h-full min-h-[220px] rounded-[12px] overflow-hidden flex items-center justify-center relative"
+      className="w-full h-full min-h-[220px] rounded-card overflow-hidden flex items-center justify-center relative"
       style={{ background: isDark ? 'rgba(214,243,145,0.08)' : 'rgba(0,130,124,0.06)' }}
     >
       {mostrarPlaceholder ? (
@@ -469,7 +469,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               draggable={false}
               src={logoSvgUrl}
               alt={empresaNombre}
-              className="w-auto object-contain flex-shrink-0"
+              className="w-auto object-contain shrink-0"
               style={{ height: logoAltoPx, ...(isDark ? { filter: 'brightness(0) invert(1)' } : {}) }}
             />
           ) : logoUrl ? (
@@ -478,7 +478,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               draggable={false}
               src={logoUrl}
               alt={empresaNombre}
-              className="w-auto object-contain flex-shrink-0 rounded-[8px]"
+              className="w-auto object-contain shrink-0 rounded-input"
               style={{ height: logoAltoPx }}
             />
           ) : (
@@ -488,7 +488,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 draggable={false}
                 src="/logo-icono.svg"
                 alt={empresaNombre}
-                className="w-7 h-7 object-contain flex-shrink-0"
+                className="w-7 h-7 object-contain shrink-0"
                 style={isDark ? { filter: 'brightness(0) invert(1)' } : undefined}
               />
               <span className={`text-base font-semibold ${tp}`}>{empresaNombre}</span>
@@ -505,8 +505,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               className={`w-9 h-9 rounded-full flex items-center justify-center relative cursor-pointer transition-all duration-200 ${
                 vista === 'galeria'
                   ? isDark
-                    ? 'bg-[#00827C] text-white shadow-xs'
-                    : 'bg-primary text-[#00827C] shadow-sm'
+                    ? 'bg-[#00827C] text-white shadow-2xs'
+                    : 'bg-primary text-[#00827C] shadow-xs'
                   : isDark
                     ? 'text-white/60 hover:text-white hover:bg-white/10'
                     : 'text-secondary hover:text-primary hover:bg-black/5'
@@ -522,8 +522,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               className={`w-9 h-9 rounded-full flex items-center justify-center relative cursor-pointer transition-all duration-200 ${
                 vista === 'lista'
                   ? isDark
-                    ? 'bg-[#00827C] text-white shadow-xs'
-                    : 'bg-primary text-[#00827C] shadow-sm'
+                    ? 'bg-[#00827C] text-white shadow-2xs'
+                    : 'bg-primary text-[#00827C] shadow-xs'
                   : isDark
                     ? 'text-white/60 hover:text-white hover:bg-white/10'
                     : 'text-secondary hover:text-primary hover:bg-black/5'
@@ -688,7 +688,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                   type="button"
                   onClick={() => setImagenZoom({ url: m.imagen_url!, titulo: tituloMueble })}
                   aria-label={`Ampliar imagen: ${tituloMueble}`}
-                  className="group relative w-28 sm:w-36 h-28 sm:h-36 rounded-[10px] flex-shrink-0 overflow-hidden cursor-zoom-in"
+                  className="group relative w-28 sm:w-36 h-28 sm:h-36 rounded-btn shrink-0 overflow-hidden cursor-zoom-in"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -705,7 +705,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                   </span>
                 </button>
               ) : (
-                <div className={`w-28 sm:w-36 h-28 sm:h-36 rounded-[10px] flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-[#F5FAFA]'}`}>
+                <div className={`w-28 sm:w-36 h-28 sm:h-36 rounded-btn shrink-0 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-[#F5FAFA]'}`}>
                   <ArrowsCounterClockwise size={22} className="text-[#00827C]/30" />
                 </div>
               )}
@@ -832,7 +832,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             {cotizacion.observaciones && cotizacion.nota_mostrar_galeria !== false && (
               <div className="text-center mt-6 mb-4">
                 <div className={`text-sm ${ts50} inline-flex items-center justify-center gap-1.5 flex-wrap`}>
-                  <ChatCircle size={15} className="flex-shrink-0" />
+                  <ChatCircle size={15} className="shrink-0" />
                   <span className={`font-semibold ${tp}`}>Nota:</span>
                   <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(cotizacion.observaciones), NOTA_SANITIZE_CONFIG) }} />
                 </div>
@@ -843,7 +843,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             {cotizacion.validez_activa && cotizacion.validez_mostrar_galeria !== false && (
               <div className="text-center mt-4 mb-4">
                 <div className={`text-sm ${ts50} inline-flex items-center justify-center gap-1.5 flex-wrap`}>
-                  <Calendar size={15} className="flex-shrink-0" />
+                  <Calendar size={15} className="shrink-0" />
                   <span className={`font-semibold ${tp}`}>Validez de la oferta:</span>
                   <span>Válida hasta el {fechaValidezLarga}.</span>
                 </div>
@@ -854,7 +854,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             {cotizacion.tiempo_entrega_activo !== false && cotizacion.tiempo_entrega_mostrar_galeria !== false && (
               <div className="text-center mt-4 mb-4">
                 <div className={`text-sm ${ts50} inline-flex items-center justify-center gap-1.5 flex-wrap`}>
-                  <Clock size={15} className="flex-shrink-0" />
+                  <Clock size={15} className="shrink-0" />
                   <span className={`font-semibold ${tp}`}>Tiempo de la entrega:</span>
                   <span>
                     {(cotizacion.tiempo_entrega || '25 a 30 días hábiles').endsWith('.')
@@ -869,7 +869,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             {cotizacion.garantia_activo !== false && cotizacion.garantia_mostrar_galeria !== false && cotizacion.garantia && (
               <div className="text-center mt-4 mb-6">
                 <div className={`text-sm ${ts50} inline-flex items-center justify-center gap-1.5 flex-wrap`}>
-                  <ShieldCheck size={15} className="flex-shrink-0" />
+                  <ShieldCheck size={15} className="shrink-0" />
                   <span className={`font-semibold ${tp}`}>Garantía:</span>
                   <span>{cotizacion.garantia}</span>
                 </div>
@@ -883,7 +883,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <div className="flex flex-col items-center gap-2 mt-4 mb-6">
                   {destacadosGaleria.map((d, i) => (
                     <div key={i} className={`text-sm ${ts50} inline-flex items-center justify-center gap-1.5 flex-wrap`}>
-                      <DynamicIcon nombre={d.icono} size={15} className="flex-shrink-0" />
+                      <DynamicIcon nombre={d.icono} size={15} className="shrink-0" />
                       <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(d.texto), NOTA_SANITIZE_CONFIG) }} />
                     </div>
                   ))}
@@ -919,8 +919,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Tarjeta 1: Nuevo según la IA — Morado #985fa1 */}
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#985fa1]/15' : 'bg-[#985fa1]/[0.06]'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#985fa1]/15">
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#985fa1]/15' : 'bg-[#985fa1]/6'}`}>
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center bg-[#985fa1]/15">
                   <Sparkles size={24} className="text-[#985fa1]" />
                 </div>
                 <div className="min-w-0">
@@ -932,8 +932,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               </div>
 
               {/* Tarjeta 2: Restaurarlo — Café #AD7C43 */}
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#AD7C43]/15' : 'bg-[#AD7C43]/[0.06]'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#AD7C43]/15">
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#AD7C43]/15' : 'bg-[#AD7C43]/6'}`}>
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center bg-[#AD7C43]/15">
                   <Hammer size={24} className="text-[#AD7C43]" />
                 </div>
                 <div className="min-w-0">
@@ -943,8 +943,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               </div>
 
               {/* Tarjeta 3: Ahorras — Verde #38B98E */}
-              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#38B98E]/15' : 'bg-[#38B98E]/[0.06]'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#38B98E]/15">
+              <div className={`rounded-[16px] p-5 flex items-center gap-3 transition-colors ${isDark ? 'bg-[#38B98E]/15' : 'bg-[#38B98E]/6'}`}>
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center bg-[#38B98E]/15">
                   <TrendDown size={24} className="text-[#38B98E]" />
                 </div>
                 <div className="min-w-0">
@@ -978,9 +978,9 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Tarjeta 1: CO2 → árboles — dos filas del mismo peso visual */}
-            <div className={`rounded-[16px] p-5 flex flex-col gap-3 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/[0.04]'}`}>
+            <div className={`rounded-[16px] p-5 flex flex-col gap-3 ${isDark ? 'bg-[#00827C]/10' : 'bg-[#00827C]/4'}`}>
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#00827C]/12">
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center ">
                   <ArrowsCounterClockwise size={26} className="text-[#00827C]" />
                 </div>
                 <div className="min-w-0">
@@ -993,7 +993,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 </div>
               </div>
               <div className={`flex items-center gap-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-black/5'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#00827C]/12">
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center ">
                   <Tree size={26} className="text-[#00827C]" />
                 </div>
                 <div className="min-w-0">
@@ -1008,9 +1008,9 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             </div>
 
             {/* Tarjeta 2: agua → duchas — dos filas del mismo peso visual */}
-            <div className={`rounded-[16px] p-5 flex flex-col gap-3 ${isDark ? 'bg-[#59A6E4]/10' : 'bg-[#59A6E4]/[0.05]'}`}>
+            <div className={`rounded-[16px] p-5 flex flex-col gap-3 ${isDark ? 'bg-[#59A6E4]/10' : 'bg-[#59A6E4]/5'}`}>
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#59A6E4]/12">
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center ">
                   <Drop size={26} className="text-[#59A6E4]" />
                 </div>
                 <div className="min-w-0">
@@ -1023,7 +1023,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 </div>
               </div>
               <div className={`flex items-center gap-3 pt-3 border-t ${isDark ? 'border-white/10' : 'border-black/5'}`}>
-                <div className="w-14 h-14 flex-shrink-0 rounded-full flex items-center justify-center bg-[#59A6E4]/12">
+                <div className="w-14 h-14 shrink-0 rounded-full flex items-center justify-center ">
                   <Bathtub size={26} className="text-[#59A6E4]" />
                 </div>
                 <div className="min-w-0">
@@ -1062,7 +1062,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <ul className="space-y-2">
                   {config.bullets.map((item, idx) => (
                     <li key={idx} className={`flex items-start gap-2 text-sm ${ts70}`}>
-                      <CheckCircle size={16} className="text-[#00827C] flex-shrink-0 mt-0.5" />
+                      <CheckCircle size={16} className="text-[#00827C] shrink-0 mt-0.5" />
                       <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(renderTextoSimple(item), NOTA_SANITIZE_CONFIG) }} />
                     </li>
                   ))}
@@ -1135,7 +1135,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             Esta propuesta es solo para ti. No puedes compartir su contenido<br />
             ni usarla con fines comerciales sin autorización.
           </span>
-          <div className="flex-shrink-0 flex items-center">
+          <div className="shrink-0 flex items-center">
             <ThemeToggle />
           </div>
         </div>
@@ -1169,10 +1169,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           <div className="flex-1 flex flex-col justify-center">
             {/* Tabla de Materiales */}
             {materialMap.size > 0 && (
-              <div className="mb-4 rounded-[12px] overflow-hidden border border-[var(--border)] shadow-sm bg-[var(--bg-card)]">
+              <div className="mb-4 rounded-card overflow-hidden border border-(--border) shadow-xs bg-(--bg-card)">
                 <table className="w-full text-left border-collapse text-[11.5px]">
                   <thead>
-                    <tr className="bg-[var(--bg-table-header)] border-b border-[var(--border)]">
+                    <tr className="bg-(--bg-table-header) border-b border-(--border)">
                       <th className="py-2 px-3 font-semibold text-[#00827C]">Material recuperado</th>
                       <th className="py-2 px-3 font-semibold text-[#00827C] text-right w-[100px]">Peso estimado</th>
                     </tr>
@@ -1184,14 +1184,14 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                       return (
                         <tr 
                           key={idx}
-                          className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-table-hover)] transition-colors ${
-                            idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`border-b border-(--border) last:border-0 hover:bg-(--bg-table-hover) transition-colors ${
+                            idx % 2 !== 0 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                         >
-                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium">
+                          <td className="py-1.5 px-3 text-(--text-primary) font-medium">
                             <span className="inline-flex items-center gap-1.5 flex-wrap">
                               <span className="capitalize">{nombre}</span>
-                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-xs ring-1 inset-ring ${
+                              <span className={`inline-flex items-center justify-center px-1.5 py-0.5 rounded-[4px] text-[9px] font-bold tracking-wide shadow-2xs ring-1 inset-ring ${
                                 esReemplazo 
                                   ? 'bg-gray-100 text-gray-600 ring-gray-500/20' 
                                   : 'bg-emerald-50 text-[#00827C] ring-emerald-600/20'
@@ -1201,7 +1201,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                               <TooltipInfo texto={descripcionesLookup.get(nombre.toLowerCase()) ?? ''} />
                             </span>
                           </td>
-                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-bold text-right">
+                          <td className="py-1.5 px-3 text-(--text-primary) font-bold text-right">
                             {formatNumero(peso)} kg
                           </td>
                         </tr>
@@ -1213,13 +1213,13 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             )}
 
             {/* Ecuación Visual */}
-            <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-gradient-to-br from-[var(--bg-hover)] to-[var(--bg-card)] border border-[var(--border)] shadow-sm relative overflow-hidden">
+            <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-linear-to-br/srgb from-(--bg-hover) to-(--bg-card) border border-(--border) shadow-xs relative overflow-hidden">
               <div className="absolute -top-10 -right-10 w-24 h-24 bg-[#00827C]/10 blur-2xl rounded-full" />
               
               <div className="flex flex-col items-center flex-1 relative z-10">
-                <span className="text-xl font-black text-[var(--text-primary)] leading-none mb-1">{totalPesoStr}</span>
-                <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-wider">Kilos</span>
-                <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">recuperados</span>
+                <span className="text-xl font-black text-(--text-primary) leading-none mb-1">{totalPesoStr}</span>
+                <span className="text-[9px] font-bold text-(--text-secondary) tracking-wider">Kilos</span>
+                <span className="text-[9px] font-medium text-(--text-secondary) opacity-80 leading-none mt-0.5">recuperados</span>
               </div>
 
               <div className="text-[#00827C] opacity-50 font-black text-lg relative z-10 mb-1">
@@ -1230,8 +1230,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 <div className="flex items-center justify-center w-6 h-6 rounded-full bg-[#00827C]/10 mb-1">
                   <Leaf size={12} className="text-[#00827C]" />
                 </div>
-                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">Impacto</span>
-                <span className="text-[9px] font-medium text-[var(--text-secondary)] opacity-80 leading-none mt-0.5">por material</span>
+                <span className="text-[9px] font-bold text-(--text-primary) tracking-wider">Impacto</span>
+                <span className="text-[9px] font-medium text-(--text-secondary) opacity-80 leading-none mt-0.5">por material</span>
               </div>
 
               <div className="text-[#00827C] opacity-50 relative z-10 mb-1">
@@ -1240,7 +1240,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
 
               <div className="flex flex-col items-center flex-1 relative z-10">
                 <span className="text-xl font-black text-[#00827C] leading-none mb-1">{totalCO2Str}</span>
-                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">CO₂</span>
+                <span className="text-[9px] font-bold text-(--text-primary) tracking-wider">CO₂</span>
                 <span className="text-[9px] font-medium text-[#00827C] opacity-80 leading-none mt-0.5">evitado</span>
               </div>
             </div>
@@ -1254,52 +1254,52 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               <div className="absolute left-[20px] sm:left-[28px] top-6 bottom-6 w-[2px] bg-[#00827C]/35 rounded-full" />
 
               {/* Paso 1 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <ScanSearch size={14} className="text-[#00827C]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     1. Identificación precisa de cada material
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Analizamos la composición de tus elementos para saber exactamente qué estamos salvando.
                   </span>
                 </div>
               </div>
 
               {/* Paso 2 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <Scale size={14} className="text-[#00827C]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     2. Estimación de peso y volumen evitado
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Calculamos los kilogramos reales de residuo que no terminarán en un botadero o relleno.
                   </span>
                 </div>
               </div>
 
               {/* Paso 3 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#00827C] group-hover:bg-[#00827C]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <ShieldCheck size={14} className="text-[#00827C]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     3. Rigor metodológico con análisis de ciclo de vida
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Aplicamos matrices técnicas de huella ambiental para sustentar cada cifra de impacto ecológico. Excluimos las equivalencias cotidianas de cualquier certificación formal para respaldar la veracidad científica.
                   </span>
                 </div>
               </div>
             </div>
 
-            <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-[var(--border)] opacity-70 px-2 sm:px-4">
+            <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-(--border) opacity-70 px-2 sm:px-4">
               El balance ecológico de esta cotización constituye una <strong>estimación</strong> técnica preliminar. Conforme a la Directiva EmpCo de la Unión Europea y las Guías Verdes de la FTC contra el lavado verde, las equivalencias de árboles o duchas cumplen una función pedagógica e ilustrativa. Nunca las tratamos como cálculos verificados ni forman parte del Pasaporte Digital de Producto (DPP) o de documentos oficiales.
             </p>
           </div>
@@ -1329,13 +1329,13 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           {/* Columna Izquierda: Tabla comparativa de ítems */}
           <div className="flex-1 flex flex-col justify-center">
             {mueblesConPrecioNuevo.length > 0 && (
-              <div className="mb-4 rounded-[12px] overflow-hidden border border-[var(--border)] shadow-sm bg-[var(--bg-card)]">
+              <div className="mb-4 rounded-card overflow-hidden border border-(--border) shadow-xs bg-(--bg-card)">
                 <table className="w-full text-left border-collapse text-[11px]">
                   <thead>
-                    <tr className="bg-[var(--bg-table-header)] border-b border-[var(--border)]">
+                    <tr className="bg-(--bg-table-header) border-b border-(--border)">
                       <th className="py-2 px-3 font-semibold text-[#985fa1]">Elemento</th>
-                      <th className="py-2 px-2 font-semibold text-[var(--text-secondary)] text-right">Nuevo (IA)</th>
-                      <th className="py-2 px-2 font-semibold text-[var(--text-secondary)] text-right">Restaurar</th>
+                      <th className="py-2 px-2 font-semibold text-(--text-secondary) text-right">Nuevo (IA)</th>
+                      <th className="py-2 px-2 font-semibold text-(--text-secondary) text-right">Restaurar</th>
                       <th className="py-2 px-3 font-semibold text-[#985fa1] text-right">Ahorro</th>
                     </tr>
                   </thead>
@@ -1347,17 +1347,17 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                       return (
                         <tr
                           key={m.id || idx}
-                          className={`border-b border-[var(--border)] last:border-0 hover:bg-[var(--bg-table-hover)] transition-colors ${
-                            idx % 2 !== 0 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`border-b border-(--border) last:border-0 hover:bg-(--bg-table-hover) transition-colors ${
+                            idx % 2 !== 0 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                         >
-                          <td className="py-1.5 px-3 text-[var(--text-primary)] font-medium max-w-[140px] leading-tight">
+                          <td className="py-1.5 px-3 text-(--text-primary) font-medium max-w-[140px] leading-tight">
                             {(m.titulo || m.tipo_mueble).replace(/\s*\(x\d+\)\s*$/i, '')}
                           </td>
-                          <td className="py-1.5 px-2 text-[var(--text-secondary)] text-right font-medium">
+                          <td className="py-1.5 px-2 text-(--text-secondary) text-right font-medium">
                             {formatCOPCompact(nuevoItem)}
                           </td>
-                          <td className="py-1.5 px-2 text-[var(--text-primary)] text-right font-medium">
+                          <td className="py-1.5 px-2 text-(--text-primary) text-right font-medium">
                             {formatCOPCompact(restItem)}
                           </td>
                           <td className="py-1.5 px-3 text-[#985fa1] font-bold text-right">
@@ -1372,10 +1372,10 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             )}
 
             {/* Resumen comparativo en caja destacada — Morado #985fa1 */}
-            <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-gradient-to-br from-[#985fa1]/10 via-[#985fa1]/5 to-[var(--bg-card)] border border-[#985fa1]/20 shadow-sm relative overflow-hidden">
+            <div className="flex items-center justify-between gap-1 p-3 sm:p-4 rounded-[16px] bg-linear-to-br/srgb from-[#985fa1]/10 via-[#985fa1]/5 to-(--bg-card) border border-[#985fa1]/20 shadow-xs relative overflow-hidden">
               <div className="flex flex-col items-center flex-1 relative z-10">
-                <span className="text-base font-bold text-[var(--text-secondary)] leading-none mb-1">{formatCOPCompact(valorNuevoTotal)}</span>
-                <span className="text-[9px] font-bold text-[var(--text-secondary)] tracking-wider">Nuevo (IA)</span>
+                <span className="text-base font-bold text-(--text-secondary) leading-none mb-1">{formatCOPCompact(valorNuevoTotal)}</span>
+                <span className="text-[9px] font-bold text-(--text-secondary) tracking-wider">Nuevo (IA)</span>
               </div>
 
               <div className="text-[#985fa1] opacity-50 font-black text-lg relative z-10 mb-1">
@@ -1383,8 +1383,8 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               </div>
 
               <div className="flex flex-col items-center flex-1 relative z-10">
-                <span className="text-base font-bold text-[var(--text-primary)] leading-none mb-1">{formatCOPCompact(valorReparacionTotal)}</span>
-                <span className="text-[9px] font-bold text-[var(--text-primary)] tracking-wider">Restaurado</span>
+                <span className="text-base font-bold text-(--text-primary) leading-none mb-1">{formatCOPCompact(valorReparacionTotal)}</span>
+                <span className="text-[9px] font-bold text-(--text-primary) tracking-wider">Restaurado</span>
               </div>
 
               <div className="text-[#985fa1] opacity-50 relative z-10 mb-1">
@@ -1398,7 +1398,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             </div>
 
             {/* Aviso sobre IVA e impuestos B2B */}
-            <p className="text-[10.5px] leading-relaxed text-[var(--text-secondary)] opacity-80 mt-2.5 px-1">
+            <p className="text-[10.5px] leading-relaxed text-(--text-secondary) opacity-80 mt-2.5 px-1">
               <strong>Impuestos B2B:</strong> Valores calculados sobre la base de mercado. En cotizaciones corporativas, el IVA (19%) se discrimina sobre el servicio contratado.
             </p>
           </div>
@@ -1410,52 +1410,52 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
               <div className="absolute left-[20px] sm:left-[28px] top-6 bottom-6 w-[2px] bg-[#985fa1]/35 rounded-full" />
 
               {/* Paso 1 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <Sparkles size={14} className="text-[#985fa1]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     1. Rastreo con inteligencia artificial en el mercado
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Buscamos modelos idénticos o equivalentes en las principales tiendas y marcas del país.
                   </span>
                 </div>
               </div>
 
               {/* Paso 2 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <Scale size={14} className="text-[#985fa1]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     2. Comparativa transparente y objetiva frente a nuevo
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Contrastamos el precio de comprar a estrenar frente a la inversión en restauración experta.
                   </span>
                 </div>
               </div>
 
               {/* Paso 3 */}
-              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-[var(--bg-hover)] transition-all duration-300 cursor-default">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--bg-card)] border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-sm flex-shrink-0 z-10 transition-all duration-300 mt-0.5">
+              <div className="group relative flex items-start gap-3 p-1.5 -mx-1.5 rounded-2xl hover:bg-(--bg-hover) transition-all duration-300 cursor-default">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center bg-(--bg-card) border-2 border-[#985fa1] group-hover:bg-[#985fa1]/10 shadow-xs shrink-0 z-10 transition-all duration-300 mt-0.5">
                   <TrendDown size={14} className="text-[#985fa1]" />
                 </div>
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-[var(--text-primary)] leading-snug">
+                  <span className="text-[13px] font-bold text-(--text-primary) leading-snug">
                     3. Ahorro económico real y capital optimizado
                   </span>
-                  <span className="text-[11.5px] text-[var(--text-secondary)] leading-relaxed mt-0.5">
+                  <span className="text-[11.5px] text-(--text-secondary) leading-relaxed mt-0.5">
                     Obtienes la misma vida útil y garantía conservando tu presupuesto y liquidez.
                   </span>
                 </div>
               </div>
             </div>
 
-            <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-[var(--border)] opacity-70 px-2 sm:px-4">
+            <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-(--border) opacity-70 px-2 sm:px-4">
               Los valores económicos comparativos reflejan una <strong>estimación</strong> referencial de mercado. Presentamos cada cifra con carácter <strong>estimativo</strong> para ilustrar tu ahorro proyectado.
             </p>
           </div>
@@ -1505,7 +1505,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
           box-shadow: 0 1px 2px rgba(0,0,0,0.05);
           position: relative;
           cursor: pointer;
-          flex-shrink: 0;
+          shrink: 0;
         }
 
         [data-theme="light"] .legal-header-btn {

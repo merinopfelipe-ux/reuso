@@ -202,8 +202,8 @@ function CookieTable({ rows, thNombre, thDominio, thDuracion, thFinalidad }: {
           {rows.map((row, idx) => (
             <tr
               key={idx}
-              className={`transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+              className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
               }`}
               style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
             >

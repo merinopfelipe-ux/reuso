@@ -277,7 +277,7 @@ function BotonToolbar({ icon, label, atajo, onClick, disabled }: {
         onMouseDown={e => e.preventDefault()}
         onClick={onClick}
         disabled={disabled}
-        className="rte-btn inline-flex items-center justify-center w-7 h-7 rounded-lg hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        className="rte-btn inline-flex items-center justify-center w-7 h-7 rounded-lg hover:bg-(--bg-hover) transition-colors cursor-pointer shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
       >
         {icon}
       </button>
@@ -515,33 +515,33 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
     if (tecla === 'u') { e.preventDefault(); aplicarSubrayado() }
   }
 
-  const ts = 'text-[var(--text-secondary)]'
-  const tp = 'text-[var(--text-primary)]'
-  const popoverCard = 'absolute top-full left-0 mt-1 z-20 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] shadow-lg'
+  const ts = 'text-(--text-secondary)'
+  const tp = 'text-(--text-primary)'
+  const popoverCard = 'absolute top-full left-0 mt-1 z-20 rounded-xl border border-(--border) bg-(--bg-card) shadow-lg'
 
   return (
     <div
-      className={`rounded-xl border overflow-hidden bg-[var(--bg-input)] transition-colors ${
-        enfocado ? 'border-[var(--color-brand)]' : 'border-[var(--border)]'
+      className={`rounded-xl border overflow-hidden bg-(--bg-input) transition-colors ${
+        enfocado ? 'border-brand' : 'border-(--border)'
       } ${className}`}
     >
-      <div className="flex flex-wrap items-center gap-1 px-1.5 py-1 border-b border-[var(--border)] rounded-t-[11px]">
+      <div className="flex flex-wrap items-center gap-1 px-1.5 py-1 border-b border-(--border) rounded-t-[11px]">
         <BotonToolbar icon={<Undo2 size={15} className={ts} />} label="Deshacer" atajo="⌘Z" onClick={deshacer} disabled={!canUndo} />
         <BotonToolbar icon={<Redo2 size={15} className={ts} />} label="Rehacer" atajo="⌘⇧Z" onClick={rehacer} disabled={!canRedo} />
 
-        <div className="w-2 flex-shrink-0" />
+        <div className="w-2 shrink-0" />
 
         <BotonToolbar icon={<Bold size={14} className={ts} />} label="Negrita" atajo="⌘B" onClick={aplicarNegrita} />
         <BotonToolbar icon={<Italic size={14} className={ts} />} label="Cursiva" atajo="⌘I" onClick={aplicarCursiva} />
         <BotonToolbar icon={<Underline size={14} className={ts} />} label="Subrayado" atajo="⌘U" onClick={aplicarSubrayado} />
 
-        <div className="w-2 flex-shrink-0" />
+        <div className="w-2 shrink-0" />
 
         <BotonToolbar icon={<ALargeSmall size={15} className={ts} />} label="Aumentar tamaño" onClick={crecerFuente} />
 
         {/* Resaltado: clic directo en el ícono aplica el último color usado; la flechita abre la paleta. */}
         <div ref={colorBtnRef} className="relative flex items-center group/tt">
-          <button type="button" onMouseDown={e => e.preventDefault()} onClick={aplicarResaltado} className="rte-btn inline-flex items-center justify-center w-7 h-7 rounded-lg hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0">
+          <button type="button" onMouseDown={e => e.preventDefault()} onClick={aplicarResaltado} className="rte-btn inline-flex items-center justify-center w-7 h-7 rounded-lg hover:bg-(--bg-hover) transition-colors cursor-pointer shrink-0">
             <span className="relative inline-flex flex-col items-center">
               <Highlighter size={15} className={ts} />
               <span className="w-3.5 h-[3px] rounded-full mt-px" style={{ background: colorActual === 'transparent' ? 'transparent' : colorActual }} />
@@ -551,7 +551,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
             type="button"
             onMouseDown={e => e.preventDefault()}
             onClick={() => { setColorAbierto(v => !v); setEmojiAbierto(false) }}
-            className="inline-flex items-center justify-center w-4 h-7 rounded-lg hover:bg-[var(--bg-hover)] transition-colors cursor-pointer flex-shrink-0"
+            className="inline-flex items-center justify-center w-4 h-7 rounded-lg hover:bg-(--bg-hover) transition-colors cursor-pointer shrink-0"
             title="Elegir color de resaltado"
           >
             <CaretDown size={11} className={ts} />
@@ -568,10 +568,10 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
                   onMouseDown={e => e.preventDefault()}
                   onClick={() => elegirColorResaltado(c.valor)}
                   title={c.nombre}
-                  className="w-7 h-7 rounded-lg border border-[var(--border)] cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
+                  className="w-7 h-7 rounded-lg border border-(--border) cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
                   style={{ background: c.valor === 'transparent' ? 'repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%) 50% / 8px 8px' : c.valor }}
                 >
-                  {colorActual === c.valor && <span className="w-1.5 h-1.5 rounded-full bg-[var(--text-primary)]" />}
+                  {colorActual === c.valor && <span className="w-1.5 h-1.5 rounded-full bg-(--text-primary)" />}
                 </button>
               ))}
             </div>
@@ -589,7 +589,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
           {emojiAbierto && (
             <div className={`${popoverCard} w-[296px]`}>
               {/* Pestañas de categoría — saltan a esa sección de la lista de abajo */}
-              <div className="flex items-center gap-0.5 p-1.5 border-b border-[var(--border)] overflow-x-auto">
+              <div className="flex items-center gap-0.5 p-1.5 border-b border-(--border) overflow-x-auto">
                 {CATEGORIAS_EMOJI.map((cat, i) => (
                   <button
                     key={cat.nombre}
@@ -600,8 +600,8 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
                       setCategoriaEmojiActiva(i)
                       seccionesEmojiRef.current[i]?.scrollIntoView({ block: 'start', behavior: 'smooth' })
                     }}
-                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base cursor-pointer transition-colors ${
-                      categoriaEmojiActiva === i ? 'bg-[var(--bg-hover)]' : 'hover:bg-[var(--bg-hover)]'
+                    className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-base cursor-pointer transition-colors ${
+                      categoriaEmojiActiva === i ? 'bg-(--bg-hover)' : 'hover:bg-(--bg-hover)'
                     }`}
                   >
                     {cat.emojis[0]}
@@ -620,7 +620,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
                           type="button"
                           onMouseDown={e => e.preventDefault()}
                           onClick={() => elegirEmoji(emoji)}
-                          className="text-xl leading-none w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--bg-hover)] cursor-pointer transition-colors"
+                          className="text-xl leading-none w-9 h-9 flex items-center justify-center rounded-lg hover:bg-(--bg-hover) cursor-pointer transition-colors"
                         >
                           {emoji}
                         </button>
@@ -649,7 +649,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
           onFocus={() => setEnfocado(true)}
           onBlur={() => setEnfocado(false)}
           style={{ minHeight: minHeightPx, maxHeight: maxHeightPx }}
-          className={`overflow-y-auto px-3 py-2.5 text-sm leading-relaxed outline-none ${tp}`}
+          className={`overflow-y-auto px-3 py-2.5 text-sm leading-relaxed outline-hidden ${tp}`}
         />
       </div>
 

@@ -335,18 +335,18 @@ export default function NuevoActivoDppPage() {
       />
 
       {errorGeneral && (
-        <div className="rounded-[10px] p-3 mb-5 text-sm font-semibold" style={{ background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)', color: '#FF5E4B' }}>
+        <div className="rounded-btn p-3 mb-5 text-sm font-semibold" style={{ background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)', color: '#FF5E4B' }}>
           {errorGeneral}
         </div>
       )}
 
       {/* Cliente dueño del ítem — opcional, un único selector para toda la tanda */}
       <div className="mb-5">
-        <label className="text-sm font-semibold text-[var(--text-primary)] block mb-1">Cliente dueño del ítem</label>
-        <p className="text-xs text-[var(--text-secondary)] mb-2">Opcional, búscalo si ya sabes de quién es, o crea el pasaporte sin cliente todavía</p>
+        <label className="text-sm font-semibold text-(--text-primary) block mb-1">Cliente dueño del ítem</label>
+        <p className="text-xs text-(--text-secondary) mb-2">Opcional, búscalo si ya sabes de quién es, o crea el pasaporte sin cliente todavía</p>
         {clienteSeleccionado ? (
           <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border" style={{ borderColor: 'rgba(0,130,124,0.30)', background: 'rgba(0,130,124,0.06)' }}>
-            <span className="text-sm font-semibold text-[var(--text-primary)]">{clienteSeleccionado.nombre} {clienteSeleccionado.apellido ?? ''}</span>
+            <span className="text-sm font-semibold text-(--text-primary)">{clienteSeleccionado.nombre} {clienteSeleccionado.apellido ?? ''}</span>
             <button type="button" onClick={() => setClienteSeleccionado(null)} className="text-[#00827C] text-sm font-semibold">Quitar</button>
           </div>
         ) : (
@@ -357,18 +357,18 @@ export default function NuevoActivoDppPage() {
                 onChange={e => { setClienteQuery(e.target.value); setClienteBusquedaHecha(false) }}
                 onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); buscarCliente() } }}
                 placeholder="Busca por nombre, celular o NIT"
-                className="flex-1 px-3 py-2 rounded-lg border text-sm bg-[var(--bg-card)] border-[var(--border)] text-[var(--text-primary)]"
+                className="flex-1 px-3 py-2 rounded-lg border text-sm bg-(--bg-card) border-(--border) text-(--text-primary)"
               />
               <Button type="button" variant="secondary" onClick={buscarCliente} loading={buscandoCliente}>Buscar</Button>
             </div>
             {clienteResultados.length > 0 && (
-              <div className="mt-2 rounded-lg border border-[var(--border)] overflow-hidden">
+              <div className="mt-2 rounded-lg border border-(--border) overflow-hidden">
                 {clienteResultados.map(c => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => { setClienteSeleccionado(c); setClienteResultados([]); setClienteQuery(''); setClienteBusquedaHecha(false) }}
-                    className="block w-full text-left px-3 py-2.5 text-sm text-[var(--text-primary)] border-t border-[var(--border)] bg-[var(--bg-card)]"
+                    className="block w-full text-left px-3 py-2.5 text-sm text-(--text-primary) border-t border-(--border) bg-(--bg-card)"
                   >
                     {c.nombre} {c.apellido ?? ''}
                   </button>
@@ -376,7 +376,7 @@ export default function NuevoActivoDppPage() {
               </div>
             )}
             {clienteBusquedaHecha && !buscandoCliente && clienteResultados.length === 0 && (
-              <p className="mt-2 text-xs text-[var(--text-secondary)]">No se encontraron clientes con ese término.</p>
+              <p className="mt-2 text-xs text-(--text-secondary)">No se encontraron clientes con ese término.</p>
             )}
           </>
         )}
@@ -425,7 +425,7 @@ export default function NuevoActivoDppPage() {
 
       {dppsCreados.length > 0 && (
         <div className="rounded-2xl border p-4 mb-8" style={{ borderColor: 'rgba(0,130,124,0.30)', background: 'rgba(0,130,124,0.06)' }}>
-          <p className="text-sm font-bold text-[var(--text-primary)] mb-2">Pasaportes creados en esta tanda</p>
+          <p className="text-sm font-bold text-(--text-primary) mb-2">Pasaportes creados en esta tanda</p>
           <div className="flex flex-col gap-1">
             {dppsCreados.map(d => (
               <button key={d.id} onClick={() => router.push(`/empresa/dpp/${d.id}`)} className="text-left text-sm text-[#00827C] font-semibold hover:underline">

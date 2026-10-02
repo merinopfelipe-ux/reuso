@@ -189,47 +189,47 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (valo
 
   return (
     <div className="relative">
-      <label className="block text-xs font-semibold text-[var(--text-secondary)] mb-1.5">Ícono</label>
+      <label className="block text-xs font-semibold text-(--text-secondary) mb-1.5">Ícono</label>
       <button
         type="button"
         onClick={() => setAbierto(v => !v)}
         className="w-full flex items-center gap-3 px-3 py-3 rounded-xl border hover-pop"
         style={{ border: '1px solid var(--border)', background: 'var(--bg-input)', color: 'var(--text-primary)' }}
       >
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'var(--color-brand-light)' }}>
-          {IconoActual ? <IconoActual size={20} className="text-[var(--color-brand)]" {...(libreriaActual === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} /> : <MagnifyingGlass size={18} className="text-[var(--text-placeholder)]" strokeWidth={1.3} />}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'var(--color-brand-light)' }}>
+          {IconoActual ? <IconoActual size={20} className="text-brand" {...(libreriaActual === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} /> : <MagnifyingGlass size={18} className="text-(--text-placeholder)" strokeWidth={1.3} />}
         </div>
         <div className="flex-1 text-left min-w-0">
           <p className="text-sm font-medium truncate">{nombreActual || 'Elegir ícono'}</p>
-          <p className="text-xs text-[var(--text-secondary)]">Toca para buscar</p>
+          <p className="text-xs text-(--text-secondary)">Toca para buscar</p>
         </div>
       </button>
 
       {abierto && (
         <div className="absolute z-30 mt-2 w-full rounded-2xl p-3" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', boxShadow: '0 12px 32px rgba(0,0,0,0.16)' }}>
           <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl mb-3" style={{ background: 'var(--bg-input)' }}>
-            <MagnifyingGlass size={15} className="text-[var(--text-secondary)] flex-shrink-0" />
+            <MagnifyingGlass size={15} className="text-(--text-secondary) shrink-0" />
             <input
               autoFocus
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
               placeholder="Busca en español o inglés: mesa, shelving-unit, muebles..."
-              className="flex-1 bg-transparent text-sm outline-none text-[var(--text-primary)]"
+              className="flex-1 bg-transparent text-sm outline-hidden text-(--text-primary)"
             />
             {busqueda && (
-              <button type="button" onClick={() => setBusqueda('')} className="flex-shrink-0 hover-pop">
-                <X size={14} className="text-[var(--text-secondary)]" />
+              <button type="button" onClick={() => setBusqueda('')} className="shrink-0 hover-pop">
+                <X size={14} className="text-(--text-secondary)" />
               </button>
             )}
           </div>
-          <p className="text-[11px] text-[var(--text-secondary)] mb-2 px-1">{totalResultados} ícono{totalResultados === 1 ? '' : 's'}</p>
+          <p className="text-[11px] text-(--text-secondary) mb-2 px-1">{totalResultados} ícono{totalResultados === 1 ? '' : 's'}</p>
           <div className="max-h-64 overflow-y-auto flex flex-col gap-3">
             {([
               ['Lucide', 'lucide', resultadosLucide],
               ['Phosphor', 'phosphor', resultadosPhosphor],
             ] as const).map(([titulo, libreria, nombres]) => nombres.length > 0 && (
               <div key={libreria}>
-                <p className="text-[11px] font-bold text-[var(--text-secondary)] mb-1.5 px-1">{titulo}</p>
+                <p className="text-[11px] font-bold text-(--text-secondary) mb-1.5 px-1">{titulo}</p>
                 <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
                   {nombres.map(nombre => {
                     const Icono = componenteDe(libreria, nombre)
@@ -244,8 +244,8 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (valo
                         className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl hover-pop hover-press"
                         style={{ background: activo ? 'var(--color-brand)' : 'var(--bg-input)' }}
                       >
-                        <Icono size={20} className={activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'} {...(libreria === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} />
-                        <span className={`text-[9px] truncate w-full text-center ${activo ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'}`}>{nombre}</span>
+                        <Icono size={20} className={activo ? 'text-(--text-on-brand)' : 'text-(--text-secondary)'} {...(libreria === 'phosphor' ? { weight: 'regular' } : { strokeWidth: 1.3 })} />
+                        <span className={`text-[9px] truncate w-full text-center ${activo ? 'text-(--text-on-brand)' : 'text-(--text-secondary)'}`}>{nombre}</span>
                       </button>
                     )
                   })}
@@ -253,7 +253,7 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (valo
               </div>
             ))}
             {totalResultados === 0 && (
-              <p className="text-xs text-[var(--text-secondary)] py-6 text-center">Sin resultados para &ldquo;{busqueda}&rdquo;.</p>
+              <p className="text-xs text-(--text-secondary) py-6 text-center">Sin resultados para &ldquo;{busqueda}&rdquo;.</p>
             )}
           </div>
         </div>

@@ -77,14 +77,14 @@ export function Selector({
         type="button"
         disabled={disabled}
         onKeyDown={onKeyDownTrigger}
-        className={`w-full flex items-center justify-between gap-2 rounded-lg border outline-none transition-colors ${SIZES[tamano]} 
-          ${disabled ? 'opacity-50 cursor-not-allowed bg-[var(--bg-card)]' : 'bg-[var(--bg-input)] hover:bg-[var(--bg-card)] cursor-pointer'} 
-          ${abierto ? 'border-[var(--color-brand)] shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-[var(--border)]'}`}
+        className={`w-full flex items-center justify-between gap-2 rounded-lg border outline-hidden transition-colors ${SIZES[tamano]} 
+          ${disabled ? 'opacity-50 cursor-not-allowed bg-(--bg-card)' : 'bg-(--bg-input) hover:bg-(--bg-card) cursor-pointer'} 
+          ${abierto ? 'border-brand shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-(--border)'}`}
         style={style}
         onClick={() => setAbierto(a => !a)}
       >
         <span className="whitespace-nowrap" style={{ color: seleccionada ? 'var(--text-primary)' : 'var(--text-placeholder)' }}>{seleccionada?.label ?? placeholder}</span>
-        <ChevronDown size={ICON_SIZES[tamano]} className="text-[var(--text-secondary)] flex-shrink-0" />
+        <ChevronDown size={ICON_SIZES[tamano]} className="text-(--text-secondary) shrink-0" />
       </button>
 
       {abierto && !disabled && (
@@ -100,7 +100,7 @@ export function Selector({
                   key={o.value}
                   type="button"
                   onClick={() => { onChange(o.value); setAbierto(false) }}
-                  className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors hover:bg-[var(--bg-hover)] whitespace-nowrap ${value === o.value ? 'bg-[var(--bg-hover)] font-semibold' : ''}`}
+                  className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors hover:bg-(--bg-hover) whitespace-nowrap ${value === o.value ? 'bg-(--bg-hover) font-semibold' : ''}`}
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {o.label}

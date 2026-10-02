@@ -8,7 +8,7 @@ import { SelectorPais, type Pais } from '@/components/ui/selector-pais'
 import { FirmaCanvas } from '@/components/legal/firma-canvas'
 import { SwitchOpciones } from '@/components/ui/switch-opciones'
 
-const inputSt = 'w-full px-4 py-2.5 rounded-xl border text-sm outline-none bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)] transition-colors focus:border-[var(--color-brand)]'
+const inputSt = 'w-full px-4 py-2.5 rounded-xl border text-sm outline-hidden bg-(--bg-input) border-(--border) text-(--text-primary) transition-colors focus:border-brand'
 
 interface DatosInvitacion {
   nombre?: string
@@ -102,8 +102,8 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
 
   if (enviado) {
     return (
@@ -124,8 +124,8 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 sm:py-12">
-      <section className="rounded-3xl border p-5 sm:p-7 mb-5 bg-[var(--bg-card)] border-[var(--border)]">
-        <p className="text-xs font-semibold tracking-wide text-[var(--color-brand)] mb-2">FIRMA ELECTRÓNICA · ENLACE PERSONAL</p>
+      <section className="rounded-3xl border p-5 sm:p-7 mb-5 bg-(--bg-card) border-(--border)">
+        <p className="text-xs font-semibold tracking-wide text-brand mb-2">FIRMA ELECTRÓNICA · ENLACE PERSONAL</p>
         <h1 className={`text-2xl sm:text-3xl font-bold tracking-tight mb-2 ${tp}`}>{documentoLabel}</h1>
         <p className={`text-sm leading-relaxed max-w-xl ${ts}`}>Revisa el acuerdo, confirma tus datos y dibuja tu firma. Al finalizar recibirás una copia en PDF en tu correo.</p>
 
@@ -135,8 +135,8 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
             ['2', 'Completa tus datos'],
             ['3', 'Firma y recibe tu copia'],
           ].map(([paso, texto]) => (
-            <div key={paso} className="rounded-xl p-3 border border-[var(--border)] bg-[var(--bg-input)]">
-              <span className="inline-flex w-5 h-5 items-center justify-center rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] text-[10px] font-bold mb-2">{paso}</span>
+            <div key={paso} className="rounded-xl p-3 border border-(--border) bg-(--bg-input)">
+              <span className="inline-flex w-5 h-5 items-center justify-center rounded-full bg-brand text-(--text-on-brand) text-[10px] font-bold mb-2">{paso}</span>
               <p className={`text-xs leading-snug ${tp}`}>{texto}</p>
             </div>
           ))}
@@ -146,16 +146,16 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
           href="/legal/confidencialidad"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1 mt-5 text-sm font-semibold text-[var(--color-brand)] hover-pop"
+          className="inline-flex items-center gap-1 mt-5 text-sm font-semibold text-brand hover-pop"
         >
           Leer el acuerdo completo en otra pestaña →
         </Link>
       </section>
 
       {/* Banner de validez jurídica Ley 527 de 1999 */}
-      <div className="rounded-2xl border p-4 mb-6 bg-[var(--bg-card)] border-[var(--border)] text-xs leading-relaxed">
-        <p className={`font-semibold mb-1 flex items-center gap-1.5 text-[var(--color-brand)]`}>
-          <ShieldCheck size={16} className="flex-shrink-0" />
+      <div className="rounded-2xl border p-4 mb-6 bg-(--bg-card) border-(--border) text-xs leading-relaxed">
+        <p className={`font-semibold mb-1 flex items-center gap-1.5 text-brand`}>
+          <ShieldCheck size={16} className="shrink-0" />
           Tu firma queda asociada a este acuerdo
         </p>
         <p className={ts}>
@@ -171,13 +171,13 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
           type="checkbox"
           checked={aceptado}
           onChange={e => setAceptado(e.target.checked)}
-          className="mt-0.5 w-4 h-4 flex-shrink-0 cursor-pointer"
+          className="mt-0.5 w-4 h-4 shrink-0 cursor-pointer"
           style={{ accentColor: 'var(--color-brand)' }}
         />
         <span className={`text-sm leading-relaxed ${tp}`}>He leído, comprendo y acepto los términos de este documento. Al continuar, manifiesto mi voluntad de firmarlo electrónicamente.</span>
       </label>
 
-      <div className={`rounded-2xl border p-5 mb-4 bg-[var(--bg-card)] border-[var(--border)] transition-opacity ${!aceptado ? 'opacity-50 pointer-events-none' : ''}`}>
+      <div className={`rounded-2xl border p-5 mb-4 bg-(--bg-card) border-(--border) transition-opacity ${!aceptado ? 'opacity-50 pointer-events-none' : ''}`}>
         <div className="flex items-baseline justify-between gap-3 mb-4">
           <p className={`text-xs font-bold tracking-wider ${ts}`}>DATOS DEL FIRMANTE</p>
           <p className={`text-xs ${ts}`}><span className="text-[#FF5E4B]">*</span> Obligatorio</p>
@@ -318,7 +318,7 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
             Celular <span className="text-[#FF5E4B]">*</span>
           </label>
           <div className="flex gap-2 items-center">
-            <div className="w-32 flex-shrink-0">
+            <div className="w-32 shrink-0">
               <SelectorPais value={indicativo} onChange={setIndicativo} modo="indicativo" disabled={!aceptado} />
             </div>
             <input

@@ -2,15 +2,15 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function HomeLoading() {
   return (
-    <div className="w-full flex flex-col min-h-[100vh] bg-[var(--bg-primary)] overflow-hidden">
+    <div className="w-full flex flex-col min-h-screen bg-(--bg-primary) overflow-hidden">
       
       {/* Header Skeleton (Flotante / Pill) */}
-      <div className="fixed top-4 lg:top-8 left-0 w-full z-[100] px-4 flex flex-col items-center pointer-events-none">
+      <div className="fixed top-4 lg:top-8 left-0 w-full z-100 px-4 flex flex-col items-center pointer-events-none">
         <header 
-          className="flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-[2.5rem] border border-[var(--border)] bg-[var(--bg-primary)] shadow-sm"
+          className="flex items-center justify-between w-full max-w-5xl px-6 py-3 rounded-[2.5rem] border border-(--border) bg-(--bg-primary) shadow-xs"
         >
           {/* Logo */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Skeleton style={{ width: 140, height: 32, borderRadius: 8 }} />
           </div>
           
@@ -63,7 +63,7 @@ export default function HomeLoading() {
 
           {/* Right Column (HeroImpactPanel) */}
           <div className="lg:col-span-6 xl:col-span-5 w-full mt-10 lg:mt-0">
-            <div className="w-full rounded-[2rem] border border-[var(--border)] bg-[var(--bg-primary)] p-8 flex flex-col shadow-sm">
+            <div className="w-full rounded-4xl border border-(--border) bg-(--bg-primary) p-8 flex flex-col shadow-xs">
                
                {/* Top info */}
                <div className="flex justify-between items-start mb-8">
@@ -77,19 +77,19 @@ export default function HomeLoading() {
                {/* 3 Cards */}
                <div className="grid grid-cols-3 gap-3 mb-8">
                  {/* Card 1 */}
-                 <div className="border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3">
+                 <div className="border border-(--border) rounded-2xl p-4 flex flex-col gap-3">
                    <Skeleton style={{ width: '60%', height: 10, borderRadius: 4 }} />
                    <Skeleton style={{ width: '80%', height: 28, borderRadius: 6 }} />
                    <Skeleton style={{ width: '90%', height: 8, borderRadius: 4 }} />
                  </div>
                  {/* Card 2 */}
-                 <div className="border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3">
+                 <div className="border border-(--border) rounded-2xl p-4 flex flex-col gap-3">
                    <Skeleton style={{ width: '70%', height: 10, borderRadius: 4 }} />
                    <Skeleton style={{ width: '90%', height: 28, borderRadius: 6 }} />
                    <Skeleton style={{ width: '85%', height: 8, borderRadius: 4 }} />
                  </div>
                  {/* Card 3 */}
-                 <div className="border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3">
+                 <div className="border border-(--border) rounded-2xl p-4 flex flex-col gap-3">
                    <Skeleton style={{ width: '75%', height: 10, borderRadius: 4 }} />
                    <Skeleton style={{ width: '85%', height: 28, borderRadius: 6 }} />
                    <Skeleton style={{ width: '80%', height: 8, borderRadius: 4 }} />

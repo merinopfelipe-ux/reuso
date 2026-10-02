@@ -24,10 +24,10 @@ export function SwitchOpciones<T extends string>({ opciones, valor, onChange, cl
   const n = opciones.length
 
   return (
-    <div className={`relative flex w-full p-1 rounded-full bg-[var(--bg-input)] border border-[var(--border)] ${className}`}>
+    <div className={`relative flex w-full p-1 rounded-full bg-(--bg-input) border border-(--border) ${className}`}>
       {idx >= 0 && (
         <div
-          className="absolute inset-y-1 rounded-full bg-[var(--color-brand)] shadow-sm transition-[left] duration-300 ease-out"
+          className="absolute inset-y-1 rounded-full bg-brand shadow-xs transition-[left] duration-300 ease-out"
           style={{
             width: `calc((100% - 8px) / ${n})`,
             left: `calc(4px + ${idx} * (100% - 8px) / ${n})`,
@@ -40,7 +40,7 @@ export function SwitchOpciones<T extends string>({ opciones, valor, onChange, cl
           type="button"
           onClick={() => onChange(o.valor)}
           className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-            valor === o.valor ? 'text-[var(--text-on-brand)]' : 'text-[var(--text-secondary)]'
+            valor === o.valor ? 'text-(--text-on-brand)' : 'text-(--text-secondary)'
           }`}
         >
           {o.icon}

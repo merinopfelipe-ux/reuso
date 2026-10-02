@@ -228,7 +228,7 @@ export default async function EmpresaPage() {
   )
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       <div style={{ marginBottom: 24 }}>
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)', margin: '0 0 4px' }}>

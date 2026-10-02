@@ -2295,7 +2295,7 @@ function PageSpeedWidget({ isDark }: { isDark: boolean }) {
                   className={`text-[10px] font-bold px-2.5 py-1 rounded-lg border transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                     isDark
                       ? 'border-[#D6F391]/30 text-[#D6F391] hover:bg-[#D6F391]/10'
-                      : 'border-[#00827C]/30 text-[#00827C] hover:bg-[#00827C]/08'
+                      : 'border-[#00827C]/30 text-[#00827C] '
                   }`}
                 >
                   {cargando ? 'Analizando…' : 'Analizar'}
@@ -2354,7 +2354,7 @@ function PageSpeedWidget({ isDark }: { isDark: boolean }) {
         })}
       </div>
 
-      <p className={`px-4 py-2 text-[10px] border-t ${isDark ? 'text-white/25 border-white/06' : 'text-[#474747]/35 border-[#00827C]/08'}`}>
+      <p className={`px-4 py-2 text-[10px] border-t ${isDark ? 'text-white/25 ' : 'text-[#474747]/35 '}`}>
         Scores sobre la URL de <code>NEXT_PUBLIC_APP_URL</code> en mobile. Usa el veredicto de abajo para registrar el resultado.
       </p>
     </div>
@@ -3248,7 +3248,7 @@ function QAContenido() {
 
   if (!mounted) {
     return (
-      <div className="h-full min-h-[60vh] bg-[var(--bg-primary)] text-[var(--text-primary)] flex items-center justify-center font-sans">
+      <div className="h-full min-h-[60vh] bg-(--bg-primary) text-(--text-primary) flex items-center justify-center font-sans">
         <LogoSpinner size={96} />
       </div>
     )
@@ -3262,11 +3262,11 @@ function QAContenido() {
     textTitle:         isDark ? 'text-white'                             : 'text-[#474747]',
     headerBg:          isDark ? 'bg-black/10 backdrop-blur-md border-white/10'
                               : 'bg-white/60 backdrop-blur-md border-[rgba(0,130,124,0.12)]',
-    cardBg:            isDark ? 'bg-black/5 backdrop-blur-sm border-white/5'
-                              : 'bg-white/50 backdrop-blur-sm border-[rgba(0,130,124,0.10)]',
+    cardBg:            isDark ? 'bg-black/5 backdrop-blur-xs border-white/5'
+                              : 'bg-white/50 backdrop-blur-xs border-[rgba(0,130,124,0.10)]',
     sidebarActiveBg:   isDark ? 'bg-white/10 border-[#00827C] shadow-[0_4px_12px_rgba(0,0,0,0.2)]'
                               : 'bg-white/90 border-[rgba(0,130,124,0.3)] shadow-[0_4px_12px_rgba(0,130,124,0.08)]',
-    sidebarInactiveBg: isDark ? 'bg-transparent border-white/[0.05] hover:border-white/10 hover:bg-white/[0.05]'
+    sidebarInactiveBg: isDark ? 'bg-transparent border-white/5 hover:border-white/10 hover:bg-white/5'
                               : 'bg-white/30 border-black/5 hover:bg-primary hover:border-black/10',
     inputBg:           isDark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-[rgba(0,130,124,0.12)]',
     divider:           isDark ? 'border-white/10'               : 'border-[rgba(0,130,124,0.08)]',
@@ -3306,7 +3306,7 @@ function QAContenido() {
                 role="button"
                 tabIndex={0}
                 onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setMostrarProgresoModal(true) }}
-                className={`border ${theme.cardBg} rounded-xl p-3 sm:px-4 sm:py-3 inline-flex items-center gap-3 sm:gap-3.5 transition-all shadow-xs w-full sm:w-fit cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:border-[#00827C]/50 hover:shadow-md group`}
+                className={`border ${theme.cardBg} rounded-xl p-3 sm:px-4 sm:py-3 inline-flex items-center gap-3 sm:gap-3.5 transition-all shadow-2xs w-full sm:w-fit cursor-pointer hover:scale-[1.02] active:scale-[0.98] hover:border-[#00827C]/50 hover:shadow-md group`}
                 style={{ borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.06)' }}
                 title="Haz clic para ver métricas detalladas, fallos y evolución en el tiempo"
               >
@@ -3325,10 +3325,10 @@ function QAContenido() {
                   <span className={`absolute text-xs font-extrabold ${theme.textTitle}`}>{progreso}%</span>
                 </div>
                 <div className="min-w-0 flex-1 sm:flex-initial">
-                  <div className={`text-[11px] sm:text-xs font-medium ${theme.textSecondary} opacity-75 leading-none mb-1 flex items-center gap-1 group-hover:text-[#00827C] transition-colors`}>
+                  <div className={`text-[11px] sm:text-xs font-medium ${theme.textSecondary} opacity-75 leading-none mb-1 flex items-center gap-1 group-hover:text-[#00827C] transition-colors sm:leading-[1rem]`}>
                     Progreso General <span className="opacity-40 text-[9px]">↗</span>
                   </div>
-                  <div className={`text-sm sm:text-lg font-bold ${theme.textTitle} leading-tight`}>{revisadas} de {total} pruebas</div>
+                  <div className={`text-sm sm:text-lg font-bold ${theme.textTitle} leading-tight sm:leading-[1.75rem]`}>{revisadas} de {total} pruebas</div>
                   <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] sm:text-xs mt-1">
                     <span className={`font-semibold ${isDark ? 'text-[#38B98E]' : 'text-[#1F8C65]'}`}>{oks} aprobadas</span>
                     <span className={`${theme.textSecondary} opacity-40`}>·</span>
@@ -3389,7 +3389,7 @@ function QAContenido() {
                   placeholder="Buscar prueba..."
                   value={busqueda}
                   onChange={e => setBusqueda(e.target.value)}
-                  className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-white/50 focus:border-[#00827C]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-none focus:ring-1 transition-all`}
+                  className={`w-full pl-8 pr-2.5 py-1.5 ${theme.inputBg} border rounded-lg text-xs md:text-sm ${theme.textPrimary} ${isDark ? 'placeholder-white/50 focus:border-[#00827C]' : 'placeholder-[#00827C]/50 focus:border-[#38B98E]'} focus:outline-hidden focus:ring-1 transition-all`}
                 />
               </div>
 
@@ -3461,7 +3461,7 @@ function QAContenido() {
                   onClick={() => { setModo('modulo'); setExpandida(null) }}
                   className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                     modo === 'modulo'
-                      ? 'bg-[#00827C] text-white shadow-sm'
+                      ? 'bg-[#00827C] text-white shadow-xs'
                       : `bg-transparent ${theme.textSecondary} hover:opacity-70`
                   }`}
                 >
@@ -3471,7 +3471,7 @@ function QAContenido() {
                   onClick={() => { setModo('pagina'); setExpandida(null) }}
                   className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all ${
                     modo === 'pagina'
-                      ? 'bg-[#00827C] text-white shadow-sm'
+                      ? 'bg-[#00827C] text-white shadow-xs'
                       : `bg-transparent ${theme.textSecondary} hover:opacity-70`
                   }`}
                 >
@@ -3481,7 +3481,7 @@ function QAContenido() {
                   onClick={() => { setModo('criticas'); setFiltroModuloCritico(null); setExpandida(null) }}
                   className={`flex-1 py-1.5 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
                     modo === 'criticas'
-                      ? 'bg-[#FF5E4B] text-white shadow-sm'
+                      ? 'bg-[#FF5E4B] text-white shadow-xs'
                       : `bg-transparent ${theme.textSecondary} hover:opacity-70`
                   }`}
                 >
@@ -3532,25 +3532,25 @@ function QAContenido() {
                         {pRevisadas > 0 && (
                           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                             {pOk > 0 && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#1F8C65]'}`} title={`${pOk} aprobadas`}>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#1F8C65]'}`} title={`${pOk} aprobadas`}>
                                 <CheckCircle size={10} />
                                 <span>{pOk}</span>
                               </span>
                             )}
                             {pParcial > 0 && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#F6BF3E]/20 text-[#F6BF3E]' : 'bg-[#F59E0B]/15 text-[#D97706]'}`} title={`${pParcial} cumple parcial`}>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#F6BF3E]/20 text-[#F6BF3E]' : 'bg-[#F59E0B]/15 text-[#D97706]'}`} title={`${pParcial} cumple parcial`}>
                                 <MinusCircle size={10} />
                                 <span>{pParcial}</span>
                               </span>
                             )}
                             {pDudosa > 0 && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#985fa1]/30 text-[#D8B4E2]' : 'bg-[#985fa1]/15 text-[#8A4A94]'}`} title={`${pDudosa} no se entiende / dudas`}>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#985fa1]/30 text-[#D8B4E2]' : 'bg-[#985fa1]/15 text-[#8A4A94]'}`} title={`${pDudosa} no se entiende / dudas`}>
                                 <Square size={9} />
                                 <span>{pDudosa}</span>
                               </span>
                             )}
                             {pFail > 0 && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B]' : 'bg-[#FF5E4B]/15 text-[#CC3C2A]'}`} title={`${pFail} fallas`}>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B]' : 'bg-[#FF5E4B]/15 text-[#CC3C2A]'}`} title={`${pFail} fallas`}>
                                 <XCircle size={10} />
                                 <span>{pFail}</span>
                               </span>
@@ -3591,7 +3591,7 @@ function QAContenido() {
                         <div className="pl-2 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <Warning size={13} className="text-[#FF5E4B] shrink-0" />
-                            <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 ${isAllActive ? '!text-[#FF5E4B]' : theme.textTitle}`}>
+                            <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 ${isAllActive ? 'text-[#FF5E4B]!' : theme.textTitle}`}>
                               Todas las críticas
                             </span>
                           </div>
@@ -3637,9 +3637,9 @@ function QAContenido() {
                           key={cat.key}
                           type="button"
                           onClick={() => { setFiltroModuloCritico(cat.key); setExpandida(null) }}
-                          className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-[var(--card-color)] ${
+                          className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-(--card-color) ${
                             isActive 
-                              ? `border-[var(--card-color)] z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] bg-card` 
+                              ? `border-(--card-color) z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] bg-card` 
                               : `hover:shadow-[0_8px_30px_var(--card-glow)] ${theme.sidebarInactiveBg}`
                           }`}
                           style={{
@@ -3654,7 +3654,7 @@ function QAContenido() {
                           <div className="pl-2 flex items-center justify-between gap-2">
                             <div className="flex items-center gap-1.5 min-w-0">
                               <Icon size={13} color={cat.color} style={{ color: cat.color }} className="shrink-0" />
-                              <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 group-hover:!text-[var(--card-color)] ${isActive ? '!text-[var(--card-color)]' : theme.textTitle}`}>
+                              <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 group-hover:text-(--card-color)! ${isActive ? 'text-(--card-color)!' : theme.textTitle}`}>
                                 {cat.key}
                               </span>
                             </div>
@@ -3702,9 +3702,9 @@ function QAContenido() {
                       <button
                         key={cat.key}
                         onClick={() => { setCategoriaActiva(cat.key); setExpandida(null) }}
-                        className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-[var(--card-color)] ${
+                        className={`w-[200px] sm:w-[220px] lg:w-full snap-start text-left p-3 rounded-xl border transition-all duration-300 relative group flex flex-col gap-1.5 overflow-hidden shrink-0 hover:z-10 hover:-translate-y-1 hover:border-(--card-color) ${
                           isActive 
-                            ? `border-[var(--card-color)] z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] bg-card` 
+                            ? `border-(--card-color) z-10 shadow-[inset_0_0_40px_var(--card-bg-active)] hover:shadow-[0_8px_30px_var(--card-glow),inset_0_0_40px_var(--card-bg-active)] bg-card` 
                             : `hover:shadow-[0_8px_30px_var(--card-glow)] ${theme.sidebarInactiveBg}`
                         }`}
                         style={{
@@ -3721,7 +3721,7 @@ function QAContenido() {
                         <div className="pl-2 flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
                             <Icon size={13} color={cat.color} style={{ color: cat.color }} className="shrink-0" />
-                            <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 group-hover:!text-[var(--card-color)] ${isActive ? '!text-[var(--card-color)]' : theme.textTitle}`}>
+                            <span className={`font-semibold text-xs sm:text-sm truncate transition-colors duration-300 group-hover:text-(--card-color)! ${isActive ? 'text-(--card-color)!' : theme.textTitle}`}>
                               {cat.key}
                             </span>
                           </div>
@@ -3777,25 +3777,25 @@ function QAContenido() {
                           {cRevisadas > 0 && (
                             <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                               {cOk > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#1F8C65]'}`} title={`${cOk} aprobadas`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#1F8C65]'}`} title={`${cOk} aprobadas`}>
                                   <CheckCircle size={10} />
                                   <span>{cOk}</span>
                                 </span>
                               )}
                               {cParcial > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#F6BF3E]/20 text-[#F6BF3E]' : 'bg-[#F59E0B]/15 text-[#D97706]'}`} title={`${cParcial} cumple parcial`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#F6BF3E]/20 text-[#F6BF3E]' : 'bg-[#F59E0B]/15 text-[#D97706]'}`} title={`${cParcial} cumple parcial`}>
                                   <MinusCircle size={10} />
                                   <span>{cParcial}</span>
                                 </span>
                               )}
                               {cDudosa > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#985fa1]/30 text-[#D8B4E2]' : 'bg-[#985fa1]/15 text-[#8A4A94]'}`} title={`${cDudosa} no se entiende / dudas`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#985fa1]/30 text-[#D8B4E2]' : 'bg-[#985fa1]/15 text-[#8A4A94]'}`} title={`${cDudosa} no se entiende / dudas`}>
                                   <Square size={9} />
                                   <span>{cDudosa}</span>
                                 </span>
                               )}
                               {cFail > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 ${isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B]' : 'bg-[#FF5E4B]/15 text-[#CC3C2A]'}`} title={`${cFail} fallas`}>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold flex items-center gap-1 ${isDark ? 'bg-[#FF5E4B]/20 text-[#FF7B6B]' : 'bg-[#FF5E4B]/15 text-[#CC3C2A]'}`} title={`${cFail} fallas`}>
                                   <XCircle size={10} />
                                   <span>{cFail}</span>
                                 </span>
@@ -4011,7 +4011,7 @@ function QAContenido() {
                 return (
                   <div
                     key={tarea.id}
-                    className={`group border rounded-2xl transition-all duration-300 relative hover:z-50 hover:-translate-y-1 hover:border-[var(--card-color)] hover:shadow-[0_8px_30px_var(--card-glow)] border-[var(--card-border)]`}
+                    className={`group border rounded-2xl transition-all duration-300 relative hover:z-50 hover:-translate-y-1 hover:border-(--card-color) hover:shadow-[0_8px_30px_var(--card-glow)] border-(--card-border)`}
                     style={{ 
                       boxShadow: `0 4px 20px var(--card-shadow)`,
                       '--card-color': cardColor,
@@ -4042,7 +4042,7 @@ function QAContenido() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between sm:justify-start gap-2 flex-wrap mb-1">
                             <div className="flex items-center gap-2 flex-wrap min-w-0">
-                              <span className={`text-xs sm:text-sm font-semibold transition-colors duration-300 group-hover:!text-[var(--card-color)] ${theme.textTitle} break-words`}>
+                              <span className={`text-xs sm:text-sm font-semibold transition-colors duration-300 group-hover:text-(--card-color)! ${theme.textTitle} wrap-break-word`}>
                                 {tarea.titulo}
                               </span>
                               {tarea.critica && (
@@ -4067,7 +4067,7 @@ function QAContenido() {
                           </div>
 
                           <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
-                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border bg-black/[0.03] dark:bg-white/[0.04] border-black/5 dark:border-white/10 transition-colors">
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md border bg-black/3 dark:bg-white/4 border-black/5 dark:border-white/10 transition-colors">
                               <span className={`${theme.textSecondary} opacity-85 select-all text-[11px] sm:text-xs`}>{tarea.ruta}</span>
                               <button
                                 type="button"
@@ -4101,7 +4101,7 @@ function QAContenido() {
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
-                                  className={`p-0.5 rounded hover:scale-115 active:scale-90 transition-all ${theme.textSecondary} hover:text-[#00827C] opacity-60 hover:opacity-100`}
+                                  className={`p-0.5 rounded-sm hover:scale-115 active:scale-90 transition-all ${theme.textSecondary} hover:text-[#00827C] opacity-60 hover:opacity-100`}
                                   title={tarea.ruta.includes('[') ? "Abrir ejemplo con datos demo" : "Abrir esta ruta en una nueva pestaña"}
                                 >
                                   <ExternalLink size={11} />
@@ -4120,7 +4120,7 @@ function QAContenido() {
                                         ? 'bg-[#38B98E]/15 border border-[#38B98E]/30 text-[#38B98E]'
                                         : isDark
                                         ? 'bg-white/5 border border-white/10 text-white/50'
-                                        : 'bg-[#474747]/[0.03] border border-[#474747]/10 text-[#474747]/50'
+                                        : 'bg-[#474747]/3 border border-[#474747]/10 text-[#474747]/50'
                                     }`}
                                   >
                                     {rol === 'sin_sesion' ? 'público' : rol.replace('_', ' ')}
@@ -4135,7 +4135,7 @@ function QAContenido() {
                                 return (
                                   <span
                                     key={campo}
-                                    className="text-[10px] sm:text-xs px-1.5 rounded font-semibold flex items-center gap-0.5"
+                                    className="text-[10px] sm:text-xs px-1.5 rounded-sm font-semibold flex items-center gap-0.5"
                                     style={{
                                       background: color ? `${color}18` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
                                       border: `1px solid ${color ? `${color}40` : isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'}`,
@@ -4182,7 +4182,7 @@ function QAContenido() {
 
                                 {/* Tooltip flotante en desktop */}
                                 <div
-                                  className={`pointer-events-none hidden sm:flex absolute top-full mt-1.5 z-[999] opacity-0 group-hover/qa-tip:opacity-100 transition-all duration-150 transform translate-y-[-2px] group-hover/qa-tip:translate-y-0 flex-col ${
+                                  className={`pointer-events-none hidden sm:flex absolute top-full mt-1.5 z-999 opacity-0 group-hover/qa-tip:opacity-100 transition-all duration-150 transform translate-y-[-2px] group-hover/qa-tip:translate-y-0 flex-col ${
                                     isRight
                                       ? 'right-0 items-end'
                                       : isLeft
@@ -4216,7 +4216,7 @@ function QAContenido() {
                         </div>
 
                         {/* Caret en desktop */}
-                        <div className={`hidden sm:block ${theme.textSecondary} opacity-60 flex-shrink-0 ml-1.5`}>
+                        <div className={`hidden sm:block ${theme.textSecondary} opacity-60 shrink-0 ml-1.5`}>
                           {abierta ? <CaretUp size={13} /> : <CaretDown size={13} />}
                         </div>
                       </div>
@@ -4228,7 +4228,7 @@ function QAContenido() {
                         className={`px-3.5 pb-4 sm:px-5 sm:pb-5 border-t ${theme.divider} relative z-10`}
                         style={{ paddingLeft: 18 }}
                       >
-                        <p className={`text-xs sm:text-sm ${theme.textSecondary} mt-3 mb-3 leading-relaxed`}>
+                        <p className={`text-xs sm:text-sm ${theme.textSecondary} mt-3 mb-3 leading-relaxed sm:leading-[1.25rem]`}>
                           {tarea.descripcion}
                         </p>
 
@@ -4290,7 +4290,7 @@ function QAContenido() {
                                       ? 'bg-[#38B98E]/10 border-[#38B98E]/30 text-[#38B98E]'
                                       : isDark
                                       ? 'bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/20'
-                                      : 'bg-primary border-black/10 text-primary/60 hover:text-primary hover:border-black/20'
+                                      : 'bg-primary border-black/10  hover:text-primary hover:border-black/20'
                                   }`}
                                 >
                                   <span className={`w-3.5 h-3.5 rounded border flex items-center justify-center shrink-0 ${
@@ -4363,7 +4363,7 @@ function QAContenido() {
                           placeholder={'Hice: abrí X y pulsé Y\nEsperaba ver: Z\nEn su lugar pasó: W\n(pega una captura con Cmd+V)'}
                           rows={5}
                           onClick={e => e.stopPropagation()}
-                          className={`w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs sm:text-sm ${theme.textPrimary} resize-vertical outline-none transition-all font-sans`}
+                          className={`w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border text-xs sm:text-sm ${theme.textPrimary} resize-vertical outline-hidden transition-all font-sans`}
                           style={{
                             background: isDark ? 'rgba(0,0,0,0.2)' : 'rgba(0,130,124,0.02)',
                             border: `1px solid ${isDark ? 'rgba(255,255,255,0.12)' : 'rgba(0,130,124,0.12)'}`,
@@ -4440,7 +4440,7 @@ function QAContenido() {
 
               const intentosModulo = intentos.filter(i => i.alcance === alcanceObjetivo).length
               return (
-                <div className={`border ${theme.cardBg} rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-xs transition-all`}>
+                <div className={`border ${theme.cardBg} rounded-2xl p-4 sm:p-5 flex flex-col gap-3 shadow-2xs transition-all`}>
                   {/* Línea 1: Estado y contexto del módulo */}
                   <div className="flex items-center justify-between gap-3 text-xs w-full">
                     <div className="flex items-center gap-2.5">
@@ -4498,7 +4498,7 @@ function QAContenido() {
                         setAlcanceParcial(alcanceObjetivo)
                         setMostrarInforme('parcial')
                       }}
-                      className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer shadow-xs ${
+                      className={`inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap hover:scale-102 active:scale-98 transition-all cursor-pointer shadow-2xs ${
                         isDark
                           ? 'bg-[#D6F391]/15 text-[#D6F391] border border-[#D6F391]/30 hover:bg-[#D6F391]/25'
                           : 'bg-[#00827C]/10 text-[#00827C] border border-[#00827C]/20 hover:bg-[#00827C]/15'
@@ -4532,7 +4532,7 @@ function QAContenido() {
               <button
                 onClick={correrDiagnostico}
                 disabled={diagnosticando}
-                className={`text-xs px-3.5 py-1.5 rounded-lg transition-all disabled:opacity-50 font-bold hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} shadow-sm`}
+                className={`text-xs px-3.5 py-1.5 rounded-lg transition-all disabled:opacity-50 font-bold hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'} shadow-xs`}
               >
                 {diagnosticando ? 'Revisando…' : 'Ejecutar revisión'}
               </button>
@@ -4594,7 +4594,7 @@ function QAContenido() {
       {/* ── Modal de informe ─────────────────────────────────────────────────── */}
       {mounted && Boolean(mostrarInforme) && createPortal(
         <div
-          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 sm:p-6 animate-in fade-in duration-150"
+          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-9999 p-4 sm:p-6 animate-in fade-in duration-150"
           onClick={() => setMostrarInforme(null)}
         >
           <div
@@ -4617,7 +4617,7 @@ function QAContenido() {
 
               return (
                 <>
-                  <div className={`px-6 py-4 border-b flex-shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
+                  <div className={`px-6 py-4 border-b shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/15 text-[#00827C]'}`}>
@@ -4657,7 +4657,7 @@ function QAContenido() {
                           <select
                             value={targetScope}
                             onChange={e => setAlcanceParcial(e.target.value)}
-                            className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border cursor-pointer outline-none max-w-[260px] truncate ${theme.inputBg} ${theme.textPrimary}`}
+                            className={`text-xs font-mono font-bold px-3 py-1.5 rounded-lg border cursor-pointer outline-hidden max-w-[260px] truncate ${theme.inputBg} ${theme.textPrimary}`}
                             style={{ borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,130,124,0.25)' }}
                           >
                             {esPorTema ? (
@@ -4722,7 +4722,7 @@ function QAContenido() {
                   </div>
 
                   <div className="flex flex-col gap-4 p-5 sm:p-6 overflow-y-auto min-h-0 flex-1">
-                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 flex-shrink-0">
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5 shrink-0">
                       {[
                         { l: 'Aprobadas',      v: oksScope,                               c: isDark ? '#38B98E' : '#1F8C65' },
                         { l: 'Cumple parcial', v: parcialesScope,                         c: isDark ? '#F6BF3E' : '#D97706' },
@@ -4738,13 +4738,13 @@ function QAContenido() {
                     </div>
 
                     <pre
-                      className={`flex-1 min-h-[140px] overflow-y-auto rounded-xl p-4 text-xs leading-relaxed whitespace-pre-wrap break-words font-mono border ${isDark ? 'bg-[#3a3a3a] text-white/90 border-white/15' : 'bg-secondary text-primary border-light'}`}
+                      className={`flex-1 min-h-[140px] overflow-y-auto rounded-xl p-4 text-xs leading-relaxed whitespace-pre-wrap wrap-break-word font-mono border ${isDark ? 'bg-[#3a3a3a] text-white/90 border-white/15' : 'bg-secondary text-primary border-light'}`}
                     >
                       {generarInforme(mostrarInforme!, targetScope)}
                     </pre>
 
                     <div
-                      className="px-4 py-3 rounded-xl flex-shrink-0"
+                      className="px-4 py-3 rounded-xl shrink-0"
                       style={{
                         background: criticasScope > 0 ? 'rgba(255,94,75,0.15)' : fallasScope > 0 ? 'rgba(255,94,75,0.10)' : 'rgba(56,185,142,0.15)',
                         border: `1px solid ${criticasScope > 0 ? 'rgba(255,94,75,0.35)' : fallasScope > 0 ? 'rgba(255,94,75,0.25)' : 'rgba(56,185,142,0.25)'}`,
@@ -4772,14 +4772,14 @@ function QAContenido() {
       {/* ── Modal de historial ───────────────────────────────────────────────────── */}
       {mounted && mostrarHistorial && createPortal(
         <div
-          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 sm:p-6 animate-in fade-in duration-150"
+          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-9999 p-4 sm:p-6 animate-in fade-in duration-150"
           onClick={() => setMostrarHistorial(null)}
         >
           <div
             onClick={e => e.stopPropagation()}
             className={`rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 relative ${isDark ? 'bg-[#474747] text-white border-white/20' : 'bg-primary text-primary border-light'}`}
           >
-            <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
+            <div className={`flex items-center justify-between px-6 py-4 border-b shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-3">
                   <h2 className={`text-lg font-bold ${theme.textTitle} m-0 flex items-center gap-2`}>
@@ -4846,7 +4846,7 @@ function QAContenido() {
                 return (
                   <div
                     key={intento.id}
-                    className={`rounded-2xl border p-4 flex flex-col gap-3 transition-all ${isDark ? 'bg-[#525252] border-white/10' : 'bg-primary border-light shadow-xs'}`}
+                    className={`rounded-2xl border p-4 flex flex-col gap-3 transition-all ${isDark ? 'bg-[#525252] border-white/10' : 'bg-primary border-light shadow-2xs'}`}
                   >
                     {/* Línea 1: Título del intento + Badge de resultado + Acciones utilitarias a la derecha */}
                     <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -4971,7 +4971,7 @@ function QAContenido() {
                           return (
                             <div
                               key={t.id}
-                              className={`p-2.5 rounded-lg border flex flex-col gap-1.5 ${isDark ? 'bg-white/[0.03] border-white/5' : 'bg-primary border-light/60'}`}
+                              className={`p-2.5 rounded-lg border flex flex-col gap-1.5 ${isDark ? 'bg-white/3 border-white/5' : 'bg-primary '}`}
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2 min-w-0">
@@ -5011,7 +5011,7 @@ function QAContenido() {
       {/* ── Modal Confirmación: Nuevo Intento ─────────────────────────── */}
       {mounted && modalNuevoIntento?.abierto && createPortal(
         <div
-          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 animate-in fade-in duration-150"
+          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-9999 p-4 animate-in fade-in duration-150"
           onClick={() => setModalNuevoIntento(null)}
         >
           <div
@@ -5037,7 +5037,7 @@ function QAContenido() {
             <div className="flex flex-col gap-2 pt-2">
               <button
                 onClick={() => confirmarNuevoIntento(modalNuevoIntento.alcance, false)}
-                className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold transition-all hover-press shadow-xs ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white hover:bg-[#00827C]/90'}`}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold transition-all hover-press shadow-2xs ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white hover:bg-[#00827C]/90'}`}
               >
                 Guardar snapshot y reiniciar todo en blanco
               </button>
@@ -5061,7 +5061,7 @@ function QAContenido() {
 
       {/* ── Toast flotante de confirmación ─────────────────────────── */}
       {mounted && toastMensaje && createPortal(
-        <div className="fixed bottom-6 right-6 z-[99999] bg-[#474747] text-white px-4 py-3 rounded-xl shadow-2xl border border-white/10 flex items-center gap-2.5 text-xs font-medium animate-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-6 right-6 z-99999 bg-[#474747] text-white px-4 py-3 rounded-xl shadow-2xl border border-white/10 flex items-center gap-2.5 text-xs font-medium animate-in slide-in-from-bottom-4 duration-200">
           <CheckCircle size={16} className="text-[#38B98E] shrink-0" />
           <span>{toastMensaje}</span>
         </div>,
@@ -5071,7 +5071,7 @@ function QAContenido() {
       {/* ── Modal de Progreso General & Métricas de Evolución ─────────────────────────── */}
       {mounted && mostrarProgresoModal && createPortal(
         <div
-          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 sm:p-6 animate-in fade-in duration-150"
+          className="fixed inset-0 bg-[#000000]/70 backdrop-blur-xs flex items-center justify-center z-9999 p-4 sm:p-6 animate-in fade-in duration-150"
           onClick={() => setMostrarProgresoModal(false)}
         >
           <div
@@ -5079,7 +5079,7 @@ function QAContenido() {
             className={`rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col border overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 relative ${isDark ? 'bg-[#474747] text-white border-white/20' : 'bg-primary text-primary border-light'}`}
           >
             {/* Header del modal */}
-            <div className={`flex items-center justify-between px-6 py-4 border-b flex-shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
+            <div className={`flex items-center justify-between px-6 py-4 border-b shrink-0 ${isDark ? 'bg-[#3e3e3e] border-white/10' : 'bg-[#f4faf9] border-light'}`}>
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-3">
                   <h2 className={`text-lg sm:text-xl font-bold ${theme.textTitle} m-0 flex items-center gap-2`}>
@@ -5123,7 +5123,7 @@ function QAContenido() {
                       strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                    <span className={`text-2xl sm:text-3xl font-black tracking-tight leading-none ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>
+                    <span className={`text-2xl sm:text-3xl font-black tracking-tight leading-none ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} sm:leading-[2.25rem]`}>
                       {progreso}%
                     </span>
                     <span className={`text-[11px] font-bold ${isDark ? 'text-gray-300' : theme.textSecondary} opacity-75 mt-1 leading-none`}>

@@ -283,7 +283,7 @@ export default function LoginPage() {
       <section className="anim-left w-full lg:w-[40%] flex flex-col justify-between relative overflow-y-auto z-10 bg-primary">
 
         {/* Header */}
-        <header className="flex items-center justify-center sm:justify-between w-full px-8 pt-8 md:px-12 flex-shrink-0">
+        <header className="flex items-center justify-center sm:justify-between w-full px-8 pt-8 md:px-12 shrink-0">
           <Link href="/" aria-label="Ir al inicio" className="flex items-center justify-center">
             <Image
               src="/logo-completo.svg"
@@ -306,7 +306,7 @@ export default function LoginPage() {
         <div className="flex-1 flex flex-col justify-center max-w-md w-full mx-auto my-12 px-8 md:px-12">
 
           <div className="flex flex-col items-center text-center mb-10">
-            <div className="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mb-4 text-brand hover-pop">
+            <div className="w-16 h-16  rounded-full flex items-center justify-center mb-4 text-brand hover-pop">
               <UserCircle size={40} strokeWidth={1.5} />
             </div>
             <h1 className="text-3xl font-bold text-primary mb-1">{T[idioma].titulo}</h1>
@@ -316,7 +316,7 @@ export default function LoginPage() {
           </div>
 
           {invited && (
-            <div role="status" className="mb-6 p-3 rounded-md bg-brand/8 border border-brand/25 text-brand text-sm text-center font-medium">
+            <div role="status" className="mb-6 p-3 rounded-md  border  text-brand text-sm text-center font-medium">
               Cuenta creada. Ya puedes ingresar con tu correo y contraseña.
             </div>
           )}
@@ -355,7 +355,7 @@ export default function LoginPage() {
                   onChange={(e) => { setEmail(e.target.value); setEmailError(false) }}
                   placeholder={T[idioma].correoPlaceholder}
                   autoComplete="email"
-                  className={`w-full py-3.5 pl-12 pr-4 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-none focus:ring-1 transition-all text-sm shadow-sm ${emailError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
+                  className={`w-full py-3.5 pl-12 pr-4 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-hidden focus:ring-1 transition-all text-sm shadow-xs ${emailError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
                 />
               </div>
               {emailError && (
@@ -383,12 +383,12 @@ export default function LoginPage() {
                   onChange={(e) => { setPassword(e.target.value); setPassError(false) }}
                   placeholder={T[idioma].passPlaceholder}
                   autoComplete="current-password"
-                  className={`w-full py-3.5 pl-12 pr-12 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-none focus:ring-1 transition-all text-sm shadow-sm ${passError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
+                  className={`w-full py-3.5 pl-12 pr-12 bg-input border rounded-input text-primary placeholder:text-placeholder focus:outline-hidden focus:ring-1 transition-all text-sm shadow-xs ${passError ? 'border-error focus:border-error focus:ring-error' : 'border-light focus:border-brand focus:ring-brand'}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 text-secondary hover:text-primary transition-colors flex items-center justify-center focus:outline-none hover-pop hover-press"
+                  className="absolute right-4 text-secondary hover:text-primary transition-colors flex items-center justify-center focus:outline-hidden hover-pop hover-press"
                   aria-label={showPassword ? T[idioma].ocultarPass : T[idioma].mostrarPass}
                 >
                   {showPassword ? <EyeSlash size={20} /> : <Eye size={20} />}
@@ -408,8 +408,8 @@ export default function LoginPage() {
                 onClick={() => setRecordarme(!recordarme)}
               >
                 {recordarme
-                  ? <CheckSquare size={18} className="text-brand flex-shrink-0" />
-                  : <Square size={18} className="text-secondary group-hover:text-primary transition-colors flex-shrink-0" />
+                  ? <CheckSquare size={18} className="text-brand shrink-0" />
+                  : <Square size={18} className="text-secondary group-hover:text-primary transition-colors shrink-0" />
                 }
                 <span className="text-sm font-medium text-secondary group-hover:text-primary transition-colors">
                   {T[idioma].recordarme}
@@ -426,7 +426,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   onClick={() => { setAceptaLegal(!aceptaLegal); setLegalError(false) }}
-                  className="flex-shrink-0 flex items-center focus:outline-none hover-pop hover-press"
+                  className="shrink-0 flex items-center focus:outline-hidden hover-pop hover-press"
                   aria-label="Aceptar términos legales"
                 >
                   {aceptaLegal
@@ -512,7 +512,7 @@ export default function LoginPage() {
       </section>
 
       {/* ── PANEL DERECHO - CARRUSEL (60%) ──────────────────────────── */}
-      <section className={`anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-gradient-to-br shadow-inner ${isDark ? 'from-[#474747] to-brand' : 'from-[#004945] to-brand'}`}>
+      <section className={`anim-right hidden lg:flex w-[60%] flex-col relative overflow-hidden bg-linear-to-br/srgb shadow-inner ${isDark ? 'from-[#474747] to-brand' : 'from-[#004945] to-brand'}`}>
 
         {/* Semicírculo decorativo */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/3 opacity-10 pointer-events-none">
@@ -529,21 +529,21 @@ export default function LoginPage() {
         <div className="flex-1 flex flex-col justify-center items-center w-full px-16 lg:px-24 xl:px-32 relative z-10">
 
           {/* Card testimonio - sombra siempre visible */}
-          <div className="w-full max-w-2xl bg-white/[0.08] backdrop-blur-md border border-white/15 rounded-[2rem] p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
+          <div className="w-full max-w-2xl bg-white/8 backdrop-blur-md border border-white/15 rounded-4xl p-10 md:p-14 shadow-[0_40px_80px_rgba(0,0,0,0.35)] relative">
 
 
             <div key={activeTestimonial} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} min-h-[220px] flex flex-col justify-center`}>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight md:leading-[2.5rem]">
                 {T[idioma].testimonios[activeTestimonial].titulo}
               </h2>
-              <p className="text-lg md:text-xl text-white/80 font-sans leading-relaxed">
+              <p className="text-lg md:text-xl text-white/80 font-sans leading-relaxed md:leading-[1.75rem]">
                 &ldquo;{T[idioma].testimonios[activeTestimonial].texto}&rdquo;
               </p>
             </div>
 
             <div key={`author-${activeTestimonial}`} className={`${navDir === 'next' ? 'anim-t-next' : 'anim-t-prev'} flex items-center gap-4 mt-10`} style={{ animationDelay: '80ms' }}>
               <div
-                className="w-14 h-14 rounded-full border-2 border-white/20 flex-shrink-0 flex items-center justify-center font-bold text-lg"
+                className="w-14 h-14 rounded-full border-2 border-white/20 shrink-0 flex items-center justify-center font-bold text-lg"
                 style={{ background: TESTIMONIOS[activeTestimonial].color, color: '#474747' }}
               >
                 {TESTIMONIOS[activeTestimonial].initials}
@@ -564,7 +564,7 @@ export default function LoginPage() {
                 <button
                   key={idx}
                   onClick={() => setActiveTestimonial(idx)}
-                  className={`h-2 rounded-full transition-all duration-300 ease-out focus:outline-none ${
+                  className={`h-2 rounded-full transition-all duration-300 ease-out focus:outline-hidden ${
                     idx === activeTestimonial
                       ? 'w-10 bg-primary shadow-[0_0_10px_rgba(255,255,255,0.5)]'
                       : 'w-2 bg-white/30 hover:bg-white/50'
@@ -578,14 +578,14 @@ export default function LoginPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-l hover-press"
+                className="w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 flex items-center justify-center text-white backdrop-blur-xs transition-colors focus:outline-hidden focus:ring-2 focus:ring-white/50 hover-slide-l hover-press"
                 aria-label="Testimonio anterior"
               >
                 <CaretLeft size={24} strokeWidth={2.5} />
               </button>
               <button
                 onClick={nextTestimonial}
-                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-white/50 hover-slide-r hover-press"
+                className="w-12 h-12 rounded-full bg-white text-brand hover:bg-white/90 flex items-center justify-center transition-colors shadow-lg focus:outline-hidden focus:ring-2 focus:ring-white/50 hover-slide-r hover-press"
                 aria-label="Testimonio siguiente"
               >
                 <CaretRight size={24} strokeWidth={2.5} />

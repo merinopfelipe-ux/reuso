@@ -98,7 +98,7 @@ export function ModulosEmpresaClient({
         abierto={!!pendiente}
         onClose={() => setPendiente(null)}
         titulo={`¿Apagar ${pendiente?.nombre ?? 'este módulo'}?`}
-        icono={<Warning size={22} className="text-[var(--color-warning)]" />}
+        icono={<Warning size={22} className="text-warning" />}
         descripcion={
           pendiente && pendiente.usuarios > 0 ? (
             <>Si apagas el {pendiente.nombre}, sus <strong>{pendiente.usuarios}</strong>{' '}

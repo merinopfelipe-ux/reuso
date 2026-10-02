@@ -66,7 +66,7 @@ export function ReportesClient() {
         {REPORTES.map(r => {
           const Icon = r.icon
           return (
-            <div key={r.tipo} className="flex flex-col gap-3 rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]">
+            <div key={r.tipo} className="flex flex-col gap-3 rounded-card border border-(--border) p-4 bg-(--bg-card)">
               <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
                 <div style={{ width: 40, height: 40, borderRadius: 10, background: C.light, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Icon size={18} color={C.brand} />

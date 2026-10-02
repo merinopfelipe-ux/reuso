@@ -229,10 +229,10 @@ export default function AdminStatusPage() {
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-  const inputStyle = `w-full px-3 py-2 rounded-[8px] border outline-none text-sm bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]`
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
+  const inputStyle = `w-full px-3 py-2 rounded-input border outline-hidden text-sm bg-(--bg-input) border-(--border) text-(--text-primary)`
 
   const activos = incidentes.filter(i => i.estado !== 'resuelto')
   const historicos = incidentes.filter(i => i.estado === 'resuelto')
@@ -248,7 +248,7 @@ export default function AdminStatusPage() {
             href="/status"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border border-[var(--color-brand)]/30 text-[var(--color-brand)] hover:bg-[var(--color-brand)]/05 transition-colors hover-pop"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border  text-brand  transition-colors hover-pop"
           >
             <Pulse size={16} />
             Ver página pública ↗
@@ -273,7 +273,7 @@ export default function AdminStatusPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* PANEL DE CREACIÓN DE INCIDENCIA */}
-        <div className={`md:col-span-1 rounded-[12px] border p-5 ${cardBg} h-fit`}>
+        <div className={`md:col-span-1 rounded-card border p-5 ${cardBg} h-fit`}>
           <h3 className={`text-base font-bold mb-4 ${tp} flex items-center gap-2`}>
             <Plus size={18} />
             Nueva Alerta / Incidente
@@ -379,7 +379,7 @@ export default function AdminStatusPage() {
         <div className="md:col-span-2 space-y-6">
           
           {/* INCIDENCIAS ACTIVAS */}
-          <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+          <div className={`rounded-card border p-5 ${cardBg}`}>
             <h3 className={`text-base font-bold mb-4 ${tp} flex items-center gap-2`}>
               <Clock size={18} />
               Incidencias Activas ({activos.length})
@@ -392,7 +392,7 @@ export default function AdminStatusPage() {
             ) : (
               <div className="space-y-4">
                 {activos.map(i => (
-                  <div key={i.id} className={`p-4 rounded-[8px] border ${isDark ? 'bg-white/05 border-white/10' : 'bg-[#474747]/05 border-[#474747]/10'}`}>
+                  <div key={i.id} className={`p-4 rounded-input border ${isDark ? 'bg-white/05 border-white/10' : 'bg-[#474747]/05 border-[#474747]/10'}`}>
                     <div className="flex justify-between items-start flex-wrap gap-2">
                       <div>
                         <h4 className={`text-sm font-bold ${tp}`}>{i.titulo}</h4>
@@ -404,7 +404,7 @@ export default function AdminStatusPage() {
                       {/* Un mantenimiento no es una falla — "menor · investigando"
                           no tiene sentido ahí, se muestra aparte. */}
                       {i.tipo === 'mantenimiento' ? (
-                        <span className="text-xs px-2 py-0.5 rounded font-bold bg-[#59A6E4]/15 text-[#59A6E4]">
+                        <span className="text-xs px-2 py-0.5 rounded-sm font-bold bg-[#59A6E4]/15 text-[#59A6E4]">
                           Mantenimiento programado
                         </span>
                       ) : (
@@ -443,7 +443,7 @@ export default function AdminStatusPage() {
                         <button
                           onClick={() => setEditingIncidente(i)}
                           disabled={actionLoading != null}
-                          className="p-1 rounded text-[#59A6E4] hover:bg-[#59A6E4]/10 transition-colors disabled:opacity-50 hover-press"
+                          className="p-1 rounded-sm text-[#59A6E4] hover:bg-[#59A6E4]/10 transition-colors disabled:opacity-50 hover-press"
                           title="Editar incidencia"
                         >
                           <Pencil size={16} />
@@ -451,7 +451,7 @@ export default function AdminStatusPage() {
                         <button
                           onClick={() => handleEliminarIncidente(i.id)}
                           disabled={actionLoading != null}
-                          className="p-1 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50 hover-trash hover-press"
+                          className="p-1 rounded-sm text-[#FF5E4B] hover:bg-[#FF5E4B]/10 transition-colors disabled:opacity-50 hover-trash hover-press"
                           title="Eliminar incidencia"
                         >
                           <Trash size={16} />
@@ -465,7 +465,7 @@ export default function AdminStatusPage() {
           </div>
 
           {/* HISTORIAL DE INCIDENCIAS */}
-          <div className={`rounded-[12px] border p-5 ${cardBg}`}>
+          <div className={`rounded-card border p-5 ${cardBg}`}>
             <h3 className={`text-base font-bold mb-4 ${tp} flex items-center gap-2`}>
               <ShieldCheck size={18} />
               Historial de Incidencias Resueltas ({historicos.length})
@@ -478,7 +478,7 @@ export default function AdminStatusPage() {
             ) : (
               <div className="space-y-3 max-h-96 overflow-y-auto pr-1">
                 {historicos.map(i => (
-                  <div key={i.id} className="flex justify-between items-center py-2 border-b border-[#00827C]/08 last:border-b-0">
+                  <div key={i.id} className="flex justify-between items-center py-2 border-b  last:border-b-0">
                     <div>
                       <h4 className={`text-sm font-semibold ${tp}`}>{i.titulo}</h4>
                       <p className={`text-xs ${ts}`}>
@@ -489,7 +489,7 @@ export default function AdminStatusPage() {
                     <button
                       onClick={() => handleEliminarIncidente(i.id)}
                       disabled={actionLoading != null}
-                      className="p-1.5 rounded text-[#FF5E4B] hover:bg-[#FF5E4B]/08 transition-colors disabled:opacity-50 hover-trash hover-press"
+                      className="p-1.5 rounded-sm text-[#FF5E4B]  transition-colors disabled:opacity-50 hover-trash hover-press"
                       title="Eliminar"
                     >
                       <Trash size={15} />

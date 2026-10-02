@@ -136,14 +136,14 @@ export function DesignSystemHeader({
   return (
     <>
       {/* WRAPPER DEL HEADER TOP */}
-      <div className="fixed top-4 lg:top-8 left-0 w-full z-[100] px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
+      <div className="fixed top-4 lg:top-8 left-0 w-full z-100 px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
         
         {/* HEADER PRINCIPAL */}
         <header style={headerStyle} className="flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-[2.5rem] pointer-events-auto transition-all relative z-50">
           <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto">
 
             <Link href={logoHref} className="flex items-center gap-3 pointer-events-auto">
-              <Image src="/logo-icono.svg" alt="Reuso" width={42} height={42} className="drop-shadow-sm pointer-events-none" />
+              <Image src="/logo-icono.svg" alt="Reuso" width={42} height={42} className="drop-shadow-xs pointer-events-none" />
               <div 
                 style={{ 
                   fontFamily: 'seravek, ui-sans-serif, sans-serif',
@@ -192,11 +192,11 @@ export function DesignSystemHeader({
                   setTimeout(() => document.getElementById('search-input')?.focus(), 100);
                 }
               }}
-              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#474747] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#474747]/10')}`}
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-100 border shadow-xs ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#474747] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#474747]/10')}`}
             >
               {searchOpen ? <X size={16} strokeWidth={2.5} /> : <MagnifyingGlass size={16} strokeWidth={2.5} />}
             </button>
-            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#474747]/10'}`}>
+            <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-xs ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#474747]/10'}`}>
               {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
             </button>
           </div>
@@ -213,7 +213,7 @@ export function DesignSystemHeader({
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
                autoComplete="off"
-               className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#474747]/30'}`}
+               className={`w-full bg-transparent border-0 outline-hidden ring-0 focus:ring-0 focus:outline-hidden text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#474747]/30'}`}
              />
              {searchQuery && (
                <button onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
@@ -224,7 +224,7 @@ export function DesignSystemHeader({
 
            {/* RESULTADOS DE BÚSQUEDA */}
            {searchQuery && (
-             <div className={`absolute top-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#474747]/10 backdrop-blur-2xl'}`}>
+             <div className={`absolute top-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-70 ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#474747]/10 backdrop-blur-2xl'}`}>
                 <div className="grid grid-cols-2 gap-2">
                   {filteredResults.slice(0, 8).map((r, i) => (
                     <a 
@@ -246,7 +246,7 @@ export function DesignSystemHeader({
 
       {/* FOOTER MÓVIL (Sustituye al hamburger) */}
       <nav 
-        className="fixed bottom-4 left-4 right-4 z-[100] flex lg:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
+        className="fixed bottom-4 left-4 right-4 z-100 flex lg:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
         style={headerStyle}
       >
         {menuGroups.slice(0, 3).map((group, idx) => {
@@ -294,7 +294,7 @@ export function DesignSystemHeader({
 
       {/* MENÚ MÓVIL (Drawer) */}
       {mounted && isMobileNavOpen && createPortal(
-        <div className="fixed inset-0 z-[9999] lg:hidden">
+        <div className="fixed inset-0 z-9999 lg:hidden">
           <div className="absolute inset-0" onClick={() => setIsMobileNavOpen(false)} />
 
           <div
@@ -352,14 +352,14 @@ export function DesignSystemHeader({
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-[2rem] border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-primary border-[#474747]/12'}`}>
+          <div className={`p-2 rounded-4xl border shadow-[0_40px_80px_rgba(0,0,0,0.35)] ${isDark ? 'bg-[#0A0A0A] border-white/10' : 'bg-primary '}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items.map((item, i) => (
                 <a
                   key={i}
                   href={item.link}
                   onClick={() => setActiveMenu(null)}
-                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]/70 hover:bg-[#474747]/08 hover:text-[#474747]'}`}
+                  className={`block px-5 py-3 rounded-[1.4rem] text-[12px] font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/70 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]/70  hover:text-[#474747]'}`}
                 >
                   {item.name}
                 </a>

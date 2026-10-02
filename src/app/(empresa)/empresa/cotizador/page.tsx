@@ -139,7 +139,7 @@ interface Cotizacion {
 // ── Constantes estados ─────────────────────────────────────────────────────────
 
 const ESTADOS: { key: string; label: string; color: string }[] = [
-  { key: 'por_cotizar',       label: 'Por cotizar',        color: 'text-[#474747]/60 bg-[#474747]/08' },
+  { key: 'por_cotizar',       label: 'Por cotizar',        color: 'text-[#474747]/60 ' },
   { key: 'enviada',           label: 'Enviada',            color: 'text-[#59A6E4] bg-[#59A6E4]/10' },
   { key: 'en_negociacion',    label: 'En negociación',     color: 'text-[#F6BF3E] bg-[#F6BF3E]/10' },
   { key: 'esperando_anticipo',label: 'Esperando anticipo', color: 'text-[#38B98E] bg-[#38B98E]/10' },
@@ -153,7 +153,7 @@ const ESTADOS: { key: string; label: string; color: string }[] = [
 
 export default function PanelCotizadorPage() {
   return (
-    <Suspense fallback={<div className="h-full min-h-[60vh] bg-[var(--bg-primary)]" />}>
+    <Suspense fallback={<div className="h-full min-h-[60vh] bg-(--bg-primary)" />}>
       <PanelCotizadorContent />
     </Suspense>
   )
@@ -371,9 +371,9 @@ function PanelCotizadorContent() {
     })
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
   const paddingY = densidad === 'compacta' ? 'py-1' : 'py-2.5'
 
   function filasParaExportarSeleccionadas() {
@@ -388,11 +388,11 @@ function PanelCotizadorContent() {
   }
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {esSuperAdmin && (
-          <div className={`rounded-[12px] border p-4 mb-6 flex items-center gap-3 ${cardBg}`}>
-            <Buildings size={18} className="text-[#00827C] flex-shrink-0" />
+          <div className={`rounded-card border p-4 mb-6 flex items-center gap-3 ${cardBg}`}>
+            <Buildings size={18} className="text-[#00827C] shrink-0" />
             <div className="flex-1">
               <p className={`text-xs font-semibold ${ts} mb-1`}>Cotizando para</p>
               <SelectorEmpresa empresas={empresas} value={empresaId ?? ''} onChange={cambiarEmpresa} />
@@ -401,8 +401,8 @@ function PanelCotizadorContent() {
         )}
 
         {esSuperAdmin && !empresaId && !cargandoContexto && (
-          <div className="rounded-[12px] border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 mb-4 flex items-center gap-2.5">
-            <Info size={18} className="text-[#59A6E4] flex-shrink-0" />
+          <div className="rounded-card border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 mb-4 flex items-center gap-2.5">
+            <Info size={18} className="text-[#59A6E4] shrink-0" />
             <p className="text-sm text-[#59A6E4] font-medium">Selecciona una empresa arriba para ver o crear sus cotizaciones.</p>
           </div>
         )}
@@ -430,7 +430,7 @@ function PanelCotizadorContent() {
         )}
 
         {error && (
-          <div className="mb-4 px-4 py-3 rounded-[10px] bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
+          <div className="mb-4 px-4 py-3 rounded-btn bg-[#FF5E4B]/10 border border-[#FF5E4B]/20 text-sm text-[#FF5E4B] flex items-center gap-2">
             <XCircle size={16} />
             {error}
           </div>
@@ -454,8 +454,8 @@ function PanelCotizadorContent() {
 
             {/* Barra de acción masiva — solo aparece con selección activa. */}
             {seleccionadas.size > 0 && (
-              <div className="flex items-center justify-between rounded-[10px] border border-[var(--color-brand)]/20 bg-[var(--color-brand-light)] px-4 py-2.5 mb-3">
-                <span className="text-sm font-semibold text-[var(--color-brand)]">
+              <div className="flex items-center justify-between rounded-btn border  bg-brand-light px-4 py-2.5 mb-3">
+                <span className="text-sm font-semibold text-brand">
                   {seleccionadas.size} cotización{seleccionadas.size === 1 ? '' : 'es'} seleccionada{seleccionadas.size === 1 ? '' : 's'}
                 </span>
                 <div className="flex gap-2">
@@ -469,7 +469,7 @@ function PanelCotizadorContent() {
                   <button
                     type="button"
                     onClick={() => setConfirmandoBorrado(true)}
-                    className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50"
+                    className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
                   >
                     <Trash size={15} sinAnimacion /> Eliminar
                   </button>
@@ -482,7 +482,7 @@ function PanelCotizadorContent() {
             {cargando ? (
               <SkeletonLista filas={3} />
             ) : cotsVista.length === 0 ? (
-              <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
+              <div className={`rounded-card border p-8 text-center ${cardBg}`}>
                 <p className={`text-sm ${ts}`}>No hay cotizaciones que coincidan.</p>
                 <Button onClick={() => router.push(linkConEmpresa('/empresa/cotizador/nueva'))} size="sm" className="mt-3">
                   Crea la primera
@@ -494,15 +494,15 @@ function PanelCotizadorContent() {
               // de cambiar a tarjetas. Sin animaciones (ni hover-pop de
               // íconos, ni transition-colors en filas): solo cambio de fondo
               // instantáneo, directriz explícita del usuario.
-              <div className={`rounded-[12px] border ${cardBg}`}>
+              <div className={`rounded-card border ${cardBg}`}>
                 <div className="overflow-x-auto">
                 <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                    <tr className="bg-(--bg-table-header) text-brand">
                       <th className={`px-1.5 xl:px-4 ${paddingY} w-10`}>
                         <button type="button" onClick={toggleSeleccionarTodas} className="flex">
                           {todasSeleccionadas
-                            ? <SquareCheck size={20} className="text-[var(--color-brand)]" sinAnimacion />
+                            ? <SquareCheck size={20} className="text-brand" sinAnimacion />
                             : <Square size={20} className={ts} sinAnimacion />}
                         </button>
                       </th>
@@ -528,13 +528,13 @@ function PanelCotizadorContent() {
                         // llevan a algún lado (cada una a su propio destino, ver
                         // abajo); el resto de columnas solo resalta, directriz
                         // explícita del usuario.
-                        className={`hover:bg-[var(--bg-table-hover)] ${idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'}`}
+                        className={`hover:bg-(--bg-table-hover) ${idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'}`}
                         style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                       >
                         <td className={`px-1.5 xl:px-4 ${paddingY}`} onClick={e => e.stopPropagation()}>
                           <button type="button" onClick={() => toggleSeleccionada(c.id)} className="flex">
                             {seleccionadas.has(c.id)
-                              ? <SquareCheck size={20} className="text-[var(--color-brand)]" sinAnimacion />
+                              ? <SquareCheck size={20} className="text-brand" sinAnimacion />
                               : <Square size={20} className={ts} sinAnimacion />}
                           </button>
                         </td>
@@ -598,10 +598,10 @@ function PanelCotizadorContent() {
                                       partir a 2 líneas — "block" lo pisaba (ganaba el
                                       cascade) y el texto quedaba en 1 sola línea cortada
                                       en seco sin "...", el bug real reportado. */}
-                                  <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 break-words`}>
+                                  <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                                     {renderCeldaColumna(clave, c)}
                                   </span>
-                                  <CaretRight size={14} className={`${ts} flex-shrink-0`} sinAnimacion />
+                                  <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                                 </span>
                               ) : clave === 'codigo_cotizacion' ? (
                                 // El "abrir" (>) va junto a Cotización también —
@@ -625,10 +625,10 @@ function PanelCotizadorContent() {
                                       partir a 2 líneas — "block" lo pisaba (ganaba el
                                       cascade) y el texto quedaba en 1 sola línea cortada
                                       en seco sin "...", el bug real reportado. */}
-                                  <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 break-words`}>
+                                  <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                                     {renderCeldaColumna(clave, c)}
                                   </span>
-                                  <CaretRight size={14} className={`${ts} flex-shrink-0`} sinAnimacion />
+                                  <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                                 </span>
                               ) : (
                                 <span className={
@@ -641,7 +641,7 @@ function PanelCotizadorContent() {
                                   // "block" nunca junto con "line-clamp-2" — pisa el
                                   // display:-webkit-box que necesita para partir a 2
                                   // líneas (mismo bug ya corregido arriba).
-                                  colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} ${clave === 'total' ? 'whitespace-nowrap' : 'line-clamp-2 break-words'}`
+                                  colIdx === 0 ? `${margen} ${anchoColumna(clave).celda} ${clave === 'total' ? 'whitespace-nowrap' : 'line-clamp-2 wrap-break-word'}`
                                   // Fecha: nunca truncar con "..." — su propio
                                   // FechaColumna ya resuelve el ajuste por
                                   // pantalla (1 línea en móvil/escritorio, 2
@@ -679,7 +679,7 @@ function PanelCotizadorContent() {
                     en este wrapper puntual (no en el componente Pagination
                     en sí, que otras pantallas siguen usando igual) contiene
                     ese desborde aquí mismo, sin comprimir sus botones. */}
-                <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
+                <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-(--border-light)">
                   <span className={`text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 ${ts}`} style={{ flexShrink: 1 }}>
                     {cotsVista.length} cotizaciones · Página {paginaSegura} de {totalPaginas}
                   </span>

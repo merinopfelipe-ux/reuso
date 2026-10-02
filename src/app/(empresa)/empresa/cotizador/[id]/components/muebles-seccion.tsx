@@ -66,13 +66,13 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   if (muebles.length === 0) {
     return (
-      <div className={`rounded-[12px] border p-6 mb-4 text-center ${cardBg}`}>
+      <div className={`rounded-card border p-6 mb-4 text-center ${cardBg}`}>
         <p className={`text-sm mb-3 ${ts}`}>Esta cotización todavía no tiene ítems.</p>
         <Button size="sm" icon={<Plus size={13} strokeWidth={2.5} />} onClick={onAgregarMas}>
           Agregar ítems
@@ -82,7 +82,7 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
   }
 
   return (
-    <div className={`rounded-[12px] border p-4 mb-4 ${cardBg}`}>
+    <div className={`rounded-card border p-4 mb-4 ${cardBg}`}>
       <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
         <p className={`text-xs font-semibold ${ts}`}>
           {muebles.length} {muebles.length === 1 ? 'ítem' : 'ítems'}
@@ -99,10 +99,10 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
               <ImagenAmpliable
                 src={m.imagen_url}
                 alt={m.tipo_mueble || 'Ítem'}
-                wrapperClassName="w-16 h-16 rounded-[8px] flex-shrink-0"
+                wrapperClassName="w-16 h-16 rounded-input shrink-0"
               />
             ) : (
-              <div className="w-16 h-16 rounded-[8px] bg-[var(--bg-input)] flex-shrink-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-input bg-(--bg-input) shrink-0 flex items-center justify-center">
                 <ArrowsCounterClockwise size={18} className="text-[#00827C]/30" />
               </div>
             )}
@@ -115,11 +115,11 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
                 {formatCOP(Number(m.precio_mueble))} · {formatNumero(m.co2_evitado_kg, { unidad: 'kg CO2 eq' })}
               </p>
             </div>
-            <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={() => setEditando(m)}
-                className="hover-pop hover-press p-2 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                className="hover-pop hover-press p-2 rounded-lg text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
                 title="Editar ítem"
               >
                 <PencilSimple size={15} />
@@ -136,7 +136,7 @@ export function MueblesSeccion({ muebles, cotizacionId, conEmpresa, onAgregarMas
               <button
                 type="button"
                 onClick={() => setEliminandoConfirmId(m.id)}
-                className="bg-transparent text-[var(--color-error)] transition-opacity duration-200 hover:opacity-50 p-2 cursor-pointer"
+                className="bg-transparent text-error transition-opacity duration-200 hover:opacity-50 p-2 cursor-pointer"
                 title="Eliminar ítem"
               >
                 <Trash size={15} />

@@ -134,11 +134,11 @@ export default async function DppPage(
           cta={{ label: 'Registra el primer activo', href: '/empresa/dpp/nuevo' }}
         />
       ) : (
-        <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+        <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Código DPP</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Nombre</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
@@ -154,19 +154,19 @@ export default async function DppPage(
                 return (
                   <tr
                     key={a.id}
-                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <Link href={`/empresa/dpp/${a.id}`} className="font-mono text-xs font-semibold text-[var(--color-brand)] no-underline">
+                        <Link href={`/empresa/dpp/${a.id}`} className="font-mono text-xs font-semibold text-brand no-underline">
                           {a.codigo_dpp}
                         </Link>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-[var(--text-primary)]">
+                    <td className="px-4 py-3 font-semibold text-(--text-primary)">
                       <Link href={`/empresa/dpp/${a.id}`} className="text-inherit no-underline">
                         {a.nombre}
                       </Link>
@@ -179,13 +179,13 @@ export default async function DppPage(
                         {est.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-[var(--color-brand)] text-right">
+                    <td className="px-4 py-3 text-brand text-right">
                       {a.n_ciclos ?? 0}
                     </td>
                     <td className="px-4 py-3 text-right" style={{ color: co2 > 0 ? 'var(--color-brand)' : 'var(--text-secondary)', fontWeight: co2 > 0 ? 700 : 400 }}>
                       {co2 > 0 ? formatNumero(co2, { unidad: 'kg' }) : '-'}
                     </td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-center">
+                    <td className="px-4 py-3 text-(--text-secondary) text-center">
                       {formatFecha(a.updated_at ?? a.created_at)}
                     </td>
                   </tr>

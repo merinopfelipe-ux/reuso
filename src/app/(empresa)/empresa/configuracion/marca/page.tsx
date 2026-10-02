@@ -161,17 +161,17 @@ export default function ConfigMarcaPage() {
     }
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
-  const inputCls = `w-full px-3 py-2.5 rounded-[8px] text-sm border border-[var(--border)] outline-none transition-colors
-    bg-[var(--bg-input)] text-[var(--text-primary)] placeholder:text-[var(--text-placeholder)] focus:border-[var(--color-brand)]`
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
+  const inputCls = `w-full px-3 py-2.5 rounded-input text-sm border border-(--border) outline-hidden transition-colors
+    bg-(--bg-input) text-(--text-primary) placeholder:text-(--text-placeholder) focus:border-brand`
 
   const logoMostrado = logoPreview ?? logoUrl
 
   if (cargando) {
     return (
-      <div className="h-full min-h-[60vh] bg-[var(--bg-primary)]">
+      <div className="h-full min-h-[60vh] bg-(--bg-primary)">
         <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <SkeletonLista filas={3} />
         </div>
@@ -180,7 +180,7 @@ export default function ConfigMarcaPage() {
   }
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AdminPageHeader titulo="Personaliza tu marca" showBack />
         <p className={`text-sm mb-6 ${ts}`}>
@@ -191,10 +191,10 @@ export default function ConfigMarcaPage() {
           {/* Columna Izquierda: Formulario */}
           <div className="flex flex-col gap-4">
             {/* Logo */}
-            <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 ${cardBg}`}>
               <p className={`text-sm font-semibold mb-3 ${tp}`}>Logo de tu empresa</p>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-[10px] flex-shrink-0 overflow-hidden border border-[var(--border)] flex items-center justify-center bg-[var(--bg-input)]">
+                <div className="w-16 h-16 rounded-btn shrink-0 overflow-hidden border border-(--border) flex items-center justify-center bg-(--bg-input)">
                   {logoMostrado
                     ? <img src={logoMostrado} alt="Logo" className="w-full h-full object-contain" />  // eslint-disable-line @next/next/no-img-element
                     : <Camera size={22} className={ts} />
@@ -203,7 +203,7 @@ export default function ConfigMarcaPage() {
                 <div className="flex-1">
                   <button
                     onClick={() => logoInputRef.current?.click()}
-                    className={`text-sm font-medium px-3 py-2 rounded-[8px] border transition-colors ${
+                    className={`text-sm font-medium px-3 py-2 rounded-input border transition-colors ${
                       isDark
                         ? 'border-white/15 text-white hover:bg-white/10'
                         : 'border-[#00827C]/20 text-[#00827C] hover:bg-[#00827C]/05'
@@ -225,7 +225,7 @@ export default function ConfigMarcaPage() {
             />
 
             {/* Nombre footer */}
-            <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 ${cardBg}`}>
               <label className={`text-sm font-semibold mb-2 block ${tp}`}>
                 Nombre en el pie de la propuesta
               </label>
@@ -241,7 +241,7 @@ export default function ConfigMarcaPage() {
             </div>
 
             {/* WhatsApp */}
-            <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 ${cardBg}`}>
               <label className={`text-sm font-semibold mb-2 block ${tp}`}>
                 WhatsApp de atención al cliente
               </label>
@@ -269,15 +269,15 @@ export default function ConfigMarcaPage() {
             </div>
 
             {/* Crédito Reúso */}
-            <div className={`rounded-[12px] border p-4 ${cardBg}`}>
+            <div className={`rounded-card border p-4 ${cardBg}`}>
               <p className={`text-sm font-semibold mb-3 ${tp}`}>Crédito de Calculadora de Reúso</p>
               <label
                 className="flex items-center gap-3 cursor-pointer select-none"
                 onClick={() => setMostrarMarca(p => !p)}
               >
                 {mostrarMarca
-                  ? <CheckSquare size={20} className="text-[#00827C] flex-shrink-0" />
-                  : <Square size={20} className={`flex-shrink-0 ${ts}`} />
+                  ? <CheckSquare size={20} className="text-[#00827C] shrink-0" />
+                  : <Square size={20} className={`shrink-0 ${ts}`} />
                 }
                 <div>
                   <span className={`text-sm font-medium ${tp}`}>Mostrar &quot;Hecho con Calculadora de Reúso&quot;</span>
@@ -304,20 +304,20 @@ export default function ConfigMarcaPage() {
 
           {/* Columna Derecha: Vista Previa */}
           <div className="relative">
-            <div className={`rounded-[12px] border overflow-hidden bg-[var(--bg-card)] border-[var(--border)] sticky top-6`}>
-              <div className={`px-4 py-3 border-b flex items-center gap-2 border-[var(--border-light)]`}>
+            <div className={`rounded-card border overflow-hidden bg-(--bg-card) border-(--border) sticky top-6`}>
+              <div className={`px-4 py-3 border-b flex items-center gap-2 border-(--border-light)`}>
                 <Eye size={14} className={ts} />
                 <span className={`text-xs font-medium ${ts}`}>Vista previa de la propuesta</span>
               </div>
               <div className="p-4">
                 <div className="flex items-center gap-3 mb-3">
                   {logoMostrado ? (
-                    <div className="w-10 h-10 rounded-[8px] flex-shrink-0 overflow-hidden border border-[var(--border)] bg-[var(--bg-input)]">
+                    <div className="w-10 h-10 rounded-input shrink-0 overflow-hidden border border-(--border) bg-(--bg-input)">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={logoMostrado} alt="Logo" className="w-full h-full object-contain" />
                     </div>
                   ) : (
-                    <div className="w-10 h-10 rounded-[8px] flex-shrink-0 flex items-center justify-center border border-[var(--border)] bg-[var(--bg-input)]">
+                    <div className="w-10 h-10 rounded-input shrink-0 flex items-center justify-center border border-(--border) bg-(--bg-input)">
                       <Buildings size={18} className={ts} />
                     </div>
                   )}
@@ -326,7 +326,7 @@ export default function ConfigMarcaPage() {
                     <p className={`text-xs ${ts}`}>Hola Cliente, preparamos tu propuesta</p>
                   </div>
                 </div>
-                <div className="rounded-[8px] p-3 bg-[var(--bg-active)]">
+                <div className="rounded-input p-3 bg-(--bg-active)">
                   <p className={`text-xs font-semibold ${tp}`}>¿Tengo dudas?</p>
                   {whatsapp && validarWhatsapp(whatsapp)
                     ? <p className="text-xs mt-0.5 text-[#25D366]">→ WhatsApp {whatsapp}</p>

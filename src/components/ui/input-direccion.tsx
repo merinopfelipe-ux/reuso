@@ -95,7 +95,7 @@ export function InputDireccion({ value, onChange, disabled, paisCodigo }: InputD
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Ej: Calle 10 # 40-50"
-        className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-none focus:border-[var(--color-brand)]"
+        className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand"
         style={{
           background: 'var(--surface, var(--bg-input))',
           borderColor: 'var(--border)',
@@ -105,7 +105,7 @@ export function InputDireccion({ value, onChange, disabled, paisCodigo }: InputD
         }}
       />
       {apiKeyMissing && (
-        <p className="text-[10px] text-[var(--color-error)]">
+        <p className="text-[10px] text-error">
           Falta configurar NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en .env.local para usar el autocompletado de Maps.
         </p>
       )}

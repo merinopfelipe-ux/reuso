@@ -1,6 +1,6 @@
 export default function EmpresaLoading() {
   return (
-    <div className="flex flex-col items-center justify-center bg-[var(--bg-primary)]" style={{ minHeight: '60vh' }}>
+    <div className="flex flex-col items-center justify-center bg-(--bg-primary)" style={{ minHeight: '60vh' }}>
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6 md:gap-8">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
         <div className="skeleton-shimmer w-full sm:max-w-[400px] h-11 md:h-12 rounded-full" />

@@ -104,7 +104,7 @@ export function NegociacionEmpresaClient({ empresaId }: { empresaId: string }) {
   }
 
   return (
-    <div className="rounded-[12px] border border-[var(--border)] p-5 bg-[var(--bg-card)]">
+    <div className="rounded-card border border-(--border) p-5 bg-(--bg-card)">
       <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 20 }}>
         {negociacion
           ? 'Esta empresa tiene una negociación propia. Sus precios y límites quedan fijos y nunca cambian cuando publicas un ajuste al plan global.'

@@ -38,7 +38,7 @@ interface EmpresaAgrupada {
 
 export default function ClientesPage() {
   return (
-    <Suspense fallback={<div className="h-full min-h-[60vh] bg-[var(--bg-primary)]" />}>
+    <Suspense fallback={<div className="h-full min-h-[60vh] bg-(--bg-primary)" />}>
       <ClientesContent />
     </Suspense>
   )
@@ -112,9 +112,9 @@ function ClientesContent() {
     return ruta
   }, [esSuperAdmin, empresaId])
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
-  const cardBg = 'bg-[var(--bg-card)] border-[var(--border)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
+  const cardBg = 'bg-(--bg-card) border-(--border)'
 
   // Agrupación de empresas y personas
   const empresasMap = new Map<string, EmpresaAgrupada>()
@@ -154,13 +154,13 @@ function ClientesContent() {
   const personasTodas = clientes.filter(c => c.tipo === 'persona')
 
   return (
-    <div className="pb-6 bg-[var(--bg-primary)]">
+    <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <AdminPageHeader titulo="Clientes" />
 
         {esSuperAdmin && (
-          <div className="rounded-[12px] border p-4 mb-4 flex items-center gap-3 bg-[var(--bg-card)] border-[var(--border)]">
-            <Buildings size={18} className="text-[#00827C] flex-shrink-0" />
+          <div className="rounded-card border p-4 mb-4 flex items-center gap-3 bg-(--bg-card) border-(--border)">
+            <Buildings size={18} className="text-[#00827C] shrink-0" />
             <div className="flex-1">
               <p className={`text-xs font-semibold ${ts} mb-1`}>Viendo clientes de</p>
               <SelectorEmpresa empresas={empresas} value={empresaId ?? ''} onChange={cambiarEmpresa} />
@@ -169,19 +169,19 @@ function ClientesContent() {
         )}
 
         {esSuperAdmin && !empresaId && !cargandoContexto ? (
-          <div className="rounded-[12px] border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 flex items-center gap-2.5">
-            <Info size={18} className="text-[#59A6E4] flex-shrink-0" />
+          <div className="rounded-card border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 flex items-center gap-2.5">
+            <Info size={18} className="text-[#59A6E4] shrink-0" />
             <p className="text-sm text-[#59A6E4] font-medium">Selecciona una empresa arriba para ver sus clientes.</p>
           </div>
         ) : (
           <>
             {/* Buscador + Filtro tipo */}
             <div className="space-y-3 mb-5">
-              <div className={`rounded-[12px] border p-3 flex items-center gap-2 bg-[var(--bg-card)] border-[var(--border)]`}>
-                <div className="flex items-center gap-2 flex-1 rounded-[8px] border border-[var(--border)] px-3 py-2 bg-[var(--bg-input)]">
+              <div className={`rounded-card border p-3 flex items-center gap-2 bg-(--bg-card) border-(--border)`}>
+                <div className="flex items-center gap-2 flex-1 rounded-input border border-(--border) px-3 py-2 bg-(--bg-input)">
                   <MagnifyingGlass size={16} className={ts} />
                   <input
-                    className={`flex-1 bg-transparent text-sm outline-none ${tp} placeholder:opacity-40`}
+                    className={`flex-1 bg-transparent text-sm outline-hidden ${tp} placeholder:opacity-40`}
                     placeholder="Busca por nombre, celular o NIT"
                     value={busqueda}
                     onChange={e => setBusqueda(e.target.value)}
@@ -194,10 +194,10 @@ function ClientesContent() {
                 <button
                   type="button"
                   onClick={() => setFiltroTipo('todos')}
-                  className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-btn text-xs font-semibold transition-all ${
                     filtroTipo === 'todos'
-                      ? 'bg-[#00827C] text-white shadow-sm'
-                      : 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ? 'bg-[#00827C] text-white shadow-xs'
+                      : 'bg-(--bg-card) border border-(--border) text-(--text-secondary) hover:text-(--text-primary)'
                   }`}
                 >
                   Todos ({clientes.length})
@@ -205,10 +205,10 @@ function ClientesContent() {
                 <button
                   type="button"
                   onClick={() => setFiltroTipo('personas')}
-                  className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-btn text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     filtroTipo === 'personas'
-                      ? 'bg-[#00827C] text-white shadow-sm'
-                      : 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ? 'bg-[#00827C] text-white shadow-xs'
+                      : 'bg-(--bg-card) border border-(--border) text-(--text-secondary) hover:text-(--text-primary)'
                   }`}
                 >
                   <User size={14} />
@@ -217,10 +217,10 @@ function ClientesContent() {
                 <button
                   type="button"
                   onClick={() => setFiltroTipo('empresas')}
-                  className={`px-3.5 py-1.5 rounded-[10px] text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-btn text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     filtroTipo === 'empresas'
-                      ? 'bg-[#00827C] text-white shadow-sm'
-                      : 'bg-[var(--bg-card)] border border-[var(--border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                      ? 'bg-[#00827C] text-white shadow-xs'
+                      : 'bg-(--bg-card) border border-(--border) text-(--text-secondary) hover:text-(--text-primary)'
                   }`}
                 >
                   <Buildings size={14} />
@@ -232,7 +232,7 @@ function ClientesContent() {
             {cargando ? (
               <SkeletonLista filas={3} />
             ) : clientes.length === 0 ? (
-              <div className={`rounded-[12px] border p-8 text-center ${cardBg}`}>
+              <div className={`rounded-card border p-8 text-center ${cardBg}`}>
                 <p className={`text-sm ${ts}`}>Aún no hay clientes registrados. Se crean desde una nueva cotización.</p>
               </div>
             ) : (
@@ -241,7 +241,7 @@ function ClientesContent() {
                 {(filtroTipo === 'personas' || (filtroTipo === 'todos' && personasTodas.length > 0)) && (
                   <div>
                     {filtroTipo === 'todos' && (
-                      <h2 className="text-xs font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
+                      <h2 className="text-xs font-bold text-(--text-secondary) mb-3 flex items-center gap-1.5">
                         <User size={14} className="text-[#00827C]" />
                         Personas ({personasTodas.length})
                       </h2>
@@ -253,10 +253,10 @@ function ClientesContent() {
                           <button
                             key={c.id}
                             onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${c.id}`))}
-                            className={`w-full rounded-[12px] border p-3.5 text-left transition-all flex items-center gap-3 bg-[var(--bg-card)] border-[var(--border)] hover:bg-[var(--bg-hover)]`}
+                            className={`w-full rounded-card border p-3.5 text-left transition-all flex items-center gap-3 bg-(--bg-card) border-(--border) hover:bg-(--bg-hover)`}
                           >
-                            <div className="w-9 h-9 rounded-full bg-[var(--color-brand-light)] flex items-center justify-center flex-shrink-0">
-                              <User size={16} className="text-[var(--color-brand)]" />
+                            <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">
+                              <User size={16} className="text-brand" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className={`text-sm font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
@@ -277,7 +277,7 @@ function ClientesContent() {
                 {(filtroTipo === 'empresas' || (filtroTipo === 'todos' && empresasLista.length > 0)) && (
                   <div>
                     {filtroTipo === 'todos' && (
-                      <h2 className="text-xs font-bold text-[var(--text-secondary)] mb-3 flex items-center gap-1.5">
+                      <h2 className="text-xs font-bold text-(--text-secondary) mb-3 flex items-center gap-1.5">
                         <Buildings size={14} className="text-[#00827C]" />
                         Empresas ({empresasLista.length})
                       </h2>
@@ -286,33 +286,33 @@ function ClientesContent() {
                       {empresasLista.map(emp => (
                         <div
                           key={emp.id}
-                          className="rounded-[12px] border p-4 bg-[var(--bg-card)] border-[var(--border)] space-y-3"
+                          className="rounded-card border p-4 bg-(--bg-card) border-(--border) space-y-3"
                         >
                           {/* Encabezado de la Empresa */}
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center flex-shrink-0">
+                              <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center shrink-0">
                                 <Buildings size={20} className="text-[#00827C]" />
                               </div>
                               <div className="min-w-0">
                                 <h3 className={`text-sm font-bold truncate ${tp}`}>
                                   {emp.razon_social}
-                                  {emp.nombre_comercial && <span className="font-normal text-xs text-[var(--text-secondary)] ml-1.5">({emp.nombre_comercial})</span>}
+                                  {emp.nombre_comercial && <span className="font-normal text-xs text-(--text-secondary) ml-1.5">({emp.nombre_comercial})</span>}
                                 </h3>
                                 <p className={`text-xs ${ts}`}>
                                   NIT {emp.nit} {emp.direccion ? `· ${emp.direccion}` : ''}
                                 </p>
                               </div>
                             </div>
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#00827C]/10 text-[#00827C] flex-shrink-0">
+                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#00827C]/10 text-[#00827C] shrink-0">
                               {emp.contactos.length} {emp.contactos.length === 1 ? 'contacto' : 'contactos'}
                             </span>
                           </div>
 
                           {/* Personas Vinculadas a esta Empresa */}
                           {emp.contactos.length > 0 && (
-                            <div className="pt-2 border-t border-[var(--border)] space-y-1.5">
-                              <p className="text-[10px] font-bold text-[var(--text-secondary)] mb-1">
+                            <div className="pt-2 border-t border-(--border) space-y-1.5">
+                              <p className="text-[10px] font-bold text-(--text-secondary) mb-1">
                                 Personas vinculadas
                               </p>
                               {emp.contactos.map(contacto => (
@@ -320,26 +320,26 @@ function ClientesContent() {
                                   key={contacto.id}
                                   type="button"
                                   onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${contacto.id}`))}
-                                  className="w-full text-left p-2.5 rounded-[8px] bg-[var(--bg-input)] border border-[var(--border)] hover:bg-[var(--bg-hover)] transition-colors flex items-center justify-between gap-2"
+                                  className="w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors flex items-center justify-between gap-2"
                                 >
                                   <div className="flex items-center gap-2.5 min-w-0">
-                                    <div className="w-6 h-6 rounded-full bg-[#00827C]/10 flex items-center justify-center flex-shrink-0">
+                                    <div className="w-6 h-6 rounded-full bg-[#00827C]/10 flex items-center justify-center shrink-0">
                                       <User size={12} className="text-[#00827C]" />
                                     </div>
                                     <div className="flex items-center gap-2 min-w-0">
-                                      <span className="text-xs font-semibold text-[var(--text-primary)] truncate">
+                                      <span className="text-xs font-semibold text-(--text-primary) truncate">
                                         {contacto.nombre} {contacto.apellido ?? ''}
                                       </span>
                                       {/* El teléfono nunca se parte ni se corta con "..." —
                                           directriz explícita, regla general de la plataforma. */}
                                       {contacto.telefono && (
-                                        <span className="text-[11px] text-[var(--text-secondary)] whitespace-nowrap flex-shrink-0">
+                                        <span className="text-[11px] text-(--text-secondary) whitespace-nowrap shrink-0">
                                           {formatTelefonoVista(contacto.telefono, contacto.telefono_indicativo)}
                                         </span>
                                       )}
                                     </div>
                                   </div>
-                                  <CaretRight size={14} className="text-[var(--text-secondary)] flex-shrink-0" />
+                                  <CaretRight size={14} className="text-(--text-secondary) shrink-0" />
                                 </button>
                               ))}
                             </div>

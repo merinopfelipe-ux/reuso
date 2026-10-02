@@ -323,7 +323,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
         className={`group w-full flex items-center justify-between gap-4 text-left p-3.5 sm:p-4 rounded-2xl transition-all duration-300 ${
           open
             ? isDark ? 'bg-white/5 shadow-inner' : 'bg-[#00827C]/5 shadow-inner'
-            : isDark ? 'hover:bg-white/[0.04]' : 'hover:bg-[#00827C]/[0.04]'
+            : isDark ? 'hover:bg-white/4' : 'hover:bg-[#00827C]/4'
         }`}
       >
         <span className={`text-sm sm:text-base font-bold transition-colors duration-200 ${
@@ -333,9 +333,9 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
         }`}>
           {q}
         </span>
-        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 ${
+        <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
           open
-            ? isDark ? 'bg-[#D6F391] text-[#474747] rotate-180 shadow-sm' : 'bg-[#00827C] text-white rotate-180 shadow-sm'
+            ? isDark ? 'bg-[#D6F391] text-[#474747] rotate-180 shadow-xs' : 'bg-[#00827C] text-white rotate-180 shadow-xs'
             : isDark ? 'bg-white/5 text-white/60 group-hover:bg-[#D6F391]/20 group-hover:text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C] group-hover:bg-[#00827C]/15 group-hover:text-[#00827C]'
         }`}>
           <CaretDown size={16} strokeWidth={2.5} />
@@ -350,11 +350,11 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
             transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden px-3 sm:px-4"
           >
-            <p className={`text-sm sm:text-base leading-relaxed py-3 font-medium ${isDark ? 'text-white/75' : 'text-[#474747]/80'}`}>{a}</p>
+            <p className={`text-sm sm:text-base leading-relaxed py-3 font-medium ${isDark ? 'text-white/75' : 'text-[#474747]/80'} sm:leading-[1.5rem]`}>{a}</p>
           </m.div>
         )}
       </AnimatePresence>
-      <div className={`w-full h-px mt-1 bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/10'} to-transparent`} />
+      <div className={`w-full h-px mt-1 bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/10'} to-transparent`} />
     </div>
   )
 }
@@ -397,7 +397,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
   const yActivo = DPP_NODO_Y[activo]
 
   return (
-    <div ref={ref} className="relative w-full aspect-[600/520] select-none" aria-hidden="true" onMouseLeave={() => setPausado(false)}>
+    <div ref={ref} className="relative w-full aspect-600/520 select-none" aria-hidden="true" onMouseLeave={() => setPausado(false)}>
       {/* Brillos de color internos del componente (nunca fondo de página) */}
       <div className="absolute left-[2%] top-[10%] w-[34%] aspect-square rounded-full blur-3xl pointer-events-none" style={{ background: `#F6BF3E${isDark ? '1A' : '2E'}` }} />
       <div className="absolute left-[24%] top-[46%] w-[36%] aspect-square rounded-full blur-3xl pointer-events-none" style={{ background: `#38B98E${isDark ? '1F' : '2E'}` }} />
@@ -438,7 +438,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
 
       {/* Nodo central: el vínculo que une todas las acciones */}
       <div className="absolute aspect-square w-[9.5%] -translate-x-1/2 -translate-y-1/2" style={{ left: '8.67%', top: '50%' }}>
-        <div className="absolute -inset-[20%] rounded-full transition-colors duration-700" style={{ background: `${pasoActivo.color}${isDark ? '33' : '2E'}` }} />
+        <div className="absolute inset-[-20%] rounded-full transition-colors duration-700" style={{ background: `${pasoActivo.color}${isDark ? '33' : '2E'}` }} />
         <m.div
           animate={reducido ? undefined : { scale: [1, 1.06, 1] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
@@ -464,9 +464,9 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
             onMouseEnter={() => enfocar(i)}
           >
             {/* Base opaca: tapa las líneas punteadas para que terminen limpias en el borde del halo */}
-            <div className="absolute -inset-[22%] rounded-full" style={{ background: 'var(--bg-primary)' }} />
+            <div className="absolute inset-[-22%] rounded-full" style={{ background: 'var(--bg-primary)' }} />
             <div
-              className="absolute -inset-[22%] rounded-full transition-colors duration-300"
+              className="absolute inset-[-22%] rounded-full transition-colors duration-300"
               style={{ background: `${paso.color}${esActivo ? '4D' : (isDark ? '1F' : '24')}` }}
             />
             <div
@@ -495,9 +495,9 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
           boxShadow: isDark ? `0 20px 50px rgba(71,71,71,0.55), 0 0 0 1px ${pasoActivo.color}26` : `0 20px 50px ${pasoActivo.color}33, inset 0 1px 0 rgba(255,255,255,0.9)`,
         }}
       >
-        <p className="text-[10px] lg:text-[11px] font-semibold opacity-60 text-[var(--text-primary)]">Pasaporte Digital de Producto</p>
-        <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-[var(--text-primary)] mt-0.5">Activo circular</p>
-        <p className="text-[10px] lg:text-[11px] font-mono opacity-50 text-[var(--text-primary)] mt-0.5">DPP-7F3A-2026</p>
+        <p className="text-[10px] lg:text-[11px] font-semibold opacity-60 text-(--text-primary)">Pasaporte Digital de Producto</p>
+        <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-(--text-primary) mt-0.5 lg:leading-[1.5rem] xl:leading-[1.75rem]">Activo circular</p>
+        <p className="text-[10px] lg:text-[11px] font-mono opacity-50 text-(--text-primary) mt-0.5">DPP-7F3A-2026</p>
         <div className="h-px my-[4%]" style={{ background: 'var(--border)' }} />
 
         <div className="flex-1 flex flex-col justify-between gap-1.5">
@@ -516,7 +516,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
                 }}
               >
                 <div
-                  className="flex-shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center transition-all duration-500"
+                  className="shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center transition-all duration-500"
                   style={{
                     background: hecho ? paso.color : 'transparent',
                     border: hecho ? 'none' : `1.5px dashed ${paso.color}99`,
@@ -526,7 +526,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
                 >
                   {hecho && <Check size={12} strokeWidth={3} sinAnimacion />}
                 </div>
-                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-[var(--text-primary)] transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-45'}`}>
+                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-(--text-primary) transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-45'} lg:leading-[1rem]`}>
                   {paso.label}
                 </span>
               </div>
@@ -536,10 +536,10 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
 
         <div className="mt-[4%] rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 transition-colors duration-500" style={{ background: `${pasoActivo.color}${isDark ? '1F' : '1A'}` }}>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold opacity-60 text-[var(--text-primary)]">Huella SHA-256 encadenada</p>
-            <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-[var(--text-primary)]">{DPP_HASHES[activo]}…</p>
+            <p className="text-[10px] font-semibold opacity-60 text-(--text-primary)">Huella SHA-256 encadenada</p>
+            <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-(--text-primary)">{DPP_HASHES[activo]}…</p>
           </div>
-          <QrCode size={22} strokeWidth={1.8} className="flex-shrink-0 text-[var(--text-primary)] opacity-70" sinAnimacion />
+          <QrCode size={22} strokeWidth={1.8} className="shrink-0 text-(--text-primary) opacity-70" sinAnimacion />
         </div>
       </div>
 
@@ -617,7 +617,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
         isolation: 'isolate',
         WebkitMaskImage: '-webkit-radial-gradient(white, black)',
       }}
-      className={`relative p-4 sm:p-5 md:p-5 lg:p-6 rounded-2xl md:rounded-3xl lg:rounded-[2rem] overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,130,124,0.18)] ${liquidGlass} ${
+      className={`relative p-4 sm:p-5 md:p-5 lg:p-6 rounded-2xl md:rounded-3xl lg:rounded-4xl overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-[0_24px_60px_rgba(0,130,124,0.18)] ${liquidGlass} ${
         isHovered ? (isDark ? 'border-[#D6F391]/40' : 'border-[#00827C]/30 scale-[1.015]') : ''
       }`}
     >
@@ -648,7 +648,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
             Cálculo registrado · Pasaporte DPP activo.
           </p>
         </div>
-        <div className={`w-7 h-7 md:w-7 md:h-7 lg:w-8 lg:h-8 rounded-full bg-[#D6F391] flex items-center justify-center flex-shrink-0 transition-all duration-500 cursor-pointer ${
+        <div className={`w-7 h-7 md:w-7 md:h-7 lg:w-8 lg:h-8 rounded-full bg-[#D6F391] flex items-center justify-center shrink-0 transition-all duration-500 cursor-pointer ${
           isHovered ? 'rotate-45 scale-110 shadow-[0_0_20px_rgba(214,243,145,0.8)]' : ''
         }`}>
           <Leaf size={14} className="text-[#474747]" />
@@ -671,8 +671,8 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
                   ? 'bg-white/15 border-[#D6F391]/40 scale-105 shadow-lg'
                   : 'bg-white/70 border-[#00827C]/30 scale-105 shadow-lg'
                 : isDark
-                ? 'bg-white/5 border-white/8 hover:bg-white/10'
-                : 'bg-white/30 border-[#00827C]/8 hover:bg-white/50'
+                ? 'bg-white/5  hover:bg-white/10'
+                : 'bg-white/30  hover:bg-white/50'
             }`}
           >
             <span className={`text-[8px] sm:text-[9px] md:text-[8px] lg:text-[10px] font-bold leading-tight transition-colors duration-200 ${
@@ -682,7 +682,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
             </span>
             <span className={`glass-number text-xl sm:text-2xl md:text-xl lg:text-3xl font-black leading-none transition-transform duration-200 ${
               hoveredIndex === i ? 'scale-105' : ''
-            } ${tp}`}>
+            } ${tp} sm:leading-[2rem] md:leading-[1.75rem] lg:leading-[2.25rem]`}>
               {stat.value}
             </span>
             <span className={`text-[8px] sm:text-[9px] md:text-[8px] lg:text-[10px] font-medium leading-tight ${ts}`}>
@@ -695,7 +695,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
       <div className={`relative z-10 mt-4 sm:mt-5 md:mt-4 lg:mt-6 p-3 sm:p-3.5 md:p-3 lg:p-4 rounded-xl md:rounded-2xl border transition-all duration-300 ${
         isHovered
           ? isDark ? 'bg-white/10 border-white/15' : 'bg-white/40 border-[#00827C]/15'
-          : isDark ? 'bg-white/5 border-white/8' : 'bg-white/20 border-[#00827C]/8'
+          : isDark ? 'bg-white/5 ' : 'bg-white/20 '
       }`}>
         <div className="flex justify-between items-center mb-1.5 md:mb-2">
           <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${ts}`}>
@@ -709,7 +709,7 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
         </div>
         <div className={`relative h-1.5 md:h-2 rounded-full overflow-hidden ${isDark ? 'bg-[#D6F391]/10' : 'bg-[#00827C]/10'}`}>
           <div
-            className={`h-full bg-gradient-to-r rounded-full transition-all duration-500 ${
+            className={`h-full bg-linear-to-r/srgb rounded-full transition-all duration-500 ${
               isDark ? 'from-[#D6F391] to-[#8AD0B2]' : 'from-[#00827C] to-[#D6F391]'
             }`}
             style={{ width: `${circRate}%` }}
@@ -1197,8 +1197,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
   ]
 
   const liquidGlass = isDark
-    ? 'bg-[#474747]/35 backdrop-blur-[60px] backdrop-saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+    ? 'bg-[#474747]/35 backdrop-blur-[60px] backdrop-saturate-200 border border-white/10 shadow-2xl'
+    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-180 border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   // Busca el precio real publicado (config_planes) para este plan y moneda.
   // Si no llegó ningún dato del servidor, o falta ese plan puntual, cae de
@@ -1495,13 +1495,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               Software de sostenibilidad para tu empresa.
             </p>
             
-            <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp}`}>
+            <h1 className={`text-3xl sm:text-4xl md:text-[2.2rem] lg:text-[2.4rem] xl:text-[2.8rem] font-black tracking-tight leading-[1.14] mb-4 md:mb-5 ${tp} sm:leading-[2.5rem]`}>
               <span className="block">Mide, gestiona y comparte</span>
               <span className="block whitespace-normal sm:whitespace-nowrap">tu impacto social y ambiental</span>
               <span className="block">con trazabilidad en cada acción</span>
             </h1>
 
-            <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-sm lg:text-base font-medium leading-relaxed mb-6 md:mb-8 max-w-xl ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.5rem]`}>
               Emite Pasaportes Digitales (DPP) con QR y genera informes de datos para tus reportes de RSE y ESG que respaldan tus compromisos ante clientes y aliados.
             </p>
             
@@ -1518,10 +1518,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </a>
               <a 
                 href="#calculos" 
-                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-bold text-sm sm:text-base backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
+                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-bold text-sm sm:text-base backdrop-blur-xs transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'border-[#D6F391]/25 text-[#D6F391] hover:bg-[#D6F391]/10' 
-                    : 'border-[#00827C]/25 text-[#00827C] hover:bg-[#00827C]/8'
+                    : 'border-[#00827C]/25 text-[#00827C] '
                 }`}
               >
                 Explora los cálculos
@@ -1537,11 +1537,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 2 - COMPARATIVA ───────────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section id="comparativa" className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               El valor de medir tu sostenibilidad: <br className="hidden sm:block" />
               de buenas intenciones a resultados
             </h2>
@@ -1552,7 +1552,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
             {/* Lineal */}
-            <div className={`group p-5 sm:p-6 md:p-6 lg:p-8 rounded-2xl md:rounded-3xl lg:rounded-[2rem] border reveal-card hover-card-interactive ${isDark ? 'border-white/10 bg-[#525252]/30 hover:border-white/20' : 'border-[#474747]/10 bg-[#474747]/[0.03] hover:border-[#474747]/20'}`}>
+            <div className={`group p-5 sm:p-6 md:p-6 lg:p-8 rounded-2xl md:rounded-3xl lg:rounded-4xl border reveal-card hover-card-interactive ${isDark ? 'border-white/10 bg-[#525252]/30 hover:border-white/20' : 'border-[#474747]/10 bg-[#474747]/3 hover:border-[#474747]/20'}`}>
               <div className="flex items-center gap-3 mb-4 md:mb-6">
                 <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-xl bg-[#FF5E4B]/10 flex items-center justify-center hover-icon-interactive">
                   <X size={18} strokeWidth={2.5} className="text-[#FF5E4B]" />
@@ -1570,14 +1570,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   'Amortizar inventario a pérdida por falta de trazabilidad en el ciclo de vida del producto.',
                 ].map((item, i) => (
                   <li key={i} className="group/item flex gap-2.5 md:gap-3 items-start transition-all duration-200 hover:translate-x-1">
-                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
+                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                       isDark
                         ? 'bg-[#FF5E4B]/20 text-[#FF5E4B] group-hover/item:bg-[#FF5E4B] group-hover/item:text-white'
                         : 'bg-[#FF5E4B]/15 text-[#FF5E4B] group-hover/item:bg-[#FF5E4B] group-hover/item:text-white'
                     }`}>
                       <X size={10} strokeWidth={3} className="transition-transform duration-300" />
                     </div>
-                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts}`}>{item}</span>
+                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.25rem]`}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -1590,7 +1590,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 WebkitMaskImage: '-webkit-radial-gradient(white, black)',
                 animationDelay: '0.15s',
               }}
-              className={`relative group p-5 sm:p-6 md:p-6 lg:p-8 rounded-2xl md:rounded-3xl lg:rounded-[2rem] overflow-hidden reveal-card hover-card-interactive ${liquidGlass}`}
+              className={`relative group p-5 sm:p-6 md:p-6 lg:p-8 rounded-2xl md:rounded-3xl lg:rounded-4xl overflow-hidden reveal-card hover-card-interactive ${liquidGlass}`}
             >
               <div data-blob data-mx="0.04" data-my="0.04" data-ms="0"
                 className="absolute -top-6 -right-6 w-32 h-32 bg-[#8AD0B2]/35 blur-[35px] rounded-full pointer-events-none"
@@ -1615,14 +1615,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   'Informes de sostenibilidad y responsabilidad social listos para descargar en PDF y presentar ante clientes, juntas y auditorías.',
                 ].map((item, i) => (
                   <li key={i} className="group/item flex gap-2.5 md:gap-3 items-start transition-all duration-200 hover:translate-x-1">
-                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
+                    <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                       isDark
                         ? 'bg-[#D6F391]/20 text-[#D6F391] group-hover/item:bg-[#D6F391] group-hover/item:text-[#474747]'
                         : 'bg-[#00827C]/15 text-[#00827C] group-hover/item:bg-[#00827C] group-hover/item:text-white'
                     }`}>
                       <Check size={10} strokeWidth={3} className="transition-transform duration-300" />
                     </div>
-                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold leading-relaxed ${ts}`}>{item}</span>
+                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.25rem]`}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -1632,7 +1632,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section id="dpp" className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           {/* Diagrama animado: solo tablet y escritorio */}
@@ -1644,17 +1644,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
               Pasaporte Digital de Producto (DPP)
             </p>
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem]`}>
               Une cada punto,{' '}
               <span className="bg-clip-text text-transparent" style={{ backgroundImage: isDark ? 'linear-gradient(90deg, #F6BF3E, #D6F391 30%, #8AD0B2 65%, #59A6E4)' : 'linear-gradient(90deg, #38B98E, #00827C 55%, #59A6E4)' }}>
                 desde el residuo hasta su nuevo uso
               </span>
             </h2>
 
-            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-3 ${ts}`}>
+            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-3 ${ts} sm:leading-[1.5rem]`}>
               Tu trazabilidad empieza donde otras terminan. Los pasaportes tradicionales nacen en la fábrica, con el producto nuevo. El tuyo nace cuando alguien quiso desecharlo. Registras de dónde tomaste el residuo, en qué lo transformaste y a dónde llegó, y demuestras con datos que tu operación es sostenible.
             </p>
-            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-7 ${ts}`}>
+            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-7 ${ts} sm:leading-[1.5rem]`}>
               Llega antes que la norma. Europa ya lo incorpora. En LATAM todavía es opcional, y quien registra hoy llega listo cuando sus clientes lo pidan.
             </p>
 
@@ -1669,9 +1669,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div
                   key={texto}
                   style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
-                  className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
+                  className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-(--c) hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
                 >
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-[var(--ic)] group-hover:bg-[var(--c)] group-hover:text-[var(--sobre)]">
+                  <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-(--ic) group-hover:bg-(--c) group-hover:text-(--sobre)">
                     <Icono size={16} strokeWidth={2} sinAnimacion />
                   </div>
                   <span className={`text-xs sm:text-[13px] font-semibold leading-snug ${ts}`}>{texto}</span>
@@ -1684,11 +1684,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 3 - CATÁLOGO DE CÁLCULOS ───────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
-      <section id="calculos" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/[0.02]'}`}>
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <section id="calculos" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               Descubre los 9 cálculos de sostenibilidad: <br className="hidden sm:block" />
               ambientales, económicos y sociales
             </h2>
@@ -1710,7 +1710,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   whileHover={{ y: -6, scale: 1.015 }}
                   className={`group relative p-4 sm:p-5 md:p-5 lg:p-6 rounded-2xl md:rounded-3xl border transition-all duration-300 backdrop-blur-xl ${
                     isDark
-                      ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)]'
+                      ? 'bg-white/4 border-white/10 hover:bg-white/[0.07] hover:border-transparent hover:shadow-[0_20px_45px_-10px_rgba(0,0,0,0.85),inset_0_1px_1px_rgba(255,255,255,0.2)]'
                       : 'bg-primary border-[#00827C]/10 hover:border-transparent shadow-[0_4px_20px_rgba(0,130,124,0.04)] hover:shadow-[0_20px_40px_-10px_rgba(0,130,124,0.12),inset_0_1px_2px_rgba(255,255,255,0.9)]'
                   }`}
                 >
@@ -1772,7 +1772,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
               <span>Ver detalle</span>
-              <Plus size={16} strokeWidth={2.5} className="flex-shrink-0" />
+              <Plus size={16} strokeWidth={2.5} className="shrink-0" />
             </button>
           </div>
         </div>
@@ -1806,7 +1806,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           key={idx}
                           className={`group/item relative p-3.5 sm:p-4 rounded-2xl border transition-all duration-300 active:scale-[0.98] ${
                             isDark
-                              ? 'bg-white/[0.04] border-white/10 hover:bg-white/[0.07] hover:border-transparent'
+                              ? 'bg-white/4 border-white/10 hover:bg-white/[0.07] hover:border-transparent'
                               : 'bg-primary border-[#00827C]/10 hover:border-transparent shadow-[0_2px_10px_rgba(0,130,124,0.04)]'
                           }`}
                           onMouseEnter={e => {
@@ -1863,8 +1863,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             {/* Aviso legal de carácter estimativo */}
             <div className={`mt-2 p-3.5 sm:p-4 rounded-xl border text-[11px] sm:text-xs leading-relaxed ${
-              isDark ? 'bg-white/[0.03] border-white/10 text-white/70' : 'bg-[#00827C]/[0.03] border-[#00827C]/15 text-[#474747]/80'
-            }`}>
+              isDark ? 'bg-white/3 border-white/10 text-white/70' : 'bg-[#00827C]/3 border-[#00827C]/15 text-[#474747]/80'
+            } sm:leading-[1rem]`}>
               <p className="m-0">
                 Presentamos todos los cálculos como una <strong>estimación</strong> técnica orientativa del impacto positivo del reúso. Entregamos estas métricas con carácter <strong>estimativo</strong> referencial para respaldar la toma de decisiones sostenibles sin reemplazar auditorías ambientales obligatorias.
               </p>
@@ -1875,7 +1875,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
 
       {/* ── SECCIÓN 4 - CATEGORÍAS / INDUSTRIAS (SIN STICKY SCROLL) ─── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section
         id="categorias"
         ref={sectionCategoriasRef}
@@ -1883,7 +1883,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       >
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
           <div className="mb-4 sm:mb-6 md:mb-8">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 sm:mb-2.5 md:mb-3 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 sm:mb-2.5 md:mb-3 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               ¿Cuánto valor recupera tu empresa con economía circular?
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl ${ts}`}>
@@ -1895,13 +1895,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="relative md:hidden mb-4 sm:mb-5">
             {/* Máscara izquierda de difuminado */}
             <div 
-              className={`pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-r ${
+              className={`pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10 bg-linear-to-r/srgb ${
                 isDark ? 'from-[#474747] via-[#474747]/80 to-transparent' : 'from-white via-white/80 to-transparent'
               }`} 
             />
             {/* Máscara derecha de difuminado */}
             <div 
-              className={`pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-gradient-to-l ${
+              className={`pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10 bg-linear-to-l/srgb ${
                 isDark ? 'from-[#474747] via-[#474747]/80 to-transparent' : 'from-white via-white/80 to-transparent'
               }`} 
             />
@@ -1916,12 +1916,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     key={c.id}
                     id={`mobile-tab-${c.id}`}
                     onClick={() => scrollToCategory(c.id as CatKey)}
-                    className={`relative flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 active:scale-95 select-none ${
+                    className={`relative shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 active:scale-95 select-none ${
                       isSelected 
                         ? (isDark ? 'text-[#474747]' : 'text-white')
                         : isDark
-                          ? 'bg-white/[0.04] border border-white/10 text-white/70 active:bg-white/10'
-                          : 'bg-[#00827C]/[0.04] border border-[#00827C]/12 text-[#474747]/80 active:bg-[#00827C]/10'
+                          ? 'bg-white/4 border border-white/10 text-white/70 active:bg-white/10'
+                          : 'bg-[#00827C]/4 border  text-[#474747]/80 active:bg-[#00827C]/10'
                     }`}
                   >
                     {isSelected && (
@@ -1955,7 +1955,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-sm md:text-sm lg:text-sm transition-colors duration-200 active:scale-95 ${
                       isSelected
                         ? (isDark ? 'text-[#474747]' : 'text-white')
-                        : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20 hover:text-white' : 'border-[#00827C]/12 hover:border-[#00827C]/20 hover:text-[#00827C]'}`
+                        : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20 hover:text-white' : ' hover:border-[#00827C]/20 hover:text-[#00827C]'}`
                     }`}
                   >
                     {isSelected && (
@@ -1970,7 +1970,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       />
                     )}
                     <span className="relative z-10 flex items-center gap-2.5 lg:gap-3">
-                      <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className="transition-transform duration-200 group-hover:rotate-6 flex-shrink-0" />
+                      <Icon size={16} strokeWidth={isSelected ? 2.5 : 2} className="transition-transform duration-200 group-hover:rotate-6 shrink-0" />
                       <span>{c.id === 'mobiliario' ? <>Mobiliario <br />y diseño interior</> : c.label}</span>
                     </span>
                   </button>
@@ -1990,7 +1990,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 className="absolute -top-8 -right-8 w-44 h-44 bg-[#59A6E4]/25 blur-[45px] rounded-full pointer-events-none transition-transform duration-700"
                 style={{ willChange: 'transform' }} />
               <div data-blob data-mx="-0.04" data-my="-0.04" data-ms="0"
-                className="absolute -bottom-8 -left-8 w-40 h-40 bg-[#D6F391]/25 blur-[40px] rounded-full pointer-events-none transition-transform duration-700"
+                className="absolute -bottom-8 -left-8 w-40 h-40 bg-[#D6F391]/25 blur-2xl rounded-full pointer-events-none transition-transform duration-700"
                 style={{ willChange: 'transform' }} />
 
               <div className="relative z-10 min-h-[290px]">
@@ -2013,7 +2013,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       {/* Métricas con animación Count-up dinámica */}
                       <CategoryMetricsDisplay cat={cat} isDark={isDark} tp={tp} ts={ts} />
 
-                      <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts}`}>
+                      <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-medium leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.25rem]`}>
                         {cat.desc}
                       </p>
                     </m.div>
@@ -2025,11 +2025,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 5 - PROCESO ───────────────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section id="proceso" className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               Soluciones para medir, gestionar
               <br />
               y respaldar tu impacto ambiental
@@ -2070,7 +2070,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 viewport={{ once: true, margin: '100px' }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: -5, scale: 1.015 }}
-                className={`group flex flex-col rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${isDark ? 'bg-white/5 border border-white/10' : 'bg-primary border border-[#00827C]/10'}`}
+                className={`group flex flex-col rounded-4xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 ${isDark ? 'bg-white/5 border border-white/10' : 'bg-primary border border-[#00827C]/10'}`}
               >
                 {/* Mitad superior: Imagen fotográfica nativa sin velo verde */}
                 <div className="relative w-full h-40 sm:h-48 md:h-44 lg:h-52 overflow-hidden bg-hover dark:bg-gray-800">
@@ -2092,7 +2092,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <h3 className={`text-sm sm:text-base md:text-base lg:text-lg font-bold mb-3 ${tp}`}>
                     {paso.titulo}
                   </h3>
-                  <p className={`text-sm sm:text-base font-medium leading-relaxed flex-1 ${ts}`}>
+                  <p className={`text-sm sm:text-base font-medium leading-relaxed flex-1 ${ts} sm:leading-[1.5rem]`}>
                     {paso.desc}
                   </p>
                 </div>
@@ -2103,11 +2103,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 6 - PLANES ────────────────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
-      <section id="planes" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/[0.02]'}`}>
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <section id="planes" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <div className="mb-6 sm:mb-8 md:mb-10 text-center">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               Planes de sostenibilidad a tu ritmo
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
@@ -2116,18 +2116,18 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8 lg:mb-10">
-            <div className={`flex rounded-full p-1 border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.1)]' : 'bg-white/50 backdrop-blur-[40px] border-[#00827C]/10 shadow-[0_4px_20px_rgba(0,130,124,0.06)]'}`}>
+            <div className={`flex rounded-full p-1 border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.1)]' : 'bg-white/50 backdrop-blur-2xl border-[#00827C]/10 shadow-[0_4px_20px_rgba(0,130,124,0.06)]'}`}>
               {(['COP', 'USD', 'EUR'] as const).map(cur => (
                 <button key={cur} onClick={() => setCurrency(cur)} className={`px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2 rounded-full text-xs sm:text-sm md:text-xs font-bold transition-all duration-300 hover:scale-105 active:scale-95 ${currency === cur ? (isDark ? 'bg-[#D6F391] text-[#474747] shadow-lg' : 'bg-[#00827C] text-white shadow-lg') : `hover:bg-[#00827C]/5 ${ts}`}`}>{cur}</button>
               ))}
             </div>
-            <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-[40px] border-[#00827C]/10'}`}>
+            <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-2xl border-[#00827C]/10'}`}>
               <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts}`}`}>Mensual</span>
               <button aria-label="Cambiar entre cobro mensual y anual" onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${billing === 'annual' ? 'translate-x-4 lg:translate-x-5' : 'translate-x-0.5'}`} />
               </button>
               <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts}`}`}>Anual</span>
-              {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] bg-[#00827C]/8'}`}>2 meses gratis.</span>}
+              {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] '}`}>2 meses gratis.</span>}
             </div>
           </div>
 
@@ -2135,7 +2135,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             {PLANS.map((plan, i) => (
               <div
                 key={plan.id}
-                className={`group relative p-5 sm:p-6 md:p-5 lg:p-7 rounded-2xl md:rounded-3xl lg:rounded-[2rem] border flex flex-col hover-card-interactive reveal-card transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 ${
+                className={`group relative p-5 sm:p-6 md:p-5 lg:p-7 rounded-2xl md:rounded-3xl lg:rounded-4xl border flex flex-col hover-card-interactive reveal-card transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 ${
                   plan.popular
                     ? isDark ? 'border-white/20 bg-white/10 shadow-[0_20px_50px_rgba(255,255,255,0.08)] hover:border-[#D6F391]/40 hover:bg-white/10' : 'border-[#00827C]/30 bg-primary shadow-[0_20px_50px_rgba(0,130,124,0.10)] hover:border-[#00827C]/50 hover:bg-primary'
                     : isDark ? 'border-white/10 bg-[#525252]/50 backdrop-blur-md hover:border-white/20 hover:bg-white/10' : 'border-[#00827C]/10 bg-white/80 backdrop-blur-md hover:border-[#00827C]/25 hover:bg-primary'
@@ -2148,17 +2148,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div className="mb-4 md:mb-5 lg:mb-6">
                   <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 ${ts}`}>{plan.tagline}</p>
                   <h3 className={`text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 group-hover:${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} ${tp}`}>{plan.name}</h3>
-                  <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 group-hover:text-[var(--color-brand)] ${tp}`}>{formatPrice(plan)}</div>
+                  <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 group-hover:text-brand ${tp}`}>{formatPrice(plan)}</div>
                   {plan.priceMonthlyCOP > 0 && (
                     <div className="flex flex-col gap-0.5">
                       <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
                       {billing === 'annual' && (
-                        <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 group-hover:text-[var(--color-brand)]`}>{getAnnualTotal(plan)}</span></p>
+                        <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 group-hover:text-brand`}>{getAnnualTotal(plan)}</span></p>
                       )}
                     </div>
                   )}
                 </div>
-                <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/12'}`}>
+                <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : ''}`}>
                   {cuotasPlan(plan).map((c, k) => (
                     <div key={k}>
                       <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
@@ -2166,10 +2166,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     </div>
                   ))}
                 </dl>
-                <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
+                <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 grow">
                   {bulletsPlan(plan).map((f, j) => (
                     <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-sm md:text-sm lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
-                      <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
+                      <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
                         isDark
                           ? 'bg-[#D6F391]/15 text-[#D6F391] group-hover/item:bg-[#D6F391] group-hover/item:text-[#474747] group-hover/item:shadow-[0_0_12px_rgba(214,243,145,0.4)]'
                           : 'bg-[#00827C]/10 text-[#00827C] group-hover/item:bg-[#00827C] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(0,130,124,0.3)]'
@@ -2210,7 +2210,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
               <span>Comparar todos los planes y cálculos</span>
-              <Plus size={16} strokeWidth={2.5} className="flex-shrink-0" />
+              <Plus size={16} strokeWidth={2.5} className="shrink-0" />
             </button>
           </div>
         </div>
@@ -2266,8 +2266,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {categoria.nombre && (
                       <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
                     )}
-                    <div className="rounded-[12px] border-2 overflow-hidden" style={{ borderColor: `${colorCategoria}40`, isolation: 'isolate' }}>
-                      <div className="overflow-x-auto rounded-[10px]">
+                    <div className="rounded-card border-2 overflow-hidden" style={{ borderColor: `${colorCategoria}40`, isolation: 'isolate' }}>
+                      <div className="overflow-x-auto rounded-btn">
                         <table className="w-full text-sm" style={{ borderCollapse: 'separate', borderSpacing: 0, tableLayout: 'fixed', minWidth: 150 + PLANS.length * 108 }}>
                           <colgroup>
                             <col style={{ width: 150 }} />
@@ -2276,7 +2276,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           <thead>
                             <tr style={{ background: `${colorCategoria}14` }}>
                               <th
-                                className={`text-left px-3 py-2.5 text-xs font-bold rounded-tl-[10px] ${ts}`}
+                                className={`text-left px-3 py-2.5 text-xs font-bold rounded-tl-btn ${ts}`}
                                 style={{ position: 'sticky', left: 0, zIndex: 2, background: isDark ? '#525252' : '#FFFFFF' }}
                               >
                                 &nbsp;
@@ -2284,7 +2284,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                               {PLANS.map((plan, planIdx) => (
                                 <th
                                   key={plan.id}
-                                  className={`text-center px-2 py-2 ${planIdx === PLANS.length - 1 ? 'rounded-tr-[10px]' : ''}`}
+                                  className={`text-center px-2 py-2 ${planIdx === PLANS.length - 1 ? 'rounded-tr-btn' : ''}`}
                                 >
                                   <button
                                     type="button"
@@ -2292,10 +2292,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                     className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
                                     style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
                                   >
-                                    <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-[var(--color-categoria)] ${tp}`}>
+                                    <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-(--color-categoria) ${tp}`}>
                                       {plan.name}
                                     </span>
-                                    <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-[var(--color-categoria)] ${ts}`}>
+                                    <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-(--color-categoria) ${ts}`}>
                                       Elegir →
                                     </span>
                                   </button>
@@ -2307,13 +2307,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                             {categoria.filas.map((fila, fi) => {
                               const isUltimaFila = fi === categoria.filas.length - 1
                               return (
-                                <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/[0.02]' : 'bg-[#00827C]/[0.015]') : ''}>
+                                <tr key={fi} className={fi % 2 === 1 ? (isDark ? 'bg-white/2' : 'bg-[#00827C]/1.5') : ''}>
                                   <td
-                                    className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${isUltimaFila ? 'rounded-bl-[10px]' : ''} ${tp}`}
+                                    className={`text-left px-3 py-2.5 text-xs sm:text-sm leading-snug ${isUltimaFila ? 'rounded-bl-btn' : ''} ${tp} sm:leading-[1.25rem]`}
                                     style={{ position: 'sticky', left: 0, zIndex: 1, background: fi % 2 === 1 ? (isDark ? '#5A5A5A' : '#FCFCFC') : (isDark ? '#525252' : '#FFFFFF') }}
                                   >
                                     <span className="inline-flex items-center gap-1.5 min-w-0">
-                                      <span className="break-words min-w-0">{fila.label}</span>
+                                      <span className="wrap-break-word min-w-0">{fila.label}</span>
                                       {fila.descripcion && <TooltipInfo texto={fila.descripcion} posicion={fi === 0 ? 'abajo' : 'arriba'} centrado />}
                                     </span>
                                   </td>
@@ -2321,7 +2321,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                     const val = fila.valores[plan.id]
                                     const isUltimaCelda = isUltimaFila && planIdx === PLANS.length - 1
                                     return (
-                                      <td key={plan.id} className={`text-center px-2 py-2.5 ${isUltimaCelda ? 'rounded-br-[10px]' : ''}`}>
+                                      <td key={plan.id} className={`text-center px-2 py-2.5 ${isUltimaCelda ? 'rounded-br-btn' : ''}`}>
                                         {fila.tipo === 'check' ? (
                                           val ? (
                                             <span className="inline-flex items-center justify-center w-6 h-6 rounded-full" style={{ background: `${colorCategoria}22` }}>
@@ -2331,7 +2331,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                             <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
                                           )
                                         ) : val ? (
-                                          <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{val as string}</span>
+                                          <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp} sm:leading-[1.25rem]`}>{val as string}</span>
                                         ) : (
                                           <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
                                         )}
@@ -2354,8 +2354,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       })()}
 
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
-      <section id="ia" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/[0.02]'}`}>
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <section id="ia" className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -2382,17 +2382,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <p className={`text-sm sm:text-base font-bold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
                   Inteligencia artificial amigable y responsable.
                 </p>
-                <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2.5 leading-snug ${tp}`}>
+                <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2.5 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
                   Diagnóstico visual con IA, <br className="hidden sm:block" />
                   con ciencia detrás de cada cálculo
                 </h2>
-                <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium leading-relaxed mb-5 ${ts}`}>
+                <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium leading-relaxed mb-5 ${ts} sm:leading-[1.5rem] md:leading-[1.5rem] lg:leading-[1.5rem]`}>
                   Usamos visión por computadora para reconocer materiales con solo una foto, combinándolo con bases de datos estandarizadas globalmente. La IA te da una mano extra para que todo quede ordenado, claro y fácil de demostrar, estimando tu impacto de forma rigurosa.
                 </p>
 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-start gap-3">
-                    <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#00827C]'}`}>
+                    <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-[#38B98E]/20 text-[#38B98E]' : 'bg-[#38B98E]/15 text-[#00827C]'}`}>
                       <IaIcon size={14} />
                     </div>
                     <div>
@@ -2402,7 +2402,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-[#59A6E4]/20 text-[#59A6E4]' : 'bg-[#59A6E4]/15 text-[#59A6E4]'}`}>
+                    <div className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${isDark ? 'bg-[#59A6E4]/20 text-[#59A6E4]' : 'bg-[#59A6E4]/15 text-[#59A6E4]'}`}>
                       <ShieldCheck size={14} strokeWidth={2.5} />
                     </div>
                     <div>
@@ -2419,7 +2419,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   className={`group inline-flex items-center gap-2 text-sm sm:text-base font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#005B56]'}`}
                 >
                   <span className="group-hover:underline">Conoce nuestro marco ético y gobernanza en la Política de IA</span>
-                  <ArrowRight size={14} strokeWidth={2.5} className="flex-shrink-0" />
+                  <ArrowRight size={14} strokeWidth={2.5} className="shrink-0" />
                 </Link>
               </div>
 
@@ -2428,14 +2428,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div className={`p-4 sm:p-5 rounded-xl md:rounded-2xl border transition-all ${
                   isDark 
                     ? 'bg-[#474747]/25 border-white/10 shadow-inner'
-                    : 'bg-white/70 border-[#00827C]/15 shadow-sm'
+                    : 'bg-white/70 border-[#00827C]/15 shadow-xs'
                 }`}>
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-inherit">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span className={`text-xs sm:text-sm font-bold ${tp}`}>Muestra de diagnóstico.</span>
                     </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>
                       Diagnóstico circular y ambiental.
                     </span>
                   </div>
@@ -2457,7 +2457,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       </div>
                     </div>
 
-                    <div className={`p-2 rounded-lg flex items-center justify-between text-[11px] ${isDark ? 'bg-white/[0.03] text-white/70' : 'bg-[#00827C]/[0.03] text-[#00827C]'}`}>
+                    <div className={`p-2 rounded-lg flex items-center justify-between text-[11px] ${isDark ? 'bg-white/3 text-white/70' : 'bg-[#00827C]/3 text-[#00827C]'}`}>
                       <span>Pasaporte digital con QR verificable.</span>
                       <span className="font-bold text-emerald-500 flex items-center gap-1">
                         <Check size={12} strokeWidth={3} /> Listo para compartir.
@@ -2472,7 +2472,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 8 - OBJETIVO 12 (ODS 12) ─────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section id="ods-12" className="scroll-mt-28 relative pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="mb-8 md:mb-12 text-center max-w-3xl mx-auto">
@@ -2484,13 +2484,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <div className={`hidden md:block w-12 h-px ${isDark ? 'bg-white/20' : 'bg-[#474747]/20'}`} />
             </div>
 
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 md:mb-6 leading-snug ${tp}`}>
-              Impactamos el <span className={`text-transparent bg-clip-text bg-gradient-to-r ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>Objetivo 12:</span> <br className="hidden md:block" />
-              <span className={`text-transparent bg-clip-text bg-gradient-to-r ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 md:mb-6 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+              Impactamos el <span className={`text-transparent bg-clip-text bg-linear-to-r/srgb ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>Objetivo 12:</span> <br className="hidden md:block" />
+              <span className={`text-transparent bg-clip-text bg-linear-to-r/srgb ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>
                 Producción y consumo responsables
               </span>
             </h2>
-            <p className={`text-sm sm:text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-2xl mx-auto ${ts}`}>
+            <p className={`text-sm sm:text-base md:text-base lg:text-lg font-medium leading-relaxed max-w-2xl mx-auto ${ts} sm:leading-[1.5rem] md:leading-[1.5rem] lg:leading-[1.75rem]`}>
               Somos el aliado ClimaTech estratégico para respaldar con datos verificables cada meta de sostenibilidad y economía circular. Transformamos iniciativas en métricas trazables que sustentan el cumplimiento del compromiso global ante comités, clientes y auditorías.
             </p>
           </div>
@@ -2547,15 +2547,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   viewport={{ once: true, margin: '100px' }}
                   transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                   whileHover={{ y: -5, scale: 1.015 }}
-                  className={`group relative p-6 sm:p-8 rounded-[2rem] overflow-hidden flex flex-col justify-between hover-card-interactive shadow-lg hover:shadow-2xl transition-all duration-300 border ${isDark ? col.borderColorDark : col.borderColorLight}`}
+                  className={`group relative p-6 sm:p-8 rounded-4xl overflow-hidden flex flex-col justify-between hover-card-interactive shadow-lg hover:shadow-2xl transition-all duration-300 border ${isDark ? col.borderColorDark : col.borderColorLight}`}
                 >
                   <div className="absolute inset-0 z-0">
                     <Image src={col.image} alt={col.titulo} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500 mix-blend-luminosity" />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${isDark ? col.bgGradientDark : col.bgGradientLight} opacity-95`} />
+                    <div className={`absolute inset-0 bg-linear-to-br/srgb ${isDark ? col.bgGradientDark : col.bgGradientLight} opacity-95`} />
                   </div>
 
                   <div 
-                    className={`absolute -top-12 -right-12 w-32 h-32 rounded-full blur-[40px] opacity-30 transition-opacity duration-500 group-hover:opacity-60 ${col.glowColor}`}
+                    className={`absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl opacity-30 transition-opacity duration-500 group-hover:opacity-60 ${col.glowColor}`}
                   />
 
                   <div className="relative z-10">
@@ -2564,7 +2564,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         <m.div
                           animate={{ scale: [1, 1.18, 1], rotate: [0, 6, -6, 0] }}
                           transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.4 }}
-                          className="inline-flex items-center justify-center flex-shrink-0"
+                          className="inline-flex items-center justify-center shrink-0"
                         >
                           <col.Icon size={18} className={`${col.textColor} transition-transform duration-300 group-hover:scale-125`} />
                         </m.div>
@@ -2572,12 +2572,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           {col.tag}
                         </span>
                       </div>
-                      <h3 className={`text-base sm:text-lg md:text-lg lg:text-xl font-black leading-tight ${tp}`}>
+                      <h3 className={`text-base sm:text-lg md:text-lg lg:text-xl font-black leading-tight ${tp} sm:leading-[1.75rem] md:leading-[1.75rem] lg:leading-[1.75rem]`}>
                         {col.titulo}
                       </h3>
                     </div>
 
-                    <p className={`text-sm md:text-sm lg:text-base font-medium leading-relaxed mb-6 ${ts}`}>
+                    <p className={`text-sm md:text-sm lg:text-base font-medium leading-relaxed mb-6 ${ts} md:leading-[1.25rem] lg:leading-[1.5rem]`}>
                       {col.desc}
                     </p>
                   </div>
@@ -2585,7 +2585,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div className={`pt-4 border-t flex flex-col gap-2 relative z-10 border-light`}>
                     {col.puntos.map((pt, pIdx) => (
                       <div key={pIdx} className="flex items-center gap-3 text-sm sm:text-base font-semibold">
-                        <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${col.glowColor}`} />
+                        <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${col.glowColor}`} />
                         <span className={isDark ? 'text-white/80' : 'text-[#474747]'}>{pt}</span>
                       </div>
                     ))}
@@ -2597,11 +2597,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         </section>
 
       {/* ── SECCIÓN 9 - FAQ (AL FINAL) ─────────────────────────────────────── */}
-      <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
+      <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <section id="faq" className="scroll-mt-28 pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
         <div className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto">
           <div className="mb-6 sm:mb-8 text-center">
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 md:mb-3 lg:mb-4 leading-snug ${tp}`}>
+            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 md:mb-3 lg:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
               Preguntas frecuentes
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>Todo lo que necesitas saber para sustentar el impacto de tus productos sin greenwashing.</p>
@@ -2650,7 +2650,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               data-mx="-0.02"
               data-my="-0.02"
               data-ms="0"
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#8AD0B2]/20 blur-[40px] rounded-full pointer-events-none transition-transform duration-700"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#8AD0B2]/20 blur-2xl rounded-full pointer-events-none transition-transform duration-700"
               style={{ willChange: 'transform' }}
             />
 
@@ -2658,7 +2658,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
                 Software ClimaTech de trazabilidad corporativa.
               </p>
-              <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp}`}>
+              <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
                 Estructura tus reportes de sostenibilidad e impacto ambiental <br className="hidden sm:block" />
                 con datos claros
               </h2>
@@ -2732,7 +2732,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── MODAL POPUP: FORMULARIO DE CONTACTO (TE LLAMAMOS) ── */}
       <AnimatePresence>
         {contactModalOpen && (
-          <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+          <div className="fixed inset-0 z-999999 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
             {/* Backdrop con desenfoque: claro de día, oscuro de noche */}
             <m.div
               initial={{ opacity: 0 }}
@@ -2751,7 +2751,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 16 }}
               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-              className={`relative w-full max-w-lg p-6 sm:p-8 rounded-[2rem] shadow-2xl z-10 my-auto overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
+              className={`relative w-full max-w-lg p-6 sm:p-8 rounded-4xl shadow-2xl z-10 my-auto overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
                 isDark
                   ? 'bg-[#1E1E1E] border-white/10 text-white shadow-black/80'
                   : 'bg-primary border-[#00827C]/15 text-[#474747] shadow-[0_24px_60px_rgba(0,130,124,0.15)]'

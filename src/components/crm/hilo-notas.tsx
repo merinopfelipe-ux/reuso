@@ -66,8 +66,8 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
     setEnviando(false)
   }
 
-  const tp = 'text-[var(--text-primary)]'
-  const ts = 'text-[var(--text-secondary)]'
+  const tp = 'text-(--text-primary)'
+  const ts = 'text-(--text-secondary)'
 
   if (cargando) return null
 
@@ -78,14 +78,14 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
           const perfilAutor = Array.isArray(n.profiles) ? n.profiles[0] : n.profiles
           const autor = perfilAutor ? displayName(perfilAutor) : null
           return (
-            <div key={n.id} className="rounded-xl p-2.5 bg-[var(--bg-input)]">
+            <div key={n.id} className="rounded-xl p-2.5 bg-(--bg-input)">
               {/* Fotos pegadas dentro de la nota (ver
                   conceptos/contenteditable-paste-imagenes.md) vienen como
                   <img> crudo dentro de HTML ya guardado, fuera del control
                   de React — delegación de clic: cualquier <img> aquí abre
                   el mismo visor de zoom que el resto del sistema. */}
               <div
-                className={`text-[13px] font-normal break-words whitespace-pre-wrap nota-con-fotos-ampliables ${tp}`}
+                className={`text-[13px] font-normal wrap-break-word whitespace-pre-wrap nota-con-fotos-ampliables ${tp}`}
                 onClick={(e) => {
                   const target = e.target as HTMLElement
                   if (target.tagName === 'IMG') setZoomUrl((target as HTMLImageElement).src)

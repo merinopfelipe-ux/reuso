@@ -53,7 +53,7 @@ export function InputTelefono({
             flecha, ej. "🇭🇳 +504"), 140px desde sm: — con 140px fijo siempre,
             en 375px (el ancho mínimo obligatorio) el número quedaba con solo
             129px reales, demasiado angosto para "(300) 123 4567". */}
-        <div className="flex-shrink-0 w-[110px] sm:w-[140px]">
+        <div className="shrink-0 w-[110px] sm:w-[140px]">
           <SelectorPais
             modo="indicativo"
             value={PAISES.find(p => p.dial === indicativo) || indicativo}
@@ -79,7 +79,7 @@ export function InputTelefono({
           }}
           onBlur={() => setTocado(true)}
           placeholder={indicativo === '+57' ? '(300) 123 4567' : '123 456 7890'}
-          className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-none focus:border-[var(--color-brand)] flex-1"
+          className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand flex-1"
           style={{
             background: 'var(--surface, var(--bg-input))',
             borderColor: error ? 'var(--color-error)' : 'var(--border)',

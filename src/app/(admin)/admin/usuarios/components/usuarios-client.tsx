@@ -267,11 +267,11 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
       </Modal>
 
       {/* Tabla */}
-      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+      <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
-              <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+              <tr className="bg-(--bg-table-header) text-brand">
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
                 <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
@@ -291,12 +291,12 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                 return (
                   <tr
                     key={u.id}
-                    className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                      idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                    className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                   >
-                    <td className="px-4 py-3 text-[var(--text-primary)]">
+                    <td className="px-4 py-3 text-(--text-primary)">
                       <div className="flex items-center gap-2">
                         <span>{u.nombre || '-'}</span>
                       </div>
@@ -311,7 +311,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                         opciones={ROLES.map(r => ({ value: r, label: ROL_LABEL[r] }))}
                       />
                     </td>
-                    <td className="px-4 py-3 text-[var(--text-secondary)] text-center">{formatFecha(u.created_at)}</td>
+                    <td className="px-4 py-3 text-(--text-secondary) text-center">{formatFecha(u.created_at)}</td>
                     <td className="px-4 py-3 text-center">
                       <button
                         type="button"
@@ -336,7 +336,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                         onClick={(e) => { e.stopPropagation(); setUsuarioAEliminar(u); setErrorEliminar('') }}
                         disabled={u.user_id === currentUserId}
                         title={u.user_id === currentUserId ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
-                        className={`inline-flex items-center gap-1.5 text-sm font-semibold px-2 py-1 bg-transparent transition-opacity duration-200 ${u.user_id === currentUserId ? 'text-[var(--text-secondary)] opacity-50 cursor-not-allowed' : 'text-[var(--color-error)] hover:opacity-50'}`}
+                        className={`inline-flex items-center gap-1.5 text-sm font-semibold px-2 py-1 bg-transparent transition-opacity duration-200 ${u.user_id === currentUserId ? 'text-(--text-secondary) opacity-50 cursor-not-allowed' : 'text-error hover:opacity-50'}`}
                       >
                         <Trash size={15} sinAnimacion />
                         Eliminar
@@ -353,8 +353,8 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
         {/* Siempre después de la última fila. El conteo se acorta primero
             (min-width:0 + ellipsis) para que el paginador nunca se comprima
             ni quede oculto detrás de un scroll. */}
-        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-[var(--border-light)]">
-          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-[var(--text-secondary)]" style={{ flexShrink: 1 }}>
+        <div className="flex items-center justify-between gap-2 px-4 py-4 mt-1 border-t border-(--border-light)">
+          <span className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-(--text-secondary)" style={{ flexShrink: 1 }}>
             {total} usuarios · Página {page} de {Math.max(1, totalPages)}
           </span>
           <div className="min-w-0 max-w-full overflow-x-auto">

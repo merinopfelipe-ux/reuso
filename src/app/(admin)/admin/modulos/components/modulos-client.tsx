@@ -173,7 +173,7 @@ export function ModulosClient({ modulos }: { modulos: ModuloConCategorias[] }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
         {modulos.map((m) => (
-          <div key={m.id} className="rounded-[12px] border border-[var(--border)] p-4 bg-[var(--bg-card)]" style={{ opacity: m.activo ? 1 : 0.55 }}>
+          <div key={m.id} className="rounded-card border border-(--border) p-4 bg-(--bg-card)" style={{ opacity: m.activo ? 1 : 0.55 }}>
             {editandoId === m.id ? (
               /* Modo edición */
               <div>

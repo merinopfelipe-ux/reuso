@@ -127,19 +127,19 @@ export function LandingHeader({
   return (
     <>
       {/* WRAPPER DEL HEADER TOP */}
-      <div className="fixed top-4 lg:top-8 left-0 w-full z-[100] px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
+      <div className="fixed top-4 lg:top-8 left-0 w-full z-100 px-4 lg:px-6 flex flex-col items-center gap-4 pointer-events-none">
         
         {/* HEADER PRINCIPAL */}
         <header style={headerStyle} className="flex items-center justify-between w-full max-w-5xl px-4 sm:px-8 py-3 sm:py-4 rounded-[2.5rem] pointer-events-auto transition-all relative z-50">
-          <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto flex-shrink-0">
+          <div className="flex items-center gap-3 sm:gap-6 pointer-events-auto shrink-0">
 
-            <Link href={logoHref} className="flex items-center flex-shrink-0">
+            <Link href={logoHref} className="flex items-center shrink-0">
               <Image
                 src="/logo-completo.svg"
                 alt="Reuso"
                 width={140}
                 height={39}
-                className={`h-[35px] sm:h-[39px] w-auto flex-shrink-0 transition-all duration-300 ${isDark ? 'brightness-0 invert' : ''}`}
+                className={`h-[35px] sm:h-[39px] w-auto shrink-0 transition-all duration-300 ${isDark ? 'brightness-0 invert' : ''}`}
                 priority
               />
             </Link>
@@ -201,16 +201,16 @@ export function LandingHeader({
                 aria-label="Te llamamos"
                 title="Te llamamos"
                 onClick={onContactClick}
-                className={`hidden md:flex w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center transition-all border shadow-sm hover-pop hover-press ${
+                className={`hidden md:flex w-8 h-8 sm:w-10 sm:h-10 rounded-full items-center justify-center transition-all border shadow-xs hover-pop hover-press ${
                   isDark
                     ? 'bg-[#D6F391]/10 border-[#D6F391]/40 text-[#D6F391] hover:bg-[#D6F391]/20 hover:border-[#D6F391]/70'
-                    : 'bg-[#00827C]/[0.05] border-[#00827C]/35 text-[#00827C] hover:bg-[#00827C]/12 hover:border-[#00827C]/60'
+                    : 'bg-[#00827C]/5 border-[#00827C]/35 text-[#00827C]  hover:border-[#00827C]/60'
                 }`}
               >
                 <Headset size={18} strokeWidth={2.2} />
               </button>
             ) : (
-              <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-sm hover-rotate-180 hover-press ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
+              <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-xs hover-rotate-180 hover-press ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
                 {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
               </button>
             )}
@@ -226,7 +226,7 @@ export function LandingHeader({
                     setTimeout(() => document.getElementById('search-input')?.focus(), 100);
                   }
                 }}
-                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-[100] border shadow-sm hover-press ${searchOpen ? 'hover-rotate-90' : 'hover-pop'} ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
+                className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all relative z-100 border shadow-xs hover-press ${searchOpen ? 'hover-rotate-90' : 'hover-pop'} ${searchOpen ? (isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-[#00827C] text-white border-transparent') : (isDark ? 'bg-white/10 border-white/10 text-white' : 'bg-white/40 border-white/50 text-[#474747] hover:bg-[#00827C]/10')}`}
               >
                 {searchOpen ? <X size={16} strokeWidth={2.5} /> : <MagnifyingGlass size={16} strokeWidth={2.5} />}
               </button>
@@ -246,7 +246,7 @@ export function LandingHeader({
                value={searchQuery}
                onChange={(e) => setSearchQuery(e.target.value)}
                autoComplete="off"
-               className={`w-full bg-transparent border-0 outline-none ring-0 focus:ring-0 focus:outline-none text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#00827C]/30'}`}
+               className={`w-full bg-transparent border-0 outline-hidden ring-0 focus:ring-0 focus:outline-hidden text-base font-medium shadow-none ${isDark ? 'text-white placeholder:text-white/20' : 'text-[#474747] placeholder:text-[#00827C]/30'}`}
              />
              {searchQuery && (
                <button aria-label="Limpiar búsqueda" onClick={() => setSearchQuery('')} className="hover-rotate-90 hover-press">
@@ -257,7 +257,7 @@ export function LandingHeader({
 
            {/* RESULTADOS DE BÚSQUEDA */}
            {searchQuery && (
-             <div className={`absolute bottom-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-[70] ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#00827C]/10 backdrop-blur-2xl'}`}>
+             <div className={`absolute bottom-[calc(100%+12px)] left-0 w-full rounded-3xl p-3 border shadow-2xl z-70 ${isDark ? 'bg-[#1A1A1A]/95 border-white/10 backdrop-blur-2xl' : 'bg-white/95 border-[#00827C]/10 backdrop-blur-2xl'}`}>
                 <div className="grid grid-cols-2 gap-2">
                   {filteredResults.slice(0, 8).map((r, i) => (
                     <a 
@@ -294,7 +294,7 @@ export function LandingHeader({
       {/* FOOTER MÓVIL (Barra de navegación inferior con 4 íconos esenciales) */}
       <nav 
         aria-label="Navegación móvil inferior"
-        className="fixed bottom-4 left-4 right-4 z-[100] flex md:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
+        className="fixed bottom-4 left-4 right-4 z-100 flex md:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
         style={headerStyle}
       >
         <button
@@ -384,7 +384,7 @@ export function LandingHeader({
           onMouseEnter={() => { if (menuTimeoutRef.current) clearTimeout(menuTimeoutRef.current) }}
           onMouseLeave={handleMenuLeave}
         >
-          <div className={`p-2 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#1E1E1E] border-white/10' : 'bg-primary border-[#00827C]/12'}`}>
+          <div className={`p-2 rounded-2xl border shadow-[0_20px_50px_rgba(0,0,0,0.25)] ${isDark ? 'bg-[#1E1E1E] border-white/10' : 'bg-primary '}`}>
             <div className="flex flex-col gap-1 p-1">
               {menuGroups.find(g => g.name === activeMenu)?.items?.map((item, i) => (
                 <a
@@ -405,7 +405,7 @@ export function LandingHeader({
                       }
                     }
                   }}
-                  className={`block px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/80 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747] hover:bg-[#00827C]/8 hover:text-[#00827C]'}`}
+                  className={`block px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/80 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]  hover:text-[#00827C]'}`}
                 >
                   {item.name}
                 </a>

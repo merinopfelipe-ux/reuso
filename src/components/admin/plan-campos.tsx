@@ -184,7 +184,7 @@ export function CampoPrecioFormateado({
             lineHeight: 1,
             transition: 'all 0.15s ease',
           }}
-          className="hover:text-[var(--color-brand)]"
+          className="hover:text-brand"
           title="Aumentar"
         >
           <ChevronUp size={fontSize > 20 ? 14 : 11} sinAnimacion />
@@ -207,7 +207,7 @@ export function CampoPrecioFormateado({
             lineHeight: 1,
             transition: 'all 0.15s ease',
           }}
-          className="hover:text-[var(--color-brand)]"
+          className="hover:text-brand"
           title="Disminuir"
         >
           <ChevronDown size={fontSize > 20 ? 14 : 11} sinAnimacion />
@@ -339,7 +339,7 @@ function CampoNumeroEstetico({
             lineHeight: 1,
             transition: 'all 0.15s ease',
           }}
-          className="hover:text-[var(--color-brand)]"
+          className="hover:text-brand"
           title="Aumentar"
         >
           <ChevronUp size={fontSize > 20 ? 14 : 11} sinAnimacion />
@@ -362,7 +362,7 @@ function CampoNumeroEstetico({
             lineHeight: 1,
             transition: 'all 0.15s ease',
           }}
-          className="hover:text-[var(--color-brand)]"
+          className="hover:text-brand"
           title="Disminuir"
         >
           <ChevronDown size={fontSize > 20 ? 14 : 11} sinAnimacion />

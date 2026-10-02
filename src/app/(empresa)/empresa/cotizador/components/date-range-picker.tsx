@@ -221,20 +221,20 @@ export function DateRangePicker({ fechaInicio, fechaFin, onChange }: DateRangePi
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setAbierto(!abierto)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-[8px] border border-[var(--border)] bg-[var(--bg-card)] text-sm font-medium hover:bg-[var(--bg-hover)] transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-input border border-(--border) bg-(--bg-card) text-sm font-medium hover:bg-(--bg-hover) transition-colors"
       >
-        <CalendarIcon size={14} className="text-[var(--text-secondary)]" />
-        <span className="text-[var(--text-secondary)]">{formatDisplay()}</span>
-        <ChevronDown size={14} className="text-[var(--text-secondary)]" />
+        <CalendarIcon size={14} className="text-(--text-secondary)" />
+        <span className="text-(--text-secondary)">{formatDisplay()}</span>
+        <ChevronDown size={14} className="text-(--text-secondary)" />
       </button>
 
       {abierto && (
-        <div className="absolute right-0 top-full mt-2 z-50 bg-[var(--bg-card)] border border-[var(--border)] rounded-[12px] shadow-xl flex flex-col md:flex-row w-[300px] md:w-[420px] max-h-[80vh] overflow-y-auto md:overflow-visible">
+        <div className="absolute right-0 top-full mt-2 z-50 bg-(--bg-card) border border-(--border) rounded-card shadow-xl flex flex-col md:flex-row w-[300px] md:w-[420px] max-h-[80vh] overflow-y-auto md:overflow-visible">
 
-          <div className="w-full md:w-[150px] flex-shrink-0 border-b md:border-b-0 md:border-r border-[var(--border)] py-2 max-h-[220px] md:max-h-none overflow-y-auto hide-scrollbar">
+          <div className="w-full md:w-[150px] shrink-0 border-b md:border-b-0 md:border-r border-(--border) py-2 max-h-[220px] md:max-h-none overflow-y-auto hide-scrollbar">
             <button
               onClick={() => setRangoSeleccionado('personalizado')}
-              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${rangoSeleccionado === 'personalizado' ? 'bg-[#00827C]/10 text-[#00827C] font-medium' : 'text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}
+              className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${rangoSeleccionado === 'personalizado' ? 'bg-[#00827C]/10 text-[#00827C] font-medium' : 'text-(--text-primary) hover:bg-(--bg-hover)'}`}
             >
               Personalizado
             </button>
@@ -242,20 +242,20 @@ export function DateRangePicker({ fechaInicio, fechaFin, onChange }: DateRangePi
               <button
                 key={r.id}
                 onClick={() => handleRangoClick(r)}
-                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${rangoSeleccionado === r.id ? 'bg-[#00827C]/10 text-[#00827C] font-medium' : 'text-[var(--text-primary)] hover:bg-[var(--bg-hover)]'}`}
+                className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${rangoSeleccionado === r.id ? 'bg-[#00827C]/10 text-[#00827C] font-medium' : 'text-(--text-primary) hover:bg-(--bg-hover)'}`}
               >
                 {r.label}
               </button>
             ))}
           </div>
 
-          <div className="flex-1 flex flex-col p-4 bg-[var(--bg-primary)]">
+          <div className="flex-1 flex flex-col p-4 bg-(--bg-primary)">
             {/* Entradas manuales — compactas, arriba del calendario. Texto
                 DD/MM/AAAA, no input nativo de fecha (evita el calendario del
                 navegador encima del nuestro). */}
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1">
-                <label className="text-[10px] font-medium text-[var(--text-secondary)] mb-1 block">Fecha de inicio</label>
+                <label className="text-[10px] font-medium text-(--text-secondary) mb-1 block">Fecha de inicio</label>
                 <FechaTextoInput
                   value={tempInicio}
                   onCompletar={(v) => {
@@ -263,18 +263,18 @@ export function DateRangePicker({ fechaInicio, fechaFin, onChange }: DateRangePi
                     setMesVisible(sumarMeses(parseDateStr(v), 0))
                     if (parseDateStr(v) <= parseDateStr(tempFin)) onChange(v, tempFin)
                   }}
-                  className="w-full bg-transparent border border-[var(--border)] rounded-md px-2 py-1.5 text-sm outline-none text-[var(--text-primary)]"
+                  className="w-full bg-transparent border border-(--border) rounded-md px-2 py-1.5 text-sm outline-hidden text-(--text-primary)"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-[10px] font-medium text-[var(--text-secondary)] mb-1 block">Fecha de fin</label>
+                <label className="text-[10px] font-medium text-(--text-secondary) mb-1 block">Fecha de fin</label>
                 <FechaTextoInput
                   value={tempFin}
                   onCompletar={(v) => {
                     setTempFin(v); setRangoSeleccionado('personalizado')
                     if (parseDateStr(v) >= parseDateStr(tempInicio)) onChange(tempInicio, v)
                   }}
-                  className="w-full bg-transparent border border-[var(--border)] rounded-md px-2 py-1.5 text-sm outline-none text-[var(--text-primary)]"
+                  className="w-full bg-transparent border border-(--border) rounded-md px-2 py-1.5 text-sm outline-hidden text-(--text-primary)"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export function DateRangePicker({ fechaInicio, fechaFin, onChange }: DateRangePi
               onNext={() => setMesVisible(sumarMeses(mesVisible, 1))}
             />
 
-            <div className="mt-4 flex justify-end border-t border-[var(--border)] pt-3">
+            <div className="mt-4 flex justify-end border-t border-(--border) pt-3">
               <button onClick={() => setAbierto(false)} className="text-sm font-medium text-[#00827C] hover:text-[#00827C]/80 transition-colors">
                 Listo
               </button>
@@ -318,15 +318,15 @@ function MiniCalendario({ mesVisible, tempInicio, tempFin, onDayClick, onPrev, o
   for (let i = 1; i <= diasDelMes; i++) calendarDays.push(i)
 
   return (
-    <div className="flex flex-col items-center select-none bg-[var(--bg-card)] border border-[var(--border)] rounded-xl p-3">
+    <div className="flex flex-col items-center select-none bg-(--bg-card) border border-(--border) rounded-xl p-3">
       <div className="flex items-center justify-between w-full mb-3 px-1">
-        <button onClick={onPrev} className="p-1 hover:bg-[var(--bg-hover)] rounded-full transition-colors text-[var(--text-secondary)]">
+        <button onClick={onPrev} className="p-1 hover:bg-(--bg-hover) rounded-full transition-colors text-(--text-secondary)">
           <ChevronLeft size={16} />
         </button>
-        <span className="text-sm font-semibold text-[var(--text-primary)]">
+        <span className="text-sm font-semibold text-(--text-primary)">
           {MESES[mesVisible.getMonth()]} {mesVisible.getFullYear()}
         </span>
-        <button onClick={onNext} className="p-1 hover:bg-[var(--bg-hover)] rounded-full transition-colors text-[var(--text-secondary)]">
+        <button onClick={onNext} className="p-1 hover:bg-(--bg-hover) rounded-full transition-colors text-(--text-secondary)">
           <ChevronRight size={16} />
         </button>
       </div>
@@ -335,7 +335,7 @@ function MiniCalendario({ mesVisible, tempInicio, tempFin, onDayClick, onPrev, o
           tocar el borde de cada celda para verse continua, no punteada. */}
       <div className="grid grid-cols-7 w-full gap-y-1 gap-x-0 text-center">
         {DIAS.map(d => (
-          <div key={d} className="text-[10px] font-medium text-[var(--text-secondary)]">{d}</div>
+          <div key={d} className="text-[10px] font-medium text-(--text-secondary)">{d}</div>
         ))}
 
         {calendarDays.map((dia, idx) => {
@@ -368,7 +368,7 @@ function MiniCalendario({ mesVisible, tempInicio, tempFin, onDayClick, onPrev, o
               )}
               <button
                 onClick={() => onDayClick(dia, mesVisible)}
-                className={`absolute inset-0 m-auto h-7 w-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors hover:bg-[var(--bg-hover)] ${esHoy && !isStart && !isEnd ? 'ring-1 ring-inset ring-[#00827C]' : ''}`}
+                className={`absolute inset-0 m-auto h-7 w-7 rounded-full flex items-center justify-center text-xs font-medium transition-colors hover:bg-(--bg-hover) ${esHoy && !isStart && !isEnd ? 'ring-1 ring-inset ring-[#00827C]' : ''}`}
                 style={
                   isStart || isEnd
                     ? { backgroundColor: '#00827C', color: '#FFFFFF', fontWeight: 700 }

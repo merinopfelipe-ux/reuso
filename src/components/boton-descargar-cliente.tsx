@@ -127,7 +127,7 @@ export function BotonDescargarCliente({ data, nombre, tituloPdf, label, disabled
           userSelect: 'none',
           opacity: disabled || cargando || (!onGenerarData && (!data || data.length === 0)) ? 0.5 : 1,
         }}
-        className={disabled || cargando || (!onGenerarData && (!data || data.length === 0)) ? '' : 'hover:bg-[var(--bg-hover)]'}
+        className={disabled || cargando || (!onGenerarData && (!data || data.length === 0)) ? '' : 'hover:bg-(--bg-hover)'}
       >
         {cargando ? <span style={{ width: 14, height: 14, border: '2px solid currentColor', borderRightColor: 'transparent', borderRadius: '50%', display: 'inline-block', animation: 'spin 1s linear infinite' }} /> : (icon ?? <Download size={14} />)}
         {cargando ? 'Generando...' : label}

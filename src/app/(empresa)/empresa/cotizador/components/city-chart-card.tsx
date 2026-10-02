@@ -85,7 +85,7 @@ export function CityChartCard({
   }
 
   return (
-    <div className={`group rounded-[12px] border ${cardBg} p-3 lg:p-2 xl:p-3 flex flex-col justify-center h-full cursor-default relative overflow-hidden`} style={style}>
+    <div className={`group rounded-card border ${cardBg} p-3 lg:p-2 xl:p-3 flex flex-col justify-center h-full cursor-default relative overflow-hidden`} style={style}>
 
       {/* Cabecera — mismo patrón exacto que KpiCard ("Tiempo de apertura",
           "Muebles cotizados"): ícono a la izquierda, título con
@@ -93,7 +93,7 @@ export function CityChartCard({
           explícita para que las 4 cards se vean consistentes entre sí. */}
       <div className="flex items-center justify-between mb-3 lg:mb-2 xl:mb-3 z-10 w-full gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <MapPinHouse size={14} className="text-[var(--color-rosa)] flex-shrink-0" />
+          <MapPinHouse size={14} className="text-rosa shrink-0" />
           <p className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
             <span className="block xl:inline">Top</span>
             <span className="hidden xl:inline"> </span>
@@ -104,7 +104,7 @@ export function CityChartCard({
           <button
             onClick={onConfigClick}
             title="Configurar Áreas Metropolitanas"
-            className={`p-1.5 rounded-md hover-pop hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0 ${ts}`}
+            className={`p-1.5 rounded-md hover-pop hover:bg-(--bg-hover) transition-colors shrink-0 ${ts}`}
           >
             <Pencil size={12} />
           </button>
@@ -129,7 +129,7 @@ export function CityChartCard({
                         por grupo es solo del gráfico (la barra) y del ícono
                         de la cabecera, nunca del texto (aclaración explícita
                         del usuario). */}
-                    <span className={`font-bold text-[11px] break-words ${tp}`}>
+                    <span className={`font-bold text-[11px] wrap-break-word ${tp}`}>
                       {item.name}
                     </span>
                     <span className={`font-normal ${tp} text-[11px] whitespace-nowrap flex justify-between w-full lg:w-auto lg:justify-end gap-1 items-baseline`}>
@@ -138,7 +138,7 @@ export function CityChartCard({
                     </span>
                   </div>
                   {/* Barra de progreso */}
-                  <div className="w-full h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-(--bg-hover) rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full"
                       style={{ width: `${pct}%`, backgroundColor: colorItem }}
@@ -171,7 +171,7 @@ export function CityChartCard({
         abierto={modalDesgloseAbierto}
         onClose={() => setModalDesgloseAbierto(false)}
         titulo="Todas las ciudades"
-        icono={<MapPinHouse size={20} className="text-[var(--color-rosa)]" />}
+        icono={<MapPinHouse size={20} className="text-rosa" />}
         colorIcono="var(--color-rosa)"
         textoConfirmar="Cerrar"
         onConfirmar={() => setModalDesgloseAbierto(false)}
@@ -180,28 +180,28 @@ export function CityChartCard({
         <div className="flex flex-col gap-4 pt-1">
           {/* Switch por cotización / por monto — solo cambia esta vista,
               nunca la card chica ni se guarda (directriz explícita). */}
-          <div className="flex bg-[var(--bg-hover)] rounded-lg p-1">
+          <div className="flex bg-(--bg-hover) rounded-lg p-1">
             <button
               onClick={() => setModoDesglose('clientes')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${modoDesglose === 'clientes' ? 'bg-[var(--color-brand)] text-white' : ts}`}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${modoDesglose === 'clientes' ? 'bg-brand text-white' : ts}`}
             >
               Por cotización
             </button>
             <button
               onClick={() => setModoDesglose('monto')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${modoDesglose === 'monto' ? 'bg-[var(--color-brand)] text-white' : ts}`}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-md transition-colors ${modoDesglose === 'monto' ? 'bg-brand text-white' : ts}`}
             >
               Por monto
             </button>
           </div>
 
           {/* Resumen: cuántas cotizaciones/cuánto monto y cuántas ciudades distintas */}
-          <div className="flex items-center justify-between rounded-[10px] bg-[var(--bg-hover)] px-4 py-3">
+          <div className="flex items-center justify-between rounded-btn bg-(--bg-hover) px-4 py-3">
             <div>
               <p className={`text-lg font-black leading-none ${tp}`}>{modoDesglose === 'monto' ? formatCOP(totalDesglose) : totalDesglose}</p>
               <p className={`text-[11px] mt-0.5 ${ts}`}>{modoDesglose === 'monto' ? 'monto total' : 'cotizaciones'}</p>
             </div>
-            <div className="w-px h-8 bg-[var(--border)]" />
+            <div className="w-px h-8 bg-(--border)" />
             <div className="text-right">
               <p className={`text-lg font-black leading-none ${tp}`}>{dataDesglose.length}</p>
               <p className={`text-[11px] mt-0.5 ${ts}`}>{dataDesglose.length === 1 ? 'ciudad' : 'ciudades'}</p>
@@ -215,13 +215,13 @@ export function CityChartCard({
               const esLider = idx === 0
               const colorItem = colorPorPosicionCiudad(idx, item.name)
               const miembrosTexto = isGroup ? miembrosPorGrupo[item.name] : ''
-              const badgeBg = esLider ? 'bg-[var(--color-warning)] text-white' : 'bg-[var(--bg-hover)] text-[var(--text-secondary)]'
+              const badgeBg = esLider ? 'bg-warning text-white' : 'bg-(--bg-hover) text-(--text-secondary)'
               return (
                 <div
                   key={item.name}
-                  className={`flex items-center gap-3 rounded-[10px] border p-3 ${esLider ? 'border-[var(--color-warning)]/30 bg-[var(--color-warning)]/[0.04]' : 'border-[var(--border)]'}`}
+                  className={`flex items-center gap-3 rounded-btn border p-3 ${esLider ? ' ' : 'border-(--border)'}`}
                 >
-                  <span className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${badgeBg}`}>
+                  <span className={`shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black ${badgeBg}`}>
                     {idx + 1}
                   </span>
                   <div className="flex-1 min-w-0">
@@ -234,9 +234,9 @@ export function CityChartCard({
                           <span className="ml-1.5 text-[11px] font-normal align-middle">{miembrosTexto}</span>
                         )}
                       </span>
-                      <span className={`text-xs font-black flex-shrink-0 ${tp}`}>{pct} %</span>
+                      <span className={`text-xs font-black shrink-0 ${tp}`}>{pct} %</span>
                     </div>
-                    <div className="w-full h-1.5 bg-[var(--bg-hover)] rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-(--bg-hover) rounded-full overflow-hidden">
                       <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: colorItem }} />
                     </div>
                     <p className={`text-[11px] mt-1 ${ts}`}>{formatValor(item.value, modoDesglose)}</p>

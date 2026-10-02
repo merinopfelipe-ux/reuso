@@ -204,21 +204,21 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
       </div>
 
       {/* Eventos: rango de fechas — puede haber varios activos al mismo tiempo */}
-      <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)]" style={{ padding: 16, marginBottom: 20 }}>
+      <div className="rounded-card border border-(--border) bg-(--bg-card)" style={{ padding: 16, marginBottom: 20 }}>
         <p style={{ fontSize: 14, fontWeight: 700, color: C.dark, margin: '0 0 4px' }}>Eventos</p>
         <p style={{ fontSize: 12, color: C.mid, margin: '0 0 12px' }}>
           Programa nombre y rango de fechas. El correo dirá &quot;Nos encontramos en&quot; + el nombre del evento activo hoy.
         </p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <input value={evNombre} onChange={e => setEvNombre(e.target.value)} placeholder="Nombre del evento" maxLength={120}
-            className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13, flex: '1 1 180px' }} />
+            className="rounded-xl border border-(--border) bg-(--bg-input) text-(--text-primary)" style={{ padding: '8px 12px', fontSize: 13, flex: '1 1 180px' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <input type="date" value={evFechaInicio} onChange={e => setEvFechaInicio(e.target.value)}
-              className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+              className="rounded-xl border border-(--border) bg-(--bg-input) text-(--text-primary)" style={{ padding: '8px 12px', fontSize: 13 }} />
             <span style={{ fontSize: 12, color: C.mid }}>hasta</span>
             <input type="date" value={evFechaFin} onChange={e => setEvFechaFin(e.target.value)}
               min={evFechaInicio}
-              className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] text-[var(--text-primary)]" style={{ padding: '8px 12px', fontSize: 13 }} />
+              className="rounded-xl border border-(--border) bg-(--bg-input) text-(--text-primary)" style={{ padding: '8px 12px', fontSize: 13 }} />
           </div>
           <Button size="sm" variant="primary" loading={evGuardando} onClick={crearEvento}>Programar</Button>
         </div>
@@ -357,57 +357,57 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
           onCancelar={() => setLeadEditando(null)}
         >
           <div className="flex flex-col gap-3.5 pt-1">
-            {errorEdit && <p role="alert" className="text-xs text-[var(--color-error)]">{errorEdit}</p>}
+            {errorEdit && <p role="alert" className="text-xs text-error">{errorEdit}</p>}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Nombre</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Nombre</label>
                 <input
                   type="text"
                   value={formEdit.nombre}
                   onChange={e => setFormEdit(p => ({ ...p, nombre: e.target.value }))}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Empresa</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Empresa</label>
                 <input
                   type="text"
                   value={formEdit.empresa}
                   onChange={e => setFormEdit(p => ({ ...p, empresa: e.target.value }))}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Correo electrónico</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Correo electrónico</label>
                 <input
                   type="email"
                   value={formEdit.email}
                   onChange={e => setFormEdit(p => ({ ...p, email: e.target.value }))}
                   placeholder="ejemplo@empresa.com"
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Celular / Teléfono</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Celular / Teléfono</label>
                 <input
                   type="text"
                   value={formEdit.telefono}
                   onChange={e => setFormEdit(p => ({ ...p, telefono: e.target.value }))}
                   placeholder="+57 300 1234567"
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Estado</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Estado</label>
                 <Selector
                   value={formEdit.estado}
                   onChange={val => setFormEdit(p => ({ ...p, estado: val as EstadoLead }))}
@@ -416,58 +416,58 @@ export function LeadsClient({ leads: inicial, eventos: eventosIniciales = [] }: 
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Interés / Fuente</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Interés / Fuente</label>
                 <input
                   type="text"
                   value={formEdit.interes}
                   onChange={e => setFormEdit(p => ({ ...p, interes: e.target.value }))}
                   placeholder="Ej. Eventos, Plan Pro..."
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]">Evento vinculado</label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Evento vinculado</label>
                 <input
                   type="text"
                   value={formEdit.evento_nombre}
                   onChange={e => setFormEdit(p => ({ ...p, evento_nombre: e.target.value }))}
                   placeholder="Nombre del evento"
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)]"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-[var(--text-secondary)]">Mensaje original</label>
+              <label className="text-xs font-semibold text-(--text-secondary)">Mensaje original</label>
               <textarea
                 rows={2}
                 value={formEdit.mensaje}
                 onChange={e => setFormEdit(p => ({ ...p, mensaje: e.target.value }))}
-                className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] resize-none"
+                className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand resize-none"
               />
             </div>
 
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-[var(--text-secondary)]">Notas internas (Admin)</label>
+              <label className="text-xs font-semibold text-(--text-secondary)">Notas internas (Admin)</label>
               <textarea
                 rows={2}
                 value={formEdit.notas_admin}
                 onChange={e => setFormEdit(p => ({ ...p, notas_admin: e.target.value }))}
                 placeholder="Añade notas del seguimiento comercial..."
-                className="rounded-xl border border-[var(--border)] bg-[var(--bg-input)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--color-brand)] resize-none"
+                className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand resize-none"
               />
             </div>
 
-            <div className="flex justify-between items-center pt-2 border-t border-[var(--border)]">
+            <div className="flex justify-between items-center pt-2 border-t border-(--border)">
               <button
                 type="button"
                 onClick={() => eliminarLead(leadEditando.id)}
-                className="text-xs font-semibold text-[var(--color-error)] hover:underline cursor-pointer"
+                className="text-xs font-semibold text-error hover:underline cursor-pointer"
               >
                 Eliminar este lead
               </button>
-              {guardandoEdit && <span className="text-xs text-[var(--text-secondary)]">Guardando...</span>}
+              {guardandoEdit && <span className="text-xs text-(--text-secondary)">Guardando...</span>}
             </div>
           </div>
         </Modal>

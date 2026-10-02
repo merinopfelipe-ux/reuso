@@ -299,10 +299,10 @@ export default function RegistroPage() {
 
   // ── Estilos compartidos ──────────────────────────────────────────────────────
   const inputBase = `
-    w-full px-4 py-3.5 rounded-2xl border text-sm outline-none transition-all duration-200
-    bg-[var(--bg-input)] text-[var(--text-primary)] border-[var(--border)]
-    placeholder-[var(--text-placeholder)]/50
-    focus:border-[var(--color-brand)] focus:ring-1 focus:ring-[var(--color-brand)]/20
+    w-full px-4 py-3.5 rounded-2xl border text-sm outline-hidden transition-all duration-200
+    bg-(--bg-input) text-(--text-primary) border-(--border)
+    
+    focus:border-brand focus:ring-1 
   `
 
   const [isDark, setIsDark] = useState(false)
@@ -351,11 +351,11 @@ export default function RegistroPage() {
         {/* ── Barra de progreso ─────────────────────────────────────────────── */}
         <div className="px-8 pt-8 pb-0">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5 text-xs text-[var(--color-brand)] font-semibold">
+            <div className="flex items-center gap-1.5 text-xs text-brand font-semibold">
               <ShieldCheck size={14} />
               <span>Estás en un entorno seguro</span>
             </div>
-            <span className="text-xs text-[var(--text-secondary)]/50 font-medium">Paso {paso} de 4</span>
+            <span className="text-xs  font-medium">Paso {paso} de 4</span>
           </div>
           <div className="flex gap-1.5">
             {[1, 2, 3, 4].map(n => (
@@ -439,8 +439,8 @@ export default function RegistroPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl bg-[var(--color-error)]/8 border border-[var(--color-error)]/25 text-[var(--color-error-content)] text-sm">
-                    <X size={16} className="flex-shrink-0 mt-0.5" />
+                  <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-xl  border  text-(--color-error-content) text-sm">
+                    <X size={16} className="shrink-0 mt-0.5" />
                     <span>{error}</span>
                   </div>
                 )
@@ -452,15 +452,15 @@ export default function RegistroPage() {
           {paso === 1 && (
             <div className="flex flex-col gap-5">
               <div>
-                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Crea tu cuenta</h1>
-                <p className="text-sm text-[var(--text-secondary)]/80">Empieza a medir tu impacto ambiental.</p>
+                <h1 className="text-2xl font-bold text-(--text-primary) mb-1">Crea tu cuenta</h1>
+                <p className="text-sm ">Empieza a medir tu impacto ambiental.</p>
               </div>
 
               {/* Nombre */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Nombres <span className="text-[#FF5E4B]">*</span></label>
+                <label className="text-xs font-semibold ">Nombres <span className="text-[#FF5E4B]">*</span></label>
                 <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
+                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 " />
                   <input
                     type="text"
                     value={nombre}
@@ -474,11 +474,11 @@ export default function RegistroPage() {
 
               {/* Apellido */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                <label className="text-xs font-semibold ">
                   Apellido <span className="text-[#FF5E4B]">*</span>
                 </label>
                 <div className="relative">
-                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
+                  <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 " />
                   <input
                     type="text"
                     value={apellido}
@@ -493,10 +493,10 @@ export default function RegistroPage() {
               {/* Apodo */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                  <label className="text-xs font-semibold ">
                     Apodo
                   </label>
-                  <span className="text-[10px] text-[var(--text-secondary)]/40">{apodo.length}/15</span>
+                  <span className="text-[10px] ">{apodo.length}/15</span>
                 </div>
                 <input
                   type="text"
@@ -510,9 +510,9 @@ export default function RegistroPage() {
 
               {/* Email */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Correo electrónico <span className="text-[#FF5E4B]">*</span></label>
+                <label className="text-xs font-semibold ">Correo electrónico <span className="text-[#FF5E4B]">*</span></label>
                 <div className="relative">
-                  <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
+                  <EnvelopeSimple size={16} className="absolute left-4 top-1/2 -translate-y-1/2 " />
                   <input
                     type="email"
                     value={email}
@@ -526,7 +526,7 @@ export default function RegistroPage() {
 
               {/* Teléfono */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                <label className="text-xs font-semibold ">
                   Teléfono <span className="text-[#FF5E4B]">*</span>
                 </label>
                 <InputTelefono
@@ -541,7 +541,7 @@ export default function RegistroPage() {
               {/* Código de empresa */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                  <label className="text-xs font-semibold ">
                     Código de empresa
                   </label>
                   <div className="relative">
@@ -549,20 +549,20 @@ export default function RegistroPage() {
                       type="button"
                       onMouseEnter={() => setMostrarTooltip(true)}
                       onMouseLeave={() => setMostrarTooltip(false)}
-                      className="w-4 h-4 rounded-full border border-[var(--color-brand)]/40 text-[var(--color-brand)]/60 flex items-center justify-center text-[10px] font-bold hover:border-[var(--color-brand)] transition-colors"
+                      className="w-4 h-4 rounded-full border   flex items-center justify-center text-[10px] font-bold hover:border-brand transition-colors"
                     >
                       ?
                     </button>
                     {mostrarTooltip && (
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] text-xs rounded-xl px-3 py-2 w-56 shadow-lg">
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 bg-(--bg-card) text-(--text-primary) border border-(--border) text-xs rounded-xl px-3 py-2 w-56 shadow-lg">
                         Si tu empresa ya usa Calculadora de Reúso y te dio un código, ingrésalo aquí para vincularte automáticamente como empleado.
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[var(--bg-card)]" />
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-(--bg-card)" />
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="relative">
-                  <Buildings size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-brand)]/50" />
+                  <Buildings size={16} className="absolute left-4 top-1/2 -translate-y-1/2 " />
                   <input
                     type="text"
                     value={codigoEmpresa}
@@ -580,7 +580,7 @@ export default function RegistroPage() {
                     }`}
                   />
                   {codigoStatus === 'validando' && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-[var(--color-brand)] border-t-transparent rounded-full animate-spin" />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-brand border-t-transparent rounded-full animate-spin" />
                   )}
                   {codigoStatus === 'ok' && (
                     <Check size={16} strokeWidth={2.5} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#38B98E]" />
@@ -601,7 +601,7 @@ export default function RegistroPage() {
                 type="button"
                 onClick={avanzarPaso1}
                 disabled={verificandoEmail || !nombre.trim() || !apellido.trim() || !email.trim() || !telefono.trim()}
-                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
+                className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full bg-brand text-(--text-on-brand) font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-2 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                 style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
               >
                 {verificandoEmail
@@ -609,9 +609,9 @@ export default function RegistroPage() {
                   : <>Siguiente <ArrowRight size={16} strokeWidth={2.5} /></>}
               </button>
 
-              <p className="text-center text-xs text-[var(--text-secondary)]/50 mt-1">
+              <p className="text-center text-xs  mt-1">
                 ¿Ya tienes cuenta?{' '}
-                <Link href="/login" className="text-[var(--color-brand)] font-semibold hover:underline">Ingresa</Link>
+                <Link href="/login" className="text-brand font-semibold hover:underline">Ingresa</Link>
               </p>
             </div>
           )}
@@ -622,13 +622,13 @@ export default function RegistroPage() {
           {paso === 2 && (
             <div className="flex flex-col gap-6">
               <div>
-                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Cuéntanos sobre ti</h1>
-                <p className="text-sm text-[var(--text-secondary)]/80">Personalizamos tu experiencia con estas respuestas.</p>
+                <h1 className="text-2xl font-bold text-(--text-primary) mb-1">Cuéntanos sobre ti</h1>
+                <p className="text-sm ">Personalizamos tu experiencia con estas respuestas.</p>
               </div>
 
               {/* Sector */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿En qué sector trabajas (CIIU)? <span className="text-[#FF5E4B]">*</span></label>
+                <label className="text-xs font-semibold ">¿En qué sector trabajas (CIIU)? <span className="text-[#FF5E4B]">*</span></label>
                 <SelectorCiiu
                   value={sector}
                   onChange={(val) => setSector(val)}
@@ -637,7 +637,7 @@ export default function RegistroPage() {
 
               {/* Frecuencia */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Con qué frecuencia reutilizas? <span className="text-[#FF5E4B]">*</span></label>
+                <label className="text-xs font-semibold ">¿Con qué frecuencia reutilizas? <span className="text-[#FF5E4B]">*</span></label>
                 <div className="flex flex-wrap gap-2">
                   {FRECUENCIAS.map(f => (
                     <button
@@ -646,8 +646,8 @@ export default function RegistroPage() {
                       onClick={() => setFrecuencia(f)}
                       className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
                         frecuencia === f
-                          ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] border-[var(--color-brand)]'
-                          : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)]'
+                          ? 'bg-brand text-(--text-on-brand) border-brand'
+                          : 'bg-(--bg-input) text-(--text-secondary) border-(--border) hover:border-brand hover:text-brand'
                       }`}
                     >
                       {f}
@@ -658,7 +658,7 @@ export default function RegistroPage() {
 
               {/* Motivación - selección múltiple */}
               <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">¿Cuáles son tus motivaciones? <span className="text-[#FF5E4B]">*</span> <span className="font-normal text-[var(--text-secondary)]/50">(elige todas las que apliquen)</span></label>
+                <label className="text-xs font-semibold ">¿Cuáles son tus motivaciones? <span className="text-[#FF5E4B]">*</span> <span className="font-normal ">(elige todas las que apliquen)</span></label>
                 <div className="flex flex-col gap-2">
                   {MOTIVACIONES.map(m => {
                     const activo = motivaciones.includes(m)
@@ -669,8 +669,8 @@ export default function RegistroPage() {
                         onClick={() => toggleMotivacion(m)}
                         className={`w-full px-4 py-2.5 rounded-2xl text-sm font-semibold border text-left transition-all ${
                           activo
-                            ? 'bg-[var(--color-brand-light)] text-[var(--color-brand)] border-[var(--color-brand)]'
-                            : 'bg-[var(--bg-input)] text-[var(--text-secondary)] border-[var(--border)] hover:border-[var(--color-brand)]/50'
+                            ? 'bg-brand-light text-brand border-brand'
+                            : 'bg-(--bg-input) text-(--text-secondary) border-(--border) '
                         }`}
                       >
                         {activo && <Check size={14} strokeWidth={2.5} className="inline mr-2" />}
@@ -685,23 +685,23 @@ export default function RegistroPage() {
               <div
                 className={`flex items-center justify-between gap-4 px-4 py-3.5 rounded-2xl border cursor-pointer transition-all ${
                   quiereAsesoria
-                    ? 'bg-[var(--color-brand-light)] border-[var(--color-brand)]'
-                    : 'bg-[var(--bg-input)] border-[var(--border)] hover:border-[var(--color-brand)]/40'
+                    ? 'bg-brand-light border-brand'
+                    : 'bg-(--bg-input) border-(--border) '
                 }`}
                 onClick={() => setQuiereAsesoria(v => !v)}
               >
                 <div className="flex items-center gap-3">
-                  <Headset size={20} className={quiereAsesoria ? 'text-[var(--color-brand)]' : 'text-[var(--text-placeholder)]'} />
+                  <Headset size={20} className={quiereAsesoria ? 'text-brand' : 'text-(--text-placeholder)'} />
                   <div>
-                    <p className="text-sm font-semibold text-[var(--text-primary)]">Asesoría personalizada</p>
-                    <p className="text-xs text-[var(--text-secondary)]/60">Un experto te contactará directamente para guiarte de forma personalizada.</p>
+                    <p className="text-sm font-semibold text-(--text-primary)">Asesoría personalizada</p>
+                    <p className="text-xs ">Un experto te contactará directamente para guiarte de forma personalizada.</p>
                   </div>
                 </div>
                 <div
-                  className={`w-11 h-6 rounded-full transition-all flex items-center px-0.5 ${quiereAsesoria ? 'bg-[var(--color-brand)]' : 'bg-[var(--border)]'}`}
+                  className={`w-11 h-6 rounded-full transition-all flex items-center px-0.5 ${quiereAsesoria ? 'bg-brand' : 'bg-(--border)'}`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full bg-primary shadow transition-transform ${quiereAsesoria ? 'translate-x-5' : 'translate-x-0'}`}
+                    className={`w-5 h-5 rounded-full bg-primary shadow-sm transition-transform ${quiereAsesoria ? 'translate-x-5' : 'translate-x-0'}`}
                   />
                 </div>
               </div>
@@ -710,7 +710,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(1) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-(--border) text-brand font-semibold text-sm hover:bg-(--bg-hover) transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
@@ -719,7 +719,7 @@ export default function RegistroPage() {
                     type="button"
                     onClick={handleSolicitarAsesoria}
                     disabled={loading}
-                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-brand text-(--text-on-brand) font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed"
                     style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                   >
                     {loading ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Enviando...</> : 'Solicitar asesoría'}
@@ -729,7 +729,7 @@ export default function RegistroPage() {
                     type="button"
                     onClick={avanzarPaso2}
                     disabled={loading}
-                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-brand text-(--text-on-brand) font-bold text-sm hover:opacity-90 active:scale-95 transition-all mt-0 disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                     style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                   >
                     Siguiente <ArrowRight size={16} strokeWidth={2.5} />
@@ -745,13 +745,13 @@ export default function RegistroPage() {
           {paso === 3 && (
             <div className="flex flex-col gap-5">
               <div>
-                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Crea tu contraseña</h1>
-                <p className="text-sm text-[var(--text-secondary)]/80">Elige una contraseña segura para proteger tu cuenta.</p>
+                <h1 className="text-2xl font-bold text-(--text-primary) mb-1">Crea tu contraseña</h1>
+                <p className="text-sm ">Elige una contraseña segura para proteger tu cuenta.</p>
               </div>
 
               {/* Contraseña */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Contraseña</label>
+                <label className="text-xs font-semibold ">Contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwd ? 'text' : 'password'}
@@ -764,14 +764,14 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwd(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors hover-pop hover-press"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-placeholder) hover:text-brand transition-colors hover-pop hover-press"
                   >
                     {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
                 {/* Indicador de fortaleza + reglas */}
                 <div className="flex flex-col gap-1.5 mt-0.5">
-                  <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-(--border) rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-300"
                       style={{ width: password ? fuerzaCfg.width : '0%', background: fuerzaCfg.color }}
@@ -798,8 +798,8 @@ export default function RegistroPage() {
                     ].map(({ ok, texto }) => (
                       <div key={texto} className="flex items-center gap-2">
                         {ok
-                          ? <CheckCircle size={14} className="text-[#38B98E] flex-shrink-0" />
-                          : <Circle size={14} className="text-secondary opacity-40 flex-shrink-0" />
+                          ? <CheckCircle size={14} className="text-[#38B98E] shrink-0" />
+                          : <Circle size={14} className="text-secondary opacity-40 shrink-0" />
                         }
                         <span className={`text-xs font-medium ${ok ? 'text-[#38B98E]' : 'text-secondary opacity-70'}`}>{texto}</span>
                       </div>
@@ -810,7 +810,7 @@ export default function RegistroPage() {
 
               {/* Confirmar contraseña */}
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[var(--text-secondary)]/70">Confirmar contraseña</label>
+                <label className="text-xs font-semibold ">Confirmar contraseña</label>
                 <div className="relative">
                   <input
                     type={showPwdConf ? 'text' : 'password'}
@@ -825,7 +825,7 @@ export default function RegistroPage() {
                   <button
                     type="button"
                     onClick={() => setShowPwdConf(v => !v)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-placeholder)] hover:text-[var(--color-brand)] transition-colors hover-pop hover-press"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-placeholder) hover:text-brand transition-colors hover-pop hover-press"
                   >
                     {showPwdConf ? <EyeSlash size={18} /> : <Eye size={18} />}
                   </button>
@@ -841,7 +841,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(2) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-(--border) text-brand font-semibold text-sm hover:bg-(--bg-hover) transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
@@ -849,7 +849,7 @@ export default function RegistroPage() {
                   type="button"
                   onClick={avanzarPaso3}
                   disabled={!password || !passwordConfirm || password !== passwordConfirm || password.length < 8}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-[var(--color-brand)] text-[var(--text-on-brand)] font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-full bg-brand text-(--text-on-brand) font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-60 disabled:cursor-not-allowed hover-slide-r"
                   style={{ boxShadow: '0 6px 20px var(--color-brand-light)' }}
                 >
                   Siguiente <ArrowRight size={16} strokeWidth={2.5} />
@@ -864,13 +864,13 @@ export default function RegistroPage() {
           {paso === 4 && (
             <div className="flex flex-col gap-5">
               <div>
-                <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1">Ya casi terminas</h1>
-                <p className="text-sm text-[var(--text-secondary)]/80">Solo confirma que leíste los documentos y listo.</p>
+                <h1 className="text-2xl font-bold text-(--text-primary) mb-1">Ya casi terminas</h1>
+                <p className="text-sm ">Solo confirma que leíste los documentos y listo.</p>
               </div>
 
               {/* Documentos legales - patrón Bancolombia */}
               <div className="flex flex-col gap-2">
-                <p className="text-xs font-semibold text-[var(--text-secondary)]/70">
+                <p className="text-xs font-semibold ">
                   Revisa y acepta los documentos
                 </p>
 
@@ -884,15 +884,15 @@ export default function RegistroPage() {
                   }}
                 >
                   <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <FileText size={18} className="text-[var(--color-brand)]" />
+                    <FileText size={18} className="text-brand" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight">Términos y condiciones</p>
-                    <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
+                    <p className="text-sm font-semibold text-(--text-primary) leading-tight">Términos y condiciones</p>
+                    <p className="text-xs  mt-0.5">Toca para ver qué aceptas</p>
                   </div>
                   {aceptoTerminos
-                    ? <CheckCircle size={22} className="text-[var(--color-brand)] flex-shrink-0" />
-                    : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
+                    ? <CheckCircle size={22} className="text-brand shrink-0" />
+                    : <CaretRight size={16} className=" shrink-0" />
                   }
                 </button>
 
@@ -906,15 +906,15 @@ export default function RegistroPage() {
                   }}
                 >
                   <div style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0, background: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <ShieldCheck size={18} className="text-[var(--color-brand)]" />
+                    <ShieldCheck size={18} className="text-brand" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-[var(--text-primary)] leading-tight">Política de privacidad y datos</p>
-                    <p className="text-xs text-[var(--text-secondary)]/60 mt-0.5">Toca para ver qué aceptas</p>
+                    <p className="text-sm font-semibold text-(--text-primary) leading-tight">Política de privacidad y datos</p>
+                    <p className="text-xs  mt-0.5">Toca para ver qué aceptas</p>
                   </div>
                   {aceptoPrivacidad
-                    ? <CheckCircle size={22} className="text-[var(--color-brand)] flex-shrink-0" />
-                    : <CaretRight size={16} className="text-[var(--text-secondary)]/40 flex-shrink-0" />
+                    ? <CheckCircle size={22} className="text-brand shrink-0" />
+                    : <CaretRight size={16} className=" shrink-0" />
                   }
                 </button>
               </div>
@@ -925,10 +925,10 @@ export default function RegistroPage() {
                 onClick={() => setSuscritoNewsletter(v => !v)}
               >
                 {suscritoNewsletter
-                  ? <CheckSquare size={20} className="text-[var(--color-brand)] flex-shrink-0 mt-0.5" />
-                  : <Square size={20} className="text-[var(--text-secondary)]/40 flex-shrink-0 mt-0.5 group-hover:text-[var(--color-brand)]/60 transition-colors" />
+                  ? <CheckSquare size={20} className="text-brand shrink-0 mt-0.5" />
+                  : <Square size={20} className=" shrink-0 mt-0.5  transition-colors" />
                 }
-                <span className="text-sm text-[var(--text-secondary)]/70 group-hover:text-[var(--text-primary)] transition-colors leading-snug">
+                <span className="text-sm  group-hover:text-(--text-primary) transition-colors leading-snug">
                   Quiero recibir novedades sobre economía circular
                 </span>
               </label>
@@ -951,7 +951,7 @@ export default function RegistroPage() {
                 <button
                   type="button"
                   onClick={() => { setError(''); setPaso(3) }}
-                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-[var(--border)] text-[var(--color-brand)] font-semibold text-sm hover:bg-[var(--bg-hover)] transition-all hover-pop hover-press"
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-full border border-(--border) text-brand font-semibold text-sm hover:bg-(--bg-hover) transition-all hover-pop hover-press"
                 >
                   <ArrowLeft size={15} strokeWidth={2.5} /> Atrás
                 </button>
@@ -1014,7 +1014,7 @@ export default function RegistroPage() {
               {(modalDoc === 'terminos' ? PUNTOS_TERMINOS : PUNTOS_PRIVACIDAD).map((punto, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: isDark ? 'rgba(214,243,145,0.15)' : 'rgba(0,130,124,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <Check size={11} strokeWidth={2.5} className="text-[var(--color-brand)]" />
+                    <Check size={11} strokeWidth={2.5} className="text-brand" />
                   </div>
                   <p style={{ margin: 0, fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.55 }}>{punto}</p>
                 </div>

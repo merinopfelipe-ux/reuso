@@ -66,7 +66,7 @@ export function B2BChartCard({
   const total = data.reduce((sum, item) => sum + item.value, 0)
 
   return (
-    <div className={`group rounded-[12px] border ${cardBg} p-3 lg:p-2 xl:p-3 flex flex-col justify-center h-full cursor-default`} style={style}>
+    <div className={`group rounded-card border ${cardBg} p-3 lg:p-2 xl:p-3 flex flex-col justify-center h-full cursor-default`} style={style}>
       {/* Cabecera — mismo patrón exacto que KpiCard ("Tiempo de apertura",
           "Muebles cotizados"): ícono a la izquierda, título con
           block/xl:inline para partir a 2 líneas hasta desktop, directriz
@@ -79,7 +79,7 @@ export function B2BChartCard({
           ver por cantidad de clientes o por monto cerrado. */}
       <div className="flex items-center justify-between mb-3 lg:mb-2 xl:mb-3 z-10 w-full gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          <User size={14} className="text-[var(--color-info)] flex-shrink-0" />
+          <User size={14} className="text-info shrink-0" />
           <p className={`text-[12px] font-semibold leading-tight font-sans ${ts}`} style={{ fontFamily: "'Open Sans', sans-serif", fontWeight: 600, fontStyle: 'normal' }}>
             <span className="block xl:inline">Tipo</span>
             <span className="hidden xl:inline"> </span>
@@ -89,7 +89,7 @@ export function B2BChartCard({
         <button
           onClick={() => setModalAbierto(true)}
           title="Ver por monto o por clientes"
-          className={`p-1.5 rounded-md hover-pop hover:bg-[var(--bg-hover)] transition-colors flex-shrink-0 ${ts}`}
+          className={`p-1.5 rounded-md hover-pop hover:bg-(--bg-hover) transition-colors shrink-0 ${ts}`}
         >
           <Pencil size={12} />
         </button>
@@ -111,7 +111,7 @@ export function B2BChartCard({
               ancha de nuevo). Antes solo tenía 2 niveles y mobile heredaba
               por error el tamaño chico pensado para tablet (bug real
               reportado: "se ve muy pequeño en mobile"). */}
-          <div className="w-24 h-24 lg:w-16 lg:h-16 xl:w-24 xl:h-24 2xl:w-28 2xl:h-28 flex-shrink-0 relative">
+          <div className="w-24 h-24 lg:w-16 lg:h-16 xl:w-24 xl:h-24 2xl:w-28 2xl:h-28 shrink-0 relative">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -162,7 +162,7 @@ export function B2BChartCard({
         onClose={() => setModalAbierto(false)}
         titulo="Tipo de cliente"
         descripcion="Elige cómo repartir B2B/B2C: por cantidad de cotizaciones cerradas ganadas, o por el monto total de esas cotizaciones."
-        icono={<User size={20} className="text-[var(--color-info)]" />}
+        icono={<User size={20} className="text-info" />}
         colorIcono="var(--color-info)"
         textoConfirmar="Listo"
         onConfirmar={() => setModalAbierto(false)}
@@ -171,14 +171,14 @@ export function B2BChartCard({
         <div className="flex flex-col gap-2 pt-1">
           <button
             onClick={() => setModoVista('clientes')}
-            className={`text-left rounded-lg border p-3 transition-colors ${modoVista === 'clientes' ? 'border-[var(--color-brand)] bg-[var(--color-brand)]/5' : 'border-[var(--border)] bg-[var(--bg-card)] hover:border-[var(--color-brand)]/40'}`}
+            className={`text-left rounded-lg border p-3 transition-colors ${modoVista === 'clientes' ? 'border-brand ' : 'border-(--border) bg-(--bg-card) '}`}
           >
             <p className={`text-sm font-semibold ${tp}`}>Por clientes</p>
             <p className={`text-xs mt-0.5 ${ts}`}>Cuenta cuántas cotizaciones cerradas ganadas son de cada tipo.</p>
           </button>
           <button
             onClick={() => setModoVista('monto')}
-            className={`text-left rounded-lg border p-3 transition-colors ${modoVista === 'monto' ? 'border-[var(--color-brand)] bg-[var(--color-brand)]/5' : 'border-[var(--border)] bg-[var(--bg-card)] hover:border-[var(--color-brand)]/40'}`}
+            className={`text-left rounded-lg border p-3 transition-colors ${modoVista === 'monto' ? 'border-brand ' : 'border-(--border) bg-(--bg-card) '}`}
           >
             <p className={`text-sm font-semibold ${tp}`}>Por monto</p>
             <p className={`text-xs mt-0.5 ${ts}`}>Suma el valor total cerrado ganado de cada tipo, en pesos.</p>

@@ -128,7 +128,7 @@ Aplica a cualquier archivo que suba un usuario (empresa_admin, super_admin subie
 - Un solo uso (invalidar tras aceptar)
 - Verificar que el email del token coincida con el email de registro
 
-## Middleware Next.js (middleware.ts)
+## Proxy de Next.js (`src/proxy.ts`, antes middleware.ts hasta Next 15)
 - Proteger TODAS las rutas bajo (dashboard), (empresa), (admin)
 - Redirigir a /login si no hay sesión válida
 - Verificar rol del usuario contra la ruta solicitada
@@ -183,7 +183,7 @@ RLS real: solo `super_admin` puede hacer `SELECT` (policy `logs_super_admin_read
 ## Validación de rol client-side — solo UX
 - El UI puede ocultar botones, menús o secciones según el rol del usuario para mejorar la experiencia
 - Esto es decorativo — un usuario malicioso puede ignorar estas restricciones client-side
-- La autorización real ocurre en: middleware.ts, API routes, y RLS de Supabase
+- La autorización real ocurre en: `src/proxy.ts`, API routes, y RLS de Supabase
 - Patrón correcto: mostrar/ocultar con condicional en JSX basado en session.user.rol
 - Patrón incorrecto: proteger rutas o datos solo con condicionales en Client Components
 

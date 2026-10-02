@@ -373,7 +373,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
       )}
 
       {/* Tabla */}
-      <div className="overflow-x-auto border-t border-[var(--border)]">
+      <div className="overflow-x-auto border-t border-(--border)">
         {data.length === 0 ? (
           <div style={{ padding: '40px 20px', textAlign: 'center', color: TEXT_MED }}>
             <p style={{ fontSize: 14, margin: 0 }}>
@@ -383,7 +383,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
         ) : (
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
-                <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                <tr className="bg-(--bg-table-header) text-brand">
                   <SortTh col="fecha" sort={sort} onToggle={toggleSort} align="center">Fecha</SortTh>
                   {mostrarUsuario && (
                     <SortTh col="usuario_nombre" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
@@ -398,25 +398,25 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                     <tr
                       key={c.id}
                       onClick={() => setDetalleAbierto(c)}
-                      className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                        idx % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                      className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-[var(--text-secondary)] text-center">
+                      <td className="px-4 py-3 whitespace-nowrap text-(--text-secondary) text-center">
                         {formatFecha(c.fecha)}
                       </td>
                       {mostrarUsuario && (
-                        <td className="px-4 py-3 text-[var(--color-brand)]">
+                        <td className="px-4 py-3 text-brand">
                           {c.usuario_nombre ?? '-'}
                         </td>
                       )}
-                      <td className="px-4 py-3 text-[var(--text-secondary)]" style={{ maxWidth: 280 }}>
+                      <td className="px-4 py-3 text-(--text-secondary)" style={{ maxWidth: 280 }}>
                         <span className="block overflow-hidden text-ellipsis whitespace-nowrap">
                           {resumenItems(c.detalle_json)}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">
+                      <td className="px-4 py-3 font-semibold text-brand text-right whitespace-nowrap">
                         {formatNumero(c.total_co2, { unidad: 'kg' })}
                       </td>
                     </tr>
@@ -570,11 +570,11 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
               <p style={{ fontSize: 12, fontWeight: 700, color: TEXT_MED, margin: '0 0 10px' }}>
                 Materiales reutilizados
               </p>
-              <div className="rounded-[12px] border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
+              <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
-                      <tr className="bg-[var(--bg-table-header)] text-[var(--color-brand)]">
+                      <tr className="bg-(--bg-table-header) text-brand">
                         <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Material</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Peso / Cant.</th>
                         <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂ eq</th>
@@ -585,25 +585,25 @@ function DetalleModal({ calculo, onClose }: { calculo: CalculoFila; onClose: () 
                       return (
                         <tr
                           key={i}
-                          className={`cursor-pointer transition-colors duration-150 hover:bg-[var(--bg-table-hover)] ${
-                            i % 2 === 1 ? 'bg-[var(--bg-zebra)]' : 'bg-[var(--bg-card)]'
+                          className={`cursor-pointer transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                            i % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
                           }`}
                           style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}
                         >
-                          <td className="px-4 py-3 text-[var(--text-primary)]">
+                          <td className="px-4 py-3 text-(--text-primary)">
                             <div className="flex items-start gap-2">
                               <div>
                                 <span className="block font-semibold">{item.nombre}</span>
-                                <span className="block text-xs text-[var(--text-secondary)]">{item.categoria}</span>
+                                <span className="block text-xs text-(--text-secondary)">{item.categoria}</span>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-[var(--text-secondary)] text-right whitespace-nowrap">
+                          <td className="px-4 py-3 text-(--text-secondary) text-right whitespace-nowrap">
                             {item.peso_kg != null
                               ? formatNumero(item.peso_kg, { unidad: 'kg' })
                               : `${item.cantidad ?? 1} u.`}
                           </td>
-                          <td className="px-4 py-3 font-semibold text-[var(--color-brand)] text-right whitespace-nowrap">
+                          <td className="px-4 py-3 font-semibold text-brand text-right whitespace-nowrap">
                             {formatNumero(item.co2, { unidad: 'kg' })}
                           </td>
                         </tr>

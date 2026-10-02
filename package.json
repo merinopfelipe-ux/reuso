@@ -21,7 +21,8 @@
     "prepare": "node .husky/install.mjs",
     "qa:auto": "node scripts/qa-automatico.mjs",
     "qa:seed": "node --env-file=.env.local scripts/sembrar-datos-qa.mjs",
-    "qa:clean": "node --env-file=.env.local scripts/limpiar-datos-qa.mjs"
+    "qa:clean": "node --env-file=.env.local scripts/limpiar-datos-qa.mjs",
+    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit -p ."
   },
   "dependencies": {
     "@lucide/lab": "^0.7.0",
@@ -50,18 +51,20 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24.19.1",
     "@types/pdf-parse": "^1.1.5",
     "@types/pngjs": "^6.0.5",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@typescript/native": "npm:typescript@^7.0.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.3.8",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
     "postcss": "^8.5.28",
-    "tailwindcss": "^3.4.1",
+    "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "vitest": "^5.0.3"
   },

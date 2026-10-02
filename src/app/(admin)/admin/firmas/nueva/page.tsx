@@ -8,7 +8,7 @@ import { Selector } from '@/components/ui/selector'
 import { TriangleAlert as Warning } from '@/components/ui/icons'
 import { DOCUMENTOS_META } from '@/lib/firmas/documentos-meta'
 
-const inputSt = 'w-full px-4 py-3 rounded-2xl border text-sm outline-none bg-[var(--bg-input)] border-[var(--border)] text-[var(--text-primary)]'
+const inputSt = 'w-full px-4 py-3 rounded-2xl border text-sm outline-hidden bg-(--bg-input) border-(--border) text-(--text-primary)'
 
 export default function NuevaSolicitudFirmaPage() {
   const router = useRouter()
@@ -22,7 +22,7 @@ export default function NuevaSolicitudFirmaPage() {
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const ts = 'text-[var(--text-secondary)]'
+  const ts = 'text-(--text-secondary)'
 
   async function enviar() {
     if (!tipoDocumento || !nombre.trim() || !tipoIdentidad || !numeroIdentidad.trim() || !email.trim()) {
@@ -60,12 +60,12 @@ export default function NuevaSolicitudFirmaPage() {
         showBack
       />
 
-      <div className="rounded-3xl border p-5 sm:p-7 bg-[var(--bg-card)] border-[var(--border)]">
+      <div className="rounded-3xl border p-5 sm:p-7 bg-(--bg-card) border-(--border)">
         <section>
           <div className="flex gap-3 mb-4">
             <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00827C] text-xs font-bold text-white">1</span>
             <div>
-              <h2 className="text-sm font-bold text-[var(--text-primary)]">Elige el documento</h2>
+              <h2 className="text-sm font-bold text-(--text-primary)">Elige el documento</h2>
               <p className={`text-xs mt-0.5 ${ts}`}>La persona podrá leerlo completo antes de firmar.</p>
             </div>
           </div>
@@ -78,11 +78,11 @@ export default function NuevaSolicitudFirmaPage() {
           />
         </section>
 
-        <section className="mt-7 pt-6 border-t border-[var(--border)]">
+        <section className="mt-7 pt-6 border-t border-(--border)">
           <div className="flex gap-3 mb-4">
             <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00827C] text-xs font-bold text-white">2</span>
             <div>
-              <h2 className="text-sm font-bold text-[var(--text-primary)]">Identifica al destinatario</h2>
+              <h2 className="text-sm font-bold text-(--text-primary)">Identifica al destinatario</h2>
               <p className={`text-xs mt-0.5 ${ts}`}>Estos datos se mostrarán como referencia en la invitación; la persona podrá confirmarlos antes de firmar.</p>
             </div>
           </div>
@@ -119,9 +119,9 @@ export default function NuevaSolicitudFirmaPage() {
           </div>
         </section>
 
-        <section className="mt-7 pt-6 border-t border-[var(--border)]">
-          <div className="rounded-2xl bg-[#00827C]/[0.06] border border-[#00827C]/20 p-4">
-            <p className="text-sm font-semibold text-[var(--text-primary)]">3. Envía la invitación</p>
+        <section className="mt-7 pt-6 border-t border-(--border)">
+          <div className="rounded-2xl bg-[#00827C]/6 border border-[#00827C]/20 p-4">
+            <p className="text-sm font-semibold text-(--text-primary)">3. Envía la invitación</p>
             <p className={`text-xs leading-relaxed mt-1 ${ts}`}>El correo incluirá un enlace personal que expira en 7 días. No contiene archivos adjuntos ni solicita contraseñas o pagos.</p>
           </div>
         </section>
