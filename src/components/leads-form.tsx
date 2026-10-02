@@ -188,6 +188,17 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
             </>
           )}
         </button>
+
+        <p className="text-[11px] text-center text-[var(--text-placeholder)] m-0 mt-1">
+          Al enviar, aceptas nuestra{' '}
+          <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
+            Política de Privacidad
+          </a>{' '}
+          y{' '}
+          <a href="/legal/terminos" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
+            Términos y Condiciones
+          </a>.
+        </p>
       </form>
     </div>
   )

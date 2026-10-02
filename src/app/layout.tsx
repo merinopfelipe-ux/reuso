@@ -25,10 +25,9 @@ export const metadata: Metadata = {
   // cotización dentro de la app autenticada, no contenido para descargar).
   other: { edge: 'no-image-actions', 'p:domain_verify': '2bbca349f7127cd43464aa3906c5b72b' },
   verification: { google: 'PCrWZ6koqycbUa-4rxqzVwD8cli1_bJxXbr0QxpJVAQ' },
-  icons: {
-    icon: '/logo-icono.svg',
-    apple: '/logo-icono.svg',
-  },
+  // Los íconos los detecta Next.js automáticamente desde src/app/ por
+  // convención: favicon.ico, icon.svg y apple-icon.png. No se declaran a mano
+  // para evitar links duplicados o rutas que apunten a archivos inexistentes.
 }
 
 export default function RootLayout({

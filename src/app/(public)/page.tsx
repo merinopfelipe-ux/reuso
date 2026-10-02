@@ -102,7 +102,7 @@ async function obtenerDatosReales() {
 export const metadata: Metadata = {
   metadataBase: new URL('https://calculadoradereuso.com'),
   title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental y Huella de Carbono',
-  description: 'Plataforma de sostenibilidad para medir el impacto ambiental de tu empresa: huella de carbono y responsabilidad social, con estimaciones documentadas. Facilita el seguimiento con el Pasaporte Digital de Producto (DPP) para tus reportes corporativos.',
+  description: 'Plataforma de sostenibilidad para medir huella de carbono e impacto ambiental corporativo. Emite Pasaportes Digitales (DPP) con QR y reportes auditables.',
   keywords: [
     'software de sostenibilidad',
     'sostenibilidad empresarial colombia',
