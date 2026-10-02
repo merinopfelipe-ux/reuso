@@ -508,14 +508,14 @@ const PLAN_THEMES: Record<string, {
     priceHoverDark: 'group-hover:text-[#59A6E4]',
     dividerLight: 'border-[#59A6E4]/25',
     dividerDark: 'border-[#59A6E4]/25',
-    badgeBg: 'bg-[#59A6E4]',
+    badgeBg: 'bg-[#1864A5]',
     badgeText: 'text-white',
     checkQuietLight: 'bg-[#59A6E4]/15 border border-[#59A6E4]/25 text-[#1E5D8F]',
     checkQuietDark: 'bg-[#59A6E4]/25 border border-[#59A6E4]/30 text-[#59A6E4]',
     checkHoverLight: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.4)]',
     checkHoverDark: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.45)]',
-    btnPopularLight: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/25 hover:shadow-[0_8px_20px_rgba(89,166,228,0.4)]',
-    btnPopularDark: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/30 hover:shadow-[0_8px_20px_rgba(89,166,228,0.45)]',
+    btnPopularLight: 'bg-[#1864A5] text-white hover:bg-[#124E82] shadow-md shadow-[#1864A5]/25 hover:shadow-[0_8px_20px_rgba(24,100,165,0.4)]',
+    btnPopularDark: 'bg-[#1864A5] text-white hover:bg-[#124E82] shadow-md shadow-[#1864A5]/30 hover:shadow-[0_8px_20px_rgba(24,100,165,0.45)]',
     btnOutlineLight: 'border border-[#59A6E4]/45 text-[#1E5D8F] bg-white hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4] shadow-sm hover:shadow-[0_8px_20px_rgba(89,166,228,0.25)]',
     btnOutlineDark: 'border border-[#59A6E4]/45 text-[#59A6E4] bg-[#59A6E4]/15 hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4]',
   },
@@ -750,9 +750,9 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
           boxShadow: isDark ? `0 20px 50px rgba(71,71,71,0.55), 0 0 0 1px ${pasoActivo.color}26` : `0 20px 50px ${pasoActivo.color}33, inset 0 1px 0 rgba(255,255,255,0.9)`,
         }}
       >
-        <p className="text-[10px] lg:text-[11px] font-semibold opacity-60 text-[var(--text-primary)]">Pasaporte Digital de Producto</p>
+        <p className="text-[10px] lg:text-[11px] font-semibold opacity-80 text-[var(--text-primary)]">Pasaporte Digital de Producto</p>
         <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-[var(--text-primary)] mt-0.5">Activo circular</p>
-        <p className="text-[10px] lg:text-[11px] font-mono opacity-50 text-[var(--text-primary)] mt-0.5">DPP-7F3A-2026</p>
+        <p className="text-[10px] lg:text-[11px] font-mono opacity-80 text-[var(--text-primary)] mt-0.5">DPP-7F3A-2026</p>
         <div className="h-px my-[4%]" style={{ background: 'var(--border)' }} />
 
         <div className="flex-1 flex flex-col justify-between gap-1.5">
@@ -781,7 +781,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
                 >
                   {hecho && <Check size={12} strokeWidth={3} sinAnimacion />}
                 </div>
-                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-[var(--text-primary)] transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-45'}`}>
+                <span className={`text-[11px] lg:text-xs xl:text-[13px] font-semibold leading-tight text-[var(--text-primary)] transition-opacity duration-500 ${hecho ? 'opacity-100' : 'opacity-80'}`}>
                   {paso.label}
                 </span>
               </div>
@@ -791,7 +791,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
 
         <div className="mt-[4%] rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 transition-colors duration-500" style={{ background: `${pasoActivo.color}${isDark ? '1F' : '1A'}` }}>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold opacity-60 text-[var(--text-primary)]">Huella SHA-256 encadenada</p>
+            <p className="text-[10px] font-semibold opacity-80 text-[var(--text-primary)]">Huella SHA-256 encadenada</p>
             <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-[var(--text-primary)]">{DPP_HASHES[activo]}…</p>
           </div>
           <QrCode size={22} strokeWidth={1.8} className="flex-shrink-0 text-[var(--text-primary)] opacity-70" sinAnimacion />
@@ -2199,8 +2199,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <div
                 className={`flex-shrink-0 flex items-center px-3.5 py-1.5 rounded-full border border-dashed text-xs font-semibold select-none ${
                   isDark
-                    ? 'border-white/15 text-white/50 bg-white/[0.02]'
-                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/[0.02]'
+                    ? 'border-white/15 text-white/70 bg-white/[0.02]'
+                    : 'border-[#00827C]/20 text-[#474747]/80 bg-[#00827C]/[0.02]'
                 }`}
               >
                 <span>El desarrollo que tú necesites</span>
@@ -2247,8 +2247,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <div
                 className={`w-full flex items-center justify-center gap-2 px-3.5 py-2.5 lg:px-4 lg:py-3 rounded-xl md:rounded-2xl text-center text-xs md:text-xs font-semibold border border-dashed select-none transition-colors ${
                   isDark
-                    ? 'border-white/15 text-white/50 bg-white/[0.02]'
-                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/[0.02]'
+                    ? 'border-white/15 text-white/70 bg-white/[0.02]'
+                    : 'border-[#00827C]/20 text-[#474747]/80 bg-[#00827C]/[0.02]'
                 }`}
               >
                 <span className="leading-snug">El desarrollo que tú necesites</span>
