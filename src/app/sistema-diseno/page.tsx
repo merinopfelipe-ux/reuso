@@ -103,8 +103,8 @@ const DESIGN_TOKENS = [
   {
     category: 'Liquid Glass',
     tokens: [
-      { name: 'liquidGlassDay',   value: 'bg-white/35 blur-[60px] saturate-[180%]',    preview: 'glass-day',        desc: 'Cristal diurno completo' },
-      { name: 'liquidGlassNight', value: 'bg-[#D6F391]/08 blur-[60px] saturate-[200%]',   preview: 'glass-night',      desc: 'Cristal nocturno completo' },
+      { name: 'liquidGlassDay',   value: 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%]',    preview: 'glass-day',        desc: 'Cristal diurno completo' },
+      { name: 'liquidGlassNight', value: 'bg-[#D6F391]/08 backdrop-blur-[60px] backdrop-saturate-[200%]',   preview: 'glass-night',      desc: 'Cristal nocturno completo' },
       { name: 'blobAzul',         value: 'bg-[#59A6E4]/40 blur-[100px] rounded-full',   preview: 'color:#59A6E4',   desc: 'Reflejo azul de los banners' },
       { name: 'blobMenta',        value: 'bg-[#8AD0B2]/35 blur-[90px] rounded-full',    preview: 'color:#8AD0B2',   desc: 'Reflejo menta central' },
       { name: 'blobRosa',         value: 'bg-[#F3BBD3]/40 blur-[100px] rounded-full',   preview: 'color:#F3BBD3',   desc: 'Reflejo rosa de los banners' },
@@ -290,8 +290,8 @@ export default function ManualDisenoPage() {
 
   // Clases comunes de Liquid Glass - Transparencia 50% + Blur 40px
   const liquidGlassClass = isDark 
-    ? 'bg-[#D6F391]/08 backdrop-blur-[60px] saturate-[200%] border border-white/10 shadow-2xl'
-    : 'bg-white/35 backdrop-blur-[60px] saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
+    ? 'bg-[#D6F391]/08 backdrop-blur-[60px] backdrop-saturate-[200%] border border-white/10 shadow-2xl'
+    : 'bg-white/35 backdrop-blur-[60px] backdrop-saturate-[180%] border border-[#00827C]/10 shadow-[0_12px_40px_rgba(0,130,124,0.06),inset_0_2px_4px_rgba(255,255,255,0.4)]'
 
   const searchResults = [
     { title: 'Arquitectura de color', link: '#s01-color' },
@@ -834,7 +834,7 @@ export default function ManualDisenoPage() {
                 { name: 'Tarjeta Flotante (shadow-lg)', base: 'shadow-[0_12px_24px_rgba(0,130,124,0.06)]', text: 'Tarjetas en lienzo puro' },
                 { name: 'Cristal Profundo Liquid (shadow-2xl)', base: 'shadow-[0_32px_64px_rgba(0,130,124,0.15),inset_2px_2px_0_rgba(255,255,255,0.7)]', text: 'Paneles Maestros de Cristal' },
               ].map(el => (
-                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] saturate-[180%]' : 'bg-primary border border-[#00827C]/10'} ${el.base}`}>
+                <div key={el.name} className={`h-24 w-full rounded-2xl flex flex-col justify-center px-6 transition-all relative overflow-hidden ${isDark ? 'bg-white/[0.03] border border-white/10 backdrop-blur-[20px] backdrop-saturate-[180%]' : 'bg-primary border border-[#00827C]/10'} ${el.base}`}>
                   {isDark && <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/[0.05] to-transparent pointer-events-none" />}
                   <h4 className={`font-bold text-primary select-all relative z-10`}>{el.name}</h4>
                   <p className={`text-sm ${isDark ? 'text-white/60' : 'text-[#474747]'} relative z-10`}>{el.text}</p>
@@ -1485,12 +1485,12 @@ export default function ManualDisenoPage() {
           </div>
           
           <div className={`flex flex-col md:flex-row items-center justify-center gap-8 mb-8`}>
-            <div className={`flex rounded-full p-1.5 backdrop-blur-[40px] saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
+            <div className={`flex rounded-full p-1.5 backdrop-blur-[40px] backdrop-saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
               {(['USD', 'EUR', 'COP'] as const).map(cur => (
                 <button key={cur} onClick={() => setSelectedCurrency(cur)} className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${selectedCurrency === cur ? 'bg-[#00827C] text-white shadow-lg' : isDark ? 'text-white/60 hover:text-white hover:bg-white/5' : 'text-[#00827C]/60 hover:text-[#474747] hover:bg-[#00827C]/5'}`}>{cur}</button>
               ))}
             </div>
-            <div className={`flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-[40px] saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
+            <div className={`flex items-center gap-4 px-6 py-3 rounded-full backdrop-blur-[40px] backdrop-saturate-[150%] border shadow-[0_4px_20px_rgba(0,130,124,0.06)] ${isDark ? 'bg-white/10 border-white/10' : 'bg-white/50 border-[#00827C]/10'}`}>
               <span className={`text-sm font-bold ${!isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Mensual</span>
               <button onClick={() => setIsYearly(!isYearly)} className={`relative w-14 h-8 rounded-full transition-colors duration-300 ${isYearly ? 'bg-[#00827C]' : isDark ? 'bg-white/20' : 'bg-[#474747]/15'}`}><div className={`absolute top-1 w-6 h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${isYearly ? 'translate-x-7' : 'translate-x-1'}`} /></button>
               <span className={`text-sm font-bold ${isYearly ? (isDark ? 'text-white' : 'text-[#474747]') : (isDark ? 'text-white/40' : 'text-[#00827C]/40')}`}>Anual</span>

@@ -41,17 +41,16 @@ jobs:
         run: npm run test:unit
 
       - name: Auditoría de dependencias (bloquea lo crítico)
-        # Bloquea solo ante vulnerabilidades CRÍTICAS. A propósito no se usa
-        # --audit-level=high: hoy hay 6 vulnerabilidades altas, 4 de ellas en
-        # herramientas de desarrollo (eslint, postcss, glob) que no llegan al
-        # navegador del usuario, y las 2 restantes (next, xlsx) exigen
-        # actualizaciones mayores. Con "high" el CI fallaría en rojo todos los
-        # días y se volvería ruido que nadie mira, que es peor que no tenerlo.
-        run: npm audit --audit-level=critical
+        # Bloquea ante cualquier vulnerabilidad CRÍTICA, salvo las mitigadas por
+        # configuración que lista scripts/audit-criticos.mjs con su motivo
+        # (npm audit no lee next.config.mjs). A propósito no se bloquea en
+        # "high": las altas que quedan están en next 14 y en herramientas de
+        # desarrollo, y se resuelven con la actualización a Next 15.
+        run: node scripts/audit-criticos.mjs
 
       - name: Auditoría de dependencias (informe de altas)
         # No bloquea: deja el detalle visible en el registro para revisarlo
-        # cuando se decida actualizar Next.js o reemplazar xlsx.
+        # cuando se actualice Next.js.
         run: npm audit --audit-level=high || true
         continue-on-error: true
 
