@@ -2361,6 +2361,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     src={paso.image}
                     alt={paso.titulo}
                     fill
+                    loading="lazy"
+                    decoding="async"
                     sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
@@ -2870,7 +2872,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   className={`group relative p-6 sm:p-8 rounded-[2rem] overflow-hidden flex flex-col justify-between hover-card-interactive shadow-lg hover:shadow-2xl transition-all duration-300 border ${isDark ? col.borderColorDark : col.borderColorLight}`}
                 >
                   <div className="absolute inset-0 z-0">
-                    <Image src={col.image} alt={col.titulo} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500 mix-blend-luminosity" />
+                    <Image src={col.image} alt={col.titulo} fill loading="lazy" decoding="async" sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500 mix-blend-luminosity" />
                     <div className={`absolute inset-0 bg-gradient-to-br ${isDark ? col.bgGradientDark : col.bgGradientLight} opacity-95`} />
                   </div>
 
