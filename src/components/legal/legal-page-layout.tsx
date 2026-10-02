@@ -8,6 +8,7 @@ import { LegalSubmenu } from '@/components/legal-submenu'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
 import { FECHA_ACTUALIZACION_LEGAL } from '@/lib/constants/contacto'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 interface LeeTabienItem {
   href: string
@@ -128,29 +129,14 @@ export function LegalPageLayout({
         {/* ── COLUMNA PRINCIPAL ─────────────────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {/* Miga de pan - NO sticky */}
-          <nav
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 12,
-              color: 'var(--text-secondary)',
-              marginBottom: 16,
-              flexWrap: 'wrap',
-              paddingTop: 32,
-            }}
-            aria-label="Ruta de navegación"
-          >
-            <Link href="/" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-              Inicio
-            </Link>
-            <span style={{ opacity: 0.4 }}>/</span>
-            <Link href="/legal" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-              Legal
-            </Link>
-            <span style={{ opacity: 0.4 }}>/</span>
-            <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{breadcrumbLabel}</span>
-          </nav>
+          <Breadcrumb
+            items={[
+              { label: 'Inicio', href: '/' },
+              { label: 'Legal', href: '/legal' },
+              { label: breadcrumbLabel },
+            ]}
+            style={{ marginBottom: 16, paddingTop: 32 }}
+          />
 
           {/* Título STICKY - pegado debajo del header */}
           <div

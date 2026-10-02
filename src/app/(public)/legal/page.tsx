@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
@@ -70,11 +71,13 @@ export default function LegalIndexPage() {
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 32px 80px', color: 'var(--text-primary)' }}>
         {/* Breadcrumb */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-secondary)', marginBottom: 32 }}>
-          <Link href="/" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>{t.inicio}</Link>
-          <span style={{ opacity: 0.4 }}>/</span>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Legal</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: t.inicio, href: '/' },
+            { label: 'Legal' },
+          ]}
+          style={{ marginBottom: 32 }}
+        />
 
         {/* Título */}
         <div style={{ marginBottom: 28 }}>

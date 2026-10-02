@@ -15,6 +15,7 @@ import {
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { CLUSTERS_FAQ, type PreguntaFAQ } from '@/lib/faq/preguntas-frecuentes'
 import { WA_NUMBER } from '@/lib/constants/contacto'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 interface ThemeTokens {
   primary: string
@@ -404,17 +405,19 @@ export function FaqClient() {
 
       {/* ── CUERPO PRINCIPAL (MOBILE FIRST + MULTICOLUMNA DESKTOP) ── */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16 sm:pt-12 sm:pb-20">
-        {/* Miga de pan semántica */}
-        <nav aria-label="Miga de pan" className="mb-6 flex items-center gap-2 text-xs font-semibold text-(--text-secondary)">
-          <Link href="/" className="hover:text-brand transition-colors">Inicio</Link>
-          <span className="opacity-40">/</span>
-          <span className={`${tp} font-bold`}>Preguntas frecuentes</span>
-        </nav>
+        {/* Miga de pan semántica oficial (Design System) */}
+        <Breadcrumb
+          items={[
+            { label: 'Inicio', href: '/' },
+            { label: 'Preguntas frecuentes' },
+          ]}
+          className="mb-6"
+        />
 
-        {/* H1 SEO y GEO centrado a dos renglones */}
-        <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-[1.2] text-center max-w-4xl mx-auto ${tp} sm:leading-[2.5rem] lg:leading-[1]`}>
-          Preguntas frecuentes sobre sostenibilidad,
-          <br className="hidden sm:inline" /> huella de carbono y economía circular
+        {/* H1 de Alto Impacto equilibrado (sin palabras huérfanas) */}
+        <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight mb-4 leading-[1.18] text-center max-w-4xl mx-auto text-balance ${tp} sm:leading-[2.25rem] md:leading-[2.5rem] lg:leading-[1]`}>
+          Respuestas para medir tu impacto
+          <br className="hidden sm:inline" /> y liderar la economía circular
         </h1>
 
         {/* Subtítulo centrado */}

@@ -83,6 +83,7 @@ El bug de modo noche más común en este proyecto es un componente que declara s
 --color-warning: #F6BF3E   --color-info: #59A6E4
 --color-pistacho: #D6F391  --color-menta: #8AD0B2
 --color-nogal: #AD7C43     --color-rosa: #F3BBD3
+--color-violeta: #985FA1
 --color-success-content / --color-error-content / --color-warning-content / --color-info-content:
   versiones ajustadas para texto legible sobre fondo tenue de cada color (día y noche tienen valores distintos, ya definidos en globals.css — úsalas en vez de recalcular opacidades a mano).
 ```
@@ -96,7 +97,7 @@ El bug de modo noche más común en este proyecto es un componente que declara s
 ### Secuencias multicolor: SIEMPRE en orden arcoíris (norma 2026-10-01)
 Cuando un componente usa varios acentos a la vez (pasos de un flujo, tarjetas en grilla, segmentos de una barra, degradados), los colores van en el orden del arcoíris y solo con los tokens de arriba, sin inventar tonos:
 
-`#FF5E4B` rojo (error) → `#AD7C43` nogal (naranja tierra) → `#F6BF3E` amarillo (warning) → `#D6F391` pistacho → `#38B98E` verde (success) → `#8AD0B2` menta → `#00827C` verde azulado (brand) → `#59A6E4` azul (info) → `#F3BBD3` rosa (cierre violeta)
+`#FF5E4B` rojo (error) → `#AD7C43` nogal (naranja tierra) → `#F6BF3E` amarillo (warning) → `#D6F391` pistacho → `#38B98E` verde (success) → `#8AD0B2` menta → `#00827C` verde azulado (brand) → `#59A6E4` azul (info) → `#985FA1` violeta → `#F3BBD3` rosa (cierre)
 
 - Se toma un tramo consecutivo o un subconjunto que respete ese orden. Nunca se salta hacia atrás (azul antes que amarillo, rosa al inicio, verde entre dos amarillos).
 - En secuencias decorativas o de progreso se empieza desde nogal: el rojo `#FF5E4B` significa error en todo el sistema y no abre una secuencia positiva.
