@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { DudasForm } from './dudas-form'
 import { FECHA_ACTUALIZACION_LEGAL } from '@/lib/constants/contacto'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 const T = {
   ES: {
@@ -53,26 +54,14 @@ export default function DudasPage() {
         }}
       >
         {/* Breadcrumb */}
-        <nav
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            fontSize: 12,
-            color: 'var(--text-secondary)',
-            marginBottom: 28,
-          }}
-        >
-          <Link href="/" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-            {t.inicio}
-          </Link>
-          <span style={{ opacity: 0.4 }}>/</span>
-          <Link href="/legal" style={{ color: 'var(--color-brand)', textDecoration: 'none', fontWeight: 500 }}>
-            {t.legal}
-          </Link>
-          <span style={{ opacity: 0.4 }}>/</span>
-          <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{t.breadcrumb}</span>
-        </nav>
+        <Breadcrumb
+          items={[
+            { label: t.inicio, href: '/' },
+            { label: t.legal, href: '/legal' },
+            { label: t.breadcrumb },
+          ]}
+          style={{ marginBottom: 28 }}
+        />
 
         <h1
           style={{

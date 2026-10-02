@@ -69,6 +69,7 @@ import { PAISES } from '@/components/ui/selector-pais'
 import { TablaCotizadorDemo } from './components/tabla-cotizador-demo'
 import { formatearPrecioColombiano } from '@/lib/constants/pricing'
 import { InputPrecio } from '@/components/ui/formatted-number-input'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 
 const PRICING_PLANS = PLANS;
 
@@ -644,7 +645,13 @@ export default function ManualDisenoPage() {
           </div>
           <div className={`p-12 rounded-[3.5rem] grid grid-cols-2 md:grid-cols-3 gap-12 border border-[#00827C]/10 ${isDark ? 'bg-[#D6F391]/05' : 'bg-primary'} shadow-[0_12px_40px_rgba(0,130,124,0.04)]`}>
               <div className="flex flex-col gap-4 items-start">
-                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>1. Primario Reúso</span>
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>1. Botón Grande (Hero / CTA Shimmer)</span>
+                <button className={`animate-shimmer group inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-7 sm:py-3.5 rounded-full font-bold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_8px_32px_rgba(214,243,145,0.3)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_8px_32px_rgba(0,130,124,0.35)]'}`}>
+                  Conoce tu impacto <ArrowRight size={15} strokeWidth={2.5} className="transition-transform duration-300 group-hover:translate-x-1" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-4 items-start">
+                <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>2. Primario Reúso</span>
                 <button className={`px-8 py-4 rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white shadow-[0_8px_20px_rgba(0,130,124,0.2)]'}`}>Acción Primaria</button>
               </div>
               <div className="flex flex-col gap-4 items-start">
@@ -1618,6 +1625,7 @@ export default function ManualDisenoPage() {
                 <code className="text-[9px] font-mono opacity-40">src/components/ui/button.tsx</code>
               </div>
               <div className="flex flex-wrap items-center gap-4 mb-3">
+                <Button variant="primary" size="lg" icon={<ArrowRight size={16} strokeWidth={2.5} />}>Botón Grande (Hero / CTA)</Button>
                 <Button variant="primary">Primario</Button>
                 <Button variant="secondary">Secundario</Button>
                 <Button variant="danger">Peligro</Button>
@@ -1638,7 +1646,7 @@ export default function ManualDisenoPage() {
                 <Button variant="primary" disabled>Deshabilitado</Button>
               </div>
               <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
-                {'<Button variant="primary" icon={<Save size={16} />} loading={guardando}>Guardar</Button>'}
+                {'<Button variant="primary" size="lg" icon={<ArrowRight size={16} />}>Crear cuenta y comenzar gratis</Button>\n<Button variant="primary" icon={<Save size={16} />} loading={guardando}>Guardar</Button>'}
               </div>
             </div>
 
@@ -1865,6 +1873,87 @@ export default function ManualDisenoPage() {
 
               <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-3 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
                 {'import { formatCOP, formatEnteroMillones } from \'@/lib/format\'\nimport { formatearPrecioColombiano } from \'@/lib/constants/pricing\'\n// Ejemplo: formatCOP(1490000) -> "$ 1\'490.000"'}
+              </div>
+            </div>
+
+            {/* I. BREADCRUMB / MIGA DE PAN */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`text-sm font-semibold font-sans ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>I. Breadcrumb / Miga de Pan (Estándar Legales)</h3>
+                <code className="text-[9px] font-mono opacity-40">src/components/ui/breadcrumb.tsx</code>
+              </div>
+              <p className={`text-xs mb-4 ${isDark ? 'text-white/50' : 'text-[#474747]/70'}`}>
+                <strong>Estándar canónico obligatorio en toda la plataforma (basado en Legales):</strong> Los enlaces ancestros siempre van en color de marca (<code>var(--color-brand)</code> / <code>#00827C</code>) con peso medio (<code>500</code>). El separador <code>/</code> tiene opacidad tenue (<code>0.4</code>). La página actual (último ítem inactivo) va en color principal (<code>var(--text-primary)</code>) con peso medio (<code>500</code>, <em>prohibido usar negrita bold 700/800</em>). Tamaño estricto <code>12px</code> y espaciado de <code>6px</code>.
+              </p>
+
+              {/* Demos interactivos */}
+              <div className="p-6 rounded-2xl border mb-4 space-y-4" style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,130,124,0.03)', borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,130,124,0.12)' }}>
+                <div>
+                  <span className="text-[10px] font-bold tracking-wider text-[var(--text-secondary)] block mb-2">Ejemplo 2 niveles (Faq / Secciones):</span>
+                  <div className="p-3 rounded-xl border bg-[var(--bg-card)] border-[var(--border)]">
+                    <Breadcrumb
+                      items={[
+                        { label: 'Inicio', href: '/' },
+                        { label: 'Preguntas frecuentes' },
+                      ]}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold tracking-wider text-[var(--text-secondary)] block mb-2">Ejemplo 3 niveles (Documentos Legales):</span>
+                  <div className="p-3 rounded-xl border bg-[var(--bg-card)] border-[var(--border)]">
+                    <Breadcrumb
+                      items={[
+                        { label: 'Inicio', href: '/' },
+                        { label: 'Legal', href: '/legal' },
+                        { label: 'Metodología de cálculo' },
+                      ]}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold tracking-wider text-[var(--text-secondary)] block mb-2">Ejemplo 4 niveles (Área Empresa / Pasaporte Digital):</span>
+                  <div className="p-3 rounded-xl border bg-[var(--bg-card)] border-[var(--border)]">
+                    <Breadcrumb
+                      items={[
+                        { label: 'Inicio', href: '/' },
+                        { label: 'Empresa', href: '/empresa' },
+                        { label: 'Pasaportes digitales', href: '/empresa/dpp' },
+                        { label: 'DPP-2026-0842' },
+                      ]}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Comparador de Reglas visuales */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5">
+                  <div className="text-[10px] font-black tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">✓ CORRECTO (ESTÁNDAR CANÓNICO)</div>
+                  <div className="text-xs flex items-center gap-1.5 font-medium py-1">
+                    <span className="text-[var(--color-brand)]">Inicio</span>
+                    <span className="opacity-40">/</span>
+                    <span className="text-[var(--color-brand)]">Legal</span>
+                    <span className="opacity-40">/</span>
+                    <span className="text-[var(--text-primary)]">Metodología de cálculo</span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">Enlaces en verde marca (500), separador tenue (0.4), página actual en peso 500 regular/medio.</p>
+                </div>
+                <div className="p-3.5 rounded-xl border border-rose-500/30 bg-rose-500/5">
+                  <div className="text-[10px] font-black tracking-wider text-rose-600 dark:text-rose-400 mb-1">✗ PROHIBIDO (ENLACE GRIS + TEXTO BOLD)</div>
+                  <div className="text-xs flex items-center gap-2 py-1">
+                    <span className="text-[var(--text-secondary)] line-through">Inicio</span>
+                    <span className="opacity-40">/</span>
+                    <span className="text-[var(--text-primary)] font-bold line-through">Preguntas frecuentes</span>
+                  </div>
+                  <p className="text-[11px] text-[var(--text-secondary)] mt-1">No usar gris en links ancestros ni negrita gruesa (bold 700) en el título final.</p>
+                </div>
+              </div>
+
+              <div className={`p-4 rounded-xl text-[10px] font-mono leading-normal mt-3 ${isDark ? 'bg-[#474747]/30 text-[#D6F391]' : 'bg-[#00827C]/5 text-[#00827C]'}`}>
+                {'import { Breadcrumb } from \'@/components/ui/breadcrumb\'\n\n<Breadcrumb\n  items={[\n    { label: \'Inicio\', href: \'/\' },\n    { label: \'Legal\', href: \'/legal\' },\n    { label: \'Metodología de cálculo\' },\n  ]}\n/>'}
               </div>
             </div>
 

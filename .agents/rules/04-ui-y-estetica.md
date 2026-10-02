@@ -14,12 +14,22 @@ Este pilar unifica la experiencia interactiva, los componentes y la identidad vi
 - **Regla de Íconos de Eliminación (MANDATORIO Y PERMANENTE)**
   - Prohibido usar "X". Debe usarse `<Trash />` rojo (`text-[var(--color-error)]`) sin bordes ni fondo. Al hover, `opacity-50`.
 
-- **Regla de Relleno Obligatorio de Botones (MANDATORIO Y PERMANENTE)**
+- **Regla de Relleno Obligatorio y Botón Grande de Conversión (MANDATORIO Y PERMANENTE)**
   - Todos los botones (incluso de contorno) DEBEN tener fondo sólido relleno (`bg-white` o `bg-card`).
+  - **Botón Grande / Hero CTA (Estándar Canónico):** Todo botón principal de alto impacto o conversión (como *"Conoce tu impacto"* en Hero o *"Crear cuenta y comenzar gratis"* en el cierre final) comparte idéntica estructura: cápsula `rounded-full font-bold`, animación de brillo `animate-shimmer`, micro-interacción `hover:-translate-y-1 hover:scale-105 active:scale-95`, flecha `<ArrowRight size={15} strokeWidth={2.5} className="group-hover:translate-x-1" />`, resplandor `shadow-[0_8px_32px_rgba(0,130,124,0.35)]` (modo claro) / `shadow-[0_8px_32px_rgba(214,243,145,0.3)]` (modo oscuro), disponible en componente canónico `@/components/ui/button` con `size="lg"`.
 
 - **Regla de Componentes Reutilizables (MANDATORIO Y PERMANENTE)**
   - Uso obligatorio del `@/components/ui/rich-text-editor` para WYSIWYG, integrando el botón de Guardar en su prop `footer`.
   - Uso obligatorio de `@/components/ui/button`.
+  - Uso obligatorio de `@/components/ui/breadcrumb` para toda ruta de navegación / miga de pan.
+
+- **Regla de Migas de Pan / Breadcrumbs Unificadas (MANDATORIO Y PERMANENTE)**
+  - Toda miga de pan en la plataforma DEBE seguir estrictamente el formato canónico establecido en las páginas Legales y el componente oficial `@/components/ui/breadcrumb` (`<Breadcrumb items={...} />`). **Queda terminantemente prohibido cualquier otro formato.**
+  - **Especificaciones visuales y funcionales obligatorias:**
+    1. **Enlaces ancestros navegables:** Texto en color de marca `var(--color-brand)` (`#00827C`), peso tipográfico medio `fontWeight: 500` (`font-medium`), sin subrayado decorativo. Hover con `hover:opacity-80`.
+    2. **Separador (`/`):** Carácter `/` con opacidad tenue `opacity: 0.4` (`aria-hidden="true"`).
+    3. **Página actual (último ítem inactivo):** Texto en color principal `var(--text-primary)`, peso tipográfico medio `fontWeight: 500` (`font-medium`). **PROHIBIDO el uso de negrita gruesa (`font-bold` / 700 / 800)**.
+    4. **Dimensiones y layout:** Tamaño de fuente estricto `12px` (`text-[12px]`), espaciado horizontal de `6px` (`gap-[6px]`), contenedor flexible con `flex-wrap: wrap` y accesibilidad semántica estándar (`<nav aria-label="Ruta de navegación">`).
 
 - **Regla de Iconografía y Unificación de Trazo (MANDATORIO Y PERMANENTE)**
   - **Unificación de Grosor Visual:** Para garantizar una densidad óptica idéntica y que la plataforma se perciba como un solo sistema uniforme, todo ícono de **Lucide** utiliza un grosor de trazo de `1.3` (`strokeWidth={1.3}`), inyectado de forma predeterminada por el HOC `wrapIcon` en `@/components/ui/icons`. Los íconos de **Phosphor Icons** utilizan `weight="regular"`.

@@ -223,7 +223,7 @@ const COLOR_POR_CATEGORIA: Record<string, string> = {
 }
 
 
-// ─── Datos de categorías ─────────────────────────────────────────────────────
+// ─── Datos de categorías con paletas cromáticas temáticas ────────────────────
 const CATEGORIAS = {
   mobiliario: {
     id: 'mobiliario',
@@ -239,6 +239,40 @@ const CATEGORIAS = {
     bolsilloNum: 32,
     bolsilloUnit: '%',
     bolsillo: { valor: '32%', detalle: 'reducción en costo de insumos y estructura.' },
+    // Paleta Mobiliario: Adentro los 2 verdes (#00827C y #8AD0B2). Activo siempre blanco.
+    pillActiveLight: 'bg-[#00827C]',
+    pillActiveDark: 'bg-[#00827C]',
+    pillTextLight: 'text-white',
+    pillTextDark: 'text-white',
+    sidebarHoverLight: 'hover:border-[#00827C]/30 hover:bg-[#00827C]/8 hover:text-[#00827C]',
+    sidebarHoverDark: 'hover:border-[#00827C]/40 hover:bg-[#00827C]/15 hover:text-white',
+    blobs: [
+      { color: 'bg-[#00827C]/30', pos: '-top-8 -right-8 w-48 h-48 blur-[48px]' },
+      { color: 'bg-[#8AD0B2]/35', pos: '-bottom-8 -left-8 w-44 h-44 blur-[42px]' },
+      { color: 'bg-[#00827C]/20', pos: 'top-1/2 left-1/3 w-36 h-36 blur-[50px]' },
+    ],
+    // Card 1: Verde #00827C
+    card1Light: 'bg-[#00827C]/[0.08] border-[#00827C]/25',
+    card1Dark: 'bg-[#00827C]/15 border-[#00827C]/35',
+    card1HoverLight: 'bg-[#00827C]/15 border-[#00827C]/50 shadow-[0_12px_30px_rgba(0,130,124,0.18)]',
+    card1HoverDark: 'bg-[#00827C]/25 border-[#00827C]/60 shadow-[0_12px_30px_rgba(0,130,124,0.30)]',
+    card1IconLight: 'text-[#00827C]',
+    card1IconDark: 'text-[#8AD0B2]',
+    card1LabelLight: 'text-[#00827C]',
+    card1LabelDark: 'text-[#8AD0B2]',
+    card1NumberLight: 'text-[#00827C]',
+    card1NumberDark: 'text-white',
+    // Card 2: Verde #8AD0B2
+    card2Light: 'bg-[#8AD0B2]/20 border-[#8AD0B2]/40',
+    card2Dark: 'bg-[#8AD0B2]/12 border-[#8AD0B2]/30',
+    card2HoverLight: 'bg-[#8AD0B2]/30 border-[#8AD0B2]/60 shadow-[0_12px_30px_rgba(138,208,178,0.25)]',
+    card2HoverDark: 'bg-[#8AD0B2]/22 border-[#8AD0B2]/50 shadow-[0_12px_30px_rgba(138,208,178,0.25)]',
+    card2IconLight: 'text-[#00827C]',
+    card2IconDark: 'text-[#8AD0B2]',
+    card2LabelLight: 'text-[#00827C]',
+    card2LabelDark: 'text-[#8AD0B2]',
+    card2NumberLight: 'text-[#00827C]',
+    card2NumberDark: 'text-[#8AD0B2]',
   },
   indumentaria: {
     id: 'indumentaria',
@@ -254,6 +288,40 @@ const CATEGORIAS = {
     bolsilloNum: 40,
     bolsilloUnit: '%',
     bolsillo: { valor: '40%', detalle: 'margen superior en venta con valor circular.' },
+    // Paleta Indumentaria: Rosa (#F3BBD3) y morada (#985fa1). Activo siempre blanco.
+    pillActiveLight: 'bg-[#985fa1]',
+    pillActiveDark: 'bg-[#985fa1]',
+    pillTextLight: 'text-white',
+    pillTextDark: 'text-white',
+    sidebarHoverLight: 'hover:border-[#985fa1]/35 hover:bg-[#985fa1]/10 hover:text-[#985fa1]',
+    sidebarHoverDark: 'hover:border-[#985fa1]/45 hover:bg-[#985fa1]/20 hover:text-white',
+    blobs: [
+      { color: 'bg-[#F3BBD3]/45', pos: '-top-8 -right-8 w-48 h-48 blur-[48px]' },
+      { color: 'bg-[#985fa1]/35', pos: '-bottom-8 -left-8 w-44 h-44 blur-[42px]' },
+      { color: 'bg-[#F3BBD3]/30', pos: 'top-1/2 left-1/3 w-36 h-36 blur-[50px]' },
+    ],
+    // Card 1: Rosa #F3BBD3
+    card1Light: 'bg-[#F3BBD3]/30 border-[#F3BBD3]/60',
+    card1Dark: 'bg-[#F3BBD3]/15 border-[#F3BBD3]/35',
+    card1HoverLight: 'bg-[#F3BBD3]/45 border-[#F3BBD3]/80 shadow-[0_12px_30px_rgba(243,187,211,0.35)]',
+    card1HoverDark: 'bg-[#F3BBD3]/25 border-[#F3BBD3]/60 shadow-[0_12px_30px_rgba(243,187,211,0.30)]',
+    card1IconLight: 'text-[#763B7F]',
+    card1IconDark: 'text-[#F3BBD3]',
+    card1LabelLight: 'text-[#763B7F]',
+    card1LabelDark: 'text-[#F3BBD3]',
+    card1NumberLight: 'text-[#763B7F]',
+    card1NumberDark: 'text-[#F3BBD3]',
+    // Card 2: Morada #985fa1
+    card2Light: 'bg-[#985fa1]/18 border-[#985fa1]/35',
+    card2Dark: 'bg-[#985fa1]/25 border-[#985fa1]/45',
+    card2HoverLight: 'bg-[#985fa1]/28 border-[#985fa1]/55 shadow-[0_12px_30px_rgba(152,95,161,0.25)]',
+    card2HoverDark: 'bg-[#985fa1]/35 border-[#985fa1]/65 shadow-[0_12px_30px_rgba(152,95,161,0.35)]',
+    card2IconLight: 'text-[#763B7F]',
+    card2IconDark: 'text-[#F3BBD3]',
+    card2LabelLight: 'text-[#763B7F]',
+    card2LabelDark: 'text-[#F3BBD3]',
+    card2NumberLight: 'text-[#763B7F]',
+    card2NumberDark: 'text-[#F3BBD3]',
   },
   textil: {
     id: 'textil',
@@ -269,6 +337,40 @@ const CATEGORIAS = {
     bolsilloNum: 45,
     bolsilloUnit: '%',
     bolsillo: { valor: '45%', detalle: 'ahorro vs. compra de materia prima virgen.' },
+    // Paleta Textil y fibras (ahora Celeste #59A6E4 y Pistacho #D6F391). Activo siempre blanco.
+    pillActiveLight: 'bg-[#59A6E4]',
+    pillActiveDark: 'bg-[#59A6E4]',
+    pillTextLight: 'text-white',
+    pillTextDark: 'text-white',
+    sidebarHoverLight: 'hover:border-[#59A6E4]/40 hover:bg-[#59A6E4]/12 hover:text-[#59A6E4]',
+    sidebarHoverDark: 'hover:border-[#D6F391]/45 hover:bg-[#D6F391]/15 hover:text-white',
+    blobs: [
+      { color: 'bg-[#59A6E4]/35', pos: '-top-8 -right-8 w-48 h-48 blur-[48px]' },
+      { color: 'bg-[#D6F391]/30', pos: '-bottom-8 -left-8 w-44 h-44 blur-[44px]' },
+      { color: 'bg-[#D6F391]/20', pos: 'top-1/3 left-1/4 w-36 h-36 blur-[48px]' },
+    ],
+    // Card 1: Celeste #59A6E4
+    card1Light: 'bg-[#59A6E4]/20 border-[#59A6E4]/45',
+    card1Dark: 'bg-[#59A6E4]/15 border-[#59A6E4]/40',
+    card1HoverLight: 'bg-[#59A6E4]/30 border-[#59A6E4]/70 shadow-[0_12px_30px_rgba(89,166,228,0.30)]',
+    card1HoverDark: 'bg-[#59A6E4]/25 border-[#59A6E4]/60 shadow-[0_12px_30px_rgba(89,166,228,0.30)]',
+    card1IconLight: 'text-[#1E5D8F]',
+    card1IconDark: 'text-[#59A6E4]',
+    card1LabelLight: 'text-[#1E5D8F]',
+    card1LabelDark: 'text-[#59A6E4]',
+    card1NumberLight: 'text-[#1E5D8F]',
+    card1NumberDark: 'text-[#59A6E4]',
+    // Card 2: Pistacho (#D6F391)
+    card2Light: 'bg-[#D6F391]/25 border-[#D6F391]/50',
+    card2Dark: 'bg-[#D6F391]/18 border-[#D6F391]/40',
+    card2HoverLight: 'bg-[#D6F391]/40 border-[#D6F391]/80 shadow-[0_12px_30px_rgba(214,243,145,0.35)]',
+    card2HoverDark: 'bg-[#D6F391]/30 border-[#D6F391]/65 shadow-[0_12px_30px_rgba(214,243,145,0.30)]',
+    card2IconLight: 'text-[#156649]',
+    card2IconDark: 'text-[#D6F391]',
+    card2LabelLight: 'text-[#156649]',
+    card2LabelDark: 'text-[#D6F391]',
+    card2NumberLight: 'text-[#156649]',
+    card2NumberDark: 'text-[#D6F391]',
   },
   upcycling: {
     id: 'upcycling',
@@ -284,10 +386,163 @@ const CATEGORIAS = {
     bolsilloNum: 52,
     bolsilloUnit: '%',
     bolsillo: { valor: '52%', detalle: 'menor costo frente a disposición y compra nueva.' },
+    // Paleta Upcycling y residuos (ahora Amarillo #F6BF3E y café #AD7C43). Botón resaltado en amarillo (#F6BF3E) no café. Activo siempre blanco.
+    pillActiveLight: 'bg-[#F6BF3E]',
+    pillActiveDark: 'bg-[#F6BF3E]',
+    pillTextLight: 'text-white',
+    pillTextDark: 'text-white',
+    sidebarHoverLight: 'hover:border-[#F6BF3E]/45 hover:bg-[#F6BF3E]/12 hover:text-[#B8871B]',
+    sidebarHoverDark: 'hover:border-[#F6BF3E]/45 hover:bg-[#F6BF3E]/20 hover:text-white',
+    blobs: [
+      { color: 'bg-[#F6BF3E]/40', pos: '-top-8 -right-8 w-48 h-48 blur-[48px]' },
+      { color: 'bg-[#AD7C43]/30', pos: '-bottom-8 -left-8 w-44 h-44 blur-[42px]' },
+      { color: 'bg-[#F6BF3E]/25', pos: 'top-1/2 left-1/3 w-36 h-36 blur-[50px]' },
+    ],
+    // Card 1: Amarillo #F6BF3E
+    card1Light: 'bg-[#F6BF3E]/25 border-[#F6BF3E]/50',
+    card1Dark: 'bg-[#F6BF3E]/15 border-[#F6BF3E]/35',
+    card1HoverLight: 'bg-[#F6BF3E]/35 border-[#F6BF3E]/70 shadow-[0_12px_30px_rgba(246,191,62,0.30)]',
+    card1HoverDark: 'bg-[#F6BF3E]/25 border-[#F6BF3E]/55 shadow-[0_12px_30px_rgba(246,191,62,0.25)]',
+    card1IconLight: 'text-[#B8871B]',
+    card1IconDark: 'text-[#F6BF3E]',
+    card1LabelLight: 'text-[#B8871B]',
+    card1LabelDark: 'text-[#F6BF3E]',
+    card1NumberLight: 'text-[#B8871B]',
+    card1NumberDark: 'text-[#F6BF3E]',
+    // Card 2: Café / Nogal #AD7C43
+    card2Light: 'bg-[#AD7C43]/20 border-[#AD7C43]/45',
+    card2Dark: 'bg-[#AD7C43]/20 border-[#AD7C43]/45',
+    card2HoverLight: 'bg-[#AD7C43]/30 border-[#AD7C43]/65 shadow-[0_12px_30px_rgba(173,124,67,0.25)]',
+    card2HoverDark: 'bg-[#AD7C43]/30 border-[#AD7C43]/65 shadow-[0_12px_30px_rgba(173,124,67,0.30)]',
+    card2IconLight: 'text-[#AD7C43]',
+    card2IconDark: 'text-[#F6BF3E]',
+    card2LabelLight: 'text-[#AD7C43]',
+    card2LabelDark: 'text-[#F6BF3E]',
+    card2NumberLight: 'text-[#AD7C43]',
+    card2NumberDark: 'text-[#F6BF3E]',
   },
 } as const
 
 type CatKey = keyof typeof CATEGORIAS
+
+// ─── TEMAS DE COLOR PARA LOS PLANES (Basados en el color asignado a cada plan) ────────
+// Explora (gratis): #985fa1 | Circular Lab: #00827C | Impulso Sostenible: #59A6E4 | Impacto Ilimitado: #F6BF3E
+const PLAN_THEMES: Record<string, {
+  cardLight: string
+  cardDark: string
+  cardHoverLight: string
+  cardHoverDark: string
+  taglineQuiet: string
+  titleHoverLight: string
+  titleHoverDark: string
+  priceHoverLight: string
+  priceHoverDark: string
+  dividerLight: string
+  dividerDark: string
+  badgeBg: string
+  badgeText: string
+  checkQuietLight: string
+  checkQuietDark: string
+  checkHoverLight: string
+  checkHoverDark: string
+  btnPopularLight: string
+  btnPopularDark: string
+  btnOutlineLight: string
+  btnOutlineDark: string
+}> = {
+  free: {
+    cardLight: 'border-[#985fa1]/30 bg-white shadow-sm',
+    cardDark: 'border-[#985fa1]/25 bg-white/[0.04]',
+    cardHoverLight: 'hover:border-[#985fa1]/70 hover:shadow-[0_20px_45px_rgba(152,95,161,0.22)] hover:bg-[#985fa1]/[0.07]',
+    cardHoverDark: 'hover:border-[#F3BBD3]/50 hover:shadow-[0_20px_45px_rgba(152,95,161,0.20)] hover:bg-[#985fa1]/[0.08]',
+    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    titleHoverLight: 'group-hover:text-[#763B7F]',
+    titleHoverDark: 'group-hover:text-[#F3BBD3]',
+    priceHoverLight: 'group-hover:text-[#763B7F]',
+    priceHoverDark: 'group-hover:text-[#F3BBD3]',
+    dividerLight: 'border-[#985fa1]/20',
+    dividerDark: 'border-[#985fa1]/20',
+    badgeBg: 'bg-[#985fa1]',
+    badgeText: 'text-white',
+    checkQuietLight: 'bg-[#985fa1]/15 border border-[#985fa1]/20 text-[#763B7F]',
+    checkQuietDark: 'bg-[#985fa1]/20 border border-[#985fa1]/25 text-[#F3BBD3]',
+    checkHoverLight: 'group-hover/item:bg-[#985fa1] group-hover/item:border-[#985fa1] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(152,95,161,0.45)]',
+    checkHoverDark: 'group-hover/item:bg-[#985fa1] group-hover/item:border-[#985fa1] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(152,95,161,0.4)]',
+    btnPopularLight: 'bg-[#985fa1] text-white hover:bg-[#763B7F] shadow-md shadow-[#985fa1]/25',
+    btnPopularDark: 'bg-[#985fa1] text-white hover:bg-[#763B7F] shadow-md shadow-[#985fa1]/30',
+    btnOutlineLight: 'border border-[#985fa1]/45 text-[#763B7F] bg-white hover:bg-[#985fa1] hover:text-white hover:border-[#985fa1] shadow-sm hover:shadow-[0_8px_20px_rgba(152,95,161,0.3)]',
+    btnOutlineDark: 'border border-[#985fa1]/40 text-[#F3BBD3] bg-[#985fa1]/10 hover:bg-[#985fa1] hover:text-white hover:border-[#985fa1]',
+  },
+  lab: {
+    cardLight: 'border-[#00827C]/25 bg-white shadow-sm',
+    cardDark: 'border-[#00827C]/25 bg-white/[0.04]',
+    cardHoverLight: 'hover:border-[#00827C]/65 hover:shadow-[0_20px_45px_rgba(0,130,124,0.18)] hover:bg-[#00827C]/[0.07]',
+    cardHoverDark: 'hover:border-[#8AD0B2]/50 hover:shadow-[0_20px_45px_rgba(0,130,124,0.22)] hover:bg-[#00827C]/[0.09]',
+    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    titleHoverLight: 'group-hover:text-[#00827C]',
+    titleHoverDark: 'group-hover:text-[#8AD0B2]',
+    priceHoverLight: 'group-hover:text-[#00827C]',
+    priceHoverDark: 'group-hover:text-[#8AD0B2]',
+    dividerLight: 'border-[#00827C]/20',
+    dividerDark: 'border-[#00827C]/20',
+    badgeBg: 'bg-[#00827C]',
+    badgeText: 'text-white',
+    checkQuietLight: 'bg-[#00827C]/20 border border-[#00827C]/30 text-[#00827C]',
+    checkQuietDark: 'bg-[#8AD0B2]/20 border border-[#8AD0B2]/30 text-[#8AD0B2]',
+    checkHoverLight: 'group-hover/item:bg-[#00827C] group-hover/item:border-[#00827C] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(0,130,124,0.35)]',
+    checkHoverDark: 'group-hover/item:bg-[#8AD0B2] group-hover/item:border-[#8AD0B2] group-hover/item:text-[#474747] group-hover/item:shadow-[0_0_12px_rgba(138,208,178,0.4)]',
+    btnPopularLight: 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-md shadow-[#00827C]/25',
+    btnPopularDark: 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-md shadow-[#00827C]/30',
+    btnOutlineLight: 'border border-[#00827C]/40 text-[#00827C] bg-white hover:bg-[#00827C] hover:text-white hover:border-[#00827C] shadow-sm hover:shadow-[0_8px_20px_rgba(0,130,124,0.25)]',
+    btnOutlineDark: 'border border-[#00827C]/50 text-[#8AD0B2] bg-[#00827C]/15 hover:bg-[#00827C] hover:text-white hover:border-[#00827C]',
+  },
+  impulso: {
+    cardLight: 'border-[#59A6E4]/45 bg-[#59A6E4]/[0.08] shadow-[0_16px_40px_rgba(89,166,228,0.14)]',
+    cardDark: 'border-[#59A6E4]/45 bg-[#59A6E4]/[0.10] shadow-[0_16px_40px_rgba(89,166,228,0.18)]',
+    cardHoverLight: 'hover:border-[#59A6E4]/80 hover:shadow-[0_26px_55px_rgba(89,166,228,0.28)] hover:bg-[#59A6E4]/[0.12]',
+    cardHoverDark: 'hover:border-[#59A6E4]/75 hover:shadow-[0_26px_55px_rgba(89,166,228,0.30)] hover:bg-[#59A6E4]/[0.14]',
+    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    titleHoverLight: 'group-hover:text-[#59A6E4]',
+    titleHoverDark: 'group-hover:text-[#59A6E4]',
+    priceHoverLight: 'group-hover:text-[#59A6E4]',
+    priceHoverDark: 'group-hover:text-[#59A6E4]',
+    dividerLight: 'border-[#59A6E4]/25',
+    dividerDark: 'border-[#59A6E4]/25',
+    badgeBg: 'bg-[#59A6E4]',
+    badgeText: 'text-white',
+    checkQuietLight: 'bg-[#59A6E4]/15 border border-[#59A6E4]/25 text-[#1E5D8F]',
+    checkQuietDark: 'bg-[#59A6E4]/25 border border-[#59A6E4]/30 text-[#59A6E4]',
+    checkHoverLight: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.4)]',
+    checkHoverDark: 'group-hover/item:bg-[#59A6E4] group-hover/item:border-[#59A6E4] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(89,166,228,0.45)]',
+    btnPopularLight: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/25 hover:shadow-[0_8px_20px_rgba(89,166,228,0.4)]',
+    btnPopularDark: 'bg-[#59A6E4] text-white hover:bg-[#4392D0] shadow-md shadow-[#59A6E4]/30 hover:shadow-[0_8px_20px_rgba(89,166,228,0.45)]',
+    btnOutlineLight: 'border border-[#59A6E4]/45 text-[#1E5D8F] bg-white hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4] shadow-sm hover:shadow-[0_8px_20px_rgba(89,166,228,0.25)]',
+    btnOutlineDark: 'border border-[#59A6E4]/45 text-[#59A6E4] bg-[#59A6E4]/15 hover:bg-[#59A6E4] hover:text-white hover:border-[#59A6E4]',
+  },
+  ilimitado: {
+    cardLight: 'border-[#F6BF3E]/35 bg-white shadow-sm',
+    cardDark: 'border-[#F6BF3E]/25 bg-white/[0.04]',
+    cardHoverLight: 'hover:border-[#F6BF3E]/75 hover:shadow-[0_20px_45px_rgba(246,191,62,0.22)] hover:bg-[#F6BF3E]/[0.08]',
+    cardHoverDark: 'hover:border-[#F6BF3E]/60 hover:shadow-[0_20px_45px_rgba(246,191,62,0.20)] hover:bg-[#F6BF3E]/[0.09]',
+    taglineQuiet: 'text-[#474747]/70 dark:text-white/60',
+    titleHoverLight: 'group-hover:text-[#B8871B]',
+    titleHoverDark: 'group-hover:text-[#F6BF3E]',
+    priceHoverLight: 'group-hover:text-[#B8871B]',
+    priceHoverDark: 'group-hover:text-[#F6BF3E]',
+    dividerLight: 'border-[#F6BF3E]/20',
+    dividerDark: 'border-[#F6BF3E]/20',
+    badgeBg: 'bg-[#F6BF3E]',
+    badgeText: 'text-white',
+    checkQuietLight: 'bg-[#F6BF3E]/20 border border-[#F6BF3E]/25 text-[#B8871B]',
+    checkQuietDark: 'bg-[#F6BF3E]/25 border border-[#F6BF3E]/30 text-[#F6BF3E]',
+    checkHoverLight: 'group-hover/item:bg-[#F6BF3E] group-hover/item:border-[#F6BF3E] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(246,191,62,0.4)]',
+    checkHoverDark: 'group-hover/item:bg-[#F6BF3E] group-hover/item:border-[#F6BF3E] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(246,191,62,0.45)]',
+    btnPopularLight: 'bg-[#F6BF3E] text-white hover:bg-[#e0ac34] shadow-md shadow-[#F6BF3E]/25',
+    btnPopularDark: 'bg-[#F6BF3E] text-white hover:bg-[#e0ac34] shadow-md shadow-[#F6BF3E]/30',
+    btnOutlineLight: 'border border-[#F6BF3E]/50 text-[#B8871B] bg-white hover:bg-[#F6BF3E] hover:text-white hover:border-[#F6BF3E] shadow-sm hover:shadow-[0_8px_20px_rgba(246,191,62,0.3)]',
+    btnOutlineDark: 'border border-[#F6BF3E]/45 text-[#F6BF3E] bg-[#F6BF3E]/15 hover:bg-[#F6BF3E] hover:text-white hover:border-[#F6BF3E]',
+  },
+}
 
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 const FAQS = [
@@ -724,7 +979,6 @@ function HeroImpactPanel({ isDark, tp, ts, liquidGlass }: { isDark: boolean; tp:
 function CategoryMetricsDisplay({
   cat,
   isDark,
-  tp,
   ts
 }: {
   cat: (typeof CATEGORIAS)[CatKey]
@@ -781,20 +1035,20 @@ function CategoryMetricsDisplay({
         className={`p-3.5 sm:p-5 md:p-4 lg:p-6 rounded-xl md:rounded-2xl border cursor-pointer transition-all duration-300 ${
           hoveredCard === 'planeta'
             ? isDark
-              ? 'bg-white/15 border-[#D6F391]/40 scale-105 shadow-lg'
-              : 'bg-[#00827C]/10 border-[#00827C]/30 scale-105 shadow-lg'
+              ? `${cat.card1HoverDark} scale-105`
+              : `${cat.card1HoverLight} scale-105`
             : isDark
-            ? 'bg-white/5 border-white/10 hover:bg-white/10'
-            : 'bg-[#00827C]/5 border-[#00827C]/10 hover:bg-[#00827C]/10'
+            ? cat.card1Dark
+            : cat.card1Light
         }`}
       >
         <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-3">
-          <Leaf size={16} className={`transition-transform duration-300 ${hoveredCard === 'planeta' ? 'scale-125 rotate-6' : ''} ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`} />
-          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#006B66]'}`}>
+          <Leaf size={16} className={`transition-transform duration-300 ${hoveredCard === 'planeta' ? 'scale-125 rotate-6' : ''} ${isDark ? cat.card1IconDark : cat.card1IconLight}`} />
+          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? cat.card1LabelDark : cat.card1LabelLight}`}>
             Impacto ambiental evitado.
           </span>
         </div>
-        <div className={`glass-number text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 ${tp}`}>
+        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card1NumberDark : cat.card1NumberLight}`}>
           {planetaVal.toLocaleString('es-CO')}{cat.planetaUnit}
         </div>
         <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium ${ts}`}>{cat.planeta.detalle}</p>
@@ -807,20 +1061,20 @@ function CategoryMetricsDisplay({
         className={`p-3.5 sm:p-5 md:p-4 lg:p-6 rounded-xl md:rounded-2xl border cursor-pointer transition-all duration-300 ${
           hoveredCard === 'bolsillo'
             ? isDark
-              ? 'bg-[#D6F391]/20 border-[#D6F391]/50 scale-105 shadow-lg'
-              : 'bg-[#D6F391]/35 border-[#D6F391]/60 scale-105 shadow-lg'
+              ? `${cat.card2HoverDark} scale-105`
+              : `${cat.card2HoverLight} scale-105`
             : isDark
-            ? 'bg-[#D6F391]/10 border-[#D6F391]/20 hover:bg-[#D6F391]/20'
-            : 'bg-[#D6F391]/20 border-[#D6F391]/40 hover:bg-[#D6F391]/30'
+            ? cat.card2Dark
+            : cat.card2Light
         }`}
       >
         <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-3">
-          <TrendingUp size={16} className={`transition-transform duration-300 ${hoveredCard === 'bolsillo' ? 'scale-125 rotate-6' : ''} ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`} />
-          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>
+          <TrendingUp size={16} className={`transition-transform duration-300 ${hoveredCard === 'bolsillo' ? 'scale-125 rotate-6' : ''} ${isDark ? cat.card2IconDark : cat.card2IconLight}`} />
+          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? cat.card2LabelDark : cat.card2LabelLight}`}>
             Retorno y margen comercial estimado.
           </span>
         </div>
-        <div className={`glass-number text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 ${isDark ? 'text-[#D6F391]' : 'text-[#474747]'}`}>
+        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card2NumberDark : cat.card2NumberLight}`}>
           +{bolsilloVal}%
         </div>
         <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium ${ts}`}>{cat.bolsillo.detalle}</p>
@@ -1634,51 +1888,53 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-gradient-to-r from-transparent ${isDark ? 'via-white/10' : 'via-[#00827C]/12'} to-transparent`} />
       <section id="dpp" className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
-          {/* Diagrama animado: solo tablet y escritorio */}
-          <div className="hidden md:block lg:col-span-7 w-full max-w-2xl mx-auto lg:max-w-none">
-            <DppTrazabilidadVisual isDark={isDark} />
-          </div>
-
-          <div className="lg:col-span-5">
-            <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
-              Pasaporte Digital de Producto (DPP)
-            </p>
-            <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp}`}>
-              Une cada punto,{' '}
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: isDark ? 'linear-gradient(90deg, #F6BF3E, #D6F391 30%, #8AD0B2 65%, #59A6E4)' : 'linear-gradient(90deg, #38B98E, #00827C 55%, #59A6E4)' }}>
-                desde el residuo hasta su nuevo uso
-              </span>
-            </h2>
-
-            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-3 ${ts}`}>
-              Tu trazabilidad empieza donde otras terminan. Los pasaportes tradicionales nacen en la fábrica, con el producto nuevo. El tuyo nace cuando alguien quiso desecharlo. Registras de dónde tomaste el residuo, en qué lo transformaste y a dónde llegó, y demuestras con datos que tu operación es sostenible.
-            </p>
-            <p className={`text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-7 ${ts}`}>
-              Llega antes que la norma. Europa ya lo incorpora. En LATAM todavía es opcional, y quien registra hoy llega listo cuando sus clientes lo pidan.
-            </p>
-
-            <p className={`text-sm sm:text-base font-black mb-3 ${tp}`}>Lo que demuestras con cada pasaporte</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {[
-                { icon: MapPin, texto: 'De dónde tomaste el residuo antes de que terminara desechado', color: '#F6BF3E' },
-                { icon: Hammer, texto: 'En qué lo transformaste, con qué materiales y quién intervino', color: '#38B98E' },
-                { icon: QrCode, texto: 'Cada pieza con su QR público, consultable sin crear cuenta', color: '#59A6E4' },
-                { icon: ShieldCheck, texto: 'Un registro encadenado SHA-256 que ayuda a detectar cambios', color: '#F3BBD3' },
-              ].map(({ icon: Icono, texto, color }) => (
-                <div
-                  key={texto}
-                  style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
-                  className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
-                >
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-[var(--ic)] group-hover:bg-[var(--c)] group-hover:text-[var(--sobre)]">
-                    <Icono size={16} strokeWidth={2} sinAnimacion />
-                  </div>
-                  <span className={`text-xs sm:text-[13px] font-semibold leading-snug ${ts}`}>{texto}</span>
-                </div>
-              ))}
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center justify-center">
+            {/* Diagrama animado: solo tablet y escritorio */}
+            <div className="hidden md:flex lg:col-span-7 w-full max-w-2xl mx-auto lg:max-w-none items-center justify-center">
+              <DppTrazabilidadVisual isDark={isDark} />
             </div>
 
+            <div className="w-full max-w-2xl mx-auto lg:max-w-none lg:col-span-5 flex flex-col justify-center">
+              <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/60' : 'text-[#737373]'}`}>
+                Pasaporte Digital de Producto (DPP)
+              </p>
+              <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp}`}>
+                Une cada punto,{' '}
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: isDark ? 'linear-gradient(90deg, #F6BF3E, #D6F391 30%, #8AD0B2 65%, #59A6E4)' : 'linear-gradient(90deg, #38B98E, #00827C 55%, #59A6E4)' }}>
+                  desde el residuo hasta su nuevo uso
+                </span>
+              </h2>
+
+              <p className={`text-sm sm:text-base font-medium leading-relaxed mb-3 ${ts}`}>
+                Tu trazabilidad empieza donde otras terminan. Los pasaportes tradicionales nacen en la fábrica, con el producto nuevo. El tuyo nace cuando alguien quiso desecharlo. Registras de dónde tomaste el residuo, en qué lo transformaste y a dónde llegó, y demuestras con datos que tu operación es sostenible.
+              </p>
+              <p className={`text-sm sm:text-base font-medium leading-relaxed mb-6 sm:mb-7 ${ts}`}>
+                Llega antes que la norma. Europa ya lo incorpora. En LATAM todavía es opcional, y quien registra hoy llega listo cuando sus clientes lo pidan.
+              </p>
+
+              <p className={`text-sm sm:text-base font-black mb-3 ${tp}`}>Lo que demuestras con cada pasaporte</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {[
+                  { icon: MapPin, texto: 'De dónde tomaste el residuo antes de que terminara desechado', color: '#F6BF3E' },
+                  { icon: Hammer, texto: 'En qué lo transformaste, con qué materiales y quién intervino', color: '#38B98E' },
+                  { icon: QrCode, texto: 'Cada pieza con su QR público, consultable sin crear cuenta', color: '#59A6E4' },
+                  { icon: ShieldCheck, texto: 'Un registro encadenado SHA-256 que ayuda a detectar cambios', color: '#F3BBD3' },
+                ].map(({ icon: Icono, texto, color }) => (
+                  <div
+                    key={texto}
+                    style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
+                    className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
+                  >
+                    <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-[var(--ic)] group-hover:bg-[var(--c)] group-hover:text-[var(--sobre)]">
+                      <Icono size={16} strokeWidth={2} sinAnimacion />
+                    </div>
+                    <span className={`text-xs sm:text-[13px] font-semibold leading-snug ${ts}`}>{texto}</span>
+                  </div>
+                ))}
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
@@ -1693,7 +1949,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               ambientales, económicos y sociales
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl mx-auto ${ts}`}>
-              Desde la estimación rápida de huella de carbono hasta el seguimiento en Pasaportes Digitales (DPP), adaptados a las exigencias de tu industria.
+              Desde que un material o residuo se descarta hasta que se convierte en un nuevo recurso con valor ambiental y económico.
             </p>
           </div>
 
@@ -1918,7 +2174,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     onClick={() => scrollToCategory(c.id as CatKey)}
                     className={`relative flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 active:scale-95 select-none ${
                       isSelected 
-                        ? (isDark ? 'text-[#474747]' : 'text-white')
+                        ? (isDark ? c.pillTextDark : c.pillTextLight)
                         : isDark
                           ? 'bg-white/[0.04] border border-white/10 text-white/70 active:bg-white/10'
                           : 'bg-[#00827C]/[0.04] border border-[#00827C]/12 text-[#474747]/80 active:bg-[#00827C]/10'
@@ -1929,8 +2185,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         layoutId="activeTabMobilePill"
                         className={`absolute inset-0 rounded-full pointer-events-none ${
                           isDark 
-                            ? 'bg-[#D6F391]' 
-                            : 'bg-[#00827C]'
+                            ? c.pillActiveDark 
+                            : c.pillActiveLight
                         }`}
                         transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       />
@@ -1939,6 +2195,16 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   </button>
                 )
               })}
+              {/* Elemento debajo / al final de los tabs, estilo botón sin ser botón */}
+              <div
+                className={`flex-shrink-0 flex items-center px-3.5 py-1.5 rounded-full border border-dashed text-xs font-semibold select-none ${
+                  isDark
+                    ? 'border-white/15 text-white/50 bg-white/[0.02]'
+                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/[0.02]'
+                }`}
+              >
+                <span>El desarrollo que tú necesites</span>
+              </div>
             </div>
           </div>
 
@@ -1952,10 +2218,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <button
                     key={c.id}
                     onClick={() => scrollToCategory(c.id as CatKey)}
-                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-sm md:text-sm lg:text-sm transition-colors duration-200 active:scale-95 ${
+                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-sm md:text-sm lg:text-sm transition-all duration-200 active:scale-95 ${
                       isSelected
-                        ? (isDark ? 'text-[#474747]' : 'text-white')
-                        : `border ${ts} hover:bg-[#00827C]/5 ${isDark ? 'border-white/10 hover:border-white/20 hover:text-white' : 'border-[#00827C]/12 hover:border-[#00827C]/20 hover:text-[#00827C]'}`
+                        ? (isDark ? c.pillTextDark : c.pillTextLight)
+                        : `border ${ts} ${isDark ? `border-white/10 ${c.sidebarHoverDark}` : `border-[#00827C]/12 ${c.sidebarHoverLight}`}`
                     }`}
                   >
                     {isSelected && (
@@ -1963,8 +2229,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         layoutId="activeTabDesktopPill"
                         className={`absolute inset-0 rounded-xl md:rounded-2xl pointer-events-none ${
                           isDark 
-                            ? 'bg-[#D6F391]' 
-                            : 'bg-[#00827C]'
+                            ? c.pillActiveDark 
+                            : c.pillActiveLight
                         }`}
                         transition={{ type: 'spring', stiffness: 350, damping: 28 }}
                       />
@@ -1976,9 +2242,20 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   </button>
                 )
               })}
+
+              {/* Debajo de "Upcycling y residuos", texto de botón sin ser botón */}
+              <div
+                className={`w-full flex items-center justify-center gap-2 px-3.5 py-2.5 lg:px-4 lg:py-3 rounded-xl md:rounded-2xl text-center text-xs md:text-xs font-semibold border border-dashed select-none transition-colors ${
+                  isDark
+                    ? 'border-white/15 text-white/50 bg-white/[0.02]'
+                    : 'border-[#00827C]/20 text-[#474747]/65 bg-[#00827C]/[0.02]'
+                }`}
+              >
+                <span className="leading-snug">El desarrollo que tú necesites</span>
+              </div>
             </div>
 
-            {/* Panel dinámico con transición de contenido afable (blur + crossfade + slide) */}
+            {/* Panel dinámico con transición de contenido afable y reflejos temáticos */}
             <div
               style={{
                 isolation: 'isolate',
@@ -1986,12 +2263,18 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               }}
               className={`relative p-5 sm:p-7 md:p-6 lg:p-10 rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] overflow-hidden hover-card-interactive ${liquidGlass}`}
             >
-              <div data-blob data-mx="0.04" data-my="0.04" data-ms="0"
-                className="absolute -top-8 -right-8 w-44 h-44 bg-[#59A6E4]/25 blur-[45px] rounded-full pointer-events-none transition-transform duration-700"
-                style={{ willChange: 'transform' }} />
-              <div data-blob data-mx="-0.04" data-my="-0.04" data-ms="0"
-                className="absolute -bottom-8 -left-8 w-40 h-40 bg-[#D6F391]/25 blur-[40px] rounded-full pointer-events-none transition-transform duration-700"
-                style={{ willChange: 'transform' }} />
+              {/* Blobs de color dinámicos según la categoría activa */}
+              {cat.blobs.map((b, idx) => (
+                <div
+                  key={idx}
+                  data-blob
+                  data-mx={idx % 2 === 0 ? "0.04" : "-0.04"}
+                  data-my={idx % 2 === 0 ? "0.04" : "-0.04"}
+                  data-ms="0"
+                  className={`absolute ${b.pos} ${b.color} rounded-full pointer-events-none transition-all duration-700`}
+                  style={{ willChange: 'transform' }}
+                />
+              ))}
 
               <div className="relative z-10 min-h-[290px]">
                 <AnimatePresence mode="wait" initial={false}>
@@ -2110,8 +2393,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <h2 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp}`}>
               Planes de sostenibilidad a tu ritmo
             </h2>
-            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>
-              Cada plan de pago incluye una tarifa de Implementación (pago único), cotizada a tu medida según lo que quieras migrar: tu catálogo de materiales, tus datos históricos y la capacitación de tu equipo.
+            <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl sm:max-w-3xl mx-auto leading-relaxed ${ts}`}>
+              Comienza de inmediato con nuestras categorías base. <br className="hidden md:inline" />
+              La tarifa de implementación es opcional y solo aplica si deseas habilitar nuevas categorías a la medida o integrar datos específicos de tu empresa.
             </p>
           </div>
 
@@ -2132,75 +2416,96 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-4 lg:gap-5">
-            {PLANS.map((plan, i) => (
-              <div
-                key={plan.id}
-                className={`group relative p-5 sm:p-6 md:p-5 lg:p-7 rounded-2xl md:rounded-3xl lg:rounded-[2rem] border flex flex-col hover-card-interactive reveal-card transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 ${
-                  plan.popular
-                    ? isDark ? 'border-white/20 bg-white/10 shadow-[0_20px_50px_rgba(255,255,255,0.08)] hover:border-[#D6F391]/40 hover:bg-white/10' : 'border-[#00827C]/30 bg-primary shadow-[0_20px_50px_rgba(0,130,124,0.10)] hover:border-[#00827C]/50 hover:bg-primary'
-                    : isDark ? 'border-white/10 bg-[#525252]/50 backdrop-blur-md hover:border-white/20 hover:bg-white/10' : 'border-[#00827C]/10 bg-white/80 backdrop-blur-md hover:border-[#00827C]/25 hover:bg-primary'
-                }`}
-                style={{ animationDelay: `${i * 0.05}s` }}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 md:px-3 md:py-0.5 lg:px-4 lg:py-1 bg-[#474747] text-[#D6F391] text-[9px] md:text-[9px] lg:text-[10px] font-bold rounded-full whitespace-nowrap shadow-md">Más popular</div>
-                )}
-                <div className="mb-4 md:mb-5 lg:mb-6">
-                  <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 ${ts}`}>{plan.tagline}</p>
-                  <h3 className={`text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 group-hover:${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'} ${tp}`}>{plan.name}</h3>
-                  <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 group-hover:text-[var(--color-brand)] ${tp}`}>{formatPrice(plan)}</div>
-                  {plan.priceMonthlyCOP > 0 && (
-                    <div className="flex flex-col gap-0.5">
-                      <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
-                      {billing === 'annual' && (
-                        <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 group-hover:text-[var(--color-brand)]`}>{getAnnualTotal(plan)}</span></p>
-                      )}
+            {PLANS.map((plan, i) => {
+              const theme = PLAN_THEMES[plan.id] ?? PLAN_THEMES.lab
+              const isSelectedPopular = Boolean(plan.popular)
+              return (
+                <div
+                  key={plan.id}
+                  className={`group relative p-5 sm:p-6 md:p-5 lg:p-7 rounded-2xl md:rounded-3xl lg:rounded-[2rem] border flex flex-col hover-card-interactive reveal-card transition-all duration-300 hover:scale-[1.03] hover:-translate-y-2 backdrop-blur-md ${
+                    isDark ? `${theme.cardDark} ${theme.cardHoverDark}` : `${theme.cardLight} ${theme.cardHoverLight}`
+                  }`}
+                  style={{ animationDelay: `${i * 0.05}s` }}
+                >
+                  {/* Sutil halo superior con el color propio del plan */}
+                  <div
+                    className={`absolute top-0 left-6 right-6 h-[2px] rounded-full transition-opacity duration-300 ${
+                      isSelectedPopular ? 'opacity-80' : 'opacity-40 group-hover:opacity-100'
+                    }`}
+                    style={{ background: `linear-gradient(90deg, transparent, ${plan.color}, transparent)` }}
+                  />
+
+                  {isSelectedPopular && (
+                    <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 md:px-3 md:py-0.5 lg:px-4 lg:py-1 ${theme.badgeBg} ${theme.badgeText} text-[9px] md:text-[9px] lg:text-[10px] font-bold rounded-full whitespace-nowrap shadow-md`}>
+                      Más popular
                     </div>
                   )}
-                </div>
-                <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? 'border-white/10' : 'border-[#00827C]/12'}`}>
-                  {cuotasPlan(plan).map((c, k) => (
-                    <div key={k}>
-                      <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
-                      <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
-                    </div>
-                  ))}
-                </dl>
-                <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
-                  {bulletsPlan(plan).map((f, j) => (
-                    <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-sm md:text-sm lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
-                      <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
-                        isDark
-                          ? 'bg-[#D6F391]/15 text-[#D6F391] group-hover/item:bg-[#D6F391] group-hover/item:text-[#474747] group-hover/item:shadow-[0_0_12px_rgba(214,243,145,0.4)]'
-                          : 'bg-[#00827C]/10 text-[#00827C] group-hover/item:bg-[#00827C] group-hover/item:text-white group-hover/item:shadow-[0_0_12px_rgba(0,130,124,0.3)]'
-                      }`}>
-                        <Check size={10} strokeWidth={3} className="transition-transform duration-300" />
+
+                  <div className="mb-4 md:mb-5 lg:mb-6">
+                    <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 transition-colors duration-200 ${theme.taglineQuiet} ${isDark ? theme.titleHoverDark : theme.titleHoverLight}`}>{plan.tagline}</p>
+                    <h3 className={`text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 ${isDark ? theme.titleHoverDark : theme.titleHoverLight} ${tp}`}>{plan.name}</h3>
+                    <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight} ${tp}`}>{formatPrice(plan)}</div>
+                    {plan.priceMonthlyCOP > 0 && (
+                      <div className="flex flex-col gap-0.5">
+                        <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
+                        {billing === 'annual' && (
+                          <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight}`}>{getAnnualTotal(plan)}</span></p>
+                        )}
                       </div>
-                      <span className="transition-colors duration-200 group-hover/item:text-current">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-                {plan.priceMonthlyCOP === 0 ? (
-                  <Link
-                    href="/registro"
-                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
-                  >
-                    {plan.cta}
-                  </Link>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedPlan(plan.name)
-                      setContactModalOpen(true)
-                    }}
-                    className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${plan.popular ? (isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-lg' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-lg') : `border hover:bg-[#00827C]/5 ${isDark ? 'border-white/20 text-white' : 'border-[#00827C]/20 text-[#00827C]'}`}`}
-                  >
-                    {plan.cta}
-                  </button>
-                )}
-              </div>
-            ))}
+                    )}
+                  </div>
+                  <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? theme.dividerDark : theme.dividerLight}`}>
+                    {cuotasPlan(plan).map((c, k) => (
+                      <div key={k}>
+                        <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
+                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <ul className="space-y-2 md:space-y-2 lg:space-y-3 mb-5 md:mb-6 lg:mb-8 flex-grow">
+                    {bulletsPlan(plan).map((f, j) => (
+                      <li key={j} className={`group/item flex items-start gap-2.5 md:gap-2.5 lg:gap-3 text-sm md:text-sm lg:text-sm font-medium transition-all duration-200 hover:translate-x-1 ${ts}`}>
+                        <div className={`mt-0.5 w-4 h-4 md:w-4.5 md:h-4.5 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 ${
+                          isDark
+                            ? `${theme.checkQuietDark} ${theme.checkHoverDark}`
+                            : `${theme.checkQuietLight} ${theme.checkHoverLight}`
+                        }`}>
+                          <Check size={10} strokeWidth={3} className="transition-transform duration-300" />
+                        </div>
+                        <span className="transition-colors duration-200 group-hover/item:text-current">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {plan.priceMonthlyCOP === 0 ? (
+                    <Link
+                      href="/registro"
+                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
+                        isSelectedPopular
+                          ? (isDark ? theme.btnPopularDark : theme.btnPopularLight)
+                          : (isDark ? theme.btnOutlineDark : theme.btnOutlineLight)
+                      }`}
+                    >
+                      {plan.cta}
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedPlan(plan.name)
+                        setContactModalOpen(true)
+                      }}
+                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
+                        isSelectedPopular
+                          ? (isDark ? theme.btnPopularDark : theme.btnPopularLight)
+                          : (isDark ? theme.btnOutlineDark : theme.btnOutlineLight)
+                      }`}
+                    >
+                      {plan.cta}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           {/* Puerta de entrada al cuadro comparativo completo */}
@@ -2667,9 +2972,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </p>
               <Link
                 href="/registro"
-                className={`inline-flex items-center justify-center gap-2.5 md:gap-3 w-full sm:w-auto px-6 py-3.5 md:px-7 md:py-4 lg:px-10 lg:py-5 rounded-full font-black text-sm sm:text-base md:text-base lg:text-base transition-all hover:-translate-y-1 hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_12px_40px_rgba(214,243,145,0.25)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_12px_40px_rgba(0,130,124,0.35)]'}`}
+                className={`animate-shimmer group inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
+                  isDark 
+                    ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_8px_32px_rgba(214,243,145,0.3)]' 
+                    : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_8px_32px_rgba(0,130,124,0.35)]'
+                }`}
               >
-                Crear cuenta y comenzar gratis <ArrowRight size={18} strokeWidth={2.5} />
+                Crear cuenta y comenzar gratis <ArrowRight size={15} strokeWidth={2.5} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
               <p className={`mt-4 sm:mt-5 md:mt-5 lg:mt-6 text-[11px] sm:text-xs md:text-[11px] lg:text-sm font-medium ${ts}`}>Empieza hoy con el plan Explora, 5 cálculos al mes sin costo · Sin tarjeta de crédito.</p>
             </div>

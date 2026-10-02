@@ -2,10 +2,10 @@ import type { Plan } from '@/types'
 import { Leaf, FlaskConical, TrendingUp, Crown } from '@/components/ui/icons'
 
 export const PLAN_CONFIG: Record<Plan, { label: string; bg: string; color: string; icon: React.ElementType }> = {
-  free:      { label: 'Explora',           bg: 'rgba(0,130,124,0.12)',   color: '#00827C', icon: Leaf },
-  lab:       { label: 'Circular Lab',      bg: 'rgba(155,109,214,0.15)', color: '#9B6DD6', icon: FlaskConical },
-  impulso:   { label: 'Impulso Sostenible', bg: 'rgba(49,130,206,0.15)',  color: '#3182CE', icon: TrendingUp },
-  ilimitado: { label: 'Impacto Ilimitado', bg: 'rgba(214,158,46,0.15)', color: '#D69E2E', icon: Crown },
+  free:      { label: 'Explora',            bg: 'rgba(152,95,161,0.15)', color: '#985fa1', icon: Leaf },
+  lab:       { label: 'Circular Lab',       bg: 'rgba(0,130,124,0.12)',   color: '#00827C', icon: FlaskConical },
+  impulso:   { label: 'Impulso Sostenible', bg: 'rgba(89,166,228,0.15)',  color: '#59A6E4', icon: TrendingUp },
+  ilimitado: { label: 'Impacto Ilimitado',  bg: 'rgba(246,191,62,0.15)', color: '#F6BF3E', icon: Crown },
 }
 
 export function PlanBadge({ plan }: { plan: Plan }) {
