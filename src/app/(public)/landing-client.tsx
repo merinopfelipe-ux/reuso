@@ -1138,7 +1138,7 @@ export const COMPARATIVA_DEFAULT: CategoriaComparativa[] = [
     filas: [
       { label: 'Personas en el equipo', tipo: 'texto', valores: { free: '1 persona', lab: '5 personas', impulso: '10 personas', ilimitado: 'Ilimitado' }, descripcion: 'Usuarios con acceso simultáneo a la plataforma' },
       { label: 'Puesta en marcha guiada', tipo: 'check', valores: { free: true, lab: true, impulso: true, ilimitado: true }, descripcion: 'Acompañamiento inicial para configurar tu cuenta' },
-      { label: 'Canal de soporte', tipo: 'texto', valores: { free: 'Email', lab: 'Email', impulso: 'Email', ilimitado: 'Prioritario 24/7' } },
+      { label: 'Canal de soporte', tipo: 'texto', valores: { free: false, lab: 'Formulario', impulso: 'Formulario', ilimitado: 'Prioritario 24/7' } },
     ]
   },
   {
@@ -1924,7 +1924,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div
                     key={texto}
                     style={{ '--c': color, '--sobre': '#FFFFFF', '--ic': color } as React.CSSProperties}
-                    className="group flex gap-2.5 items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
+                    className="group flex gap-2.5 items-center sm:items-start rounded-2xl p-3 border transition-all duration-300 hover:-translate-y-1 border-[color-mix(in_srgb,var(--c)_35%,transparent)] bg-[color-mix(in_srgb,var(--c)_8%,transparent)] hover:border-[var(--c)] hover:bg-[color-mix(in_srgb,var(--c)_16%,transparent)] hover:shadow-[0_10px_26px_color-mix(in_srgb,var(--c)_28%,transparent)]"
                   >
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-[var(--ic)] group-hover:bg-[var(--c)] group-hover:text-[var(--sobre)]">
                       <Icono size={16} strokeWidth={2} sinAnimacion />
@@ -2458,7 +2458,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     {cuotasPlan(plan).map((c, k) => (
                       <div key={k}>
                         <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
-                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp}`}>{c.valor}</dd>
+                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp} flex items-center min-h-[16px]`}>
+                          {(c.valor && !['x', 'no incluye', '—', '-'].includes(String(c.valor).trim().toLowerCase())) ? (
+                            c.valor
+                          ) : (
+                            <X size={12} strokeWidth={3} className={isDark ? 'text-white/20' : 'text-[#474747]/20'} />
+                          )}
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -2551,6 +2557,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               )
               return { ...fila, valores: { ...fila.valores, ...valoresReales } }
             }
+            if (/soporte/i.test(fila.label)) {
+              const nuevosValores = { ...fila.valores }
+              if (nuevosValores.free === 'Comunidad' || nuevosValores.free === 'No incluye') {
+                nuevosValores.free = ''
+              }
+              if (nuevosValores.lab === 'Email') nuevosValores.lab = 'Formulario'
+              if (nuevosValores.impulso === 'Email') nuevosValores.impulso = 'Formulario'
+              return { ...fila, valores: nuevosValores }
+            }
             return fila
           }),
         }))
@@ -2635,7 +2650,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                           ) : (
                                             <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />
                                           )
-                                        ) : val ? (
+                                        ) : (val && !['x', 'no incluye', '—', '-'].includes(String(val).trim().toLowerCase())) ? (
                                           <span className={`block leading-snug text-xs sm:text-sm font-semibold ${tp}`}>{val as string}</span>
                                         ) : (
                                           <X size={13} strokeWidth={3} className={`inline-block ${isDark ? 'text-white/20' : 'text-[#474747]/20'}`} />

@@ -101,7 +101,7 @@ async function obtenerDatosReales() {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://calculadoradereuso.com'),
-  title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental y Huella de Carbono',
+  title: { absolute: 'Impacto Ambiental e Informes DPP | Calculadora de Reúso' },
   description: 'Plataforma de sostenibilidad para medir huella de carbono e impacto ambiental corporativo. Emite Pasaportes Digitales (DPP) con QR y reportes auditables.',
   keywords: [
     'software de sostenibilidad',
@@ -135,7 +135,7 @@ export const metadata: Metadata = {
   },
   alternates: { canonical: 'https://calculadoradereuso.com' },
   openGraph: {
-    title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental',
+    title: 'Impacto Ambiental e Informes DPP | Calculadora de Reúso',
     description: 'Plataforma de sostenibilidad para estructurar tu impacto ambiental y tu responsabilidad social. Estima, reporta y respalda tus iniciativas con seguimiento integral.',
     url: 'https://calculadoradereuso.com',
     type: 'website',
@@ -147,7 +147,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@calreuso',
     creator: '@calreuso',
-    title: 'Software de Sostenibilidad | Mide tu Impacto Ambiental',
+    title: 'Impacto Ambiental e Informes DPP | Calculadora de Reúso',
     description: 'Sostenibilidad e impacto ambiental con estimaciones documentadas. Trazabilidad y Responsabilidad Social Empresarial (RSE) sustentadas con Pasaporte Digital.',
     images: ['/og-image.png'],
   },
