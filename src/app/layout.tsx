@@ -100,8 +100,8 @@ export default function RootLayout({
             activan siempre. Google Analytics (_ga/_gid) y Microsoft Clarity
             (_clck/_clsk) sí usan cookies y solo se cargan si la persona aceptó
             la categoría "Analíticas" del banner de cookies. */}
-        <Analytics />
-        <SpeedInsights />
+        {process.env.VERCEL === '1' && <Analytics />}
+        {process.env.VERCEL === '1' && <SpeedInsights />}
         <GoogleAnalytics />
         <MicrosoftClarity />
       </body>

@@ -66,7 +66,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net https://p.typekit.net",
               "font-src 'self' https://fonts.gstatic.com https://use.typekit.net https://p.typekit.net https://fonts.typekit.net",
               "img-src 'self' data: blob: https://*.supabase.co https://cdn.jsdelivr.net https://images.unsplash.com https://*.google-analytics.com https://*.googletagmanager.com https://*.clarity.ms https://c.bing.com",
-              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.clarity.ms https://c.bing.com",
+              "connect-src 'self' https://*.supabase.co https://challenges.cloudflare.com https://generativelanguage.googleapis.com https://api.groq.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.clarity.ms https://c.bing.com https://use.typekit.net",
               "frame-src https://challenges.cloudflare.com",
               "object-src 'none'",
               "base-uri 'self'",
