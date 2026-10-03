@@ -113,13 +113,21 @@ export function LandingHeader({
 
   // Eliminado: if (!mounted) return null para permitir SSR del header y pre-carga del logo con priority
   const headerStyle: React.CSSProperties = {
-    background: isDark ? 'color-mix(in srgb, var(--bg-primary) 50%, transparent)' : 'rgba(255, 255, 255, 0.5)',
-    backdropFilter: 'blur(8px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(8px) saturate(180%)',
-    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.1)',
+    background: isDark ? 'color-mix(in srgb, var(--bg-primary) 85%, transparent)' : 'rgba(255, 255, 255, 0.90)',
+    backdropFilter: 'blur(12px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.15)',
     boxShadow: isDark 
       ? '0 4px 24px rgba(214,243,145,0.12), inset 0 1px 0 rgba(214,243,145,0.15), inset 0 -1px 0 rgba(214,243,145,0.10)' 
       : '0 4px 24px rgba(0,130,124,0.08), inset 0 1px 0 rgba(255,255,255,0.7), inset 0 -1px 0 rgba(0,130,124,0.04)'
+  }
+
+  const bottomNavStyle: React.CSSProperties = {
+    background: isDark ? '#525252' : '#FFFFFF',
+    border: isDark ? '1px solid rgba(255, 255, 255, 0.15)' : '1.5px solid rgba(0, 130, 124, 0.2)',
+    boxShadow: isDark 
+      ? '0 8px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1)' 
+      : '0 8px 30px rgba(0,130,124,0.15), 0 2px 10px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,1)'
   }
 
   const filteredResults = searchResults.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -169,8 +177,8 @@ export function LandingHeader({
                     }}
                     className={`px-3 md:px-4 py-2 rounded-full cursor-pointer transition-all flex items-center font-semibold text-xs md:text-sm ${
                       isDark 
-                        ? 'text-white/80 hover:text-[#D6F391] hover:bg-white/10' 
-                        : 'text-[#474747]/90 hover:text-[#00827C] hover:bg-[#00827C]/5'
+                        ? 'text-white hover:text-[#D6F391] hover:bg-white/10' 
+                        : 'text-[#474747] hover:text-[#00827C] hover:bg-[#00827C]/5'
                     }`}
                   >
                     {group.name}
@@ -295,7 +303,7 @@ export function LandingHeader({
       <nav 
         aria-label="Navegación móvil inferior"
         className="fixed bottom-4 left-4 right-4 z-100 flex md:hidden justify-around items-center h-[72px] px-2 rounded-[2.5rem] pointer-events-auto"
-        style={headerStyle}
+        style={bottomNavStyle}
       >
         <button
           onClick={() => {
@@ -304,13 +312,13 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
+            color: isDark ? '#FFFFFF' : '#474747',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Cálculos"
         >
-          <Calculator size={22} strokeWidth={2} />
-          <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap' }}>
+          <Calculator size={22} strokeWidth={2.2} />
+          <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
             Cálculos
           </span>
         </button>
@@ -322,13 +330,13 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
+            color: isDark ? '#FFFFFF' : '#474747',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Industrias"
         >
-          <Buildings size={22} strokeWidth={2} />
-          <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap' }}>
+          <Buildings size={22} strokeWidth={2.2} />
+          <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
             Industrias
           </span>
         </button>
@@ -340,13 +348,13 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
+            color: isDark ? '#FFFFFF' : '#474747',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Metodología"
         >
-          <Sprout size={22} strokeWidth={2} />
-          <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap' }}>
+          <Sprout size={22} strokeWidth={2.2} />
+          <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
             Metodología
           </span>
         </button>
@@ -358,13 +366,13 @@ export function LandingHeader({
           }}
           className="flex flex-col items-center gap-1 hover-pop hover-press w-16"
           style={{
-            color: isDark ? 'rgba(255, 255, 255, 0.6)' : 'rgba(71, 71, 71, 0.75)',
+            color: isDark ? '#FFFFFF' : '#474747',
             transition: 'color 0.2s ease',
           }}
           aria-label="Ir a Planes"
         >
-          <BadgeDollarSign size={22} strokeWidth={2} />
-          <span style={{ fontSize: 10, fontWeight: 500, textAlign: 'center', whiteSpace: 'nowrap' }}>
+          <BadgeDollarSign size={22} strokeWidth={2.2} />
+          <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'center', whiteSpace: 'nowrap' }}>
             Planes
           </span>
         </button>

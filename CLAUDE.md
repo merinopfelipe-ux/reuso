@@ -17,6 +17,7 @@ Si necesitas espacio para algo nuevo e importante, comprime o elimina otra líne
 | `modelo-negocio-reuso` | Antes de tocar planes, límites, roles o permisos de empresa. |
 | `email-design` | Antes de crear o modificar cualquier correo (Resend o Supabase Auth). |
 | `dominios-datos` | Antes de crear una tabla nueva o escribir un cálculo/query que mezcle Costos, Cálculo Ambiental o DPP. |
+| `seo-rendimiento` | Antes de tocar o medir una página index/follow (`/`, `/faq`). Lighthouse/PageSpeed 100 móvil y escritorio, errores comunes. |
 Si vas a documentar un hecho nuevo del negocio/diseño/seguridad, escríbelo en la skill correspondiente, no aquí.
 
 ## COLORES — DOS TOKENS SAGRADOS (detalle completo en skill `design-system`)

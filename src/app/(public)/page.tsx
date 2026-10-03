@@ -101,7 +101,7 @@ async function obtenerDatosReales() {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://calculadoradereuso.com'),
-  title: { absolute: 'Impacto Ambiental e Informes DPP | Calculadora de Reúso' },
+  title: { absolute: 'Mide tu Impacto Ambiental + DPP | Calculadora de Reúso' },
   description: 'Plataforma de sostenibilidad para medir huella de carbono e impacto ambiental corporativo. Emite Pasaportes Digitales (DPP) con QR y reportes auditables.',
   keywords: [
     'software de sostenibilidad',

@@ -206,6 +206,7 @@ export const config = {
     // public/ con extensión reconocible queda excluido por patrón.
     // woff2/woff/ttf/otf: fuentes propias en public/fonts (2026-09-21).
     // _vercel/: scripts de Analytics y Speed Insights que sirve la plataforma.
-    '/((?!_next/static|_next/image|_vercel/|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json|html|woff2|woff|ttf|otf)$).*)',
+    // js/css: scripts estáticos y service workers (2026-10-02).
+    '/((?!_next/static|_next/image|_vercel/|api/|.*\\.(?:ico|svg|png|jpg|jpeg|webp|gif|txt|xml|webmanifest|json|html|woff2|woff|ttf|otf|js|css)$).*)',
   ],
 }

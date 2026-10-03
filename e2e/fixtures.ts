@@ -5,7 +5,7 @@ import { test as base, expect, type Page } from '@playwright/test'
 // cargar, todavía no existe, y luego aparece encima de los botones al escribir.
 // Por eso cada página arranca con el consentimiento "solo esenciales" guardado.
 export const test = base.extend({
-  context: async ({ context }, use) => {
+  context: async ({ context }, continuar) => {
     await context.addInitScript(() => {
       try {
         if (!localStorage.getItem('reuso_cookies_consent')) {
@@ -13,7 +13,7 @@ export const test = base.extend({
         }
       } catch {}
     })
-    await use(context)
+    await continuar(context)
   },
 })
 
