@@ -67,8 +67,8 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
       await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
-      // Sin botón de tema desde 2026-10-04: día o noche lo decide el dispositivo.
-      await expect(footer.getByRole('button', { name: /modo/i })).toHaveCount(0)
+      // Interruptor día/noche tipo switch (no guarda la elección, 2026-10-05).
+      await expect(footer.getByRole('switch', { name: /modo/i })).toBeVisible()
     })
 
     test('Sistema de diseño (/sistema-diseno) respeta seminegrita (600) y mailto de Contacto', async ({ page }) => {
@@ -149,8 +149,8 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
       await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
-      // Sin botón de tema desde 2026-10-04: día o noche lo decide el dispositivo.
-      await expect(footer.getByRole('button', { name: /modo/i })).toHaveCount(0)
+      // Interruptor día/noche tipo switch (no guarda la elección, 2026-10-05).
+      await expect(footer.getByRole('switch', { name: /modo/i })).toBeVisible()
     })
   })
 
@@ -208,8 +208,8 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       // Barra inferior
       await expect(footer).toContainText(/© \d{4} Grupo MLP S\.A\.S\./i)
       await expect(footer).toContainText(/Medellín y Bogotá, Colombia/i)
-      // Sin botón de tema desde 2026-10-04: día o noche lo decide el dispositivo.
-      await expect(footer.getByRole('button', { name: /modo/i })).toHaveCount(0)
+      // Interruptor día/noche tipo switch (no guarda la elección, 2026-10-05).
+      await expect(footer.getByRole('switch', { name: /modo/i })).toBeVisible()
     })
   })
 })

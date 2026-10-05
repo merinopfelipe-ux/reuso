@@ -1,0 +1,55 @@
+/* CSS de las páginas públicas (landing, /faq, legales, estado, errores).
+   Tailwind solo genera las clases de los archivos listados abajo, así el CSS
+   en línea de la landing pesa mucho menos que el de la app completa
+   (rendimiento móvil, 2026-10-05). La lista sigue las importaciones de
+   (public), del layout raíz y de las páginas de error: si una página pública
+   empieza a usar un componente nuevo, hay que agregar su archivo aquí. */
+@import 'tailwindcss' source(none);
+@source './(public)';
+@source 'error.tsx';
+@source 'global-error.tsx';
+@source 'layout.tsx';
+@source 'not-found.tsx';
+@source '../components/alertas/alertas-context.tsx';
+@source '../components/alertas/alertas-provider.tsx';
+@source '../components/analytics/google-analytics.tsx';
+@source '../components/analytics/microsoft-clarity.tsx';
+@source '../components/footer-public.tsx';
+@source '../components/footer.tsx';
+@source '../components/landing-header.tsx';
+@source '../components/leads-form.tsx';
+@source '../components/legal-submenu.tsx';
+@source '../components/legal/cookie-banner.tsx';
+@source '../components/legal/firma-canvas.tsx';
+@source '../components/legal/legal-header.tsx';
+@source '../components/legal/legal-page-layout.tsx';
+@source '../components/legal/legal-scroll-button.tsx';
+@source '../components/page-submenu.tsx';
+@source '../components/proteccion-publica.tsx';
+@source '../components/theme-toggle.tsx';
+@source '../components/toast-provider.tsx';
+@source '../components/toast.tsx';
+@source '../components/ui/bandera.tsx';
+@source '../components/ui/brand-logos.tsx';
+@source '../components/ui/breadcrumb.tsx';
+@source '../components/ui/button.tsx';
+@source '../components/ui/icons.tsx';
+@source '../components/ui/logo-spinner.tsx';
+@source '../components/ui/modal.tsx';
+@source '../components/ui/selector-pais.tsx';
+@source '../components/ui/selector.tsx';
+@source '../components/ui/skeleton.tsx';
+@source '../components/ui/switch-opciones.tsx';
+@source '../components/ui/tooltip-info.tsx';
+@source '../components/ui/whatsapp-logo.tsx';
+@source '../lib/constants/contacto.ts';
+@source '../lib/constants/pricing.ts';
+@source '../lib/constants/redes-sociales.ts';
+@source '../lib/env.ts';
+@source '../lib/faq/preguntas-frecuentes.ts';
+@source '../lib/firmas/documentos-meta.ts';
+@source '../lib/legal/fecha-actualizacion.ts';
+@source '../lib/status-checker.ts';
+@source '../lib/supabase/admin.ts';
+@source '../types/index.ts';
+@import './estilos-base.css';

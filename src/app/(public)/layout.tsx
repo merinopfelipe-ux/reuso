@@ -1,3 +1,4 @@
+import { EstilosPublicos } from '@/components/estilos-publicos'
 import { FooterPublic } from '@/components/footer-public'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 import { getFechaActualizacionLegal } from '@/lib/legal/fecha-actualizacion'
@@ -12,6 +13,7 @@ export default async function PublicLayout({ children }: { children: React.React
   // `clip` y no `hidden` para no romper los headers sticky de las legales.
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', overflowX: 'clip' }}>
+      <EstilosPublicos />
       {/* Sin header global - cada página legal gestiona su propio header sticky */}
       <main style={{ flex: 1 }}>
         <ProteccionPublica>{children}</ProteccionPublica>

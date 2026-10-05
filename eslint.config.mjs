@@ -5,7 +5,7 @@ import nextTypescript from "eslint-config-next/typescript";
 export default defineConfig([
   // header.tsx es zona protegida (ver CLAUDE.md). scripts/ son herramientas de
   // terminal en CommonJS que `next lint` nunca revisaba: se mantiene el alcance.
-  globalIgnores(["src/components/header.tsx", "scripts/**", "playwright-report/**", "test-results/**"]),
+  globalIgnores(["src/components/header.tsx", "scripts/**", "playwright-report/**", "test-results/**", "scratch/**"]),
   {
     extends: [...nextCoreWebVitals, ...nextTypescript],
     rules: {

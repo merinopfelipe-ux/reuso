@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev": "npm run css:publico && NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "dev:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev",
-    "build": "npm run check-backgrounds && next build",
+    "build": "npm run check-backgrounds && npm run css:publico && next build",
     "start": "next start",
     "lint": "eslint .",
     "check-backgrounds": "node scripts/check-backgrounds.js",
@@ -22,7 +22,8 @@
     "qa:auto": "node scripts/qa-automatico.mjs",
     "qa:seed": "node --env-file=.env.local scripts/sembrar-datos-qa.mjs",
     "qa:clean": "node --env-file=.env.local scripts/limpiar-datos-qa.mjs",
-    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit -p ."
+    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit -p .",
+    "css:publico": "node scripts/generar-css-publico.mjs"
   },
   "dependencies": {
     "@lucide/lab": "^0.7.0",

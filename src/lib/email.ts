@@ -2,10 +2,10 @@ import { Resend } from 'resend'
 import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { primerNombre } from '@/lib/eventos'
 
-// ── Tokens Sistema Reúso ────────────────────────────────────────────────────
+// ── Tokens Calculadora de Reúso ────────────────────────────────────────────────────
 const COLOR_NEGRO = '#111111'         // Títulos principales
 const COLOR_LURDES = '#474747'        // Texto de párrafos y etiquetas (Negro Lurdes)
-const COLOR_BRAND = '#00827C'         // Verde Reúso oficial (botones, antetítulo, acentos)
+const COLOR_BRAND = '#00827C'         // Verde oficial de Calculadora de Reúso (botones, antetítulo, acentos)
 const BG_PAGE = '#FFFFFF'             // Lienzo exterior blanco
 const BG_MUY_AGUA = '#E6F2F0'         // Fondo "muy agua" del cajón
 const BG_BOX_WHITE = '#FFFFFF'        // Fondo blanco para cajas internas destacadas (OTP, códigos)

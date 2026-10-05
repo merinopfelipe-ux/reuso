@@ -1,9 +1,12 @@
+import { EstilosPublicos } from '@/components/estilos-publicos'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function NotFound() {
   return (
-    <div
+    <>
+      <EstilosPublicos />
+      <div
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -40,5 +43,6 @@ export default function NotFound() {
         Ir al inicio
       </Link>
     </div>
+    </>
   )
 }

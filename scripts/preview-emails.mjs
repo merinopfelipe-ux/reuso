@@ -246,7 +246,7 @@ const templates = {
   }),
 
   '3-notificacion-ticket': emailPlantilla({
-    preheader: 'Nuevo ticket de soporte: Error al generar certificado.',
+    preheader: 'Nuevo ticket de soporte: Error al generar informe.',
     subtituloHeader: 'Ticket de soporte',
     saludo: 'Nuevo mensaje de soporte',
     cuerpo: 'Llegó un mensaje desde el formulario de soporte. Aquí están los detalles para su gestión:',
@@ -266,7 +266,7 @@ const templates = {
   </tr>
 </table>
 <p style="margin:0 0 8px;font-size:13px;font-weight:700;color:${COLOR_NEGRO};text-align:left;">Mensaje:</p>
-<div class="email-inner-box" style="margin:0;padding:16px 20px;background-color:${BG_BOX_WHITE};border-radius:16px;font-size:13.5px;color:${COLOR_LURDES};line-height:1.7;white-space:pre-wrap;text-align:left;">Al intentar generar el certificado me aparece un error 500.</div>`,
+<div class="email-inner-box" style="margin:0;padding:16px 20px;background-color:${BG_BOX_WHITE};border-radius:16px;font-size:13.5px;color:${COLOR_LURDES};line-height:1.7;white-space:pre-wrap;text-align:left;">Al intentar generar el informe me aparece un error 500.</div>`,
     mostrarAlerta: false,
   }),
 }

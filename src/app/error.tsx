@@ -1,4 +1,5 @@
 'use client'
+import { EstilosPublicos } from '@/components/estilos-publicos'
 
 import { useEffect } from 'react'
 import Image from 'next/image'
@@ -15,7 +16,9 @@ export default function Error({
   }, [error])
 
   return (
-    <div
+    <>
+      <EstilosPublicos />
+      <div
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -62,5 +65,6 @@ export default function Error({
         Intentar de nuevo
       </button>
     </div>
+    </>
   )
 }

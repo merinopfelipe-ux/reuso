@@ -1,3 +1,4 @@
+import '../globals.css'
 import type { Metadata } from 'next'
 import { ProteccionPublica } from '@/components/proteccion-publica'
 

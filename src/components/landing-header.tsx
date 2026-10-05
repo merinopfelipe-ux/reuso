@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { Search as MagnifyingGlass, X, ChevronDown as CaretDown, Building2 as Buildings, Headset, Calculator, Sprout, BadgeDollarSign } from '@/components/ui/icons'
 
 export interface MenuItem {
@@ -204,7 +205,9 @@ export function LandingHeader({
               >
                 <Headset size={18} strokeWidth={2.2} />
               </button>
-            ) : null}
+            ) : (
+              <ThemeToggle />
+            )}
             {showSearch && (
               <button
                 aria-label={searchOpen ? "Cerrar búsqueda" : "Abrir búsqueda"}

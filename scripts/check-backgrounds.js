@@ -21,6 +21,7 @@ const ALLOWED_FILES = [
   'src/app/(admin)/admin/empresas/[id]/components/marca-empresa-client.tsx', // Vista previa fija de logo en modo día Y noche a la vez, no sigue el tema de la página
   'src/components/design-system-header.tsx',
   'src/app/globals.css', // Defines variables
+  'src/app/estilos-base.css', // Variables y estilos comunes (antes en globals.css)
   'src/app/page.tsx',    // Public landing
   'src/app/(public)/landing-client.tsx', // Public landing client
   'CLAUDE.md',

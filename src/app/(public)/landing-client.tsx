@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { Suspense, useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -1698,10 +1698,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 2 - COMPARATIVA ───────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="comparativa" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -1719,7 +1720,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 lg:gap-6">
             {/* Lineal */}
             <m.div
-              initial={{ opacity: 0, y: 20 }}
+              data-reveal initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: '-30px' }}
               transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
@@ -1753,7 +1754,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             {/* Circular */}
             <m.div
-              initial={{ opacity: 0, y: 20 }}
+              data-reveal initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: '-30px' }}
               transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
@@ -1798,15 +1799,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="dpp" className="scroll-mt-[65px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center justify-center">
             {/* Diagrama animado: solo tablet y escritorio */}
             <m.div
-              initial={{ opacity: 0, y: 24 }}
+              data-reveal initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: '-30px' }}
               transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
@@ -1816,7 +1819,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </m.div>
 
             <m.div
-              initial={{ opacity: 0, y: 24 }}
+              data-reveal initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false, margin: '-30px' }}
               transition={{ duration: 0.55, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -1864,13 +1867,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN 3 - CATÁLOGO DE CÁLCULOS ───────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="calculos" className={`scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -1891,7 +1896,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               return (
                 <m.div
                   key={i}
-                  initial={{ opacity: 0, y: 16 }}
+                  data-reveal initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false, margin: '-30px' }}
                   transition={{ duration: 0.45, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
@@ -2060,10 +2065,12 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </Modal>
       </section>
+      </Suspense>
 
 
       {/* ── SECCIÓN 4 - CATEGORÍAS / INDUSTRIAS (SIN STICKY SCROLL) ─── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section
         id="categorias"
         ref={sectionCategoriasRef}
@@ -2071,7 +2078,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       >
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -2218,7 +2225,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <AnimatePresence mode="wait" initial={false}>
                   <m.div
                     key={cat.id}
-                    initial={{ opacity: 0, y: 8, filter: 'blur(3px)' }}
+                    data-reveal initial={{ opacity: 0, y: 8, filter: 'blur(3px)' }}
                     animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                     exit={{ opacity: 0, y: -8, filter: 'blur(3px)' }}
                     transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
@@ -2244,13 +2251,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN 5 - PROCESO ───────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="proceso" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -2292,7 +2301,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             ].map((paso, i) => (
               <m.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                data-reveal initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false, margin: '-30px' }}
                 transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -2330,13 +2339,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN 6 - PLANES ────────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="planes" className={`scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -2374,7 +2385,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               return (
                 <m.div
                   key={plan.id}
-                  initial={{ opacity: 0, y: 24 }}
+                  data-reveal initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false, margin: '-30px' }}
                   transition={{ duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
@@ -2482,6 +2493,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </div>
       </section>
+      </Suspense>
 
       {/* Popup del cuadro comparativo completo */}
       {(() => {
@@ -2631,10 +2643,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="ia" className={`scroll-mt-[40px] md:scroll-mt-[41px] lg:scroll-mt-[33px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            data-reveal initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -2746,13 +2759,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </m.div>
         </div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN 8 - OBJETIVO 12 (ODS 12) ─────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="ods-12" className="scroll-mt-[73px] md:scroll-mt-[82px] lg:scroll-mt-[98px] relative pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <m.div
-            initial={{ opacity: 0, y: 24 }}
+            data-reveal initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -2824,7 +2839,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             ].map((col, i) => (
                 <m.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  data-reveal initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: false, margin: '-30px' }}
                   transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -2877,12 +2892,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             </div>
           </div>
         </section>
+      </Suspense>
 
       {/* ── SECCIÓN 9 - FAQ (AL FINAL) ─────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
+      <Suspense fallback={null}>
       <section id="faq" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
         <m.div
-          initial={{ opacity: 0, y: 24 }}
+          data-reveal initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: '-30px' }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -2900,12 +2917,14 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </m.div>
       </section>
+      </Suspense>
 
       {/* ── SECCIÓN 10 - CTA FINAL ─────────────────────────────────────────── */}
+      <Suspense fallback={null}>
       <section id="cta-final" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
         <div className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto">
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            data-reveal initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, margin: '-30px' }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
@@ -2967,6 +2986,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </m.div>
         </div>
       </section>
+      </Suspense>
 
 
 
@@ -3026,7 +3046,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="fixed inset-0 z-999999 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
             {/* Backdrop con desenfoque: claro de día, oscuro de noche */}
             <m.div
-              initial={{ opacity: 0 }}
+              data-reveal initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
@@ -3038,7 +3058,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
             {/* Tarjeta modal */}
             <m.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              data-reveal initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.94, y: 16 }}
               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}

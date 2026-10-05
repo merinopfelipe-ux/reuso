@@ -1,8 +1,8 @@
 import { test, expect, Page } from './fixtures'
 
-// Desde 2026-10-04 no hay botón de tema: día o noche lo decide SIEMPRE la
-// configuración del dispositivo (script del layout raíz, que escucha cambios
-// en vivo). Aquí se simula exactamente eso: el dispositivo pasa a oscuro.
+// Al cargar, día o noche lo decide la configuración del dispositivo (script
+// del layout raíz, que escucha cambios en vivo). El interruptor tipo switch no
+// guarda la elección. Aquí se simula el dispositivo pasando a oscuro.
 // Nunca usar document.documentElement.setAttribute a mano.
 async function activarTemaOscuro(page: Page) {
   await page.emulateMedia({ colorScheme: 'dark' })
@@ -50,7 +50,14 @@ test.describe('Modo Noche', () => {
       await activarTemaOscuro(page)
       await page.emulateMedia({ colorScheme: 'light' })
       await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light', { timeout: 5_000 })
-      expect(await page.getByLabel(/Cambiar a modo|Cambiar tema/).count()).toBe(0)
+      // El interruptor cambia el modo solo mientras la página está abierta:
+      // al recargar vuelve a mandar el dispositivo (claro).
+      await page.getByRole('switch', { name: /modo noche/i }).first().click()
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'dark', { timeout: 5_000 })
+      await page.reload()
+      await page.waitForLoadState('load')
+      expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe('light')
+      expect(await page.evaluate(() => localStorage.getItem('theme'))).toBeNull()
     })
   })
 

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import './globals.css'
 import NextTopLoader from 'nextjs-toploader'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'

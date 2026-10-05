@@ -1,3 +1,4 @@
+import '../globals.css'
 import { redirect } from 'next/navigation'
 import { headers, cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
