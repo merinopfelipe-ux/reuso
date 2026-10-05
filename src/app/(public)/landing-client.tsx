@@ -674,19 +674,14 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
         <g fill="none" stroke={linea} strokeWidth="1.5" className="dpp-dash-flow">
           <path d={`M 140 60 V ${DPP_NODO_Y[4]} M 220 60 V ${DPP_NODO_Y[4]}`} />
           <path d="M 92 260 H 140" />
+          {DPP_PASOS.map((paso, i) => (
+            <path
+              key={paso.label}
+              d={`M 140 ${DPP_NODO_Y[i]} H 220`}
+            />
+          ))}
+          <path d="M 220 260 H 300" />
         </g>
-        {DPP_PASOS.map((paso, i) => (
-          <path
-            key={paso.label}
-            d={`M 140 ${DPP_NODO_Y[i]} H 220`}
-            fill="none"
-            stroke={paso.color}
-            strokeOpacity={i === activo ? 1 : 0.55}
-            strokeWidth={i === activo ? 2 : 1.5}
-            className="dpp-dash-flow transition-all duration-300"
-          />
-        ))}
-        <path d="M 220 260 H 300" fill="none" stroke={pasoActivo.color} strokeWidth="2" className="dpp-dash-flow transition-all duration-500" />
         {!reducido && (
           <m.circle
             key={activo}
@@ -782,7 +777,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
                   className="shrink-0 w-5 h-5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center transition-all duration-500"
                   style={{
                     background: hecho ? paso.color : 'transparent',
-                    border: hecho ? 'none' : `1.5px dashed ${paso.color}99`,
+                    border: hecho ? 'none' : `1.5px dashed ${linea}`,
                     color: DPP_RESALTADO,
                     transform: hecho ? 'scale(1)' : 'scale(0.85)',
                   }}
