@@ -74,6 +74,21 @@ const ESTADO_CONFIG: Record<
   },
 }
 
+// Un estado guardado en la base que no esté en la lista de arriba (por ejemplo
+// uno viejo o escrito a mano) no puede tumbar la pantalla: se muestra en gris
+// con su propio nombre. Bug real: un lead con estado 'en_proceso' dejaba
+// /admin/leads en "Error en el panel admin" (2026-10-05).
+const ESTADO_DESCONOCIDO = {
+  label: 'Sin estado',
+  bg: 'rgba(71, 71, 71, 0.08)',
+  color: '#474747',
+  border: 'rgba(71, 71, 71, 0.20)',
+  dot: '#9A9A9A',
+}
+function configEstado(estado: EstadoLead | string) {
+  return ESTADO_CONFIG[estado as EstadoLead] ?? { ...ESTADO_DESCONOCIDO, label: String(estado || 'Sin estado') }
+}
+
 interface Lead {
   id: string
   nombre: string | null
@@ -125,6 +140,25 @@ function partirNombreCompleto(nombreCompleto: string | null | undefined): { nomb
 }
 
 /** Parser de CSV robusto para importación de contactos */
+// Deja todo teléfono con indicativo de país y separado, para que se vea igual
+// venga de donde venga. Un número colombiano sin indicativo (10 dígitos que
+// empiezan por 3) recibe +57; el resto conserva el indicativo que ya traía.
+function normalizarTelefono(valor: string): string {
+  const crudo = valor.trim()
+  if (!crudo) return ''
+  const digitos = crudo.replace(/\D/g, '')
+  if (!digitos) return ''
+  let conPais = digitos
+  if (!crudo.startsWith('+')) {
+    if (digitos.length === 10 && digitos.startsWith('3')) conPais = `57${digitos}`
+    else if (digitos.length === 7) return crudo // fijo local, se deja como está
+  }
+  if (conPais.length === 12 && conPais.startsWith('57')) {
+    return `+57 ${conPais.slice(2, 5)} ${conPais.slice(5, 8)} ${conPais.slice(8)}`
+  }
+  return `+${conPais}`
+}
+
 function parsearCSVContactos(texto: string): ContactoParseado[] {
   const limpio = texto.replace(/^\uFEFF/, '').trim()
   if (!limpio) return []
@@ -198,7 +232,7 @@ function parsearCSVContactos(texto: string): ContactoParseado[] {
         nombre: rawNombre.trim(),
         apellido: rawApellido.trim(),
         email: rawEmail.trim(),
-        telefono: rawTel.trim(),
+        telefono: normalizarTelefono(rawTel),
         empresa: rawEmpresa.trim(),
         interes: rawInteres.trim(),
         evento_nombre: rawEvento.trim(),
@@ -304,6 +338,9 @@ export function LeadsClient({
   const [modalImportar, setModalImportar] = useState(false)
   const [archivoNombre, setArchivoNombre] = useState('')
   const [contactosParseados, setContactosParseados] = useState<ContactoParseado[]>([])
+  // Qué hacer con los contactos del archivo que ya existen (mismo correo o
+  // mismo teléfono): actualizarlos con los datos nuevos o dejarlos como están.
+  const [modoDuplicados, setModoDuplicados] = useState<'actualizar' | 'omitir'>('actualizar')
   const [importando, setImportando] = useState(false)
   const [errorImportar, setErrorImportar] = useState('')
   const [exitoImportar, setExitoImportar] = useState('')
@@ -670,6 +707,12 @@ export function LeadsClient({
       ['Carlos', 'Gómez', 'carlos@empresa.com', '+57 311 9876543', 'EcoLogix', 'Cotización', '', 'Solicita demo de cotizador', 'nuevo'],
     ]
     const hoja = XLSX.utils.aoa_to_sheet(filas)
+    // Teléfono como texto (columna D): si Excel lo toma como número, al guardar
+    // lo muestra en notación científica y se pierden dígitos al reimportar.
+    for (let f = 2; f <= filas.length; f++) {
+      const celda = hoja[`D${f}`]
+      if (celda) { celda.t = 's'; celda.z = '@' }
+    }
     hoja['!cols'] = [18, 16, 26, 18, 20, 16, 24, 36, 12].map(wch => ({ wch }))
     const libro = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(libro, hoja, 'Contactos')
@@ -694,7 +737,10 @@ export function LeadsClient({
         if (esExcel) {
           const XLSX = await import('xlsx')
           const libro = XLSX.read(evt.target?.result as ArrayBuffer, { type: 'array' })
-          texto = XLSX.utils.sheet_to_csv(libro.Sheets[libro.SheetNames[0]])
+          // rawNumbers: sin esto Excel entrega el valor MOSTRADO y un teléfono
+          // guardado como número llega en notación científica ("5.73142E+11"),
+          // perdiendo dígitos para siempre (bug real, 2026-10-05).
+          texto = XLSX.utils.sheet_to_csv(libro.Sheets[libro.SheetNames[0]], { rawNumbers: true })
         } else {
           texto = String(evt.target?.result ?? '')
         }
@@ -714,6 +760,19 @@ export function LeadsClient({
     else reader.readAsText(file, 'utf-8')
   }
 
+  // Contactos del archivo que ya existen (mismo correo o mismo teléfono).
+  const digitosTel = (t: string | null | undefined) => (t ?? '').replace(/\D/g, '').slice(-10)
+  const duplicadosDetectados = useMemo(() => {
+    if (contactosParseados.length === 0) return 0
+    const emails = new Set(leads.map(l => (l.email ?? '').trim().toLowerCase()).filter(Boolean))
+    const telefonos = new Set(leads.map(l => digitosTel(l.telefono)).filter(d => d.length >= 7))
+    return contactosParseados.filter(c => {
+      const e = (c.email ?? '').trim().toLowerCase()
+      const t = digitosTel(c.telefono)
+      return (e && emails.has(e)) || (t.length >= 7 && telefonos.has(t))
+    }).length
+  }, [contactosParseados, leads])
+
   // ── Enviar Contactos Importados a la BD ──
   async function ejecutarImportacion() {
     if (contactosParseados.length === 0) {
@@ -729,7 +788,7 @@ export function LeadsClient({
       const res = await fetch('/api/admin/leads/importar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactos: contactosParseados }),
+        body: JSON.stringify({ contactos: contactosParseados, duplicados: modoDuplicados }),
       })
 
       const data = await res.json().catch(() => ({}))
@@ -740,10 +799,10 @@ export function LeadsClient({
         return
       }
 
-      setExitoImportar(`¡Éxito! Se importaron ${data.insertados ?? contactosParseados.length} contactos.`)
-      if (Array.isArray(data.data)) {
-        setLeads(prev => [...data.data, ...prev])
-      }
+      const partes = [`${data.insertados ?? 0} nuevos`]
+      if (data.actualizados) partes.push(`${data.actualizados} actualizados`)
+      if (data.omitidos) partes.push(`${data.omitidos} ya existían y se dejaron igual`)
+      setExitoImportar(`Listo: ${partes.join(', ')}.`)
       setTimeout(() => {
         setModalImportar(false)
         setArchivoNombre('')
@@ -762,7 +821,7 @@ export function LeadsClient({
       {/* ── Tarjetas resumen interactivo (KPIs con tokens certificados) ── */}
       <div className="leads-grid grid grid-cols-2 sm:grid-cols-4 gap-3">
         {ESTADOS.map(e => {
-          const cfg = ESTADO_CONFIG[e]
+          const cfg = configEstado(e)
           const activo = filtroEstado === e
           return (
             <button
@@ -1127,7 +1186,7 @@ export function LeadsClient({
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[130px] leading-tight break-words line-clamp-3 text-xs font-semibold text-(--text-primary)">
+                        <div className="max-w-[130px] leading-tight break-words line-clamp-3 text-sm font-semibold text-(--text-primary)">
                           {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
                         </div>
                       </td>
@@ -1137,7 +1196,7 @@ export function LeadsClient({
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[120px] leading-tight break-words line-clamp-3 text-xs text-(--text-secondary)">
+                        <div className="max-w-[120px] leading-tight break-words line-clamp-3 text-sm text-(--text-secondary)">
                           {lead.empresa || <span className="opacity-40">-</span>}
                         </div>
                       </td>
@@ -1147,13 +1206,13 @@ export function LeadsClient({
                         className="px-2 py-2 align-top whitespace-nowrap"
                         style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="flex flex-col gap-1 leading-tight text-xs text-(--text-secondary) max-w-[200px]">
+                        <div className="flex flex-col gap-1 leading-tight text-sm text-(--text-secondary) max-w-[200px]">
                           {lead.email ? (
                             <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                               <Envelope size={11} className="text-(--text-secondary) shrink-0" />
                               <a
                                 href={`mailto:${lead.email}`}
-                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium text-[11px]"
+                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium text-sm"
                               >
                                 {lead.email}
                               </a>
@@ -1165,7 +1224,7 @@ export function LeadsClient({
                               href={`https://wa.me/${lead.telefono.replace(/[^\d+]/g, '').replace(/^\+/, '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] text-(--text-secondary) hover:text-brand transition-colors"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm text-(--text-secondary) hover:text-brand transition-colors"
                               title="Abrir chat de WhatsApp con este prospecto"
                             >
                               <WhatsappLogo size={11} className="text-(--text-secondary) shrink-0" />
@@ -1179,18 +1238,18 @@ export function LeadsClient({
 
                       {/* Interés / Evento organizado en 2 líneas sin ensanchar */}
                       <td
-                        className="px-2 py-2 align-top text-xs"
+                        className="px-2 py-2 align-top text-sm"
                         style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
                       >
                         <div className="max-w-[140px] flex flex-col leading-tight">
                           {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
-                            <span className="font-medium text-(--text-primary) break-words line-clamp-2 text-[11px]" title={lead.interes}>
+                            <span className="font-medium text-(--text-primary) break-words line-clamp-2 text-sm" title={lead.interes}>
                               {lead.interes}
                             </span>
                           ) : null}
                           {lead.evento_nombre ? (
                             <span
-                              className={`text-(--text-secondary) text-[10.5px] break-words line-clamp-2 ${
+                              className={`text-(--text-secondary) text-sm break-words line-clamp-2 ${
                                 lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5' : ''
                               }`}
                               title={`Evento: ${lead.evento_nombre}`}
@@ -1205,12 +1264,12 @@ export function LeadsClient({
 
                       {/* Fecha y hora en dos líneas */}
                       <td
-                        className="px-2 py-2 whitespace-nowrap align-top text-xs w-[85px]"
+                        className="px-2 py-2 whitespace-nowrap align-top text-sm w-[85px]"
                         style={{ background: sort.col === 'created_at' ? 'var(--table-orden-activo)' : undefined }}
                       >
                         <div className="flex flex-col leading-tight">
-                          <span className="font-medium text-(--text-primary) text-[11px]">{dia}</span>
-                          <span className="text-(--text-secondary) text-[10px] mt-0.5">{hora}</span>
+                          <span className="font-medium text-(--text-primary) text-sm">{dia}</span>
+                          <span className="text-(--text-secondary) text-sm mt-0.5">{hora}</span>
                         </div>
                       </td>
 
@@ -1389,6 +1448,34 @@ export function LeadsClient({
                   </span>
                 </div>
 
+                {duplicadosDetectados > 0 && (
+                  <div className="rounded-xl border border-(--border) bg-(--bg-integrated) p-3 flex flex-col gap-2">
+                    <p className="text-xs font-semibold text-(--text-primary) m-0">
+                      {duplicadosDetectados} de estos contactos ya están en la base (mismo correo o mismo teléfono).
+                    </p>
+                    <div className="flex flex-col gap-1.5">
+                      {([
+                        { v: 'actualizar', t: 'Actualizar los que ya existen con los datos del archivo' },
+                        { v: 'omitir', t: 'Dejarlos como están y subir solo los nuevos' },
+                      ] as const).map(o => (
+                        <label key={o.v} className="flex items-center gap-2 text-xs text-(--text-secondary) cursor-pointer">
+                          <input
+                            type="radio"
+                            name="modo-duplicados"
+                            checked={modoDuplicados === o.v}
+                            onChange={() => setModoDuplicados(o.v)}
+                            className="accent-(--color-brand)"
+                          />
+                          {o.t}
+                        </label>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-(--text-secondary) m-0">
+                      Al actualizar, un campo vacío del archivo nunca borra lo que ya estaba guardado.
+                    </p>
+                  </div>
+                )}
+
                 <div className="rounded-xl border border-(--border) overflow-hidden text-xs">
                   <table className="w-full text-left" style={{ borderCollapse: 'collapse' }}>
                     <thead className="bg-(--bg-table-header) text-brand">
@@ -1477,7 +1564,7 @@ export function LeadsClient({
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Estado inicial</label>
                 <Selector
-                  opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
+                  opciones={ESTADOS.map(e => ({ value: e, label: configEstado(e).label }))}
                   value={formCrear.estado}
                   onChange={v => setFormCrear(p => ({ ...p, estado: v as EstadoLead }))}
                 />
@@ -1612,7 +1699,7 @@ export function LeadsClient({
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Estado comercial</label>
                 <Selector
-                  opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
+                  opciones={ESTADOS.map(e => ({ value: e, label: configEstado(e).label }))}
                   value={formEdit.estado}
                   onChange={v => setFormEdit(p => ({ ...p, estado: v as EstadoLead }))}
                 />
@@ -1710,7 +1797,7 @@ function EstadoDropdownLead({
   const [abierto, setAbierto] = useState(false)
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
-  const cfg = ESTADO_CONFIG[estado]
+  const cfg = configEstado(estado)
 
   function toggle(e: React.MouseEvent) {
     e.stopPropagation()
@@ -1765,7 +1852,7 @@ function EstadoDropdownLead({
             onClick={e => e.stopPropagation()}
           >
             {ESTADOS.map(e => {
-              const itemCfg = ESTADO_CONFIG[e]
+              const itemCfg = configEstado(e)
               const seleccionado = e === estado
               return (
                 <button
