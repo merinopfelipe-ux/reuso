@@ -70,7 +70,7 @@ export default function RootLayout({
           });
         ` }} />
       </head>
-      <body>
+      <body style={{ margin: 0 }}>
         <NextTopLoader 
           color="#00827C" 
           showSpinner={false} 

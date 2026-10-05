@@ -36,7 +36,7 @@
 
 @theme {
   --font-sans: 'Open Sans', 'Open Sans Fallback', sans-serif;
-  --font-seravek: seravek, ui-sans-serif, sans-serif;
+  --font-seravek: seravek, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   --color-brand: var(--color-brand);
   --color-brand-hover: var(--color-brand-hover);
@@ -216,8 +216,12 @@
 
   h1,
   h2,
+  /* Títulos: Seravek donde existe (Mac/iPhone). Donde no, la fuente del sistema
+     y NUNCA una fuente que se descargue: en PageSpeed (Linux, sin Seravek) el H1
+     caía a Open Sans y saltaba al terminar de decodificarla (CLS 0.181,
+     2026-10-05). Con fuentes del sistema no hay cambio de fuente. */
   h3 {
-    font-family: seravek, 'Open Sans', 'Open Sans Fallback', ui-sans-serif, sans-serif;
+    font-family: seravek, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
 }
 
@@ -850,5 +854,5 @@ html { scroll-behavior: smooth; }
    siempre en Seravek, como los demás títulos (pedido de Felipe, 2026-10-05).
    Va aquí y no en footer.tsx porque ese archivo está protegido. */
 .footer-rainbow-title {
-  font-family: seravek, 'Open Sans', 'Open Sans Fallback', ui-sans-serif, sans-serif;
+  font-family: seravek, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
