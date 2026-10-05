@@ -4,6 +4,10 @@ const nextConfig = {
   // CLAUDE.md. Ese archivo es solo en español y con límite de líneas
   // (ver su regla de cabecera), así que se apaga.
   agentRules: false,
+  // El ícono de herramientas de Next 16 (solo en desarrollo) va abajo a la
+  // izquierda y tapaba el botón de scroll de las páginas legales (prueba e2e
+  // legal-08 en CI). Los errores de desarrollo se siguen mostrando.
+  devIndicators: false,
   // Migración de dominio (2026-09-05): reuso.lurdes.co sigue apuntando al
   // mismo proyecto de Vercel, así que en vez de servir la app ahí también,
   // cualquier visita a ese host redirige de forma permanente al dominio de

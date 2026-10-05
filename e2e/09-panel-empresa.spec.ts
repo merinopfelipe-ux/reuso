@@ -49,7 +49,7 @@ test.describe('empresa_admin', () => {
     await page.getByRole('button', { name: 'Filtrar' }).click()
     await page.waitForLoadState('load')
 
-    await page.getByRole('button', { name: 'Descargar' }).click()
+    await page.getByRole('button', { name: /Exportar|Descargar/ }).click()
     const responsePromise = page.waitForResponse(/\/api\/calculos\/exportar/, { timeout: 15_000 })
     await page.getByText('PDF (.pdf)').click()
     const response = await responsePromise
@@ -60,7 +60,7 @@ test.describe('empresa_admin', () => {
     await page.goto('/empresa/calculos')
     await page.waitForLoadState('load')
 
-    await page.getByRole('button', { name: 'Descargar' }).click()
+    await page.getByRole('button', { name: /Exportar|Descargar/ }).click()
     const responsePromise = page.waitForResponse(/\/api\/calculos\/exportar/, { timeout: 15_000 })
     await page.getByText('CSV (.csv)').click()
     const response = await responsePromise
