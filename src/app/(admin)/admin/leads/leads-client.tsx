@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef, useEffect } from 'react'
+import { useState, useTransition, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import {
@@ -10,8 +10,9 @@ import {
   Pencil,
   Trash2,
   Download,
+  Upload,
   Plus,
-  MoreHorizontal,
+  DotsThree,
   Check,
   ChevronDown,
   Search as MagnifyingGlass,
@@ -19,48 +20,57 @@ import {
   SquareCheck,
   Calendar,
   X,
+  FileText,
 } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { Selector } from '@/components/ui/selector'
+import { Pagination } from '@/components/ui/pagination'
+import { BotonDescargar } from '@/components/boton-descargar'
+import { SortTh } from '@/components/sort-th'
+import type { SortState } from '@/lib/use-sortable'
 
 const ESTADOS = ['nuevo', 'contactado', 'convertido', 'descartado'] as const
 type EstadoLead = typeof ESTADOS[number]
 
-// Paleta estricta alineada 100% con los tokens del Sistema de Diseño Reúso
+// Paleta estricta certificada del Sistema de Diseño Reúso (Regla WCAG AA 04-ui-y-estetica)
+// - Nuevo: Azul Info (#59A6E4 / texto #1E5D8F / bg 12%)
+// - Contactado: Ámbar Alerta (#F6BF3E / texto #AD7C43 nogal / bg 15%)
+// - Convertido: Verde Éxito (#38B98E / texto #156649 / bg 12%)
+// - Descartado: Rojo Error (#FF5E4B / texto #CC3C2A / bg 10%)
 const ESTADO_CONFIG: Record<
   EstadoLead,
   { label: string; bg: string; color: string; border: string; dot: string }
 > = {
   nuevo: {
     label: 'Nuevo',
-    bg: 'var(--color-brand-light)',
-    color: 'var(--color-brand)',
-    border: 'var(--border)',
-    dot: 'var(--color-brand)',
+    bg: 'rgba(89, 166, 228, 0.12)',
+    color: '#1E5D8F',
+    border: 'rgba(89, 166, 228, 0.30)',
+    dot: '#59A6E4',
   },
   contactado: {
     label: 'Contactado',
-    bg: 'rgba(246, 191, 62, 0.12)',
-    color: 'var(--color-warning-content)',
-    border: 'rgba(246, 191, 62, 0.3)',
-    dot: 'var(--color-warning)',
+    bg: 'rgba(246, 191, 62, 0.15)',
+    color: '#AD7C43',
+    border: 'rgba(246, 191, 62, 0.35)',
+    dot: '#F6BF3E',
   },
   convertido: {
     label: 'Convertido',
     bg: 'rgba(56, 185, 142, 0.12)',
-    color: 'var(--color-success-content)',
-    border: 'rgba(56, 185, 142, 0.3)',
-    dot: 'var(--color-success)',
+    color: '#156649',
+    border: 'rgba(56, 185, 142, 0.30)',
+    dot: '#38B98E',
   },
   descartado: {
     label: 'Descartado',
-    bg: 'var(--bg-table-hover)',
-    color: 'var(--text-secondary)',
-    border: 'var(--border)',
-    dot: 'var(--text-placeholder)',
+    bg: 'rgba(255, 94, 75, 0.10)',
+    color: '#CC3C2A',
+    border: 'rgba(255, 94, 75, 0.25)',
+    dot: '#FF5E4B',
   },
 }
 
@@ -84,6 +94,18 @@ interface Evento {
   fecha_fin: string | null
 }
 
+interface ContactoParseado {
+  nombre: string
+  apellido: string
+  email: string
+  telefono: string
+  empresa: string
+  interes: string
+  evento_nombre: string
+  mensaje: string
+  estado: EstadoLead
+}
+
 function formatearFechaLead(iso: string) {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return { dia: '-', hora: '' }
@@ -102,6 +124,93 @@ function partirNombreCompleto(nombreCompleto: string | null | undefined): { nomb
   return { nombre: partes.slice(0, 2).join(' '), apellido: partes.slice(2).join(' ') }
 }
 
+/** Parser de CSV robusto para importación de contactos */
+function parsearCSVContactos(texto: string): ContactoParseado[] {
+  const limpio = texto.replace(/^\uFEFF/, '').trim()
+  if (!limpio) return []
+
+  const lineas = limpio.split(/\r?\n/)
+  if (lineas.length < 2) return []
+
+  const sep = lineas[0].includes(';') ? ';' : ','
+
+  function parseLinea(linea: string): string[] {
+    const valores: string[] = []
+    let actual = ''
+    let dentroComillas = false
+
+    for (let i = 0; i < linea.length; i++) {
+      const c = linea[i]
+      if (c === '"') {
+        if (dentroComillas && linea[i + 1] === '"') {
+          actual += '"'
+          i++
+        } else {
+          dentroComillas = !dentroComillas
+        }
+      } else if (c === sep && !dentroComillas) {
+        valores.push(actual.trim())
+        actual = ''
+      } else {
+        actual += c
+      }
+    }
+    valores.push(actual.trim())
+    return valores
+  }
+
+  const cabeceras = parseLinea(lineas[0]).map(c =>
+    c.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim()
+  )
+
+  const colNombre = cabeceras.findIndex(c => c === 'nombre' || c.startsWith('nombre'))
+  const colApellido = cabeceras.findIndex(c => c === 'apellido' || c.startsWith('apellido'))
+  const colEmail = cabeceras.findIndex(c => c.includes('email') || c.includes('correo'))
+  const colTelefono = cabeceras.findIndex(c => c.includes('tel') || c.includes('cel') || c.includes('whatsapp'))
+  const colEmpresa = cabeceras.findIndex(c => c.includes('empresa') || c.includes('organizacion'))
+  const colInteres = cabeceras.findIndex(c => c.includes('interes') || c.includes('asunto') || c.includes('plan'))
+  const colEvento = cabeceras.findIndex(c => c.includes('evento'))
+  const colMensaje = cabeceras.findIndex(c => c.includes('mensaje') || c.includes('nota'))
+  const colEstado = cabeceras.findIndex(c => c.includes('estado'))
+
+  const contactos: ContactoParseado[] = []
+
+  for (let i = 1; i < lineas.length; i++) {
+    const rawLinea = lineas[i].trim()
+    if (!rawLinea) continue
+    const vals = parseLinea(rawLinea)
+
+    const rawNombre = colNombre >= 0 ? vals[colNombre] ?? '' : vals[0] ?? ''
+    const rawApellido = colApellido >= 0 ? vals[colApellido] ?? '' : ''
+    const rawEmail = colEmail >= 0 ? vals[colEmail] ?? '' : ''
+    const rawTel = colTelefono >= 0 ? vals[colTelefono] ?? '' : ''
+    const rawEmpresa = colEmpresa >= 0 ? vals[colEmpresa] ?? '' : ''
+    const rawInteres = colInteres >= 0 ? vals[colInteres] ?? '' : ''
+    const rawEvento = colEvento >= 0 ? vals[colEvento] ?? '' : ''
+    const rawMensaje = colMensaje >= 0 ? vals[colMensaje] ?? '' : ''
+    let rawEstado = (colEstado >= 0 ? vals[colEstado] ?? '' : '').toLowerCase().trim()
+    if (!['nuevo', 'contactado', 'convertido', 'descartado'].includes(rawEstado)) {
+      rawEstado = 'nuevo'
+    }
+
+    if (rawNombre.trim() || rawEmail.trim() || rawTel.trim()) {
+      contactos.push({
+        nombre: rawNombre.trim(),
+        apellido: rawApellido.trim(),
+        email: rawEmail.trim(),
+        telefono: rawTel.trim(),
+        empresa: rawEmpresa.trim(),
+        interes: rawInteres.trim(),
+        evento_nombre: rawEvento.trim(),
+        mensaje: rawMensaje.trim(),
+        estado: rawEstado as EstadoLead,
+      })
+    }
+  }
+
+  return contactos
+}
+
 export function LeadsClient({
   leads: inicial,
   eventos: eventosIniciales = [],
@@ -117,6 +226,25 @@ export function LeadsClient({
   const [busqueda, setBusqueda] = useState('')
   const [filtroEstado, setFiltroEstado] = useState<EstadoLead | ''>('')
   const [filtroEvento, setFiltroEvento] = useState('')
+
+  // ── Paginación canónica del sistema de diseño ──
+  const [pagina, setPagina] = useState(1)
+  const [porPagina, setPorPagina] = useState(25)
+
+  // ── Ordenamiento por columna canónico del sistema de diseño (patrón Cotizador CRM) ──
+  const [sort, setSort] = useState<SortState>({ col: 'created_at', dir: 'desc' })
+
+  function toggleSort(col: string) {
+    setSort(prev => {
+      if (prev.col !== col) {
+        return { col, dir: col === 'created_at' ? 'desc' : 'asc' }
+      }
+      if (prev.dir === 'asc') return { col, dir: 'desc' }
+      if (prev.dir === 'desc') return { col: 'created_at', dir: 'desc' }
+      return { col, dir: 'asc' }
+    })
+    setPagina(1)
+  }
 
   // ── Selección múltiple para borrado en grupo ──
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
@@ -174,6 +302,15 @@ export function LeadsClient({
   const [guardandoEdit, setGuardandoEdit] = useState(false)
   const [errorEdit, setErrorEdit] = useState('')
 
+  // ── Modal de Importación de Contactos (Popup con descargable y adjunto) ──
+  const [modalImportar, setModalImportar] = useState(false)
+  const [archivoNombre, setArchivoNombre] = useState('')
+  const [contactosParseados, setContactosParseados] = useState<ContactoParseado[]>([])
+  const [importando, setImportando] = useState(false)
+  const [errorImportar, setErrorImportar] = useState('')
+  const [exitoImportar, setExitoImportar] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   // Sincronizar leads cuando cambien desde el servidor
   useEffect(() => {
     setLeads(inicial)
@@ -187,6 +324,11 @@ export function LeadsClient({
       return nuevos.size === prev.size ? prev : nuevos
     })
   }, [leads])
+
+  // Reset de página al cambiar cualquier filtro
+  useEffect(() => {
+    setPagina(1)
+  }, [busqueda, filtroEstado, filtroEvento])
 
   // ── Filtrado interactivo ──
   const filtrados = leads.filter(lead => {
@@ -213,18 +355,72 @@ export function LeadsClient({
     descartado: leads.filter(l => l.estado === 'descartado').length,
   }
 
-  // ── Selección masiva ──
-  const todosSeleccionados = filtrados.length > 0 && filtrados.every(l => seleccionados.has(l.id))
+  // ── Ordenamiento interactivo por columna (patrón Cotizador CRM) ──
+  const filtradosOrdenados = useMemo(() => {
+    if (!sort.col || !sort.dir) return filtrados
+
+    const col = sort.col
+    const dir = sort.dir
+
+    return [...filtrados].sort((a, b) => {
+      if (col === 'created_at') {
+        const ta = a.created_at ? new Date(a.created_at).getTime() : 0
+        const tb = b.created_at ? new Date(b.created_at).getTime() : 0
+        return dir === 'asc' ? ta - tb : tb - ta
+      }
+
+      if (col === 'nombre') {
+        const na = (a.nombre ?? '').trim().toLowerCase()
+        const nb = (b.nombre ?? '').trim().toLowerCase()
+        return dir === 'asc' ? na.localeCompare(nb, 'es') : nb.localeCompare(na, 'es')
+      }
+
+      if (col === 'empresa') {
+        const ea = (a.empresa ?? '').trim().toLowerCase()
+        const eb = (b.empresa ?? '').trim().toLowerCase()
+        return dir === 'asc' ? ea.localeCompare(eb, 'es') : eb.localeCompare(ea, 'es')
+      }
+
+      if (col === 'contacto') {
+        const ca = (a.email || a.telefono || '').trim().toLowerCase()
+        const cb = (b.email || b.telefono || '').trim().toLowerCase()
+        return dir === 'asc' ? ca.localeCompare(cb, 'es') : cb.localeCompare(ca, 'es')
+      }
+
+      if (col === 'interes') {
+        const ia = (a.evento_nombre || a.interes || '').trim().toLowerCase()
+        const ib = (b.evento_nombre || b.interes || '').trim().toLowerCase()
+        return dir === 'asc' ? ia.localeCompare(ib, 'es') : ib.localeCompare(ia, 'es')
+      }
+
+      if (col === 'estado') {
+        const ea = (a.estado ?? '').toLowerCase()
+        const eb = (b.estado ?? '').toLowerCase()
+        return dir === 'asc' ? ea.localeCompare(eb, 'es') : eb.localeCompare(ea, 'es')
+      }
+
+      return 0
+    })
+  }, [filtrados, sort])
+
+  // ── Paginación y corte de filas ──
+  const totalFiltrados = filtradosOrdenados.length
+  const totalPaginas = Math.max(1, Math.ceil(totalFiltrados / porPagina))
+  const filtradosPaginados = filtradosOrdenados.slice((pagina - 1) * porPagina, pagina * porPagina)
+
+  // ── Selección masiva en página actual ──
+  const todosSeleccionados =
+    filtradosPaginados.length > 0 && filtradosPaginados.every(l => seleccionados.has(l.id))
 
   function toggleSeleccionarTodos() {
     setSeleccionados(prev => {
       if (todosSeleccionados) {
         const siguiente = new Set(prev)
-        filtrados.forEach(l => siguiente.delete(l.id))
+        filtradosPaginados.forEach(l => siguiente.delete(l.id))
         return siguiente
       } else {
         const siguiente = new Set(prev)
-        filtrados.forEach(l => siguiente.add(l.id))
+        filtradosPaginados.forEach(l => siguiente.add(l.id))
         return siguiente
       }
     })
@@ -477,9 +673,100 @@ export function LeadsClient({
     URL.revokeObjectURL(url)
   }
 
+  // ── Descargar Plantilla Oficial de Contactos CSV ──
+  function descargarPlantillaCSV() {
+    const cabeceras = 'Nombre,Apellido,Email,Teléfono,Empresa,Interés,Evento,Mensaje,Estado\n'
+    const ejemplo1 =
+      '"María Angélica","Betancur","maria@ejemplo.com","+57 300 1234567","Clothe S.A.S.","Plan Pro","Climate Week Medellín","Interesada en medición ambiental","nuevo"\n'
+    const ejemplo2 =
+      '"Carlos","Gómez","carlos@empresa.com","+57 311 9876543","EcoLogix","Cotización","","Solicita demo de cotizador","nuevo"\n'
+
+    const csvContent = '\uFEFF' + cabeceras + ejemplo1 + ejemplo2
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'plantilla-importacion-contactos.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // ── Manejar Archivo CSV para Importación ──
+  function onSeleccionarArchivoCSV(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setErrorImportar('')
+    setExitoImportar('')
+    setArchivoNombre(file.name)
+
+    const reader = new FileReader()
+    reader.onload = evt => {
+      try {
+        const texto = String(evt.target?.result ?? '')
+        const contactos = parsearCSVContactos(texto)
+        if (contactos.length === 0) {
+          setErrorImportar('El archivo CSV no contiene registros válidos o está vacío.')
+          setContactosParseados([])
+        } else {
+          setContactosParseados(contactos)
+        }
+      } catch {
+        setErrorImportar('Error al procesar el archivo CSV. Verifica el formato.')
+        setContactosParseados([])
+      }
+    }
+    reader.readAsText(file, 'utf-8')
+  }
+
+  // ── Enviar Contactos Importados a la BD ──
+  async function ejecutarImportacion() {
+    if (contactosParseados.length === 0) {
+      setErrorImportar('Por favor selecciona un archivo CSV con al menos un contacto.')
+      return
+    }
+
+    setImportando(true)
+    setErrorImportar('')
+    setExitoImportar('')
+
+    try {
+      const res = await fetch('/api/admin/leads/importar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactos: contactosParseados }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+      setImportando(false)
+
+      if (!res.ok) {
+        setErrorImportar(data.error ?? 'Error al subir e importar los contactos.')
+        return
+      }
+
+      setExitoImportar(`¡Éxito! Se importaron ${data.insertados ?? contactosParseados.length} contactos.`)
+      if (Array.isArray(data.data)) {
+        setLeads(prev => [...data.data, ...prev])
+      }
+      setTimeout(() => {
+        setModalImportar(false)
+        setArchivoNombre('')
+        setContactosParseados([])
+        setExitoImportar('')
+        startTransition(() => router.refresh())
+      }, 1500)
+    } catch {
+      setImportando(false)
+      setErrorImportar('Error de conexión al importar contactos.')
+    }
+  }
+
   return (
     <div className="flex flex-col gap-5">
-      {/* ── Tarjetas resumen interactivo (KPIs con tokens oficiales) ── */}
+      {/* ── Tarjetas resumen interactivo (KPIs con tokens certificados) ── */}
       <div className="leads-grid grid grid-cols-2 sm:grid-cols-4 gap-3">
         {ESTADOS.map(e => {
           const cfg = ESTADO_CONFIG[e]
@@ -583,8 +870,8 @@ export function LeadsClient({
           )}
         </div>
 
-        {/* Lado derecho: Acciones primarias y herramientas */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Lado derecho: Acciones primarias y herramientas (Importar, Exportar, Nuevo) */}
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
           {/* Botón de gestión de eventos desplegable */}
           <Button
             variant="secondary"
@@ -597,18 +884,34 @@ export function LeadsClient({
             <span>Eventos ({eventos.length})</span>
           </Button>
 
-          {/* Botón Exportar CSV */}
+          {/* Botón Importar contactos con popup */}
           <Button
             variant="secondary"
             size="sm"
-            onClick={exportarCSV}
-            disabled={filtrados.length === 0}
+            onClick={() => {
+              setErrorImportar('')
+              setExitoImportar('')
+              setArchivoNombre('')
+              setContactosParseados([])
+              setModalImportar(true)
+            }}
             className="gap-1.5"
-            title="Exportar listado actual a archivo CSV"
+            title="Importar contactos desde archivo CSV"
           >
-            <Download size={13} />
-            <span>Exportar CSV</span>
+            <Upload size={13} />
+            <span>Importar</span>
           </Button>
+
+          {/* Botón Exportar oficial (Excel, CSV, PDF) */}
+          <BotonDescargar
+            endpoint="/api/admin/leads/exportar"
+            queryParams={new URLSearchParams({
+              ...(filtroEstado ? { estado: filtroEstado } : {}),
+              ...(filtroEvento ? { evento: filtroEvento } : {}),
+              ...(busqueda.trim() ? { search: busqueda.trim() } : {}),
+            }).toString()}
+            label="Exportar"
+          />
 
           {/* Botón Nuevo contacto manual */}
           <Button variant="primary" size="sm" onClick={abrirCrear} className="gap-1.5 shadow-2xs">
@@ -756,13 +1059,13 @@ export function LeadsClient({
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
               <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
-                {/* Checkbox para seleccionar todos */}
+                {/* Checkbox para seleccionar todos en la página actual */}
                 <th className="px-3 py-2.5 w-10 text-center">
                   <button
                     type="button"
                     onClick={toggleSeleccionarTodos}
                     className="inline-flex items-center justify-center cursor-pointer"
-                    title={todosSeleccionados ? 'Deseleccionar todos' : 'Seleccionar todos'}
+                    title={todosSeleccionados ? 'Deseleccionar todos en esta página' : 'Seleccionar todos en esta página'}
                   >
                     {todosSeleccionados ? (
                       <SquareCheck size={18} className="text-brand" />
@@ -771,17 +1074,32 @@ export function LeadsClient({
                     )}
                   </button>
                 </th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Nombre</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Empresa</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Contacto</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Interés / Evento</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Fecha y hora</th>
-                <th className="px-4 py-2.5 text-left font-semibold text-xs whitespace-nowrap">Estado</th>
+                <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  Nombre
+                </SortTh>
+                <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  Empresa
+                </SortTh>
+                <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  Contacto
+                </SortTh>
+                <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  <div className="leading-tight">
+                    <span>Interés</span>
+                    <span className="block text-[11px] font-normal opacity-85">/ Evento</span>
+                  </div>
+                </SortTh>
+                <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  Fecha y hora
+                </SortTh>
+                <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
+                  Estado
+                </SortTh>
                 <th className="px-3 py-2.5 w-12 text-center" aria-label="Acciones" />
               </tr>
             </thead>
             <tbody>
-              {filtrados.map((lead, idx) => {
+              {filtradosPaginados.map((lead, idx) => {
                 const { dia, hora } = formatearFechaLead(lead.created_at)
                 const estaSeleccionado = seleccionados.has(lead.id)
 
@@ -809,18 +1127,27 @@ export function LeadsClient({
                       </button>
                     </td>
 
-                    {/* Nombre */}
-                    <td className="px-4 py-3 text-(--text-primary) font-semibold whitespace-nowrap">
+                    {/* Nombre completo */}
+                    <td
+                      className="px-4 py-3 text-(--text-primary) font-semibold whitespace-nowrap"
+                      style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
+                    >
                       {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
                     </td>
 
                     {/* Empresa */}
-                    <td className="px-4 py-3 text-(--text-secondary) whitespace-nowrap">
+                    <td
+                      className="px-4 py-3 text-(--text-secondary) whitespace-nowrap"
+                      style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
+                    >
                       {lead.empresa || <span className="opacity-40">-</span>}
                     </td>
 
                     {/* Contacto (Email + Teléfono) */}
-                    <td className="px-4 py-3 text-(--text-secondary)">
+                    <td
+                      className="px-4 py-3 text-(--text-secondary)"
+                      style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
+                    >
                       <div className="flex flex-col gap-1 text-xs">
                         {lead.email && (
                           <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
@@ -843,21 +1170,37 @@ export function LeadsClient({
                       </div>
                     </td>
 
-                    {/* Interés / Evento (si tiene evento, solo muestra "Evento: Nombre", no duplicado) */}
-                    <td className="px-4 py-3 whitespace-nowrap text-xs">
-                      {lead.evento_nombre ? (
-                        <span className="text-(--text-secondary) text-[12px]">
-                          Evento: {lead.evento_nombre}
-                        </span>
-                      ) : lead.interes ? (
-                        <span className="font-medium text-(--text-primary)">{lead.interes}</span>
-                      ) : (
-                        <span className="opacity-40">-</span>
-                      )}
+                    {/* Interés / Evento en dos líneas para ahorrar espacio horizontal */}
+                    <td
+                      className="px-4 py-3 text-xs"
+                      style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
+                    >
+                      <div className="flex flex-col leading-tight max-w-[200px]">
+                        {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
+                          <span className="font-medium text-(--text-primary) truncate" title={lead.interes}>
+                            {lead.interes}
+                          </span>
+                        ) : null}
+                        {lead.evento_nombre ? (
+                          <span
+                            className={`text-(--text-secondary) text-[11px] truncate ${
+                              lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5' : ''
+                            }`}
+                            title={`Evento: ${lead.evento_nombre}`}
+                          >
+                            Evento: {lead.evento_nombre}
+                          </span>
+                        ) : !lead.interes || lead.interes.toLowerCase() === 'eventos' ? (
+                          <span className="opacity-40">-</span>
+                        ) : null}
+                      </div>
                     </td>
 
                     {/* Fecha y hora en dos líneas */}
-                    <td className="px-4 py-3 whitespace-nowrap text-xs">
+                    <td
+                      className="px-4 py-3 whitespace-nowrap text-xs"
+                      style={{ background: sort.col === 'created_at' ? 'var(--table-orden-activo)' : undefined }}
+                    >
                       <div className="flex flex-col leading-tight">
                         <span className="font-medium text-(--text-primary)">{dia}</span>
                         <span className="text-(--text-secondary) text-[11px] mt-0.5">{hora}</span>
@@ -865,7 +1208,10 @@ export function LeadsClient({
                     </td>
 
                     {/* Selector de Estado Portal-based (Sin solapamientos) */}
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td
+                      className="px-4 py-3 whitespace-nowrap"
+                      style={{ background: sort.col === 'estado' ? 'var(--table-orden-activo)' : undefined }}
+                    >
                       <EstadoDropdownLead
                         estado={lead.estado}
                         cambiando={cambiando === lead.id}
@@ -873,7 +1219,7 @@ export function LeadsClient({
                       />
                     </td>
 
-                    {/* Menú de 3 puntos horizontales Portal-based */}
+                    {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
                     <td className="px-3 py-3 text-center whitespace-nowrap">
                       <MenuTresPuntosLead
                         onEditar={() => abrirEdicion(lead)}
@@ -889,6 +1235,28 @@ export function LeadsClient({
               })}
             </tbody>
           </table>
+
+          {/* ── Paginación Canónica del Sistema de Diseño (Pie de Tabla) ── */}
+          <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-(--border)">
+            <span
+              className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-(--text-secondary)"
+              style={{ flexShrink: 1 }}
+            >
+              {totalFiltrados} {totalFiltrados === 1 ? 'prospecto' : 'prospectos'} · Página {pagina} de {totalPaginas}
+            </span>
+            <div className="min-w-0 max-w-full overflow-x-auto">
+              <Pagination
+                page={pagina}
+                totalPages={totalPaginas}
+                onPageChange={setPagina}
+                porPagina={porPagina}
+                onPorPaginaChange={n => {
+                  setPorPagina(n)
+                  setPagina(1)
+                }}
+              />
+            </div>
+          </div>
         </div>
       )}
 
@@ -932,6 +1300,115 @@ export function LeadsClient({
         </Modal>
       )}
 
+      {/* ── Modal: IMPORTAR CONTACTOS (Descarga de plantilla + Carga y subida) ── */}
+      {modalImportar && (
+        <Modal
+          abierto={modalImportar}
+          onClose={() => setModalImportar(false)}
+          titulo="Importar contactos"
+          descripcion="Carga prospectos comerciales en lote mediante un archivo CSV estructurado."
+          icono={<Upload size={20} />}
+          ancho="lg"
+          textoConfirmar={importando ? 'Importando...' : `Subir e importar (${contactosParseados.length})`}
+          textoCancelar="Cerrar"
+          onConfirmar={ejecutarImportacion}
+          onCancelar={() => setModalImportar(false)}
+        >
+          <div className="flex flex-col gap-4 pt-1">
+            {/* Paso 1: Descargar Plantilla */}
+            <div className="rounded-xl border border-(--border) bg-(--bg-table-header) p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-brand m-0">Plantilla CSV oficial</p>
+                <p className="text-xs text-(--text-secondary) m-0 mt-0.5">
+                  Descarga el formato modelo con los encabezados exactos (Nombre, Apellido, Email, Teléfono, etc.).
+                </p>
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={descargarPlantillaCSV}
+                className="gap-1.5 shrink-0"
+              >
+                <Download size={13} />
+                <span>Descargar plantilla</span>
+              </Button>
+            </div>
+
+            {/* Paso 2: Adjuntar Archivo CSV */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-semibold text-(--text-secondary)">
+                Selecciona tu archivo CSV completado
+              </label>
+
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-(--border) hover:border-brand/40 bg-(--bg-input) rounded-2xl p-6 text-center cursor-pointer transition-colors flex flex-col items-center justify-center gap-2"
+              >
+                <div className="w-10 h-10 rounded-full bg-brand-light text-brand flex items-center justify-center">
+                  <FileText size={20} />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <p className="text-xs font-semibold text-(--text-primary) m-0">
+                    {archivoNombre ? archivoNombre : 'Haz clic para seleccionar o arrastra tu archivo CSV'}
+                  </p>
+                  <p className="text-[11px] text-(--text-secondary) m-0">
+                    Archivos .csv delimitados por comas o punto y coma
+                  </p>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={onSeleccionarArchivoCSV}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
+            {/* Mensajes de error o éxito */}
+            {errorImportar && <p role="alert" className="text-xs text-error font-medium m-0">{errorImportar}</p>}
+            {exitoImportar && <p role="status" className="text-xs text-success font-semibold m-0">{exitoImportar}</p>}
+
+            {/* Paso 3: Vista previa de registros detectados */}
+            {contactosParseados.length > 0 && (
+              <div className="flex flex-col gap-2 pt-1 border-t border-(--border)">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-brand">
+                    {contactosParseados.length} contactos detectados listos para subir
+                  </span>
+                  <span className="text-[11px] text-(--text-secondary)">
+                    Mostrando primeros 3 registros
+                  </span>
+                </div>
+
+                <div className="rounded-xl border border-(--border) overflow-hidden text-xs">
+                  <table className="w-full text-left" style={{ borderCollapse: 'collapse' }}>
+                    <thead className="bg-(--bg-table-header) text-brand">
+                      <tr>
+                        <th className="px-3 py-1.5 font-semibold">Nombre completo</th>
+                        <th className="px-3 py-1.5 font-semibold">Empresa</th>
+                        <th className="px-3 py-1.5 font-semibold">Email</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contactosParseados.slice(0, 3).map((c, i) => (
+                        <tr key={i} className="border-t border-(--border) bg-(--bg-card)">
+                          <td className="px-3 py-2 text-(--text-primary) font-medium">
+                            {[c.nombre, c.apellido].filter(Boolean).join(' ')}
+                          </td>
+                          <td className="px-3 py-2 text-(--text-secondary)">{c.empresa || '-'}</td>
+                          <td className="px-3 py-2 text-(--text-secondary)">{c.email || '-'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+
       {/* ── Modal: Creación Manual con Nombre y Apellido Separados ── */}
       {modalCrearAbierto && (
         <Modal
@@ -966,9 +1443,7 @@ export function LeadsClient({
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">
-                  Apellido(s)
-                </label>
+                <label className="text-xs font-semibold text-(--text-secondary)">Apellido(s)</label>
                 <input
                   type="text"
                   value={formCrear.apellido}
@@ -1316,7 +1791,7 @@ function EstadoDropdownLead({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Menú de 3 Puntos Horizontales con createPortal (Garantiza visibilidad libre)
+// Menú de 3 Puntos VERTICALES Oficiales (DotsThree) con createPortal
 // ─────────────────────────────────────────────────────────────────────────────
 function MenuTresPuntosLead({
   onEditar,
@@ -1353,9 +1828,9 @@ function MenuTresPuntosLead({
         type="button"
         onClick={toggle}
         title="Acciones"
-        className="w-8 h-8 rounded-lg border border-transparent hover:border-(--border) hover:bg-(--bg-table-hover) flex items-center justify-center text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
+        className="p-1.5 rounded-lg border border-transparent hover:border-(--border) hover:bg-(--bg-table-hover) inline-flex items-center justify-center text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
       >
-        <MoreHorizontal size={17} />
+        <DotsThree size={18} />
       </button>
 
       {abierto && coords && typeof document !== 'undefined' && createPortal(
