@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { Download } from '@/components/ui/icons'
+import { Button, type ButtonSize, type ButtonVariant } from '@/components/ui/button'
 
 type Formato = 'csv' | 'xlsx' | 'pdf'
 
@@ -20,9 +21,19 @@ interface Props {
   endpoint: string
   queryParams?: string
   label?: string
+  size?: ButtonSize
+  variant?: ButtonVariant
+  className?: string
 }
 
-export function BotonDescargar({ endpoint, queryParams, label }: Props) {
+export function BotonDescargar({
+  endpoint,
+  queryParams,
+  label = 'Exportar',
+  size = 'sm',
+  variant = 'secondary',
+  className = '',
+}: Props) {
   const [abierto, setAbierto] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -42,66 +53,34 @@ export function BotonDescargar({ endpoint, queryParams, label }: Props) {
   }
 
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <button
+    <div ref={ref} className="relative inline-block">
+      <Button
+        variant={variant}
+        size={size}
         onClick={() => setAbierto((v) => !v)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '7px 14px',
-          borderRadius: 8,
-          border: '1.5px solid var(--border)',
-          background: 'transparent',
-          color: 'var(--text-secondary)',
-          fontSize: 13,
-          fontWeight: 600,
-          cursor: 'pointer',
-          userSelect: 'none',
-        }}
-        className="hover-download hover-press"
+        className={`gap-1.5 ${className}`}
+        title={label}
       >
-        <Download size={14} />
-        {label ?? 'Descargar'}
-      </button>
+        <Download size={size === 'sm' ? 13 : 15} />
+        <span>{label}</span>
+      </Button>
 
       {abierto && (
         <div
+          className="rounded-xl border border-(--border) bg-(--bg-card) shadow-md overflow-hidden z-50 py-1"
           style={{
             position: 'absolute',
             top: 'calc(100% + 4px)',
             right: 0,
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 8,
-            zIndex: 50,
             minWidth: 160,
-            boxShadow: 'var(--shadow)',
-            overflow: 'hidden',
           }}
         >
           {OPCIONES.map(({ formato, label: opLabel }) => (
             <button
               key={formato}
+              type="button"
               onClick={() => descargar(formato)}
-              style={{
-                display: 'block',
-                width: '100%',
-                padding: '9px 16px',
-                textAlign: 'left',
-                fontSize: 13,
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'var(--text-primary)',
-                userSelect: 'none',
-              }}
-              onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-hover)'
-              }}
-              onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLButtonElement).style.background = 'transparent'
-              }}
+              className="w-full text-left px-3.5 py-2 text-xs font-medium text-(--text-primary) hover:bg-(--bg-hover) transition-colors cursor-pointer select-none block"
             >
               {opLabel}
             </button>
@@ -111,3 +90,4 @@ export function BotonDescargar({ endpoint, queryParams, label }: Props) {
     </div>
   )
 }
+
