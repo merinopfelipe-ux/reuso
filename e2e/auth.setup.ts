@@ -172,14 +172,14 @@ setup('auth: super_admin', async ({ page }) => {
   // Esta cuenta SÍ es real y permanente (tu identidad, merinop@me.com) —
   // nunca se crea ni se borra sola. La contraseña vive solo en .env.local.
   const password = process.env.TEST_SUPER_ADMIN_PASSWORD
-  if (!password) throw new Error('Falta TEST_SUPER_ADMIN_PASSWORD en .env.local — ver e2e/auth.setup.ts')
+  if (!password?.trim()) throw new Error('Falta TEST_SUPER_ADMIN_PASSWORD (vacío o sin definir) en .env.local o en los secretos de GitHub')
 
   // En CI (next dev en frío) React puede hidratar el formulario DESPUÉS de que
   // la prueba escribe y vaciar los campos ("Completa el correo electrónico", CI
   // del 2026-10-05), incluso tras confirmar los valores. Se repite el intento
   // completo, recargando /login (el botón de términos se marca y desmarca con
   // cada clic), hasta entrar a /admin.
-  const email = process.env.TEST_SUPER_ADMIN_EMAIL ?? 'merinop@me.com'
+  const email = process.env.TEST_SUPER_ADMIN_EMAIL || 'merinop@me.com'
   await expect(async () => {
     await page.goto('/login')
     await aceptarCookies(page)
