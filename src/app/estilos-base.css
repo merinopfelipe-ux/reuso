@@ -845,3 +845,10 @@ html { scroll-behavior: smooth; }
     filter: none !important;
   }
 }
+
+/* Título del footer ("Tecnología con propósito para un futuro sostenible.")
+   siempre en Seravek, como los demás títulos (pedido de Felipe, 2026-10-05).
+   Va aquí y no en footer.tsx porque ese archivo está protegido. */
+.footer-rainbow-title {
+  font-family: seravek, 'Open Sans', 'Open Sans Fallback', ui-sans-serif, sans-serif;
+}
