@@ -18,6 +18,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
 
   const [formData, setFormData] = useState({
     nombre: '',
+    apellido: '',
     email: '',
     empresa: '',
     mensaje: '',
@@ -39,10 +40,16 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
     setError(null)
 
     try {
+      const nombreCompleto = [formData.nombre.trim(), formData.apellido.trim()].filter(Boolean).join(' ')
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, turnstile_token: turnstileToken || 'skip' }),
+        body: JSON.stringify({
+          ...formData,
+          nombre: nombreCompleto,
+          apellido: formData.apellido.trim(),
+          turnstile_token: turnstileToken || 'skip',
+        }),
       })
 
       const data = await res.json()
@@ -98,19 +105,36 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
           />
         )}
 
+        {/* Nombres y Apellidos en dos espacios separados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Nombre completo</label>
+            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Nombre</label>
             <input
               type="text"
               name="nombre"
               required
               value={formData.nombre}
               onChange={handleChange}
-              placeholder="Ej. Juan Pérez"
+              placeholder="Ej. Juan"
               className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Apellido</label>
+            <input
+              type="text"
+              name="apellido"
+              required
+              value={formData.apellido}
+              onChange={handleChange}
+              placeholder="Ej. Pérez"
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
+            />
+          </div>
+        </div>
+
+        {/* Email y Empresa */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Email corporativo</label>
             <input
@@ -123,19 +147,18 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
               className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
-        </div>
-
-        <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Empresa</label>
-          <input
-            type="text"
-            name="empresa"
-            required
-            value={formData.empresa}
-            onChange={handleChange}
-            placeholder="Nombre de tu organización"
-            className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
-          />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Empresa</label>
+            <input
+              type="text"
+              name="empresa"
+              required
+              value={formData.empresa}
+              onChange={handleChange}
+              placeholder="Nombre de tu organización"
+              className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-1.5">

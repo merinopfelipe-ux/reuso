@@ -139,18 +139,32 @@ export async function DELETE(request: NextRequest) {
   if (guard.error) return guard.error
 
   const { searchParams } = new URL(request.url)
-  const id = searchParams.get('id')
-  if (!id) return NextResponse.json({ error: 'Falta el id.' }, { status: 400 })
+  const idParam = searchParams.get('id')
+  const idsParam = searchParams.get('ids')
 
-  const { error } = await guard.adminClient.from('leads').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: 'Error al eliminar el lead.' }, { status: 500 })
+  let ids: string[] = []
+  if (idsParam) {
+    ids = idsParam.split(',').map(s => s.trim()).filter(Boolean)
+  } else if (idParam) {
+    ids = [idParam.trim()]
+  } else {
+    const body = await request.json().catch(() => null)
+    if (body?.ids && Array.isArray(body.ids)) {
+      ids = body.ids.map((s: unknown) => String(s).trim()).filter(Boolean)
+    }
+  }
+
+  if (ids.length === 0) return NextResponse.json({ error: 'Falta el id o ids.' }, { status: 400 })
+
+  const { error } = await guard.adminClient.from('leads').delete().in('id', ids)
+  if (error) return NextResponse.json({ error: 'Error al eliminar los leads.' }, { status: 500 })
 
   await logAuditoria(guard.adminClient, {
     user_id: guard.user.id,
-    accion: 'eliminar_lead',
-    detalle: { id },
+    accion: 'eliminar_leads',
+    detalle: { ids, cantidad: ids.length },
     ip: getIp(request),
   })
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true, deleted: ids.length })
 }

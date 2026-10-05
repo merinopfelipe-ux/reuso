@@ -5,7 +5,8 @@ import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 
 const leadSchema = z.object({
-  nombre: z.string().min(2, 'El nombre es muy corto.'),
+  nombre: z.string().min(1, 'El nombre es muy corto.'),
+  apellido: z.string().optional(),
   email: z.string().email('Email inválido.'),
   empresa: z.string().optional(),
   interes: z.string().optional(),
@@ -34,13 +35,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { sitio_web, turnstile_token, ...lead } = result.data
+    const { sitio_web, turnstile_token, apellido, ...leadData } = result.data
 
     // Honeypot lleno → es un bot. Respondemos éxito falso para no revelarle
     // que fue detectado (no insertamos nada).
     if (sitio_web) {
       return NextResponse.json({ ok: true, id: 'ok' })
     }
+
+    const nombreCompleto = [leadData.nombre?.trim(), apellido?.trim()].filter(Boolean).join(' ') || leadData.nombre
+    const lead = { ...leadData, nombre: nombreCompleto }
 
     const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
     if (!skipTurnstile) {
