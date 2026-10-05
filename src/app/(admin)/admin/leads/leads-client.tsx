@@ -843,20 +843,17 @@ export function LeadsClient({
                       </div>
                     </td>
 
-                    {/* Interés / Evento (El evento NO va de color, va como "Evento: Nombre") */}
+                    {/* Interés / Evento (si tiene evento, solo muestra "Evento: Nombre", no duplicado) */}
                     <td className="px-4 py-3 whitespace-nowrap text-xs">
-                      <div className="flex flex-col gap-0.5">
-                        {lead.interes && (
-                          <span className="font-medium text-(--text-primary)">{lead.interes}</span>
-                        )}
-                        {lead.evento_nombre ? (
-                          <span className="text-(--text-secondary) text-[12px]">
-                            Evento: {lead.evento_nombre}
-                          </span>
-                        ) : (
-                          !lead.interes && <span className="opacity-40">-</span>
-                        )}
-                      </div>
+                      {lead.evento_nombre ? (
+                        <span className="text-(--text-secondary) text-[12px]">
+                          Evento: {lead.evento_nombre}
+                        </span>
+                      ) : lead.interes ? (
+                        <span className="font-medium text-(--text-primary)">{lead.interes}</span>
+                      ) : (
+                        <span className="opacity-40">-</span>
+                      )}
                     </td>
 
                     {/* Fecha y hora en dos líneas */}
