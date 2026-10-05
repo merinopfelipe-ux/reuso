@@ -23,6 +23,12 @@ async function generar() {
   const antes = css.length
   css = css.replace(/url\(["']?\/fonts\/open-sans-latin\.woff2["']?\)/g, `url(data:font/woff2;base64,${fuente})`)
   if (css.length === antes) throw new Error('No se encontró la @font-face de open-sans-latin.woff2 para incrustar')
+  // La copia incrustada va con font-display: block: ya está en la página, así
+  // que el navegador espera los milisegundos que tarda en decodificarla y pinta
+  // directo en Open Sans. Con swap alcanzaba a pintar un cuadro con el respaldo y
+  // el título saltaba (PageSpeed, 2026-10-05).
+  css = css.replace(/@font-face\{([^}]*?)font-display:swap([^}]*?url\(data:font\/woff2)/g, '@font-face{$1font-display:block$2')
+  if (!/font-display:block[^}]*url\(data:font\/woff2/.test(css)) throw new Error('No se pudo poner font-display:block en la fuente incrustada')
   const anterior = (() => { try { return readFileSync(salida, 'utf8') } catch { return '' } })()
   const nuevo = `// ARCHIVO GENERADO por scripts/generar-css-publico.mjs a partir de src/app/publica.css. No editar a mano.\nexport const ESTILOS_PUBLICOS = ${JSON.stringify(css)}\n`
   if (anterior !== nuevo) writeFileSync(salida, nuevo)
