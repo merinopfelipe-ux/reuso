@@ -12,6 +12,8 @@ const leadPatchSchema = z.object({
   interes: z.string().trim().max(100).nullable().optional(),
   mensaje: z.string().max(2000).nullable().optional(),
   evento_nombre: z.string().trim().max(120).nullable().optional(),
+  usuario_whatsapp: z.string().trim().max(60).optional().nullable(),
+  notas: z.string().trim().max(5000).optional().nullable(),
 })
 
 const leadPostSchema = z.object({
@@ -114,6 +116,10 @@ export async function PATCH(request: NextRequest) {
   if (parsed.data.evento_nombre !== undefined) patchData.evento_nombre = parsed.data.evento_nombre
   if (parsed.data.mensaje !== undefined) patchData.mensaje = parsed.data.mensaje
   if (parsed.data.estado !== undefined) patchData.estado = parsed.data.estado
+  // Campos de la migración 141. Si aún no se corrió, Supabase los rechaza y se
+  // avisa claro en vez de fallar en silencio (ver abajo el manejo del error).
+  if (parsed.data.usuario_whatsapp !== undefined) patchData.usuario_whatsapp = parsed.data.usuario_whatsapp?.replace(/^@/, '') || null
+  if (parsed.data.notas !== undefined) patchData.notas = parsed.data.notas || null
 
   const { data, error } = await guard.adminClient
     .from('leads')
@@ -122,7 +128,13 @@ export async function PATCH(request: NextRequest) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: 'Error al actualizar el lead.' }, { status: 500 })
+  if (error) {
+    const faltaColumna = /column .* does not exist/i.test(error.message)
+    return NextResponse.json(
+      { error: faltaColumna ? 'Falta correr la migración sql/141 en Supabase (usuario de WhatsApp y notas).' : 'Error al actualizar el lead.' },
+      { status: faltaColumna ? 409 : 500 }
+    )
+  }
 
   await logAuditoria(guard.adminClient, {
     user_id: guard.user.id,

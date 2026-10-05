@@ -21,6 +21,7 @@ import {
   Calendar,
   X,
   FileText,
+  ArrowSquareOut,
 } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { WA_NUMBER } from '@/lib/constants/contacto'
@@ -100,6 +101,8 @@ interface Lead {
   estado: EstadoLead
   created_at: string
   evento_nombre?: string | null
+  usuario_whatsapp?: string | null
+  notas?: string | null
 }
 
 interface Evento {
@@ -547,6 +550,8 @@ export function LeadsClient({
     }
   }
 
+  // WhatsApp abre un chat por número (solo dígitos, con indicativo) o por
+  // nombre de usuario. Si el contacto tiene usuario, ese manda.
   // ── WhatsApp ──
   function abrirWhatsApp(lead: Lead) {
     if (!lead.telefono || lead.telefono.trim().length < 7) {
@@ -1212,7 +1217,12 @@ export function LeadsClient({
                               <Envelope size={11} className="text-(--text-secondary) shrink-0" />
                               <a
                                 href={`mailto:${lead.email}`}
-                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium text-sm"
+                                title={lead.email}
+                                // Un correo largo se corta con puntos suspensivos para no
+                                // ensanchar la tabla, pero se ve completo al pasar el cursor
+                                // y se puede seleccionar con el mouse para copiarlo
+                                // (select-text, pedido de Felipe 2026-10-05).
+                                className="text-(--text-primary) hover:text-brand hover:underline font-medium text-sm truncate select-text max-w-[190px] xl:max-w-[260px]"
                               >
                                 {lead.email}
                               </a>
@@ -1221,7 +1231,11 @@ export function LeadsClient({
 
                           {lead.telefono ? (
                             <a
-                              href={`https://wa.me/${lead.telefono.replace(/[^\d+]/g, '').replace(/^\+/, '')}`}
+                              href={
+                                lead.usuario_whatsapp?.trim()
+                                  ? `https://wa.me/${encodeURIComponent(lead.usuario_whatsapp.trim().replace(/^@/, ''))}`
+                                  : `https://wa.me/${lead.telefono.replace(/\D/g, '')}`
+                              }
                               target="_blank"
                               rel="noopener noreferrer"
                               className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm text-(--text-secondary) hover:text-brand transition-colors"
@@ -1288,6 +1302,7 @@ export function LeadsClient({
                       {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
                       <td className="px-1 py-2 text-center whitespace-nowrap align-top w-8">
                         <MenuTresPuntosLead
+                          leadId={lead.id}
                           tieneTelefono={Boolean(lead.telefono && lead.telefono.trim().length >= 7)}
                           onEditar={() => abrirEdicion(lead)}
                           onWhatsApp={() => abrirWhatsApp(lead)}
@@ -1886,11 +1901,13 @@ function EstadoDropdownLead({
 // Menú de 3 Puntos VERTICALES Oficiales (DotsThree) con createPortal
 // ─────────────────────────────────────────────────────────────────────────────
 function MenuTresPuntosLead({
+  leadId,
   tieneTelefono = false,
   onEditar,
   onWhatsApp,
   onEliminar,
 }: {
+  leadId: string
   tieneTelefono?: boolean
   onEditar: () => void
   onWhatsApp: () => void
@@ -1947,6 +1964,19 @@ function MenuTresPuntosLead({
             }}
             onClick={e => e.stopPropagation()}
           >
+            {/* Ficha completa, en una pestaña aparte: deja agregar notas sin
+                perder los filtros ni el scroll de la lista. */}
+            <a
+              href={`/admin/leads/${leadId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setAbierto(false)}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
+            >
+              <ArrowSquareOut size={13} className="text-brand shrink-0" />
+              <span>Abrir ficha completa</span>
+            </a>
+
             {/* Editar */}
             <button
               type="button"
