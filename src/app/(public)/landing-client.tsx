@@ -1636,10 +1636,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         }}
         extraActions={
           <>
-            <Link href="/registro" className={`px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-semibold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
+            <Link prefetch={false} href="/registro" className={`px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-semibold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
               Empezar gratis
             </Link>
-            <Link href="/login" className={`inline-flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-base font-semibold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
+            <Link prefetch={false} href="/login" className={`inline-flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-base font-semibold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
               Entrar
             </Link>
           </>
@@ -2451,7 +2451,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     ))}
                   </ul>
                   {plan.priceMonthlyCOP === 0 ? (
-                    <Link
+                    <Link prefetch={false}
                       href="/registro"
                       className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-semibold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
                         isSelectedPopular
@@ -2976,7 +2976,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <p className={`text-xs sm:text-base md:text-sm lg:text-base font-medium mb-6 md:mb-8 lg:mb-10 max-w-lg mx-auto glass-subtitle ${ts}`}>
                 Calcula tus estimaciones ambientales, genera Pasaportes Digitales con código QR y respalda tus iniciativas de sostenibilidad con fundamentos técnicos.
               </p>
-              <Link
+              <Link prefetch={false}
                 href="/registro"
                 className={`animate-shimmer group inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
                   isDark 
