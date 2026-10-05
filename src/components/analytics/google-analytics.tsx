@@ -53,6 +53,22 @@ function GoogleAnalyticsPageview({ gaId }: { gaId: string }) {
 
 export function GoogleAnalytics() {
   const [permitido, setPermitido] = useState(false)
+  // gtag.js pesa ~175 KB y era lo que más bloqueaba el hilo principal en la
+  // carga (TBT 100-150 ms en PageSpeed, 2026-10-05). Se descarga con la
+  // primera interacción o a los 15 s, lo que pase primero. Los eventos previos
+  // quedan en dataLayer y se envían al cargar.
+  const [cargar, setCargar] = useState(false)
+
+  useEffect(() => {
+    const activar = () => setCargar(true)
+    const eventos = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const
+    eventos.forEach((e) => window.addEventListener(e, activar, { once: true, passive: true }))
+    const espera = window.setTimeout(activar, 15_000)
+    return () => {
+      eventos.forEach((e) => window.removeEventListener(e, activar))
+      window.clearTimeout(espera)
+    }
+  }, [])
 
   useEffect(() => {
     setPermitido(leerConsentimientoAnalitico())
@@ -74,7 +90,7 @@ export function GoogleAnalytics() {
     })
   }, [permitido])
 
-  if (!GA_ID) return null
+  if (!GA_ID || !cargar) return null
 
   // El `consent default: denied` se fija antes que nada en el <head> del
   // layout raíz (script inline, junto al del tema) — así gtag.js nunca llega

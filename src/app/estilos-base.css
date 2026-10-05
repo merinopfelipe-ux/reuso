@@ -151,7 +151,7 @@
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 100 900;
-    font-display: swap;
+    font-display: optional;
     src: url('/fonts/open-sans-latin-ext.woff2') format('woff2');
     unicode-range:
       U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
@@ -162,7 +162,7 @@
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 100 900;
-    font-display: swap;
+    font-display: optional;
     src: url('/fonts/open-sans-latin.woff2') format('woff2');
     unicode-range:
       U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
@@ -170,6 +170,11 @@
       U+2212, U+2215, U+FEFF, U+FFFD;
   }
 
+  /* font-display: optional (2026-10-05): sin esto, en dispositivos sin Seravek
+     el título se pintaba primero con el respaldo y otra vez al llegar Open Sans:
+     PageSpeed contaba ese segundo pintado como LCP (2.4 s) y el cambio como CLS.
+     Con optional, si la fuente no llega a tiempo la página queda con el respaldo
+     y desde la siguiente ya usa Open Sans (guardada en caché). */
   /* Respaldo con las medidas de Open Sans (mismos valores que genera next/font):
      sin precarga de la fuente (bloquea el primer pintado), el texto aparece
      primero con Arial; con estas medidas el cambio a Open Sans no mueve nada
