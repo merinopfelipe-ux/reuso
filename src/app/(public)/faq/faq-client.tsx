@@ -41,6 +41,8 @@ interface ClusterTheme {
   dark: ThemeTokens
 }
 
+// Texto de pestañas y etiquetas en día: Negro Lurdes, para contraste AA
+// (los acentos de color quedaban entre 3.8 y 4.1 sobre su fondo tenue).
 // Los 3 acentos vienen directo de la paleta real del sistema (skill
 // design-system): success (verde, pero nunca pistacho/menta/teal),
 // info (azul) y violeta. Son constantes entre temas (no cambian de valor
@@ -54,9 +56,9 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
       primaryText: 'var(--color-success-content)',
       pillBg: 'rgba(56, 185, 142, 0.08)',
       pillBgHover: 'rgba(56, 185, 142, 0.16)',
-      pillText: 'var(--color-success-content)',
+      pillText: '#474747',
       badgeBg: 'rgba(56, 185, 142, 0.1)',
-      badgeText: 'var(--color-success-content)',
+      badgeText: '#474747',
       cardOpenBorder: 'rgba(56, 185, 142, 0.35)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(56, 185, 142, 0.3)',
@@ -90,9 +92,9 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
       primaryText: 'var(--color-info-content)',
       pillBg: 'rgba(89, 166, 228, 0.08)',
       pillBgHover: 'rgba(89, 166, 228, 0.16)',
-      pillText: 'var(--color-info-content)',
+      pillText: '#474747',
       badgeBg: 'rgba(89, 166, 228, 0.1)',
-      badgeText: 'var(--color-info-content)',
+      badgeText: '#474747',
       cardOpenBorder: 'rgba(89, 166, 228, 0.35)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(89, 166, 228, 0.3)',
@@ -126,9 +128,9 @@ const CLUSTER_CONFIG: Record<string, ClusterTheme> = {
       primaryText: 'var(--color-violeta)',
       pillBg: 'rgba(152, 95, 161, 0.1)',
       pillBgHover: 'rgba(152, 95, 161, 0.18)',
-      pillText: 'var(--color-violeta)',
+      pillText: '#474747',
       badgeBg: 'rgba(152, 95, 161, 0.12)',
-      badgeText: 'var(--color-violeta)',
+      badgeText: '#474747',
       cardOpenBorder: 'rgba(152, 95, 161, 0.4)',
       cardOpenBg: 'var(--bg-card)',
       cardHoverBorder: 'rgba(152, 95, 161, 0.35)',

@@ -255,7 +255,7 @@ export function LegalPageLayout({
                   <p style={{ margin: 0 }}>
                     Grupo MLP S.A.S. desarrolló la Calculadora de Reúso con asistencia de modelos de
                     inteligencia artificial. Presentamos cada resultado de CO₂ evitado y huella preservada como una <strong>estimación</strong> técnica referencial.
-                    Entregamos todos los cálculos con alcance <strong>estimativo</strong> orientativo sin sustituir certificaciones de carbono obligatorias ni auditorías oficiales.
+                    Entregamos todos los cálculos como referencia orientativa, sin sustituir certificaciones de carbono ni auditorías oficiales.
                   </p>
                 )}
               </div>

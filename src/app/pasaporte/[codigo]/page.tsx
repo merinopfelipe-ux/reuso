@@ -375,7 +375,7 @@ export default async function PasaportePage(props: PageProps) {
               ))}
             </div>
             <p style={{ margin: '12px 0 0', fontSize: 11, color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.5 }}>
-              Calculamos la huella evitada como una <strong>estimación</strong> técnica basada en la composición de materiales y los ciclos de reúso. Cada cifra posee carácter <strong>estimativo</strong> y respalda la trazabilidad de la pieza.
+              Calculamos la huella evitada como una <strong>estimación</strong> técnica basada en la composición de materiales y los ciclos de reúso. Cada cifra es referencial y respalda la trazabilidad de la pieza.
             </p>
           </CollapseSection>
         )}

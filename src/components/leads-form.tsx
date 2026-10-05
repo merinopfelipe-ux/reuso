@@ -62,7 +62,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
     return (
       <div className="p-8 text-center rounded-2xl border border-dashed border-[#38B98E] bg-[#38B98E]/5">
         <CheckCircle size={44} color="#38B98E" className="mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-[#474747] dark:text-white mb-2">¡Mensaje recibido!</h3>
+        <h3 className="text-lg font-semibold text-[#474747] dark:text-white mb-2">¡Mensaje recibido!</h3>
         <p className="text-xs sm:text-sm text-[#737373] dark:text-white/70 m-0">
           Un consultor de impacto se pondrá en contacto contigo en las próximas 24 horas laborables.
         </p>
@@ -100,7 +100,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Nombre completo</label>
+            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Nombre completo</label>
             <input
               type="text"
               name="nombre"
@@ -112,7 +112,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Email corporativo</label>
+            <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Email corporativo</label>
             <input
               type="email"
               name="email"
@@ -126,7 +126,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Empresa</label>
+          <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Empresa</label>
           <input
             type="text"
             name="empresa"
@@ -139,7 +139,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Plan de interés</label>
+          <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Plan de interés</label>
           <Selector
             value={formData.interes}
             onChange={val => setFormData({ ...formData, interes: val })}
@@ -157,7 +157,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs font-bold text-[#00827C] dark:text-[#D6F391]">Mensaje o requerimiento</label>
+          <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">Mensaje o requerimiento</label>
           <textarea
             name="mensaje"
             required
@@ -170,13 +170,13 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
         </div>
 
         {error && (
-          <p className="text-xs font-bold text-red-500 m-0">{error}</p>
+          <p className="text-xs font-semibold text-red-500 m-0">{error}</p>
         )}
 
         <button
           disabled={loading}
           type="submit"
-          className={`mt-2 w-full py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
+          className={`mt-2 w-full py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
             loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02]'
           } bg-[#00827C] dark:bg-[#D6F391] text-white dark:text-[#474747]`}>
           {loading ? (

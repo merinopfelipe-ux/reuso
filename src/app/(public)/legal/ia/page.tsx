@@ -50,7 +50,7 @@ const T = {
     s6Title: 'Limitaciones y responsabilidad',
     s6: [
       'Los sistemas de IA pueden generar imprecisiones o resultados inesperados. Ningún sistema automatizado es infalible.',
-      'Los cálculos de impacto ambiental que ofrece la plataforma constituyen una estimación técnica referencial basada en factores internacionales. Entregamos todos los resultados con carácter estimativo y no reemplazan auditorías ambientales oficiales ni certificaciones obligatorias.',
+      'Los cálculos de impacto ambiental que ofrece la plataforma constituyen una estimación técnica referencial basada en factores internacionales. Entregamos todos los resultados como referencia y no reemplazan auditorías ambientales oficiales ni certificaciones.',
       'Grupo MLP S.A.S. monitorea continuamente la plataforma para detectar y corregir errores. Al usar la plataforma aceptas que los resultados son orientativos y que la responsabilidad de su interpretación recae en el usuario.',
     ],
     s7Title: 'Tus derechos y cómo contactarnos',
@@ -112,7 +112,7 @@ const T = {
     s6Title: 'Limitations and responsibility',
     s6: [
       'AI systems can produce inaccuracies or unexpected results. No automated system is infallible.',
-      'The environmental impact calculations provided by the platform represent a technical reference estimation based on international factors. We deliver all results with an estimative character and they do not replace official environmental audits or mandatory certifications.',
+      'The environmental impact calculations provided by the platform represent a technical reference estimation based on international factors. We deliver all results as a reference and they do not replace official environmental audits or certifications.',
       'Grupo MLP S.A.S. continuously monitors the platform to detect and correct errors. By using the platform you accept that results are indicative and that responsibility for their interpretation rests with the user.',
     ],
     s7Title: 'Your rights and how to contact us',

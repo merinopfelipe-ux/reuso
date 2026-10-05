@@ -71,7 +71,7 @@ const T = {
     comoUsamos: {
       titulo: 'Cómo usamos tus datos',
       items: [
-        'Prestar el servicio de estimación y medición referencial de CO₂ evitado con carácter estimativo.',
+        'Prestar el servicio de estimación y medición referencial de CO₂ evitado.',
         'Gestionar tu cuenta y tus accesos a la plataforma.',
         'Generar informes con código de verificación único.',
         'Enviarte notificaciones relacionadas con el servicio contratado.',
@@ -181,7 +181,7 @@ const T = {
     comoUsamos: {
       titulo: 'How we use your data',
       items: [
-        'Provide the CO₂ avoided estimation and measurement service with an estimative reference scope.',
+        'Provide the CO₂ avoided estimation and reference measurement service.',
         'Manage your account and your access to the platform.',
         'Generate reports with a unique verification code.',
         'Send you notifications related to the contracted service.',

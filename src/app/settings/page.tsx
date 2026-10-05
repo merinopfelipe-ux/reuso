@@ -2,14 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Sun, Moon, Monitor, ArrowLeft, Check, Bell, CircleHelp as Question, Save as FloppyDisk, LockKeyhole as LockSimple } from '@/components/ui/icons'
+import { Sun, ArrowLeft, Check, Bell, CircleHelp as Question, Save as FloppyDisk, LockKeyhole as LockSimple } from '@/components/ui/icons'
 import { useToast } from '@/components/toast-provider'
 import { OTPInput } from '@/components/otp-input'
 import { PageSubmenu } from '@/components/page-submenu'
 import { Selector } from '@/components/ui/selector'
 import { Modal } from '@/components/ui/modal'
 
-type Tema = 'light' | 'dark' | 'system'
 
 const AVATAR_COLORS = [
   { hex: '#D6F391', label: 'Pistacho' },
@@ -18,15 +17,6 @@ const AVATAR_COLORS = [
   { hex: '#F3BBD3', label: 'Rosa' },
 ]
 
-function applyTheme(tema: Tema) {
-  if (tema === 'system') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light')
-  } else {
-    document.documentElement.setAttribute('data-theme', tema)
-  }
-  localStorage.setItem('theme', tema)
-}
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -46,9 +36,7 @@ export default function SettingsPage() {
     resumen_mensual: true,
     canal_preferido: 'todos',
     soporte_respuestas: true,
-    eco_night_mode: false,
   })
-  const [tema, setTema] = useState<Tema>('system')
   const [isDark, setIsDark] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingProfile, setLoadingProfile] = useState(true)
@@ -69,7 +57,6 @@ export default function SettingsPage() {
   const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
-    const temaAlEmpezar = localStorage.getItem('theme')
     fetch('/api/profile')
       .then((r) => r.json())
       .then((data) => {
@@ -92,22 +79,9 @@ export default function SettingsPage() {
         setAvatarColor(data.avatar_color || '#D6F391')
         setAvatarText(data.avatar_text || '')
 
-        // Inicializar el selector basándose en tema_preferido del perfil antes de recurrir a localStorage.
-        // Bug real corregido 2026-09-02: si el usuario cambia el tema con el
-        // toggle del header MIENTRAS esta petición sigue en curso, aplicar
-        // el valor del perfil aquí pisaba en silencio ese clic reciente con
-        // el valor viejo guardado en la base de datos. Solo se aplica si
-        // nadie tocó el tema desde que arrancó esta petición.
-        if (data.tema_preferido && localStorage.getItem('theme') === temaAlEmpezar) {
-          setTema(data.tema_preferido as Tema)
-          applyTheme(data.tema_preferido as Tema)
-        }
         setLoadingProfile(false)
       })
       .catch(() => setLoadingProfile(false))
-
-    const saved = (localStorage.getItem('theme') as Tema) ?? 'light'
-    setTema(saved)
 
     const syncHash = () => setActiveHash(window.location.hash || '#datos')
     syncHash()
@@ -123,34 +97,6 @@ export default function SettingsPage() {
       observer.disconnect()
     }
   }, [])
-
-  useEffect(() => {
-    if (tema !== 'system') return
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const handler = () => applyTheme('system')
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [tema])
-
-  function seleccionarTema(t: Tema) {
-    setTema(t)
-    applyTheme(t)
-    // Sincronizar la base de datos en segundo plano al cambiar el tema — solo
-    // ese campo. Antes mandaba todo el perfil (nombre/apellido/apodo/avatar)
-    // desde el estado local de React; si ese estado no había cargado aún o
-    // quedaba desactualizado, el PATCH terminaba grabando valores viejos o
-    // vacíos sobre el perfil real (bug real, ver src/app/api/profile/route.ts).
-    if (nombre.trim()) {
-      fetch('/api/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: nombre.trim(),
-          tema_preferido: t,
-        }),
-      }).catch((err) => console.error('Error syncing theme preference:', err))
-    }
-  }
 
   async function guardarDatos(e?: React.FormEvent) {
     if (e) e.preventDefault()
@@ -168,7 +114,6 @@ export default function SettingsPage() {
           nombre: nombre.trim(),
           apellido: apellido.trim() || '',
           apodo: usarPrimerNombre ? nombre.trim().split(' ')[0] : (apodo.trim() || nombre.trim().split(' ')[0]),
-          tema_preferido: tema,
           avatar_color: avatarColor,
           avatar_text: avatarText,
         }),
@@ -596,37 +541,6 @@ export default function SettingsPage() {
                     <Sun size={18} /> Aspecto visual
                   </h3>
 
-                  <div style={{ marginBottom: 28 }}>
-                    <p style={{ margin: '0 0 10px', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Tema de la interfaz</p>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      {([
-                        { key: 'light', label: 'Claro', Icon: Sun },
-                        { key: 'dark', label: 'Oscuro', Icon: Moon },
-                        { key: 'system', label: 'Sistema', Icon: Monitor },
-                      ] as { key: Tema; label: string; Icon: React.ElementType }[]).map(({ key, label, Icon }) => (
-                        <button
-                          key={key}
-                          type="button"
-                          onClick={() => seleccionarTema(key)}
-                          className="hover-pop"
-                          style={{
-                            flex: 1, padding: '10px 6px',
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5,
-                            border: tema === key ? '2px solid var(--color-brand)' : '1px solid var(--border)',
-                            borderRadius: 10,
-                            background: tema === key ? 'var(--color-brand-light)' : 'var(--bg-integrated)',
-                            color: tema === key ? 'var(--color-brand)' : 'var(--text-secondary)',
-                            cursor: 'pointer', fontSize: 12, fontWeight: tema === key ? 700 : 500,
-                            transition: 'all 0.2s cubic-bezier(0.22,1,0.36,1)',
-                          }}
-                        >
-                          <Icon size={17} />
-                          {label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Avatar */}
                   <div>
                     <p style={{ margin: '0 0 14px', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Avatar</p>
@@ -700,7 +614,6 @@ export default function SettingsPage() {
                     <NotificationSwitch label="Diagnósticos listos" info="Aviso cuando tus diagnósticos circulares y PDFs de impacto estén disponibles." active={notificaciones.nuevos_documentos} onToggle={() => toggleNotificacion('nuevos_documentos')} />
                     <NotificationSwitch label="Resumen mensual" info="Informe consolidado con métricas de economía circular y ahorro acumulado." active={notificaciones.resumen_mensual} onToggle={() => toggleNotificacion('resumen_mensual')} />
                     <NotificationSwitch label="Respuestas de soporte" info="Notificaciones en tiempo real cuando el equipo responda tus consultas." active={notificaciones.soporte_respuestas} onToggle={() => toggleNotificacion('soporte_respuestas')} />
-                    <NotificationSwitch label="Modo Eco-Noche" info="Cambia automáticamente al tema oscuro entre 7:00 PM y 7:00 AM." active={notificaciones.eco_night_mode} onToggle={() => toggleNotificacion('eco_night_mode')} />
 
                     <div style={{ marginTop: 4 }}>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>

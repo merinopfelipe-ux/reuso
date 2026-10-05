@@ -52,7 +52,7 @@ const T = {
     identificacion1:
       'Revisamos permanentemente 4 factores clave: (i) Quiénes son nuestros clientes y proveedores, (ii) Qué servicios compran, (iii) Por qué canales pagan (bancos y pasarelas oficiales), y (iv) De qué ciudades o países vienen los fondos.',
     identificacion2:
-      'Investigamos de inmediato pagos fraccionados extraños, transferencias no acordes con la actividad de la empresa o intentos de simular la estimación ambiental para mover dinero de origen desconocido. Entregamos todos los cálculos con propósito estimativo referencial y protegemos la transparencia de cada informe.',
+      'Investigamos de inmediato pagos fraccionados extraños, transferencias no acordes con la actividad de la empresa o intentos de simular la estimación ambiental para mover dinero de origen desconocido. Entregamos todos los cálculos con propósito referencial y protegemos la transparencia de cada informe.',
     debidaTitle: 'Debida diligencia: conocer muy bien a cada parte (KYC / KYB)',
     debida1:
       'Antes de firmar un contrato o activar un plan corporativo, hacemos una verificación exhaustiva:',
@@ -134,7 +134,7 @@ const T = {
     identificacion1:
       'We monitor 4 key factors: (i) Client and vendor reputation, (ii) Services purchased, (iii) Official payment channels used, and (iv) Geographic origin of funds.',
     identificacion2:
-      'We investigate unusual split payments, unexpected account transfers, or attempts to fabricate an environmental estimation to move unjustified funds. We deliver all calculations with an estimative reference purpose and protect the transparency of every report.',
+      'We investigate unusual split payments, unexpected account transfers, or attempts to fabricate an environmental estimation to move unjustified funds. We deliver all calculations for reference purposes and protect the transparency of every report.',
     debidaTitle: 'Due diligence: knowing our partners (KYC / KYB)',
     debida1:
       'Before signing agreements or enabling corporate plans, we execute thorough background checks:',

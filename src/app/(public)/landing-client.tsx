@@ -10,9 +10,17 @@ import { Modal } from '@/components/ui/modal'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 import { PLANS, CURRENCIES, formatearPrecioColombiano, PALETA_COMPARATIVA } from '@/lib/constants/pricing'
 import { LandingHeader, MenuGroup } from '@/components/landing-header'
-import { LeadsForm } from '@/components/leads-form'
+import dynamic from 'next/dynamic'
+import { SkeletonCard } from '@/components/ui/skeleton'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { waLink } from '@/lib/constants/contacto'
+
+// El formulario (con Turnstile) solo vive en el modal "Te llamamos": se descarga al abrirlo,
+// no en la carga inicial de la home.
+const LeadsForm = dynamic(() => import('@/components/leads-form').then((r) => r.LeadsForm), {
+  ssr: false,
+  loading: () => <SkeletonCard lineas={4} />,
+})
 
 // ─── Catálogo de los 9 cálculos técnicos de impacto ──────────────────────────
 const TODOS_LOS_CALCULOS = [
@@ -581,7 +589,7 @@ function FAQItem({ q, a, isDark }: { q: string; a: string; isDark: boolean }) {
             : isDark ? 'hover:bg-white/4' : 'hover:bg-[#00827C]/4'
         }`}
       >
-        <span className={`text-sm sm:text-base font-bold transition-colors duration-200 ${
+        <span className={`text-sm sm:text-base font-semibold transition-colors duration-200 ${
           open
             ? isDark ? 'text-[#D6F391]' : 'text-[#00827C]'
             : isDark ? 'text-white group-hover:text-[#D6F391]' : 'text-[#474747] group-hover:text-[#00827C]'
@@ -751,7 +759,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
         }}
       >
         <p className="text-[10px] lg:text-[11px] font-semibold opacity-80 text-(--text-primary)">Pasaporte Digital de Producto</p>
-        <p className="text-sm lg:text-base xl:text-lg font-black leading-tight text-(--text-primary) mt-0.5 lg:leading-[1.5rem] xl:leading-[1.75rem]">Activo circular</p>
+        <p className="text-sm lg:text-base xl:text-lg font-semibold leading-tight text-(--text-primary) mt-0.5 lg:leading-[1.5rem] xl:leading-[1.75rem]">Activo circular</p>
         <p className="text-[10px] lg:text-[11px] font-mono opacity-80 text-(--text-primary) mt-0.5">DPP-7F3A-2026</p>
         <div className="h-px my-[4%]" style={{ background: 'var(--border)' }} />
 
@@ -792,7 +800,7 @@ function DppTrazabilidadVisual({ isDark }: { isDark: boolean }) {
         <div className="mt-[4%] rounded-xl px-2.5 py-2 flex items-center justify-between gap-2 transition-colors duration-500" style={{ background: `${pasoActivo.color}${isDark ? '1F' : '1A'}` }}>
           <div className="min-w-0">
             <p className="text-[10px] font-semibold opacity-80 text-(--text-primary)">Huella SHA-256 encadenada</p>
-            <p className="text-[11px] lg:text-xs font-mono font-bold truncate text-(--text-primary)">{DPP_HASHES[activo]}…</p>
+            <p className="text-[11px] lg:text-xs font-mono font-semibold truncate text-(--text-primary)">{DPP_HASHES[activo]}…</p>
           </div>
           <QrCode size={22} strokeWidth={1.8} className="shrink-0 text-(--text-primary) opacity-70" sinAnimacion />
         </div>
@@ -891,7 +899,7 @@ function HeroImpactPanel({ isDark, tp, liquidGlass }: { isDark: boolean; tp: str
               Panel de impacto circular.
             </p>
             {isHovered && (
-              <span className={`inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-bold px-2 py-0.5 rounded-full animate-pulse ${
+              <span className={`inline-flex items-center gap-1 text-[8px] sm:text-[9px] font-semibold px-2 py-0.5 rounded-full animate-pulse ${
                 isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'
               }`}>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
@@ -930,12 +938,12 @@ function HeroImpactPanel({ isDark, tp, liquidGlass }: { isDark: boolean; tp: str
                 : 'bg-white/95 border-[#00827C]/15 hover:bg-white shadow-xs'
             }`}
           >
-            <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[11px] font-bold leading-tight transition-colors duration-200 ${
+            <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[11px] font-semibold leading-tight transition-colors duration-200 ${
               isDark ? 'text-[#D6F391]' : 'text-[#006B66]'
             }`}>
               {stat.label}
             </span>
-            <span className={`glass-number text-xl sm:text-2xl md:text-xl lg:text-3xl font-black leading-none transition-transform duration-200 ${
+            <span className={`glass-number text-xl sm:text-2xl md:text-xl lg:text-3xl font-semibold leading-none transition-transform duration-200 ${
               hoveredIndex === i ? 'scale-105' : ''
             } ${tp} sm:leading-[2rem] md:leading-[1.75rem] lg:leading-[2.25rem]`}>
               {stat.value}
@@ -953,10 +961,10 @@ function HeroImpactPanel({ isDark, tp, liquidGlass }: { isDark: boolean; tp: str
           : isDark ? 'bg-white/5 ' : 'bg-white/95 border-[#00827C]/15 shadow-xs'
       }`}>
         <div className="flex justify-between items-center mb-1.5 md:mb-2">
-          <span className={`text-[10px] sm:text-[11px] md:text-[10px] lg:text-xs font-bold ${isDark ? 'text-white/90' : 'text-[#474747]'}`}>
+          <span className={`text-[10px] sm:text-[11px] md:text-[10px] lg:text-xs font-semibold ${isDark ? 'text-white/90' : 'text-[#474747]'}`}>
             Tasa de circularidad.
           </span>
-          <span className={`text-[10px] sm:text-[11px] md:text-[10px] lg:text-xs font-black transition-all duration-300 ${
+          <span className={`text-[10px] sm:text-[11px] md:text-[10px] lg:text-xs font-semibold transition-all duration-300 ${
             isHovered ? 'scale-110' : ''
           } ${isDark ? 'text-[#D6F391]' : 'text-[#006B66]'}`}>
             {circRate}%
@@ -1044,11 +1052,11 @@ function CategoryMetricsDisplay({
       >
         <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-3">
           <Leaf size={16} className={`transition-transform duration-300 ${hoveredCard === 'planeta' ? 'scale-125 rotate-6' : ''} ${isDark ? cat.card1IconDark : cat.card1IconLight}`} />
-          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? cat.card1LabelDark : cat.card1LabelLight}`}>
+          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-semibold ${isDark ? cat.card1LabelDark : cat.card1LabelLight}`}>
             Impacto ambiental evitado.
           </span>
         </div>
-        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card1NumberDark : cat.card1NumberLight}`}>
+        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-semibold mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card1NumberDark : cat.card1NumberLight}`}>
           {planetaVal.toLocaleString('es-CO')}{cat.planetaUnit}
         </div>
         <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium ${ts}`}>{cat.planeta.detalle}</p>
@@ -1070,11 +1078,11 @@ function CategoryMetricsDisplay({
       >
         <div className="flex items-center gap-2 mb-1.5 md:mb-2 lg:mb-3">
           <TrendingUp size={16} className={`transition-transform duration-300 ${hoveredCard === 'bolsillo' ? 'scale-125 rotate-6' : ''} ${isDark ? cat.card2IconDark : cat.card2IconLight}`} />
-          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-bold ${isDark ? cat.card2LabelDark : cat.card2LabelLight}`}>
+          <span className={`text-[9px] sm:text-[10px] md:text-[9px] lg:text-[10px] font-semibold ${isDark ? cat.card2LabelDark : cat.card2LabelLight}`}>
             Retorno y margen comercial estimado.
           </span>
         </div>
-        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card2NumberDark : cat.card2NumberLight}`}>
+        <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-semibold mb-0.5 md:mb-1 transition-colors duration-200 ${isDark ? cat.card2NumberDark : cat.card2NumberLight}`}>
           +{bolsilloVal}%
         </div>
         <p className={`text-[11px] sm:text-xs md:text-[11px] lg:text-xs font-medium ${ts}`}>{cat.bolsillo.detalle}</p>
@@ -1238,13 +1246,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
     setActiveCategory(key)
     activeCategoryRef.current = key
     const section = sectionCategoriasRef.current
-    if (section) {
-      // Offset de navbar
-      const rect = section.getBoundingClientRect()
-      const scrollTop = window.scrollY || document.documentElement.scrollTop
-      const targetY = rect.top + scrollTop - 80 // dejar margen superior
-      window.scrollTo({ top: targetY, behavior: 'smooth' })
-    }
+    // Usa el scroll-mt de la sección (mismo margen que el resto de anclas,
+    // calculado por tamaño de pantalla para quedar justo bajo el menú fijo).
+    if (section) section.scrollIntoView({ behavior: 'smooth' })
   }
 
   // Auto-centrado del tab activo en la barra móvil (scroll horizontal, no
@@ -1276,10 +1280,6 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       setIsDark(currentTheme === 'dark')
     }
 
-    const stored = localStorage.getItem('theme') || localStorage.getItem('reuso-theme')
-    if (stored) {
-      document.documentElement.setAttribute('data-theme', stored)
-    }
     checkTheme()
 
     const themeObserver = new MutationObserver(checkTheme)
@@ -1636,10 +1636,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         }}
         extraActions={
           <>
-            <Link href="/registro" className={`px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-bold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
+            <Link href="/registro" className={`px-2.5 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-base font-semibold transition-all whitespace-nowrap hover:scale-105 active:scale-95 ${isDark ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_4px_16px_rgba(214,243,145,0.2)]' : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_4px_16px_rgba(0,130,124,0.25)]'}`}>
               Empezar gratis
             </Link>
-            <Link href="/login" className={`inline-flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-base font-bold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
+            <Link href="/login" className={`inline-flex px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full border text-xs sm:text-base font-semibold transition-all hover:scale-105 active:scale-95 ${isDark ? 'border-[#D6F391]/20 text-white hover:bg-[#D6F391]/5' : 'border-[#00827C]/20 text-[#474747] hover:bg-[#00827C]/5'}`}>
               Entrar
             </Link>
           </>
@@ -1668,7 +1668,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center">
               <a 
                 href="#planes" 
-                className={`animate-shimmer inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
+                className={`animate-shimmer inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_8px_32px_rgba(214,243,145,0.3)]' 
                     : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_8px_32px_rgba(0,130,124,0.35)]'
@@ -1678,7 +1678,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </a>
               <a 
                 href="#calculos" 
-                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-bold text-sm sm:text-base backdrop-blur-xs transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
+                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-5 sm:py-3 rounded-full border font-semibold text-sm sm:text-base backdrop-blur-xs transition-all duration-300 hover:-translate-y-0.5 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'border-[#D6F391]/25 text-[#D6F391] hover:bg-[#D6F391]/10' 
                     : 'border-[#00827C]/25 text-[#00827C] '
@@ -1698,7 +1698,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 2 - COMPARATIVA ───────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="comparativa" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
+      <section id="comparativa" className="scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 24 }}
@@ -1707,7 +1707,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto"
           >
-            <h2 className={`font-sans text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2.5 sm:mb-3 md:mb-4 ${tp}`}>
               El valor de medir tu sostenibilidad: <br className="hidden sm:block" />
               de buenas intenciones a resultados
             </h2>
@@ -1729,8 +1729,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-xl bg-[#FF5E4B]/10 flex items-center justify-center hover-icon-interactive">
                   <X size={18} strokeWidth={2.5} className="text-[#FF5E4B]" />
                 </div>
-                <h3 className={`text-lg sm:text-base md:text-base lg:text-lg font-black ${tp}`}>
-                  La manera de siempre <br />
+                <h3 className={`text-lg font-normal leading-snug ${tp}`}>
+                  <span className="font-medium">La manera de siempre</span> <br />
                   Hacer las cosas sin estimar tu impacto
                 </h3>
               </div>
@@ -1774,8 +1774,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div className={`w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center hover-icon-interactive bg-[#00827C]/10 dark:bg-[#D6F391]/10`}>
                   <Check size={18} strokeWidth={2.5} className="text-[#00827C] dark:text-[#D6F391]" />
                 </div>
-                <h3 className={`text-lg sm:text-base md:text-base lg:text-lg font-black ${tp}`}>
-                  Calculadora de Reúso <br />
+                <h3 className={`text-lg font-normal leading-snug ${tp}`}>
+                  <span className="font-medium">Calculadora de Reúso</span> <br />
                   Mide tu sostenibilidad y aprovecha la gestión circular
                 </h3>
               </div>
@@ -1790,7 +1790,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     <div className={`mt-0.5 w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 group-hover/item:scale-125 group-hover/item:rotate-6 group-hover:scale-110 bg-[#00827C]/15 text-[#00827C] group-hover/item:bg-[#00827C] group-hover/item:text-white dark:bg-[#D6F391]/20 dark:text-[#D6F391] dark:group-hover/item:bg-[#D6F391] dark:group-hover/item:text-[#474747]`}>
                       <Check size={10} strokeWidth={3} className="transition-transform duration-300" />
                     </div>
-                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.25rem]`}>{item}</span>
+                    <span className={`text-sm sm:text-base md:text-sm lg:text-sm font-semibold leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.25rem] lg:leading-[1.25rem]`}>{item}</span>
                   </li>
                 ))}
               </ul>
@@ -1801,7 +1801,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="dpp" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
+      <section id="dpp" className="scroll-mt-[115px] md:scroll-mt-[124px] lg:scroll-mt-[132px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center justify-center">
             {/* Diagrama animado: solo tablet y escritorio */}
@@ -1825,7 +1825,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
                 Pasaporte Digital de Producto (DPP)
               </p>
-              <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-[2rem] font-extrabold tracking-tight mb-4 sm:mb-5 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem]`}>
+              <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-4 sm:mb-5 ${tp}`}>
                 Une cada punto,{' '}
                 <span className="bg-clip-text text-transparent" style={{ backgroundImage: isDark ? 'linear-gradient(90deg, #F6BF3E, #D6F391 30%, #8AD0B2 65%, #59A6E4)' : 'linear-gradient(90deg, #38B98E, #00827C 55%, #59A6E4)' }}>
                   desde el residuo hasta su nuevo uso
@@ -1839,13 +1839,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 Llega antes que la norma. Europa ya lo incorpora. En LATAM todavía es opcional, y quien registra hoy llega listo cuando sus clientes lo pidan.
               </p>
 
-              <p className={`text-sm sm:text-base font-black mb-3 ${tp}`}>Lo que demuestras con cada pasaporte</p>
+              <p className={`text-sm sm:text-base font-semibold mb-3 ${tp}`}>Lo que demuestras con cada pasaporte</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {[
-                  { icon: MapPin, texto: 'De dónde tomaste el residuo antes de que terminara desechado', color: '#F6BF3E' },
-                  { icon: Hammer, texto: 'En qué lo transformaste, con qué materiales y quién intervino', color: '#38B98E' },
-                  { icon: QrCode, texto: 'Cada pieza con su QR público, consultable sin crear cuenta', color: '#59A6E4' },
-                  { icon: ShieldCheck, texto: 'Un registro encadenado SHA-256 que ayuda a detectar cambios', color: '#F3BBD3' },
+                  { icon: MapPin, texto: 'De dónde tomaste el residuo antes de que terminara desechado.', color: '#F6BF3E' },
+                  { icon: Hammer, texto: 'En qué lo transformaste, con qué materiales y quién intervino.', color: '#38B98E' },
+                  { icon: QrCode, texto: 'Cada pieza con su QR público, consultable sin crear cuenta.', color: '#59A6E4' },
+                  { icon: ShieldCheck, texto: 'Un registro encadenado SHA-256 que ayuda a detectar cambios.', color: '#F3BBD3' },
                 ].map(({ icon: Icono, texto, color }) => (
                   <div
                     key={texto}
@@ -1855,7 +1855,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:-rotate-6 bg-[color-mix(in_srgb,var(--c)_22%,transparent)] text-(--ic) group-hover:bg-(--c) group-hover:text-(--sobre)">
                       <Icono size={16} strokeWidth={2} sinAnimacion />
                     </div>
-                    <span className={`text-xs sm:text-[13px] font-semibold leading-snug ${ts}`}>{texto}</span>
+                    <span className={`text-[11px] sm:text-[12px] font-semibold leading-snug ${ts}`}>{texto}</span>
                   </div>
                 ))}
               </div>
@@ -1867,7 +1867,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 3 - CATÁLOGO DE CÁLCULOS ───────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="calculos" style={{ contentVisibility: 'auto' }} className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
+      <section id="calculos" className={`scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 24 }}
@@ -1876,7 +1876,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 sm:mb-8 md:mb-10 text-center"
           >
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2.5 sm:mb-3 md:mb-4 ${tp}`}>
               Descubre los 9 cálculos de sostenibilidad: <br className="hidden sm:block" />
               ambientales, económicos y sociales
             </h2>
@@ -1942,7 +1942,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         {calc.tag}
                       </span>
                     </div>
-                    <h3 className={`text-base sm:text-base font-extrabold mb-1 transition-colors duration-300 ${tp}`}>
+                    <h3 className={`text-lg font-semibold leading-snug mb-1 transition-colors duration-300 ${tp}`}>
                       {calc.titulo}
                     </h3>
                     <p className={`text-xs font-medium leading-relaxed ${ts}`}>
@@ -1957,7 +1957,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="mt-6 sm:mt-8 flex justify-center">
             <button
               onClick={() => setCatalogoCalculosAbierto(true)}
-              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
+              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
               <span>Ver detalle</span>
               <Plus size={16} strokeWidth={2.5} className="shrink-0" />
@@ -1983,7 +1983,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div key={grupo}>
                   <div className="flex items-center gap-2 mb-3 sm:mb-4">
                     <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                    <h4 className={`text-sm font-extrabold ${tp}`}>{grupo}</h4>
+                    <h4 className={`font-seravek text-base font-normal ${tp}`}>{grupo}</h4>
                     <span className={`h-px flex-1 bg-active`} />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -2037,7 +2037,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                               <Ic size={16} strokeWidth={2.3} />
                             </div>
                             <div className="min-w-0 flex-1">
-                              <h5 className={`text-xs sm:text-[13px] font-extrabold mb-0.5 ${tp}`}>{calc.titulo}</h5>
+                              <h5 className={`font-seravek text-xs sm:text-[13px] font-semibold mb-0.5 ${tp}`}>{calc.titulo}</h5>
                               <p className={`text-[11px] sm:text-[11.5px] leading-relaxed ${ts}`}>{calc.desc}</p>
                             </div>
                           </div>
@@ -2054,7 +2054,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               isDark ? 'bg-white/3 border-white/10 text-white/70' : 'bg-[#00827C]/3 border-[#00827C]/15 text-[#474747]/80'
             } sm:leading-[1rem]`}>
               <p className="m-0">
-                Presentamos todos los cálculos como una <strong>estimación</strong> técnica orientativa del impacto positivo del reúso. Entregamos estas métricas con carácter <strong>estimativo</strong> referencial para respaldar la toma de decisiones sostenibles sin reemplazar auditorías ambientales obligatorias.
+                Presentamos todos los cálculos como una <strong>estimación</strong> técnica orientativa del impacto positivo del reúso. Entregamos estas métricas como referencia para respaldar la toma de decisiones sostenibles, sin reemplazar auditorías ambientales.
               </p>
             </div>
           </div>
@@ -2067,7 +2067,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       <section
         id="categorias"
         ref={sectionCategoriasRef}
-        className={`scroll-mt-28 relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-primary'} py-8 sm:py-10 md:py-12 lg:py-14`}
+        className={`scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-primary'} py-8 sm:py-10 md:py-12 lg:py-14`}
       >
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
           <m.div
@@ -2077,7 +2077,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-4 sm:mb-6 md:mb-8"
           >
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 sm:mb-2.5 md:mb-3 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2 sm:mb-2.5 md:mb-3 ${tp}`}>
               ¿Cuánto valor recupera tu empresa con economía circular?
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl ${ts}`}>
@@ -2110,7 +2110,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     key={c.id}
                     id={`mobile-tab-${c.id}`}
                     onClick={() => scrollToCategory(c.id as CatKey)}
-                    className={`relative shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold transition-colors duration-200 active:scale-95 select-none ${
+                    className={`relative shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 active:scale-95 select-none ${
                       isSelected 
                         ? (isDark ? c.pillTextDark : c.pillTextLight)
                         : isDark
@@ -2156,7 +2156,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <button
                     key={c.id}
                     onClick={() => scrollToCategory(c.id as CatKey)}
-                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-bold text-sm md:text-sm lg:text-sm transition-all duration-200 active:scale-95 ${
+                    className={`relative w-full flex items-center gap-2.5 lg:gap-3 px-3.5 py-3 lg:px-4 lg:py-3.5 rounded-xl md:rounded-2xl text-left font-semibold text-sm md:text-sm lg:text-sm transition-all duration-200 active:scale-95 ${
                       isSelected
                         ? (isDark ? c.pillTextDark : c.pillTextLight)
                         : `border ${ts} ${isDark ? `border-white/10 ${c.sidebarHoverDark}` : ` ${c.sidebarHoverLight}`}`
@@ -2224,10 +2224,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
                   >
 
-                    <h3 className={`text-lg sm:text-lg md:text-lg lg:text-xl font-black mb-1 md:mb-1.5 ${tp}`}>
+                    <h3 className={`text-lg font-normal leading-snug mb-1 md:mb-1.5 ${tp}`}>
                       {cat.h3}
                     </h3>
-                    <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-bold mb-4 sm:mb-5 md:mb-5 lg:mb-6 ${ts}`}>
+                    <p className={`text-sm sm:text-base md:text-sm lg:text-sm font-semibold mb-4 sm:mb-5 md:mb-5 lg:mb-6 ${ts}`}>
                       {cat.ejemplo}
                     </p>
 
@@ -2247,7 +2247,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 5 - PROCESO ───────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="proceso" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
+      <section id="proceso" className="scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 24 }}
@@ -2256,7 +2256,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 sm:mb-8 md:mb-10 text-center max-w-3xl mx-auto"
           >
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2.5 sm:mb-3 md:mb-4 ${tp}`}>
               Soluciones para medir, gestionar
               <br />
               y respaldar tu impacto ambiental
@@ -2300,7 +2300,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 className={`group flex flex-col rounded-4xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 ${isDark ? 'bg-white/5 border border-white/10' : 'bg-primary border border-[#00827C]/10'}`}
               >
                 {/* Mitad superior: Imagen fotográfica nativa sin velo verde */}
-                <div className="relative w-full h-40 sm:h-48 md:h-44 lg:h-52 overflow-hidden bg-hover dark:bg-gray-800">
+                <div className="relative w-full h-40 sm:h-48 md:h-44 lg:h-52 overflow-hidden bg-hover dark:bg-[#525252]">
                   <Image
                     src={paso.image}
                     alt={paso.titulo}
@@ -2318,7 +2318,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
                 {/* Mitad inferior: Contenido descriptivo (Sin botón) */}
                 <div className="flex flex-col flex-1 p-6 lg:p-8">
-                  <h3 className={`text-base sm:text-base md:text-base lg:text-lg font-bold mb-3 ${tp}`}>
+                  <h3 className={`text-xl font-semibold leading-snug mb-3 ${tp}`}>
                     {paso.titulo}
                   </h3>
                   <p className={`text-sm sm:text-base font-medium leading-relaxed flex-1 ${ts} sm:leading-[1.5rem]`}>
@@ -2333,7 +2333,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 6 - PLANES ────────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="planes" style={{ contentVisibility: 'auto' }} className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
+      <section id="planes" className={`scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 24 }}
@@ -2342,7 +2342,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 sm:mb-8 md:mb-10 text-center"
           >
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2.5 sm:mb-3 md:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2.5 sm:mb-3 md:mb-4 ${tp}`}>
               Planes de sostenibilidad a tu ritmo
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium max-w-2xl sm:max-w-3xl mx-auto leading-relaxed ${ts} sm:leading-[1.5rem] md:leading-[1.5rem] lg:leading-[1.5rem]`}>
@@ -2354,16 +2354,16 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-6 md:mb-8 lg:mb-10">
             <div className={`flex rounded-full p-1 border ${isDark ? 'bg-white/5 border-white/10 shadow-[0_4px_20px_rgba(0,0,0,0.1)]' : 'bg-white/50 backdrop-blur-2xl border-[#00827C]/10 shadow-[0_4px_20px_rgba(0,130,124,0.06)]'}`}>
               {(['COP', 'USD', 'EUR'] as const).map(cur => (
-                <button key={cur} onClick={() => setCurrency(cur)} className={`px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2 rounded-full text-xs sm:text-sm md:text-xs font-bold transition-all duration-300 hover:scale-105 active:scale-95 ${currency === cur ? (isDark ? 'bg-[#D6F391] text-[#474747] shadow-lg' : 'bg-[#00827C] text-white shadow-lg') : `hover:bg-[#00827C]/5 ${ts}`}`}>{cur}</button>
+                <button key={cur} onClick={() => setCurrency(cur)} className={`px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2 rounded-full text-xs sm:text-sm md:text-xs font-semibold transition-all duration-300 hover:scale-105 active:scale-95 ${currency === cur ? (isDark ? 'bg-[#D6F391] text-[#474747] shadow-lg' : 'bg-[#00827C] text-white shadow-lg') : `hover:bg-[#00827C]/5 ${ts}`}`}>{cur}</button>
               ))}
             </div>
             <div className={`flex items-center gap-2.5 sm:gap-3 px-3.5 sm:px-4 py-1.5 md:px-3.5 md:py-1.5 lg:px-5 lg:py-2.5 rounded-full border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white/50 backdrop-blur-2xl border-[#00827C]/10'}`}>
-              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'monthly' ? tp : `${ts}`}`}>Mensual</span>
+              <span className={`text-sm md:text-sm lg:text-sm font-semibold ${billing === 'monthly' ? tp : `${ts}`}`}>Mensual</span>
               <button aria-label="Cambiar entre cobro mensual y anual" onClick={() => setBilling(b => b === 'monthly' ? 'annual' : 'monthly')} className={`relative w-10 h-6 md:w-11 md:h-6 lg:w-12 lg:h-7 rounded-full transition-colors duration-300 hover:scale-105 active:scale-95 ${billing === 'annual' ? (isDark ? 'bg-[#D6F391]' : 'bg-[#00827C]') : isDark ? 'bg-white/15' : 'bg-[#474747]/15'}`}>
                 <div className={`absolute top-0.5 w-5 h-5 lg:w-6 lg:h-6 bg-primary rounded-full shadow-md transition-transform duration-300 ${billing === 'annual' ? 'translate-x-4 lg:translate-x-5' : 'translate-x-0.5'}`} />
               </button>
-              <span className={`text-sm md:text-sm lg:text-sm font-bold ${billing === 'annual' ? tp : `${ts}`}`}>Anual</span>
-              {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-black px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] '}`}>2 meses gratis.</span>}
+              <span className={`text-sm md:text-sm lg:text-sm font-semibold ${billing === 'annual' ? tp : `${ts}`}`}>Anual</span>
+              {billing === 'annual' && <span className={`text-[10px] md:text-[10px] lg:text-xs font-semibold px-2 py-0.5 rounded-full ${isDark ? 'text-[#D6F391] bg-[#D6F391]/15' : 'text-[#00827C] '}`}>2 meses gratis.</span>}
             </div>
           </div>
 
@@ -2392,20 +2392,20 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   />
 
                   {isSelectedPopular && (
-                    <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 md:px-3 md:py-0.5 lg:px-4 lg:py-1 ${theme.badgeBg} ${theme.badgeText} text-[9px] md:text-[9px] lg:text-[10px] font-bold rounded-full whitespace-nowrap shadow-md`}>
+                    <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 md:px-3 md:py-0.5 lg:px-4 lg:py-1 ${theme.badgeBg} ${theme.badgeText} text-[9px] md:text-[9px] lg:text-[10px] font-semibold rounded-full whitespace-nowrap shadow-md`}>
                       Más popular
                     </div>
                   )}
 
                   <div className="mb-4 md:mb-5 lg:mb-6">
-                    <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold mb-1 transition-colors duration-200 ${theme.taglineQuiet} ${isDark ? theme.titleHoverDark : theme.titleHoverLight}`}>{plan.tagline}</p>
-                    <h3 className={`text-lg sm:text-base md:text-base lg:text-lg font-black mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 ${isDark ? theme.titleHoverDark : theme.titleHoverLight} ${tp}`}>{plan.name}</h3>
-                    <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-black mb-0.5 transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight} ${tp}`}>{formatPrice(plan)}</div>
+                    <p className={`text-[9px] md:text-[9px] lg:text-[10px] font-semibold mb-1 transition-colors duration-200 ${theme.taglineQuiet} ${isDark ? theme.titleHoverDark : theme.titleHoverLight}`}>{plan.tagline}</p>
+                    <h3 className={`text-lg font-semibold leading-snug mb-2 md:mb-2.5 lg:mb-3 transition-colors duration-200 ${isDark ? theme.titleHoverDark : theme.titleHoverLight} ${tp}`}>{plan.name}</h3>
+                    <div className={`text-2xl sm:text-3xl md:text-2xl lg:text-4xl font-semibold mb-0.5 transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight} ${tp}`}>{formatPrice(plan)}</div>
                     {plan.priceMonthlyCOP > 0 && (
                       <div className="flex flex-col gap-0.5">
                         <p className={`text-[11px] md:text-[11px] lg:text-xs ${ts}`}>{CURRENCIES[currency].code}/mes</p>
                         {billing === 'annual' && (
-                          <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-bold transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight}`}>{getAnnualTotal(plan)}</span></p>
+                          <p className={`text-[9px] md:text-[9px] lg:text-[10px] mt-1 whitespace-nowrap ${tp}`}>Único pago anual de{' '}<span className={`text-[14px] md:text-[14px] lg:text-[16px] font-semibold transition-colors duration-200 ${isDark ? theme.priceHoverDark : theme.priceHoverLight}`}>{getAnnualTotal(plan)}</span></p>
                         )}
                       </div>
                     )}
@@ -2413,8 +2413,8 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <dl className={`grid grid-cols-2 gap-x-3 gap-y-2 mb-4 md:mb-5 pb-4 md:pb-5 border-b ${isDark ? theme.dividerDark : theme.dividerLight}`}>
                     {cuotasPlan(plan).map((c, k) => (
                       <div key={k}>
-                        <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-bold tracking-wide ${ts}`}>{c.etiqueta}</dt>
-                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-bold ${tp} flex items-center min-h-[16px]`}>
+                        <dt className={`text-[9px] md:text-[9px] lg:text-[10px] font-semibold tracking-wide ${ts}`}>{c.etiqueta}</dt>
+                        <dd className={`text-[11px] md:text-[11px] lg:text-xs font-semibold ${tp} flex items-center min-h-[16px]`}>
                           {(c.valor && !['x', 'no incluye', '—', '-'].includes(String(c.valor).trim().toLowerCase())) ? (
                             c.valor
                           ) : (
@@ -2441,7 +2441,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   {plan.priceMonthlyCOP === 0 ? (
                     <Link
                       href="/registro"
-                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
+                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-semibold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
                         isSelectedPopular
                           ? (isDark ? theme.btnPopularDark : theme.btnPopularLight)
                           : (isDark ? theme.btnOutlineDark : theme.btnOutlineLight)
@@ -2456,7 +2456,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         setSelectedPlan(plan.name)
                         setContactModalOpen(true)
                       }}
-                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-bold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
+                      className={`w-full py-2.5 md:py-3 lg:py-3.5 rounded-xl font-semibold text-sm md:text-sm lg:text-sm text-center transition-all block hover:scale-105 active:scale-95 cursor-pointer ${
                         isSelectedPopular
                           ? (isDark ? theme.btnPopularDark : theme.btnPopularLight)
                           : (isDark ? theme.btnOutlineDark : theme.btnOutlineLight)
@@ -2474,7 +2474,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <div className="mt-5 sm:mt-6 flex justify-center">
             <button
               onClick={() => setComparativaAbierta(true)}
-              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-bold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
+              className={`group inline-flex items-center gap-1.5 text-sm sm:text-base font-semibold transition-colors duration-200 ${isDark ? 'text-[#D6F391] hover:underline' : 'text-[#00827C] hover:underline'}`}
             >
               <span>Comparar todos los planes y cálculos</span>
               <Plus size={16} strokeWidth={2.5} className="shrink-0" />
@@ -2540,7 +2540,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 return (
                   <div key={ci}>
                     {categoria.nombre && (
-                      <h4 className={`text-sm sm:text-base font-black mb-3 ${tp}`}>{categoria.nombre}</h4>
+                      <h4 className={`font-seravek text-base font-normal mb-3 ${tp}`}>{categoria.nombre}</h4>
                     )}
                     <div className="rounded-card border-2 overflow-hidden" style={{ borderColor: `${colorCategoria}40`, isolation: 'isolate' }}>
                       <div className="overflow-x-auto rounded-btn">
@@ -2552,7 +2552,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                           <thead>
                             <tr style={{ background: `${colorCategoria}14` }}>
                               <th
-                                className={`text-left px-3 py-2.5 text-xs font-bold rounded-tl-btn ${ts}`}
+                                className={`text-left px-3 py-2.5 text-xs font-semibold rounded-tl-btn ${ts}`}
                                 style={{ position: 'sticky', left: 0, zIndex: 2, background: isDark ? '#525252' : '#FFFFFF' }}
                               >
                                 &nbsp;
@@ -2568,10 +2568,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                     className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
                                     style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
                                   >
-                                    <span className={`text-xs sm:text-[13px] font-black whitespace-nowrap transition-colors group-hover:text-(--color-categoria) ${tp}`}>
+                                    <span className={`text-xs sm:text-[13px] font-semibold leading-tight text-balance break-words transition-colors group-hover:text-(--color-categoria) ${tp}`}>
                                       {plan.name}
                                     </span>
-                                    <span className={`text-[9px] font-bold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-(--color-categoria) ${ts}`}>
+                                    <span className={`text-[9px] font-semibold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-(--color-categoria) ${ts}`}>
                                       Elegir →
                                     </span>
                                   </button>
@@ -2631,7 +2631,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="ia" style={{ contentVisibility: 'auto' }} className={`scroll-mt-28 py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
+      <section id="ia" className={`scroll-mt-[94px] md:scroll-mt-[95px] lg:scroll-mt-[87px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -2655,10 +2655,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
               {/* Lado izquierdo: narrativa e información */}
               <div className="lg:col-span-7">
-                <p className={`text-sm sm:text-base font-bold mb-2 ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
+                <p className={`text-sm sm:text-base font-semibold mb-2 ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
                   Inteligencia artificial amigable y responsable.
                 </p>
-                <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-2.5 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+                <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] mb-2.5 ${tp}`}>
                   Diagnóstico visual con IA, <br className="hidden sm:block" />
                   con ciencia detrás de cada cálculo
                 </h2>
@@ -2672,7 +2672,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <IaIcon size={14} />
                     </div>
                     <div>
-                      <h3 className={`text-base sm:text-base font-bold ${tp}`}>Reconocimiento visual automático</h3>
+                      <h3 className={`text-lg font-normal leading-snug ${tp}`}>Reconocimiento visual automático</h3>
                       <p className={`text-xs sm:text-sm font-medium ${ts}`}>Descubre de qué material están hechas las cosas con solo analizar una imagen.</p>
                     </div>
                   </div>
@@ -2682,7 +2682,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <ShieldCheck size={14} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <h3 className={`text-base sm:text-base font-bold ${tp}`}>Estimaciones con fundamentos técnicos</h3>
+                      <h3 className={`text-lg font-normal leading-snug ${tp}`}>Estimaciones con fundamentos técnicos</h3>
                       <p className={`text-xs sm:text-sm font-medium ${ts}`}>Usamos bases de datos internacionales reconocidas para que tus estimaciones tengan respaldo técnico sólido.</p>
                     </div>
                   </div>
@@ -2692,7 +2692,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   href="/legal/ia"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`group inline-flex items-center gap-2 text-sm sm:text-base font-bold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#006B66]'}`}
+                  className={`group inline-flex items-center gap-2 text-sm sm:text-base font-semibold transition-all duration-200 hover:gap-3 ${isDark ? 'text-[#D6F391] hover:text-white' : 'text-[#00827C] hover:text-[#006B66]'}`}
                 >
                   <span className="group-hover:underline">Conoce nuestro marco ético y gobernanza en la Política de IA</span>
                   <ArrowRight size={14} strokeWidth={2.5} className="shrink-0" />
@@ -2709,7 +2709,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div className="flex items-center justify-between pb-3 mb-3 border-b border-inherit">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className={`text-xs sm:text-sm font-bold ${tp}`}>Muestra de diagnóstico.</span>
+                      <span className={`text-xs sm:text-sm font-semibold ${tp}`}>Muestra de diagnóstico.</span>
                     </div>
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>
                       Diagnóstico circular y ambiental.
@@ -2719,23 +2719,23 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                   <div className="space-y-2.5 text-xs">
                     <div className={`p-2.5 rounded-lg bg-hover`}>
                       <p className={`text-[10px] font-semibold tracking-wider mb-0.5 opacity-60 ${ts}`}>Detección de material.</p>
-                      <p className={`font-bold ${tp}`}>Escritorio modular en madera maciza y base metálica.</p>
+                      <p className={`font-semibold ${tp}`}>Escritorio modular en madera maciza y base metálica.</p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <div className={`p-2.5 rounded-lg bg-hover`}>
                         <p className={`text-[10px] font-semibold tracking-wider mb-0.5 opacity-60 ${ts}`}>CO₂ evitado.</p>
-                        <p className="font-extrabold text-[#38B98E]">85 kg CO₂e</p>
+                        <p className="font-semibold text-[#38B98E]">85 kg CO₂e</p>
                       </div>
                       <div className={`p-2.5 rounded-lg bg-hover`}>
                         <p className={`text-[10px] font-semibold tracking-wider mb-0.5 opacity-60 ${ts}`}>Agua ahorrada.</p>
-                        <p className="font-extrabold text-[#59A6E4]">3.200 L</p>
+                        <p className="font-semibold text-[#59A6E4]">3.200 L</p>
                       </div>
                     </div>
 
                     <div className={`p-2 rounded-lg flex items-center justify-between text-[11px] ${isDark ? 'bg-white/3 text-white/70' : 'bg-[#00827C]/3 text-[#00827C]'}`}>
                       <span>Pasaporte digital con QR verificable.</span>
-                      <span className="font-bold text-emerald-500 flex items-center gap-1">
+                      <span className="font-semibold text-emerald-500 flex items-center gap-1">
                         <Check size={12} strokeWidth={3} /> Listo para compartir.
                       </span>
                     </div>
@@ -2749,7 +2749,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 8 - OBJETIVO 12 (ODS 12) ─────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="ods-12" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 relative pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
+      <section id="ods-12" className="scroll-mt-[123px] md:scroll-mt-[132px] lg:scroll-mt-[148px] relative pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <m.div
             initial={{ opacity: 0, y: 24 }}
@@ -2760,13 +2760,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           >
             <div className="flex flex-col md:flex-row items-center justify-center gap-3 mb-4 sm:mb-6">
               <div className={`hidden md:block w-12 h-px ${isDark ? 'bg-white/20' : 'bg-[#474747]/20'}`} />
-              <div className={`text-xs sm:text-sm font-bold tracking-normal ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
+              <div className={`text-xs sm:text-sm font-semibold tracking-normal ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
                 Compromiso agenda 2030 de la ONU
               </div>
               <div className={`hidden md:block w-12 h-px ${isDark ? 'bg-white/20' : 'bg-[#474747]/20'}`} />
             </div>
 
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 sm:mb-4 md:mb-6 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-3 sm:mb-4 md:mb-6 ${tp}`}>
               Impactamos el <span className={`text-transparent bg-clip-text bg-linear-to-r/srgb ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>Objetivo 12:</span> <br className="hidden md:block" />
               <span className={`text-transparent bg-clip-text bg-linear-to-r/srgb ${isDark ? 'from-white via-[#BF8D2C] to-[#BF8D2C]' : 'from-[#474747] via-[#BF8D2C] to-[#BF8D2C]'}`}>
                 Producción y consumo responsables
@@ -2850,11 +2850,11 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                         >
                           <col.Icon size={18} className={`${col.textColor} transition-transform duration-300 group-hover:scale-125`} />
                         </m.div>
-                        <span className={`text-xs sm:text-sm font-bold tracking-normal ${col.textColor}`}>
+                        <span className={`text-sm sm:text-base font-semibold tracking-normal ${col.textColor}`}>
                           {col.tag}
                         </span>
                       </div>
-                      <h3 className={`text-lg sm:text-lg md:text-lg lg:text-xl font-black leading-tight ${tp} sm:leading-[1.75rem] md:leading-[1.75rem] lg:leading-[1.75rem]`}>
+                      <h3 className={`text-xl font-semibold leading-snug ${tp}`}>
                         {col.titulo}
                       </h3>
                     </div>
@@ -2866,7 +2866,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
                   <div className={`pt-4 border-t flex flex-col gap-2 relative z-10 border-light`}>
                     {col.puntos.map((pt, pIdx) => (
-                      <div key={pIdx} className="flex items-center gap-3 text-sm sm:text-base font-semibold">
+                      <div key={pIdx} className="flex items-center gap-3 text-[13px] sm:text-[15px] font-semibold">
                         <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${col.glowColor}`} />
                         <span className={isDark ? 'text-white/80' : 'text-[#474747]'}>{pt}</span>
                       </div>
@@ -2880,7 +2880,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 9 - FAQ (AL FINAL) ─────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
-      <section id="faq" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
+      <section id="faq" className="scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
         <m.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2889,7 +2889,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto"
         >
           <div className="mb-6 sm:mb-8 text-center">
-            <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-2 md:mb-3 lg:mb-4 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
+            <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight mb-2 md:mb-3 lg:mb-4 ${tp}`}>
               Preguntas frecuentes
             </h2>
             <p className={`text-sm sm:text-base md:text-base lg:text-base font-medium ${ts}`}>Todo lo que necesitas saber para sustentar el impacto de tus productos sin greenwashing.</p>
@@ -2902,7 +2902,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       </section>
 
       {/* ── SECCIÓN 10 - CTA FINAL ─────────────────────────────────────────── */}
-      <section id="cta-final" style={{ contentVisibility: 'auto' }} className="scroll-mt-28 pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
+      <section id="cta-final" className="scroll-mt-[140px] md:scroll-mt-[148px] lg:scroll-mt-[156px] pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
         <div className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto">
           <m.div
             initial={{ opacity: 0, y: 20 }}
@@ -2946,16 +2946,15 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               <p className={`text-sm sm:text-base font-semibold mb-3 md:mb-4 text-center ${isDark ? 'text-white/80' : 'text-[#474747]/90'}`}>
                 Software ClimaTech de trazabilidad corporativa.
               </p>
-              <h2 className={`text-2xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight mb-3 md:mb-4 lg:mb-6 leading-snug ${tp} sm:leading-[2rem] md:leading-[2.25rem] lg:leading-[2.5rem]`}>
-                Estructura tus reportes de sostenibilidad e impacto ambiental <br className="hidden sm:block" />
-                con datos claros
+              <h2 className={`text-[28px] md:text-[30px] lg:text-[32px] font-semibold leading-[30px] md:leading-[32px] lg:leading-[34px] tracking-tight text-balance mb-3 md:mb-4 lg:mb-6 ${tp}`}>
+                Estructura tus reportes de sostenibilidad e impacto ambiental con datos claros
               </h2>
               <p className={`text-xs sm:text-base md:text-sm lg:text-base font-medium mb-6 md:mb-8 lg:mb-10 max-w-lg mx-auto glass-subtitle ${ts}`}>
                 Calcula tus estimaciones ambientales, genera Pasaportes Digitales con código QR y respalda tus iniciativas de sostenibilidad con fundamentos técnicos.
               </p>
               <Link
                 href="/registro"
-                className={`animate-shimmer group inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-bold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
+                className={`animate-shimmer group inline-flex items-center justify-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 ${
                   isDark 
                     ? 'bg-[#D6F391] text-[#474747] hover:opacity-90 shadow-[0_8px_32px_rgba(214,243,145,0.3)]' 
                     : 'bg-[#00827C] text-white hover:bg-[#006B66] shadow-[0_8px_32px_rgba(0,130,124,0.35)]'
@@ -2978,7 +2977,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       >
         {/* Botón WhatsApp (Latente sutil con tooltip) */}
         <div className="group relative flex items-center justify-end pointer-events-auto">
-          <span className="pointer-events-none absolute right-[calc(100%+12px)] opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1.5 group-hover:translate-x-0 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-lg backdrop-blur-md border bg-white/95 dark:bg-[#252525]/95 border-emerald-500/20 text-[#25D366] dark:text-emerald-400">
+          <span className="pointer-events-none absolute right-[calc(100%+12px)] opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1.5 group-hover:translate-x-0 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-lg backdrop-blur-md border bg-white/95 dark:bg-[#474747]/95 border-emerald-500/20 text-[#25D366] dark:text-emerald-400">
             Hablemos por WhatsApp
           </span>
           <a
@@ -3000,7 +2999,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
         {/* Botón Te llamamos (Círculo sutil debajo de WhatsApp con tooltip) */}
         <div className="group relative flex items-center justify-end pointer-events-auto">
-          <span className="pointer-events-none absolute right-[calc(100%+12px)] opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1.5 group-hover:translate-x-0 px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap shadow-lg backdrop-blur-md border bg-white/95 dark:bg-[#252525]/95 border-[#00827C]/20 dark:border-white/15 text-[#00827C] dark:text-[#D6F391]">
+          <span className="pointer-events-none absolute right-[calc(100%+12px)] opacity-0 group-hover:opacity-100 transition-all duration-200 translate-x-1.5 group-hover:translate-x-0 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shadow-lg backdrop-blur-md border bg-white/95 dark:bg-[#474747]/95 border-[#00827C]/20 dark:border-white/15 text-[#00827C] dark:text-[#D6F391]">
             Te llamamos
           </span>
           <button
@@ -3010,7 +3009,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             }}
             className={`relative flex items-center justify-center w-[52px] h-[52px] sm:w-[56px] sm:h-[56px] rounded-full shadow-lg backdrop-blur-md border transition-all duration-300 hover:scale-105 active:scale-95 ${
               isDark
-                ? 'bg-[#2E2E2E]/90 hover:bg-[#383838] border-[#D6F391]/35 text-[#D6F391] shadow-black/40'
+                ? 'bg-[#525252]/90 hover:bg-[#5A5A5A] border-[#D6F391]/35 text-[#D6F391] shadow-[#474747]/40'
                 : 'bg-white/95 hover:bg-primary border-[#00827C]/30 text-[#00827C] shadow-[0_8px_20px_rgba(0,130,124,0.12)]'
             }`}
             aria-label="Te llamamos"
@@ -3033,7 +3032,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => setContactModalOpen(false)}
               className={`fixed inset-0 backdrop-blur-md transition-colors duration-300 ${
-                isDark ? 'bg-[#121212]/70' : 'bg-white/70'
+                isDark ? 'bg-[#474747]/70' : 'bg-white/70'
               }`}
             />
 
@@ -3045,7 +3044,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
               className={`relative w-full max-w-lg p-6 sm:p-8 rounded-4xl shadow-2xl z-10 my-auto overflow-hidden border backdrop-blur-xl transition-colors duration-300 ${
                 isDark
-                  ? 'bg-[#1E1E1E] border-white/10 text-white shadow-black/80'
+                  ? 'bg-[#525252] border-white/10 text-white shadow-[#474747]/80'
                   : 'bg-primary border-[#00827C]/15 text-[#474747] shadow-[0_24px_60px_rgba(0,130,124,0.15)]'
               }`}
             >
@@ -3063,13 +3062,13 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               {/* Encabezado del modal orientado a conversión */}
               <div className="mb-5 text-center pr-6">
                 {selectedPlan && (
-                  <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-3 ${
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mb-3 ${
                     isDark ? 'bg-[#D6F391]/15 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'
                   }`}>
                     <Headset size={14} /> Plan {selectedPlan}
                   </div>
                 )}
-                <h3 className="text-2xl sm:text-2xl font-black tracking-tight mb-2">
+                <h3 className="text-xl sm:text-2xl font-normal leading-snug tracking-tight mb-2">
                   {selectedPlan ? `Comienza con tu plan ${selectedPlan}` : 'Empieza a medir tu impacto hoy'}
                 </h3>
                 <p className={`text-sm sm:text-base font-medium ${ts}`}>

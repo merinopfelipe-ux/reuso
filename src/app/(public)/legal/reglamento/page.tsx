@@ -8,7 +8,7 @@ const T = {
     titulo: 'Reglamento de Uso',
     breadcrumbLabel: 'Reglamento de Uso',
     resumen:
-      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y estimar el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Prohibimos el uso de estos informes para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo bajo tu propia responsabilidad. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
+      'Al usar la calculadora aceptas este reglamento. Lo más importante: solo puedes usar la plataforma para calcular y estimar el CO₂ que evitas al reutilizar objetos. No puedes copiar, replicar ni extraer la metodología. Tus datos están protegidos. Prohibimos el uso de estos informes para auditorías ambientales formales o certificaciones de carbono, salvo bajo tu propia responsabilidad. Si incumples, Grupo MLP S.A.S. puede suspender tu acceso de forma inmediata.',
     secciones: [
       { id: 'definiciones', label: 'Definiciones' },
       { id: 'aceptacion', label: 'Aceptación' },
@@ -55,9 +55,8 @@ const T = {
       'La Calculadora de Reúso es una plataforma en línea que te permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en la plataforma.',
     servicio_p2_pre: 'Entregamos todos los resultados de la plataforma bajo una ',
     servicio_p2_bold1: 'estimación',
-    servicio_p2_mid: ' técnica referencial basada en factores de emisión reconocidos internacionalmente. Cada informe posee alcance ',
-    servicio_p2_bold2: 'estimativo',
-    servicio_p2_post: ' para orientar tu comunicación ambiental. Este reglamento prohíbe expresamente emplear los cálculos e informes para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo que el usuario los utilice bajo su propia y exclusiva responsabilidad.',
+    servicio_p2_mid: ' técnica referencial basada en factores de emisión reconocidos internacionalmente, para orientar tu comunicación ambiental.',
+    servicio_p2_post: ' Este reglamento prohíbe expresamente emplear los cálculos e informes para auditorías ambientales formales o certificaciones de carbono, salvo que el usuario los utilice bajo su propia y exclusiva responsabilidad.',
     h_cuenta: 'Creación de cuenta',
     cuenta_p:
       'Puedes registrarte como persona natural o como organización. Las organizaciones designan un administrador que puede invitar a otros usuarios mediante enlace de invitación. Asumes la responsabilidad sobre la veracidad de la información suministrada y sobre la confidencialidad de tus credenciales.',
@@ -85,7 +84,7 @@ const T = {
     restriccion_8:
       'Realizar capturas de pantalla masivas, enlazamiento (linking) o reproducción de contenidos sin autorización escrita de Grupo MLP S.A.S.',
     restriccion_9:
-      'Emplear los cálculos o reportes de la plataforma para auditorías ambientales formales o certificaciones de carbono obligatorias, salvo bajo tu propia y exclusiva responsabilidad.',
+      'Emplear los cálculos o reportes de la plataforma para auditorías ambientales formales o certificaciones de carbono, salvo bajo tu propia y exclusiva responsabilidad.',
     h_licencia: 'Licencia de uso',
     licencia_p:
       'Grupo MLP S.A.S. te otorga una licencia limitada, personal, intransferible y revocable para acceder y usar la plataforma conforme a este reglamento. No adquieres ningún derecho sobre el código fuente, diseño, metodología de cálculo, marcas ni ningún otro elemento de la plataforma.',
@@ -97,9 +96,8 @@ const T = {
     h_responsabilidad: 'Limitación de responsabilidad',
     responsabilidad_p_pre: 'Grupo MLP S.A.S. declina toda responsabilidad por daños directos, indirectos o consecuentes derivados del uso o la imposibilidad de uso de la plataforma. Presentamos cada cálculo de impacto ambiental como una ',
     responsabilidad_p_bold1: 'estimación',
-    responsabilidad_p_mid: ' técnica basada en factores reconocidos internacionalmente. Entregamos todos los resultados con carácter ',
-    responsabilidad_p_bold2: 'estimativo',
-    responsabilidad_p_post: ' referencial. Prohibimos expresamente su empleo en auditorías ambientales formales o certificaciones de carbono obligatorias. Si decides utilizarlos para tales fines, asumes de forma personal y exclusiva la totalidad del riesgo, exonerando a Grupo MLP S.A.S. de cualquier responsabilidad.',
+    responsabilidad_p_mid: ' técnica referencial basada en factores reconocidos internacionalmente.',
+    responsabilidad_p_post: ' Prohibimos expresamente su empleo en auditorías ambientales formales o certificaciones de carbono. Si decides utilizarlos para tales fines, asumes de forma personal y exclusiva la totalidad del riesgo, exonerando a Grupo MLP S.A.S. de cualquier responsabilidad.',
     h_ley: 'Ley aplicable y resolución de controversias',
     ley_p1:
       'Este reglamento se rige por las leyes de la República de Colombia. Cumple también con el Reglamento General de Protección de Datos (RGPD) de la Unión Europea, la Ley de Privacidad del Consumidor de California (CCPA) y la Ley 1581 de 2012 de Colombia. Ante cualquier controversia, las partes agotan primero una instancia de negociación directa y, de persistir la controversia, se someten al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
@@ -123,7 +121,7 @@ const T = {
     titulo: 'Terms of Use',
     breadcrumbLabel: 'Terms of Use',
     resumen:
-      'By using the calculator you accept these terms. Most importantly: you may only use the platform to calculate and estimate the CO₂ you avoid by reusing objects. You may not copy, replicate, or extract the methodology. Your data is protected. We prohibit using these reports for formal environmental audits or mandatory carbon certifications, except under your own responsibility. If you violate these terms, Grupo MLP S.A.S. may suspend your access immediately.',
+      'By using the calculator you accept these terms. Most importantly: you may only use the platform to calculate and estimate the CO₂ you avoid by reusing objects. You may not copy, replicate, or extract the methodology. Your data is protected. We prohibit using these reports for formal environmental audits or carbon certifications, except under your own responsibility. If you violate these terms, Grupo MLP S.A.S. may suspend your access immediately.',
     secciones: [
       { id: 'definiciones', label: 'Definitions' },
       { id: 'aceptacion', label: 'Acceptance' },
@@ -170,9 +168,8 @@ const T = {
       'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the equivalent CO₂ avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable on the platform.',
     servicio_p2_pre: 'We deliver all platform results as a technical reference ',
     servicio_p2_bold1: 'estimation',
-    servicio_p2_mid: ' based on internationally recognised emission factors. Each report carries an ',
-    servicio_p2_bold2: 'estimative',
-    servicio_p2_post: ' scope to guide your environmental communication. These regulations strictly prohibit using these calculations and reports for formal environmental audits or mandatory carbon certifications, unless the user does so under their own sole responsibility.',
+    servicio_p2_mid: ' based on internationally recognised emission factors, to guide your environmental communication.',
+    servicio_p2_post: ' These regulations strictly prohibit using these calculations and reports for formal environmental audits or carbon certifications, unless the user does so under their own sole responsibility.',
     h_cuenta: 'Account creation',
     cuenta_p:
       'You can register as an individual or as an organisation. Organisations designate an administrator who can invite other users via an invitation link. You are responsible for the accuracy of the information you provide and for keeping your credentials confidential.',
@@ -199,7 +196,7 @@ const T = {
     restriccion_8:
       'Taking mass screenshots, linking, or reproducing content without written authorisation from Grupo MLP S.A.S.',
     restriccion_9:
-      'Using platform calculations or reports for formal environmental audits or mandatory carbon certifications, except under the user’s sole and exclusive responsibility.',
+      'Using platform calculations or reports for formal environmental audits or carbon certifications, except under the user’s sole and exclusive responsibility.',
     h_licencia: 'Use license',
     licencia_p:
       'Grupo MLP S.A.S. grants you a limited, personal, non-transferable, and revocable licence to access and use the platform in accordance with these terms. You do not acquire any rights over the source code, design, calculation methodology, trademarks, or any other element of the platform.',
@@ -211,9 +208,8 @@ const T = {
     h_responsabilidad: 'Limitation of liability',
     responsabilidad_p_pre: 'Grupo MLP S.A.S. disclaims all liability for direct, indirect, or consequential damages arising from the use or inability to use the platform. We present each environmental calculation as a technical reference ',
     responsabilidad_p_bold1: 'estimation',
-    responsabilidad_p_mid: ' based on international factors. We deliver all results with an ',
-    responsabilidad_p_bold2: 'estimative',
-    responsabilidad_p_post: ' character. We explicitly prohibit their use in official environmental audits or mandatory carbon certifications. If you decide to use them for such purposes, you assume total risk exclusively, releasing Grupo MLP S.A.S. from any liability.',
+    responsabilidad_p_mid: ' based on international factors.',
+    responsabilidad_p_post: ' We explicitly prohibit their use in official environmental audits or carbon certifications. If you decide to use them for such purposes, you assume total risk exclusively, releasing Grupo MLP S.A.S. from any liability.',
     h_ley: 'Applicable law and dispute resolution',
     ley_p1:
       'These terms are governed by the laws of the Republic of Colombia. They also comply with the General Data Protection Regulation (GDPR) of the European Union, the California Consumer Privacy Act (CCPA), and Law 1581 of 2012 of Colombia. In the event of a dispute, the parties shall first attempt direct negotiation and, if unresolved, submit to the Arbitration Tribunal of the Medellín Conciliation, Arbitration and Mediation Centre.',
@@ -316,7 +312,6 @@ export default function ReglamentoPage() {
         {t.servicio_p2_pre}
         <strong>{t.servicio_p2_bold1}</strong>
         {t.servicio_p2_mid}
-        <strong>{t.servicio_p2_bold2}</strong>
         {t.servicio_p2_post}
       </p>
 
@@ -375,7 +370,6 @@ export default function ReglamentoPage() {
         {t.responsabilidad_p_pre}
         <strong>{t.responsabilidad_p_bold1}</strong>
         {t.responsabilidad_p_mid}
-        <strong>{t.responsabilidad_p_bold2}</strong>
         {t.responsabilidad_p_post}
       </p>
 

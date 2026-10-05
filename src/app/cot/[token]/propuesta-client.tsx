@@ -1456,7 +1456,7 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
             </div>
 
             <p className="text-center sm:text-left text-[11px] leading-relaxed mt-5 pt-4 border-t border-(--border) opacity-70 px-2 sm:px-4">
-              Los valores económicos comparativos reflejan una <strong>estimación</strong> referencial de mercado. Presentamos cada cifra con carácter <strong>estimativo</strong> para ilustrar tu ahorro proyectado.
+              Los valores económicos comparativos reflejan una <strong>estimación</strong> referencial de mercado. Presentamos cada cifra para ilustrar tu ahorro proyectado.
             </p>
           </div>
         </div>

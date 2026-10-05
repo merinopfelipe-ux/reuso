@@ -26,6 +26,7 @@ Si vas a documentar un hecho nuevo del negocio/diseño/seguridad, escríbelo en 
 **Regla crítica de contraste:** fondo pistacho → texto SIEMPRE `#474747`. Prohibido texto blanco sobre pistacho.
 **Antes de cambiar un hex en más de 2 archivos**, el usuario debe escribir el valor nuevo explícitamente en su mensaje. Si parece "no autorizado" → preguntar, nunca asumir.
 **Fondos siempre planos:** día `#FFFFFF`, noche `#474747`. Prohibido gradiente/blob/glow como fondo de página completa (sí permitido dentro de cards/modales).
+**Día o noche lo decide SIEMPRE el dispositivo** (`prefers-color-scheme`, en vivo): sin botón de tema, sin preferencia guardada. `ThemeToggle` devuelve `null` a propósito.
 
 ## NOMBRE DEL PRODUCTO
 Es **Calculadora de Reúso**, nunca solo "Reúso" (UI, correos, commits, skills). Excepción técnica: slugs de URL y variables de código.

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Search as MagnifyingGlass, Sun, Moon, X, ChevronDown as CaretDown, Building2 as Buildings, Headset, Calculator, Sprout, BadgeDollarSign } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, X, ChevronDown as CaretDown, Building2 as Buildings, Headset, Calculator, Sprout, BadgeDollarSign } from '@/components/ui/icons'
 
 export interface MenuItem {
   name: string
@@ -32,7 +32,6 @@ interface LandingHeaderProps {
   logoHref?: string
   showSearch?: boolean
   isDark?: boolean
-  onToggleDark?: () => void
   onContactClick?: () => void
 }
 
@@ -43,7 +42,6 @@ export function LandingHeader({
   logoHref = '/',
   showSearch = false,
   isDark: propIsDark,
-  onToggleDark,
   onContactClick
 }: LandingHeaderProps) {
   const [localIsDark, setLocalIsDark] = useState(false)
@@ -99,17 +97,6 @@ export function LandingHeader({
     }
   }, [])
 
-  const toggleDark = () => {
-    if (onToggleDark) {
-      onToggleDark()
-    } else {
-      const next = !isDark
-      setLocalIsDark(next)
-      document.documentElement.setAttribute('data-theme', next ? 'dark' : 'light')
-      localStorage.setItem('theme', next ? 'dark' : 'light')
-      localStorage.setItem('reuso-theme', next ? 'dark' : 'light')
-    }
-  }
 
   // Eliminado: if (!mounted) return null para permitir SSR del header y pre-carga del logo con priority
   const headerStyle: React.CSSProperties = {
@@ -217,11 +204,7 @@ export function LandingHeader({
               >
                 <Headset size={18} strokeWidth={2.2} />
               </button>
-            ) : (
-              <button aria-label="Cambiar tema" onClick={toggleDark} className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all border shadow-xs hover-rotate-180 hover-press ${isDark ? 'bg-[#D6F391] text-[#474747] border-transparent' : 'bg-white/40 border-white/50 hover:bg-[#00827C]/10'}`}>
-                {isDark ? <Sun size={16} strokeWidth={2.5} /> : <Moon size={16} strokeWidth={2.5} />}
-              </button>
-            )}
+            ) : null}
             {showSearch && (
               <button
                 aria-label={searchOpen ? "Cerrar búsqueda" : "Abrir búsqueda"}
@@ -289,7 +272,7 @@ export function LandingHeader({
                         }
                       }}
                     >
-                      <span className={`text-xs font-bold leading-snug line-clamp-1`}>{r.title}</span>
+                      <span className={`text-xs font-semibold leading-snug line-clamp-1`}>{r.title}</span>
                     </a>
                   ))}
                   {filteredResults.length === 0 && <div className="col-span-2 px-4 py-8 text-center text-sm opacity-50">No hay coincidencias para tu búsqueda</div>}
@@ -413,7 +396,7 @@ export function LandingHeader({
                       }
                     }
                   }}
-                  className={`block px-4 py-2.5 rounded-xl text-xs font-bold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/80 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]  hover:text-[#00827C]'}`}
+                  className={`block px-4 py-2.5 rounded-xl text-xs font-semibold tracking-tight transition-colors cursor-pointer ${isDark ? 'text-white/80 hover:bg-white/10 hover:text-[#D6F391]' : 'text-[#474747]  hover:text-[#00827C]'}`}
                 >
                   {item.name}
                 </a>

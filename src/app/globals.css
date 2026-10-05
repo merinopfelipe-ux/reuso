@@ -714,7 +714,7 @@ input[type="number"] {
 
 
 /* ─── ANIMACIONES DE LANDING PAGE MOVIDAS DESDE jsx global ─── */
-html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+html { scroll-behavior: smooth; }
 @keyframes glassStatIn {
   from { opacity: 0; transform: translateY(16px) scale(0.96); filter: blur(4px); }
   to   { opacity: 1; transform: translateY(0) scale(1);       filter: blur(0); }

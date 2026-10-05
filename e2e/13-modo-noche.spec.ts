@@ -1,12 +1,11 @@
 import { test, expect, Page } from './fixtures'
 
-// El toggle real es <ThemeToggle> (src/components/theme-toggle.tsx),
-// aria-label "Cambiar a modo noche" / "Cambiar a modo día" — igual en
-// todas las páginas autenticadas. Nunca usar
-// document.documentElement.setAttribute a mano: no dispara el mismo efecto
-// que un clic real (lección ya aprendida hoy con landing-header).
+// Desde 2026-10-04 no hay botón de tema: día o noche lo decide SIEMPRE la
+// configuración del dispositivo (script del layout raíz, que escucha cambios
+// en vivo). Aquí se simula exactamente eso: el dispositivo pasa a oscuro.
+// Nunca usar document.documentElement.setAttribute a mano.
 async function activarTemaOscuro(page: Page) {
-  await page.getByLabel('Cambiar a modo noche').click()
+  await page.emulateMedia({ colorScheme: 'dark' })
   await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'dark', { timeout: 5_000 })
 }
 
@@ -40,25 +39,18 @@ test.describe('Modo Noche', () => {
       await sinTextoInvisible(page, 'body')
     })
 
-    test('dark-07 - toggle de modo noche persiste tras cerrar y reabrir', async ({ page, context }) => {
-      // Bug real corregido 2026-09-02: /settings aplica de forma asíncrona
-      // el tema_preferido guardado en el perfil (GET /api/profile) — si el
-      // toggle del header se clickea mientras esa petición sigue en curso,
-      // el valor recién elegido quedaba pisado por el de la base de datos.
-      // Se espera esa respuesta antes de tocar el toggle para no competir
-      // con ella (además de la corrección ya aplicada en la página misma).
-      const respuestaPerfil = page.waitForResponse('/api/profile', { timeout: 15_000 })
-      await page.goto('/settings')
+    test('dark-07 - el tema sigue al dispositivo e ignora preferencias guardadas', async ({ page }) => {
+      // Una elección vieja guardada en el navegador ya no manda: se borra y
+      // se aplica la configuración del dispositivo, al cargar y en vivo.
+      await page.emulateMedia({ colorScheme: 'light' })
+      await page.addInitScript(() => { try { localStorage.setItem('theme', 'dark') } catch {} })
+      await page.goto('/dashboard')
       await page.waitForLoadState('load')
-      await respuestaPerfil
+      expect(await page.evaluate(() => document.documentElement.getAttribute('data-theme'))).toBe('light')
       await activarTemaOscuro(page)
-      await page.waitForTimeout(500)
-
-      const nuevaPagina = await context.newPage()
-      await nuevaPagina.goto('/dashboard')
-      await nuevaPagina.waitForLoadState('load')
-      const tema = await nuevaPagina.evaluate(() => document.documentElement.getAttribute('data-theme'))
-      expect(tema).toBe('dark')
+      await page.emulateMedia({ colorScheme: 'light' })
+      await page.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light', { timeout: 5_000 })
+      expect(await page.getByLabel(/Cambiar a modo|Cambiar tema/).count()).toBe(0)
     })
   })
 
@@ -107,9 +99,8 @@ test.describe('Modo Noche', () => {
       const errores: string[] = []
       page.on('pageerror', (e) => errores.push(e.message))
 
-      const boton = page.locator('button[aria-label^="Cambiar a modo"]')
       for (let i = 0; i < 10; i++) {
-        await boton.click()
+        await page.emulateMedia({ colorScheme: i % 2 === 0 ? 'dark' : 'light' })
         await page.waitForTimeout(80)
       }
       await page.waitForTimeout(500)

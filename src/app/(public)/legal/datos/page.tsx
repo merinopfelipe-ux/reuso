@@ -33,7 +33,7 @@ const T = {
       'Grupo MLP S.A.S. establece los criterios para el tratamiento de datos personales, que comprende toda operación sobre datos: recolección, almacenamiento, uso, circulación y supresión. La empresa puede actuar como responsable o encargado del tratamiento según el caso.',
     alcanceTitle: 'Alcance',
     alcance:
-      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de medición de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso, bajo una estimación técnica con carácter estimativo referencial.',
+      'Esta política aplica a los datos de personas naturales almacenados en las bases de datos administradas por Grupo MLP S.A.S. e incluye todas las áreas de la empresa que involucren datos de carácter personal. Grupo MLP S.A.S. ofrece servicios de medición de impacto ambiental por reúso de objetos a través de la plataforma Calculadora de Reúso, bajo una estimación técnica referencial.',
     destinatariosTitle: 'Destinatarios',
     destinatariosIntro: 'Esta política aplica a quienes mantienen cualquier relación con Grupo MLP S.A.S.:',
     destinatarios: [
@@ -88,7 +88,7 @@ const T = {
     finalidades: [
       'Celebración y ejecución de contratos de servicio.',
       'Creación y gestión de accesos en la plataforma.',
-      'Elaboración y emisión de reportes ambientales bajo una estimación técnica con alcance estimativo.',
+      'Elaboración y emisión de reportes ambientales bajo una estimación técnica referencial.',
       'Elaboración y envío de facturas y documentos comerciales.',
       'Realización de encuestas y seguimiento de calidad del servicio.',
       'Envío de comunicaciones relacionadas con el servicio contratado.',
@@ -172,7 +172,7 @@ const T = {
       'Grupo MLP S.A.S. establishes the criteria for personal data processing, which covers all data operations: collection, storage, use, circulation and deletion. The company may act as data controller or data processor depending on the case.',
     alcanceTitle: 'Scope',
     alcance:
-      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact measurement services for object reuse through the Reuse Calculator platform under a technical estimation with an estimative reference scope.',
+      'This policy applies to personal data stored in the databases managed by Grupo MLP S.A.S. and covers all areas of the company that involve personal data. Grupo MLP S.A.S. offers environmental impact measurement services for object reuse through the Reuse Calculator platform under a technical reference estimation.',
     destinatariosTitle: 'Recipients',
     destinatariosIntro: 'This policy applies to anyone who has any relationship with Grupo MLP S.A.S.:',
     destinatarios: [
@@ -227,7 +227,7 @@ const T = {
     finalidades: [
       'Entering into and performing service contracts.',
       'Creating and managing platform access.',
-      'Preparing and issuing environmental reports under a technical estimation with an estimative scope.',
+      'Preparing and issuing environmental reports under a technical reference estimation.',
       'Preparing and sending invoices and commercial documents.',
       'Conducting surveys and monitoring service quality.',
       'Sending communications related to the contracted service.',

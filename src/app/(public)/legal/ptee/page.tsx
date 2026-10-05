@@ -67,7 +67,7 @@ const T = {
       'Las invitaciones a eventos o almuerzos de trabajo deben ser transparentes, razonables y contar con la aprobación previa de la empresa.',
     integridadTitle: 'Cálculos de impacto honestos y transparentes',
     integridad1:
-      'El corazón de la Calculadora de Reúso es la verdad metodológica. Prohibimos simular datos o alterar fórmulas para distorsionar la estimación del impacto ambiental de una empresa. Entregamos cada cálculo con carácter estimativo referencial y protegemos su autenticidad.',
+      'El corazón de la Calculadora de Reúso es la verdad metodológica. Prohibimos simular datos o alterar fórmulas para distorsionar la estimación del impacto ambiental de una empresa. Entregamos cada cálculo como referencia y protegemos su autenticidad.',
     integridad2:
       'Protegemos cada informe con sellos de seguridad de cadena criptográfica y códigos QR verificables en tiempo real en calculadoradereuso.com/verificar.',
     debidaTitle: 'Conozcamos bien a las empresas con las que trabajamos',
@@ -149,7 +149,7 @@ const T = {
       'Invitations to industry events or meals must remain reasonable, transparent, and approved in advance.',
     integridadTitle: 'Honest and transparent impact calculations',
     integridad1:
-      'Methodological truth is the core of Calculadora de Reúso. We forbid altering formulas or fake data to distort a company’s environmental impact estimation. We deliver every calculation with an estimative reference scope and protect its authenticity.',
+      'Methodological truth is the core of Calculadora de Reúso. We forbid altering formulas or fake data to distort a company’s environmental impact estimation. We deliver every calculation as a reference and protect its authenticity.',
     integridad2:
       'We secure every report with tamper-proof digital seals and real-time QR verification at calculadoradereuso.com/verificar.',
     debidaTitle: 'Getting to know our business partners',

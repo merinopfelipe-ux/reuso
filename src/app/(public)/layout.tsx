@@ -6,8 +6,12 @@ import { EMAIL_CONTACTO_LEGAL } from '@/lib/constants/contacto'
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const fechaActualizacion = await getFechaActualizacionLegal()
 
+  // overflowX clip: el footer se dibuja en versión escritorio hasta que hidrata
+  // (isMobile empieza en false) y desbordaba a 556 px en celular. Ese desborde
+  // ensanchaba la página y desplazaba la barra móvil fija al hidratar (CLS 0.076).
+  // `clip` y no `hidden` para no romper los headers sticky de las legales.
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', overflowX: 'clip' }}>
       {/* Sin header global - cada página legal gestiona su propio header sticky */}
       <main style={{ flex: 1 }}>
         <ProteccionPublica>{children}</ProteccionPublica>

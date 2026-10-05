@@ -433,7 +433,7 @@ export default async function VerificarPage(props: PageProps) {
             {[
               'Los kilogramos de CO₂ eq y los litros de agua de este informe son la suma de los cálculos registrados por el titular durante el período indicado.',
               'Los factores de emisión provienen de fuentes públicas y trazables como ecoinvent, DEFRA y la Comisión Europea, detalladas en nuestra página de metodología.',
-              'Son resultados de carácter estimativo, no un reemplazo de auditorías ambientales formales ni de certificaciones de carbono obligatorias.',
+              'Son resultados de carácter estimativo, no un reemplazo de auditorías ambientales formales ni de certificaciones de carbono.',
             ].map((texto, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-brand)', marginTop: 6, flexShrink: 0 }} />
@@ -500,7 +500,7 @@ export default async function VerificarPage(props: PageProps) {
         <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--text-placeholder)', lineHeight: 1.7, maxWidth: 640, margin: '0 auto 40px' }}>
           Factores de emisión basados en ecoinvent, Humana PPP, DEFRA 2023 y la Comisión Europea.
           Presentamos todos los cálculos de la plataforma como una <strong>estimación</strong> técnica orientativa sobre el beneficio del reúso.
-          Cada resultado posee carácter <strong>estimativo</strong> y no reemplaza auditorías ambientales formales ni certificaciones de carbono obligatorias.
+          Cada resultado es referencial y no reemplaza auditorías ambientales formales ni certificaciones de carbono.
           Protegemos este documento con un sello de seguridad digital que permite detectar cualquier modificación posterior.
           Verificable de forma independiente en <strong style={{ color: 'var(--text-secondary)' }}>calculadoradereuso.com/verificar</strong>.
         </p>
