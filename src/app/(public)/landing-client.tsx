@@ -2724,7 +2724,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                       <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                       <span className={`text-xs sm:text-sm font-semibold ${tp}`}>Muestra de diagnóstico.</span>
                     </div>
-                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm ${isDark ? 'bg-white/10 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#006B66]'}`}>
                       Diagnóstico circular y ambiental.
                     </span>
                   </div>
@@ -2738,17 +2738,17 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                     <div className="grid grid-cols-2 gap-2">
                       <div className={`p-2.5 rounded-lg bg-hover`}>
                         <p className={`text-[10px] font-semibold tracking-wider mb-0.5 opacity-60 ${ts}`}>CO₂ evitado.</p>
-                        <p className="font-semibold text-[#38B98E]">85 kg CO₂e</p>
+                        <p className="font-semibold text-[#474747] dark:text-[#38B98E]">85 kg CO₂e</p>
                       </div>
                       <div className={`p-2.5 rounded-lg bg-hover`}>
                         <p className={`text-[10px] font-semibold tracking-wider mb-0.5 opacity-60 ${ts}`}>Agua ahorrada.</p>
-                        <p className="font-semibold text-[#59A6E4]">3.200 L</p>
+                        <p className="font-semibold text-[#474747] dark:text-[#59A6E4]">3.200 L</p>
                       </div>
                     </div>
 
                     <div className={`p-2 rounded-lg flex items-center justify-between text-[11px] ${isDark ? 'bg-white/3 text-white/70' : 'bg-[#00827C]/3 text-[#00827C]'}`}>
                       <span>Pasaporte digital con QR verificable.</span>
-                      <span className="font-semibold text-emerald-500 flex items-center gap-1">
+                      <span className="font-semibold text-[#006B66] dark:text-emerald-400 flex items-center gap-1">
                         <Check size={12} strokeWidth={3} /> Listo para compartir.
                       </span>
                     </div>
