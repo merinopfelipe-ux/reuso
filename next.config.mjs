@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Next 16 agrega en cada `next dev` un bloque en inglés al final de
+  // CLAUDE.md. Ese archivo es solo en español y con límite de líneas
+  // (ver su regla de cabecera), así que se apaga.
+  agentRules: false,
   // Migración de dominio (2026-09-05): reuso.lurdes.co sigue apuntando al
   // mismo proyecto de Vercel, así que en vez de servir la app ahí también,
   // cualquier visita a ese host redirige de forma permanente al dominio de
