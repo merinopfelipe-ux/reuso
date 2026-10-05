@@ -788,21 +788,21 @@ export function LeadsClient({
       </div>
 
       {/* ── Toolbar del Sistema de Diseño ── */}
-      <div className="flex flex-col md:flex-row md:items-center gap-3 justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-2.5 justify-between">
         {/* Lado izquierdo: Búsqueda y Filtros */}
-        <div className="flex items-center gap-2.5 flex-wrap flex-1">
+        <div className="flex items-center gap-2 flex-wrap lg:flex-nowrap flex-1 min-w-0">
           {/* Campo de búsqueda canónico */}
-          <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <div className="relative flex-1 sm:flex-none sm:w-52 lg:w-44 xl:w-56 min-w-[140px]">
             <MagnifyingGlass
               size={14}
               className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-placeholder) pointer-events-none"
             />
             <input
               type="text"
-              placeholder="Buscar por nombre, email, empresa..."
+              placeholder="Buscar contacto..."
               value={busqueda}
               onChange={e => setBusqueda(e.target.value)}
-              className="w-full pl-8.5 pr-8 py-2 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary) placeholder:text-(--text-placeholder) outline-hidden focus:border-brand transition-colors"
+              className="w-full pl-8.5 pr-8 py-1.5 rounded-xl border border-(--border) bg-(--bg-input) text-xs sm:text-[13px] text-(--text-primary) placeholder:text-(--text-placeholder) outline-hidden focus:border-brand transition-colors"
             />
             {busqueda && (
               <button
@@ -829,7 +829,7 @@ export function LeadsClient({
             onChange={v => setFiltroEstado(v as EstadoLead | '')}
             tamano="sm"
             placeholder="Estado"
-            className="w-40"
+            className="w-[134px] shrink-0"
           />
 
           {/* Filtro de Evento si existen eventos registrados */}
@@ -843,7 +843,7 @@ export function LeadsClient({
               onChange={v => setFiltroEvento(v)}
               tamano="sm"
               placeholder="Evento"
-              className="w-44"
+              className="w-[134px] shrink-0"
             />
           )}
 
@@ -856,7 +856,7 @@ export function LeadsClient({
                 setFiltroEvento('')
                 setBusqueda('')
               }}
-              className="text-xs font-semibold text-brand hover:underline px-2 cursor-pointer whitespace-nowrap"
+              className="text-xs font-semibold text-brand hover:underline px-1.5 cursor-pointer whitespace-nowrap shrink-0"
             >
               Restablecer
             </button>
@@ -864,13 +864,13 @@ export function LeadsClient({
         </div>
 
         {/* Lado derecho: Acciones primarias y herramientas (Importar, Exportar, Nuevo) */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
           {/* Botón de gestión de eventos desplegable */}
           <Button
             variant="secondary"
             size="sm"
             onClick={() => setMostrarGestorEventos(v => !v)}
-            className="gap-1.5"
+            className="gap-1.5 px-2.5 text-xs"
             title="Administrar eventos comerciales"
           >
             <Calendar size={13} />
@@ -888,7 +888,7 @@ export function LeadsClient({
               setContactosParseados([])
               setModalImportar(true)
             }}
-            className="gap-1.5"
+            className="gap-1.5 px-2.5 text-xs"
             title="Importar contactos desde Excel o CSV"
           >
             <Upload size={13} />
@@ -904,10 +904,11 @@ export function LeadsClient({
               ...(busqueda.trim() ? { search: busqueda.trim() } : {}),
             }).toString()}
             label="Exportar"
+            className="text-xs"
           />
 
           {/* Botón Nuevo contacto manual */}
-          <Button variant="primary" size="sm" onClick={abrirCrear} className="gap-1.5 shadow-2xs">
+          <Button variant="primary" size="sm" onClick={abrirCrear} className="gap-1.5 px-3 text-xs shadow-2xs">
             <Plus size={14} />
             <span>Nuevo contacto</span>
           </Button>
@@ -1054,7 +1055,7 @@ export function LeadsClient({
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
                   {/* Checkbox para seleccionar todos en la página actual */}
-                  <th className="px-3 py-2.5 w-10 text-center">
+                  <th className="px-1.5 py-2 w-8 text-center">
                     <button
                       type="button"
                       onClick={toggleSeleccionarTodos}
@@ -1062,34 +1063,34 @@ export function LeadsClient({
                       title={todosSeleccionados ? 'Deseleccionar todos en esta página' : 'Seleccionar todos en esta página'}
                     >
                       {todosSeleccionados ? (
-                        <SquareCheck size={18} className="text-brand" />
+                        <SquareCheck size={16} className="text-brand" />
                       ) : (
-                        <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
+                        <Square size={16} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
                       )}
                     </button>
                   </th>
-                  <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '130px', maxWidth: '160px' }}>
+                  <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '100px', maxWidth: '130px' }}>
                     Nombre
                   </SortTh>
-                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '120px', maxWidth: '150px' }}>
+                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '90px', maxWidth: '120px' }}>
                     Empresa
                   </SortTh>
-                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '220px' }}>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '170px', maxWidth: '200px' }}>
                     Contacto
                   </SortTh>
-                  <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '160px', maxWidth: '210px' }}>
+                  <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '110px', maxWidth: '140px' }}>
                     <div className="leading-tight">
                       <span>Interés</span>
-                      <span className="block text-[11px] font-normal opacity-85">/ Evento</span>
+                      <span className="block text-[10px] font-normal opacity-85">/ Evento</span>
                     </div>
                   </SortTh>
-                  <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', width: '110px' }}>
-                    Fecha y hora
+                  <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', width: '85px' }}>
+                    Fecha
                   </SortTh>
-                  <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', width: '130px' }}>
+                  <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', width: '100px' }}>
                     Estado
                   </SortTh>
-                  <th className="px-2 py-2.5 w-10 text-center" aria-label="Acciones" />
+                  <th className="px-1 py-2 w-8 text-center" aria-label="Acciones" />
                 </tr>
               </thead>
               <tbody>
@@ -1106,7 +1107,7 @@ export function LeadsClient({
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
                       {/* Checkbox de selección individual */}
-                      <td className="px-3 py-3 text-center align-top w-10" onClick={e => e.stopPropagation()}>
+                      <td className="px-1.5 py-2 text-center align-top w-8" onClick={e => e.stopPropagation()}>
                         <button
                           type="button"
                           onClick={() => toggleSeleccionado(lead.id)}
@@ -1114,45 +1115,45 @@ export function LeadsClient({
                           title={estaSeleccionado ? 'Deseleccionar prospecto' : 'Seleccionar prospecto'}
                         >
                           {estaSeleccionado ? (
-                            <SquareCheck size={18} className="text-brand" />
+                            <SquareCheck size={16} className="text-brand" />
                           ) : (
-                            <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
+                            <Square size={16} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
                           )}
                         </button>
                       </td>
 
-                      {/* Nombre completo (hasta 3 líneas) */}
+                      {/* Nombre completo */}
                       <td
-                        className="px-3.5 py-3 align-top"
+                        className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[160px] leading-tight break-words line-clamp-3 text-xs font-semibold text-(--text-primary)">
+                        <div className="max-w-[130px] leading-tight break-words line-clamp-3 text-xs font-semibold text-(--text-primary)">
                           {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
                         </div>
                       </td>
 
-                      {/* Empresa (hasta 3 líneas) */}
+                      {/* Empresa */}
                       <td
-                        className="px-3.5 py-3 align-top"
+                        className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[150px] leading-tight break-words line-clamp-3 text-xs text-(--text-secondary)">
+                        <div className="max-w-[120px] leading-tight break-words line-clamp-3 text-xs text-(--text-secondary)">
                           {lead.empresa || <span className="opacity-40">-</span>}
                         </div>
                       </td>
 
                       {/* Contacto (Email en un renglón sin partir + Teléfono / WhatsApp organizado) */}
                       <td
-                        className="px-3.5 py-3 align-top whitespace-nowrap"
+                        className="px-2 py-2 align-top whitespace-nowrap"
                         style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="flex flex-col gap-1 leading-tight text-xs text-(--text-secondary)">
+                        <div className="flex flex-col gap-1 leading-tight text-xs text-(--text-secondary) max-w-[200px]">
                           {lead.email ? (
                             <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                              <Envelope size={12} className="text-(--text-secondary) shrink-0" />
+                              <Envelope size={11} className="text-(--text-secondary) shrink-0" />
                               <a
                                 href={`mailto:${lead.email}`}
-                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium"
+                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium text-[11px]"
                               >
                                 {lead.email}
                               </a>
@@ -1164,10 +1165,10 @@ export function LeadsClient({
                               href={`https://wa.me/${lead.telefono.replace(/[^\d+]/g, '').replace(/^\+/, '')}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-(--text-secondary) hover:text-[#25D366] transition-colors"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap text-[11px] text-(--text-secondary) hover:text-brand transition-colors"
                               title="Abrir chat de WhatsApp con este prospecto"
                             >
-                              <WhatsappLogo size={13} className="text-[#25D366] shrink-0" color="#25D366" />
+                              <WhatsappLogo size={11} className="text-(--text-secondary) shrink-0" />
                               <span className="hover:underline">{lead.telefono}</span>
                             </a>
                           ) : null}
@@ -1176,21 +1177,21 @@ export function LeadsClient({
                         </div>
                       </td>
 
-                      {/* Interés / Evento organizado en 2-4 líneas sin ensanchar */}
+                      {/* Interés / Evento organizado en 2 líneas sin ensanchar */}
                       <td
-                        className="px-3.5 py-3 align-top text-xs"
+                        className="px-2 py-2 align-top text-xs"
                         style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[210px] flex flex-col leading-tight">
+                        <div className="max-w-[140px] flex flex-col leading-tight">
                           {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
-                            <span className="font-medium text-(--text-primary) break-words line-clamp-2" title={lead.interes}>
+                            <span className="font-medium text-(--text-primary) break-words line-clamp-2 text-[11px]" title={lead.interes}>
                               {lead.interes}
                             </span>
                           ) : null}
                           {lead.evento_nombre ? (
                             <span
-                              className={`text-(--text-secondary) text-[11px] break-words line-clamp-2 ${
-                                lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-1' : ''
+                              className={`text-(--text-secondary) text-[10.5px] break-words line-clamp-2 ${
+                                lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5' : ''
                               }`}
                               title={`Evento: ${lead.evento_nombre}`}
                             >
@@ -1204,18 +1205,18 @@ export function LeadsClient({
 
                       {/* Fecha y hora en dos líneas */}
                       <td
-                        className="px-3.5 py-3 whitespace-nowrap align-top text-xs w-[110px]"
+                        className="px-2 py-2 whitespace-nowrap align-top text-xs w-[85px]"
                         style={{ background: sort.col === 'created_at' ? 'var(--table-orden-activo)' : undefined }}
                       >
                         <div className="flex flex-col leading-tight">
-                          <span className="font-medium text-(--text-primary)">{dia}</span>
-                          <span className="text-(--text-secondary) text-[11px] mt-0.5">{hora}</span>
+                          <span className="font-medium text-(--text-primary) text-[11px]">{dia}</span>
+                          <span className="text-(--text-secondary) text-[10px] mt-0.5">{hora}</span>
                         </div>
                       </td>
 
                       {/* Selector de Estado Portal-based */}
                       <td
-                        className="px-3.5 py-3 whitespace-nowrap align-top w-[130px]"
+                        className="px-2 py-2 whitespace-nowrap align-top w-[100px]"
                         style={{ background: sort.col === 'estado' ? 'var(--table-orden-activo)' : undefined }}
                       >
                         <EstadoDropdownLead
@@ -1226,7 +1227,7 @@ export function LeadsClient({
                       </td>
 
                       {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
-                      <td className="px-2 py-3 text-center whitespace-nowrap align-top w-10">
+                      <td className="px-1 py-2 text-center whitespace-nowrap align-top w-8">
                         <MenuTresPuntosLead
                           tieneTelefono={Boolean(lead.telefono && lead.telefono.trim().length >= 7)}
                           onEditar={() => abrirEdicion(lead)}
@@ -1734,13 +1735,13 @@ function EstadoDropdownLead({
         disabled={cambiando}
         onClick={toggle}
         style={{ backgroundColor: cfg.bg, color: cfg.color, borderColor: cfg.border }}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-semibold cursor-pointer transition-all duration-150 hover:opacity-85 ${
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg border text-[11px] font-semibold cursor-pointer transition-all duration-150 hover:opacity-85 ${
           cambiando ? 'opacity-50 cursor-wait' : ''
         }`}
       >
         <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: cfg.dot }} />
-        <span>{cfg.label}</span>
-        <ChevronDown size={11} className={`transition-transform duration-200 ${abierto ? 'rotate-180' : ''}`} />
+        <span className="whitespace-nowrap">{cfg.label}</span>
+        <ChevronDown size={10} className={`transition-transform duration-200 shrink-0 ${abierto ? 'rotate-180' : ''}`} />
       </button>
 
       {abierto && coords && typeof document !== 'undefined' && createPortal(
@@ -1834,9 +1835,9 @@ function MenuTresPuntosLead({
         type="button"
         onClick={toggle}
         title="Acciones"
-        className="p-1.5 rounded-lg border border-transparent hover:border-(--border) hover:bg-(--bg-table-hover) inline-flex items-center justify-center text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
+        className="p-1 rounded-lg border border-transparent hover:border-(--border) hover:bg-(--bg-table-hover) inline-flex items-center justify-center text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
       >
-        <DotsThree size={18} />
+        <DotsThree size={16} />
       </button>
 
       {abierto && coords && typeof document !== 'undefined' && createPortal(
@@ -1884,8 +1885,7 @@ function MenuTresPuntosLead({
               >
                 <WhatsappLogo
                   size={13}
-                  className="text-[#25D366] shrink-0"
-                  color="#25D366"
+                  className="text-(--text-secondary) shrink-0"
                 />
                 <span>Enviar WhatsApp</span>
               </button>
