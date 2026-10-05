@@ -1170,17 +1170,7 @@ export function LeadsClient({
                               <WhatsappLogo size={13} className="text-[#25D366] shrink-0" color="#25D366" />
                               <span className="hover:underline">{lead.telefono}</span>
                             </a>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => abrirEdicion(lead)}
-                              className="inline-flex items-center gap-1 text-[11px] text-brand hover:underline font-medium cursor-pointer"
-                              title="Agregar número de WhatsApp para este prospecto (solo admin)"
-                            >
-                              <WhatsappLogo size={12} className="opacity-70 shrink-0" />
-                              <span>+ Agregar WhatsApp</span>
-                            </button>
-                          )}
+                          ) : null}
 
                           {!lead.email && !lead.telefono && <span className="opacity-40">-</span>}
                         </div>
@@ -1882,26 +1872,24 @@ function MenuTresPuntosLead({
               <span>Editar información</span>
             </button>
 
-            {/* Enviar o Agregar WhatsApp */}
-            <button
-              type="button"
-              onClick={() => {
-                setAbierto(false)
-                if (tieneTelefono) {
+            {/* Enviar WhatsApp (solo si tiene teléfono registrado) */}
+            {tieneTelefono && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAbierto(false)
                   onWhatsApp()
-                } else {
-                  onEditar()
-                }
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
-            >
-              <WhatsappLogo
-                size={13}
-                className={tieneTelefono ? 'text-[#25D366] shrink-0' : 'text-brand shrink-0'}
-                color={tieneTelefono ? '#25D366' : undefined}
-              />
-              <span>{tieneTelefono ? 'Enviar WhatsApp' : 'Agregar WhatsApp'}</span>
-            </button>
+                }}
+                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
+              >
+                <WhatsappLogo
+                  size={13}
+                  className="text-[#25D366] shrink-0"
+                  color="#25D366"
+                />
+                <span>Enviar WhatsApp</span>
+              </button>
+            )}
 
             <div className="h-px my-1 bg-(--border)" />
 
