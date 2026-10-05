@@ -168,25 +168,28 @@ setup('auth: empresa_admin', async ({ page }) => {
 })
 
 setup('auth: super_admin', async ({ page }) => {
+  setup.setTimeout(180_000)
   // Esta cuenta SÍ es real y permanente (tu identidad, merinop@me.com) —
   // nunca se crea ni se borra sola. La contraseña vive solo en .env.local.
   const password = process.env.TEST_SUPER_ADMIN_PASSWORD
   if (!password) throw new Error('Falta TEST_SUPER_ADMIN_PASSWORD en .env.local — ver e2e/auth.setup.ts')
 
-  await page.goto('/login')
-  await aceptarCookies(page)
-  // En CI (next dev en frío) la prueba puede escribir antes de que React
-  // hidrate el formulario, y al hidratar los campos quedan vacíos ("Completa
-  // el correo electrónico", CI del 2026-10-05). Se reescribe hasta confirmar.
+  // En CI (next dev en frío) React puede hidratar el formulario DESPUÉS de que
+  // la prueba escribe y vaciar los campos ("Completa el correo electrónico", CI
+  // del 2026-10-05), incluso tras confirmar los valores. Se repite el intento
+  // completo, recargando /login (el botón de términos se marca y desmarca con
+  // cada clic), hasta entrar a /admin.
   const email = process.env.TEST_SUPER_ADMIN_EMAIL ?? 'merinop@me.com'
   await expect(async () => {
+    await page.goto('/login')
+    await aceptarCookies(page)
+    await page.waitForLoadState('load')
     await page.locator('#email').fill(email)
     await page.locator('#password').fill(password)
-    await expect(page.locator('#email')).toHaveValue(email, { timeout: 1_000 })
-    await expect(page.locator('#password')).toHaveValue(password, { timeout: 1_000 })
-  }).toPass({ timeout: 30_000 })
-  await page.getByRole('button', { name: /aceptar términos legales/i }).click()
-  await page.getByRole('button', { name: /ingresar|sign in/i }).click()
-  await page.waitForURL(/\/admin/, { timeout: 75_000 })
+    await expect(page.locator('#email')).toHaveValue(email, { timeout: 2_000 })
+    await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page.getByRole('button', { name: /ingresar|sign in/i }).click()
+    await page.waitForURL(/\/admin/, { timeout: 25_000 })
+  }).toPass({ timeout: 150_000, intervals: [1_000, 3_000, 5_000] })
   await page.context().storageState({ path: `${AUTH_DIR}/super-admin.json` })
 })
