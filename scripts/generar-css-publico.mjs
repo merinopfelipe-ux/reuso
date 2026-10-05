@@ -14,7 +14,15 @@ const salida = path.resolve('src/app/estilos-publicos.generated.ts')
 async function generar() {
   const compilador = await compile(readFileSync(entrada, 'utf8'), { base: path.dirname(entrada), onDependency() {} })
   const scanner = new Scanner({ sources: compilador.sources.map((s) => ({ base: s.base, pattern: s.pattern, negated: s.negated })) })
-  const css = optimize(compilador.build(scanner.scan()), { minify: true }).code
+  let css = optimize(compilador.build(scanner.scan()), { minify: true }).code
+  // Open Sans va DENTRO del CSS público (recortada a Latin-1 y pesos 400-800,
+  // public/fonts/open-sans-publica.woff2): sin descarga aparte no hay cambio de
+  // fuente al cargar, así el título no salta en equipos sin Arial (CLS 0.191 en
+  // PageSpeed, 2026-10-05). La app sigue usando el archivo normal.
+  const fuente = readFileSync(path.resolve('public/fonts/open-sans-publica.woff2')).toString('base64')
+  const antes = css.length
+  css = css.replace(/url\(["']?\/fonts\/open-sans-latin\.woff2["']?\)/g, `url(data:font/woff2;base64,${fuente})`)
+  if (css.length === antes) throw new Error('No se encontró la @font-face de open-sans-latin.woff2 para incrustar')
   const anterior = (() => { try { return readFileSync(salida, 'utf8') } catch { return '' } })()
   const nuevo = `// ARCHIVO GENERADO por scripts/generar-css-publico.mjs a partir de src/app/publica.css. No editar a mano.\nexport const ESTILOS_PUBLICOS = ${JSON.stringify(css)}\n`
   if (anterior !== nuevo) writeFileSync(salida, nuevo)
