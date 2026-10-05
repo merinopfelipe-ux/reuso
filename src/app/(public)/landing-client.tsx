@@ -1647,7 +1647,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       />
 
       {/* ── SECCIÓN 1 - HERO ───────────────────────────────────────────────── */}
-      <section id="hero" className="min-h-[110vh] md:min-h-0 scroll-mt-28 pt-[105px] sm:pt-[136px] md:pt-[154px] lg:pt-[168px] pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6 transition-colors duration-300 flex items-start sm:items-center w-full">
+      <section id="hero" className="scroll-mt-28 pt-[105px] sm:pt-[136px] md:pt-[154px] lg:pt-[168px] pb-2 sm:pb-10 md:pb-12 px-4 sm:px-6 transition-colors duration-300 flex items-start sm:items-center w-full">
         <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center">
           {/* Texto izquierdo (Sin animación para no retrasar LCP) */}
           <div className="lg:col-span-7 xl:col-span-7">
@@ -1699,7 +1699,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 2 - COMPARATIVA ───────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="comparativa" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
+      <section id="comparativa" className="scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 24 }}
@@ -1804,7 +1804,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN DPP - TRAZABILIDAD ────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="dpp" className="scroll-mt-[65px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
+      <section id="dpp" className="scroll-mt-[73px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-14 items-center justify-center">
             {/* Diagrama animado: solo tablet y escritorio */}
@@ -1872,7 +1872,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 3 - CATÁLOGO DE CÁLCULOS ───────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="calculos" className={`scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
+      <section id="calculos" className={`scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 24 }}
@@ -2074,7 +2074,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       <section
         id="categorias"
         ref={sectionCategoriasRef}
-        className={`scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-primary'} py-8 sm:py-10 md:py-12 lg:py-14`}
+        className={`scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] relative transition-colors duration-300 ${isDark ? 'bg-[#474747]' : 'bg-primary'} py-6 sm:py-10 md:py-12 lg:py-14`}
       >
         <div className="w-full max-w-6xl mx-auto px-4 sm:px-6">
           <m.div
@@ -2257,7 +2257,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 5 - PROCESO ───────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="proceso" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
+      <section id="proceso" className="scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 24 }}
@@ -2345,7 +2345,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 6 - PLANES ────────────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="planes" className={`scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
+      <section id="planes" className={`scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/40' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 24 }}
@@ -2646,7 +2646,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 7 - INTELIGENCIA ARTIFICIAL & ÉTICA ─────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="ia" className={`scroll-mt-[40px] md:scroll-mt-[41px] lg:scroll-mt-[33px] py-8 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
+      <section id="ia" className={`scroll-mt-[48px] md:scroll-mt-[41px] lg:scroll-mt-[33px] py-6 sm:py-10 md:py-12 lg:py-14 px-4 sm:px-6 transition-colors duration-300 ${isDark ? 'bg-[#525252]/25' : 'bg-[#00827C]/2'}`}>
         <div className="max-w-6xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 20 }}
@@ -2766,7 +2766,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 8 - OBJETIVO 12 (ODS 12) ─────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="ods-12" className="scroll-mt-[73px] md:scroll-mt-[82px] lg:scroll-mt-[98px] relative pt-6 sm:pt-8 md:pt-10 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
+      <section id="ods-12" className="scroll-mt-[73px] md:scroll-mt-[82px] lg:scroll-mt-[98px] relative pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-16 md:pb-20 px-4 sm:px-6 overflow-hidden">
         <div className="max-w-6xl mx-auto relative z-10">
           <m.div
             data-reveal initial={{ opacity: 0, y: 24 }}
@@ -2899,7 +2899,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
       {/* ── SECCIÓN 9 - FAQ (AL FINAL) ─────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
       <Suspense fallback={null}>
-      <section id="faq" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-8 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
+      <section id="faq" className="scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-6 sm:pt-10 md:pt-12 lg:pt-14 pb-6 sm:pb-8 px-4 sm:px-6">
         <m.div
           data-reveal initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -2923,7 +2923,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
 
       {/* ── SECCIÓN 10 - CTA FINAL ─────────────────────────────────────────── */}
       <Suspense fallback={null}>
-      <section id="cta-final" className="scroll-mt-[66px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
+      <section id="cta-final" className="scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-6 sm:pt-8 pb-8 sm:pb-10 md:pb-12 px-4 sm:px-6">
         <div className="max-w-2xl md:max-w-2xl lg:max-w-3xl mx-auto">
           <m.div
             data-reveal initial={{ opacity: 0, y: 20 }}
