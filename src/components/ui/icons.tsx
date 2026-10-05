@@ -58,6 +58,7 @@ import {
   Droplet as Lucide_Droplet,
   Dumbbell as Lucide_Dumbbell,
   EllipsisVertical as Lucide_EllipsisVertical,
+  MoreHorizontal as Lucide_MoreHorizontal,
   Equal as Lucide_Equal,
   ExternalLink as Lucide_ExternalLink,
   Eye as Lucide_Eye,
@@ -1006,6 +1007,7 @@ export const Wrench = /*#__PURE__*/ wrapIcon(Lucide_Wrench)
 export const Truck = /*#__PURE__*/ wrapIcon(Lucide_Truck)
 export const Folder = /*#__PURE__*/ wrapIcon(Lucide_Folder)
 export const EllipsisVertical = /*#__PURE__*/ wrapIcon(Lucide_EllipsisVertical)
+export const MoreHorizontal = /*#__PURE__*/ wrapIcon(Lucide_MoreHorizontal)
 export const ClockCounterClockwise = /*#__PURE__*/ wrapIcon(Lucide_History)
 export const Lifebuoy = /*#__PURE__*/ wrapIcon(Lucide_LifeBuoy)
 export const Star = /*#__PURE__*/ wrapIcon(Lucide_Star)

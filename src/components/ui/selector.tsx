@@ -72,7 +72,7 @@ export function Selector({
   }
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${abierto ? 'z-40' : ''} ${className}`} ref={containerRef}>
       <button
         type="button"
         disabled={disabled}

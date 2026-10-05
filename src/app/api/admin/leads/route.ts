@@ -3,10 +3,8 @@ import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { z } from 'zod'
 
-const patchLeadSchema = z.object({
+const leadPatchSchema = z.object({
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).optional(),
-  notas_admin: z.string().max(2000).nullable().optional(),
-  asignado_a: z.string().uuid().nullable().optional(),
   nombre: z.string().trim().max(100).nullable().optional(),
   email: z.string().trim().email('Correo inválido.').nullable().optional().or(z.literal('')),
   telefono: z.string().trim().max(30).nullable().optional(),
@@ -14,6 +12,17 @@ const patchLeadSchema = z.object({
   interes: z.string().trim().max(100).nullable().optional(),
   mensaje: z.string().max(2000).nullable().optional(),
   evento_nombre: z.string().trim().max(120).nullable().optional(),
+})
+
+const leadPostSchema = z.object({
+  nombre: z.string().trim().min(1, 'El nombre es obligatorio.').max(100),
+  email: z.string().trim().email('Correo inválido.').nullable().optional().or(z.literal('')),
+  telefono: z.string().trim().max(30).nullable().optional(),
+  empresa: z.string().trim().max(100).nullable().optional(),
+  interes: z.string().trim().max(100).nullable().optional(),
+  evento_nombre: z.string().trim().max(120).nullable().optional(),
+  mensaje: z.string().max(2000).nullable().optional(),
+  estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).default('nuevo'),
 })
 
 export async function GET(request: NextRequest) {
@@ -45,6 +54,43 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ data: data ?? [], total: count ?? 0 })
 }
 
+export async function POST(request: NextRequest) {
+  const guard = await requireSuperAdmin(request)
+  if (guard.error) return guard.error
+
+  const body = await request.json().catch(() => null)
+  const parsed = leadPostSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
+  }
+
+  const { data, error } = await guard.adminClient
+    .from('leads')
+    .insert({
+      nombre: parsed.data.nombre,
+      email: parsed.data.email || null,
+      telefono: parsed.data.telefono || null,
+      empresa: parsed.data.empresa || null,
+      interes: parsed.data.interes || null,
+      evento_nombre: parsed.data.evento_nombre || null,
+      mensaje: parsed.data.mensaje || null,
+      estado: parsed.data.estado,
+    })
+    .select()
+    .single()
+
+  if (error) return NextResponse.json({ error: 'Error al crear el lead.' }, { status: 500 })
+
+  await logAuditoria(guard.adminClient, {
+    user_id: guard.user.id,
+    accion: 'crear_lead',
+    detalle: { id: data.id, nombre: data.nombre },
+    ip: getIp(request),
+  })
+
+  return NextResponse.json(data, { status: 201 })
+}
+
 export async function PATCH(request: NextRequest) {
   const guard = await requireSuperAdmin(request)
   if (guard.error) return guard.error
@@ -54,17 +100,24 @@ export async function PATCH(request: NextRequest) {
   if (!id) return NextResponse.json({ error: 'Falta el id.' }, { status: 400 })
 
   const body = await request.json().catch(() => null)
-  const parsed = patchLeadSchema.safeParse(body)
+  const parsed = leadPatchSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
-  const patchData = { ...parsed.data }
-  if (patchData.email === '') patchData.email = null
+  const patchData: Record<string, unknown> = {}
+  if (parsed.data.nombre !== undefined) patchData.nombre = parsed.data.nombre
+  if (parsed.data.email !== undefined) patchData.email = parsed.data.email === '' ? null : parsed.data.email
+  if (parsed.data.telefono !== undefined) patchData.telefono = parsed.data.telefono
+  if (parsed.data.empresa !== undefined) patchData.empresa = parsed.data.empresa
+  if (parsed.data.interes !== undefined) patchData.interes = parsed.data.interes
+  if (parsed.data.evento_nombre !== undefined) patchData.evento_nombre = parsed.data.evento_nombre
+  if (parsed.data.mensaje !== undefined) patchData.mensaje = parsed.data.mensaje
+  if (parsed.data.estado !== undefined) patchData.estado = parsed.data.estado
 
   const { data, error } = await guard.adminClient
     .from('leads')
-    .update({ ...patchData, updated_at: new Date().toISOString() })
+    .update(patchData)
     .eq('id', id)
     .select()
     .single()
@@ -101,4 +154,3 @@ export async function DELETE(request: NextRequest) {
 
   return NextResponse.json({ ok: true })
 }
-
