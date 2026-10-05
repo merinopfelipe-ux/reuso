@@ -239,9 +239,7 @@ export function LeadsClient({
       if (prev.col !== col) {
         return { col, dir: col === 'created_at' ? 'desc' : 'asc' }
       }
-      if (prev.dir === 'asc') return { col, dir: 'desc' }
-      if (prev.dir === 'desc') return { col: 'created_at', dir: 'desc' }
-      return { col, dir: 'asc' }
+      return { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' }
     })
     setPagina(1)
   }
@@ -372,24 +370,36 @@ export function LeadsClient({
       if (col === 'nombre') {
         const na = (a.nombre ?? '').trim().toLowerCase()
         const nb = (b.nombre ?? '').trim().toLowerCase()
+        if (!na && !nb) return 0
+        if (!na) return 1
+        if (!nb) return -1
         return dir === 'asc' ? na.localeCompare(nb, 'es') : nb.localeCompare(na, 'es')
       }
 
       if (col === 'empresa') {
         const ea = (a.empresa ?? '').trim().toLowerCase()
         const eb = (b.empresa ?? '').trim().toLowerCase()
+        if (!ea && !eb) return 0
+        if (!ea) return 1
+        if (!eb) return -1
         return dir === 'asc' ? ea.localeCompare(eb, 'es') : eb.localeCompare(ea, 'es')
       }
 
       if (col === 'contacto') {
         const ca = (a.email || a.telefono || '').trim().toLowerCase()
         const cb = (b.email || b.telefono || '').trim().toLowerCase()
+        if (!ca && !cb) return 0
+        if (!ca) return 1
+        if (!cb) return -1
         return dir === 'asc' ? ca.localeCompare(cb, 'es') : cb.localeCompare(ca, 'es')
       }
 
       if (col === 'interes') {
         const ia = (a.evento_nombre || a.interes || '').trim().toLowerCase()
         const ib = (b.evento_nombre || b.interes || '').trim().toLowerCase()
+        if (!ia && !ib) return 0
+        if (!ia) return 1
+        if (!ib) return -1
         return dir === 'asc' ? ia.localeCompare(ib, 'es') : ib.localeCompare(ia, 'es')
       }
 
@@ -502,8 +512,12 @@ export function LeadsClient({
 
   // ── WhatsApp ──
   function abrirWhatsApp(lead: Lead) {
-    const rawTel = lead.telefono ? lead.telefono.replace(/[^\d+]/g, '') : ''
-    const tel = rawTel.length >= 7 ? (rawTel.startsWith('+') ? rawTel.replace('+', '') : rawTel) : WA_NUMBER
+    if (!lead.telefono || lead.telefono.trim().length < 7) {
+      abrirEdicion(lead)
+      return
+    }
+    const rawTel = lead.telefono.replace(/[^\d+]/g, '')
+    const tel = rawTel.startsWith('+') ? rawTel.replace('+', '') : rawTel
     const texto = encodeURIComponent(
       `Hola ${lead.nombre || ''}, te escribo de Reúso en seguimiento a tu solicitud de información.`
     )
@@ -1060,7 +1074,7 @@ export function LeadsClient({
                   <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '120px', maxWidth: '150px' }}>
                     Empresa
                   </SortTh>
-                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '160px', maxWidth: '200px' }}>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '220px' }}>
                     Contacto
                   </SortTh>
                   <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '160px', maxWidth: '210px' }}>
@@ -1127,29 +1141,47 @@ export function LeadsClient({
                         </div>
                       </td>
 
-                      {/* Contacto (Email + Teléfono organizado en líneas) */}
+                      {/* Contacto (Email en un renglón sin partir + Teléfono / WhatsApp organizado) */}
                       <td
-                        className="px-3.5 py-3 align-top"
+                        className="px-3.5 py-3 align-top whitespace-nowrap"
                         style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[200px] flex flex-col gap-1 leading-tight text-xs text-(--text-secondary)">
-                          {lead.email && (
-                            <span className="inline-flex items-start gap-1.5 break-all">
-                              <Envelope size={12} className="text-(--text-secondary) shrink-0 mt-0.5" />
+                        <div className="flex flex-col gap-1 leading-tight text-xs text-(--text-secondary)">
+                          {lead.email ? (
+                            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                              <Envelope size={12} className="text-(--text-secondary) shrink-0" />
                               <a
                                 href={`mailto:${lead.email}`}
-                                className="text-(--text-primary) hover:text-brand hover:underline"
+                                className="text-(--text-primary) hover:text-brand hover:underline whitespace-nowrap font-medium"
                               >
                                 {lead.email}
                               </a>
                             </span>
+                          ) : null}
+
+                          {lead.telefono ? (
+                            <a
+                              href={`https://wa.me/${lead.telefono.replace(/[^\d+]/g, '').replace(/^\+/, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 whitespace-nowrap text-xs text-(--text-secondary) hover:text-[#25D366] transition-colors"
+                              title="Abrir chat de WhatsApp con este prospecto"
+                            >
+                              <WhatsappLogo size={13} className="text-[#25D366] shrink-0" color="#25D366" />
+                              <span className="hover:underline">{lead.telefono}</span>
+                            </a>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => abrirEdicion(lead)}
+                              className="inline-flex items-center gap-1 text-[11px] text-brand hover:underline font-medium cursor-pointer"
+                              title="Agregar número de WhatsApp para este prospecto (solo admin)"
+                            >
+                              <WhatsappLogo size={12} className="opacity-70 shrink-0" />
+                              <span>+ Agregar WhatsApp</span>
+                            </button>
                           )}
-                          {lead.telefono && (
-                            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                              <Phone size={12} className="text-(--text-secondary) shrink-0" />
-                              <span>{lead.telefono}</span>
-                            </span>
-                          )}
+
                           {!lead.email && !lead.telefono && <span className="opacity-40">-</span>}
                         </div>
                       </td>
@@ -1206,6 +1238,7 @@ export function LeadsClient({
                       {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
                       <td className="px-2 py-3 text-center whitespace-nowrap align-top w-10">
                         <MenuTresPuntosLead
+                          tieneTelefono={Boolean(lead.telefono && lead.telefono.trim().length >= 7)}
                           onEditar={() => abrirEdicion(lead)}
                           onWhatsApp={() => abrirWhatsApp(lead)}
                           onEliminar={() => {
@@ -1473,12 +1506,15 @@ export function LeadsClient({
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp (solo admin)</label>
+                  <span className="text-[10px] text-brand font-medium">Uso interno</span>
+                </div>
                 <input
                   type="tel"
                   value={formCrear.telefono}
                   onChange={e => setFormCrear(p => ({ ...p, telefono: e.target.value }))}
-                  placeholder="+57 300 1234567"
+                  placeholder="+57 300 123 4567"
                   className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
@@ -1605,14 +1641,20 @@ export function LeadsClient({
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp (solo admin)</label>
+                  <span className="text-[10px] text-brand font-medium">Uso interno</span>
+                </div>
                 <input
                   type="tel"
                   value={formEdit.telefono}
                   onChange={e => setFormEdit(p => ({ ...p, telefono: e.target.value }))}
-                  placeholder="+57 300 1234567"
+                  placeholder="+57 300 123 4567"
                   className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
+                <span className="text-[11px] text-(--text-placeholder)">
+                  No se solicita al prospecto en la landing. Solo tú como administrador puedes registrarlo o modificarlo aquí.
+                </span>
               </div>
             </div>
 
@@ -1766,10 +1808,12 @@ function EstadoDropdownLead({
 // Menú de 3 Puntos VERTICALES Oficiales (DotsThree) con createPortal
 // ─────────────────────────────────────────────────────────────────────────────
 function MenuTresPuntosLead({
+  tieneTelefono = false,
   onEditar,
   onWhatsApp,
   onEliminar,
 }: {
+  tieneTelefono?: boolean
   onEditar: () => void
   onWhatsApp: () => void
   onEliminar: () => void
@@ -1838,17 +1882,25 @@ function MenuTresPuntosLead({
               <span>Editar información</span>
             </button>
 
-            {/* Enviar WhatsApp */}
+            {/* Enviar o Agregar WhatsApp */}
             <button
               type="button"
               onClick={() => {
                 setAbierto(false)
-                onWhatsApp()
+                if (tieneTelefono) {
+                  onWhatsApp()
+                } else {
+                  onEditar()
+                }
               }}
               className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
             >
-              <WhatsappLogo size={13} className="text-[#25D366] shrink-0" color="#25D366" />
-              <span>Enviar WhatsApp</span>
+              <WhatsappLogo
+                size={13}
+                className={tieneTelefono ? 'text-[#25D366] shrink-0' : 'text-brand shrink-0'}
+                color={tieneTelefono ? '#25D366' : undefined}
+              />
+              <span>{tieneTelefono ? 'Enviar WhatsApp' : 'Agregar WhatsApp'}</span>
             </button>
 
             <div className="h-px my-1 bg-(--border)" />

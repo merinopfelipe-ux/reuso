@@ -28,11 +28,6 @@ function generarCSV(filas: FilaExport[]): Buffer {
     ...filas.map((f) =>
       CABECERAS_KEY.map((k) => {
         const val = String(f[k as keyof FilaExport] ?? '').trim()
-        if (k === 'telefono' && val) {
-          // Si empieza por +, anteponer apóstrofe en CSV para que Excel no lo evalúe como fórmula matemática (#NAME?)
-          const telFormateado = val.startsWith('+') ? `'${val}` : val
-          return `"${telFormateado.replace(/"/g, '""')}"`
-        }
         return `"${val.replace(/"/g, '""')}"`
       }).join(',')
     ),
