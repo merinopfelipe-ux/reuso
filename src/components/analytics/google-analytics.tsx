@@ -55,7 +55,7 @@ export function GoogleAnalytics() {
   const [permitido, setPermitido] = useState(false)
   // gtag.js pesa ~175 KB y era lo que más bloqueaba el hilo principal en la
   // carga (TBT 100-150 ms en PageSpeed, 2026-10-05). Se descarga con la
-  // primera interacción o a los 15 s, lo que pase primero. Los eventos previos
+  // primera interacción o a los 5 s, lo que pase primero. Los eventos previos
   // quedan en dataLayer y se envían al cargar.
   const [cargar, setCargar] = useState(false)
 
@@ -63,7 +63,7 @@ export function GoogleAnalytics() {
     const activar = () => setCargar(true)
     const eventos = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const
     eventos.forEach((e) => window.addEventListener(e, activar, { once: true, passive: true }))
-    const espera = window.setTimeout(activar, 15_000)
+    const espera = window.setTimeout(activar, 5_000)
     return () => {
       eventos.forEach((e) => window.removeEventListener(e, activar))
       window.clearTimeout(espera)

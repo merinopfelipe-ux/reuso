@@ -151,7 +151,7 @@
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 100 900;
-    font-display: optional;
+    font-display: swap;
     src: url('/fonts/open-sans-latin-ext.woff2') format('woff2');
     unicode-range:
       U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
@@ -162,7 +162,7 @@
     font-family: 'Open Sans';
     font-style: normal;
     font-weight: 100 900;
-    font-display: optional;
+    font-display: swap;
     src: url('/fonts/open-sans-latin.woff2') format('woff2');
     unicode-range:
       U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
@@ -170,22 +170,48 @@
       U+2212, U+2215, U+FEFF, U+FFFD;
   }
 
-  /* font-display: optional (2026-10-05): sin esto, en dispositivos sin Seravek
-     el título se pintaba primero con el respaldo y otra vez al llegar Open Sans:
-     PageSpeed contaba ese segundo pintado como LCP (2.4 s) y el cambio como CLS.
-     Con optional, si la fuente no llega a tiempo la página queda con el respaldo
-     y desde la siguiente ya usa Open Sans (guardada en caché). */
-  /* Respaldo con las medidas de Open Sans (mismos valores que genera next/font):
-     sin precarga de la fuente (bloquea el primer pintado), el texto aparece
-     primero con Arial; con estas medidas el cambio a Open Sans no mueve nada
-     (CLS 0.011 en escritorio sin esto, 2026-10-05). */
+  /* Respaldo de Open Sans con sus medidas reales, un bloque por peso (medido en
+     Chrome el 2026-10-05: ancho de Open Sans frente a Arial en 400, 500, 600 y
+     700). Mientras llega Open Sans (font-display: swap) el texto ya ocupa lo
+     mismo, así el cambio de fuente no mueve nada ni crea un segundo LCP.
+     Liberation Sans y Arimo tienen las medidas de Arial (servidores Linux,
+     PageSpeed). Nunca usar font-display: optional: deja la página con el
+     respaldo en la primera visita. */
   @font-face {
     font-family: 'Open Sans Fallback';
-    src: local('Arial'), local('ArialMT');
-    ascent-override: 101.65%;
+    font-weight: 100 449;
+    src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+    ascent-override: 103.29%;
+    descent-override: 28.31%;
+    line-gap-override: 0%;
+    size-adjust: 103.48%;
+  }
+  @font-face {
+    font-family: 'Open Sans Fallback';
+    font-weight: 450 549;
+    src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+    ascent-override: 101.62%;
     descent-override: 27.86%;
     line-gap-override: 0%;
-    size-adjust: 105.15%;
+    size-adjust: 105.18%;
+  }
+  @font-face {
+    font-family: 'Open Sans Fallback';
+    font-weight: 550 649;
+    src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+    ascent-override: 106.36%;
+    descent-override: 29.16%;
+    line-gap-override: 0%;
+    size-adjust: 100.49%;
+  }
+  @font-face {
+    font-family: 'Open Sans Fallback';
+    font-weight: 650 900;
+    src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+    ascent-override: 103.08%;
+    descent-override: 28.26%;
+    line-gap-override: 0%;
+    size-adjust: 103.69%;
   }
 
   h1,
