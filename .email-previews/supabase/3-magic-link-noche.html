@@ -6,77 +6,90 @@
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-  <title>Enlace de acceso</title>
-</head>
-<body class="eo" style="margin:0;padding:0;background-color:#ffffff;font-family:'Open Sans',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <title>Ingresa a tu cuenta</title>
   
   <style type="text/css">
-    .ec { background-color: #525252 !important; }
-    .ec p, .ec td, .ec span, .ec li { color: #E0E0E0 !important; }
-    .ec strong { color: #ffffff !important; }
-    .ec a { color: #D6F391 !important; }
-    .eh { background-color: #D6F391 !important; }
-    .eh p { color: #474747 !important; }
-    .eh p + p { color: rgba(71,71,71,0.65) !important; }
-    a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    .ef p, .ef a { color: #E0E0E0 !important; }
-    .ea td { background-color: rgba(246,191,62,0.10) !important; }
-    .ea p { color: #F6BF3E !important; }
-    .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    .ek a, .ek span { color: #D6F391 !important; }
-    .ek p { color: #E0E0E0 !important; }
+    body, .email-body { background-color: #121817 !important; }
+    .email-card { background-color: #1B2624 !important; }
+    .email-card h1, .email-card h2, .email-card h3 { color: #FFFFFF !important; }
+    .email-card p, .email-card td, .email-card span, .email-card li { color: #D1DCDA !important; }
+    .email-card strong { color: #FFFFFF !important; }
+    .email-card a { color: #52D1C9 !important; }
+    .email-inner-box td { background-color: #243330 !important; }
+    .email-inner-box p { color: #D1DCDA !important; }
+    .email-inner-box strong { color: #FFFFFF !important; }
+    .email-inner-box span.otp-text { color: #52D1C9 !important; }
+    .email-eyebrow { color: #52D1C9 !important; }
+    a.email-btn { background-color: #00827C !important; color: #FFFFFF !important; }
+    .email-footer p, .email-footer a { color: #8F9E9B !important; }
+    .email-social-icon path { fill: #8F9E9B !important; }
   </style>
-  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Tu enlace de acceso seguro. Expira en 10 minutos&nbsp;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;</div>
+</head>
+<body class="email-body" style="margin:0;padding:0;background-color:#F8FAFB;font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <!-- Preheader oculto -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">Tu enlace de acceso seguro. Expira en 10 minutos&nbsp;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;</div>
 
-  <table class="eo" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
+  <!-- Contenedor externo -->
+  <table class="email-body" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F8FAFB;">
     <tr>
-      <td align="center" style="padding:40px 20px 48px;">
+      <td align="center" style="padding:48px 16px 56px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;">
 
+          <!-- ── CABECERA: LOGO COMPLETO OFICIAL (Centrado con holgura) ── -->
           <tr>
-            <td class="eh" style="background-color:#00827C;border-radius:16px 16px 0 0;padding:28px 40px 24px;">
-              <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Calculadora de Reúso</p>
-              <p style="margin:6px 0 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);">Enlace de acceso</p>
+            <td align="center" style="padding:0 0 32px;text-align:center;">
+              <a href="https://calculadoradereuso.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="Calculadora de Reúso">
+                <img src="https://calculadoradereuso.com/logo-completo.svg" alt="Calculadora de Reúso" width="148" height="41" style="display:block;margin:0 auto;max-width:148px;height:auto;border:0;outline:none;" />
+              </a>
             </td>
           </tr>
 
+          <!-- ── EL CAJÓN (Fondo "muy agua" #E6F2F0, texto adentro a la izquierda, sin líneas) ── -->
           <tr>
-            <td class="ec" style="background-color:#ffffff;padding:36px 40px 40px;">
+            <td class="email-card" style="background-color:#E6F2F0;border-radius:28px;padding:48px 44px 44px;text-align:left;">
 
-              <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#474747;line-height:1.3;">¡Hola! 👋</p>
-              <p style="margin:0 0 28px;font-size:15px;color:#474747;line-height:1.75;">Usa este enlace para ingresar a tu cuenta. Es de un solo uso y expira en 10 minutos.</p>
-
+              <!-- Antetítulo: texto plano limpio (sin botón ni píldora) -->
               
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 0;">
+              <p class="email-eyebrow" style="margin:0 0 14px;font-size:13px;font-weight:700;color:#00827C;letter-spacing:0.02em;text-align:left;font-family:'Open Sans',-apple-system,sans-serif;">
+                Enlace de acceso rápido
+              </p>
+
+              <!-- Título principal en Negro (#111111) a la izquierda -->
+              <h1 style="margin:0 0 20px;font-size:26px;font-weight:800;color:#111111;line-height:1.25;letter-spacing:-0.5px;text-align:left;">
+                Ingresa a tu cuenta
+              </h1>
+
+              <!-- Párrafo introductorio a la izquierda en Negro Lurdes (#474747) -->
+              <p style="margin:0 0 20px;font-size:15px;color:#474747;line-height:1.75;text-align:left;">Usa este botón para ingresar directamente a tu cuenta en la Calculadora de Reúso. Este enlace es seguro y de un solo uso.</p>
+
+              <!-- Contenido central (cajas de código, OTP o detalles) -->
+              
+<table align="center" cellpadding="0" cellspacing="0" border="0" style="margin:28px auto 12px;">
   <tr>
     <td align="center">
-      <a class="eb" href="{{ .ConfirmationURL }}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
+      <a class="email-btn" href="{{ .ConfirmationURL }}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:15px 42px;border-radius:100px;font-size:15px;font-weight:700;letter-spacing:-0.2px;text-align:center;">
         Ingresar a mi cuenta
       </a>
     </td>
   </tr>
-  <tr>
-    <td align="center" style="padding-top:14px;">
-      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="{{ .ConfirmationURL }}" style="color:#00827C;word-break:break-all;font-size:11px;">{{ .ConfirmationURL }}</a>
-      </p>
-    </td>
-  </tr>
 </table>
 
-              <p style="margin:32px 0 0;font-size:14px;color:#474747;line-height:1.65;">
-                Un saludo,<br>
-                <strong style="color:#474747;">El equipo de la Calculadora de Reúso</strong>
-              </p>
+              <!-- Firma a la izquierda -->
+              <div style="margin-top:28px;">
+                <p style="margin:0;font-size:14px;color:#474747;line-height:1.65;text-align:left;">
+                  Un saludo,<br>
+                  <strong style="color:#111111;">El equipo de la Calculadora de Reúso</strong>
+                </p>
+              </div>
 
+              <!-- Alerta de seguridad opcional -->
               
-              <table class="ea" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+              <table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
                 <tr>
-                  <td style="background-color:#FFF8E6;border-radius:12px;padding:16px 20px;">
-                    <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#474747;">🔔 ¿No lo pediste tú?</p>
-                    <p style="margin:0;font-size:13px;color:#474747;line-height:1.65;">
-                      Tranquilo, tu cuenta está segura. Nadie puede usarla sin que tú lo hagas. Solo ignora este correo y no uses el enlace.
+                  <td style="background-color:#FFFFFF;border-radius:16px;padding:18px 22px;text-align:left;">
+                    <p style="margin:0 0 6px;font-size:13.5px;font-weight:700;color:#111111;text-align:left;">🔔 ¿No realizaste esta solicitud?</p>
+                    <p style="margin:0;font-size:13px;color:#474747;line-height:1.65;text-align:left;">
+                      Tu cuenta está protegida. Nadie puede acceder sin tu confirmación. Puedes ignorar este correo y no uses el enlace.
                     </p>
                   </td>
                 </tr>
@@ -85,15 +98,59 @@
             </td>
           </tr>
 
+          <!-- ── DEBAJO DEL CAJÓN: TODO BIEN CENTRADO ── -->
           <tr>
-            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
-              <p style="margin:0 0 10px;font-size:11px;color:#474747;line-height:1.7;">
-                Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
+            <td class="email-footer" align="center" style="padding:32px 16px 0;text-align:center;">
+
+              <!-- Texto explicativo de destinatario centrado -->
+              <p style="margin:0 auto 14px;font-size:11.5px;color:#8F9E9B;line-height:1.65;max-width:440px;text-align:center;">
+                Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing.
               </p>
-              <p style="margin:0;font-size:11px;color:#474747;line-height:1.7;">
-                © 2026 Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://calculadoradereuso.com" style="color:#474747;text-decoration:underline;">calculadoradereuso.com</a>
+
+              <!-- Enlaces legales centrados (sin cancelar suscripción para transaccionales) -->
+              <p style="margin:0 auto 14px;font-size:11.5px;color:#8F9E9B;text-align:center;">
+                <a href="https://calculadoradereuso.com/terminos" style="color:#8F9E9B;text-decoration:none;">Términos</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="https://calculadoradereuso.com/privacidad" style="color:#8F9E9B;text-decoration:none;">Privacidad</a>
               </p>
+
+              <!-- Redes Sociales centradas -->
+              
+  <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin:16px auto 12px;">
+    <tr>
+      <!-- LinkedIn -->
+      <td style="padding:0 10px;">
+        <a href="https://www.linkedin.com/company/calculadora-de-reuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="LinkedIn Calculadora de Reúso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+      <!-- YouTube -->
+      <td style="padding:0 10px;">
+        <a href="https://www.youtube.com/@calculadoradereuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="YouTube Calculadora de Reúso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+      <!-- Instagram -->
+      <td style="padding:0 10px;">
+        <a href="https://www.instagram.com/calculadoradereuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="Instagram @calculadoradereuso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+    </tr>
+  </table>
+
+              <!-- Dirección legal centrada -->
+              <p style="margin:12px auto 0;font-size:11px;color:#8F9E9B;line-height:1.6;text-align:center;">
+                Grupo MLP S.A.S.<br>
+                Medellín, Colombia · <a href="https://calculadoradereuso.com" style="color:#8F9E9B;text-decoration:none;">calculadoradereuso.com</a>
+              </p>
+
             </td>
           </tr>
 
