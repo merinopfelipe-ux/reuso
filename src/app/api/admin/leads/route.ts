@@ -155,6 +155,11 @@ export async function DELETE(request: NextRequest) {
   }
 
   if (ids.length === 0) return NextResponse.json({ error: 'Falta el id o ids.' }, { status: 400 })
+  // Solo UUID válidos y máximo 500 por llamada (borrado en lote).
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  if (ids.length > 500 || ids.some(id => !UUID.test(id))) {
+    return NextResponse.json({ error: 'Ids inválidos.' }, { status: 400 })
+  }
 
   const { error } = await guard.adminClient.from('leads').delete().in('id', ids)
   if (error) return NextResponse.json({ error: 'Error al eliminar los leads.' }, { status: 500 })

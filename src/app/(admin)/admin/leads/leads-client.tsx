@@ -646,33 +646,6 @@ export function LeadsClient({
     startTransition(() => router.refresh())
   }
 
-  // ── Exportar a CSV (Descarga directa del navegador) ──
-  function exportarCSV() {
-    const encabezados = ['ID', 'Nombre', 'Email', 'Teléfono', 'Empresa', 'Interés', 'Evento', 'Estado', 'Fecha']
-    const filas = filtrados.map(l => [
-      `"${l.id}"`,
-      `"${(l.nombre ?? '').replace(/"/g, '""')}"`,
-      `"${(l.email ?? '').replace(/"/g, '""')}"`,
-      `"${(l.telefono ?? '').replace(/"/g, '""')}"`,
-      `"${(l.empresa ?? '').replace(/"/g, '""')}"`,
-      `"${(l.interes ?? '').replace(/"/g, '""')}"`,
-      `"${(l.evento_nombre ?? '').replace(/"/g, '""')}"`,
-      `"${l.estado}"`,
-      `"${l.created_at}"`,
-    ])
-
-    const csvContent = '\uFEFF' + [encabezados.join(','), ...filas.map(f => f.join(','))].join('\n')
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `leads-reuso-${new Date().toISOString().slice(0, 10)}.csv`)
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }
-
   // ── Descargar Plantilla Oficial de Contactos CSV ──
   function descargarPlantillaCSV() {
     const cabeceras = 'Nombre,Apellido,Email,Teléfono,Empresa,Interés,Evento,Mensaje,Estado\n'
@@ -1468,17 +1441,11 @@ export function LeadsClient({
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Estado inicial</label>
-                <select
+                <Selector
+                  opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
                   value={formCrear.estado}
-                  onChange={e => setFormCrear(p => ({ ...p, estado: e.target.value as EstadoLead }))}
-                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand h-[38px]"
-                >
-                  {ESTADOS.map(e => (
-                    <option key={e} value={e}>
-                      {ESTADO_CONFIG[e].label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={v => setFormCrear(p => ({ ...p, estado: v as EstadoLead }))}
+                />
               </div>
             </div>
 
@@ -1606,17 +1573,11 @@ export function LeadsClient({
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Estado comercial</label>
-                <select
+                <Selector
+                  opciones={ESTADOS.map(e => ({ value: e, label: ESTADO_CONFIG[e].label }))}
                   value={formEdit.estado}
-                  onChange={e => setFormEdit(p => ({ ...p, estado: e.target.value as EstadoLead }))}
-                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand h-[38px]"
-                >
-                  {ESTADOS.map(e => (
-                    <option key={e} value={e}>
-                      {ESTADO_CONFIG[e].label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={v => setFormEdit(p => ({ ...p, estado: v as EstadoLead }))}
+                />
               </div>
             </div>
 
