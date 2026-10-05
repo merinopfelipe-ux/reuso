@@ -4,6 +4,12 @@ const nextConfig = {
   // CLAUDE.md. Ese archivo es solo en español y con límite de líneas
   // (ver su regla de cabecera), así que se apaga.
   agentRules: false,
+  experimental: {
+    // CSS dentro del HTML en vez de una hoja externa: la hoja externa bloquea
+    // el primer pintado hasta descargarse. Medido 2026-10-05 con red real: FCP
+    // de 1.5 s a 0.4 s en celular (junto con quitar la precarga de la fuente).
+    inlineCss: true,
+  },
   // Migración de dominio (2026-09-05): reuso.lurdes.co sigue apuntando al
   // mismo proyecto de Vercel, así que en vez de servir la app ahí también,
   // cualquier visita a ese host redirige de forma permanente al dominio de

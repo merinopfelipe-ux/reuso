@@ -33,7 +33,7 @@
 }
 
 @theme {
-  --font-sans: 'Open Sans', sans-serif;
+  --font-sans: 'Open Sans', 'Open Sans Fallback', sans-serif;
   --font-seravek: seravek, ui-sans-serif, sans-serif;
 
   --color-brand: var(--color-brand);
@@ -168,10 +168,23 @@
       U+2212, U+2215, U+FEFF, U+FFFD;
   }
 
+  /* Respaldo con las medidas de Open Sans (mismos valores que genera next/font):
+     sin precarga de la fuente (bloquea el primer pintado), el texto aparece
+     primero con Arial; con estas medidas el cambio a Open Sans no mueve nada
+     (CLS 0.011 en escritorio sin esto, 2026-10-05). */
+  @font-face {
+    font-family: 'Open Sans Fallback';
+    src: local('Arial'), local('ArialMT');
+    ascent-override: 101.65%;
+    descent-override: 27.86%;
+    line-gap-override: 0%;
+    size-adjust: 105.15%;
+  }
+
   h1,
   h2,
   h3 {
-    font-family: seravek, 'Open Sans', ui-sans-serif, sans-serif;
+    font-family: seravek, 'Open Sans', 'Open Sans Fallback', ui-sans-serif, sans-serif;
   }
 }
 
@@ -299,7 +312,7 @@
   }
 
   html {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Open Sans', 'Open Sans Fallback', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
 

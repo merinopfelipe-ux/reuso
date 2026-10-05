@@ -1,4 +1,4 @@
-import { test as setup, type Page } from './fixtures'
+import { test as setup, expect, type Page } from './fixtures'
 import { createClient } from '@supabase/supabase-js'
 import fs from 'fs'
 import path from 'path'
@@ -175,8 +175,16 @@ setup('auth: super_admin', async ({ page }) => {
 
   await page.goto('/login')
   await aceptarCookies(page)
-  await page.locator('#email').fill(process.env.TEST_SUPER_ADMIN_EMAIL ?? 'merinop@me.com')
-  await page.locator('#password').fill(password)
+  // En CI (next dev en frío) la prueba puede escribir antes de que React
+  // hidrate el formulario, y al hidratar los campos quedan vacíos ("Completa
+  // el correo electrónico", CI del 2026-10-05). Se reescribe hasta confirmar.
+  const email = process.env.TEST_SUPER_ADMIN_EMAIL ?? 'merinop@me.com'
+  await expect(async () => {
+    await page.locator('#email').fill(email)
+    await page.locator('#password').fill(password)
+    await expect(page.locator('#email')).toHaveValue(email, { timeout: 1_000 })
+    await expect(page.locator('#password')).toHaveValue(password, { timeout: 1_000 })
+  }).toPass({ timeout: 30_000 })
   await page.getByRole('button', { name: /aceptar términos legales/i }).click()
   await page.getByRole('button', { name: /ingresar|sign in/i }).click()
   await page.waitForURL(/\/admin/, { timeout: 75_000 })

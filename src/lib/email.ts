@@ -2,10 +2,16 @@ import { Resend } from 'resend'
 import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { primerNombre } from '@/lib/eventos'
 
-// ── Dark mode - espejo fiel de globals.css [data-theme="dark"] ───────────────
-// --bg-primary:#474747  --bg-card:#525252  --text-primary:#FFFFFF
-// --text-secondary:#E0E0E0  --border:rgba(255,255,255,0.08)
-// --color-brand:#D6F391  --color-warning-content:#F6BF3E
+// ── Tokens Sistema Reúso ────────────────────────────────────────────────────
+const COLOR_NEGRO = '#111111'         // Títulos principales
+const COLOR_LURDES = '#474747'        // Texto de párrafos y etiquetas (Negro Lurdes)
+const COLOR_BRAND = '#00827C'         // Verde Reúso oficial (botones, antetítulo, acentos)
+const BG_PAGE = '#FFFFFF'             // Lienzo exterior blanco
+const BG_MUY_AGUA = '#E6F2F0'         // Fondo "muy agua" del cajón
+const BG_BOX_WHITE = '#FFFFFF'        // Fondo blanco para cajas internas destacadas (OTP, códigos)
+const COLOR_TEXT_MUTED = '#6B7E7B'    // Texto secundario y enlaces del footer
+
+// ── Dark mode - Protocolo Lurdes adaptado ───────────────────────────────────
 const DARK_MODE_CSS = `
   <style type="text/css">
     :root {
@@ -24,71 +30,26 @@ const DARK_MODE_CSS = `
       color: inherit !important;
       text-decoration: none !important;
     }
-    /* Apple Mail, Outlook iOS, Samsung Mail */
     @media (prefers-color-scheme: dark) {
-      .ec { background-color: #525252 !important; }
-      .ec p, .ec td, .ec span, .ec li { color: #E0E0E0 !important; }
-      .ec strong { color: #ffffff !important; }
-      .ec a { color: #D6F391 !important; }
-      .eh { background-color: #D6F391 !important; }
-      .eh p { color: #474747 !important; }
-      .eh p + p { color: rgba(71,71,71,0.65) !important; }
-      a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-      .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-      .ef p { color: #A1A1AA !important; }
-      .ef strong { color: #D6F391 !important; }
-      .ef a { color: #D6F391 !important; text-decoration: none !important; }
-      .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
-      .ea td { background-color: rgba(246,191,62,0.10) !important; }
-      .ea p { color: #F6BF3E !important; }
-      .ek td { background-color: rgba(214,243,145,0.10) !important; }
-      .ek a, .ek span { color: #D6F391 !important; }
-      .ek p { color: #E0E0E0 !important; }
-      .et { background-color: rgba(214,243,145,0.08) !important; }
-      .et td { color: #E0E0E0 !important; }
+      body, .email-body { background-color: #2E2E2E !important; }
+      .email-card { background-color: #384240 !important; }
+      .email-card p, .email-card td, .email-card span, .email-card li { color: #E0E8E6 !important; }
+      .email-card strong, .email-card h1 { color: #FFFFFF !important; }
+      .email-eyebrow { color: #D6F391 !important; }
+      .email-card a { color: #D6F391 !important; }
+      .email-btn { background-color: #00827C !important; color: #FFFFFF !important; }
+      .email-inner-box { background-color: #2A3331 !important; }
+      .email-inner-box p, .email-inner-box td { color: #E0E8E6 !important; }
+      .email-footer p, .email-footer a { color: #8F9E9B !important; }
+      .email-social-icon path { fill: #8F9E9B !important; }
     }
-    /* Gmail (web, Android, iOS) — data-ogsc */
-    [data-ogsc] .ec { background-color: #525252 !important; }
-    [data-ogsc] .ec p, [data-ogsc] .ec td, [data-ogsc] .ec span, [data-ogsc] .ec li { color: #E0E0E0 !important; }
-    [data-ogsc] .ec strong { color: #ffffff !important; }
-    [data-ogsc] .ec a { color: #D6F391 !important; }
-    [data-ogsc] .eh { background-color: #D6F391 !important; }
-    [data-ogsc] .eh p { color: #474747 !important; }
-    [data-ogsc] .eh p + p { color: rgba(71,71,71,0.65) !important; }
-    [data-ogsc] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsc] .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsc] .ef p { color: #A1A1AA !important; }
-    [data-ogsc] .ef strong { color: #D6F391 !important; }
-    [data-ogsc] .ef a { color: #D6F391 !important; text-decoration: none !important; }
-    [data-ogsc] .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
-    [data-ogsc] .ea td { background-color: rgba(246,191,62,0.10) !important; }
-    [data-ogsc] .ea p { color: #F6BF3E !important; }
-    [data-ogsc] .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    [data-ogsc] .ek a, [data-ogsc] .ek span { color: #D6F391 !important; }
-    [data-ogsc] .ek p { color: #E0E0E0 !important; }
-    [data-ogsc] .et { background-color: rgba(214,243,145,0.08) !important; }
-    [data-ogsc] .et td { color: #E0E0E0 !important; }
-    /* Outlook.com web — data-ogsb */
-    [data-ogsb] .ec { background-color: #525252 !important; }
-    [data-ogsb] .ec p, [data-ogsb] .ec td, [data-ogsb] .ec span, [data-ogsb] .ec li { color: #E0E0E0 !important; }
-    [data-ogsb] .ec strong { color: #ffffff !important; }
-    [data-ogsb] .ec a { color: #D6F391 !important; }
-    [data-ogsb] .eh { background-color: #D6F391 !important; }
-    [data-ogsb] .eh p { color: #474747 !important; }
-    [data-ogsb] .eh p + p { color: rgba(71,71,71,0.65) !important; }
-    [data-ogsb] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsb] .ef { background-color: #383838 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsb] .ef p { color: #A1A1AA !important; }
-    [data-ogsb] .ef strong { color: #D6F391 !important; }
-    [data-ogsb] .ef a { color: #D6F391 !important; text-decoration: none !important; }
-    [data-ogsb] .ef .div-sep { border-color: rgba(255,255,255,0.10) !important; }
-    [data-ogsb] .ea td { background-color: rgba(246,191,62,0.10) !important; }
-    [data-ogsb] .ea p { color: #F6BF3E !important; }
-    [data-ogsb] .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    [data-ogsb] .ek a, [data-ogsb] .ek span { color: #D6F391 !important; }
-    [data-ogsb] .ek p { color: #E0E0E0 !important; }
-    [data-ogsb] .et { background-color: rgba(214,243,145,0.08) !important; }
-    [data-ogsb] .et td { color: #E0E0E0 !important; }
+    [data-ogsc] body, [data-ogsc] .email-body { background-color: #2E2E2E !important; }
+    [data-ogsc] .email-card { background-color: #384240 !important; }
+    [data-ogsc] .email-card p, [data-ogsc] .email-card td { color: #E0E8E6 !important; }
+    [data-ogsc] .email-card strong, [data-ogsc] .email-card h1 { color: #FFFFFF !important; }
+    [data-ogsc] .email-eyebrow { color: #D6F391 !important; }
+    [data-ogsc] .email-btn { background-color: #00827C !important; color: #FFFFFF !important; }
+    [data-ogsc] .email-footer p, [data-ogsc] .email-footer a { color: #8F9E9B !important; }
   </style>`
 
 function escaparHtml(valor: string): string {
@@ -101,42 +62,72 @@ function escaparHtml(valor: string): string {
   }[caracter] ?? caracter))
 }
 
+// ── Redes Sociales Oficiales ────────────────────────────────────────────────
+const SOCIAL_ICONS_HTML = `
+  <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin:16px auto 12px;">
+    <tr>
+      <!-- LinkedIn -->
+      <td style="padding:0 10px;">
+        <a href="https://www.linkedin.com/company/calculadora-de-reuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="LinkedIn Calculadora de Reúso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+      <!-- YouTube -->
+      <td style="padding:0 10px;">
+        <a href="https://www.youtube.com/@calculadoradereuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="YouTube Calculadora de Reúso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+      <!-- Instagram -->
+      <td style="padding:0 10px;">
+        <a href="https://www.instagram.com/calculadoradereuso" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="Instagram @calculadoradereuso">
+          <svg class="email-social-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="#8F9E9B"/>
+          </svg>
+        </a>
+      </td>
+    </tr>
+  </table>`
+
 // ── Bloque de alerta de seguridad ────────────────────────────────────────────
 const ALERTA_SEGURIDAD = (accion: string) => `
-<table class="ea" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:28px;">
   <tr>
-    <td style="background-color:#FFF8E6;border-radius:12px;padding:16px 20px;">
-      <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#474747;">🔔 ¿No lo pediste tú?</p>
-      <p style="margin:0;font-size:13px;color:#474747;line-height:1.65;">
-        Tranquilo, tu cuenta está segura.${accion ? ` Nadie puede usarla sin que tú lo hagas.` : ''} Solo ignora este correo${accion ? ` y no ${accion}` : ''}.
+    <td style="background-color:#FFFFFF;border-radius:16px;padding:18px 22px;text-align:left;">
+      <p style="margin:0 0 6px;font-size:13.5px;font-weight:700;color:${COLOR_NEGRO};text-align:left;">🔔 ¿No realizaste esta solicitud?</p>
+      <p style="margin:0;font-size:13px;color:${COLOR_LURDES};line-height:1.65;text-align:left;">
+        Tu cuenta está protegida.${accion ? ` Nadie puede acceder sin tu confirmación.` : ''} Puedes ignorar este correo${accion ? ` y no ${accion}` : ''}.
       </p>
     </td>
   </tr>
 </table>`
 
-// ── Plantilla base ────────────────────────────────────────────────────────────
+// ── Plantilla base del sistema de correos ─────────────────────────────────────
 function emailPlantilla({
   preheader,
   subtituloHeader,
   saludo,
   cuerpo,
-  contenidoCentral,
+  contenidoCentral = '',
   alertaAccion = 'compartas el código con nadie',
   mostrarAlerta = true,
   mostrarFirma = true,
   avisoPie,
 }: {
   preheader: string
-  subtituloHeader: string
+  subtituloHeader?: string
   saludo: string
-  cuerpo: string
-  contenidoCentral: string
+  cuerpo?: string
+  contenidoCentral?: string
   alertaAccion?: string
   mostrarAlerta?: boolean
   mostrarFirma?: boolean
   avisoPie?: string
 }): string {
-  const year = new Date().getFullYear()
   return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -145,55 +136,93 @@ function emailPlantilla({
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
   <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-  <title>${subtituloHeader}</title>
-</head>
-<body class="eo" style="margin:0;padding:0;background-color:#ffffff;font-family:'Open Sans',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <title>${saludo}</title>
   ${DARK_MODE_CSS}
+</head>
+<body class="email-body" style="margin:0;padding:0;background-color:${BG_PAGE};font-family:'Open Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <!-- Preheader oculto -->
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}&nbsp;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;&#8203;</div>
 
-  <table class="eo" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;">
+  <!-- Contenedor externo -->
+  <table class="email-body" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${BG_PAGE};">
     <tr>
-      <td align="center" style="padding:40px 20px 48px;">
+      <td align="center" style="padding:48px 16px 56px;">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;">
 
-          <!-- Cabecera - día: #00827C / noche: #D6F391 con texto #474747 -->
+          <!-- ── CABECERA: LOGO COMPLETO OFICIAL (Centrado con holgura) ── -->
           <tr>
-            <td class="eh" style="background-color:#00827C;border-radius:16px 16px 0 0;padding:28px 40px 24px;">
-              <p style="margin:0;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Calculadora de Reúso</p>
-              <p style="margin:6px 0 0;font-size:14px;font-weight:600;color:rgba(255,255,255,0.75);">${subtituloHeader}</p>
+            <td align="center" style="padding:0 0 32px;text-align:center;">
+              <a href="https://calculadoradereuso.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="Calculadora de Reúso">
+                <img src="https://calculadoradereuso.com/logo-completo.svg" alt="Calculadora de Reúso" width="148" height="41" style="display:block;margin:0 auto;max-width:148px;height:auto;border:0;outline:none;" />
+              </a>
             </td>
           </tr>
 
-          <!-- Cuerpo -->
+          <!-- ── EL CAJÓN (Fondo "muy agua" #E6F2F0, texto adentro a la izquierda, sin líneas) ── -->
           <tr>
-            <td class="ec" style="background-color:#ffffff;padding:36px 40px 40px;">
+            <td class="email-card" style="background-color:${BG_MUY_AGUA};border-radius:28px;padding:48px 44px 44px;text-align:left;">
 
-              <p style="margin:0 0 12px;font-size:22px;font-weight:700;color:#474747;line-height:1.3;">${saludo}</p>
-              ${cuerpo ? `<p style="margin:0 0 28px;font-size:15px;color:#474747;line-height:1.75;">${cuerpo}</p>` : ''}
+              <!-- Antetítulo: texto plano limpio (sin botón ni píldora) -->
+              ${subtituloHeader ? `
+              <p class="email-eyebrow" style="margin:0 0 14px;font-size:13px;font-weight:700;color:${COLOR_BRAND};letter-spacing:0.02em;text-align:left;font-family:'Open Sans',-apple-system,sans-serif;">
+                ${subtituloHeader}
+              </p>` : ''}
 
+              <!-- Título principal en Negro (#111111) a la izquierda -->
+              <h1 style="margin:0 0 20px;font-size:26px;font-weight:800;color:${COLOR_NEGRO};line-height:1.25;letter-spacing:-0.5px;text-align:left;">
+                ${saludo}
+              </h1>
+
+              <!-- Párrafo introductorio a la izquierda en Negro Lurdes (#474747) -->
+              ${cuerpo ? `<p style="margin:0 0 20px;font-size:15px;color:${COLOR_LURDES};line-height:1.75;text-align:left;">${cuerpo}</p>` : ''}
+
+              <!-- Contenido central (cajas de código, OTP o detalles) -->
               ${contenidoCentral}
 
-              ${mostrarFirma ? `<p style="margin:32px 0 0;font-size:14px;color:#474747;line-height:1.65;">Un saludo,<br><strong style="color:#474747;">El equipo de la Calculadora de Reúso</strong></p>` : ''}
+              <!-- Firma a la izquierda -->
+              ${mostrarFirma ? `
+              <div style="margin-top:28px;">
+                <p style="margin:0;font-size:14px;color:${COLOR_LURDES};line-height:1.65;text-align:left;">
+                  Un saludo,<br>
+                  <strong style="color:${COLOR_NEGRO};">El equipo de la Calculadora de Reúso</strong>
+                </p>
+              </div>` : ''}
 
+              <!-- Alerta de seguridad opcional -->
               ${mostrarAlerta ? ALERTA_SEGURIDAD(alertaAccion) : ''}
+
             </td>
           </tr>
 
-          <!-- Footer -->
+          <!-- ── DEBAJO DEL CAJÓN: TODO BIEN CENTRADO ── -->
           <tr>
-            <td class="ef" style="background-color:#F5FAFA;border-radius:0 0 16px 16px;padding:24px 36px;text-align:center;">
+            <td class="email-footer" align="center" style="padding:32px 16px 0;text-align:center;">
+
+              <!-- Texto explicativo de destinatario centrado -->
               ${avisoPie
                 ? (avisoPie.startsWith('<p')
                     ? avisoPie
-                    : `<p style="margin:0 0 16px;font-size:11px;color:#71717A;line-height:1.65;">${avisoPie}</p>`)
-                : `<p style="margin:0 0 16px;font-size:11px;color:#71717A;line-height:1.65;">
-                    Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing, por eso no incluye un enlace para darte de baja. Lo recibirás aunque hayas cancelado tu suscripción a correos de marketing.
+                    : `<p style="margin:0 auto 14px;font-size:11.5px;color:${COLOR_TEXT_MUTED};line-height:1.65;max-width:440px;text-align:center;">${avisoPie}</p>`)
+                : `<p style="margin:0 auto 14px;font-size:11.5px;color:${COLOR_TEXT_MUTED};line-height:1.65;max-width:440px;text-align:center;">
+                    Recibiste este correo porque tienes una cuenta en la Calculadora de Reúso. No tiene fines promocionales ni de marketing.
                   </p>`}
-              <div class="div-sep" style="border-top:1px solid #E5E7EB;margin:0 auto 16px;width:64px;"></div>
-              <p style="margin:0;font-size:11px;color:#8E8E93;line-height:1.7;">
-                © ${year} Grupo MLP S.A.S. · Todos los derechos reservados.<br>
-                <a href="https://calculadoradereuso.com" style="color:#00827C;text-decoration:none;font-weight:600;">calculadoradereuso.com</a>
+
+              <!-- Enlaces legales centrados (sin cancelar suscripción para transaccionales) -->
+              <p style="margin:0 auto 14px;font-size:11.5px;color:${COLOR_TEXT_MUTED};text-align:center;">
+                <a href="https://calculadoradereuso.com/terminos" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Términos</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="https://calculadoradereuso.com/privacidad" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Privacidad</a>
               </p>
+
+              <!-- Redes Sociales centradas -->
+              ${SOCIAL_ICONS_HTML}
+
+              <!-- Dirección legal centrada -->
+              <p style="margin:12px auto 0;font-size:11px;color:${COLOR_TEXT_MUTED};line-height:1.6;text-align:center;">
+                Grupo MLP S.A.S.<br>
+                Medellín, Colombia · <a href="https://calculadoradereuso.com" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">calculadoradereuso.com</a>
+              </p>
+
             </td>
           </tr>
 
@@ -203,6 +232,26 @@ function emailPlantilla({
   </table>
 </body>
 </html>`
+}
+
+// ── Botón CTA Centrado ───────────────────────────────────────────────────────
+function botonCorreo(href: string, texto: string, subtexto?: string): string {
+  return `
+<table align="center" cellpadding="0" cellspacing="0" border="0" style="margin:28px auto 12px;">
+  <tr>
+    <td align="center">
+      <a class="email-btn" href="${href}" style="display:inline-block;background-color:${COLOR_BRAND};color:#ffffff;text-decoration:none;padding:15px 42px;border-radius:100px;font-size:15px;font-weight:700;letter-spacing:-0.2px;text-align:center;">
+        ${texto}
+      </a>
+    </td>
+  </tr>
+  ${subtexto ? `
+  <tr>
+    <td align="center" style="padding-top:10px;">
+      <p style="margin:0;font-size:12px;color:${COLOR_TEXT_MUTED};text-align:center;">${subtexto}</p>
+    </td>
+  </tr>` : ''}
+</table>`
 }
 
 // ── Compatibilidad hacia atrás ────────────────────────────────────────────────
@@ -217,20 +266,20 @@ export function emailBase({
 }): string {
   const filasHtml = filas.map(f =>
     `<tr>
-      <td style="padding:5px 0;font-weight:700;color:#474747;width:100px;vertical-align:top;font-size:13px;">${f.label}</td>
-      <td style="padding:5px 0;color:#474747;font-size:13px;">${f.valor}</td>
+      <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:100px;vertical-align:top;font-size:13px;">${f.label}</td>
+      <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;">${f.valor}</td>
     </tr>`
   ).join('')
 
   const contenidoCentral = `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:16px;padding:18px 22px;">
   ${filasHtml}
 </table>
-<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">${descripcion}</p>`
+<p style="margin:0;font-size:14px;color:${COLOR_LURDES};line-height:1.75;text-align:left;">${descripcion}</p>`
 
   return emailPlantilla({
     preheader: subtitulo,
-    subtituloHeader: subtitulo,
+    subtituloHeader: 'Notificación',
     saludo: subtitulo,
     cuerpo: '',
     contenidoCentral,
@@ -239,9 +288,6 @@ export function emailBase({
 }
 
 // ── Correo de invitación de empresa ──────────────────────────────────────────
-// El id que devuelve Resend permite al webhook (/api/webhooks/resend) saber
-// exactamente a qué invitación corresponde cada evento de apertura/clic —
-// nunca se hace match por email o fecha, que puede repetirse.
 export async function enviarInvitacion(
   to: string,
   rawToken: string,
@@ -257,52 +303,35 @@ export async function enviarInvitacion(
   const link = `${APP_URL}/invitacion/${rawToken}`
 
   const saludoPersonal = nombreDestinatario
-    ? `¡Hola, ${nombreDestinatario}! 👋`
-    : '¡Hola! 👋'
+    ? `¡Hola, ${nombreDestinatario}!`
+    : '¡Hola!'
 
-  const boton = `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Aceptar invitación
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
-      </p>
-    </td>
-  </tr>
-</table>`
-
-  const bloqueExpiracion = `
-<p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
-  <strong>Recuerda:</strong> Este enlace expira en <strong>7 días</strong>.
-  Si no alcanzas a usarlo, pídele a tu administrador que genere uno nuevo.
-</p>`
+  const boton = botonCorreo(link, 'Aceptar invitación', `O copia este enlace: ${link}`)
 
   const bloqueCodigoOpcional = codigoEmpresa
-    ? `<table class="ek" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 0;">
+    ? `<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px auto 16px;max-width:400px;">
         <tr>
-          <td style="background-color:#F0F7F6;border-radius:12px;padding:16px 20px;text-align:center;">
-            <p style="margin:0 0 6px;font-size:12px;color:#474747;font-weight:600;">¿Prefieres registrarte con código?</p>
-            <span style="font-size:24px;font-weight:800;color:#00827C;letter-spacing:0.15em;">${codigoEmpresa}</span>
-            <p style="margin:6px 0 0;font-size:11px;color:#474747;">Úsalo en <a href="${APP_URL}/registro" style="color:#00827C;">${APP_URL}/registro</a></p>
+          <td style="background-color:${BG_BOX_WHITE};border-radius:18px;padding:22px 24px;text-align:center;">
+            <p style="margin:0 0 8px;font-size:12.5px;color:${COLOR_LURDES};font-weight:600;text-align:center;">¿Prefieres registrarte con código?</p>
+            <span style="display:inline-block;font-size:26px;font-weight:800;color:${COLOR_BRAND};letter-spacing:0.14em;font-family:'Open Sans',-apple-system,sans-serif;text-align:center;">${codigoEmpresa}</span>
+            <p style="margin:8px 0 0;font-size:11.5px;color:${COLOR_TEXT_MUTED};text-align:center;">Úsalo en <a href="${APP_URL}/registro" style="color:${COLOR_BRAND};text-decoration:none;font-weight:600;">${APP_URL}/registro</a></p>
           </td>
         </tr>
       </table>`
     : ''
 
+  const bloqueExpiracion = `
+<p style="margin:20px 0 0;font-size:12.5px;color:${COLOR_TEXT_MUTED};line-height:1.6;text-align:left;">
+  Recuerda que este enlace expira en <strong>7 días</strong>. Si no alcanzas a usarlo, pídele a tu administrador que genere uno nuevo.
+</p>`
+
   const contenidoCentral = boton + bloqueCodigoOpcional + bloqueExpiracion
 
   const html = emailPlantilla({
-    preheader: `${empresaNombre} te invitó a medir su impacto ambiental. Acepta y empieza hoy`,
+    preheader: `${empresaNombre} te invitó a medir su impacto ambiental. Acepta y empieza hoy.`,
     subtituloHeader: 'Invitación de equipo',
     saludo: saludoPersonal,
-    cuerpo: `<strong>${empresaNombre}</strong> te invitó a unirte a su equipo en la Calculadora de Reúso. Acepta la invitación y empieza a registrar el impacto ambiental de tu organización.`,
+    cuerpo: `<strong>${empresaNombre}</strong> te invitó a unirte a su equipo en la Calculadora de Reúso. Al aceptar, podrás colaborar en el registro de inventario, certificar el ahorro de CO₂ y gestionar el impacto ambiental de tu organización.`,
     contenidoCentral,
     alertaAccion: 'aceptes la invitación',
     mostrarAlerta: true,
@@ -338,34 +367,17 @@ export async function enviarInvitacionEmpresaAbierta(
   const link = `${APP_URL}/invitacion/${rawToken}`
   const planLabel = PLAN_LABELS_EMAIL[plan] ?? plan
 
-  const boton = `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Activar mi cuenta
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
-      </p>
-    </td>
-  </tr>
-</table>`
+  const boton = botonCorreo(link, 'Activar mi cuenta', `O copia este enlace: ${link}`)
 
   const bloqueExpiracion = `
-<p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
-  <strong>Recuerda:</strong> Este enlace expira en <strong>7 días</strong>.
-  Si no alcanzas a usarlo, pídele a tu contacto en Calculadora de Reúso que genere uno nuevo.
+<p style="margin:20px 0 0;font-size:12.5px;color:${COLOR_TEXT_MUTED};line-height:1.6;text-align:left;">
+  Recuerda que este enlace expira en <strong>7 días</strong>. Si no alcanzas a usarlo, pídele a tu contacto en la Calculadora de Reúso que genere uno nuevo.
 </p>`
 
   const html = emailPlantilla({
-    preheader: `Activa tu cuenta en el plan ${planLabel} y registra el impacto de tu empresa`,
-    subtituloHeader: 'Bienvenido a Calculadora de Reúso',
-    saludo: '¡Hola! 👋',
+    preheader: `Activa tu cuenta en el plan ${planLabel} y registra el impacto de tu empresa.`,
+    subtituloHeader: 'Bienvenido a la Calculadora de Reúso',
+    saludo: '¡Hola!',
     cuerpo: `Te dimos acceso al plan <strong>${planLabel}</strong> en la Calculadora de Reúso. Activa tu cuenta, crea tu empresa y empieza a registrar el impacto ambiental de tu organización.`,
     contenidoCentral: boton + bloqueExpiracion,
     alertaAccion: 'actives tu cuenta',
@@ -388,12 +400,6 @@ export async function enviarNotificacionTicket(
   destinatarios: string[],
   datos: { nombre?: string | null; email?: string | null; categoria: string; mensaje: string; numeroCaso?: string }
 ): Promise<void> {
-  // Bug real 2026-09-02: las pruebas e2e crean tickets de soporte reales
-  // (varias veces, en cada corrida) y este correo se le manda de verdad al
-  // super_admin real (tu propia cuenta) y a servicio@calculadoradereuso.com cada vez —
-  // el usuario reportó "muchos mensajes de soporte" y la causa era esta.
-  // SKIP_TEST_EMAILS=true (puesto por Playwright, ver playwright.config.ts)
-  // apaga el envío sin tocar el resto del flujo de creación del ticket.
   if (process.env.SKIP_TEST_EMAILS === 'true') return
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
@@ -401,31 +407,31 @@ export async function enviarNotificacionTicket(
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filasInfo = [
-    ...(datos.numeroCaso ? [{ label: 'Caso', valor: `<strong style="font-family:monospace;color:#00827C;font-size:14px;">${datos.numeroCaso}</strong>` }] : []),
+    ...(datos.numeroCaso ? [{ label: 'Caso', valor: `<strong style="color:${COLOR_BRAND};font-size:14px;">${datos.numeroCaso}</strong>` }] : []),
     { label: 'Usuario',   valor: datos.nombre ?? 'Sin nombre' },
-    { label: 'Correo',    valor: datos.email ? `<a href="mailto:${datos.email}" style="color:#00827C;">${datos.email}</a>` : 'No indicado' },
+    { label: 'Correo',    valor: datos.email ? `<a href="mailto:${datos.email}" style="color:${COLOR_BRAND};text-decoration:none;font-weight:600;">${datos.email}</a>` : 'No indicado' },
     { label: 'Categoría', valor: datos.categoria },
   ].map(f =>
     `<tr>
-      <td style="padding:5px 0;font-weight:700;color:#474747;width:90px;vertical-align:top;font-size:13px;">${f.label}</td>
-      <td style="padding:5px 0;color:#474747;font-size:13px;">${f.valor}</td>
+      <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:90px;vertical-align:top;font-size:13px;text-align:left;">${f.label}</td>
+      <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;text-align:left;">${f.valor}</td>
     </tr>`
   ).join('')
 
   const contenidoCentral = `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:20px 24px;">
   ${filasInfo}
 </table>
-<p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#474747;">Mensaje:</p>
-<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;white-space:pre-wrap;">${datos.mensaje}</p>`
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:${COLOR_NEGRO};text-align:left;">Mensaje:</p>
+<div class="email-inner-box" style="margin:0;padding:16px 20px;background-color:${BG_BOX_WHITE};border-radius:16px;font-size:13.5px;color:${COLOR_LURDES};line-height:1.7;white-space:pre-wrap;text-align:left;">${datos.mensaje}</div>`
 
   const casoPrefijo = datos.numeroCaso ? `[${datos.numeroCaso}] ` : ''
 
   const html = emailPlantilla({
-    preheader: `${casoPrefijo}Nuevo ticket. ${datos.categoria}. Responde desde el panel admin`,
-    subtituloHeader: 'Nuevo ticket de soporte',
-    saludo: '📬 Alguien necesita ayuda',
-    cuerpo: 'Llegó un mensaje desde el formulario de soporte. Aquí están los detalles:',
+    preheader: `${casoPrefijo}Nuevo ticket. ${datos.categoria}. Responde desde el panel admin.`,
+    subtituloHeader: 'Ticket de soporte',
+    saludo: 'Nuevo mensaje de soporte',
+    cuerpo: 'Llegó un mensaje desde el formulario de soporte. Aquí están los detalles para su gestión:',
     contenidoCentral,
     mostrarAlerta: false,
   })
@@ -467,42 +473,42 @@ export async function enviarConfirmacionConsultaLegal(
   })
 
   const contenidoCentral = `
-<div style="margin:0 0 24px;text-align:center;">
-  <span style="display:inline-block;padding:5px 14px;background-color:rgba(0,130,124,0.1);color:#00827C;font-size:12px;font-weight:700;border-radius:20px;letter-spacing:0.5px;">
-    Número de caso asignado
-  </span>
-  <div style="margin:10px 0 0;font-size:24px;font-weight:800;color:#00827C;font-family:monospace;letter-spacing:1.5px;">
-    ${casoSeguro}
-  </div>
-</div>
-
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+<table class="email-inner-box" align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;max-width:400px;">
   <tr>
-    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Asunto</td>
-    <td style="padding:6px 0;color:#474747;font-size:13px;">${tipoSeguro}</td>
-  </tr>
-  <tr>
-    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Fecha</td>
-    <td style="padding:6px 0;color:#474747;font-size:13px;">${fecha}</td>
-  </tr>
-  <tr>
-    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">Plazo estimado</td>
-    <td style="padding:6px 0;color:#00827C;font-weight:700;font-size:13px;">10 a 15 días hábiles</td>
+    <td style="background-color:${BG_BOX_WHITE};border-radius:18px;padding:22px 24px;text-align:center;">
+      <p style="margin:0 0 6px;font-size:12px;color:${COLOR_LURDES};font-weight:600;text-align:center;">Número de caso asignado</p>
+      <span style="display:inline-block;font-size:26px;font-weight:800;color:${COLOR_BRAND};letter-spacing:0.12em;font-family:'Open Sans',-apple-system,sans-serif;text-align:center;">
+        ${casoSeguro}
+      </span>
+      <p style="margin:8px 0 0;font-size:11.5px;color:${COLOR_TEXT_MUTED};text-align:center;">Plazo estimado de respuesta: 10 a 15 días hábiles</p>
+    </td>
   </tr>
 </table>
 
-<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:#474747;">Tu consulta:</p>
-<div style="margin:0;padding:14px;background-color:#FAFAFA;border:1px solid #E5E7EB;border-radius:8px;font-size:13px;color:#474747;line-height:1.6;">${mensajeSeguro}</div>
-`
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:18px 24px;">
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:100px;vertical-align:top;font-size:13px;text-align:left;">Asunto</td>
+    <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;text-align:left;">${tipoSeguro}</td>
+  </tr>
+  <tr>
+    <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:100px;vertical-align:top;font-size:13px;text-align:left;">Fecha</td>
+    <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;text-align:left;">${fecha}</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 8px;font-size:13px;font-weight:700;color:${COLOR_NEGRO};text-align:left;">Tu consulta:</p>
+<div class="email-inner-box" style="margin:0;padding:16px 20px;background-color:${BG_BOX_WHITE};border-radius:16px;font-size:13px;color:${COLOR_LURDES};line-height:1.65;text-align:left;">
+  ${mensajeSeguro}
+</div>`
 
   const html = emailPlantilla({
     preheader: `Caso ${casoSeguro} registrado. Confirmación de tu consulta legal.`,
     subtituloHeader: 'Consulta legal recibida',
     saludo: `Hola ${nombreSeguro}`,
-    cuerpo: `Hemos recibido tu consulta con éxito. Se ha generado un ticket de seguimiento oficial para nuestro equipo jurídico:`,
+    cuerpo: `Hemos recibido tu consulta con éxito. Se ha generado un radicado oficial para el seguimiento de nuestro equipo jurídico:`,
     contenidoCentral,
     mostrarAlerta: false,
-    avisoPie: `Este es un mensaje de confirmación automático. Para agregar información a tu caso, responde directamente a este correo citando el identificador <strong style="font-family:monospace;color:#00827C;">${casoSeguro}</strong>.`,
+    avisoPie: `Este es un mensaje de confirmación automático. Para agregar información a tu caso, responde a este correo citando el identificador <strong>${casoSeguro}</strong>.`,
   })
 
   const { data } = await resend.emails.send({
@@ -517,7 +523,6 @@ export async function enviarConfirmacionConsultaLegal(
 }
 
 // ── Firmas de documentos legales (invitación cerrada, un solo uso) ──────────
-
 export async function enviarInvitacionFirma(
   to: string,
   rawToken: string,
@@ -532,45 +537,28 @@ export async function enviarInvitacionFirma(
   const link = `${APP_URL}/legal/firma/${rawToken}`
   const nombreSeguro = escaparHtml(nombreDestinatario)
   const documentoSeguro = escaparHtml(documentoLabel)
-  const linkSeguro = escaparHtml(link)
 
-  const boton = `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${linkSeguro}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Revisar y firmar
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="${linkSeguro}" style="color:#00827C;word-break:break-all;font-size:11px;">${linkSeguro}</a>
-      </p>
-    </td>
-  </tr>
-</table>`
+  const boton = botonCorreo(link, 'Revisar y firmar', `O copia este enlace: ${link}`)
 
   const bloqueInformacion = `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
-  <tr><td style="padding:4px 0;font-size:13px;color:#474747;"><strong>Documento:</strong> ${documentoSeguro}</td></tr>
-  <tr><td style="padding:4px 0;font-size:13px;color:#474747;"><strong>Vigencia:</strong> 7 días · un solo uso</td></tr>
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:18px 24px;">
+  <tr><td style="padding:4px 0;font-size:13px;color:${COLOR_LURDES};text-align:left;"><strong style="color:${COLOR_NEGRO};">Documento:</strong> ${documentoSeguro}</td></tr>
+  <tr><td style="padding:4px 0;font-size:13px;color:${COLOR_LURDES};text-align:left;"><strong style="color:${COLOR_NEGRO};">Vigencia:</strong> 7 días · un solo uso</td></tr>
 </table>
-<p style="margin:0 0 12px;font-size:14px;font-weight:700;color:#474747;">Solo necesitas tres pasos:</p>
-<ol style="margin:0;padding-left:20px;font-size:13px;color:#474747;line-height:1.8;">
+<p style="margin:0 0 12px;font-size:14px;font-weight:700;color:${COLOR_NEGRO};text-align:left;">Pasos para completar tu firma:</p>
+<ol style="margin:0;padding-left:20px;font-size:13.5px;color:${COLOR_LURDES};line-height:1.8;text-align:left;">
   <li>Lee el acuerdo completo.</li>
   <li>Confirma tus datos y dibuja tu firma.</li>
-  <li>Recibe automáticamente una copia en PDF.</li>
+  <li>Recibe automáticamente una copia en PDF para tus registros.</li>
 </ol>
-<p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;">
+<p style="margin:20px 0 0;font-size:12.5px;color:${COLOR_TEXT_MUTED};line-height:1.6;text-align:left;">
   Por seguridad, esta invitación no contiene archivos adjuntos y nunca te pediremos contraseña, códigos de acceso ni pagos.
 </p>`
 
   const html = emailPlantilla({
-    preheader: `Tienes un ${documentoLabel} pendiente de firma en Calculadora de Reúso`,
+    preheader: `Tienes un ${documentoLabel} pendiente de firma en la Calculadora de Reúso.`,
     subtituloHeader: 'Solicitud de firma',
-    saludo: `Hola, ${nombreSeguro}.`,
+    saludo: `Hola, ${nombreSeguro}`,
     cuerpo: `Tienes una invitación personal para revisar y firmar el <strong>${documentoSeguro}</strong>. El enlace te lleva directamente a calculadoradereuso.com y, al finalizar, recibirás una copia en PDF.`,
     contenidoCentral: bloqueInformacion + boton,
     alertaAccion: 'abras ni firmes el documento',
@@ -604,22 +592,24 @@ export async function enviarConfirmacionFirma(
     { label: 'Fecha', valor: fecha },
   ].map(f =>
     `<tr>
-      <td style="padding:5px 0;font-weight:700;color:#474747;width:100px;vertical-align:top;font-size:13px;">${f.label}</td>
-      <td style="padding:5px 0;color:#474747;font-size:13px;">${f.valor}</td>
+      <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:100px;vertical-align:top;font-size:13px;text-align:left;">${f.label}</td>
+      <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;text-align:left;">${f.valor}</td>
     </tr>`
   ).join('')
 
   const contenidoCentral = `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:18px 24px;">
   ${filas}
 </table>
-<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">Adjuntamos tu copia en PDF. Verifica su autenticidad en <a href="https://calculadoradereuso.com/verificar" style="color:#00827C;">calculadoradereuso.com/verificar</a>.</p>`
+<p style="margin:0;font-size:13.5px;color:${COLOR_LURDES};line-height:1.7;text-align:left;">
+  Adjuntamos tu copia en PDF. Puedes verificar su autenticidad en cualquier momento en <a href="https://calculadoradereuso.com/verificar" style="color:${COLOR_BRAND};text-decoration:none;font-weight:600;">calculadoradereuso.com/verificar</a>.
+</p>`
 
   const html = emailPlantilla({
-    preheader: `Tu ${documentoLabel} quedó firmado. Adjuntamos tu copia en PDF`,
+    preheader: `Tu ${documentoLabel} quedó firmado. Adjuntamos tu copia en PDF.`,
     subtituloHeader: 'Documento firmado',
-    saludo: `¡Listo, ${nombreDestinatario}! ✅`,
-    cuerpo: `Firmaste tu ${documentoLabel}. Guarda esta copia para tus registros.`,
+    saludo: `¡Listo, ${nombreDestinatario}!`,
+    cuerpo: `Firmaste tu <strong>${documentoLabel}</strong> satisfactoriamente. Guarda esta copia para tus registros.`,
     contenidoCentral,
     mostrarAlerta: false,
   })
@@ -636,6 +626,7 @@ export async function enviarConfirmacionFirma(
   })
 }
 
+// ── Propuesta de cotización (Sector-agnóstica) ──────────────────────────────
 export async function enviarPropuestaCotizacion(
   to: string,
   nombreCliente: string | null,
@@ -650,39 +641,19 @@ export async function enviarPropuestaCotizacion(
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
-  const boton = `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${link}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Ver propuesta
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:12px;color:#474747;">O copia este enlace en tu navegador:<br>
-        <a href="${link}" style="color:#00827C;word-break:break-all;font-size:11px;">${link}</a>
-      </p>
-    </td>
-  </tr>
-</table>`
+  const boton = botonCorreo(link, 'Ver propuesta', `O copia este enlace: ${link}`)
 
   const bloqueMensaje = mensajeAsesor
-    ? `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;background-color:#F0F7F6;border-radius:10px;">
-  <tr>
-    <td style="padding:16px 20px;">
-      <p style="margin:0;font-size:14px;color:#474747;line-height:1.7;white-space:pre-line;">${mensajeAsesor}</p>
-    </td>
-  </tr>
-</table>`
+    ? `<div class="email-inner-box" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:20px 24px;text-align:left;">
+        <p style="margin:0;font-size:14px;color:${COLOR_LURDES};line-height:1.7;white-space:pre-line;text-align:left;">${mensajeAsesor}</p>
+      </div>`
     : ''
 
   const html = emailPlantilla({
-    preheader: `Tu propuesta de restauración de ${empresaNombre} ya está lista`,
+    preheader: `Tu propuesta de ${empresaNombre} ya está lista.`,
     subtituloHeader: 'Tu propuesta está lista',
     saludo: nombreCliente ? `¡Hola, ${nombreCliente}!` : '¡Hola!',
-    cuerpo: `${empresaNombre} preparó tu propuesta de restauración con el código <strong>${formatCodigoCotizacion(codigoCotizacion)}</strong>. Revisa los detalles en el enlace o abre el PDF que adjuntamos a este correo.`,
+    cuerpo: `<strong>${empresaNombre}</strong> preparó tu propuesta con el código <strong>${formatCodigoCotizacion(codigoCotizacion)}</strong>. Revisa los detalles en el enlace o abre el PDF que adjuntamos a este correo.`,
     contenidoCentral: bloqueMensaje + boton,
     mostrarAlerta: false,
   })
@@ -699,7 +670,7 @@ export async function enviarPropuestaCotizacion(
   })
 }
 
-// ── Confirmación de registro con código OTP de 8 dígitos y enlace directo ─────
+// ── Confirmación de registro con código OTP y enlace directo ────────────────
 export async function enviarConfirmacionRegistro(
   to: string,
   datos: {
@@ -714,51 +685,33 @@ export async function enviarConfirmacionRegistro(
   const resend = new Resend(process.env.RESEND_API_KEY)
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const nombreSeguro = datos.nombre ? escaparHtml(datos.nombre) : ''
-  const saludo = nombreSeguro ? `¡Hola, ${nombreSeguro}! 👋` : '¡Hola! 👋'
+  const saludo = nombreSeguro ? `¡Hola, ${nombreSeguro}!` : '¡Hola!'
 
-  const botonDirecto = `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:16px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${datos.enlaceConfirmacion}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        Activar mi cuenta
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" style="padding-top:12px;">
-      <p style="margin:0;font-size:12px;color:#71717A;">O copia este enlace en tu navegador:<br>
-        <a href="${datos.enlaceConfirmacion}" style="color:#00827C;word-break:break-all;font-size:11px;">${datos.enlaceConfirmacion}</a>
-      </p>
-    </td>
-  </tr>
-</table>`
+  const botonDirecto = botonCorreo(datos.enlaceConfirmacion, 'Activar mi cuenta', `O copia este enlace: ${datos.enlaceConfirmacion}`)
 
   const bloqueCodigo = datos.codigoOtp ? `
-<div style="margin-top:28px;padding-top:20px;border-top:1px dashed #E5E7EB;">
-  <p style="margin:0 0 12px;font-size:13px;color:#71717A;text-align:center;font-weight:600;">
-    ¿Prefieres ingresar el código en pantalla?
-  </p>
-  <table class="ek" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 12px;">
-    <tr>
-      <td style="background-color:#F0F7F6;border-radius:16px;padding:20px 20px;text-align:center;">
-        <span class="otp-text" style="display:inline-block;font-size:34px;font-weight:800;color:#00827C;letter-spacing:0.18em;">
-          <a href="#otp" style="color:inherit;text-decoration:none;">${
-            datos.codigoOtp.length === 8
-              ? `${datos.codigoOtp.slice(0, 4)}&thinsp;${datos.codigoOtp.slice(4)}`
-              : datos.codigoOtp
-          }</a>
-        </span>
-        <p style="margin:8px 0 0;font-size:12px;color:#71717A;">Expira en 10 minutos.</p>
-      </td>
-    </tr>
-  </table>
-</div>` : ''
+<table class="email-inner-box" align="center" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px auto 16px;max-width:400px;">
+  <tr>
+    <td style="background-color:${BG_BOX_WHITE};border-radius:18px;padding:24px 20px;text-align:center;">
+      <p style="margin:0 0 10px;font-size:12.5px;color:${COLOR_LURDES};font-weight:600;text-align:center;">
+        ¿Prefieres ingresar el código en pantalla?
+      </p>
+      <span class="otp-text" style="display:inline-block;font-size:36px;font-weight:800;color:${COLOR_BRAND};letter-spacing:0.14em;font-family:'Open Sans',-apple-system,sans-serif;text-align:center;">
+        <a href="#otp" style="color:inherit;text-decoration:none;">${
+          datos.codigoOtp.length === 8
+            ? `${datos.codigoOtp.slice(0, 4)}&thinsp;${datos.codigoOtp.slice(4)}`
+            : datos.codigoOtp
+        }</a>
+      </span>
+      <p style="margin:10px 0 0;font-size:11.5px;color:${COLOR_TEXT_MUTED};text-align:center;">Expira en 10 minutos.</p>
+    </td>
+  </tr>
+</table>` : ''
 
   const contenidoCentral = botonDirecto + bloqueCodigo
 
   const html = emailPlantilla({
-    preheader: 'Activa tu cuenta en la Calculadora de Reúso con un clic',
+    preheader: 'Activa tu cuenta en la Calculadora de Reúso con un clic.',
     subtituloHeader: 'Confirma tu correo',
     saludo,
     cuerpo: 'Te damos la bienvenida a la <strong>Calculadora de Reúso</strong>. Para activar tu cuenta y empezar a medir tu impacto ambiental, haz clic en el botón a continuación:',
@@ -779,22 +732,6 @@ export async function enviarConfirmacionRegistro(
 }
 
 // ── Página /eventos: seguimiento inmediato al lead y aviso interno ───────────
-
-function botonCorreo(href: string, texto: string): string {
-  return `
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
-  <tr>
-    <td align="center">
-      <a class="eb" href="${href}" style="display:inline-block;background-color:#00827C;color:#ffffff;text-decoration:none;padding:16px 44px;border-radius:100px;font-size:16px;font-weight:700;letter-spacing:-0.2px;">
-        ${texto}
-      </a>
-    </td>
-  </tr>
-</table>`
-}
-
-// Correo que recibe la persona apenas deja sus datos en /eventos. Saluda solo
-// por el primer nombre y menciona el evento programado en /admin/leads.
 export async function enviarSeguimientoEvento(
   to: string,
   datos: { nombre: string; empresa?: string | null; evento?: string | null }
@@ -808,23 +745,20 @@ export async function enviarSeguimientoEvento(
   const empresaSegura = datos.empresa ? escaparHtml(datos.empresa) : ''
   const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
 
-  // Saludo de cabecera y preheader
   const subtitulo = evento ? `Nos encontramos en ${evento}` : 'Quedamos en contacto'
   const preheader = evento
     ? `Nos encontramos en ${evento} y quedamos en contacto.`
     : 'Quedamos en contacto. Pronto te escribimos.'
 
-  // Texto introductorio
   const textoEmpresa = empresaSegura ? ` Recibimos los datos de <strong>${empresaSegura}</strong>.` : ''
   const cuerpo = evento
     ? `Nos encontramos en <strong>${evento}</strong> y quedamos en contacto.${textoEmpresa}`
     : `Quedamos en contacto.${textoEmpresa}`
 
-  // Botón + mensaje de cierre
   const contenidoCentral = `
 ${botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso')}
-<p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">
-  Pronto te escribiremos para mostrarte cómo medir el impacto ambiental de tu empresa con la Calculadora de Reúso.
+<p style="margin:20px 0 0;font-size:14px;color:${COLOR_LURDES};line-height:1.75;text-align:left;">
+  Pronto te escribiremos para mostrarte cómo medir el impacto ambiental y optimizar recursos con la Calculadora de Reúso.
 </p>`
 
   const html = emailPlantilla({
@@ -835,7 +769,7 @@ ${botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso
     contenidoCentral,
     mostrarAlerta: false,
     mostrarFirma: false,
-    avisoPie: 'Recibiste este correo porque dejaste tus datos en nuestra web. Es un mensaje único de seguimiento y no hace parte de una lista de correos.',
+    avisoPie: 'Recibiste este correo porque dejaste tus datos en nuestra web. Es un mensaje de seguimiento y no hace parte de una lista de correos masivos.',
   })
 
   const { data } = await resend.emails.send({
@@ -848,8 +782,7 @@ ${botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso
   return { resendEmailId: data?.id ?? null }
 }
 
-// Aviso interno: llega al equipo con un botón que abre WhatsApp con el mensaje
-// listo, porque no hay API de WhatsApp (basta un toque para enviarlo).
+// ── Aviso interno al equipo sobre nuevo lead ─────────────────────────────────
 export async function enviarAvisoLeadEvento(datos: {
   nombre: string
   empresa?: string | null
@@ -865,12 +798,12 @@ export async function enviarAvisoLeadEvento(datos: {
   const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const fila = (k: string, v: string) => v ? `
   <tr>
-    <td style="padding:6px 0;font-weight:700;color:#474747;width:110px;vertical-align:top;font-size:13px;">${k}</td>
-    <td style="padding:6px 0;color:#474747;font-size:13px;">${escaparHtml(v)}</td>
+    <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:110px;vertical-align:top;font-size:13px;text-align:left;">${k}</td>
+    <td style="padding:6px 0;color:${COLOR_LURDES};font-size:13px;text-align:left;">${escaparHtml(v)}</td>
   </tr>` : ''
 
   const contenidoCentral = `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:${BG_BOX_WHITE};border-radius:18px;padding:18px 24px;">
   ${fila('Nombre', datos.nombre)}
   ${fila('Empresa', datos.empresa ?? '')}
   ${fila('Celular', datos.celular ?? '')}
@@ -907,9 +840,3 @@ ${datos.whatsappUrl ? botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp') : 
   })
   return { resendEmailId: data?.id ?? null }
 }
-
-// Nota: enviarCorreoAdmin/emailMarketing/urlBaja (el envío masivo del panel
-// admin con su propio tracking de apertura/clic) se eliminaron junto con
-// /admin/correos (2026-09-06) — esa función pasa a Loops.so. Ver
-// conceptos/arquitectura-correos-2026-09-06 en el Vault.
-

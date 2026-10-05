@@ -39,10 +39,10 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         {/* Seravek: los títulos piden `seravek`, la fuente del sistema en Apple
-            (Mac/iPhone); en el resto cae a Open Sans (propia, public/fonts). El kit
-            de Typekit se quitó el 2026-10-03: entregaba `seravek-web`, un nombre que
-            ningún estilo usaba, así que nunca se aplicó y solo agregaba carga y CLS. */}
-        <link rel="preload" href="/fonts/open-sans-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+            (Mac/iPhone); en el resto cae a Open Sans (propia, public/fonts, con
+            font-display: swap). Sin <link rel="preload"> de la fuente a propósito:
+            Chrome espera a las fuentes precargadas antes del primer pintado y eso
+            retrasaba el FCP en celular de 0.4 s a 1.5 s (medido 2026-10-05). */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             // Día o noche lo decide SIEMPRE la configuración del dispositivo
