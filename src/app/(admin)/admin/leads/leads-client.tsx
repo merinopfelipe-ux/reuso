@@ -646,27 +646,23 @@ export function LeadsClient({
     startTransition(() => router.refresh())
   }
 
-  // ── Descargar Plantilla Oficial de Contactos CSV ──
-  function descargarPlantillaCSV() {
-    const cabeceras = 'Nombre,Apellido,Email,Teléfono,Empresa,Interés,Evento,Mensaje,Estado\n'
-    const ejemplo1 =
-      '"María Angélica","Betancur","maria@ejemplo.com","+57 300 1234567","Clothe S.A.S.","Plan Pro","Climate Week Medellín","Interesada en medición ambiental","nuevo"\n'
-    const ejemplo2 =
-      '"Carlos","Gómez","carlos@empresa.com","+57 311 9876543","EcoLogix","Cotización","","Solicita demo de cotizador","nuevo"\n'
-
-    const csvContent = '\uFEFF' + cabeceras + ejemplo1 + ejemplo2
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', 'plantilla-importacion-contactos.csv')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+  // ── Descargar Plantilla Oficial de Contactos en Excel ──
+  // Excel porque no todos abren CSV con facilidad; la importación acepta los dos.
+  async function descargarPlantillaExcel() {
+    const XLSX = await import('xlsx')
+    const filas = [
+      ['Nombre', 'Apellido', 'Email', 'Teléfono', 'Empresa', 'Interés', 'Evento', 'Mensaje', 'Estado'],
+      ['María Angélica', 'Betancur', 'maria@ejemplo.com', '+57 300 1234567', 'Clothe S.A.S.', 'Plan Pro', 'Climate Week Medellín', 'Interesada en medición ambiental', 'nuevo'],
+      ['Carlos', 'Gómez', 'carlos@empresa.com', '+57 311 9876543', 'EcoLogix', 'Cotización', '', 'Solicita demo de cotizador', 'nuevo'],
+    ]
+    const hoja = XLSX.utils.aoa_to_sheet(filas)
+    hoja['!cols'] = [18, 16, 26, 18, 20, 16, 24, 36, 12].map(wch => ({ wch }))
+    const libro = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(libro, hoja, 'Contactos')
+    XLSX.writeFile(libro, 'plantilla-importacion-contactos.xlsx')
   }
 
-  // ── Manejar Archivo CSV para Importación ──
+  // ── Manejar Archivo Excel o CSV para Importación ──
   function onSeleccionarArchivoCSV(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -675,29 +671,39 @@ export function LeadsClient({
     setExitoImportar('')
     setArchivoNombre(file.name)
 
+    const esExcel = /\.xlsx?$/i.test(file.name)
     const reader = new FileReader()
-    reader.onload = evt => {
+    reader.onload = async evt => {
       try {
-        const texto = String(evt.target?.result ?? '')
+        // Excel se convierte a CSV y pasa por la misma validación que un CSV.
+        let texto = ''
+        if (esExcel) {
+          const XLSX = await import('xlsx')
+          const libro = XLSX.read(evt.target?.result as ArrayBuffer, { type: 'array' })
+          texto = XLSX.utils.sheet_to_csv(libro.Sheets[libro.SheetNames[0]])
+        } else {
+          texto = String(evt.target?.result ?? '')
+        }
         const contactos = parsearCSVContactos(texto)
         if (contactos.length === 0) {
-          setErrorImportar('El archivo CSV no contiene registros válidos o está vacío.')
+          setErrorImportar('El archivo no contiene registros válidos o está vacío.')
           setContactosParseados([])
         } else {
           setContactosParseados(contactos)
         }
       } catch {
-        setErrorImportar('Error al procesar el archivo CSV. Verifica el formato.')
+        setErrorImportar('Error al procesar el archivo. Verifica que use las columnas de la plantilla.')
         setContactosParseados([])
       }
     }
-    reader.readAsText(file, 'utf-8')
+    if (esExcel) reader.readAsArrayBuffer(file)
+    else reader.readAsText(file, 'utf-8')
   }
 
   // ── Enviar Contactos Importados a la BD ──
   async function ejecutarImportacion() {
     if (contactosParseados.length === 0) {
-      setErrorImportar('Por favor selecciona un archivo CSV con al menos un contacto.')
+      setErrorImportar('Selecciona un archivo Excel o CSV con al menos un contacto.')
       return
     }
 
@@ -869,7 +875,7 @@ export function LeadsClient({
               setModalImportar(true)
             }}
             className="gap-1.5"
-            title="Importar contactos desde archivo CSV"
+            title="Importar contactos desde Excel o CSV"
           >
             <Upload size={13} />
             <span>Importar</span>
@@ -1279,7 +1285,7 @@ export function LeadsClient({
           abierto={modalImportar}
           onClose={() => setModalImportar(false)}
           titulo="Importar contactos"
-          descripcion="Carga prospectos comerciales en lote mediante un archivo CSV estructurado."
+          descripcion="Carga prospectos comerciales en lote mediante un archivo Excel o CSV."
           icono={<Upload size={20} />}
           ancho="lg"
           textoConfirmar={importando ? 'Importando...' : `Subir e importar (${contactosParseados.length})`}
@@ -1291,7 +1297,7 @@ export function LeadsClient({
             {/* Paso 1: Descargar Plantilla */}
             <div className="rounded-xl border border-(--border) bg-(--bg-table-header) p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold text-brand m-0">Plantilla CSV oficial</p>
+                <p className="text-xs font-bold text-brand m-0">Plantilla oficial en Excel</p>
                 <p className="text-xs text-(--text-secondary) m-0 mt-0.5">
                   Descarga el formato modelo con los encabezados exactos (Nombre, Apellido, Email, Teléfono, etc.).
                 </p>
@@ -1299,7 +1305,7 @@ export function LeadsClient({
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={descargarPlantillaCSV}
+                onClick={descargarPlantillaExcel}
                 className="gap-1.5 shrink-0"
               >
                 <Download size={13} />
@@ -1310,7 +1316,7 @@ export function LeadsClient({
             {/* Paso 2: Adjuntar Archivo CSV */}
             <div className="flex flex-col gap-2">
               <label className="text-xs font-semibold text-(--text-secondary)">
-                Selecciona tu archivo CSV completado
+                Selecciona tu archivo Excel o CSV completado
               </label>
 
               <div
@@ -1322,16 +1328,16 @@ export function LeadsClient({
                 </div>
                 <div className="flex flex-col gap-0.5">
                   <p className="text-xs font-semibold text-(--text-primary) m-0">
-                    {archivoNombre ? archivoNombre : 'Haz clic para seleccionar o arrastra tu archivo CSV'}
+                    {archivoNombre ? archivoNombre : 'Haz clic para seleccionar o arrastra tu archivo Excel o CSV'}
                   </p>
                   <p className="text-[11px] text-(--text-secondary) m-0">
-                    Archivos .csv delimitados por comas o punto y coma
+                    Archivos Excel (.xlsx) o CSV
                   </p>
                 </div>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".csv,text/csv"
+                  accept=".xlsx,.xls,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
                   onChange={onSeleccionarArchivoCSV}
                   className="hidden"
                 />
