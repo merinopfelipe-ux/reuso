@@ -885,10 +885,10 @@ function HeroImpactPanel({ isDark, tp, liquidGlass }: { isDark: boolean; tp: str
       }`}
     >
       {/* Blobs reactivos con desplazamiento dinámico contenido */}
-      <div data-blob data-mx="0.05" data-my="0.05" data-ms="0"
+      <div data-blob suppressHydrationWarning data-mx="0.05" data-my="0.05" data-ms="0"
         className={`absolute -top-10 -right-10 w-56 h-56 bg-[#59A6E4]/30 blur-[60px] rounded-full pointer-events-none transition-all duration-700 ${isHovered ? 'scale-110 opacity-90' : 'opacity-70'}`}
         style={{ willChange: 'transform' }} />
-      <div data-blob data-mx="-0.04" data-my="-0.04" data-ms="0"
+      <div data-blob suppressHydrationWarning data-mx="-0.04" data-my="-0.04" data-ms="0"
         className={`absolute -bottom-10 -left-10 w-48 h-48 bg-[#8AD0B2]/30 blur-[50px] rounded-full pointer-events-none transition-all duration-700 ${isHovered ? 'scale-110 opacity-90' : 'opacity-70'}`}
         style={{ willChange: 'transform' }} />
 
@@ -1765,10 +1765,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               }}
               className={`relative group p-5 sm:p-6 md:p-6 lg:p-8 rounded-2xl md:rounded-3xl lg:rounded-4xl overflow-hidden reveal-card hover-card-interactive ${liquidGlass}`}
             >
-              <div data-blob data-mx="0.04" data-my="0.04" data-ms="0"
+              <div data-blob suppressHydrationWarning data-mx="0.04" data-my="0.04" data-ms="0"
                 className="absolute -top-6 -right-6 w-32 h-32 bg-[#8AD0B2]/35 blur-[35px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
-              <div data-blob data-mx="-0.03" data-my="-0.03" data-ms="0"
+              <div data-blob suppressHydrationWarning data-mx="-0.03" data-my="-0.03" data-ms="0"
                 className="absolute -bottom-6 -left-6 w-28 h-28 bg-[#D6F391]/30 blur-[30px] rounded-full pointer-events-none"
                 style={{ willChange: 'transform' }} />
               <div className="flex gap-3 sm:gap-4 items-start">
@@ -2213,6 +2213,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                 <div
                   key={idx}
                   data-blob
+                  suppressHydrationWarning
                   data-mx={idx % 2 === 0 ? "0.04" : "-0.04"}
                   data-my={idx % 2 === 0 ? "0.04" : "-0.04"}
                   data-ms="0"
@@ -2580,8 +2581,9 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
                                     className="group w-full flex flex-col items-center gap-0.5 cursor-pointer"
                                     style={{ '--color-categoria': colorCategoria } as React.CSSProperties}
                                   >
-                                    <span className={`text-xs sm:text-[13px] font-semibold leading-tight text-balance break-words transition-colors group-hover:text-(--color-categoria) ${tp}`}>
-                                      {plan.name}
+                                    <span className={`text-xs sm:text-[13px] font-semibold leading-tight whitespace-pre-line transition-colors group-hover:text-(--color-categoria) ${tp}`}>
+                                      {/* Nombres de dos palabras siempre en dos renglones, para que todas las columnas se vean iguales (pedido de Felipe, 2026-10-05). */}
+                                      {plan.name.replace(' ', '\n')}
                                     </span>
                                     <span className={`text-[9px] font-semibold opacity-70 group-hover:opacity-100 group-hover:underline group-hover:text-(--color-categoria) ${ts}`}>
                                       Elegir →
@@ -2658,10 +2660,10 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             className={`relative p-6 sm:p-8 md:p-8 lg:p-12 rounded-2xl md:rounded-3xl lg:rounded-[2.5rem] overflow-hidden hover-card-interactive ${liquidGlass}`}
           >
             {/* Blobs de ambientación */}
-            <div data-blob data-mx="0.04" data-my="0.04" data-ms="0"
+            <div data-blob suppressHydrationWarning data-mx="0.04" data-my="0.04" data-ms="0"
               className="absolute -top-10 -right-10 w-52 h-52 bg-[#59A6E4]/25 blur-[50px] rounded-full pointer-events-none transition-transform duration-700"
               style={{ willChange: 'transform' }} />
-            <div data-blob data-mx="-0.04" data-my="-0.03" data-ms="0"
+            <div data-blob suppressHydrationWarning data-mx="-0.04" data-my="-0.03" data-ms="0"
               className="absolute -bottom-10 -left-10 w-48 h-48 bg-[#D6F391]/20 blur-[45px] rounded-full pointer-events-none transition-transform duration-700"
               style={{ willChange: 'transform' }} />
 
@@ -2938,6 +2940,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             {/* Blobs de ambientación contenidos estrictamente dentro de la tarjeta */}
             <div
               data-blob
+              suppressHydrationWarning
               data-mx="0.04"
               data-my="0.04"
               data-ms="0"
@@ -2946,6 +2949,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             />
             <div
               data-blob
+              suppressHydrationWarning
               data-mx="-0.04"
               data-my="-0.04"
               data-ms="0"
@@ -2954,6 +2958,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
             />
             <div
               data-blob
+              suppressHydrationWarning
               data-mx="-0.02"
               data-my="-0.02"
               data-ms="0"

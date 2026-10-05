@@ -136,6 +136,7 @@ export function LandingHeader({
                 width={140}
                 height={39}
                 className={`h-[35px] sm:h-[39px] w-auto shrink-0 transition-all duration-300 ${isDark ? 'brightness-0 invert' : ''}`}
+                style={{ width: 'auto' }}
                 priority
               />
             </Link>

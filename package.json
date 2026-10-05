@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run css:publico && NODE_OPTIONS='--max-old-space-size=4096' next dev",
+    "dev": "node scripts/generar-css-publico.mjs --vigilar & NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "dev:clean": "rm -rf .next && NODE_OPTIONS='--max-old-space-size=4096' next dev",
     "build": "npm run check-backgrounds && npm run css:publico && next build",
     "start": "next start",
