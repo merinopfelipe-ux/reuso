@@ -1034,196 +1034,201 @@ export function LeadsClient({
           </p>
         </div>
       ) : (
-        <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-x-auto shadow-xs">
-          <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
-            <thead>
-              <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
-                {/* Checkbox para seleccionar todos en la página actual */}
-                <th className="px-3 py-2.5 w-10 text-center">
-                  <button
-                    type="button"
-                    onClick={toggleSeleccionarTodos}
-                    className="inline-flex items-center justify-center cursor-pointer"
-                    title={todosSeleccionados ? 'Deseleccionar todos en esta página' : 'Seleccionar todos en esta página'}
-                  >
-                    {todosSeleccionados ? (
-                      <SquareCheck size={18} className="text-brand" />
-                    ) : (
-                      <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
-                    )}
-                  </button>
-                </th>
-                <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  Nombre
-                </SortTh>
-                <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  Empresa
-                </SortTh>
-                <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  Contacto
-                </SortTh>
-                <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  <div className="leading-tight">
-                    <span>Interés</span>
-                    <span className="block text-[11px] font-normal opacity-85">/ Evento</span>
-                  </div>
-                </SortTh>
-                <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  Fecha y hora
-                </SortTh>
-                <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ fontSize: '12px' }}>
-                  Estado
-                </SortTh>
-                <th className="px-3 py-2.5 w-12 text-center" aria-label="Acciones" />
-              </tr>
-            </thead>
-            <tbody>
-              {filtradosPaginados.map((lead, idx) => {
-                const { dia, hora } = formatearFechaLead(lead.created_at)
-                const estaSeleccionado = seleccionados.has(lead.id)
+        <div className="rounded-card border border-(--border) bg-(--bg-card) shadow-xs">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
+              <thead>
+                <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
+                  {/* Checkbox para seleccionar todos en la página actual */}
+                  <th className="px-3 py-2.5 w-10 text-center">
+                    <button
+                      type="button"
+                      onClick={toggleSeleccionarTodos}
+                      className="inline-flex items-center justify-center cursor-pointer"
+                      title={todosSeleccionados ? 'Deseleccionar todos en esta página' : 'Seleccionar todos en esta página'}
+                    >
+                      {todosSeleccionados ? (
+                        <SquareCheck size={18} className="text-brand" />
+                      ) : (
+                        <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
+                      )}
+                    </button>
+                  </th>
+                  <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '130px', maxWidth: '160px' }}>
+                    Nombre
+                  </SortTh>
+                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '120px', maxWidth: '150px' }}>
+                    Empresa
+                  </SortTh>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '160px', maxWidth: '200px' }}>
+                    Contacto
+                  </SortTh>
+                  <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', minWidth: '160px', maxWidth: '210px' }}>
+                    <div className="leading-tight">
+                      <span>Interés</span>
+                      <span className="block text-[11px] font-normal opacity-85">/ Evento</span>
+                    </div>
+                  </SortTh>
+                  <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', width: '110px' }}>
+                    Fecha y hora
+                  </SortTh>
+                  <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ padding: '8px 12px', fontSize: '12px', width: '130px' }}>
+                    Estado
+                  </SortTh>
+                  <th className="px-2 py-2.5 w-10 text-center" aria-label="Acciones" />
+                </tr>
+              </thead>
+              <tbody>
+                {filtradosPaginados.map((lead, idx) => {
+                  const { dia, hora } = formatearFechaLead(lead.created_at)
+                  const estaSeleccionado = seleccionados.has(lead.id)
 
-                return (
-                  <tr
-                    key={lead.id}
-                    className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${
-                      idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
-                    }`}
-                    style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
-                  >
-                    {/* Checkbox de selección individual */}
-                    <td className="px-3 py-3 text-center" onClick={e => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        onClick={() => toggleSeleccionado(lead.id)}
-                        className="inline-flex items-center justify-center cursor-pointer"
-                        title={estaSeleccionado ? 'Deseleccionar prospecto' : 'Seleccionar prospecto'}
+                  return (
+                    <tr
+                      key={lead.id}
+                      className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${
+                        idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'
+                      }`}
+                      style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
+                    >
+                      {/* Checkbox de selección individual */}
+                      <td className="px-3 py-3 text-center align-top w-10" onClick={e => e.stopPropagation()}>
+                        <button
+                          type="button"
+                          onClick={() => toggleSeleccionado(lead.id)}
+                          className="inline-flex items-center justify-center cursor-pointer"
+                          title={estaSeleccionado ? 'Deseleccionar prospecto' : 'Seleccionar prospecto'}
+                        >
+                          {estaSeleccionado ? (
+                            <SquareCheck size={18} className="text-brand" />
+                          ) : (
+                            <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
+                          )}
+                        </button>
+                      </td>
+
+                      {/* Nombre completo (hasta 3 líneas) */}
+                      <td
+                        className="px-3.5 py-3 align-top"
+                        style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        {estaSeleccionado ? (
-                          <SquareCheck size={18} className="text-brand" />
-                        ) : (
-                          <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
-                        )}
-                      </button>
-                    </td>
+                        <div className="max-w-[160px] leading-tight break-words line-clamp-3 text-xs font-semibold text-(--text-primary)">
+                          {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
+                        </div>
+                      </td>
 
-                    {/* Nombre completo */}
-                    <td
-                      className="px-4 py-3 text-(--text-primary) font-semibold whitespace-nowrap"
-                      style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
-                    </td>
+                      {/* Empresa (hasta 3 líneas) */}
+                      <td
+                        className="px-3.5 py-3 align-top"
+                        style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
+                      >
+                        <div className="max-w-[150px] leading-tight break-words line-clamp-3 text-xs text-(--text-secondary)">
+                          {lead.empresa || <span className="opacity-40">-</span>}
+                        </div>
+                      </td>
 
-                    {/* Empresa */}
-                    <td
-                      className="px-4 py-3 text-(--text-secondary) whitespace-nowrap"
-                      style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      {lead.empresa || <span className="opacity-40">-</span>}
-                    </td>
+                      {/* Contacto (Email + Teléfono organizado en líneas) */}
+                      <td
+                        className="px-3.5 py-3 align-top"
+                        style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
+                      >
+                        <div className="max-w-[200px] flex flex-col gap-1 leading-tight text-xs text-(--text-secondary)">
+                          {lead.email && (
+                            <span className="inline-flex items-start gap-1.5 break-all">
+                              <Envelope size={12} className="text-(--text-secondary) shrink-0 mt-0.5" />
+                              <a
+                                href={`mailto:${lead.email}`}
+                                className="text-(--text-primary) hover:text-brand hover:underline"
+                              >
+                                {lead.email}
+                              </a>
+                            </span>
+                          )}
+                          {lead.telefono && (
+                            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                              <Phone size={12} className="text-(--text-secondary) shrink-0" />
+                              <span>{lead.telefono}</span>
+                            </span>
+                          )}
+                          {!lead.email && !lead.telefono && <span className="opacity-40">-</span>}
+                        </div>
+                      </td>
 
-                    {/* Contacto (Email + Teléfono) */}
-                    <td
-                      className="px-4 py-3 text-(--text-secondary)"
-                      style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      <div className="flex flex-col gap-1 text-xs">
-                        {lead.email && (
-                          <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                            <Envelope size={12} className="text-(--text-secondary) shrink-0" />
-                            <a
-                              href={`mailto:${lead.email}`}
-                              className="text-(--text-primary) hover:text-brand hover:underline"
+                      {/* Interés / Evento organizado en 2-4 líneas sin ensanchar */}
+                      <td
+                        className="px-3.5 py-3 align-top text-xs"
+                        style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
+                      >
+                        <div className="max-w-[210px] flex flex-col leading-tight">
+                          {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
+                            <span className="font-medium text-(--text-primary) break-words line-clamp-2" title={lead.interes}>
+                              {lead.interes}
+                            </span>
+                          ) : null}
+                          {lead.evento_nombre ? (
+                            <span
+                              className={`text-(--text-secondary) text-[11px] break-words line-clamp-2 ${
+                                lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-1' : ''
+                              }`}
+                              title={`Evento: ${lead.evento_nombre}`}
                             >
-                              {lead.email}
-                            </a>
-                          </span>
-                        )}
-                        {lead.telefono && (
-                          <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
-                            <Phone size={12} className="text-(--text-secondary) shrink-0" />
-                            <span>{lead.telefono}</span>
-                          </span>
-                        )}
-                        {!lead.email && !lead.telefono && <span className="opacity-40">-</span>}
-                      </div>
-                    </td>
+                              Evento: {lead.evento_nombre}
+                            </span>
+                          ) : !lead.interes || lead.interes.toLowerCase() === 'eventos' ? (
+                            <span className="opacity-40">-</span>
+                          ) : null}
+                        </div>
+                      </td>
 
-                    {/* Interés / Evento en dos líneas para ahorrar espacio horizontal */}
-                    <td
-                      className="px-4 py-3 text-xs"
-                      style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      <div className="flex flex-col leading-tight max-w-[200px]">
-                        {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
-                          <span className="font-medium text-(--text-primary) truncate" title={lead.interes}>
-                            {lead.interes}
-                          </span>
-                        ) : null}
-                        {lead.evento_nombre ? (
-                          <span
-                            className={`text-(--text-secondary) text-[11px] truncate ${
-                              lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5' : ''
-                            }`}
-                            title={`Evento: ${lead.evento_nombre}`}
-                          >
-                            Evento: {lead.evento_nombre}
-                          </span>
-                        ) : !lead.interes || lead.interes.toLowerCase() === 'eventos' ? (
-                          <span className="opacity-40">-</span>
-                        ) : null}
-                      </div>
-                    </td>
+                      {/* Fecha y hora en dos líneas */}
+                      <td
+                        className="px-3.5 py-3 whitespace-nowrap align-top text-xs w-[110px]"
+                        style={{ background: sort.col === 'created_at' ? 'var(--table-orden-activo)' : undefined }}
+                      >
+                        <div className="flex flex-col leading-tight">
+                          <span className="font-medium text-(--text-primary)">{dia}</span>
+                          <span className="text-(--text-secondary) text-[11px] mt-0.5">{hora}</span>
+                        </div>
+                      </td>
 
-                    {/* Fecha y hora en dos líneas */}
-                    <td
-                      className="px-4 py-3 whitespace-nowrap text-xs"
-                      style={{ background: sort.col === 'created_at' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      <div className="flex flex-col leading-tight">
-                        <span className="font-medium text-(--text-primary)">{dia}</span>
-                        <span className="text-(--text-secondary) text-[11px] mt-0.5">{hora}</span>
-                      </div>
-                    </td>
+                      {/* Selector de Estado Portal-based */}
+                      <td
+                        className="px-3.5 py-3 whitespace-nowrap align-top w-[130px]"
+                        style={{ background: sort.col === 'estado' ? 'var(--table-orden-activo)' : undefined }}
+                      >
+                        <EstadoDropdownLead
+                          estado={lead.estado}
+                          cambiando={cambiando === lead.id}
+                          onCambiar={nuevo => cambiarEstado(lead.id, nuevo)}
+                        />
+                      </td>
 
-                    {/* Selector de Estado Portal-based (Sin solapamientos) */}
-                    <td
-                      className="px-4 py-3 whitespace-nowrap"
-                      style={{ background: sort.col === 'estado' ? 'var(--table-orden-activo)' : undefined }}
-                    >
-                      <EstadoDropdownLead
-                        estado={lead.estado}
-                        cambiando={cambiando === lead.id}
-                        onCambiar={nuevo => cambiarEstado(lead.id, nuevo)}
-                      />
-                    </td>
-
-                    {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
-                    <td className="px-3 py-3 text-center whitespace-nowrap">
-                      <MenuTresPuntosLead
-                        onEditar={() => abrirEdicion(lead)}
-                        onWhatsApp={() => abrirWhatsApp(lead)}
-                        onEliminar={() => {
-                          setErrorEliminarIndividual('')
-                          setLeadAEliminar(lead)
-                        }}
-                      />
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+                      {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
+                      <td className="px-2 py-3 text-center whitespace-nowrap align-top w-10">
+                        <MenuTresPuntosLead
+                          onEditar={() => abrirEdicion(lead)}
+                          onWhatsApp={() => abrirWhatsApp(lead)}
+                          onEliminar={() => {
+                            setErrorEliminarIndividual('')
+                            setLeadAEliminar(lead)
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
 
           {/* ── Paginación Canónica del Sistema de Diseño (Pie de Tabla) ── */}
           <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-(--border)">
             <span
-              className="text-xs whitespace-nowrap overflow-hidden text-ellipsis min-w-0 text-(--text-secondary)"
-              style={{ flexShrink: 1 }}
+              className="text-xs whitespace-nowrap text-(--text-secondary) shrink-0"
             >
               {totalFiltrados} {totalFiltrados === 1 ? 'prospecto' : 'prospectos'} · Página {pagina} de {totalPaginas}
             </span>
-            <div className="min-w-0 max-w-full overflow-x-auto">
+            <div className="shrink-0">
               <Pagination
                 page={pagina}
                 totalPages={totalPaginas}

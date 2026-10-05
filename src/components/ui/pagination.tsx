@@ -96,7 +96,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
             {porPagina} por página <CaretDown size={14} sinAnimacion />
           </button>
           {abierto && (
-            <div className="absolute right-0 top-full mt-1 rounded-btn border p-1 z-30 bg-(--bg-card) border-(--border) shadow-lg">
+            <div className="absolute right-0 bottom-full mb-1.5 rounded-xl border p-1 z-50 bg-(--bg-card) border-(--border) shadow-xl min-w-[130px]">
               {/* Solo se muestran las opciones a las que SÍ se puede cambiar
                   — la que ya está activa no aparece en su propia lista,
                   directriz explícita del usuario. */}
@@ -105,7 +105,7 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
                   key={n}
                   type="button"
                   onClick={() => { onPorPaginaChange(n); setAbierto(false) }}
-                  className="block w-full text-left px-3 py-1.5 rounded-[6px] text-sm text-(--text-primary)"
+                  className="block w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold text-(--text-primary) hover:bg-(--bg-hover) cursor-pointer transition-colors"
                 >
                   {n} por página
                 </button>

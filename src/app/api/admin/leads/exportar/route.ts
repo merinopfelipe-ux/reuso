@@ -26,7 +26,15 @@ function generarCSV(filas: FilaExport[]): Buffer {
   const csv = [
     CABECERAS.join(','),
     ...filas.map((f) =>
-      CABECERAS_KEY.map((k) => `"${String(f[k as keyof FilaExport] ?? '').replace(/"/g, '""')}"`).join(',')
+      CABECERAS_KEY.map((k) => {
+        const val = String(f[k as keyof FilaExport] ?? '').trim()
+        if (k === 'telefono' && val) {
+          // Si empieza por +, anteponer apóstrofe en CSV para que Excel no lo evalúe como fórmula matemática (#NAME?)
+          const telFormateado = val.startsWith('+') ? `'${val}` : val
+          return `"${telFormateado.replace(/"/g, '""')}"`
+        }
+        return `"${val.replace(/"/g, '""')}"`
+      }).join(',')
     ),
   ].join('\n')
   return Buffer.from('\uFEFF' + csv, 'utf-8')
@@ -38,7 +46,7 @@ function generarXLSX(filas: FilaExport[]): Buffer {
     filas.map((f) => ({
       Nombre: f.nombre,
       Email: f.email,
-      Teléfono: f.telefono,
+      Teléfono: f.telefono ? String(f.telefono).trim() : '',
       Empresa: f.empresa,
       Interés: f.interes,
       Evento: f.evento,
@@ -46,6 +54,28 @@ function generarXLSX(filas: FilaExport[]): Buffer {
       Fecha: f.fecha,
     }))
   )
+
+  // Configurar anchos de columna óptimos
+  ws['!cols'] = [
+    { wch: 25 }, // Nombre
+    { wch: 30 }, // Email
+    { wch: 20 }, // Teléfono
+    { wch: 25 }, // Empresa
+    { wch: 32 }, // Interés
+    { wch: 26 }, // Evento
+    { wch: 15 }, // Estado
+    { wch: 14 }, // Fecha
+  ]
+
+  // Forzar tipo texto explícito en la columna C (Teléfono) para evitar notación científica y errores de formato
+  for (let r = 2; r <= filas.length + 1; r++) {
+    const ref = `C${r}`
+    if (ws[ref]) {
+      ws[ref].t = 's' // tipo string nativo
+      ws[ref].z = '@' // formato texto en Excel
+    }
+  }
+
   utils.book_append_sheet(wb, ws, 'Prospectos')
   return write(wb, { bookType: 'xlsx', type: 'buffer' }) as Buffer
 }
@@ -62,9 +92,19 @@ function generarPDF(filas: FilaExport[]): Buffer {
     head: [CABECERAS],
     body: filas.map((f) => CABECERAS_KEY.map((k) => String(f[k as keyof FilaExport] ?? ''))),
     startY: 28,
-    styles: { fontSize: 8, cellPadding: 2 },
+    styles: { fontSize: 8, cellPadding: 2.5, overflow: 'linebreak' },
     headStyles: { fillColor: [0, 130, 124], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [245, 250, 249] },
+    columnStyles: {
+      0: { cellWidth: 32 }, // Nombre
+      1: { cellWidth: 42 }, // Email
+      2: { cellWidth: 26 }, // Teléfono
+      3: { cellWidth: 32 }, // Empresa
+      4: { cellWidth: 42 }, // Interés
+      5: { cellWidth: 35 }, // Evento
+      6: { cellWidth: 20 }, // Estado
+      7: { cellWidth: 20 }, // Fecha
+    },
   })
   return Buffer.from(doc.output('arraybuffer'))
 }
