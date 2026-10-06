@@ -31,6 +31,8 @@ import { Selector } from '@/components/ui/selector'
 import { Pagination } from '@/components/ui/pagination'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
+import { InputTelefono } from '@/components/ui/input-telefono'
+import { normalizarTelefono, separarTelefonoEIndicativo } from '@/lib/telefono'
 import type { SortState } from '@/lib/use-sortable'
 
 const ESTADOS = ['nuevo', 'contactado', 'convertido', 'descartado'] as const
@@ -143,24 +145,6 @@ function partirNombreCompleto(nombreCompleto: string | null | undefined): { nomb
 }
 
 /** Parser de CSV robusto para importación de contactos */
-// Deja todo teléfono con indicativo de país y separado, para que se vea igual
-// venga de donde venga. Un número colombiano sin indicativo (10 dígitos que
-// empiezan por 3) recibe +57; el resto conserva el indicativo que ya traía.
-function normalizarTelefono(valor: string): string {
-  const crudo = valor.trim()
-  if (!crudo) return ''
-  const digitos = crudo.replace(/\D/g, '')
-  if (!digitos) return ''
-  let conPais = digitos
-  if (!crudo.startsWith('+')) {
-    if (digitos.length === 10 && digitos.startsWith('3')) conPais = `57${digitos}`
-    else if (digitos.length === 7) return crudo // fijo local, se deja como está
-  }
-  if (conPais.length === 12 && conPais.startsWith('57')) {
-    return `+57 ${conPais.slice(2, 5)} ${conPais.slice(5, 8)} ${conPais.slice(8)}`
-  }
-  return `+${conPais}`
-}
 
 function parsearCSVContactos(texto: string): ContactoParseado[] {
   const limpio = texto.replace(/^\uFEFF/, '').trim()
@@ -306,6 +290,7 @@ export function LeadsClient({
 
   // ── Modal de nuevo contacto manual ──
   const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
+  const [crearIndicativo, setCrearIndicativo] = useState('+57')
   const [formCrear, setFormCrear] = useState({
     nombre: '',
     apellido: '',
@@ -322,6 +307,7 @@ export function LeadsClient({
 
   // ── Modal de edición de contacto con Nombre y Apellido separados ──
   const [leadEditando, setLeadEditando] = useState<Lead | null>(null)
+  const [editIndicativo, setEditIndicativo] = useState('+57')
   const [formEdit, setFormEdit] = useState({
     id: '',
     nombre: '',
@@ -592,6 +578,7 @@ export function LeadsClient({
   // ── Crear manual ──
   function abrirCrear() {
     setErrorCrear('')
+    setCrearIndicativo('+57')
     setFormCrear({
       nombre: '',
       apellido: '',
@@ -616,13 +603,17 @@ export function LeadsClient({
     setGuardandoCrear(true)
     setErrorCrear('')
 
+    const telCompleto = formCrear.telefono.trim()
+      ? normalizarTelefono(crearIndicativo ? `${crearIndicativo} ${formCrear.telefono}` : formCrear.telefono)
+      : null
+
     const res = await fetch('/api/admin/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre: nombreCompleto,
         email: formCrear.email.trim() || null,
-        telefono: formCrear.telefono.trim() || null,
+        telefono: telCompleto,
         empresa: formCrear.empresa.trim() || null,
         interes: formCrear.interes.trim() || null,
         evento_nombre: formCrear.evento_nombre.trim() || null,
@@ -647,13 +638,15 @@ export function LeadsClient({
   // ── Editar contacto ──
   function abrirEdicion(lead: Lead) {
     const { nombre, apellido } = partirNombreCompleto(lead.nombre)
+    const { indicativo, numero } = separarTelefonoEIndicativo(lead.telefono)
     setErrorEdit('')
+    setEditIndicativo(indicativo)
     setFormEdit({
       id: lead.id,
       nombre,
       apellido,
       email: lead.email ?? '',
-      telefono: lead.telefono ?? '',
+      telefono: numero,
       empresa: lead.empresa ?? '',
       interes: lead.interes ?? '',
       evento_nombre: lead.evento_nombre ?? '',
@@ -674,13 +667,17 @@ export function LeadsClient({
     setGuardandoEdit(true)
     setErrorEdit('')
 
+    const telCompleto = formEdit.telefono.trim()
+      ? normalizarTelefono(editIndicativo ? `${editIndicativo} ${formEdit.telefono}` : formEdit.telefono)
+      : null
+
     const res = await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre: nombreCompleto,
         email: formEdit.email.trim() || null,
-        telefono: formEdit.telefono.trim() || null,
+        telefono: telCompleto,
         empresa: formEdit.empresa.trim() || null,
         interes: formEdit.interes.trim() || null,
         evento_nombre: formEdit.evento_nombre.trim() || null,
@@ -1133,25 +1130,25 @@ export function LeadsClient({
                       )}
                     </button>
                   </th>
-                  <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '100px', maxWidth: '130px' }}>
+                  <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '100px', maxWidth: '130px' }}>
                     Nombre
                   </SortTh>
-                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '90px', maxWidth: '120px' }}>
+                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '90px', maxWidth: '120px' }}>
                     Empresa
                   </SortTh>
-                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '170px', maxWidth: '200px' }}>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '170px', maxWidth: '200px' }}>
                     Contacto
                   </SortTh>
-                  <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', minWidth: '110px', maxWidth: '140px' }}>
+                  <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '110px', maxWidth: '140px' }}>
                     <div className="leading-tight">
                       <span>Interés</span>
-                      <span className="block text-[10px] font-normal opacity-85">/ Evento</span>
+                      <span className="block text-[11px] font-normal opacity-85">/ Evento</span>
                     </div>
                   </SortTh>
-                  <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', width: '85px' }}>
+                  <SortTh col="created_at" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', width: '85px' }}>
                     Fecha
                   </SortTh>
-                  <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '11px', width: '100px' }}>
+                  <SortTh col="estado" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', width: '100px' }}>
                     Estado
                   </SortTh>
                   <th className="px-1 py-2 w-8 text-center" aria-label="Acciones" />
@@ -1201,7 +1198,7 @@ export function LeadsClient({
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[120px] leading-tight break-words line-clamp-3 text-sm text-(--text-secondary)">
+                        <div className="max-w-[120px] leading-tight break-words text-sm text-(--text-secondary)">
                           {lead.empresa || <span className="opacity-40">-</span>}
                         </div>
                       </td>
@@ -1217,12 +1214,14 @@ export function LeadsClient({
                               <Envelope size={11} className="text-(--text-secondary) shrink-0" />
                               <a
                                 href={`mailto:${lead.email}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 title={lead.email}
                                 // Un correo largo se corta con puntos suspensivos para no
                                 // ensanchar la tabla, pero se ve completo al pasar el cursor
                                 // y se puede seleccionar con el mouse para copiarlo
                                 // (select-text, pedido de Felipe 2026-10-05).
-                                className="text-(--text-primary) hover:text-brand hover:underline font-medium text-sm truncate select-text max-w-[190px] xl:max-w-[260px]"
+                                className="text-(--text-primary) hover:text-brand hover:underline font-normal text-sm truncate select-text max-w-[190px] xl:max-w-[260px]"
                               >
                                 {lead.email}
                               </a>
@@ -1234,7 +1233,7 @@ export function LeadsClient({
                               href={
                                 lead.usuario_whatsapp?.trim()
                                   ? `https://wa.me/${encodeURIComponent(lead.usuario_whatsapp.trim().replace(/^@/, ''))}`
-                                  : `https://wa.me/${lead.telefono.replace(/\D/g, '')}`
+                                  : `https://wa.me/${normalizarTelefono(lead.telefono).replace(/\D/g, '')}`
                               }
                               target="_blank"
                               rel="noopener noreferrer"
@@ -1242,7 +1241,7 @@ export function LeadsClient({
                               title="Abrir chat de WhatsApp con este prospecto"
                             >
                               <WhatsappLogo size={11} className="text-(--text-secondary) shrink-0" />
-                              <span className="hover:underline">{lead.telefono}</span>
+                              <span className="hover:underline">{normalizarTelefono(lead.telefono)}</span>
                             </a>
                           ) : null}
 
@@ -1599,16 +1598,13 @@ export function LeadsClient({
               </div>
 
               <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp (solo admin)</label>
-                  <span className="text-[10px] text-brand font-medium">Uso interno</span>
-                </div>
-                <input
-                  type="tel"
-                  value={formCrear.telefono}
-                  onChange={e => setFormCrear(p => ({ ...p, telefono: e.target.value }))}
-                  placeholder="+57 300 123 4567"
-                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+                <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp</label>
+                <InputTelefono
+                  indicativo={crearIndicativo}
+                  onChangeIndicativo={setCrearIndicativo}
+                  telefono={formCrear.telefono}
+                  onChangeTelefono={tel => setFormCrear(p => ({ ...p, telefono: tel }))}
+                  placeholder="300 123 4567"
                 />
               </div>
             </div>
@@ -1734,20 +1730,14 @@ export function LeadsClient({
               </div>
 
               <div className="flex flex-col gap-1">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp (solo admin)</label>
-                  <span className="text-[10px] text-brand font-medium">Uso interno</span>
-                </div>
-                <input
-                  type="tel"
-                  value={formEdit.telefono}
-                  onChange={e => setFormEdit(p => ({ ...p, telefono: e.target.value }))}
-                  placeholder="+57 300 123 4567"
-                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+                <label className="text-xs font-semibold text-(--text-secondary)">Celular / WhatsApp</label>
+                <InputTelefono
+                  indicativo={editIndicativo}
+                  onChangeIndicativo={setEditIndicativo}
+                  telefono={formEdit.telefono}
+                  onChangeTelefono={tel => setFormEdit(p => ({ ...p, telefono: tel }))}
+                  placeholder="300 123 4567"
                 />
-                <span className="text-[11px] text-(--text-placeholder)">
-                  No se solicita al prospecto en la landing. Solo tú como administrador puedes registrarlo o modificarlo aquí.
-                </span>
               </div>
             </div>
 

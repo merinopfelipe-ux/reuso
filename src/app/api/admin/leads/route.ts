@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
+import { normalizarTelefono } from '@/lib/telefono'
 import { z } from 'zod'
 
 const leadPatchSchema = z.object({
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).optional(),
   nombre: z.string().trim().max(100).nullable().optional(),
   email: z.string().trim().email('Correo inválido.').nullable().optional().or(z.literal('')),
-  telefono: z.string().trim().max(30).nullable().optional(),
+  telefono: z.string().trim().max(40).nullable().optional(),
   empresa: z.string().trim().max(100).nullable().optional(),
   interes: z.string().trim().max(100).nullable().optional(),
   mensaje: z.string().max(2000).nullable().optional(),
@@ -19,7 +20,7 @@ const leadPatchSchema = z.object({
 const leadPostSchema = z.object({
   nombre: z.string().trim().min(1, 'El nombre es obligatorio.').max(100),
   email: z.string().trim().email('Correo inválido.').nullable().optional().or(z.literal('')),
-  telefono: z.string().trim().max(30).nullable().optional(),
+  telefono: z.string().trim().max(40).nullable().optional(),
   empresa: z.string().trim().max(100).nullable().optional(),
   interes: z.string().trim().max(100).nullable().optional(),
   evento_nombre: z.string().trim().max(120).nullable().optional(),
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     .insert({
       nombre: parsed.data.nombre,
       email: parsed.data.email || null,
-      telefono: parsed.data.telefono || null,
+      telefono: parsed.data.telefono ? normalizarTelefono(parsed.data.telefono) : null,
       empresa: parsed.data.empresa || null,
       interes: parsed.data.interes || null,
       evento_nombre: parsed.data.evento_nombre || null,
@@ -110,7 +111,7 @@ export async function PATCH(request: NextRequest) {
   const patchData: Record<string, unknown> = {}
   if (parsed.data.nombre !== undefined) patchData.nombre = parsed.data.nombre
   if (parsed.data.email !== undefined) patchData.email = parsed.data.email === '' ? null : parsed.data.email
-  if (parsed.data.telefono !== undefined) patchData.telefono = parsed.data.telefono
+  if (parsed.data.telefono !== undefined) patchData.telefono = parsed.data.telefono ? normalizarTelefono(parsed.data.telefono) : null
   if (parsed.data.empresa !== undefined) patchData.empresa = parsed.data.empresa
   if (parsed.data.interes !== undefined) patchData.interes = parsed.data.interes
   if (parsed.data.evento_nombre !== undefined) patchData.evento_nombre = parsed.data.evento_nombre

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
+import { normalizarTelefono } from '@/lib/telefono'
 import { z } from 'zod'
 
 const itemSchema = z.object({
@@ -24,7 +25,10 @@ const importSchema = z.object({
 
 // Un teléfono se compara solo por sus dígitos: "+57 314 248 6695" y
 // "3142486695" son el mismo número escrito distinto.
-const soloDigitos = (t: string | null | undefined) => (t ?? '').replace(/\D/g, '').slice(-10)
+const soloDigitos = (t: string | null | undefined) => {
+  const norm = normalizarTelefono(t)
+  return norm.replace(/\D/g, '').slice(-10)
+}
 
 export async function POST(request: NextRequest) {
   const guard = await requireSuperAdmin(request)
@@ -41,7 +45,7 @@ export async function POST(request: NextRequest) {
     return {
       nombre: nombreCompleto,
       email: c.email || null,
-      telefono: c.telefono || null,
+      telefono: c.telefono ? normalizarTelefono(c.telefono) : null,
       empresa: c.empresa || null,
       interes: c.interes || null,
       evento_nombre: c.evento_nombre || null,

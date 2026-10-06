@@ -14,6 +14,7 @@ interface InputTelefonoProps {
   className?: string
   style?: React.CSSProperties
   required?: boolean
+  placeholder?: string
 }
 
 /**
@@ -32,7 +33,8 @@ export function InputTelefono({
   onChangeTelefono,
   className = '',
   style,
-  required
+  required,
+  placeholder,
 }: InputTelefonoProps) {
   const [displayVal, setDisplayVal] = useState('')
   const [tocado, setTocado] = useState(false)
@@ -78,7 +80,7 @@ export function InputTelefono({
             onChangeTelefono(raw) // Pasamos el valor sin formato al backend, solo digitos
           }}
           onBlur={() => setTocado(true)}
-          placeholder={indicativo === '+57' ? '(300) 123 4567' : '123 456 7890'}
+          placeholder={placeholder ?? (indicativo === '+57' ? '(300) 123 4567' : '123 456 7890')}
           className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand flex-1"
           style={{
             background: 'var(--surface, var(--bg-input))',

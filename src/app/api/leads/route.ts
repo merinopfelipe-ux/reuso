@@ -3,11 +3,13 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
+import { normalizarTelefono } from '@/lib/telefono'
 
 const leadSchema = z.object({
   nombre: z.string().min(1, 'El nombre es muy corto.'),
   apellido: z.string().optional(),
   email: z.string().email('Email inválido.'),
+  telefono: z.string().trim().max(40).optional().nullable(),
   empresa: z.string().optional(),
   interes: z.string().optional(),
   mensaje: z.string().min(5, 'Por favor escribe un mensaje más detallado.').max(1000),
@@ -44,7 +46,11 @@ export async function POST(request: NextRequest) {
     }
 
     const nombreCompleto = [leadData.nombre?.trim(), apellido?.trim()].filter(Boolean).join(' ') || leadData.nombre
-    const lead = { ...leadData, nombre: nombreCompleto }
+    const lead = {
+      ...leadData,
+      nombre: nombreCompleto,
+      telefono: leadData.telefono ? normalizarTelefono(leadData.telefono) : null,
+    }
 
     const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'
     if (!skipTurnstile) {

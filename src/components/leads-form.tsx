@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, CheckCircle } from '@/components/ui/icons'
 import { Selector } from '@/components/ui/selector'
+import { InputTelefono } from '@/components/ui/input-telefono'
 
 interface LeadsFormProps {
   initialPlan?: string
@@ -15,6 +16,9 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
   const [error, setError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState('')
   const turnstileRef = useRef<TurnstileInstance | null>(null)
+
+  const [indicativo, setIndicativo] = useState('+57')
+  const [telefono, setTelefono] = useState('')
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -48,6 +52,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
           ...formData,
           nombre: nombreCompleto,
           apellido: formData.apellido.trim(),
+          telefono: telefono ? `${indicativo} ${telefono}`.trim() : null,
           turnstile_token: turnstileToken || 'skip',
         }),
       })
@@ -159,6 +164,19 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
               className="w-full px-3 py-2 rounded-xl text-xs sm:text-sm border border-[#00827C]/20 dark:border-white/15 bg-primary dark:bg-white/5 text-[#474747] dark:text-white placeholder:text-placeholder dark:placeholder:text-white/30 outline-hidden focus:border-[#00827C] dark:focus:border-[#D6F391] transition-colors"
             />
           </div>
+        </div>
+
+        {/* Celular / WhatsApp con indicativo */}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-[#00827C] dark:text-[#D6F391]">
+            Celular / WhatsApp <span className="text-[11px] font-normal opacity-70">(opcional)</span>
+          </label>
+          <InputTelefono
+            indicativo={indicativo}
+            onChangeIndicativo={setIndicativo}
+            telefono={telefono}
+            onChangeTelefono={setTelefono}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">

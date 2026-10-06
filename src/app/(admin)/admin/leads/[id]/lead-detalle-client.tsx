@@ -2,18 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Save as FloppyDisk, CheckCircle } from '@/components/ui/icons'
+import { ArrowLeft, Save as FloppyDisk, CheckCircle, Mail as Envelope } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
 import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
+import { InputTelefono } from '@/components/ui/input-telefono'
 import { useToast } from '@/components/toast-provider'
+import { normalizarTelefono, separarTelefonoEIndicativo } from '@/lib/telefono'
 
 // WhatsApp abre un chat de dos maneras: por número (solo dígitos, con
 // indicativo y sin signos) o por nombre de usuario. Las dos usan wa.me.
 export function enlaceWhatsApp(telefono?: string | null, usuario?: string | null) {
   const u = (usuario ?? '').trim().replace(/^@/, '')
   if (u) return `https://wa.me/${encodeURIComponent(u)}`
-  const d = (telefono ?? '').replace(/\D/g, '')
+  const d = normalizarTelefono(telefono ?? '').replace(/\D/g, '')
   return d.length >= 7 ? `https://wa.me/${d}` : null
 }
 
@@ -44,10 +46,13 @@ const ETIQUETA_ESTADO: Record<string, string> = {
 
 export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const { toast } = useToast()
+  const telSeparado = separarTelefonoEIndicativo(lead.telefono)
+  const [indicativo, setIndicativo] = useState(telSeparado.indicativo)
+  const [telefono, setTelefono] = useState(telSeparado.numero)
+
   const [form, setForm] = useState({
     nombre: lead.nombre ?? '',
     email: lead.email ?? '',
-    telefono: lead.telefono ?? '',
     usuario_whatsapp: lead.usuario_whatsapp ?? '',
     empresa: lead.empresa ?? '',
     interes: lead.interes ?? '',
@@ -59,7 +64,8 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
-  const wa = enlaceWhatsApp(form.telefono, form.usuario_whatsapp)
+  const telFinal = telefono.trim() ? normalizarTelefono(`${indicativo} ${telefono}`) : null
+  const wa = enlaceWhatsApp(telFinal, form.usuario_whatsapp)
 
   async function guardar() {
     if (!form.nombre.trim()) {
@@ -72,7 +78,10 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
       const res = await fetch(`/api/admin/leads?id=${lead.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          telefono: telFinal,
+        }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error ?? 'No se pudo guardar.')
@@ -105,16 +114,28 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         {form.empresa && <p className="text-sm text-(--text-secondary) mt-1 mb-0">{form.empresa}</p>}
       </div>
 
-      {wa && (
-        <a
-          href={wa}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 self-start rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
-        >
-          <WhatsappLogo size={16} /> Escribir por WhatsApp
-        </a>
-      )}
+      <div className="flex items-center gap-2 flex-wrap">
+        {wa && (
+          <a
+            href={wa}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
+          >
+            <WhatsappLogo size={16} /> Escribir por WhatsApp
+          </a>
+        )}
+        {form.email && (
+          <a
+            href={`mailto:${form.email}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
+          >
+            <Envelope size={16} /> Enviar correo
+          </a>
+        )}
+      </div>
 
       <section className="rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4">
         <h2 className="text-base font-semibold text-(--text-primary) m-0">Datos del contacto</h2>
@@ -132,10 +153,15 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
             <span className={etiqueta}>Correo</span>
             <input className={campo} type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
           </label>
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Celular con indicativo</span>
-            <input className={campo} type="tel" placeholder="+57 300 123 4567" value={form.telefono} onChange={e => setForm(p => ({ ...p, telefono: e.target.value }))} />
-          </label>
+          <div className="flex flex-col gap-1">
+            <span className={etiqueta}>Celular / WhatsApp</span>
+            <InputTelefono
+              indicativo={indicativo}
+              onChangeIndicativo={setIndicativo}
+              telefono={telefono}
+              onChangeTelefono={setTelefono}
+            />
+          </div>
           <label className="flex flex-col gap-1 sm:col-span-2">
             <span className={etiqueta}>Usuario de WhatsApp</span>
             <input className={campo} placeholder="nombredeusuario" value={form.usuario_whatsapp} onChange={e => setForm(p => ({ ...p, usuario_whatsapp: e.target.value }))} />
