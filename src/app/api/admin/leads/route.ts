@@ -25,6 +25,7 @@ const leadPostSchema = z.object({
   interes: z.string().trim().max(100).nullable().optional(),
   evento_nombre: z.string().trim().max(120).nullable().optional(),
   mensaje: z.string().max(2000).nullable().optional(),
+  usuario_whatsapp: z.string().trim().max(60).optional().nullable(),
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).default('nuevo'),
 })
 
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
       nombre: parsed.data.nombre,
       email: parsed.data.email || null,
       telefono: parsed.data.telefono ? normalizarTelefono(parsed.data.telefono) : null,
+      usuario_whatsapp: parsed.data.usuario_whatsapp?.replace(/^@/, '') || null,
       empresa: parsed.data.empresa || null,
       interes: parsed.data.interes || null,
       evento_nombre: parsed.data.evento_nombre || null,

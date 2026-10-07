@@ -649,10 +649,17 @@ export function LeadsClient({
     }
 
     setGuardandoCrear(true)
-    setErrorCrear('')
+    let celGuardar = formCrear.telefono.trim()
+    let userWpGuardar = formCrear.usuario_whatsapp.trim().replace(/^@/, '')
 
-    const telCompleto = formCrear.telefono.trim()
-      ? normalizarTelefono(crearIndicativo ? `${crearIndicativo} ${formCrear.telefono}` : formCrear.telefono)
+    // Si en celular colocó un usuario con @ y no llenó usuario_whatsapp, guardarlo como usuario_whatsapp
+    if (celGuardar.startsWith('@') && !userWpGuardar) {
+      userWpGuardar = celGuardar.replace(/^@/, '').trim()
+      celGuardar = ''
+    }
+
+    const telCompleto = celGuardar
+      ? (crearIndicativo ? `${crearIndicativo} ${celGuardar}` : celGuardar)
       : null
 
     const res = await fetch('/api/admin/leads', {
@@ -662,7 +669,7 @@ export function LeadsClient({
         nombre: nombreCompleto,
         email: formCrear.email.trim() || null,
         telefono: telCompleto,
-        usuario_whatsapp: formCrear.usuario_whatsapp.trim() || null,
+        usuario_whatsapp: userWpGuardar || null,
         empresa: formCrear.empresa.trim() || null,
         interes: formCrear.interes.trim() || null,
         evento_nombre: formCrear.evento_nombre.trim() || null,
@@ -769,16 +776,20 @@ export function LeadsClient({
     setGuardandoEdit(true)
     setErrorEdit('')
 
-    const tieneTel = Boolean(formEdit.telefono.trim())
-    const telCompleto = tieneTel
-      ? normalizarTelefono(editIndicativo ? `${editIndicativo} ${formEdit.telefono}` : formEdit.telefono)
+    let celGuardar = formEdit.telefono.trim()
+    let userWpGuardar = formEdit.usuario_whatsapp.trim().replace(/^@/, '')
+
+    // Si en celular colocó un usuario con @ y no llenó usuario_whatsapp, guardarlo como usuario_whatsapp
+    if (celGuardar.startsWith('@') && !userWpGuardar) {
+      userWpGuardar = celGuardar.replace(/^@/, '').trim()
+      celGuardar = ''
+    }
+
+    const telCompleto = celGuardar
+      ? (editIndicativo ? `${editIndicativo} ${celGuardar}` : celGuardar)
       : null
 
-    // Solo si y únicamente si no se tiene WhatsApp (sin teléfono) se puede colocar usuario_whatsapp (sin indicativo)
-    const usuarioWhatsappLimpio = !tieneTel && formEdit.usuario_whatsapp.trim()
-      ? formEdit.usuario_whatsapp.trim().replace(/^@/, '')
-      : null
-
+    const usuarioWhatsappLimpio = userWpGuardar || null
     const payloadNotas = notasModal.length > 0 ? JSON.stringify(notasModal) : null
 
     const res = await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
@@ -806,7 +817,7 @@ export function LeadsClient({
       return
     }
 
-    setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, ...data, notas: payloadNotas, usuario_whatsapp: usuarioWhatsappLimpio } : l)))
+    setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, ...data, telefono: telCompleto, notas: payloadNotas, usuario_whatsapp: usuarioWhatsappLimpio } : l)))
     setLeadEditando(null)
     startTransition(() => router.refresh())
   }
@@ -1225,6 +1236,25 @@ export function LeadsClient({
         </div>
       ) : (
         <div className="rounded-card border border-(--border) bg-(--bg-card) shadow-xs">
+          <style dangerouslySetInnerHTML={{
+            __html: `
+              .lead-email-link {
+                display: inline-block;
+                white-space: nowrap;
+                overflow: visible;
+                text-overflow: clip;
+                max-width: none;
+              }
+              @media (min-width: 768px) and (max-width: 1024px) {
+                .lead-email-link {
+                  max-width: 155px !important;
+                  overflow: hidden !important;
+                  text-overflow: ellipsis !important;
+                  white-space: nowrap !important;
+                }
+              }
+            `
+          }} />
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
@@ -1250,7 +1280,7 @@ export function LeadsClient({
                   <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '90px', maxWidth: '130px' }}>
                     Empresa
                   </SortTh>
-                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '170px' }}>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '185px' }}>
                     Contacto
                   </SortTh>
                   <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '110px', maxWidth: '140px' }}>
@@ -1302,19 +1332,42 @@ export function LeadsClient({
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[130px] leading-tight break-words line-clamp-3 text-sm font-semibold text-(--text-primary)">
+                        <div
+                          className="max-w-[130px] text-sm font-semibold text-(--text-primary)"
+                          title={lead.nombre ?? undefined}
+                          style={{
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 2,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            wordBreak: 'break-word',
+                            lineHeight: '1.25',
+                            maxHeight: '2.55em',
+                          }}
+                        >
                           {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
                         </div>
                       </td>
 
-                      {/* Empresa (line-clamp-2: puntos suspensivos solo si tiene más de 2 líneas) */}
+                      {/* Empresa (estricto a 2 líneas: puntos suspensivos solo si tiene más de 2 líneas) */}
                       <td
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
                       >
                         <div
-                          className="max-w-[130px] leading-tight break-words text-sm text-(--text-secondary) line-clamp-2"
+                          className="max-w-[130px] text-sm text-(--text-secondary)"
                           title={lead.empresa ?? undefined}
+                          style={{
+                            display: '-webkit-box',
+                            WebkitBoxOrient: 'vertical',
+                            WebkitLineClamp: 2,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            wordBreak: 'break-word',
+                            lineHeight: '1.25',
+                            maxHeight: '2.55em',
+                          }}
                         >
                           {lead.empresa || <span className="opacity-40">-</span>}
                         </div>
@@ -1325,7 +1378,7 @@ export function LeadsClient({
                         className="px-2 py-2 align-top whitespace-nowrap"
                         style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="flex flex-col gap-1 leading-tight text-sm text-(--text-secondary) md:max-w-[170px] lg:max-w-none">
+                        <div className="flex flex-col gap-1 leading-tight text-sm text-(--text-secondary)">
                           {lead.email ? (
                             <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                               <Envelope size={11} className="text-(--text-secondary) shrink-0" />
@@ -1334,7 +1387,7 @@ export function LeadsClient({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={lead.email}
-                                className="text-(--text-primary) hover:text-brand hover:underline font-normal text-sm select-text whitespace-nowrap md:truncate md:max-w-[150px] lg:max-w-none lg:overflow-visible"
+                                className="lead-email-link text-(--text-primary) hover:text-brand hover:underline font-normal text-sm select-text"
                               >
                                 {lead.email}
                               </a>
@@ -1355,8 +1408,13 @@ export function LeadsClient({
                             >
                               <WhatsappLogo size={11} className="text-(--text-secondary) shrink-0" />
                               <span className="hover:underline">
-                                {lead.telefono ? normalizarTelefono(lead.telefono) : `@${lead.usuario_whatsapp!.trim().replace(/^@/, '')}`}
+                                {lead.telefono ? (lead.telefono.startsWith('+') ? normalizarTelefono(lead.telefono) : lead.telefono) : `@${lead.usuario_whatsapp!.trim().replace(/^@/, '')}`}
                               </span>
+                              {lead.telefono && lead.usuario_whatsapp ? (
+                                <span className="text-[11px] opacity-75">
+                                  (@{lead.usuario_whatsapp.trim().replace(/^@/, '')})
+                                </span>
+                              ) : null}
                             </a>
                           ) : null}
 
@@ -1719,12 +1777,27 @@ export function LeadsClient({
                   onChangeIndicativo={setCrearIndicativo}
                   telefono={formCrear.telefono}
                   onChangeTelefono={tel => setFormCrear(p => ({ ...p, telefono: tel }))}
-                  placeholder="300 123 4567"
+                  permitirSinIndicativo={true}
+                  soloNumeros={false}
+                  placeholder="300 123 4567 o usuario"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">
+                  Usuario de WhatsApp <span className="font-normal opacity-75">(sin indicativo)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formCrear.usuario_whatsapp}
+                  onChange={e => setFormCrear(p => ({ ...p, usuario_whatsapp: e.target.value.replace(/^@/, '').trim() }))}
+                  placeholder="ej. nombredeusuario o @usuario"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+                />
+              </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Interés / Asunto</label>
                 <input
@@ -1735,23 +1808,23 @@ export function LeadsClient({
                   className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
+            </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Evento comercial vinculado</label>
-                <input
-                  type="text"
-                  value={formCrear.evento_nombre}
-                  onChange={e => setFormCrear(p => ({ ...p, evento_nombre: e.target.value }))}
-                  placeholder="Ej. Climate Week Medellín"
-                  list="eventos-disponibles-crear"
-                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
-                />
-                <datalist id="eventos-disponibles-crear">
-                  {eventos.map(ev => (
-                    <option key={ev.id} value={ev.nombre} />
-                  ))}
-                </datalist>
-              </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-(--text-secondary)">Evento comercial vinculado</label>
+              <input
+                type="text"
+                value={formCrear.evento_nombre}
+                onChange={e => setFormCrear(p => ({ ...p, evento_nombre: e.target.value }))}
+                placeholder="Ej. Climate Week Medellín"
+                list="eventos-disponibles-crear"
+                className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+              />
+              <datalist id="eventos-disponibles-crear">
+                {eventos.map(ev => (
+                  <option key={ev.id} value={ev.nombre} />
+                ))}
+              </datalist>
             </div>
 
             <div className="flex flex-col gap-1">
@@ -1853,39 +1926,28 @@ export function LeadsClient({
                   onChangeTelefono={tel => setFormEdit(p => ({
                     ...p,
                     telefono: tel,
-                    // Si se ingresa número de teléfono, se limpia usuario_whatsapp
-                    usuario_whatsapp: tel.trim() ? '' : p.usuario_whatsapp,
                   }))}
-                  placeholder="300 123 4567"
+                  permitirSinIndicativo={true}
+                  soloNumeros={false}
+                  placeholder="300 123 4567 o usuario"
                 />
               </div>
             </div>
 
-            {/* Usuario de WhatsApp: SOLO si y únicamente si NO se tiene WhatsApp por número */}
-            {!formEdit.telefono.trim() && (
-              <div className="flex flex-col gap-1 p-2.5 rounded-xl border border-(--border) bg-(--bg-input)/50">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-(--text-primary)">
-                    Usuario de WhatsApp <span className="text-[11px] font-normal text-(--text-secondary)">(sin indicativo)</span>
-                  </label>
-                  <span className="text-[11px] text-brand font-medium">
-                    Sin número de WhatsApp
-                  </span>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">
+                  Usuario de WhatsApp <span className="font-normal opacity-75">(sin indicativo)</span>
+                </label>
                 <input
                   type="text"
                   value={formEdit.usuario_whatsapp}
                   onChange={e => setFormEdit(p => ({ ...p, usuario_whatsapp: e.target.value.replace(/^@/, '').trim() }))}
-                  placeholder="ej. nombredeusuario (sin indicativo, sin +)"
-                  className="rounded-xl border border-(--border) bg-(--bg-card) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+                  placeholder="ej. nombredeusuario o @usuario"
+                  className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
-                <span className="text-[11px] text-(--text-secondary)">
-                  Habilitado únicamente porque no tiene número de WhatsApp. No es necesario colocar indicativo.
-                </span>
               </div>
-            )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Interés / Asunto</label>
                 <input
@@ -1896,6 +1958,7 @@ export function LeadsClient({
                   className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
                 />
               </div>
+            </div>
 
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-(--text-secondary)">Evento vinculado</label>
@@ -1913,7 +1976,6 @@ export function LeadsClient({
                   ))}
                 </datalist>
               </div>
-            </div>
 
             {/* Mensaje original del prospecto */}
             <div className="flex flex-col gap-1">

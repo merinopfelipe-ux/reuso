@@ -48,8 +48,13 @@ export function normalizarTelefono(valor: string | null | undefined): string {
   let texto = crudo
   if (texto.startsWith('00')) texto = '+' + texto.slice(2)
 
+  // Si contiene letras o símbolos como @ (nombre de usuario / alfanumérico), preservar el texto tal cual
+  if (/[a-zA-Z]/.test(texto) || texto.startsWith('@')) {
+    return texto
+  }
+
   const digitos = texto.replace(/\D/g, '')
-  if (!digitos) return ''
+  if (!digitos) return texto
 
   // 1. Detección y normalización de números de Colombia
   let digitosCol: string | null = null
@@ -156,6 +161,11 @@ export function separarTelefonoEIndicativo(valor?: string | null): { indicativo:
     }
   }
 
+  // Si contiene letras o arroba (ej. @usuario o nombre), no forzar indicativo
+  if (/[a-zA-Z]/.test(limpio) || limpio.startsWith('@')) {
+    return { indicativo: '', numero: limpio }
+  }
+
   const digitos = limpio.replace(/\D/g, '')
   if (digitos.length === 12 && digitos.startsWith('57')) {
     return { indicativo: '+57', numero: digitos.slice(2) }
@@ -163,6 +173,10 @@ export function separarTelefonoEIndicativo(valor?: string | null): { indicativo:
   if (digitos.length === 11 && digitos.startsWith('03')) {
     return { indicativo: '+57', numero: digitos.slice(1) }
   }
+  if (digitos.length === 10 && (digitos.startsWith('3') || digitos.startsWith('60'))) {
+    return { indicativo: '+57', numero: digitos }
+  }
 
-  return { indicativo: '+57', numero: limpio }
+  // Si no tiene '+' ni coincide con formato móvil colombiano, no forzar indicativo
+  return { indicativo: '', numero: limpio }
 }

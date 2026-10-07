@@ -42,26 +42,37 @@ export interface SelectorPaisProps<T extends Pais | string | null = Pais | strin
   onChange: (val: T) => void
   disabled?: boolean
   modo?: 'pais' | 'indicativo'
+  permitirSinIndicativo?: boolean
 }
 
-export function SelectorPais<T extends Pais | string | null>({ value, onChange, disabled, modo = 'pais' }: SelectorPaisProps<T>) {
+export function SelectorPais<T extends Pais | string | null>({
+  value,
+  onChange,
+  disabled,
+  modo = 'pais',
+  permitirSinIndicativo = false,
+}: SelectorPaisProps<T>) {
   const [abierto, setAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
 
   const isStringValue = typeof value === 'string'
   const currentPaisObj: Pais | undefined = isStringValue
-    ? PAISES.find(p => p.nombre === value)
+    ? (value ? (PAISES.find(p => p.nombre === value || p.dial === value)) : undefined)
     : (value as Pais | null) ?? undefined
   
   const currentBandera = currentPaisObj ? (
     <Bandera codigo={currentPaisObj.codigo || ''} alt={currentPaisObj.nombre} className="mr-1.5 align-middle" />
-  ) : null
+  ) : (permitirSinIndicativo && !value && modo === 'indicativo' ? (
+    <span className="mr-1.5 align-middle text-sm">🌐</span>
+  ) : null)
 
   // Determinamos el texto a mostrar en el botón
   let displayText = 'Seleccionar'
   if (currentPaisObj) {
     displayText = modo === 'indicativo' ? currentPaisObj.dial : currentPaisObj.nombre
+  } else if (permitirSinIndicativo && !value && modo === 'indicativo') {
+    displayText = 'Sin indicativo'
   } else if (isStringValue && value) {
     displayText = value as string
   }
@@ -82,7 +93,7 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
         style={{
           background: 'var(--surface, var(--bg-input))',
           borderColor: 'var(--border)',
-          color: (currentPaisObj || (isStringValue && value)) ? 'var(--text-primary)' : 'var(--text-placeholder)',
+          color: (currentPaisObj || (isStringValue && value) || (permitirSinIndicativo && !value && modo === 'indicativo')) ? 'var(--text-primary)' : 'var(--text-placeholder)',
           cursor: disabled ? 'not-allowed' : 'pointer',
           opacity: disabled ? 0.6 : 1,
         }}
@@ -125,6 +136,28 @@ export function SelectorPais<T extends Pais | string | null>({ value, onChange, 
             </div>
             
             <div className="overflow-y-auto flex-1 p-1">
+              {permitirSinIndicativo && modo === 'indicativo' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange('' as T)
+                    setAbierto(false)
+                  }}
+                  className="flex w-full items-center justify-between px-3 py-2 text-sm rounded-lg transition-colors hover:bg-(--bg-hover) border-b mb-1 pb-2 cursor-pointer"
+                  style={{
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-primary)',
+                    fontWeight: !value ? 600 : 400,
+                    background: !value ? 'var(--bg-hover)' : 'transparent',
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-base leading-none">🌐</span>
+                    <span>Sin indicativo</span>
+                  </div>
+                  <span className="text-xs text-(--text-secondary)">Ninguno</span>
+                </button>
+              )}
               {paisesFiltrados.length === 0 ? (
                 <p className="text-xs text-center p-3 text-(--text-secondary)">No se encontraron países.</p>
               ) : (

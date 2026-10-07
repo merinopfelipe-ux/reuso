@@ -15,6 +15,8 @@ interface InputTelefonoProps {
   style?: React.CSSProperties
   required?: boolean
   placeholder?: string
+  permitirSinIndicativo?: boolean
+  soloNumeros?: boolean
 }
 
 /**
@@ -35,16 +37,22 @@ export function InputTelefono({
   style,
   required,
   placeholder,
+  permitirSinIndicativo = false,
+  soloNumeros = true,
 }: InputTelefonoProps) {
   const [displayVal, setDisplayVal] = useState('')
   const [tocado, setTocado] = useState(false)
 
   useEffect(() => {
-    setDisplayVal(formatearTelefono(telefono, indicativo))
-  }, [telefono, indicativo])
+    if (!soloNumeros) {
+      setDisplayVal(telefono)
+    } else {
+      setDisplayVal(formatearTelefono(telefono, indicativo))
+    }
+  }, [telefono, indicativo, soloNumeros])
 
   const vacio = telefono.trim() === ''
-  const error = !tocado
+  const error = !tocado || !soloNumeros || !indicativo
     ? null
     : (vacio ? (required ? 'Este número es obligatorio.' : null) : validarTelefono(telefono, indicativo))
 
@@ -58,29 +66,37 @@ export function InputTelefono({
         <div className="shrink-0 w-[110px] sm:w-[140px]">
           <SelectorPais
             modo="indicativo"
+            permitirSinIndicativo={permitirSinIndicativo}
             value={PAISES.find(p => p.dial === indicativo) || indicativo}
             onChange={(val: Pais | string) => {
               const nuevoInd = typeof val === 'string' ? val : val.dial
               onChangeIndicativo(nuevoInd)
               // Re-formatear teléfono si cambia de país
-              const reFormatted = formatearTelefono(telefono, nuevoInd)
-              setDisplayVal(reFormatted)
+              if (soloNumeros) {
+                const reFormatted = formatearTelefono(telefono, nuevoInd)
+                setDisplayVal(reFormatted)
+              }
             }}
           />
         </div>
         <input
-          type="tel"
-          inputMode="tel"
+          type={soloNumeros ? 'tel' : 'text'}
+          inputMode={soloNumeros ? 'tel' : 'text'}
           value={displayVal}
           required={required}
           onChange={(e) => {
-            const raw = e.target.value.replace(/\D/g, '')
-            const formatted = formatearTelefono(raw, indicativo)
-            setDisplayVal(formatted)
-            onChangeTelefono(raw) // Pasamos el valor sin formato al backend, solo digitos
+            if (!soloNumeros) {
+              setDisplayVal(e.target.value)
+              onChangeTelefono(e.target.value)
+            } else {
+              const raw = e.target.value.replace(/\D/g, '')
+              const formatted = formatearTelefono(raw, indicativo)
+              setDisplayVal(formatted)
+              onChangeTelefono(raw) // Pasamos el valor sin formato al backend, solo digitos
+            }
           }}
           onBlur={() => setTocado(true)}
-          placeholder={placeholder ?? (indicativo === '+57' ? '(300) 123 4567' : '123 456 7890')}
+          placeholder={placeholder ?? (!indicativo ? 'Celular o WhatsApp' : (indicativo === '+57' ? '(300) 123 4567' : '123 456 7890'))}
           className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand flex-1"
           style={{
             background: 'var(--surface, var(--bg-input))',

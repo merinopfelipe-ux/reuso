@@ -69,7 +69,7 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
-  const telFinal = telefono.trim() ? normalizarTelefono(`${indicativo} ${telefono}`) : null
+  const telFinal = telefono.trim() ? (indicativo ? normalizarTelefono(`${indicativo} ${telefono}`) : telefono.trim()) : null
   const wa = enlaceWhatsApp(telFinal, form.usuario_whatsapp)
 
   async function guardar() {
@@ -173,6 +173,8 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
               onChangeIndicativo={setIndicativo}
               telefono={telefono}
               onChangeTelefono={setTelefono}
+              permitirSinIndicativo={true}
+              soloNumeros={false}
             />
           </div>
           <label className="flex flex-col gap-1 sm:col-span-2">
