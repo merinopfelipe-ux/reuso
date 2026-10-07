@@ -29,8 +29,10 @@ async function contrasenaEsCorrecta(email: string, password: string): Promise<bo
   )
   const { error } = await verificador.auth.signInWithPassword({ email, password })
   // La sesión que acabe de crearse aquí se descarta de inmediato: este
-  // cliente vive solo dentro de esta función.
-  if (!error) await verificador.auth.signOut().catch(() => {})
+  // cliente vive solo dentro de esta función. El alcance 'local' es
+  // obligatorio: el 'global' por defecto revoca TODAS las sesiones de la
+  // cuenta, incluida la del usuario que pide el cambio (bug real 2026-10-07).
+  if (!error) await verificador.auth.signOut({ scope: 'local' }).catch(() => {})
   return !error
 }
 
