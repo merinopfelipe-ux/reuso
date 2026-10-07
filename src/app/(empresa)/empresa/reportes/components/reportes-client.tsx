@@ -472,7 +472,7 @@ function ReporteGobernanza({ resultado, paramsUrl, empresaNombre }: {
         <Tabla
           columnas={['Fecha', 'Ítem', 'Campos modificados']}
           filas={resultado.auditoria_tarifas.map(a => [
-            new Date(a.created_at).toLocaleString('es-CO'),
+            new Date(a.created_at).toLocaleString('es-CO', { timeZone: 'America/Bogota' }),
             a.detalle_json?.id ?? '—',
             a.detalle_json?.despues ? Object.keys(a.detalle_json.despues as object).join(', ') : '—',
           ])}

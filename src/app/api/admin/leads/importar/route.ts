@@ -14,6 +14,7 @@ const itemSchema = z.object({
   evento_nombre: z.string().trim().optional().nullable(),
   mensaje: z.string().trim().optional().nullable(),
   estado: z.enum(['nuevo', 'contactado', 'convertido', 'descartado']).default('nuevo'),
+  usuario_whatsapp: z.string().trim().optional().nullable(),
 })
 
 const importSchema = z.object({
@@ -23,9 +24,9 @@ const importSchema = z.object({
   duplicados: z.enum(['actualizar', 'omitir']).default('actualizar'),
 })
 
-// Un teléfono se compara solo por sus dígitos: "+57 314 248 6695" y
-// "3142486695" son el mismo número escrito distinto.
+// Un teléfono se compara solo por sus dígitos. Si es un usuario (letras), se ignora aquí.
 const soloDigitos = (t: string | null | undefined) => {
+  if (!t) return ''
   const norm = normalizarTelefono(t)
   return norm.replace(/\D/g, '').slice(-10)
 }
@@ -42,10 +43,15 @@ export async function POST(request: NextRequest) {
 
   const todas = parsed.data.contactos.map(c => {
     const nombreCompleto = [c.nombre, c.apellido].filter(Boolean).join(' ').trim() || c.nombre
+    const tieneLetras = /[a-zA-Z]/.test(c.telefono || '')
+    const tel = tieneLetras ? null : (c.telefono ? normalizarTelefono(c.telefono) : null)
+    const userWa = tieneLetras ? (c.telefono || '').trim() : (c.usuario_whatsapp || null)
+    
     return {
       nombre: nombreCompleto,
       email: c.email || null,
-      telefono: c.telefono ? normalizarTelefono(c.telefono) : null,
+      telefono: tel,
+      usuario_whatsapp: userWa,
       empresa: c.empresa || null,
       interes: c.interes || null,
       evento_nombre: c.evento_nombre || null,
@@ -54,32 +60,47 @@ export async function POST(request: NextRequest) {
     }
   })
 
-  // Se buscan los que ya existen por correo o por teléfono para no duplicarlos.
+  // Se buscan los que ya existen por correo, teléfono o usuario de whatsapp
   const { data: existentes } = await guard.adminClient
     .from('leads')
-    .select('id, email, telefono')
+    .select('id, email, telefono, usuario_whatsapp')
 
   const porEmail = new Map<string, string>()
   const porTelefono = new Map<string, string>()
+  const porUsuarioWa = new Map<string, string>()
   for (const l of existentes ?? []) {
     if (l.email) porEmail.set(l.email.trim().toLowerCase(), l.id)
     const d = soloDigitos(l.telefono)
     if (d.length >= 7) porTelefono.set(d, l.id)
+    if (l.usuario_whatsapp) porUsuarioWa.set(l.usuario_whatsapp.trim().toLowerCase(), l.id)
   }
 
   const nuevas: typeof todas = []
   const aActualizar: { id: string; fila: (typeof todas)[number] }[] = []
   const vistosEmail = new Set<string>()
   const vistosTel = new Set<string>()
+  const vistosWa = new Set<string>()
 
   for (const fila of todas) {
     const email = fila.email?.trim().toLowerCase() ?? ''
     const tel = soloDigitos(fila.telefono)
+    const wa = fila.usuario_whatsapp?.trim().toLowerCase() ?? ''
+    
     // También se detectan los repetidos dentro del mismo archivo.
-    if ((email && vistosEmail.has(email)) || (tel.length >= 7 && vistosTel.has(tel))) continue
-    const id = (email && porEmail.get(email)) || (tel.length >= 7 ? porTelefono.get(tel) : undefined)
+    if (
+      (email && vistosEmail.has(email)) ||
+      (tel.length >= 7 && vistosTel.has(tel)) ||
+      (wa && vistosWa.has(wa))
+    ) continue
+
+    const id = (email && porEmail.get(email)) ||
+               (tel.length >= 7 ? porTelefono.get(tel) : undefined) ||
+               (wa ? porUsuarioWa.get(wa) : undefined)
+               
     if (email) vistosEmail.add(email)
     if (tel.length >= 7) vistosTel.add(tel)
+    if (wa) vistosWa.add(wa)
+    
     if (id) aActualizar.push({ id, fila })
     else nuevas.push(fila)
   }

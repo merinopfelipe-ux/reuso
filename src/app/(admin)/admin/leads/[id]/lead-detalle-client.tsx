@@ -50,8 +50,13 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const [indicativo, setIndicativo] = useState(telSeparado.indicativo)
   const [telefono, setTelefono] = useState(telSeparado.numero)
 
+  const partes = (lead.nombre || '').trim().split(' ')
+  const apellidoInicial = partes.length > 1 ? partes.pop()! : ''
+  const nombreInicial = partes.join(' ')
+
   const [form, setForm] = useState({
-    nombre: lead.nombre ?? '',
+    nombre: nombreInicial,
+    apellido: apellidoInicial,
     email: lead.email ?? '',
     usuario_whatsapp: lead.usuario_whatsapp ?? '',
     empresa: lead.empresa ?? '',
@@ -75,11 +80,13 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
     setGuardando(true)
     setGuardado(false)
     try {
+      const nombreCompleto = [form.nombre.trim(), form.apellido.trim()].filter(Boolean).join(' ')
       const res = await fetch(`/api/admin/leads?id=${lead.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          nombre: nombreCompleto,
           telefono: telFinal,
         }),
       })
@@ -105,12 +112,14 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
           <ArrowLeft size={16} /> Volver a contactos
         </Link>
         <span className="text-xs text-(--text-placeholder)">
-          Registrado el {new Date(lead.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })}
+          Registrado el {new Date(lead.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })}
         </span>
       </div>
 
       <div>
-        <h1 className="text-2xl font-semibold text-(--text-primary) m-0">{form.nombre || 'Contacto'}</h1>
+        <h1 className="text-2xl font-semibold text-(--text-primary) m-0">
+          {[form.nombre.trim(), form.apellido.trim()].filter(Boolean).join(' ') || 'Contacto'}
+        </h1>
         {form.empresa && <p className="text-sm text-(--text-secondary) mt-1 mb-0">{form.empresa}</p>}
       </div>
 
@@ -144,6 +153,10 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
           <label className="flex flex-col gap-1">
             <span className={etiqueta}>Nombre</span>
             <input className={campo} value={form.nombre} onChange={e => setForm(p => ({ ...p, nombre: e.target.value }))} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Apellido</span>
+            <input className={campo} value={form.apellido} onChange={e => setForm(p => ({ ...p, apellido: e.target.value }))} />
           </label>
           <label className="flex flex-col gap-1">
             <span className={etiqueta}>Empresa</span>

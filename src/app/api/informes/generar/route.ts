@@ -18,6 +18,7 @@ const schema = z.object({
 
 function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     day: '2-digit', month: 'long', year: 'numeric',
   })
 }
@@ -158,7 +159,7 @@ export async function POST(req: NextRequest) {
 
   // ── Generar PDF ───────────────────────────────────────────────
   const hoy = new Date()
-  const fechaEmision = hoy.toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
+  const fechaEmision = hoy.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'long', year: 'numeric' })
 
   let pdfBuffer: Buffer
   try {

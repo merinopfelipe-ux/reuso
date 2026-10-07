@@ -217,6 +217,7 @@ export function EstadoCuentaClient({
   }
 
   const fechaActivacion = new Date(empresa.created_at).toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -434,7 +435,7 @@ export function EstadoCuentaClient({
               const autorLimpio = n.autor ? n.autor.split('·')[0].trim() : 'Equipo Interno'
               const fechaValida = n.fecha && !isNaN(new Date(n.fecha).getTime())
               const fechaTexto = fechaValida
-                ? new Date(n.fecha).toLocaleString('es-CO', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                ? new Date(n.fecha).toLocaleString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                 : ''
               return (
                 <div key={n.id} className="rounded-xl p-2.5 bg-(--bg-input)">
@@ -527,6 +528,7 @@ export function EstadoCuentaClient({
 
                     const rolFormatted = entry.adminRol ? (entry.adminRol.charAt(0).toUpperCase() + entry.adminRol.slice(1).toLowerCase()) : ''
                     const fechaHora = new Date(entry.created_at).toLocaleString('es-CO', {
+                      timeZone: 'America/Bogota',
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',

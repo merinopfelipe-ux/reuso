@@ -55,7 +55,7 @@ function generarPDF(filas: FilaExport[], titulo: string): Buffer {
   doc.text(titulo, 14, 16)
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')} © Grupo MLP S.A.S.`, 14, 22)
+  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })} © Grupo MLP S.A.S.`, 14, 22)
   autoTable(doc, {
     head: [CABECERAS],
     body: filas.map((f) => CABECERAS_KEY.map((k) => String(f[k as keyof FilaExport] ?? ''))),
@@ -166,7 +166,7 @@ export async function GET(request: NextRequest) {
   const filas: FilaExport[] = lista.map((c) => {
     const detalle = c.detalle_json as Record<string, unknown> | null
     return {
-      fecha: c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '',
+      fecha: c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) : '',
       usuario: usuariosMap.get(c.user_id) ?? '',
       items: detalle ? Object.keys(detalle).length : 0,
       co2: (c.total_co2 ?? 0).toFixed(4),
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
     }
   })
 
-  const fecha = new Date().toISOString().slice(0, 10)
+  const fecha = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
   const nombre = `calculos-reuso-${fecha}`
 
   let buffer: Buffer

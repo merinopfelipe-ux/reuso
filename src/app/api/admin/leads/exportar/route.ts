@@ -8,13 +8,15 @@ import autoTable from 'jspdf-autotable'
 const formatoSchema = z.enum(['csv', 'xlsx', 'pdf'])
 type Formato = 'csv' | 'xlsx' | 'pdf'
 
-const CABECERAS = ['Nombre', 'Email', 'Teléfono', 'Empresa', 'Interés', 'Evento', 'Estado', 'Fecha']
-const CABECERAS_KEY = ['nombre', 'email', 'telefono', 'empresa', 'interes', 'evento', 'estado', 'fecha']
+const CABECERAS = ['Nombre', 'Apellido', 'Email', 'Teléfono', 'Usuario WhatsApp', 'Empresa', 'Interés', 'Evento', 'Estado', 'Fecha']
+const CABECERAS_KEY = ['nombre', 'apellido', 'email', 'telefono', 'usuario_whatsapp', 'empresa', 'interes', 'evento', 'estado', 'fecha']
 
 interface FilaExport {
   nombre: string
+  apellido: string
   email: string
   telefono: string
+  usuario_whatsapp: string
   empresa: string
   interes: string
   evento: string
@@ -40,8 +42,10 @@ function generarXLSX(filas: FilaExport[]): Buffer {
   const ws = utils.json_to_sheet(
     filas.map((f) => ({
       Nombre: f.nombre,
+      Apellido: f.apellido,
       Email: f.email,
       Teléfono: f.telefono ? String(f.telefono).trim() : '',
+      'Usuario WhatsApp': f.usuario_whatsapp,
       Empresa: f.empresa,
       Interés: f.interes,
       Evento: f.evento,
@@ -52,19 +56,21 @@ function generarXLSX(filas: FilaExport[]): Buffer {
 
   // Configurar anchos de columna óptimos
   ws['!cols'] = [
-    { wch: 25 }, // Nombre
-    { wch: 30 }, // Email
-    { wch: 20 }, // Teléfono
-    { wch: 25 }, // Empresa
-    { wch: 32 }, // Interés
-    { wch: 26 }, // Evento
-    { wch: 15 }, // Estado
-    { wch: 14 }, // Fecha
+    { wch: 18 }, // Nombre
+    { wch: 18 }, // Apellido
+    { wch: 26 }, // Email
+    { wch: 18 }, // Teléfono
+    { wch: 20 }, // Usuario WhatsApp
+    { wch: 22 }, // Empresa
+    { wch: 28 }, // Interés
+    { wch: 22 }, // Evento
+    { wch: 12 }, // Estado
+    { wch: 12 }, // Fecha
   ]
 
-  // Forzar tipo texto explícito en la columna C (Teléfono) para evitar notación científica y errores de formato
+  // Forzar tipo texto explícito en la columna D (Teléfono) para evitar notación científica y errores de formato
   for (let r = 2; r <= filas.length + 1; r++) {
-    const ref = `C${r}`
+    const ref = `D${r}`
     if (ws[ref]) {
       ws[ref].t = 's' // tipo string nativo
       ws[ref].z = '@' // formato texto en Excel
@@ -82,7 +88,7 @@ function generarPDF(filas: FilaExport[]): Buffer {
   doc.text('calculadoradereuso.com - Prospectos Comerciales', 14, 16)
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')} © Grupo MLP S.A.S.`, 14, 22)
+  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })} © Grupo MLP S.A.S.`, 14, 22)
   autoTable(doc, {
     head: [CABECERAS],
     body: filas.map((f) => CABECERAS_KEY.map((k) => String(f[k as keyof FilaExport] ?? ''))),
@@ -91,14 +97,16 @@ function generarPDF(filas: FilaExport[]): Buffer {
     headStyles: { fillColor: [0, 130, 124], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [245, 250, 249] },
     columnStyles: {
-      0: { cellWidth: 32 }, // Nombre
-      1: { cellWidth: 42 }, // Email
-      2: { cellWidth: 26 }, // Teléfono
-      3: { cellWidth: 32 }, // Empresa
-      4: { cellWidth: 42 }, // Interés
-      5: { cellWidth: 35 }, // Evento
-      6: { cellWidth: 20 }, // Estado
-      7: { cellWidth: 20 }, // Fecha
+      0: { cellWidth: 20 }, // Nombre
+      1: { cellWidth: 20 }, // Apellido
+      2: { cellWidth: 38 }, // Email
+      3: { cellWidth: 24 }, // Teléfono
+      4: { cellWidth: 24 }, // Usuario WhatsApp
+      5: { cellWidth: 28 }, // Empresa
+      6: { cellWidth: 36 }, // Interés
+      7: { cellWidth: 30 }, // Evento
+      8: { cellWidth: 16 }, // Estado
+      9: { cellWidth: 18 }, // Fecha
     },
   })
   return Buffer.from(doc.output('arraybuffer'))
@@ -127,7 +135,7 @@ export async function GET(request: NextRequest) {
 
   let query = guard.adminClient
     .from('leads')
-    .select('nombre, email, telefono, empresa, interes, evento_nombre, estado, created_at')
+    .select('nombre, email, telefono, usuario_whatsapp, empresa, interes, evento_nombre, estado, created_at')
     .order('created_at', { ascending: false })
 
   if (estado) query = query.eq('estado', estado)
@@ -141,18 +149,26 @@ export async function GET(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: 'Error al obtener los leads.' }, { status: 500 })
 
-  const filas: FilaExport[] = (leads ?? []).map((l) => ({
-    nombre: l.nombre ?? '',
-    email: l.email ?? '',
-    telefono: l.telefono ?? '',
-    empresa: l.empresa ?? '',
-    interes: l.interes ?? '',
-    evento: l.evento_nombre ?? '',
-    estado: l.estado ?? '',
-    fecha: l.created_at ? new Date(l.created_at).toLocaleDateString('es-CO') : '',
-  }))
+  const filas: FilaExport[] = (leads ?? []).map((l) => {
+    const partes = (l.nombre || '').trim().split(' ')
+    const apellido = partes.length > 1 ? partes.pop()! : ''
+    const nombre = partes.join(' ')
+    
+    return {
+      nombre,
+      apellido,
+      email: l.email ?? '',
+      telefono: l.telefono ?? '',
+      usuario_whatsapp: l.usuario_whatsapp ?? '',
+      empresa: l.empresa ?? '',
+      interes: l.interes ?? '',
+      evento: l.evento_nombre ?? '',
+      estado: l.estado ?? '',
+      fecha: l.created_at ? new Date(l.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) : '',
+    }
+  })
 
-  const fecha = new Date().toISOString().slice(0, 10)
+  const fecha = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
   const nombre = `leads-reuso-${fecha}`
 
   let buffer: Buffer

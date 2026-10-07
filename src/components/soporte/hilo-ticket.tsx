@@ -164,7 +164,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                       dangerouslySetInnerHTML={{ __html: m.mensaje_html }}
                     />
                     <span style={{ fontSize: 10, color: 'rgba(0,130,124,0.5)', marginTop: 4 }}>
-                       {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' })}
+                      {new Date(m.created_at).toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 )

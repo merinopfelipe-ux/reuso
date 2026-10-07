@@ -126,11 +126,52 @@ interface ContactoParseado {
   estado: EstadoLead
 }
 
+interface NotaLead {
+  id: string
+  texto: string
+  fecha: string
+}
+
+function parsearNotasLead(raw: string | null | undefined): NotaLead[] {
+  if (!raw || !raw.trim()) return []
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item, idx) => ({
+          id: String(item.id || `nota-${idx}`),
+          texto: String(item.texto || item.nota || ''),
+          fecha: String(item.fecha || item.created_at || new Date().toISOString()),
+        }))
+        .filter(n => Boolean(n.texto.trim()))
+    }
+  } catch {
+    return [
+      {
+        id: 'legacy',
+        texto: raw.trim(),
+        fecha: new Date().toISOString(),
+      },
+    ]
+  }
+  return []
+}
+
 function formatearFechaLead(iso: string) {
   const d = new Date(iso)
   if (isNaN(d.getTime())) return { dia: '-', hora: '' }
-  const dia = d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })
-  const hora = d.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true })
+  const dia = d.toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
+  const hora = d.toLocaleTimeString('es-CO', {
+    timeZone: 'America/Bogota',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  })
   return { dia, hora }
 }
 
@@ -296,6 +337,7 @@ export function LeadsClient({
     apellido: '',
     email: '',
     telefono: '',
+    usuario_whatsapp: '',
     empresa: '',
     interes: '',
     evento_nombre: '',
@@ -314,6 +356,7 @@ export function LeadsClient({
     apellido: '',
     email: '',
     telefono: '',
+    usuario_whatsapp: '',
     empresa: '',
     interes: '',
     evento_nombre: '',
@@ -322,6 +365,10 @@ export function LeadsClient({
   })
   const [guardandoEdit, setGuardandoEdit] = useState(false)
   const [errorEdit, setErrorEdit] = useState('')
+  const [notasModal, setNotasModal] = useState<NotaLead[]>([])
+  const [nuevaNotaTexto, setNuevaNotaTexto] = useState('')
+  const [guardandoNota, setGuardandoNota] = useState(false)
+  const [exitoNota, setExitoNota] = useState(false)
 
   // ── Modal de Importación de Contactos (Popup con descargable y adjunto) ──
   const [modalImportar, setModalImportar] = useState(false)
@@ -584,6 +631,7 @@ export function LeadsClient({
       apellido: '',
       email: '',
       telefono: '',
+      usuario_whatsapp: '',
       empresa: '',
       interes: '',
       evento_nombre: filtroEvento || '',
@@ -614,6 +662,7 @@ export function LeadsClient({
         nombre: nombreCompleto,
         email: formCrear.email.trim() || null,
         telefono: telCompleto,
+        usuario_whatsapp: formCrear.usuario_whatsapp.trim() || null,
         empresa: formCrear.empresa.trim() || null,
         interes: formCrear.interes.trim() || null,
         evento_nombre: formCrear.evento_nombre.trim() || null,
@@ -647,13 +696,66 @@ export function LeadsClient({
       apellido,
       email: lead.email ?? '',
       telefono: numero,
+      usuario_whatsapp: lead.usuario_whatsapp ?? '',
       empresa: lead.empresa ?? '',
       interes: lead.interes ?? '',
       evento_nombre: lead.evento_nombre ?? '',
       mensaje: lead.mensaje ?? '',
       estado: lead.estado,
     })
+    setNotasModal(parsearNotasLead(lead.notas))
+    setNuevaNotaTexto('')
+    setExitoNota(false)
     setLeadEditando(lead)
+  }
+
+  // Agregar y persistir notas dinámicas dentro del popup
+  async function agregarNotaModal() {
+    if (!nuevaNotaTexto.trim() || !leadEditando) return
+    setGuardandoNota(true)
+    const nueva: NotaLead = {
+      id: crypto.randomUUID(),
+      texto: nuevaNotaTexto.trim(),
+      fecha: new Date().toISOString(),
+    }
+    const actualizadas = [nueva, ...notasModal]
+    setNotasModal(actualizadas)
+    setNuevaNotaTexto('')
+
+    try {
+      const serializado = JSON.stringify(actualizadas)
+      const res = await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notas: serializado }),
+      })
+      if (res.ok) {
+        setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, notas: serializado } : l)))
+        setExitoNota(true)
+        setTimeout(() => setExitoNota(false), 2000)
+      }
+    } catch {
+      // Si falla la red, la nota permanece en memoria del modal para guardarse al confirmar
+    } finally {
+      setGuardandoNota(false)
+    }
+  }
+
+  async function eliminarNotaModal(notaId: string) {
+    if (!leadEditando) return
+    const actualizadas = notasModal.filter(n => n.id !== notaId)
+    setNotasModal(actualizadas)
+    const serializado = actualizadas.length > 0 ? JSON.stringify(actualizadas) : null
+    try {
+      await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notas: serializado }),
+      })
+      setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, notas: serializado } : l)))
+    } catch {
+      // Ignorar fallo puntual
+    }
   }
 
   async function guardarEdicion() {
@@ -667,9 +769,17 @@ export function LeadsClient({
     setGuardandoEdit(true)
     setErrorEdit('')
 
-    const telCompleto = formEdit.telefono.trim()
+    const tieneTel = Boolean(formEdit.telefono.trim())
+    const telCompleto = tieneTel
       ? normalizarTelefono(editIndicativo ? `${editIndicativo} ${formEdit.telefono}` : formEdit.telefono)
       : null
+
+    // Solo si y únicamente si no se tiene WhatsApp (sin teléfono) se puede colocar usuario_whatsapp (sin indicativo)
+    const usuarioWhatsappLimpio = !tieneTel && formEdit.usuario_whatsapp.trim()
+      ? formEdit.usuario_whatsapp.trim().replace(/^@/, '')
+      : null
+
+    const payloadNotas = notasModal.length > 0 ? JSON.stringify(notasModal) : null
 
     const res = await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
       method: 'PATCH',
@@ -678,10 +788,12 @@ export function LeadsClient({
         nombre: nombreCompleto,
         email: formEdit.email.trim() || null,
         telefono: telCompleto,
+        usuario_whatsapp: usuarioWhatsappLimpio,
         empresa: formEdit.empresa.trim() || null,
         interes: formEdit.interes.trim() || null,
         evento_nombre: formEdit.evento_nombre.trim() || null,
         mensaje: formEdit.mensaje.trim() || null,
+        notas: payloadNotas,
         estado: formEdit.estado,
       }),
     })
@@ -694,7 +806,7 @@ export function LeadsClient({
       return
     }
 
-    setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, ...data } : l)))
+    setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, ...data, notas: payloadNotas, usuario_whatsapp: usuarioWhatsappLimpio } : l)))
     setLeadEditando(null)
     startTransition(() => router.refresh())
   }
@@ -1034,11 +1146,13 @@ export function LeadsClient({
             <div className="flex flex-wrap gap-2 pt-2 border-t border-(--border)">
               {eventos.map(ev => {
                 const inicio = new Date(ev.fecha_inicio + 'T00:00:00').toLocaleDateString('es-CO', {
+                  timeZone: 'America/Bogota',
                   day: 'numeric',
                   month: 'short',
                 })
                 const fin = ev.fecha_fin
                   ? new Date(ev.fecha_fin + 'T00:00:00').toLocaleDateString('es-CO', {
+                      timeZone: 'America/Bogota',
                       day: 'numeric',
                       month: 'short',
                     })
@@ -1133,10 +1247,10 @@ export function LeadsClient({
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '100px', maxWidth: '130px' }}>
                     Nombre
                   </SortTh>
-                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '90px', maxWidth: '120px' }}>
+                  <SortTh col="empresa" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '90px', maxWidth: '130px' }}>
                     Empresa
                   </SortTh>
-                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '170px', maxWidth: '200px' }}>
+                  <SortTh col="contacto" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '170px' }}>
                     Contacto
                   </SortTh>
                   <SortTh col="interes" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '110px', maxWidth: '140px' }}>
@@ -1193,22 +1307,25 @@ export function LeadsClient({
                         </div>
                       </td>
 
-                      {/* Empresa */}
+                      {/* Empresa (line-clamp-2: puntos suspensivos solo si tiene más de 2 líneas) */}
                       <td
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'empresa' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="max-w-[120px] leading-tight break-words text-sm text-(--text-secondary)">
+                        <div
+                          className="max-w-[130px] leading-tight break-words text-sm text-(--text-secondary) line-clamp-2"
+                          title={lead.empresa ?? undefined}
+                        >
                           {lead.empresa || <span className="opacity-40">-</span>}
                         </div>
                       </td>
 
-                      {/* Contacto (Email en un renglón sin partir + Teléfono / WhatsApp organizado) */}
+                      {/* Contacto: Email en celular y computadora completo sin montarse encima; 3 puntos (...) solo para tablet */}
                       <td
                         className="px-2 py-2 align-top whitespace-nowrap"
                         style={{ background: sort.col === 'contacto' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div className="flex flex-col gap-1 leading-tight text-sm text-(--text-secondary) max-w-[200px]">
+                        <div className="flex flex-col gap-1 leading-tight text-sm text-(--text-secondary) md:max-w-[170px] lg:max-w-none">
                           {lead.email ? (
                             <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                               <Envelope size={11} className="text-(--text-secondary) shrink-0" />
@@ -1217,23 +1334,19 @@ export function LeadsClient({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={lead.email}
-                                // Un correo largo se corta con puntos suspensivos para no
-                                // ensanchar la tabla, pero se ve completo al pasar el cursor
-                                // y se puede seleccionar con el mouse para copiarlo
-                                // (select-text, pedido de Felipe 2026-10-05).
-                                className="text-(--text-primary) hover:text-brand hover:underline font-normal text-sm truncate select-text max-w-[190px] xl:max-w-[260px]"
+                                className="text-(--text-primary) hover:text-brand hover:underline font-normal text-sm select-text whitespace-nowrap md:truncate md:max-w-[150px] lg:max-w-none lg:overflow-visible"
                               >
                                 {lead.email}
                               </a>
                             </span>
                           ) : null}
 
-                          {lead.telefono ? (
+                          {lead.telefono || lead.usuario_whatsapp ? (
                             <a
                               href={
                                 lead.usuario_whatsapp?.trim()
                                   ? `https://wa.me/${encodeURIComponent(lead.usuario_whatsapp.trim().replace(/^@/, ''))}`
-                                  : `https://wa.me/${normalizarTelefono(lead.telefono).replace(/\D/g, '')}`
+                                  : `https://wa.me/${normalizarTelefono(lead.telefono!).replace(/\D/g, '')}`
                               }
                               target="_blank"
                               rel="noopener noreferrer"
@@ -1241,11 +1354,13 @@ export function LeadsClient({
                               title="Abrir chat de WhatsApp con este prospecto"
                             >
                               <WhatsappLogo size={11} className="text-(--text-secondary) shrink-0" />
-                              <span className="hover:underline">{normalizarTelefono(lead.telefono)}</span>
+                              <span className="hover:underline">
+                                {lead.telefono ? normalizarTelefono(lead.telefono) : `@${lead.usuario_whatsapp!.trim().replace(/^@/, '')}`}
+                              </span>
                             </a>
                           ) : null}
 
-                          {!lead.email && !lead.telefono && <span className="opacity-40">-</span>}
+                          {!lead.email && !lead.telefono && !lead.usuario_whatsapp && <span className="opacity-40">-</span>}
                         </div>
                       </td>
 
@@ -1735,11 +1850,40 @@ export function LeadsClient({
                   indicativo={editIndicativo}
                   onChangeIndicativo={setEditIndicativo}
                   telefono={formEdit.telefono}
-                  onChangeTelefono={tel => setFormEdit(p => ({ ...p, telefono: tel }))}
+                  onChangeTelefono={tel => setFormEdit(p => ({
+                    ...p,
+                    telefono: tel,
+                    // Si se ingresa número de teléfono, se limpia usuario_whatsapp
+                    usuario_whatsapp: tel.trim() ? '' : p.usuario_whatsapp,
+                  }))}
                   placeholder="300 123 4567"
                 />
               </div>
             </div>
+
+            {/* Usuario de WhatsApp: SOLO si y únicamente si NO se tiene WhatsApp por número */}
+            {!formEdit.telefono.trim() && (
+              <div className="flex flex-col gap-1 p-2.5 rounded-xl border border-(--border) bg-(--bg-input)/50">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-(--text-primary)">
+                    Usuario de WhatsApp <span className="text-[11px] font-normal text-(--text-secondary)">(sin indicativo)</span>
+                  </label>
+                  <span className="text-[11px] text-brand font-medium">
+                    Sin número de WhatsApp
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={formEdit.usuario_whatsapp}
+                  onChange={e => setFormEdit(p => ({ ...p, usuario_whatsapp: e.target.value.replace(/^@/, '').trim() }))}
+                  placeholder="ej. nombredeusuario (sin indicativo, sin +)"
+                  className="rounded-xl border border-(--border) bg-(--bg-card) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand"
+                />
+                <span className="text-[11px] text-(--text-secondary)">
+                  Habilitado únicamente porque no tiene número de WhatsApp. No es necesario colocar indicativo.
+                </span>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="flex flex-col gap-1">
@@ -1771,14 +1915,99 @@ export function LeadsClient({
               </div>
             </div>
 
+            {/* Mensaje original del prospecto */}
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-(--text-secondary)">Mensaje o notas del contacto</label>
+              <label className="text-xs font-semibold text-(--text-secondary)">
+                Mensaje original del prospecto
+              </label>
               <textarea
-                rows={3}
+                rows={2}
                 value={formEdit.mensaje}
                 onChange={e => setFormEdit(p => ({ ...p, mensaje: e.target.value }))}
+                placeholder="Mensaje dejado al registrarse o enviar formulario"
                 className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand resize-none"
               />
+            </div>
+
+            {/* ── Sección de Notas del Contacto (Múltiples notas, se van guardando en el popup) ── */}
+            <div className="flex flex-col gap-2 pt-2 border-t border-(--border)">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-(--text-primary) flex items-center gap-1.5">
+                  <FileText size={14} className="text-brand" />
+                  <span>Notas internas de seguimiento</span>
+                  <span className="text-[11px] font-normal text-(--text-secondary)">
+                    ({notasModal.length} {notasModal.length === 1 ? 'nota' : 'notas'})
+                  </span>
+                </label>
+                {exitoNota && (
+                  <span className="text-[11px] font-medium text-brand">
+                    ✓ Nota guardada en el contacto
+                  </span>
+                )}
+              </div>
+
+              {/* Input para agregar una nueva nota al popup */}
+              <div className="flex gap-2">
+                <textarea
+                  rows={2}
+                  value={nuevaNotaTexto}
+                  onChange={e => setNuevaNotaTexto(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                      e.preventDefault()
+                      agregarNotaModal()
+                    }
+                  }}
+                  placeholder="Escribe una nueva nota sobre este prospecto..."
+                  className="flex-1 rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-xs sm:text-sm text-(--text-primary) outline-hidden focus:border-brand resize-none"
+                />
+                <button
+                  type="button"
+                  onClick={agregarNotaModal}
+                  disabled={!nuevaNotaTexto.trim() || guardandoNota}
+                  className="shrink-0 self-end px-3 py-2 rounded-xl bg-brand text-white text-xs font-semibold hover:opacity-90 disabled:opacity-40 transition-opacity cursor-pointer inline-flex items-center gap-1.5"
+                  title="Guardar nota en este prospecto"
+                >
+                  <Plus size={14} />
+                  <span>{guardandoNota ? 'Guardando...' : 'Agregar nota'}</span>
+                </button>
+              </div>
+
+              {/* Lista de notas guardadas en el popup */}
+              {notasModal.length > 0 ? (
+                <div className="flex flex-col gap-1.5 mt-1 max-h-[170px] overflow-y-auto pr-1">
+                  {notasModal.map(n => {
+                    const f = formatearFechaLead(n.fecha)
+                    return (
+                      <div
+                        key={n.id}
+                        className="flex items-start justify-between gap-2 p-2.5 rounded-xl border border-(--border) bg-(--bg-input)/50 text-xs"
+                      >
+                        <div className="flex flex-col gap-1 flex-1 min-w-0">
+                          <span className="text-(--text-primary) whitespace-pre-wrap leading-relaxed break-words">
+                            {n.texto}
+                          </span>
+                          <span className="text-[10px] text-(--text-secondary)">
+                            {f.dia} · {f.hora}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => eliminarNotaModal(n.id)}
+                          className="text-(--text-secondary) hover:text-error p-1 rounded-md transition-colors cursor-pointer shrink-0"
+                          title="Eliminar esta nota"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <p className="text-[11px] text-(--text-placeholder) italic m-0">
+                  No hay notas registradas. Puedes agregar las que sean necesarias y se van guardando.
+                </p>
+              )}
             </div>
           </div>
         </Modal>

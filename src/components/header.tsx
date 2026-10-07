@@ -182,7 +182,7 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
     (resultados.usuarios.length > 0 || resultados.empresas.length > 0 || resultados.calculos.length > 0)
 
   function getDescripcionCalculo(c: SearchResultado): string {
-    const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : ''
+    const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) : ''
     const co2 = c.total_co2 != null ? `${c.total_co2.toFixed(2)} kg CO₂` : ''
     return [fecha, co2].filter(Boolean).join(' · ')
   }

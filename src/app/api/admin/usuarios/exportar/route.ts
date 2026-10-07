@@ -52,7 +52,7 @@ function generarPDF(filas: FilaExport[]): Buffer {
   doc.text('calculadoradereuso.com - Usuarios', 14, 16)
   doc.setFontSize(9)
   doc.setTextColor(100, 100, 100)
-  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')} © Grupo MLP S.A.S.`, 14, 22)
+  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })} © Grupo MLP S.A.S.`, 14, 22)
   autoTable(doc, {
     head: [CABECERAS],
     body: filas.map((f) => CABECERAS_KEY.map((k) => String(f[k as keyof FilaExport] ?? ''))),
@@ -92,11 +92,11 @@ export async function GET(request: NextRequest) {
       email: p.email ?? '',
       rol: p.rol ?? '',
       empresa: empresa?.nombre ?? '',
-      registrado: p.created_at ? new Date(p.created_at).toLocaleDateString('es-CO') : '',
+      registrado: p.created_at ? new Date(p.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' }) : '',
     }
   })
 
-  const fecha = new Date().toISOString().slice(0, 10)
+  const fecha = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
   const nombre = `usuarios-reuso-${fecha}`
 
   let buffer: Buffer

@@ -121,6 +121,7 @@ export default async function EmpresaConfiguracionPage() {
             icono: <Calendar size={17} color="#59A6E4" />,
             label: 'Miembro desde',
             valor: new Date(empresa.created_at).toLocaleDateString('es-CO', {
+              timeZone: 'America/Bogota',
               day: 'numeric', month: 'long', year: 'numeric',
             }),
           },

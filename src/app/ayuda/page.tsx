@@ -410,7 +410,7 @@ function ContenidoSuperAdmin() {
                   )}
                 </div>
                 <p style={{ margin: 0, fontSize: 12, color: 'var(--text-secondary)' }}>
-                  {nombreEmpresaDe(t)} · {t.tipo} · {t.prioridad} · {new Date(t.created_at).toLocaleDateString('es-CO')}
+                  {nombreEmpresaDe(t)} · {t.tipo} · {t.prioridad} · {new Date(t.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}
                 </p>
               </div>
             ))}

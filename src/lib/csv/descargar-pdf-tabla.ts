@@ -16,7 +16,7 @@ export function descargarPDFTabla(data: unknown[], nombre: string, titulo: strin
   doc.text(titulo, 14, 23)
   doc.setFontSize(8)
   doc.setTextColor(140, 140, 140)
-  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 28)
+  doc.text(`Generado: ${new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}`, 14, 28)
 
   autoTable(doc, {
     head: [columnas],

@@ -355,7 +355,7 @@ export default function StatusPage() {
     const fin = new Date()
     const inicio = new Date()
     inicio.setDate(inicio.getDate() - (NUM_DAYS - 1))
-    const options: Intl.DateTimeFormatOptions = { month: 'short', year: 'numeric' }
+    const options: Intl.DateTimeFormatOptions = { timeZone: 'America/Bogota', month: 'short', year: 'numeric' }
     const inicioStr = inicio.toLocaleDateString('es-CO', options)
     const finStr = fin.toLocaleDateString('es-CO', options)
     return `${inicioStr} - ${finStr}`
@@ -364,6 +364,7 @@ export default function StatusPage() {
   // Formato para el Tooltip (ej. "mié, 5 de nov de 2025")
   const formatTooltipDate = (date: Date) => {
     return date.toLocaleDateString('es-CO', {
+      timeZone: 'America/Bogota',
       weekday: 'short',
       day: 'numeric',
       month: 'short',
@@ -1459,7 +1460,7 @@ export default function StatusPage() {
           {historyExpanded && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
               {historialDias.map((d: Date, index: number) => {
-                const diaString = d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+                const diaString = d.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
                 const dISO = d.toISOString().slice(0, 10)
                 
                 const deEsteDia = incidencias.filter(i => i.created_at.slice(0, 10) === dISO)

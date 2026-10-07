@@ -361,7 +361,7 @@ export function TablaCotizadorDemo() {
         Estado: ESTADOS.find(e => e.key === c.estado)?.label ?? c.estado,
         Total: formatCOP(c.total),
         'CO2 evitado': formatNumero(c.co2_evitado_total_kg, { unidad: 'kg CO2 eq' }),
-        Fecha: c.created_at ? new Date(c.created_at).toLocaleDateString('es-CO') : '—',
+        Fecha: c.created_at ? formatFecha(c.created_at) : '—',
       }))
   }
 

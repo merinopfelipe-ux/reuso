@@ -40,7 +40,7 @@ const CONFIANZA_COLOR: Record<string, string> = {
 
 function formatFecha(iso: string | null) {
   if (!iso) return '-'
-  return new Date(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'long', year: 'numeric' })
 }
 
 

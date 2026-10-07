@@ -1,3 +1,6 @@
+// Zona horaria estándar del servidor para todo el sistema: GMT-5 (Colombia)
+process.env.TZ = 'America/Bogota'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Next 16 agrega en cada `next dev` un bloque en inglés al final de
@@ -24,6 +27,11 @@ const nextConfig = {
       { source: '/youtube',   destination: 'https://www.youtube.com/@calculadoradereuso', permanent: true },
     ]
 
+    const enlacesLegales = [
+      { source: '/terminos',   destination: '/legal/terminos',   permanent: true },
+      { source: '/privacidad', destination: '/legal/privacidad', permanent: true },
+    ]
+
     return [
       // Migración de dominio (2026-09-05)
       {
@@ -33,6 +41,7 @@ const nextConfig = {
         permanent: true,
       },
       ...redesSociales,
+      ...enlacesLegales,
     ]
   },
 

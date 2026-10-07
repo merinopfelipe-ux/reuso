@@ -30,7 +30,7 @@ export function generarPDFMitigacion({ empresa_nombre, empresa_logo_base64, desd
   doc.text('Reporte 2 · Declaración de Mitigación Ecológica GRI/ESG', 38, 16)
   doc.setFontSize(9)
   doc.setTextColor(...GRIS)
-  doc.text(`${empresa_nombre} · ${desde ?? 'Histórico'} a ${hasta ?? 'hoy'} · Generado ${new Date().toLocaleDateString('es-CO')}`, 38, 22)
+  doc.text(`${empresa_nombre} · ${desde ?? 'Histórico'} a ${hasta ?? 'hoy'} · Generado ${new Date().toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}`, 38, 22)
 
   doc.setFontSize(10)
   doc.setTextColor(...NEGRO)

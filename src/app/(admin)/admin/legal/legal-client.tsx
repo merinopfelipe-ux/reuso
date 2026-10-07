@@ -151,6 +151,7 @@ export function LegalAdminClient() {
               <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
                 Última edición:{' '}
                 {new Date(contenidoActual.updated_at).toLocaleString('es-CO', {
+                  timeZone: 'America/Bogota',
                   dateStyle: 'medium',
                   timeStyle: 'short',
                 })}

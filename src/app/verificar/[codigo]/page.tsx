@@ -43,6 +43,7 @@ interface PageProps {
 
 function formatFecha(iso: string) {
   return new Date(iso).toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     day: '2-digit', month: 'long', year: 'numeric',
   })
 }

@@ -160,7 +160,7 @@ export function PlantillasClient({ plantillas: inicial, emailNotificacionesInici
                 Plantilla de Informe
               </p>
               <p style={{ fontSize: 12, color: C.mid, margin: '4px 0 0' }}>
-                {plantilla ? `Última actualización: ${new Date(plantilla.updated_at).toLocaleDateString('es-CO')}` : 'Aún no configurada'}
+                {plantilla ? `Última actualización: ${new Date(plantilla.updated_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}` : 'Aún no configurada'}
               </p>
             </div>
             {plantilla && (

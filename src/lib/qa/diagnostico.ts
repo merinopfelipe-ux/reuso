@@ -163,6 +163,7 @@ export async function correrDiagnostico(adminClient: AdminClient): Promise<Diagn
 /** Convierte el diagnóstico en el texto plano que se descarga como .txt */
 export function comoTexto(d: Diagnostico): string {
   const fecha = new Date(d.generado).toLocaleString('es-CO', {
+    timeZone: 'America/Bogota',
     day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
   })
   const l: string[] = []

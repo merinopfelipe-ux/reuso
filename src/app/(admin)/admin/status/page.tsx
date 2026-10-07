@@ -482,7 +482,7 @@ export default function AdminStatusPage() {
                     <div>
                       <h4 className={`text-sm font-semibold ${tp}`}>{i.titulo}</h4>
                       <p className={`text-xs ${ts}`}>
-                        {COMPONENTE_OPTS.find(o => o.value === i.componente)?.label} · Resuelto el {new Date(i.resolved_at!).toLocaleDateString('es-CO')}
+                        {COMPONENTE_OPTS.find(o => o.value === i.componente)?.label} · Resuelto el {new Date(i.resolved_at!).toLocaleDateString('es-CO', { timeZone: 'America/Bogota' })}
                         {i.origen === 'sistema' && ' · Automático'}
                       </p>
                     </div>

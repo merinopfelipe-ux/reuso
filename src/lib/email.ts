@@ -209,9 +209,9 @@ function emailPlantilla({
 
               <!-- Enlaces legales centrados (sin cancelar suscripción para transaccionales) -->
               <p style="margin:0 auto 14px;font-size:11.5px;color:${COLOR_TEXT_MUTED};text-align:center;">
-                <a href="https://calculadoradereuso.com/terminos" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Términos</a>
+                <a href="https://calculadoradereuso.com/legal/terminos" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Términos</a>
                 &nbsp;&nbsp;&nbsp;&nbsp;·&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="https://calculadoradereuso.com/privacidad" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Privacidad</a>
+                <a href="https://calculadoradereuso.com/legal/privacidad" style="color:${COLOR_TEXT_MUTED};text-decoration:none;">Privacidad</a>
               </p>
 
               <!-- Redes Sociales centradas -->
@@ -467,6 +467,7 @@ export async function enviarConfirmacionConsultaLegal(
   const casoSeguro = escaparHtml(datos.numeroCaso)
 
   const fecha = new Date().toLocaleDateString('es-CO', {
+    timeZone: 'America/Bogota',
     day: 'numeric',
     month: 'long',
     year: 'numeric',

@@ -56,9 +56,9 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
     : null
 
   const fechaValidez = cot.validez_modo === 'fecha' && cot.validez_fecha
-    ? new Date(`${cot.validez_fecha}T00:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? new Date(`${cot.validez_fecha}T00:00:00`).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
     : new Date(new Date(cot.created_at).getTime() + (cot.validez_dias ?? 30) * 86_400_000)
-        .toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+        .toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
 
   const pathsToSign: string[] = []
   const mueblesArray = muebles ?? []
@@ -114,7 +114,7 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
 
   return generarPDFCotizacion({
     codigo_cotizacion: cot.codigo_cotizacion,
-    fecha: new Date(cot.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }),
+    fecha: new Date(cot.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' }),
     cliente_nombre: cliente?.nombre ?? 'Cliente',
     cliente_apellido: cliente?.apellido ?? null,
     cliente_identificacion: cliente?.identificacion ?? null,

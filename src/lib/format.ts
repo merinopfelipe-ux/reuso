@@ -117,33 +117,89 @@ export function formatCOP(val: number | string | null | undefined): string {
  * ningún componente nuevo — siempre esta función, para que el punto del mes
  * nunca vuelva a faltar en una pantalla nueva.
  */
+/**
+ * Zona horaria oficial de todo el sistema: GMT-5 (Colombia / America/Bogota).
+ * Regla permanente: toda fecha y hora en la plataforma se renderiza en GMT-5,
+ * evitando discrepancias entre la zona horaria del servidor (UTC) y la del cliente.
+ */
+export const TIMEZONE_DEFAULT = 'America/Bogota'
+
 const MESES_ABREV = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
 
-export function formatFecha(iso: string | null | undefined, opciones?: { conHora?: boolean }): string {
+export function formatFecha(
+  iso: string | null | undefined,
+  opciones?: { conHora?: boolean; timeZone?: string }
+): string {
   if (!iso) return '—'
   const d = new Date(iso)
   if (isNaN(d.getTime())) return '—'
-  const dia = d.getDate()
-  const mes = MESES_ABREV[d.getMonth()]
-  const anio = d.getFullYear()
+  const tz = opciones?.timeZone ?? TIMEZONE_DEFAULT
+
+  const partes = new Intl.DateTimeFormat('es-CO', {
+    timeZone: tz,
+    day: 'numeric',
+    month: 'numeric',
+    year: 'numeric',
+  }).formatToParts(d)
+
+  let dia = ''
+  let mesNum = 1
+  let anio = ''
+  for (const p of partes) {
+    if (p.type === 'day') dia = p.value
+    if (p.type === 'month') mesNum = parseInt(p.value, 10)
+    if (p.type === 'year') anio = p.value
+  }
+
+  const mes = MESES_ABREV[mesNum - 1] ?? 'ene'
   let resultado = `${dia} de ${mes}. de ${anio}`
   if (opciones?.conHora) {
-    resultado += ` ${formatHora(iso)}`
+    resultado += ` ${formatHora(iso, { timeZone: tz })}`
   }
   return resultado
 }
 
-/** Solo la hora, mismo formato "H:MM a.m./p.m." usado dentro de `formatFecha`
- * — separado para poder mostrar fecha y hora en renglones distintos cuando
- * el espacio disponible no alcanza para las dos en una sola línea. */
-export function formatHora(iso: string | null | undefined): string {
+/** Solo la hora en GMT-5 por defecto, mismo formato "H:MM a.m./p.m." */
+export function formatHora(
+  iso: string | null | undefined,
+  opciones?: { timeZone?: string }
+): string {
   if (!iso) return '—'
   const d = new Date(iso)
   if (isNaN(d.getTime())) return '—'
-  let horas = d.getHours()
-  const minutos = d.getMinutes().toString().padStart(2, '0')
-  const sufijo = horas >= 12 ? 'p.m.' : 'a.m.'
-  horas = horas % 12
-  if (horas === 0) horas = 12
-  return `${horas}:${minutos} ${sufijo}`
+  const tz = opciones?.timeZone ?? TIMEZONE_DEFAULT
+
+  const partes = new Intl.DateTimeFormat('es-CO', {
+    timeZone: tz,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).formatToParts(d)
+
+  let hora = ''
+  let minuto = ''
+  let periodo = ''
+  for (const p of partes) {
+    if (p.type === 'hour') hora = p.value
+    if (p.type === 'minute') minuto = p.value
+    if (p.type === 'dayPeriod') {
+      const val = p.value.toLowerCase().replace(/[\.\s]/g, '')
+      periodo = val === 'pm' ? 'p.m.' : 'a.m.'
+    }
+  }
+
+  if (!periodo) {
+    const hNum = parseInt(hora, 10)
+    periodo = hNum >= 12 ? 'p.m.' : 'a.m.'
+  }
+
+  return `${hora}:${minuto} ${periodo}`
+}
+
+/**
+ * Fecha actual en formato ISO 'YYYY-MM-DD' en GMT-5 (America/Bogota),
+ * independiente de la zona horaria del servidor o del navegador.
+ */
+export function hoyGMT5(): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE_DEFAULT }).format(new Date())
 }

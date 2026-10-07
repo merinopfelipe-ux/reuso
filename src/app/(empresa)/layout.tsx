@@ -49,6 +49,7 @@ export default async function EmpresaLayout({
 
   const lastVisitRaw = logs && logs.length > 1 ? logs[1].created_at : logs?.[0]?.created_at || new Date().toISOString()
   const lastVisitFormatted = new Date(lastVisitRaw).toLocaleString('es-CO', {
+    timeZone: 'America/Bogota',
     weekday: 'long',
     day: 'numeric',
     month: 'long',

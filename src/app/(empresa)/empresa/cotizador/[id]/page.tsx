@@ -140,7 +140,7 @@ function formatFechaValidez(cot: Cotizacion): string {
   const fecha = cot.validez_modo === 'fecha' && cot.validez_fecha
     ? new Date(`${cot.validez_fecha}T00:00:00`)
     : new Date(new Date(cot.created_at).getTime() + cot.validez_dias * 86_400_000)
-  return fecha.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+  return fecha.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 // ── Componente ────────────────────────────────────────────────────────────────

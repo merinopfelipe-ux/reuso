@@ -11,6 +11,7 @@
 // en staging, el login fallaba de un modo que parecía un bug grave y no lo
 // era. Este aviso hace ese cambio de base imposible de pasar por alto.
 export function register() {
+  process.env.TZ = 'America/Bogota'
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '(sin definir)'
   const esProduccionReal = url.includes('nxnjjncjpqckewwacgoj')
   const esStaging = url.includes('rjcfqcqgqxoblisuyapq')

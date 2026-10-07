@@ -339,21 +339,21 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
   const totalPesoStr = formatNumero(totalPeso)
 
   const fechaCreacion = cotizacion.created_at
-    ? new Date(cotizacion.created_at).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
+    ? new Date(cotizacion.created_at).toLocaleString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
     : '-'
   const fechaMod = cotizacion.updated_at
-    ? new Date(cotizacion.updated_at).toLocaleString('es-CO', { year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
+    ? new Date(cotizacion.updated_at).toLocaleString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: '2-digit', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true })
     : '-'
   const fechaCreacionLarga = cotizacion.created_at
-    ? new Date(cotizacion.created_at).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+    ? new Date(cotizacion.created_at).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
     : '-'
   const fechaValidezLarga = (() => {
     if (cotizacion.validez_modo === 'fecha' && cotizacion.validez_fecha) {
-      return new Date(`${cotizacion.validez_fecha}T00:00:00`).toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+      return new Date(`${cotizacion.validez_fecha}T00:00:00`).toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
     }
     if (!cotizacion.created_at) return '-'
     return new Date(new Date(cotizacion.created_at).getTime() + cotizacion.validez_dias * 86_400_000)
-      .toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+      .toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'long', year: 'numeric' })
   })()
 
 

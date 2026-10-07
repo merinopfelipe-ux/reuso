@@ -3354,7 +3354,7 @@ function QAContenido() {
               {guardadoReciente ? (
                 <div className="flex flex-col leading-tight">
                   <span className="text-[#38B98E] font-semibold flex items-center gap-1">
-                    <CheckCircle size={12} /> Guardado {ultimoGuardado ? `${ultimoGuardado.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })} · ${ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                    <CheckCircle size={12} /> Guardado {ultimoGuardado ? `${ultimoGuardado.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short' })} · ${ultimoGuardado.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}` : ''}
                   </span>
                   <span className="text-[11px] opacity-70 whitespace-nowrap">
                     Autoguardado en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
@@ -3363,7 +3363,7 @@ function QAContenido() {
               ) : ultimoGuardado ? (
                 <div className="flex flex-col leading-tight">
                   <span className="whitespace-nowrap font-medium">
-                    Último cambio {ultimoGuardado.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })} · {ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                    Último cambio {ultimoGuardado.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short' })} · {ultimoGuardado.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}
                   </span>
                   <span className="text-[11px] opacity-70 whitespace-nowrap">
                     Autoguardado en {Math.floor(segundosRestantes / 60)}:{String(segundosRestantes % 60).padStart(2, '0')}
@@ -4828,7 +4828,7 @@ function QAContenido() {
                 const parcialCount = intento.tareas.filter(t => t.estado === 'parcial').length
                 const noSeEntiendeCount = intento.tareas.filter(t => t.estado === 'no_se_entiende').length
                 const pct = intento.tareas.length > 0 ? Math.round((okCount / intento.tareas.length) * 100) : 0
-                const fecha = new Date(intento.ts).toLocaleString('es-CO', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                const fecha = new Date(intento.ts).toLocaleString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
                 const estaExpandido = detalleIntentoId === intento.id
                 
                 const textoInforme = [
@@ -5091,7 +5091,7 @@ function QAContenido() {
                 </div>
                 <p className={`text-xs ${isDark ? 'text-gray-300' : 'text-secondary'}`}>
                   {ultimoGuardado
-                    ? `Último cambio: ${ultimoGuardado.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' })} a las ${ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`
+                    ? `Último cambio: ${ultimoGuardado.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short', year: 'numeric' })} a las ${ultimoGuardado.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}`
                     : 'Sin cambios guardados en esta sesión'}
                 </p>
               </div>
@@ -5290,7 +5290,7 @@ function QAContenido() {
                           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#D6F391]/20 text-[#D6F391]' : 'bg-[#00827C]/15 text-[#00827C]'}`}>Activo</span>
                         </div>
                         <div className={`text-[11px] ${isDark ? 'text-gray-300' : theme.textSecondary}`}>
-                          {oks} aprobadas · {fallas} fallas · {pendientes} pendientes {ultimoGuardado ? `· Último cambio: ${ultimoGuardado.toLocaleDateString('es-CO', { day: 'numeric', month: 'short' })}, ${ultimoGuardado.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                          {oks} aprobadas · {fallas} fallas · {pendientes} pendientes {ultimoGuardado ? `· Último cambio: ${ultimoGuardado.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short' })}, ${ultimoGuardado.toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}` : ''}
                         </div>
                       </div>
                     </div>
@@ -5318,7 +5318,7 @@ function QAContenido() {
                     const okCount = intento.tareas.filter(t => t.estado === 'ok').length
                     const failCount = intento.tareas.filter(t => t.estado === 'falla').length
                     const pct = intento.tareas.length > 0 ? Math.round((okCount / intento.tareas.length) * 100) : 0
-                    const fecha = new Date(intento.ts).toLocaleString('es-CO', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+                    const fecha = new Date(intento.ts).toLocaleString('es-CO', { timeZone: 'America/Bogota', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
                     return (
                       <div
                         key={intento.id}
