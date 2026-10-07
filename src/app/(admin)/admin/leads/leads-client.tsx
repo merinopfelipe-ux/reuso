@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import {
   Inbox as Tray,
   Mail as Envelope,
-  Phone,
   Pencil,
   Trash2,
   Download,
@@ -22,9 +21,9 @@ import {
   X,
   FileText,
   ArrowSquareOut,
+  CaretRight,
 } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
-import { WA_NUMBER } from '@/lib/constants/contacto'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { Selector } from '@/components/ui/selector'
@@ -1327,27 +1326,43 @@ export function LeadsClient({
                         </button>
                       </td>
 
-                      {/* Nombre completo */}
+                      {/* Nombre completo: flecha (CaretRight) igual a cotizaciones para abrir la ficha completa */}
                       <td
                         className="px-2 py-2 align-top"
                         style={{ background: sort.col === 'nombre' ? 'var(--table-orden-activo)' : undefined }}
                       >
-                        <div
-                          className="max-w-[130px] text-sm font-semibold text-(--text-primary)"
-                          title={lead.nombre ?? undefined}
-                          style={{
-                            display: '-webkit-box',
-                            WebkitBoxOrient: 'vertical',
-                            WebkitLineClamp: 2,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            wordBreak: 'break-word',
-                            lineHeight: '1.25',
-                            maxHeight: '2.55em',
+                        <a
+                          href={`/admin/leads/${lead.id}`}
+                          title={`Ver ficha completa de ${lead.nombre ?? 'este prospecto'}`}
+                          className="group inline-flex items-center gap-1 max-w-[140px] text-sm font-semibold text-(--text-primary) hover:text-brand transition-colors cursor-pointer select-text"
+                          onClick={(e) => {
+                            if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+                              e.preventDefault()
+                              router.push(`/admin/leads/${lead.id}`)
+                            }
                           }}
                         >
-                          {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
-                        </div>
+                          <span
+                            className="group-hover:underline"
+                            style={{
+                              display: '-webkit-box',
+                              WebkitBoxOrient: 'vertical',
+                              WebkitLineClamp: 2,
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              wordBreak: 'break-word',
+                              lineHeight: '1.25',
+                              maxHeight: '2.55em',
+                            }}
+                          >
+                            {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
+                          </span>
+                          <CaretRight
+                            size={14}
+                            className="text-(--text-secondary) opacity-60 group-hover:opacity-100 group-hover:text-brand transition-all shrink-0"
+                            sinAnimacion
+                          />
+                        </a>
                       </td>
 
                       {/* Empresa (estricto a 2 líneas: puntos suspensivos solo si tiene más de 2 líneas) */}
