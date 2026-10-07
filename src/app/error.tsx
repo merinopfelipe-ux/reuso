@@ -44,7 +44,7 @@ export default function Error({
       </h1>
       <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: 0, maxWidth: 340, lineHeight: 1.6 }}>
         Ocurrió un error inesperado. Si el problema persiste, escríbenos a{' '}
-        <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)' }}>servicio@calculadoradereuso.com</a>.
+        <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)' }}>innovacion@lurdes.co</a>.
       </p>
       <button 
         onClick={reset}

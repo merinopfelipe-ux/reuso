@@ -81,7 +81,7 @@ const T = {
     canalesTitle: 'Canal seguro para reportar alertas',
     canales1:
       'Si conoces de algún intento de mover fondos ilegales o usar nuestra plataforma para actos ilícitos, reporta con tranquilidad a:',
-    canalesCorreo: 'servicio@calculadoradereuso.com',
+    canalesCorreo: 'innovacion@lurdes.co',
     canales2:
       'Tratamos cada mensaje con absoluta reserva de tu identidad y bajo amparo legal de confidencialidad.',
   },
@@ -163,7 +163,7 @@ const T = {
     canalesTitle: 'Secure channel for reporting alerts',
     canales1:
       'If you know of any attempt to move illegal funds or misuse our platform, report it safely to:',
-    canalesCorreo: 'servicio@calculadoradereuso.com',
+    canalesCorreo: 'innovacion@lurdes.co',
     canales2:
       'We process all messages with strict identity protection and legal confidentiality.',
   },

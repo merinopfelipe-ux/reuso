@@ -78,7 +78,7 @@ const T = {
     denunciasTitle: 'Canal ético: habla con tranquilidad',
     denuncias1:
       'Si ves algo sospechoso, una mala práctica o un intento de soborno, avísanos de inmediato a través de nuestro correo seguro:',
-    denunciasCanal: 'servicio@calculadoradereuso.com',
+    denunciasCanal: 'innovacion@lurdes.co',
     denuncias2:
       'Cuidamos tu identidad bajo total reserva. Nadie sufrirá represalias ni consecuencias por reportar de buena fe una irregularidad.',
     consecuenciasTitle: 'Sanciones severas para quien incumpla',
@@ -160,7 +160,7 @@ const T = {
     denunciasTitle: 'Ethics channel: speak up with peace of mind',
     denuncias1:
       'If you notice suspicious activity, unfair practices, or a bribery attempt, report it immediately through our secure email:',
-    denunciasCanal: 'servicio@calculadoradereuso.com',
+    denunciasCanal: 'innovacion@lurdes.co',
     denuncias2:
       'We protect your identity with total confidentiality. No one will face retaliation for filing a report in good faith.',
     consecuenciasTitle: 'Strict sanctions for non-compliance',

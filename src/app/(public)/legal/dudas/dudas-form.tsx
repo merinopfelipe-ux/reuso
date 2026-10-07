@@ -54,7 +54,7 @@ const TF = {
     mensaje_label: 'Mensaje',
     mensaje_placeholder: 'Describe tu consulta con el mayor detalle posible...',
     error_campos: 'Completa todos los campos para continuar.',
-    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a soporte@calculadoradereuso.com.',
+    error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a innovacion@lurdes.co.',
     enviando: 'Enviando...',
     enviar: 'Enviar consulta',
     exito: () =>
@@ -71,7 +71,7 @@ const TF = {
     mensaje_label: 'Message',
     mensaje_placeholder: 'Describe your query in as much detail as possible...',
     error_campos: 'Please complete all fields to continue.',
-    error_envio: 'Something went wrong. Try again or email us at soporte@calculadoradereuso.com.',
+    error_envio: 'Something went wrong. Try again or email us at innovacion@lurdes.co.',
     enviando: 'Sending...',
     enviar: 'Send enquiry',
     exito: () =>

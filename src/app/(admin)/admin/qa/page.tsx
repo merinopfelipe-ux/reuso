@@ -288,7 +288,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
       'Recorre el índice y revisa los derechos y responsabilidades de los usuarios.',
       'Comprueba el botón de retorno a legales y la ausencia de selector de tema en la cabecera.'
     ],
-    esperado: 'La lectura es amena, ordenada, con canal directo de contacto servicio@calculadoradereuso.com y navegación fluida.',
+    esperado: 'La lectura es amena, ordenada, con canal directo de contacto innovacion@lurdes.co y navegación fluida.',
     journeys: ['Cliente Final', 'Admin Operativa']
   },
 {
@@ -310,7 +310,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Consulta la política de tratamiento de datos.',
       'Revisa los canales oficiales para ejercer derechos de consulta o rectificación.',
-      'Comprueba el correo de atención oficial servicio@calculadoradereuso.com.'
+      'Comprueba el correo de atención oficial innovacion@lurdes.co.'
     ],
     esperado: 'El texto cumple con la normativa vigente y ofrece canales de atención directos y claros.',
     journeys: ['Cliente Final', 'Admin Operativa']
@@ -430,7 +430,7 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     pasos: [
       'Abre la sección de dudas legales en /legal/dudas.',
       'Escribe tu consulta en el formulario.',
-      'Comprueba que el envío o mensaje de respaldo utilice el correo oficial servicio@calculadoradereuso.com.'
+      'Comprueba que el envío o mensaje de respaldo utilice el correo oficial innovacion@lurdes.co.'
     ],
     esperado: 'La pantalla agradece tu mensaje y confirma que el equipo de soporte legal te responderá pronto.',
     journeys: ['Cliente Final', 'Admin Operativa']
@@ -441,9 +441,9 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     descripcion: 'Verificación de las 3 variantes de pie de página de la plataforma (Público, Legal y Sistema Interno), asegurando en escritorio su estructura a 4 columnas, límites y pesos tipográficos a 10px, y en móvil su estructura vertical unificada, enlaces en una sola línea y espaciado adaptativo para el menú inferior.',
     pasos: [
       '1. Reglas en Escritorio (4 Columnas estandarizadas a 10px): Col 1 (Título arcoíris al hover), Col 2 (Enlaces internos/legales de 70px), Col 3 (Redes sociales con altura 70px alineadas a LinkedIn e Instagram), Col 4 (Límites superior e inferior estrictos: bloque 1 arriba en línea con LinkedIn, bloque 2 abajo en línea con Instagram; tipografía estricta a 10px siempre, dos renglones sin dos puntos; negrita 600 solo si es enlace interactivo con animación suave idéntica a redes; modo día/noche escalado a 0.82 a la derecha tras "Lurdes").',
-      '2. Footer Legal (/legal y subpáginas): En escritorio Col 2 muestra "Inicio", "Iniciar sesión", "Preguntas frecuentes"; Col 4 muestra "Última actualización" (arriba, sin negrita) y "Contacto" (abajo, con negrita). En móvil: estructura unificada vertical con los 3 enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: servicio@calculadoradereuso.com", redes sociales, Lurdes con theme-toggle al lado sin opacidad, copyright pegado, y padding inferior compacto (20px, sin espacio para menú móvil).',
+      '2. Footer Legal (/legal y subpáginas): En escritorio Col 2 muestra "Inicio", "Iniciar sesión", "Preguntas frecuentes"; Col 4 muestra "Última actualización" (arriba, sin negrita) y "Contacto" (abajo, con negrita). En móvil: estructura unificada vertical con los 3 enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: innovacion@lurdes.co", redes sociales, Lurdes con theme-toggle al lado sin opacidad, copyright pegado, y padding inferior compacto (20px, sin espacio para menú móvil).',
       '3. Footer Público (/ y /sistema-diseno): En escritorio Col 2 muestra enlaces legales; Col 4 muestra "Inicia ahora" (arriba, con negrita) y "Contacto" (abajo, con negrita). En móvil: estructura unificada vertical idéntica, enlaces en una sola línea, y padding inferior de 104px (espacio estético para el menú o elementos flotantes de navegación inferior).',
-      '4. Footer Sistema Interno (/dashboard, /empresa, /admin, con LayoutShell): En escritorio Col 4 muestra "Dirección IP" (arriba, sin negrita) y "Última visita" o "Contacto" (abajo, 10px). En móvil: estructura unificada idéntica a los otros dos (título centrado, enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: servicio@calculadoradereuso.com" sin cadenas técnicas de auditoría crudas), y padding inferior de 104px para despejar el menú inferior fijo (MobileBottomNav).'
+      '4. Footer Sistema Interno (/dashboard, /empresa, /admin, con LayoutShell): En escritorio Col 4 muestra "Dirección IP" (arriba, sin negrita) y "Última visita" o "Contacto" (abajo, 10px). En móvil: estructura unificada idéntica a los otros dos (título centrado, enlaces en una sola línea, "Última actualización: [fecha]" y "Contacto: innovacion@lurdes.co" sin cadenas técnicas de auditoría crudas), y padding inferior de 104px para despejar el menú inferior fijo (MobileBottomNav).'
     ],
     esperado: 'Los 3 footers son idénticos y estéticos en diseño tanto en escritorio (4 columnas a 10px, alturas de 70px y ThemeToggle tras Lurdes) como en móvil (diseño vertical compacto, enlaces en una sola línea, información a 10px con dos puntos, negrita sólo en enlaces y separación justa). El padding inferior en móvil es de 104px en Home, Sistema de diseño y Todo el sistema para librar el menú, y compacto (20px) en Legales.',
     journeys: ['Cliente Final', 'Admin Operativa', 'Directivo']
@@ -2407,7 +2407,7 @@ function QAContenido() {
     tareas: [
       { id: 'pub-01', estado: 'falla', notas: 'Entre “Ver más +” y “¿Cuánto valor recupera tu empresa…?” ya quedó muy poco espacio. Mira en promedio cuánto mantienen los demás espacios y hazlo uniforme; una sola medida entre sección y sección lo hace ver más estético.\nEn el popup de los cálculos quisiera quitarle el tag de disponible y próxima. No me da valor y hace vernos como incompletos.' },
       { id: 'pub-02', estado: 'falla', notas: 'En modo noche hay colores que se pierden, como el verde sostenible. Por eso es casi todo pistacho. Revisa el contraste.\nLa política de privacidad tiene 2 cuadros muy seguidos; no sé si podemos dejar los principios de primera y luego, como en el centro, eso de los datos son tuyos. No lo borres, solo dale mejor estructura. SIN PERDER EL HILO DEL CONTENIDO. Revisa dónde es pertinente colocarlo. No lo coloques por colocar, solo porque dije por la mitad. Comprueba acá también el modo noche con lupa.\n/ medicion no tiene enlace a IA.\nEn general, todos los apartados de transparencia deben tener el “lee nuestra política…” en el renglón siguiente, porque es largo y se corta con la información que viene. Es para que el botón no se corte y se vea raro. La X no debe ser una X, sino una fecha atrás y regresa a los legales y no al home. El logo sí va al home, no lo cambies.\nEn todo lo legal, en el header está el modo día/noche, cuando debe estar en el footer. Esconde por ahora el idioma y coloca allí el modo noche.' },
-      { id: 'pub-03', estado: 'falla', notas: 'No tiene modo noche.\nError al enviarlo: "Algo salió mal. Intenta de nuevo o escríbenos a soporte@calculadoradereuso.com".' },
+      { id: 'pub-03', estado: 'falla', notas: 'No tiene modo noche.\nError al enviarlo: "Algo salió mal. Intenta de nuevo o escríbenos a innovacion@lurdes.co".' },
       { id: 'pub-04', estado: 'falla', notas: 'Bien, reporta.\nSe demora y no tiene lo que decimos de precargar.\nCambia reuso.lurdes.co por el logo de la calculadora.' },
       { id: 'pub-05', estado: 'falla', notas: '' },
       { id: 'pub-06', estado: 'falla', notas: '' },

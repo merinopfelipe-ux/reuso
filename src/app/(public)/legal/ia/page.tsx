@@ -55,7 +55,7 @@ const T = {
     ],
     s7Title: 'Tus derechos y cómo contactarnos',
     s7Intro: 'Si tienes preguntas sobre cómo usamos la IA en Reúso, cómo afecta al tratamiento de tus datos o quieres ejercer cualquier derecho reconocido por el RGPD (UE), la CCPA (California) o la Ley 1581 de 2012 (Colombia), escríbenos:',
-    s7Correo: 'servicio@calculadoradereuso.com',
+    s7Correo: 'innovacion@lurdes.co',
     s7FormLabel: 'Formulario de consultas',
     s7Respuesta: 'Respondemos en un plazo de 10 a 15 días hábiles.',
     resumen: 'Usamos IA para construir la plataforma y estructurar los factores de cálculo. Nunca para entrenar modelos con tus datos ni para tomar decisiones automáticas sobre ti. Todo output de IA pasa por revisión humana antes de llegar a producción.',
@@ -117,7 +117,7 @@ const T = {
     ],
     s7Title: 'Your rights and how to contact us',
     s7Intro: 'If you have questions about how we use AI at Reúso, how it affects the processing of your data, or you wish to exercise any right recognized by the GDPR (EU), the CCPA (California), or Law 1581 of 2012 (Colombia), write to us:',
-    s7Correo: 'servicio@calculadoradereuso.com',
+    s7Correo: 'innovacion@lurdes.co',
     s7FormLabel: 'Legal enquiry form',
     s7Respuesta: 'We respond within 10 to 15 business days.',
     resumen: 'We use AI to build the platform and structure the calculation factors. Never to train models with your data or to make automated decisions about you. All AI output goes through human review before reaching production.',
@@ -174,8 +174,8 @@ export default function LegalIAPage() {
         <p style={p}>{t.s5a}</p>
         <p style={p}>
           {t.s5b}{' '}
-          <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', textDecoration: 'underline', fontWeight: 600 }}>
-            servicio@calculadoradereuso.com
+          <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)', textDecoration: 'underline', fontWeight: 600 }}>
+            innovacion@lurdes.co
           </a>
           {t.s5bPost}
         </p>
@@ -205,7 +205,7 @@ export default function LegalIAPage() {
         <h2 style={h2}>{t.s7Title}</h2>
         <p style={p}>{t.s7Intro}</p>
         <p style={{ ...p, fontWeight: 600 }}>
-          <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', textDecoration: 'underline' }}>
+          <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)', textDecoration: 'underline' }}>
             {t.s7Correo}
           </a>
         </p>

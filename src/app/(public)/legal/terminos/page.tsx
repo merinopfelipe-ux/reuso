@@ -366,10 +366,10 @@ export default function TerminosPage() {
       <p style={p}>
         {t.ley2}{' '}
         <a
-          href="mailto:servicio@calculadoradereuso.com"
+          href="mailto:innovacion@lurdes.co"
           style={{ color: 'var(--color-brand)', fontWeight: 600 }}
         >
-          servicio@calculadoradereuso.com
+          innovacion@lurdes.co
         </a>
         {t.ley3}
       </p>

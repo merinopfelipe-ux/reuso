@@ -378,10 +378,10 @@ export default function ReglamentoPage() {
       <p style={p}>
         {t.ley_p2_pre}{' '}
         <a
-          href="mailto:servicio@calculadoradereuso.com"
+          href="mailto:innovacion@lurdes.co"
           style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}
         >
-          servicio@calculadoradereuso.com
+          innovacion@lurdes.co
         </a>{' '}
         {t.ley_p2_o}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

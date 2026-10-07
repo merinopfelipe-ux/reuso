@@ -298,7 +298,7 @@ export async function enviarInvitacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
 
@@ -342,7 +342,7 @@ export async function enviarInvitacion(
     to,
     subject: `${empresaNombre} te invitó a la Calculadora de Reúso`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
 
   return { resendEmailId: data?.id ?? null }
@@ -362,7 +362,7 @@ export async function enviarInvitacionEmpresaAbierta(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
   const planLabel = PLAN_LABELS_EMAIL[plan] ?? plan
@@ -389,7 +389,7 @@ export async function enviarInvitacionEmpresaAbierta(
     to,
     subject: `Activa tu cuenta en la Calculadora de Reúso (plan ${planLabel})`,
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
 
   return { resendEmailId: data?.id ?? null }
@@ -404,7 +404,7 @@ export async function enviarNotificacionTicket(
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
 
   const filasInfo = [
     ...(datos.numeroCaso ? [{ label: 'Caso', valor: `<strong style="color:${COLOR_BRAND};font-size:14px;">${datos.numeroCaso}</strong>` }] : []),
@@ -441,7 +441,7 @@ export async function enviarNotificacionTicket(
     to: destinatarios,
     subject: `${casoPrefijo}Nuevo ticket de soporte: ${datos.categoria}`,
     html,
-    replyTo: datos.email ?? 'soporte@calculadoradereuso.com',
+    replyTo: datos.email ?? 'innovacion@lurdes.co',
   })
 }
 
@@ -459,7 +459,7 @@ export async function enviarConfirmacionConsultaLegal(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
 
   const nombreSeguro = escaparHtml(datos.nombre)
   const tipoSeguro = escaparHtml(datos.tipo)
@@ -517,7 +517,7 @@ export async function enviarConfirmacionConsultaLegal(
     to,
     subject: `Caso ${casoSeguro}: Confirmación de consulta legal`,
     html,
-    replyTo: 'servicio@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
 
   return { resendEmailId: data?.id ?? null }
@@ -533,7 +533,7 @@ export async function enviarInvitacionFirma(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/legal/firma/${rawToken}`
   const nombreSeguro = escaparHtml(nombreDestinatario)
@@ -571,7 +571,7 @@ export async function enviarInvitacionFirma(
     to,
     subject: `Invitación para firmar: ${documentoLabel}`,
     html,
-    replyTo: 'servicio@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
 }
 
@@ -585,7 +585,7 @@ export async function enviarConfirmacionFirma(
   if (!process.env.RESEND_API_KEY) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
 
   const filas = [
     { label: 'Documento', valor: documentoLabel },
@@ -620,7 +620,7 @@ export async function enviarConfirmacionFirma(
     to,
     subject: `Tu ${documentoLabel} está firmado`,
     html,
-    replyTo: 'servicio@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
     attachments: [
       { filename: `${documentoLabel.toLowerCase().replace(/\s+/g, '-')}-reuso.pdf`, content: pdfBuffer },
     ],
@@ -640,7 +640,7 @@ export async function enviarPropuestaCotizacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
 
   const boton = botonCorreo(link, 'Ver propuesta', `O copia este enlace: ${link}`)
 
@@ -664,7 +664,7 @@ export async function enviarPropuestaCotizacion(
     to,
     subject: `Tu propuesta de ${empresaNombre} ya está lista`,
     html,
-    replyTo: 'servicio@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
     attachments: [
       { filename: `cotizacion-${codigoCotizacion.replace(/\s+/g, '-')}.pdf`, content: pdfBuffer },
     ],
@@ -684,7 +684,7 @@ export async function enviarConfirmacionRegistro(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const nombreSeguro = datos.nombre ? escaparHtml(datos.nombre) : ''
   const saludo = nombreSeguro ? `¡Hola, ${nombreSeguro}!` : '¡Hola!'
 
@@ -726,7 +726,7 @@ export async function enviarConfirmacionRegistro(
     to,
     subject: 'Activa tu cuenta en la Calculadora de Reúso',
     html,
-    replyTo: 'soporte@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
 
   return { resendEmailId: data?.id ?? null }
@@ -741,7 +741,7 @@ export async function enviarSeguimientoEvento(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const nombreSeguro = escaparHtml(primerNombre(datos.nombre))
   const empresaSegura = datos.empresa ? escaparHtml(datos.empresa) : ''
   const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
@@ -778,7 +778,7 @@ ${botonCorreo('https://calculadoradereuso.com', 'Conoce la Calculadora de Reúso
     to,
     subject: evento ? `Nos encontramos en ${datos.evento!.replace(/[\r\n]+/g, ' ').trim().slice(0, 80)}` : 'Quedamos en contacto',
     html,
-    replyTo: 'servicio@calculadoradereuso.com',
+    replyTo: 'innovacion@lurdes.co',
   })
   return { resendEmailId: data?.id ?? null }
 }
@@ -796,7 +796,7 @@ export async function enviarAvisoLeadEvento(datos: {
   if (!process.env.RESEND_API_KEY) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
   const fila = (k: string, v: string) => v ? `
   <tr>
     <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:110px;vertical-align:top;font-size:13px;text-align:left;">${k}</td>
@@ -835,7 +835,7 @@ ${datos.whatsappUrl ? botonCorreo(datos.whatsappUrl, 'Escribir por WhatsApp') : 
 
   const { data } = await resend.emails.send({
     from: FROM,
-    to: 'servicio@calculadoradereuso.com',
+    to: 'innovacion@lurdes.co',
     subject: asunto,
     html,
   })

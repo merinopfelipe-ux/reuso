@@ -208,7 +208,7 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: telefonoFormato,
-      email: 'servicio@calculadoradereuso.com',
+      email: 'innovacion@lurdes.co',
       contactType: 'customer support',
       availableLanguage: ['es', 'en']
     }

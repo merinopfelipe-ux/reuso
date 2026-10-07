@@ -347,8 +347,8 @@ export default function CookiesPage() {
         </ul>
         <p style={p}>
           {t.s6c}{' '}
-          <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
-            servicio@calculadoradereuso.com
+          <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>
+            innovacion@lurdes.co
           </a>{' '}
           {t.s6cMid}{' '}
           <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}>

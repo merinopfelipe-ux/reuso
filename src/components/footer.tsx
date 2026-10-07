@@ -82,7 +82,7 @@ export function Footer({
 
         const contactEmail = (lastVisit && lastVisit.includes('@'))
           ? lastVisit
-          : 'servicio@calculadoradereuso.com'
+          : 'innovacion@lurdes.co'
 
         return (
           <div style={{
@@ -152,7 +152,7 @@ export function Footer({
 
           {/* Contacto */}
           <a
-            href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:servicio@calculadoradereuso.com')}
+            href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:innovacion@lurdes.co')}
             target="_blank"
             rel="noopener noreferrer"
             className="footer-interactive-block"
@@ -162,7 +162,7 @@ export function Footer({
               {cleanLastVisitLabel || 'Contacto'}:
             </span>
             <span className="footer-info-secondary" style={{ fontSize: 10, wordBreak: 'break-word' }}>
-              {lastVisit || 'servicio@calculadoradereuso.com'}
+              {lastVisit || 'innovacion@lurdes.co'}
             </span>
           </a>
         </div>
@@ -197,7 +197,7 @@ export function Footer({
 
           {/* Límite inferior: Contacto (Con enlace: con negrita, animación de redes, 10px siempre) */}
           <a
-            href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:servicio@calculadoradereuso.com')}
+            href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:innovacion@lurdes.co')}
             target="_blank"
             rel="noopener noreferrer"
             className="footer-interactive-block"
@@ -207,7 +207,7 @@ export function Footer({
               {cleanLastVisitLabel || 'Contacto'}
             </div>
             <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word', textAlign: 'left' }}>
-              {lastVisit || 'servicio@calculadoradereuso.com'}
+              {lastVisit || 'innovacion@lurdes.co'}
             </div>
           </a>
         </div>
@@ -293,7 +293,7 @@ export function Footer({
 
         {/* Límite inferior: Contacto (Con enlace: con negrita, animación de redes, 10px siempre) */}
         <a
-          href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:servicio@calculadoradereuso.com')}
+          href={lastVisitHref || (lastVisit ? `mailto:${lastVisit}` : 'mailto:innovacion@lurdes.co')}
           target="_blank"
           rel="noopener noreferrer"
           className="footer-interactive-block"
@@ -303,7 +303,7 @@ export function Footer({
             {cleanLastVisitLabel || 'Contacto'}
           </div>
           <div className="footer-info-secondary" style={{ fontSize: 10, lineHeight: 1.15, wordBreak: 'break-word', textAlign: 'left' }}>
-            {lastVisit || 'servicio@calculadoradereuso.com'}
+            {lastVisit || 'innovacion@lurdes.co'}
           </div>
         </a>
       </div>

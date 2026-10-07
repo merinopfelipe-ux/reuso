@@ -7,7 +7,7 @@ export const WA_NUMBER = '573147265212'
 export const WA_MENSAJE_DEFAULT = 'Hola, quiero más información sobre la Calculadora de Reúso.'
 
 export const FECHA_ACTUALIZACION_LEGAL = '13 de septiembre de 2026'
-export const EMAIL_CONTACTO_LEGAL = 'servicio@calculadoradereuso.com'
+export const EMAIL_CONTACTO_LEGAL = 'innovacion@lurdes.co'
 
 // Perfil y reseñas de Google My Business (Google Maps / Knowledge Graph)
 export const GOOGLE_BUSINESS_URL = 'https://g.page/r/Ccb-Aa0oMB9WEBI'

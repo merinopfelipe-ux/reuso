@@ -479,8 +479,8 @@ export default function DatosPage() {
       <p style={p}>{t.peticiones2}</p>
       <p style={p}>
         {t.peticiones3a}{' '}
-        <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
-          servicio@calculadoradereuso.com
+        <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
+          innovacion@lurdes.co
         </a>
         {t.peticiones3b}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

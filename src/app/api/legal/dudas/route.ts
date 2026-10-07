@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       .eq('rol', 'super_admin')
 
     const destinatarios = [
-      config?.email_notificaciones ?? 'servicio@calculadoradereuso.com',
+      config?.email_notificaciones ?? 'innovacion@lurdes.co',
       ...((admins ?? []).map((a: { email: string }) => a.email)),
     ].filter((v, i, arr): v is string => Boolean(v) && arr.indexOf(v) === i)
 

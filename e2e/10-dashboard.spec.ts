@@ -103,7 +103,7 @@ test.describe('usuario_libre', () => {
     // panel-informes.tsx). Escopar a "main" evita el "strict mode
     // violation" sin depender de cuál de los dos elementos aparece primero.
     await expect(
-      page.getByRole('main').getByText('El plan Explora no incluye generación de informes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.')
+      page.getByRole('main').getByText('El plan Explora no incluye generación de informes. Contacta a innovacion@lurdes.co para ampliar tu plan.')
     ).toBeVisible({ timeout: 10_000 })
   })
 

@@ -48,9 +48,9 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
 
       const contactoLink = footer.locator('a[href^="mailto:"]').first()
       await expect(contactoLink).toBeVisible()
-      expect(await contactoLink.getAttribute('href')).toBe('mailto:servicio@calculadoradereuso.com')
+      expect(await contactoLink.getAttribute('href')).toBe('mailto:innovacion@lurdes.co')
       await expect(contactoLink).toContainText('Contacto')
-      await expect(contactoLink).toContainText('servicio@calculadoradereuso.com')
+      await expect(contactoLink).toContainText('innovacion@lurdes.co')
 
       // REGLA CRÍTICA DE PESO TIPOGRÁFICO:
       // Únicamente en Home y Sistema de diseño, "Inicia ahora" y "Contacto" van en seminegrita (600).
@@ -81,7 +81,7 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       // Contacto mailto
       const contactoLink = footer.locator('a[href^="mailto:"]').first()
       await expect(contactoLink).toBeVisible()
-      expect(await contactoLink.getAttribute('href')).toBe('mailto:servicio@calculadoradereuso.com')
+      expect(await contactoLink.getAttribute('href')).toBe('mailto:innovacion@lurdes.co')
 
       // Pesos tipográficos en 600
       const weightInicia = await footer.getByText('Inicia ahora', { exact: true }).evaluate(
@@ -133,11 +133,11 @@ test.describe('pub-24 - Verificación y reglas de los 3 footers del sistema', ()
       // Arriba: "Última actualización" (sin hora)
       await expect(footer.getByText('Última actualización', { exact: true })).toBeVisible()
 
-      // Abajo: "Contacto" con mailto:servicio@calculadoradereuso.com
+      // Abajo: "Contacto" con mailto:innovacion@lurdes.co
       const contactoLink = footer.locator('a[href^="mailto:"]').first()
       await expect(contactoLink).toBeVisible()
-      expect(await contactoLink.getAttribute('href')).toBe('mailto:servicio@calculadoradereuso.com')
-      await expect(contactoLink).toContainText('servicio@calculadoradereuso.com')
+      expect(await contactoLink.getAttribute('href')).toBe('mailto:innovacion@lurdes.co')
+      await expect(contactoLink).toContainText('innovacion@lurdes.co')
 
       // REGLA CRÍTICA DE PESO TIPOGRÁFICO:
       // En el footer de Legales, "Contacto" va en negrita/seminegrita (600), igual que en Home.

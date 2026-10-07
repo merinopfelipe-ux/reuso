@@ -389,8 +389,8 @@ export default function PrivacidadPage() {
       </ul>
       <p style={p}>
         {t.derechos.contacto}{' '}
-        <a href="mailto:servicio@calculadoradereuso.com" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
-          servicio@calculadoradereuso.com
+        <a href="mailto:innovacion@lurdes.co" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>
+          innovacion@lurdes.co
         </a>{' '}
         {lang === 'ES' ? 'o mediante el formulario de' : 'or via the'}{' '}
         <Link href="/legal/dudas" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>

@@ -782,7 +782,7 @@ export default function ManualDisenoPage() {
                </div>
                <div className="flex flex-col gap-2">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Correo Institucional</span>
-                 <input type="email" placeholder="usuario@calculadoradereuso.com" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
+                 <input type="email" placeholder="innovacion@lurdes.co" className={`p-4 rounded-2xl border transition-all ${isDark ? 'bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:bg-white/10 focus:border-[#D6F391]/30' : 'bg-primary border-[#00827C]/20 text-[#474747] focus:ring-2 focus:ring-[#00827C]/20'} outline-hidden`} />
                </div>
                <div className="flex flex-col gap-2 relative">
                  <span className={`text-[10px] font-bold ${isDark ? 'text-[#D6F391]' : 'text-[#00827C]'}`}>Contraseña Institucional</span>

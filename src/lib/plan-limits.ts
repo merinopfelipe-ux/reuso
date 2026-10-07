@@ -83,7 +83,7 @@ export async function checkLimiteEmpleados(empresaId: string, plan: Plan): Promi
     .eq('empresa_id', empresaId)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} empleado. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} empleado. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
   return null
 }
@@ -102,7 +102,7 @@ export async function checkLimiteCalculos(empresaId: string, plan: Plan): Promis
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cálculos por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cálculos por mes. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
   return null
 }
@@ -111,7 +111,7 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
   const { informes_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye generación de informes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye generación de informes. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -124,7 +124,7 @@ export async function checkLimiteInformes(empresaId: string, plan: Plan): Promis
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} informes por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} informes por mes. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
   return null
 }
@@ -133,7 +133,7 @@ export async function checkLimiteCotizaciones(empresaId: string, plan: Plan): Pr
   const { cotizaciones_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Cotizador. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Cotizador. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -146,7 +146,7 @@ export async function checkLimiteCotizaciones(empresaId: string, plan: Plan): Pr
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cotizaciones por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} cotizaciones por mes. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
   return null
 }
@@ -155,7 +155,7 @@ export async function checkLimiteDpp(empresaId: string, plan: Plan): Promise<str
   const { dpp_mes: limite } = await obtenerLimitesEfectivos(empresaId, plan)
   if (limite === Infinity) return null
   if (limite === 0) {
-    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Pasaporte Digital de Producto. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} no incluye el Pasaporte Digital de Producto. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
 
   const { inicioMes, finMes } = inicioYFinMesActual()
@@ -168,7 +168,7 @@ export async function checkLimiteDpp(empresaId: string, plan: Plan): Promise<str
     .lt('created_at', finMes)
 
   if ((count ?? 0) >= limite) {
-    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} pasaportes por mes. Contacta a servicio@calculadoradereuso.com para ampliar tu plan.`
+    return `El plan ${NOMBRES_PLAN[plan]} permite máximo ${limite} pasaportes por mes. Contacta a innovacion@lurdes.co para ampliar tu plan.`
   }
   return null
 }
