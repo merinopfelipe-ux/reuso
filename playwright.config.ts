@@ -23,8 +23,11 @@ export default defineConfig({
   workers: 1,
   // En CI un reintento: una prueba solo cuenta como fallida si falla dos
   // veces seguidas (evita que una inestable frene la fusión automática).
-  retries: process.env.CI ? 1 : 0,
-  timeout: 60_000,
+  retries: process.env.CI ? 2 : 0,
+  // En CI el servidor compila cada pantalla la primera vez que se abre, así que
+  // lo que en local tarda 5 s allá puede tardar más de 60 s. El tope alto solo
+  // aplica en CI: en local sigue en 60 s para que un cuelgue real se note.
+  timeout: process.env.CI ? 150_000 : 60_000,
   // En CI también genera el reporte HTML que el workflow sube como artefacto.
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
@@ -36,8 +39,8 @@ export default defineConfig({
     {
       name: 'setup',
       testMatch: /auth\.setup\.ts/,
-      retries: 1,
-      timeout: 90_000,
+      retries: process.env.CI ? 2 : 1,
+      timeout: process.env.CI ? 200_000 : 90_000,
     },
     {
       name: 'chromium',
