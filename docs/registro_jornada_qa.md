@@ -537,3 +537,27 @@ Se eliminaron todas las asimetrías que deformaban el pie de página interno del
   - Se ajustó el padding del contenedor `<main>` en `layout-shell.tsx` a `24px` en móvil para evitar que se acumulara un vacío duplicado entre el contenido y el footer.
 - **En Legales (`variant="legal"` o rutas `/legal/*`):**
   - Mantiene su padding inferior estándar compacto (**20 px**), preservando la experiencia de lectura limpia sin el espacio del menú móvil.
+
+---
+
+## Jornada 2026-10-07: Unificación de Correo Oficial y Refinamiento UI en Leads
+
+### 1. Unificación de Correo a `innovacion@lurdes.co`
+- **Criterio estricto:** El único correo de atención, soporte, legal y notificaciones en todo el proyecto es `innovacion@lurdes.co`.
+- **Alcance controlado:** Se actualizaron únicamente los canales públicos, legales y de redirección/notificación, **sin tocar bases de datos ni el contenido interno de leads**.
+- **Componentes y Páginas Actualizadas:**
+  - **Pie de página (`src/components/footer.tsx`):** Unificado en todas sus variantes (Público, Legal y Sistema) tanto en escritorio como en móvil.
+  - **Páginas Legales (`src/app/(public)/legal/*`):** PTEE, SAGRILAFT, Términos y Condiciones, Política de Privacidad, Cookies, Tratamiento de Datos, Transparencia de IA y Formulario de Dudas Legales.
+  - **Canales de Ayuda y Error (`/ayuda`, `/error.tsx`):** Mailto directo y tarjetas de atención técnica actualizadas.
+  - **Schema.org (`(public)/page.tsx`):** `ContactPoint` oficial configurado con `innovacion@lurdes.co`.
+  - **Notificaciones Transaccionales (`src/lib/email.ts` y API routes):** Sender `FROM`, destinatarios de tickets y respuestas de soporte redirigidos a `innovacion@lurdes.co`.
+  - **Límites de Planes (`src/lib/plan-limits.ts` y rutas de generación/diagnóstico):** Mensajes informativos de ampliación dirigidos a `innovacion@lurdes.co`.
+
+### 2. Refinamiento Visual en Tabla de Leads (`/admin/leads`)
+- **Unificación de Grosor en Íconos de Contacto:**
+  - Se reemplazó el glifo manual de WhatsApp en `src/components/ui/brand-logos.tsx` por el componente oficial de Phosphor Icons con trazo ligero (`weight="light"`).
+  - El ícono de WhatsApp ahora tiene exactamente la misma densidad visual y grosor de línea que el sobre de correo (`Envelope` / `Mail` de Lucide con `strokeWidth: 1.3`), ambos heredando `text-(--text-secondary)`.
+- **Flecha de Ficha Completa en Nombre:**
+  - En la columna de Nombre de la tabla de leads, se agregó la flecha lateral (`<CaretRight size={14} />`), siguiendo el patrón visual de la tabla de cotizaciones.
+  - Al hacer clic en el nombre o la flecha, se abre directamente la ficha completa del lead (`/admin/leads/[id]`), con soporte para navegación SPA y apertura en nueva pestaña (`Cmd` / `Ctrl` + clic).
+
