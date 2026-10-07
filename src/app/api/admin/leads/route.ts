@@ -84,7 +84,15 @@ export async function POST(request: NextRequest) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: 'Error al crear el lead.' }, { status: 500 })
+  if (error) {
+    // Mismo aviso que en PATCH: si falta la migración 141 se dice qué correr,
+    // en vez de un error genérico que no orienta a nadie.
+    const faltaColumna = /column .* does not exist|could not find the .* column/i.test(error.message)
+    return NextResponse.json(
+      { error: faltaColumna ? 'Falta correr la migración sql/141 en Supabase (usuario de WhatsApp y notas).' : 'Error al crear el lead.' },
+      { status: faltaColumna ? 409 : 500 }
+    )
+  }
 
   await logAuditoria(guard.adminClient, {
     user_id: guard.user.id,
@@ -132,7 +140,7 @@ export async function PATCH(request: NextRequest) {
     .single()
 
   if (error) {
-    const faltaColumna = /column .* does not exist/i.test(error.message)
+    const faltaColumna = /column .* does not exist|could not find the .* column/i.test(error.message)
     return NextResponse.json(
       { error: faltaColumna ? 'Falta correr la migración sql/141 en Supabase (usuario de WhatsApp y notas).' : 'Error al actualizar el lead.' },
       { status: faltaColumna ? 409 : 500 }

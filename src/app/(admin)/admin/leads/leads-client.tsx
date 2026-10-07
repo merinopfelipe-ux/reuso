@@ -1427,16 +1427,24 @@ export function LeadsClient({
                         className="px-2 py-2 align-top text-sm"
                         style={{ background: sort.col === 'interes' ? 'var(--table-orden-activo)' : undefined }}
                       >
+                        {/* Nunca más de 2 líneas en total: si hay interés y evento,
+                            cada uno ocupa una sola línea y lo que sobra se corta con
+                            puntos suspensivos (el texto completo queda en el tooltip). */}
                         <div className="max-w-[140px] flex flex-col leading-tight">
                           {lead.interes && lead.interes.toLowerCase() !== 'eventos' ? (
-                            <span className="font-medium text-(--text-primary) break-words line-clamp-2 text-sm" title={lead.interes}>
+                            <span
+                              className={`font-medium text-(--text-primary) break-words text-sm ${
+                                lead.evento_nombre ? 'line-clamp-1' : 'line-clamp-2'
+                              }`}
+                              title={lead.interes}
+                            >
                               {lead.interes}
                             </span>
                           ) : null}
                           {lead.evento_nombre ? (
                             <span
-                              className={`text-(--text-secondary) text-sm break-words line-clamp-2 ${
-                                lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5' : ''
+                              className={`text-(--text-secondary) text-sm break-words ${
+                                lead.interes && lead.interes.toLowerCase() !== 'eventos' ? 'mt-0.5 line-clamp-1' : 'line-clamp-2'
                               }`}
                               title={`Evento: ${lead.evento_nombre}`}
                             >
