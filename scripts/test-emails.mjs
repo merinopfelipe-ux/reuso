@@ -25,6 +25,7 @@ for (const line of envContent.split('\n')) {
   if (key && rest.length) process.env[key.trim()] = rest.join('=').trim()
 }
 
+const HORA = new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'})
 const DEST = ['luisfe.merino@gmail.com', 'merinop@me.com']
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -60,62 +61,30 @@ const DARK_MODE_CSS = `
       color: inherit !important;
       text-decoration: none !important;
     }
-    /* Apple Mail, Outlook iOS, Samsung Mail, Thunderbird */
     @media (prefers-color-scheme: dark) {
-      .ec { background-color: #525252 !important; }
-      .ec p, .ec td, .ec span, .ec li { color: #E0E0E0 !important; }
-      .ec strong { color: #ffffff !important; }
-      .ec a { color: #D6F391 !important; }
-      .eh { background-color: #D6F391 !important; }
-      .eh p { color: #474747 !important; }
-      .eh p + p { color: rgba(71,71,71,0.65) !important; }
-      a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-      .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-      .ef p, .ef a { color: #E0E0E0 !important; }
-      .ea td { background-color: rgba(246,191,62,0.10) !important; }
-      .ea p { color: #F6BF3E !important; }
-      .ek td { background-color: rgba(214,243,145,0.10) !important; }
-      .ek a, .ek span { color: #D6F391 !important; }
-      .ek p { color: #E0E0E0 !important; }
-      .et { background-color: rgba(214,243,145,0.08) !important; }
-      .et td { color: #E0E0E0 !important; }
+      body, .email-body { background-color: #2A2C2F !important; }
+      .email-card { background-color: #323A38 !important; }
+      .email-card p, .email-card td, .email-card span, .email-card li { color: #DADEDD !important; }
+      .email-card strong, .email-card h1 { color: #F3F3F3 !important; }
+      .email-eyebrow { color: #7CBAB7 !important; }
+      .email-card a { color: #7CBAB7 !important; }
+      .email-btn, .email-card a.email-btn { background-color: #60A09D !important; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; }
+      .email-inner-box, .email-inner-box td, td.email-inner-box { background-color: #2F3433 !important; }
+      td.email-card, .email-card { background-color: #323A38 !important; }
+      .email-inner-box p, .email-inner-box td { color: #DADEDD !important; }
+      .email-inner-box span { color: #7CBAB7 !important; }
+      .email-footer p, .email-footer a { color: #8F9E9B !important; }
+      .email-social-icon path { fill: #8F9E9B !important; }
     }
-    /* Gmail app (Android e iOS) — preserva estilos en body, agrega data-ogsc en noche */
-    [data-ogsc] .ec { background-color: #525252 !important; }
-    [data-ogsc] .ec p, [data-ogsc] .ec td, [data-ogsc] .ec span, [data-ogsc] .ec li { color: #E0E0E0 !important; }
-    [data-ogsc] .ec strong { color: #ffffff !important; }
-    [data-ogsc] .ec a { color: #D6F391 !important; }
-    [data-ogsc] .eh { background-color: #D6F391 !important; }
-    [data-ogsc] .eh p { color: #474747 !important; }
-    [data-ogsc] .eh p + p { color: rgba(71,71,71,0.65) !important; }
-    [data-ogsc] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsc] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsc] .ef p, [data-ogsc] .ef a { color: #E0E0E0 !important; }
-    [data-ogsc] .ea td { background-color: rgba(246,191,62,0.10) !important; }
-    [data-ogsc] .ea p { color: #F6BF3E !important; }
-    [data-ogsc] .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    [data-ogsc] .ek a, [data-ogsc] .ek span { color: #D6F391 !important; }
-    [data-ogsc] .ek p { color: #E0E0E0 !important; }
-    [data-ogsc] .et { background-color: rgba(214,243,145,0.08) !important; }
-    [data-ogsc] .et td { color: #E0E0E0 !important; }
-    /* Outlook.com web — agrega data-ogsb en noche */
-    [data-ogsb] .ec { background-color: #525252 !important; }
-    [data-ogsb] .ec p, [data-ogsb] .ec td, [data-ogsb] .ec span, [data-ogsb] .ec li { color: #E0E0E0 !important; }
-    [data-ogsb] .ec strong { color: #ffffff !important; }
-    [data-ogsb] .ec a { color: #D6F391 !important; }
-    [data-ogsb] .eh { background-color: #D6F391 !important; }
-    [data-ogsb] .eh p { color: #474747 !important; }
-    [data-ogsb] .eh p + p { color: rgba(71,71,71,0.65) !important; }
-    [data-ogsb] a.eb { background-color: #D6F391 !important; color: #474747 !important; }
-    [data-ogsb] .ef { background-color: #474747 !important; border-top: 1px solid rgba(255,255,255,0.08) !important; }
-    [data-ogsb] .ef p, [data-ogsb] .ef a { color: #E0E0E0 !important; }
-    [data-ogsb] .ea td { background-color: rgba(246,191,62,0.10) !important; }
-    [data-ogsb] .ea p { color: #F6BF3E !important; }
-    [data-ogsb] .ek td { background-color: rgba(214,243,145,0.10) !important; }
-    [data-ogsb] .ek a, [data-ogsb] .ek span { color: #D6F391 !important; }
-    [data-ogsb] .ek p { color: #E0E0E0 !important; }
-    [data-ogsb] .et { background-color: rgba(214,243,145,0.08) !important; }
-    [data-ogsb] .et td { color: #E0E0E0 !important; }
+    [data-ogsc] body, [data-ogsc] .email-body { background-color: #2A2C2F !important; }
+    [data-ogsc] .email-card { background-color: #323A38 !important; }
+    [data-ogsc] .email-card p, [data-ogsc] .email-card td { color: #DADEDD !important; }
+    [data-ogsc] .email-card strong, [data-ogsc] .email-card h1 { color: #F3F3F3 !important; }
+    [data-ogsc] .email-inner-box, [data-ogsc] .email-inner-box td { background-color: #2F3433 !important; }
+    [data-ogsc] .email-inner-box p, [data-ogsc] .email-inner-box td { color: #DADEDD !important; }
+    [data-ogsc] .email-eyebrow { color: #7CBAB7 !important; }
+    [data-ogsc] .email-btn, .email-card a.email-btn { background-color: #60A09D !important; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; }
+    [data-ogsc] .email-footer p, [data-ogsc] .email-footer a { color: #8F9E9B !important; }
   </style>`
 
 // ── Tokens Sistema Reúso ────────────────────────────────────────────────────
@@ -293,8 +262,8 @@ async function probar(nombre, fn) {
 
 // ── BLOQUE 1: Correos Resend ──────────────────────────────────────────────────
 console.log('\n📨 Correos Resend\n')
-const FROM = 'Calculadora de Reúso <innovacion@lurdes.co>'
-const FROM_INV = 'Calculadora de Reúso <innovacion@lurdes.co>'
+const FROM = 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
+const FROM_INV = 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
 
 await probar('1. Invitación con código de empresa', async () => {
   const link = `${APP_URL}/invitacion/TOKEN-TEST-123`
@@ -315,7 +284,7 @@ await probar('1. Invitación con código de empresa', async () => {
   </td></tr>
 </table>
 <table class="ek" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:20px 0 0;">
-  <tr><td style="background-color:#F0F7F6;border-radius:12px;padding:16px 20px;text-align:center;">
+  <tr><td class="email-inner-box" style="background-color:#F0F7F6;border-radius:12px;padding:16px 20px;text-align:center;">
     <p style="margin:0 0 6px;font-size:12px;color:#474747;font-weight:600;">¿Prefieres registrarte con código?</p>
     <span style="font-size:24px;font-weight:800;color:#00827C;letter-spacing:0.15em;">EJMP-2025</span>
     <p style="margin:6px 0 0;font-size:11px;color:#474747;">Úsalo en <a href="${APP_URL}/registro" style="color:#00827C;">${APP_URL}/registro</a></p>
@@ -326,7 +295,7 @@ await probar('1. Invitación con código de empresa', async () => {
 </p>`,
     alertaAccion: 'aceptes la invitación',
   })
-  const { error } = await resend.emails.send({ from: FROM_INV, to: DEST, subject: 'Empresa de Prueba te invitó a la Calculadora de Reúso', html })
+  const { error } = await resend.emails.send({ from: FROM_INV, to: DEST, subject: 'Empresa de Prueba te invitó a la Calculadora de Reúso [' + HORA + ']', html })
   if (error) throw new Error(JSON.stringify(error))
 })
 
@@ -346,14 +315,14 @@ await probar('2. Invitación sin código de empresa', async () => {
 <p style="margin:20px 0 0;font-size:13px;color:#474747;line-height:1.6;"><strong>Recuerda:</strong> Este enlace expira en <strong>7 días</strong>.</p>`,
     alertaAccion: 'aceptes la invitación',
   })
-  const { error } = await resend.emails.send({ from: FROM_INV, to: DEST, subject: 'Grupo MLP S.A.S. te invitó a la Calculadora de Reúso', html })
+  const { error } = await resend.emails.send({ from: FROM_INV, to: DEST, subject: 'Grupo MLP S.A.S. te invitó a la Calculadora de Reúso [' + HORA + ']', html })
   if (error) throw new Error(JSON.stringify(error))
 })
 
 await probar('3. Notificación de ticket de soporte', async () => {
   const filasInfo = [
     { label: 'Usuario', valor: 'Luis Felipe Merino' },
-    { label: 'Correo', valor: `<a href="mailto:${DEST}" style="color:#00827C;">${DEST}</a>` },
+    { label: 'Correo', valor: `<a href="mailto:${DEST[0]}" style="color:#00827C;">${DEST[0]}</a>` },
     { label: 'Categoría', valor: 'Error técnico' },
   ].map(f =>
     `<tr>
@@ -368,14 +337,14 @@ await probar('3. Notificación de ticket de soporte', async () => {
     saludo: '📬 Alguien necesita ayuda',
     cuerpo: 'Llegó un mensaje desde el formulario de soporte. Aquí están los detalles:',
     contenidoCentral: `
-<table class="et" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
+<table class="email-inner-box" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px;background-color:#F0F7F6;border-radius:10px;padding:16px 20px;">
   ${filasInfo}
 </table>
 <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#474747;">Mensaje:</p>
 <p style="margin:0;font-size:14px;color:#474747;line-height:1.75;">Esta es una prueba del sistema de tickets. Todo funciona correctamente.</p>`,
     mostrarAlerta: false,
   })
-  const { error } = await resend.emails.send({ from: FROM, to: DEST, subject: 'Nuevo ticket de soporte. Error técnico', html })
+  const { error } = await resend.emails.send({ from: FROM, to: DEST, subject: 'Nuevo ticket de soporte. Error técnico [' + HORA + ']', html })
   if (error) throw new Error(JSON.stringify(error))
 })
 
@@ -392,7 +361,7 @@ await probar('4. Demo OTP (verifica modo noche y detección iPhone)', async () =
   const { error } = await resend.emails.send({
     from: FROM,
     to: DEST,
-    subject: 'Demo — Código de verificación (prueba modo noche + iPhone)',
+    subject: 'Demo — Código de verificación (prueba modo noche + iPhone) [' + HORA + ']',
     html,
   })
   if (error) throw new Error(JSON.stringify(error))

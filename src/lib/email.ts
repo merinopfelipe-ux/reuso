@@ -31,24 +31,28 @@ const DARK_MODE_CSS = `
       text-decoration: none !important;
     }
     @media (prefers-color-scheme: dark) {
-      body, .email-body { background-color: #2E2E2E !important; }
-      .email-card { background-color: #384240 !important; }
-      .email-card p, .email-card td, .email-card span, .email-card li { color: #E0E8E6 !important; }
-      .email-card strong, .email-card h1 { color: #FFFFFF !important; }
-      .email-eyebrow { color: #D6F391 !important; }
-      .email-card a { color: #D6F391 !important; }
-      .email-btn { background-color: #00827C !important; color: #FFFFFF !important; }
-      .email-inner-box { background-color: #2A3331 !important; }
-      .email-inner-box p, .email-inner-box td { color: #E0E8E6 !important; }
+      body, .email-body { background-color: #2A2C2F !important; }
+      .email-card { background-color: #323A38 !important; }
+      .email-card p, .email-card td, .email-card span, .email-card li { color: #DADEDD !important; }
+      .email-card strong, .email-card h1 { color: #F3F3F3 !important; }
+      .email-eyebrow { color: #7CBAB7 !important; }
+      .email-card a { color: #7CBAB7 !important; }
+      .email-btn, .email-card a.email-btn { background-color: #60A09D !important; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; }
+      .email-inner-box, .email-inner-box td, td.email-inner-box { background-color: #2F3433 !important; }
+      td.email-card, .email-card { background-color: #323A38 !important; }
+      .email-inner-box p, .email-inner-box td { color: #DADEDD !important; }
+      .email-inner-box span { color: #7CBAB7 !important; }
       .email-footer p, .email-footer a { color: #8F9E9B !important; }
       .email-social-icon path { fill: #8F9E9B !important; }
     }
-    [data-ogsc] body, [data-ogsc] .email-body { background-color: #2E2E2E !important; }
-    [data-ogsc] .email-card { background-color: #384240 !important; }
-    [data-ogsc] .email-card p, [data-ogsc] .email-card td { color: #E0E8E6 !important; }
-    [data-ogsc] .email-card strong, [data-ogsc] .email-card h1 { color: #FFFFFF !important; }
-    [data-ogsc] .email-eyebrow { color: #D6F391 !important; }
-    [data-ogsc] .email-btn { background-color: #00827C !important; color: #FFFFFF !important; }
+    [data-ogsc] body, [data-ogsc] .email-body { background-color: #2A2C2F !important; }
+    [data-ogsc] .email-card { background-color: #323A38 !important; }
+    [data-ogsc] .email-card p, [data-ogsc] .email-card td { color: #DADEDD !important; }
+    [data-ogsc] .email-card strong, [data-ogsc] .email-card h1 { color: #F3F3F3 !important; }
+    [data-ogsc] .email-inner-box, [data-ogsc] .email-inner-box td { background-color: #2F3433 !important; }
+    [data-ogsc] .email-inner-box p, [data-ogsc] .email-inner-box td { color: #DADEDD !important; }
+    [data-ogsc] .email-eyebrow { color: #7CBAB7 !important; }
+    [data-ogsc] .email-btn, .email-card a.email-btn { background-color: #60A09D !important; color: #FFFFFF !important; -webkit-text-fill-color: #FFFFFF !important; }
     [data-ogsc] .email-footer p, [data-ogsc] .email-footer a { color: #8F9E9B !important; }
   </style>`
 
@@ -298,7 +302,7 @@ export async function enviarInvitacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
 
@@ -362,7 +366,7 @@ export async function enviarInvitacionEmpresaAbierta(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM_INVITACIONES ?? 'Calculadora de Reúso <invitaciones@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/invitacion/${rawToken}`
   const planLabel = PLAN_LABELS_EMAIL[plan] ?? plan
@@ -404,7 +408,7 @@ export async function enviarNotificacionTicket(
   if (!process.env.RESEND_API_KEY || destinatarios.length === 0) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filasInfo = [
     ...(datos.numeroCaso ? [{ label: 'Caso', valor: `<strong style="color:${COLOR_BRAND};font-size:14px;">${datos.numeroCaso}</strong>` }] : []),
@@ -459,7 +463,7 @@ export async function enviarConfirmacionConsultaLegal(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const nombreSeguro = escaparHtml(datos.nombre)
   const tipoSeguro = escaparHtml(datos.tipo)
@@ -533,7 +537,7 @@ export async function enviarInvitacionFirma(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://calculadoradereuso.com'
   const link = `${APP_URL}/legal/firma/${rawToken}`
   const nombreSeguro = escaparHtml(nombreDestinatario)
@@ -585,7 +589,7 @@ export async function enviarConfirmacionFirma(
   if (!process.env.RESEND_API_KEY) return
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const filas = [
     { label: 'Documento', valor: documentoLabel },
@@ -640,7 +644,7 @@ export async function enviarPropuestaCotizacion(
   if (!process.env.RESEND_API_KEY) throw new Error('RESEND_API_KEY no configurada')
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
 
   const boton = botonCorreo(link, 'Ver propuesta', `O copia este enlace: ${link}`)
 
@@ -684,7 +688,7 @@ export async function enviarConfirmacionRegistro(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const nombreSeguro = datos.nombre ? escaparHtml(datos.nombre) : ''
   const saludo = nombreSeguro ? `¡Hola, ${nombreSeguro}!` : '¡Hola!'
 
@@ -741,7 +745,7 @@ export async function enviarSeguimientoEvento(
   if (!process.env.RESEND_API_KEY || !to) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const nombreSeguro = escaparHtml(primerNombre(datos.nombre))
   const empresaSegura = datos.empresa ? escaparHtml(datos.empresa) : ''
   const evento = datos.evento ? escaparHtml(datos.evento.replace(/[\r\n]+/g, ' ').trim()) : ''
@@ -796,7 +800,7 @@ export async function enviarAvisoLeadEvento(datos: {
   if (!process.env.RESEND_API_KEY) return { resendEmailId: null }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
-  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>'
+  const FROM = process.env.RESEND_FROM ?? 'Calculadora de Reúso <noreply@calculadoradereuso.com>'
   const fila = (k: string, v: string) => v ? `
   <tr>
     <td style="padding:6px 0;font-weight:700;color:${COLOR_NEGRO};width:110px;vertical-align:top;font-size:13px;text-align:left;">${k}</td>

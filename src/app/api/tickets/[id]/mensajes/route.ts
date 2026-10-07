@@ -125,7 +125,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       try {
         const resend = new Resend(process.env.RESEND_API_KEY)
         await resend.emails.send({
-          from: process.env.RESEND_FROM ?? 'Calculadora de Reúso <innovacion@lurdes.co>',
+          from: process.env.RESEND_FROM_SOPORTE ?? 'Calculadora de Reúso <soporte@calculadoradereuso.com>',
           to: targetProfile.email,
           replyTo: 'innovacion@lurdes.co',
           subject: `Respondieron tu consulta en Calculadora de Reúso`,
