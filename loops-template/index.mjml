@@ -55,7 +55,7 @@
     <!-- ── CABECERA: LOGO COMPLETO CENTRADO CON HOLGURA ── -->
     <mj-section padding="48px 0 32px 0" text-align="center">
       <mj-column width="540px">
-        <mj-image src="img/logo-completo.png" alt="Calculadora de Reúso" width="148px" href="https://calculadoradereuso.com" align="center" padding="0" />
+        <mj-image src="https://calculadoradereuso.com/logo-completo.png" alt="Calculadora de Reúso" width="148px" href="https://calculadoradereuso.com" align="center" padding="0" />
       </mj-column>
     </mj-section>
 

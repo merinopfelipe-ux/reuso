@@ -61,3 +61,6 @@ obsidian_vault
 # Presentaciones locales para equipos comerciales/eventos (pantallas TV, etc)
 # Son visores interactivos HTML que no hacen parte del código de la app.
 src/app/ppt/
+
+# Paquete descargado de Loops, se vuelve a generar desde loops-template/
+loops-template.zip
