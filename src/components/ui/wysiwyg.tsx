@@ -37,9 +37,12 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin'
 import { AutoLinkPlugin, createLinkMatcherWithRegExp } from '@lexical/react/LexicalAutoLinkPlugin'
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin'
-import { HorizontalRuleNode, INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode'
+import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode'
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin'
-import { TRANSFORMERS } from '@lexical/markdown'
+import { TRANSFORMERS, CODE, INLINE_CODE } from '@lexical/markdown'
+
+// Excluye transformers de bloque de código: requieren CodeNode/CodeHighlightNode no registrados
+const TRANSFORMERS_SIN_CODIGO = TRANSFORMERS.filter(t => t !== CODE && t !== INLINE_CODE)
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
@@ -71,7 +74,7 @@ import {
   ALargeSmall, CaseSensitive, ChevronDown as CaretDown,
   List, ListOrdered, Link as LinkIcon, Unlink,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
-  Strikethrough, Minus, Maximize2, Minimize2, Check, X,
+  Strikethrough, Maximize2, Minimize2, Check, X,
 } from '@/components/ui/icons'
 
 // Paleta acotada a los tokens de marca del sistema de diseño (nunca colores
@@ -647,8 +650,7 @@ function ToolbarCompleta({
   const popoverCard = 'absolute top-full left-0 mt-1 z-20 rounded-xl border border-(--border) bg-(--bg-card) shadow-lg'
 
   return (
-    <div className="flex overflow-x-auto items-center gap-1 px-1.5 py-1 border-b border-(--border) rounded-t-[11px] bg-(--bg-card) scrollbar-none"
-      style={{ scrollbarWidth: 'none' }}>
+    <div className="flex flex-wrap items-center gap-1 px-1.5 py-1 border-b border-(--border) rounded-t-[11px] bg-(--bg-card)">
       {/* ── Grupo 1: Historial ── */}
       <BotonToolbar
         icon={<Undo2 size={15} />}
@@ -787,11 +789,6 @@ function ToolbarCompleta({
         onClick={onAbrirLinkModal}
         active={isLink}
       />
-      <BotonToolbar
-        icon={<Minus size={15} />}
-        label="Línea divisoria"
-        onClick={() => editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined)}
-      />
 
       <SeparadorToolbar />
 
@@ -879,8 +876,6 @@ function ToolbarCompleta({
           </div>
         )}
       </div>
-
-      <div className="flex-1" />
 
       {/* ── Grupo 7: Pantalla Completa / Enfoque ── */}
       <BotonToolbar
@@ -1115,10 +1110,10 @@ export const WYSIWYG = forwardRef<WYSIWYGHandle, WYSIWYGProps>(
 
     const contenedorClases = esPantallaCompleta
       ? 'fixed inset-0 z-[100] bg-[#474747]/50 backdrop-blur-xs flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200'
-      : `rounded-xl border overflow-hidden bg-(--bg-input) transition-colors border-(--border) focus-within:border-brand ${className}`
+      : `rounded-xl border bg-(--bg-input) transition-colors border-(--border) focus-within:border-brand ${className}`
 
     const editorCardClases = esPantallaCompleta
-      ? 'w-full max-w-4xl h-full max-h-[85vh] flex flex-col rounded-2xl bg-(--bg-input) border border-(--border) shadow-2xl overflow-hidden'
+      ? 'w-full max-w-4xl h-full max-h-[85vh] flex flex-col rounded-2xl bg-(--bg-input) border border-(--border) shadow-2xl'
       : 'flex flex-col'
 
     const editorContentEstilo = {
@@ -1152,7 +1147,7 @@ export const WYSIWYG = forwardRef<WYSIWYGHandle, WYSIWYGProps>(
             />
 
             {/* Contenido editable */}
-            <div className="relative flex-1 flex flex-col">
+            <div className={`relative flex-1 flex flex-col overflow-hidden ${esPantallaCompleta ? 'rounded-b-2xl' : 'rounded-b-[11px]'}`}>
               <RichTextPlugin
                 contentEditable={
                   <ContentEditable
@@ -1172,7 +1167,7 @@ export const WYSIWYG = forwardRef<WYSIWYGHandle, WYSIWYGProps>(
               <LinkPlugin />
               <AutoLinkPlugin matchers={AUTO_LINK_MATCHERS} />
               <HorizontalRulePlugin />
-              <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+              <MarkdownShortcutPlugin transformers={TRANSFORMERS_SIN_CODIGO} />
 
               {/* Listener de conteo de palabras y caracteres */}
               <EditorContadorPlugin onUpdate={setContador} />

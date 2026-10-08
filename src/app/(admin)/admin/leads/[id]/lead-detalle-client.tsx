@@ -157,17 +157,16 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         </CampoFormulario>
       </SeccionDetalle>
         </DetalleColumna>
+      </DetalleGrid>
 
-        <DetalleColumna>
-          <SeccionDetalle titulo="Notas internas">
-            <p className="text-xs text-(--text-secondary) m-0">Solo las ve el equipo. El prospecto nunca las recibe.</p>
-            <HiloNotas
-              endpointBase={`/api/admin/leads/${lead.id}/notas`}
-              placeholder="Qué se habló, próximos pasos, fecha del siguiente contacto..."
-            />
-          </SeccionDetalle>
-        </DetalleColumna>
-    </DetalleGrid>
+      {/* Notas internas — siempre al final */}
+      <SeccionDetalle titulo="Notas internas">
+        <p className="text-xs text-(--text-secondary) m-0">Solo las ve el equipo. El prospecto nunca las recibe.</p>
+        <HiloNotas
+          endpointBase={`/api/admin/leads/${lead.id}/notas`}
+          placeholder="Qué se habló, próximos pasos, fecha del siguiente contacto..."
+        />
+      </SeccionDetalle>
 
       <PieDetalle
         onGuardar={guardar}

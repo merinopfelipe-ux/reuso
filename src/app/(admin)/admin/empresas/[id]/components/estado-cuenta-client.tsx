@@ -5,7 +5,12 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power, RefreshCw, Save, Calendar, FileText, ClipboardList, Plus, Minus } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { PlanBadge, PLAN_CONFIG } from '@/components/admin/plan-badge'
-import { WYSIWYG, type WYSIWYGHandle } from '@/components/ui/wysiwyg'
+import dynamic from 'next/dynamic'
+import type { WYSIWYGHandle } from '@/components/ui/wysiwyg'
+const WYSIWYG = dynamic(() => import('@/components/ui/wysiwyg').then(m => ({ default: m.WYSIWYG })), {
+  ssr: false,
+  loading: () => <div className="rounded-xl border border-(--border) bg-(--bg-input) animate-pulse" style={{ minHeight: 120 }} />,
+})
 import { formatCOP } from '@/lib/format'
 import type { Empresa, Plan } from '@/types'
 

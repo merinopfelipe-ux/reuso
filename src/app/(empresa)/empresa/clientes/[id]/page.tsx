@@ -502,13 +502,8 @@ function DetalleClienteContent() {
           </SeccionDetalle>
         </DetalleColumna>
 
-        {/* Columna Derecha: Notas privadas, Historial, Tickets y Pasaportes */}
+        {/* Columna Derecha: Historial, Tickets, Pasaportes y Notas (siempre al final) */}
         <DetalleColumna>
-          {/* Notas privadas */}
-          <SeccionDetalle titulo="Notas privadas">
-            <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
-          </SeccionDetalle>
-
           {/* Historial de cotizaciones */}
           {cotizaciones.length > 0 && (
             <SeccionDetalle titulo="Historial de cotizaciones">
@@ -589,6 +584,11 @@ function DetalleClienteContent() {
               </div>
             </SeccionDetalle>
           )}
+
+          {/* Notas privadas — siempre al final */}
+          <SeccionDetalle titulo="Notas privadas">
+            <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
+          </SeccionDetalle>
         </DetalleColumna>
       </DetalleGrid>
 

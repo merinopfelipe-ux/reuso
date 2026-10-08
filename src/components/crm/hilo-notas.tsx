@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 import { Save as FloppyDisk, PencilSimple, Trash, X, Check } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
-import { WYSIWYG, type WYSIWYGHandle } from '@/components/ui/wysiwyg'
+import dynamic from 'next/dynamic'
+import type { WYSIWYGHandle } from '@/components/ui/wysiwyg'
+const WYSIWYG = dynamic(() => import('@/components/ui/wysiwyg').then(m => ({ default: m.WYSIWYG })), {
+  ssr: false,
+  loading: () => <div className="rounded-xl border border-(--border) bg-(--bg-input) animate-pulse" style={{ minHeight: 120 }} />,
+})
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { displayName } from '@/lib/display-name'
