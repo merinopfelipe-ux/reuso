@@ -339,7 +339,6 @@ function DetalleClienteContent() {
 
   const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
   const telCompleto = telefono.trim() ? `${telefonoIndicativo.dial}${telefono}`.replace(/\D/g, '') : null
-  const linkWa = telCompleto && telCompleto.length >= 7 ? `https://wa.me/${telCompleto}` : null
 
   return (
     <DetallePagina>

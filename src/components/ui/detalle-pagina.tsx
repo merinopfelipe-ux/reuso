@@ -163,9 +163,9 @@ export function PieDetalle({
         </Button>
       )}
       {hrefVolver && !onVolver && (
-        <a href={hrefVolver}>
+        <Link href={hrefVolver}>
           <Button variant="secondary">Volver</Button>
-        </a>
+        </Link>
       )}
       {extra}
     </div>

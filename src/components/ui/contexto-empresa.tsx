@@ -45,7 +45,7 @@ export function ContextoEmpresa({
     <div className="mb-4 flex flex-col gap-3">
       {/* Selector de empresa */}
       <div className="rounded-2xl border border-(--border) p-4 flex items-center gap-3 bg-(--bg-card)">
-        <Buildings size={18} className="text-[#00827C] shrink-0" />
+        <Buildings size={18} className="text-brand shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold text-(--text-secondary) mb-1">{etiqueta}</p>
           <SelectorEmpresa empresas={empresas} value={value} onChange={onChange} />
