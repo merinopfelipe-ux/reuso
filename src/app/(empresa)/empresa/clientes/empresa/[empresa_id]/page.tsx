@@ -143,25 +143,14 @@ function EmpresaClienteContent() {
       setCargando(true)
       setError(null)
       try {
-        const resContactos = await fetch(conEmpresa(`/api/cotizador/clientes?empresa_cliente_id=${empresa_id}`))
-        const dContactos = await resContactos.json().catch(() => null)
-        if (!resContactos.ok) {
-          setError(dContactos?.error ?? 'No se pudo cargar la empresa.')
+        // Cargar empresa directamente por su ID (no dependemos de que tenga contactos)
+        const resEmpresa = await fetch(conEmpresa(`/api/crm/empresas-clientes/${empresa_id}`))
+        const dEmpresa = await resEmpresa.json().catch(() => null)
+        if (!resEmpresa.ok) {
+          setError(dEmpresa?.error ?? 'Empresa no encontrada.')
           return
         }
-        const listaRaw: Array<ContactoEmpresa & { crm_empresas_clientes: EmpresaDetalle | EmpresaDetalle[] | null }> = dContactos?.clientes ?? []
-        if (listaRaw.length === 0) {
-          setError('Empresa no encontrada.')
-          return
-        }
-        const primerRaw = listaRaw[0]
-        const empRaw = Array.isArray(primerRaw.crm_empresas_clientes)
-          ? primerRaw.crm_empresas_clientes[0]
-          : primerRaw.crm_empresas_clientes
-        if (!empRaw) {
-          setError('Empresa no encontrada.')
-          return
-        }
+        const empRaw: EmpresaDetalle = dEmpresa.empresa
         setEmpresa(empRaw)
         setNit(empRaw.nit ?? '')
         setRazonSocial(empRaw.razon_social ?? '')
@@ -175,29 +164,33 @@ function EmpresaClienteContent() {
         if (notasDir) setMostrandoNotasDireccion(true)
         setSedes(empRaw.sedes ?? [])
 
-        const reales = listaRaw
-        const primerId = reales[0]?.id ?? null
-        setPrimerContactoId(primerId)
-        setContactos(reales.map(c => ({
-          id: c.id,
-          // El contacto ancla (es_contacto_real=false) lleva el nombre de la empresa;
-          // se muestra vacío para no sugerir el nombre de la empresa en el campo de persona.
-          nombre: c.es_contacto_real === false ? '' : (c.nombre ?? ''),
-          apellido: c.apellido ?? '',
-          identificacion: c.identificacion ?? '',
-          telefono: c.telefono ?? '',
-          telefonoIndicativo: PAISES.find(p => p.dial === c.telefono_indicativo) ?? PAISES[0],
-          email: c.email ?? '',
-          telefonosExtra: c.telefonos_extra ?? [],
-          correosExtra: c.correos_extra ?? [],
-          guardando: false,
-          errorGuardar: null,
-        })))
-
-        const [resAtributos, resTickets] = await Promise.all([
+        // Cargar contactos, atributos y tickets en paralelo
+        const [resContactos, resAtributos, resTickets] = await Promise.all([
+          fetch(conEmpresa(`/api/cotizador/clientes?empresa_cliente_id=${empresa_id}`)).catch(() => null),
           fetch(conEmpresa(`/api/crm/empresas-clientes/${empresa_id}/atributos`)).catch(() => null),
-          primerId ? fetch(conEmpresa(`/api/tickets?cliente_id=${primerId}`)).catch(() => null) : Promise.resolve(null),
+          fetch(conEmpresa(`/api/tickets?empresa_cliente_id=${empresa_id}`)).catch(() => null),
         ])
+
+        if (resContactos?.ok) {
+          const dContactos = await resContactos.json().catch(() => null)
+          const listaRaw: Array<ContactoEmpresa> = dContactos?.clientes ?? []
+          const primerId = listaRaw[0]?.id ?? null
+          setPrimerContactoId(primerId)
+          setContactos(listaRaw.map(c => ({
+            id: c.id,
+            nombre: c.es_contacto_real === false ? '' : (c.nombre ?? ''),
+            apellido: c.apellido ?? '',
+            identificacion: c.identificacion ?? '',
+            telefono: c.telefono ?? '',
+            telefonoIndicativo: PAISES.find(p => p.dial === c.telefono_indicativo) ?? PAISES[0],
+            email: c.email ?? '',
+            telefonosExtra: c.telefonos_extra ?? [],
+            correosExtra: c.correos_extra ?? [],
+            guardando: false,
+            errorGuardar: null,
+          })))
+        }
+
         if (resAtributos?.ok) {
           const dAtributos = await resAtributos.json().catch(() => null)
           if (Array.isArray(dAtributos?.data)) setAtributos(dAtributos.data)
@@ -294,7 +287,7 @@ function EmpresaClienteContent() {
   }
 
   async function crearTicket() {
-    if (!primerContactoId || ticketTitulo.trim().length < 5 || ticketMensaje.trim().length < 10) {
+    if (ticketTitulo.trim().length < 5 || ticketMensaje.trim().length < 10) {
       setErrorTicket('El título y el mensaje son obligatorios (mínimo 5 y 10 caracteres).')
       return
     }
@@ -309,14 +302,14 @@ function EmpresaClienteContent() {
           tipo: ticketTipo,
           prioridad: 'media',
           mensaje_html: ticketMensaje.trim().replace(/\n/g, '<br>'),
-          cliente_id: primerContactoId,
+          empresa_cliente_id: empresa_id,
         }),
       })
       const d = await res.json()
       if (!res.ok) { setErrorTicket(d.error ?? 'Error al crear el ticket.'); return }
       setMostrandoCrearTicket(false)
       setTicketTitulo(''); setTicketMensaje(''); setTicketTipo('duda')
-      const resTickets = await fetch(conEmpresa(`/api/tickets?cliente_id=${primerContactoId}`))
+      const resTickets = await fetch(conEmpresa(`/api/tickets?empresa_cliente_id=${empresa_id}`))
       const dTickets = await resTickets.json()
       if (dTickets.data) setTickets(dTickets.data)
     } catch {

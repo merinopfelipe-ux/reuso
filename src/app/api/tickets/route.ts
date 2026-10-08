@@ -14,9 +14,10 @@ const bodySchema = z.object({
   // no puede o no sabe hacerlo ella misma — para cualquier otro rol se
   // ignora, su empresa_id real siempre sale de su propio perfil.
   empresa_id_pqr: z.uuid().optional(),
-  // Vincula el ticket a un cliente CRM puntual (crm_clientes) — opcional,
-  // para poder mostrar un historial de tickets en su ficha.
+  // Vincula el ticket a un cliente CRM puntual (crm_clientes) — opcional.
   cliente_id: z.uuid().optional(),
+  // Vincula el ticket a una empresa cliente CRM (crm_empresas_clientes) — opcional.
+  empresa_cliente_id: z.uuid().optional(),
 })
 
 export async function GET(request: NextRequest) {
@@ -33,6 +34,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
     const empresaIdFiltro = searchParams.get('empresa_id')
     const clienteIdFiltro = searchParams.get('cliente_id')
+    const empresaClienteIdFiltro = searchParams.get('empresa_cliente_id')
 
     // super_admin ve TODOS los tickets de la plataforma (con nombre de
     // empresa, para poder identificar de quién es cada uno), no solo los que
@@ -41,23 +43,22 @@ export async function GET(request: NextRequest) {
     // la query entre roles.
     let query = supabase
       .from('tickets')
-      .select('id, titulo, tipo, prioridad, estado, user_id, empresa_id, cliente_id, origen, created_at, updated_at, empresas(nombre)', { count: 'exact' })
+      .select('id, titulo, tipo, prioridad, estado, user_id, empresa_id, cliente_id, empresa_cliente_id, origen, created_at, updated_at, empresas(nombre)', { count: 'exact' })
       .order('updated_at', { ascending: false })
       .limit(limit)
 
     if (rol === 'super_admin') {
       if (empresaIdFiltro) query = query.eq('empresa_id', empresaIdFiltro)
-    } else if ((rol === 'empresa_admin' || (rol === 'empleado' && clienteIdFiltro)) && profile?.empresa_id) {
-      // Ficha de un cliente CRM (/empresa/clientes/[id]): el historial es de
-      // TODA la empresa, no solo de los tickets que creó quien está mirando
-      // — un empleado también debe ver los tickets de ese cliente creados por
-      // otro empleado o por el empresa_admin.
+    } else if ((rol === 'empresa_admin' || (rol === 'empleado' && (clienteIdFiltro || empresaClienteIdFiltro))) && profile?.empresa_id) {
+      // Ficha de un cliente CRM (/empresa/clientes/[id]) o empresa cliente:
+      // el historial es de TODA la empresa usuaria, no solo de quien mira.
       query = query.eq('empresa_id', profile.empresa_id)
     } else if (rol === 'empleado' || rol === 'usuario_libre') {
       query = query.eq('user_id', user.id)
     }
 
     if (clienteIdFiltro) query = query.eq('cliente_id', clienteIdFiltro)
+    if (empresaClienteIdFiltro) query = query.eq('empresa_cliente_id', empresaClienteIdFiltro)
 
     const { data, error } = await query
 
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Datos de ticket inválidos' }, { status: 400 })
 
-  const { titulo, tipo, prioridad, empresa_id_pqr, cliente_id } = parsed.data
+  const { titulo, tipo, prioridad, empresa_id_pqr, cliente_id, empresa_cliente_id } = parsed.data
   const mensaje_html = DOMPurify.sanitize(parsed.data.mensaje_html)
 
   const { data: profile } = await supabase.from('profiles').select('rol, empresa_id, nombre, email').eq('user_id', user.id).single()
@@ -95,9 +96,9 @@ export async function POST(request: NextRequest) {
 
   const adminClient = await createAdminClient()
 
-  // Nunca confiar en el cliente_id del body sin verificar que pertenece a
-  // la misma empresa del ticket — si no coincide, se ignora en vez de fallar
-  // el ticket completo (el vínculo al cliente es un accesorio, no lo
+  // Nunca confiar en cliente_id ni empresa_cliente_id del body sin verificar
+  // ownership — si no pertenecen a la empresa del ticket se ignoran en vez de
+  // fallar (el vínculo al cliente/empresa-cliente es un accesorio, no lo
   // esencial de la solicitud).
   let clienteIdVerificado: string | null = null
   if (cliente_id && empresaIdFinal) {
@@ -108,6 +109,17 @@ export async function POST(request: NextRequest) {
       .eq('empresa_id', empresaIdFinal)
       .maybeSingle()
     if (clienteDueño) clienteIdVerificado = clienteDueño.id
+  }
+
+  let empresaClienteIdVerificado: string | null = null
+  if (empresa_cliente_id && empresaIdFinal) {
+    const { data: empCliente } = await adminClient
+      .from('crm_empresas_clientes')
+      .select('id')
+      .eq('id', empresa_cliente_id)
+      .eq('empresa_id', empresaIdFinal)
+      .maybeSingle()
+    if (empCliente) empresaClienteIdVerificado = empCliente.id
   }
 
   // 1. Crear el ticket
@@ -121,6 +133,7 @@ export async function POST(request: NextRequest) {
       user_id: user.id,
       empresa_id: empresaIdFinal,
       cliente_id: clienteIdVerificado,
+      empresa_cliente_id: empresaClienteIdVerificado,
       origen: esPqrDeAdmin ? 'admin' : 'usuario',
     })
     .select('id')
