@@ -6,7 +6,7 @@ const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
   email, pais, ciudad, direccion, direccion_notas, notas, empresa_cliente_id, created_at,
   es_contacto_real, duplicado_de_id, telefonos_extra, correos_extra,
-  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion, sector, nombres_comerciales )
+  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, nombres_comerciales, direccion, pais, ciudad, direccion_notas, sedes, sector )
 `
 
 // Detalle de un contacto del CRM + sus cotizaciones (historial) + sus
@@ -70,6 +70,15 @@ const schema = z.object({
   empresa_direccion: z.string().max(300).nullable().optional(),
   sector: z.string().max(200).nullable().optional(),
   nombres_comerciales: z.array(z.string().max(200)).optional(),
+  empresa_pais:            z.string().max(100).nullable().optional(),
+  empresa_ciudad:          z.string().max(200).nullable().optional(),
+  empresa_direccion_notas: z.string().max(300).nullable().optional(),
+  empresa_sedes:           z.array(z.object({
+    nombre:    z.string().max(200),
+    pais:      z.string().max(100).optional(),
+    ciudad:    z.string().max(200).optional(),
+    direccion: z.string().max(300).optional(),
+  })).optional(),
   // Múltiples teléfonos y correos adicionales del contacto
   telefonos_extra: z.array(z.object({ indicativo: z.string().max(6), numero: z.string().max(20) })).optional(),
   correos_extra: z.array(z.string().email('Correo inválido.')).optional(),
@@ -102,7 +111,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   if (parsed.data.nombre === '' && !actual.empresa_cliente_id) {
     return NextResponse.json({ error: 'El nombre no puede quedar vacío.' }, { status: 400 })
   }
-  const { razon_social, nombre_comercial, empresa_direccion, sector, nombres_comerciales, telefonos_extra, correos_extra, ...contactoFields } = parsed.data
+  const { razon_social, nombre_comercial, empresa_direccion, sector, nombres_comerciales, empresa_pais, empresa_ciudad, empresa_direccion_notas, empresa_sedes, telefonos_extra, correos_extra, ...contactoFields } = parsed.data
 
   if (telefonos_extra !== undefined) (contactoFields as Record<string, unknown>).telefonos_extra = telefonos_extra
   if (correos_extra !== undefined) (contactoFields as Record<string, unknown>).correos_extra = correos_extra
@@ -147,13 +156,17 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     }
   }
 
-  if ((razon_social || nombre_comercial !== undefined || empresa_direccion !== undefined || sector !== undefined || nombres_comerciales !== undefined) && actual.empresa_cliente_id) {
+  if ((razon_social || nombre_comercial !== undefined || empresa_direccion !== undefined || sector !== undefined || nombres_comerciales !== undefined || empresa_pais !== undefined || empresa_ciudad !== undefined || empresa_direccion_notas !== undefined || empresa_sedes !== undefined) && actual.empresa_cliente_id) {
     const empresaFields: Record<string, unknown> = {}
     if (razon_social) empresaFields.razon_social = razon_social
     if (nombre_comercial !== undefined) empresaFields.nombre_comercial = nombre_comercial
     if (empresa_direccion !== undefined) empresaFields.direccion = empresa_direccion
     if (sector !== undefined) empresaFields.sector = sector
     if (nombres_comerciales !== undefined) empresaFields.nombres_comerciales = nombres_comerciales
+    if (empresa_pais !== undefined)            empresaFields.pais            = empresa_pais
+    if (empresa_ciudad !== undefined)          empresaFields.ciudad          = empresa_ciudad
+    if (empresa_direccion_notas !== undefined) empresaFields.direccion_notas = empresa_direccion_notas
+    if (empresa_sedes !== undefined)           empresaFields.sedes           = empresa_sedes
     const { error } = await adminClient.from('crm_empresas_clientes').update(empresaFields).eq('id', actual.empresa_cliente_id)
     if (error) {
       console.error('[PATCH /api/cotizador/clientes/[id]] empresa cliente', error)

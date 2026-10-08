@@ -46,6 +46,10 @@ interface EmpresaClienteDetalle {
   nombre_comercial: string | null
   nombres_comerciales: string[] | null
   direccion: string | null
+  pais: string | null
+  ciudad: string | null
+  direccion_notas: string | null
+  sedes: Array<{nombre: string; pais?: string; ciudad?: string; direccion?: string}> | null
   sector: string | null
 }
 
@@ -144,6 +148,12 @@ function DetalleClienteContent() {
   const [atributosEmpresa, setAtributosEmpresa] = useState<AtributoEmpresa[]>([])
   const [nuevaClaveEmpresa, setNuevaClaveEmpresa] = useState('')
   const [nuevoValorEmpresa, setNuevoValorEmpresa] = useState('')
+  const [empresaPais, setEmpresaPais] = useState('Colombia')
+  const [empresaCiudad, setEmpresaCiudad] = useState(CIUDAD_DEFECTO)
+  const [empresaDireccion, setEmpresaDireccion] = useState('')
+  const [empresaDireccionNotas, setEmpresaDireccionNotas] = useState('')
+  const [empresaSedes, setEmpresaSedes] = useState<Array<{nombre: string; pais?: string; ciudad?: string; direccion?: string}>>([])
+  const [nuevaSede, setNuevaSede] = useState({ nombre: '', direccion: '' })
 
   interface ContactoHermano { id: string; nombre: string; apellido: string | null; telefono: string | null; telefono_indicativo: string | null; email: string | null }
   const [otrosContactos, setOtrosContactos] = useState<ContactoHermano[]>([])
@@ -210,6 +220,11 @@ function DetalleClienteContent() {
           setRazonSocial(emp.razon_social ?? '')
           setSector(emp.sector ?? '')
           setNombresComerciales(emp.nombres_comerciales ?? [])
+          setEmpresaPais(emp.pais ?? 'Colombia')
+          setEmpresaCiudad(emp.ciudad ?? CIUDAD_DEFECTO)
+          setEmpresaDireccion(emp.direccion ?? '')
+          setEmpresaDireccionNotas(emp.direccion_notas ?? '')
+          setEmpresaSedes(emp.sedes ?? [])
           const resHermanos = await fetch(conEmpresa(`/api/cotizador/clientes?q=&empresa_cliente_id=${emp.id}`)).catch(() => null)
           if (resHermanos && resHermanos.ok) {
             const dHermanos = await resHermanos.json().catch(() => null)
@@ -261,7 +276,16 @@ function DetalleClienteContent() {
           correos_extra: correosExtra,
           pais: pais || null, ciudad: ciudad || null, direccion: direccion || null,
           direccion_notas: direccionNotas || null,
-          ...(emp ? { razon_social: razonSocial, sector: sector || null, nombres_comerciales: nombresComerciales } : {}),
+          ...(emp ? {
+            razon_social: razonSocial,
+            sector: sector || null,
+            nombres_comerciales: nombresComerciales,
+            empresa_pais: empresaPais || null,
+            empresa_ciudad: empresaCiudad || null,
+            empresa_direccion: empresaDireccion || null,
+            empresa_direccion_notas: empresaDireccionNotas || null,
+            empresa_sedes: empresaSedes,
+          } : {}),
         }),
       })
       const d = await res.json()
@@ -460,6 +484,68 @@ function DetalleClienteContent() {
                   <button onClick={agregarAtributoEmpresa} className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0" title="Agregar"><Plus size={16} className="text-brand" /></button>
                 </div>
               </div>
+
+              <div className="border-t border-(--border) pt-3 mt-1">
+                <p className="text-xs font-semibold text-(--text-secondary) mb-3">Dirección principal</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <span className={CLASE_ETIQUETA}>País</span>
+                    <SelectorPais value={empresaPais} onChange={setEmpresaPais} />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className={CLASE_ETIQUETA}>Ciudad</span>
+                    <SelectorCiudad value={empresaCiudad} onChange={setEmpresaCiudad} pais={empresaPais} conEmpresa={conEmpresa} />
+                  </div>
+                </div>
+                <div className="flex flex-col gap-1 mt-3">
+                  <span className={CLASE_ETIQUETA}>Dirección</span>
+                  <InputDireccion
+                    value={empresaDireccion}
+                    onChange={setEmpresaDireccion}
+                    paisCodigo={PAISES.find(p => p.nombre === empresaPais)?.codigo}
+                    paisNombre={empresaPais}
+                    ciudad={empresaCiudad}
+                  />
+                </div>
+                <div className="mt-3">
+                  <CampoFormulario label="Notas sobre la dirección">
+                    <input value={empresaDireccionNotas} onChange={e => setEmpresaDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Torre, apto, referencia" />
+                  </CampoFormulario>
+                </div>
+              </div>
+
+              {empresaSedes.length > 0 && (
+                <div className="border-t border-(--border) pt-3 mt-1">
+                  <p className="text-xs font-semibold text-(--text-secondary) mb-2">Otras sedes</p>
+                  <div className="flex flex-col gap-2">
+                    {empresaSedes.map((s, i) => (
+                      <div key={i} className="flex items-start justify-between gap-2 p-2.5 rounded-xl bg-(--bg-input) border border-(--border)">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-(--text-primary)">{s.nombre}</p>
+                          {s.direccion && <p className="text-[11px] text-(--text-secondary) truncate">{s.direccion}</p>}
+                        </div>
+                        <button type="button" onClick={() => setEmpresaSedes(prev => prev.filter((_, j) => j !== i))} className="text-[11px] text-(--color-error) hover:underline shrink-0">Quitar</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <div className="border-t border-(--border) pt-3 mt-1">
+                <p className="text-xs font-semibold text-(--text-secondary) mb-2">Agregar sede</p>
+                <div className="flex gap-2">
+                  <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
+                  <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!nuevaSede.nombre.trim()) return
+                      setEmpresaSedes(prev => [...prev, { nombre: nuevaSede.nombre.trim(), direccion: nuevaSede.direccion.trim() || undefined }])
+                      setNuevaSede({ nombre: '', direccion: '' })
+                    }}
+                    className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+                  ><Plus size={16} className="text-brand" /></button>
+                </div>
+              </div>
             </SeccionDetalle>
           )}
 
@@ -567,26 +653,28 @@ function DetalleClienteContent() {
             </div>
           </SeccionDetalle>
 
-          {/* Dirección */}
-          <SeccionDetalle titulo="Dirección">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1">
-                <span className={CLASE_ETIQUETA}>País</span>
-                <SelectorPais value={pais} onChange={setPais} />
+          {/* Dirección — solo cuando no hay empresa vinculada */}
+          {!emp && (
+            <SeccionDetalle titulo="Dirección">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <span className={CLASE_ETIQUETA}>País</span>
+                  <SelectorPais value={pais} onChange={setPais} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className={CLASE_ETIQUETA}>Ciudad</span>
+                  <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
+                </div>
               </div>
               <div className="flex flex-col gap-1">
-                <span className={CLASE_ETIQUETA}>Ciudad</span>
-                <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
+                <span className={CLASE_ETIQUETA}>Dirección</span>
+                <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
               </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className={CLASE_ETIQUETA}>Dirección</span>
-              <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
-            </div>
-            <CampoFormulario label="Notas sobre la dirección">
-              <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
-            </CampoFormulario>
-          </SeccionDetalle>
+              <CampoFormulario label="Notas sobre la dirección">
+                <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
+              </CampoFormulario>
+            </SeccionDetalle>
+          )}
 
         </DetalleColumna>
 
