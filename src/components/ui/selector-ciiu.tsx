@@ -14,9 +14,10 @@ interface Props {
   value: string
   onChange: (actividad: string) => void
   className?: string
+  disabled?: boolean
 }
 
-export function SelectorCiiu({ value, onChange, className }: Props) {
+export function SelectorCiiu({ value, onChange, className = '', disabled }: Props) {
   const [abierto, setAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
 
@@ -34,17 +35,20 @@ export function SelectorCiiu({ value, onChange, className }: Props) {
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <button
         type="button"
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={abierto}
         onClick={() => { setAbierto(v => !v); setBusqueda('') }}
-        className={className ?? 'w-full px-3 py-2.5 rounded-xl border border-(--border) bg-(--bg-input) text-sm text-(--text-primary) flex items-center justify-between gap-2'}
+        className="w-full px-3 py-2.5 rounded-input border border-(--border) bg-(--bg-input) text-sm text-(--text-primary) flex items-center justify-between gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <span className="truncate">{value || 'Selecciona una actividad (CIIU)'}</span>
         <CaretDown size={14} className="text-(--text-secondary) shrink-0" />
       </button>
 
-      {abierto && (
+      {abierto && !disabled && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAbierto(false)} />
           <div

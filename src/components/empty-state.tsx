@@ -1,5 +1,5 @@
 import type { ElementType } from 'react'
-import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 interface EmptyStateProps {
   icono: ElementType
@@ -47,39 +47,9 @@ export function EmptyState({ icono: Icono, titulo, descripcion, cta }: EmptyStat
       </p>
       {cta && (
         cta.href ? (
-          <Link
-            href={cta.href}
-            style={{
-              marginTop: 8,
-              padding: '9px 20px',
-              background: 'var(--color-brand)',
-              color: '#fff',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              textDecoration: 'none',
-              display: 'inline-block',
-            }}
-          >
-            {cta.label}
-          </Link>
+          <Button href={cta.href} className="mt-2">{cta.label}</Button>
         ) : (
-          <button
-            onClick={cta.onClick}
-            style={{
-              marginTop: 8,
-              padding: '9px 20px',
-              background: 'var(--color-brand)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
-          >
-            {cta.label}
-          </button>
+          <Button onClick={cta.onClick} className="mt-2">{cta.label}</Button>
         )
       )}
     </div>

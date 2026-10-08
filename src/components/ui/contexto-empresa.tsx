@@ -48,15 +48,15 @@ export function ContextoEmpresa({
         <Buildings size={18} className="text-brand shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-xs font-semibold text-(--text-secondary) mb-1">{etiqueta}</p>
-          <SelectorEmpresa empresas={empresas} value={value} onChange={onChange} />
+          <SelectorEmpresa empresas={empresas} value={value} onChange={onChange} variante="integrado" />
         </div>
       </div>
 
       {/* Aviso cuando no hay empresa elegida */}
       {listo && !value && (
-        <div className="rounded-2xl border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 flex items-center gap-2.5">
-          <Info size={18} className="text-[#59A6E4] shrink-0" />
-          <p className="text-sm text-[#59A6E4] font-medium">{mensajeVacio}</p>
+        <div className="rounded-2xl border border-(--color-info)/20 bg-(--color-info)/10 p-4 flex items-center gap-2.5">
+          <Info size={18} className="text-(--color-info-content) shrink-0" />
+          <p className="text-sm text-(--color-info-content) font-medium">{mensajeVacio}</p>
         </div>
       )}
     </div>

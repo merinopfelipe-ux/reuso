@@ -13,13 +13,22 @@ export interface SelectorEmpresaProps {
   value: string
   onChange: (val: string) => void
   placeholder?: string
+  disabled?: boolean
+  /** 'campo' (por defecto): botón con borde y fondo de input, para formularios.
+   *  'integrado': sin borde, para dentro de una tarjeta que ya lo trae (ContextoEmpresa). */
+  variante?: 'campo' | 'integrado'
 }
+
+const CLASE_DISPARADOR = {
+  campo: 'flex w-full h-9 items-center justify-between gap-2 px-3 text-xs rounded-input border bg-(--bg-input) hover:bg-(--bg-card) transition-colors',
+  integrado: 'flex w-full items-center justify-between gap-2 text-sm font-semibold',
+} as const
 
 // Reemplaza el <select> nativo del navegador (sin estilo propio, distinto en
 // cada sistema operativo) por el mismo patrón visual que ya usan
 // SelectorCiudad/SelectorPais: botón + panel propio, con buscador para
 // cuando hay muchas empresas.
-export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Selecciona una empresa' }: SelectorEmpresaProps) {
+export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Selecciona una empresa', disabled, variante = 'campo' }: SelectorEmpresaProps) {
   const [abierto, setAbierto] = useState(false)
   const [busqueda, setBusqueda] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -45,15 +54,18 @@ export function SelectorEmpresa({ empresas, value, onChange, placeholder = 'Sele
     <div className="relative w-full" ref={containerRef}>
       <button
         type="button"
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={abierto}
         onClick={() => setAbierto(!abierto)}
-        className="flex w-full items-center justify-between gap-2 text-sm font-semibold outline-hidden cursor-pointer"
+        className={`${CLASE_DISPARADOR[variante]} outline-hidden cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variante === 'campo' ? (abierto ? 'border-brand shadow-[0_0_0_3px_var(--color-brand-light)]' : 'border-(--border)') : ''}`}
         style={{ color: 'var(--text-primary)' }}
       >
         <span className="truncate">{seleccionada?.nombre ?? placeholder}</span>
         <ChevronDown size={16} className="text-(--text-secondary) shrink-0" />
       </button>
 
-      {abierto && (
+      {abierto && !disabled && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setAbierto(false)} />
           <div

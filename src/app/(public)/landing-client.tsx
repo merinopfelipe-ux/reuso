@@ -1969,7 +1969,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
         <Modal
           abierto={catalogoCalculosAbierto}
           onClose={() => setCatalogoCalculosAbierto(false)}
-          titulo=""
+          titulo="Catálogo de los 9 cálculos"
           sinEncabezado
           ancho="xl"
           sinPie
@@ -2537,7 +2537,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           <Modal
             abierto={comparativaAbierta}
             onClose={() => setComparativaAbierta(false)}
-            titulo=""
+            titulo="Comparar todos los planes y cálculos"
             sinEncabezado
             ancho="xl"
             sinPie

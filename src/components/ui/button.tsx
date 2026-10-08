@@ -1,16 +1,22 @@
 'use client'
 
+import Link from 'next/link'
 import { Loader2 } from '@/components/ui/icons'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost'
 export type ButtonSize = 'lg' | 'md' | 'sm'
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonComunProps {
   variant?: ButtonVariant
   size?: ButtonSize
   loading?: boolean
   icon?: React.ReactNode
 }
+
+type ButtonComoBoton = ButtonComunProps & React.ButtonHTMLAttributes<HTMLButtonElement> & { href?: undefined }
+type ButtonComoEnlace = ButtonComunProps & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & { href: string; disabled?: boolean }
+
+export type ButtonProps = ButtonComoBoton | ButtonComoEnlace
 
 const BASE = 'inline-flex items-center justify-center gap-2 rounded-full font-bold transition-all duration-300 hover-pop hover-press disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap'
 
@@ -32,6 +38,10 @@ const VARIANTS: Record<ButtonVariant, string> = {
  * Botón canónico del sistema de diseño. Único componente permitido para
  * acciones primarias/secundarias/destructivas (Guardar, Cancelar, Eliminar).
  * No crear variantes ad-hoc con estilos inline: usar variant/size aquí.
+ *
+ * Con `href` se renderiza como enlace de Next (navegación sin recarga) con los
+ * mismos estilos exactos. Nunca anidar un Button dentro de un Link: un elemento
+ * interactivo dentro de otro es HTML inválido y deja dos paradas de teclado.
  */
 export function Button({
   variant = 'primary',
@@ -40,19 +50,36 @@ export function Button({
   icon,
   children,
   className = '',
-  disabled,
-  type = 'button',
   ...props
 }: ButtonProps) {
-  return (
-    <button
-      type={type}
-      disabled={disabled || loading}
-      className={`${BASE} ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
-      {...props}
-    >
+  const clases = `${BASE} ${SIZES[size]} ${VARIANTS[variant]} ${className}`
+  const contenido = (
+    <>
       {loading ? <Loader2 size={size === 'sm' ? 14 : 16} className="animate-spin" /> : icon}
       {children}
+    </>
+  )
+
+  if (props.href !== undefined) {
+    const { href, disabled, ...resto } = props
+    const inactivo = disabled || loading
+    return (
+      <Link
+        href={href}
+        className={`${clases} ${inactivo ? 'pointer-events-none opacity-50' : ''}`}
+        aria-disabled={inactivo || undefined}
+        tabIndex={inactivo ? -1 : undefined}
+        {...resto}
+      >
+        {contenido}
+      </Link>
+    )
+  }
+
+  const { type = 'button', disabled, ...resto } = props
+  return (
+    <button type={type} disabled={disabled || loading} className={clases} {...resto}>
+      {contenido}
     </button>
   )
 }

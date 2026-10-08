@@ -14,7 +14,7 @@ Y la misma estructura visual:
 3. **Secciones de datos**: `rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5`
 4. **Pie de página**: botón Guardar + botón Volver
 
-Los campos varían según la entidad, pero el contenedor, el espaciado, el tipo de input, la etiqueta (`text-xs font-semibold text-(--text-secondary)`) y el estilo de campo (`rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm`) son idénticos en todas.
+Los campos varían según la entidad, pero el contenedor, el espaciado, el tipo de input, la etiqueta (`text-xs font-semibold text-(--text-secondary)`) y el estilo de campo (`rounded-input border border-(--border) bg-(--bg-input) px-3 py-2 text-sm`, radio de 8px por token) son idénticos en todas.
 
 **Referencia canónica actual**: `src/app/(admin)/admin/leads/[id]/lead-detalle-client.tsx`
 
@@ -76,13 +76,22 @@ import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/ca
   <textarea className={`${CLASE_CAMPO} min-h-[80px]`} value={...} onChange={...} />
 </CampoFormulario>
 
-// Para campos con SelectorPais/SelectorCiudad (no admiten label como wrapper):
-<div className="flex flex-col gap-1">
-  <span className={CLASE_ETIQUETA}>País</span>
+// Para componentes con botones propios (Selector, SelectorPais, SelectorCiudad, SelectorCiiu, InputTelefono):
+<CampoFormulario label="País" compuesto>
   <SelectorPais value={pais} onChange={setPais} />
-</div>
+</CampoFormulario>
 ```
-`CLASE_CAMPO` y `CLASE_ETIQUETA` son constantes exportadas para usarlas donde no cabe `CampoFormulario` (inputs dentro de modales sin grid, etc.).
+`compuesto` hace que la envoltura sea un `div` y no un `label`. Dentro de un `label`, el clic en un botón se dispara dos veces y el menú se abre y se cierra de inmediato. Nunca escribas a mano el par `div` + `span` con `CLASE_ETIQUETA`: usa `compuesto`.
+
+`CLASE_CAMPO` y `CLASE_ETIQUETA` son constantes exportadas para usarlas donde no cabe `CampoFormulario` (inputs dentro de modales sin grid, etc.). Los inputs canónicos (`InputTelefono`, `InputDocumento`, `SelectorEmpresa`, `SelectorCiiu`, `InputPrecio`, `InputConUnidad`, `InputCantidadInsumo`) aceptan `disabled`: pásalo mientras el formulario guarda.
+
+`SelectorEmpresa` tiene dos variantes: `campo` (por defecto, con borde y fondo de input, para formularios) e `integrado` (sin borde, solo dentro de una tarjeta que ya lo trae, como `ContextoEmpresa`).
+
+### Botones que navegan: `Button` con `href`
+```tsx
+<Button href="/admin/leads" variant="secondary">Volver</Button>
+```
+Con `href`, `Button` se renderiza como enlace de Next con los mismos estilos. Nunca anides un `Button` dentro de un `Link`, ni copies las clases del botón a mano en un `Link`: es HTML inválido o un botón paralelo que se desalinea del canónico.
 
 ### Acciones de contacto: `src/components/ui/acciones-contacto.tsx`
 ```tsx

@@ -128,6 +128,7 @@ import { Button } from '@/components/ui/button'
 <Button variant="ghost">Ver más</Button>               {/* sin fondo, solo texto + hover sutil */}
 <Button loading={guardando}>Guardar</Button>            {/* spinner automático (Loader2 + animate-spin), reemplaza al texto */}
 <Button size="sm">Añadir fila</Button>                  {/* botones chicos dentro de listas/editores */}
+<Button href="/ruta" variant="secondary">Volver</Button> {/* con href se renderiza como enlace de Next, mismos estilos. Nunca un Button dentro de un Link */}
 ```
 Nunca declares tu propio `btnPrimario`/`btnGuardar`/`btnBase` local en un componente — es exactamente el tipo de duplicación que rompe la unidad visual del sistema. Si `Button` no cubre un caso legítimo nuevo, se amplía `Button`, no se crea un botón paralelo.
 
