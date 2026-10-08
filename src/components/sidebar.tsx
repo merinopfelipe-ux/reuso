@@ -51,7 +51,10 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       subItems: [
         { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
         { href: '/empresa/clientes', label: 'Clientes' },
+        { href: '/empresa/dpp', label: 'DPP', grupo: 'DPP' },
         { href: '/admin/calculos', label: 'Cálculos', grupo: 'Plataforma' },
+        { href: '/empresa/informes', label: 'Informes' },
+        { href: '/empresa/metas', label: 'Metas' },
         { href: '/admin/reportes', label: 'Reportes' },
       ]
     },
