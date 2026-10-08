@@ -290,7 +290,10 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           const isDirectActive = item.href && item.href !== '#' && (
             isRootPath ? pathname === item.href : (pathname === item.href || pathname.startsWith(item.href + '/'))
           )
-          const hasActiveSub = item.subItems?.some(s => pathname === s.href || pathname.startsWith(s.href + '/'))
+          const hasActiveSub = item.subItems?.some(s => {
+            const isSubRoot = s.href === '/admin' || s.href === '/empresa' || s.href === '/dashboard' || s.href === '/'
+            return isSubRoot ? pathname === s.href : (pathname === s.href || pathname.startsWith(s.href + '/'))
+          })
           const isInteracting = activeSubmenu === item.label
           const fixedColor = 'inherit'
 
