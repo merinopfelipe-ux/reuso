@@ -643,9 +643,7 @@ function EmpresaClienteContent() {
               </button>
             }
           >
-            {tickets.length === 0 ? (
-              <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
-            ) : (
+            {tickets.length > 0 && (
               <div className="flex flex-col gap-2">
                 {tickets.map(t => (
                   <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">
