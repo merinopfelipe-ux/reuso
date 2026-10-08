@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { validarTelefono } from '@/lib/telefono'
+import { esNombreDeEmpresa } from '@/lib/es-nombre-empresa'
 
 const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
@@ -89,12 +90,17 @@ const schema = z.object({
   razon_social: z.string().max(200).optional(),
   nombre_comercial: z.string().max(200).optional(),
   sector: z.string().max(200).optional(),
+  // Para vincular una persona directamente a una empresa cliente existente
+  empresa_cliente_id: z.string().uuid().optional(),
 }).refine(
   (d) => d.tipo !== 'empresa' || (!!d.nit && !!d.razon_social),
   { message: 'NIT y razón social son obligatorios para un cliente empresa.' }
 ).refine(
   (d) => d.tipo !== 'persona' || (!!d.telefono && d.telefono.length >= 5 && !!d.nombre),
   { message: 'Nombre y celular son obligatorios para un cliente persona.' }
+).refine(
+  (d) => !(d.empresa_cliente_id && d.nombre && esNombreDeEmpresa(d.nombre)),
+  { message: 'El nombre parece ser de una empresa. Las personas vinculadas deben ser personas naturales.' }
 )
 
 export async function POST(request: NextRequest) {
@@ -127,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  let empresa_cliente_id: string | null = null
+  let empresa_cliente_id: string | null = d.empresa_cliente_id ?? null
 
   if (d.tipo === 'empresa') {
     // Buscar si ya existe una empresa cliente con ese NIT en esta empresa usuaria:

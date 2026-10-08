@@ -18,6 +18,7 @@ import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
 import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle, DetalleGrid, DetalleColumna } from '@/components/ui/detalle-pagina'
 import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/campo-formulario'
+import { esNombreDeEmpresa } from '@/lib/es-nombre-empresa'
 
 interface TicketResumen {
   id: string
@@ -235,10 +236,14 @@ function DetalleClienteContent() {
 
   async function guardar() {
     if (!id) return
+    const emp = cliente && (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
+    if (emp && nombre.trim() && esNombreDeEmpresa(nombre)) {
+      setError('El nombre parece ser de una empresa. Los contactos vinculados deben ser personas naturales.')
+      return
+    }
     setGuardando(true)
     setError(null)
     try {
-      const emp = cliente && (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
       const res = await fetch(conEmpresa(`/api/cotizador/clientes/${id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -277,6 +282,10 @@ function DetalleClienteContent() {
       setErrorAgregar('El nombre del contacto es obligatorio.')
       return
     }
+    if (esNombreDeEmpresa(nuevoContacto.nombre)) {
+      setErrorAgregar('El nombre parece ser de una empresa. Los contactos vinculados deben ser personas naturales.')
+      return
+    }
     setAgregandoContacto(true)
     setErrorAgregar(null)
     try {
@@ -284,11 +293,9 @@ function DetalleClienteContent() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          tipo: 'empresa',
-          nit: emp.nit,
-          razon_social: emp.razon_social,
-          nombre_comercial: emp.nombre_comercial || undefined,
-          nombre: nuevoContacto.nombre.trim() || undefined,
+          tipo: 'persona',
+          empresa_cliente_id: emp.id,
+          nombre: nuevoContacto.nombre.trim(),
           apellido: nuevoContacto.apellido.trim() || undefined,
           telefono: nuevoContacto.telefono.trim() || undefined,
           telefono_indicativo: nuevoIndicativo.dial,

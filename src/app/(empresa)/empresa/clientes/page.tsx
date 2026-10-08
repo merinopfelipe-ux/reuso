@@ -258,7 +258,7 @@ function ClientesContent() {
                               <p className={`text-sm font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
                               <p className={`text-xs whitespace-nowrap overflow-visible ${ts}`}>
                                 {formatTelefonoVista(c.telefono, c.telefono_indicativo)}
-                                {emp ? ` · ${emp.razon_social} (NIT ${emp.nit})` : ''}
+                                {emp ? ` · ${emp.razon_social} (NIT ${emp.nit.replace(/^NIT\s*/i, '')})` : ''}
                               </p>
                             </div>
                             <CaretRight size={16} className={ts} />
@@ -296,7 +296,7 @@ function ClientesContent() {
                                   {emp.nombre_comercial && <span className="font-normal text-xs text-(--text-secondary) ml-1.5">({emp.nombre_comercial})</span>}
                                 </h3>
                                 <p className={`text-xs ${ts}`}>
-                                  NIT {emp.nit} {emp.direccion ? `· ${emp.direccion}` : ''}
+                                  NIT {emp.nit.replace(/^NIT\s*/i, '')} {emp.direccion ? `· ${emp.direccion}` : ''}
                                 </p>
                               </div>
                             </div>
