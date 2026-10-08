@@ -129,19 +129,19 @@ function ClientesContent() {
 
   async function crearCliente() {
     setErrorCrear(null)
-    if (modoCrear === 'empresa' && (!crearNit.trim() || !crearRazonSocial.trim())) {
-      setErrorCrear('El NIT y la razón social son obligatorios.')
+    if (modoCrear === 'empresa' && !crearNit.trim()) {
+      setErrorCrear('El NIT es obligatorio.')
       return
     }
-    if (modoCrear === 'persona' && (!crearNombre.trim() || !crearTelefono.trim())) {
-      setErrorCrear('El nombre y el celular son obligatorios.')
+    if (modoCrear === 'persona' && !crearTelefono.trim()) {
+      setErrorCrear('El celular es obligatorio.')
       return
     }
     setCreando(true)
     try {
       const body = modoCrear === 'empresa'
-        ? { tipo: 'empresa', nit: crearNit.trim(), razon_social: crearRazonSocial.trim() }
-        : { tipo: 'persona', nombre: crearNombre.trim(), apellido: crearApellido.trim() || undefined, telefono: crearTelefono.trim(), telefono_indicativo: crearIndicativo.dial, email: crearEmail.trim() || undefined }
+        ? { tipo: 'empresa', nit: crearNit.trim(), razon_social: crearRazonSocial.trim() || crearNit.trim() }
+        : { tipo: 'persona', nombre: crearNombre.trim() || undefined, apellido: crearApellido.trim() || undefined, telefono: crearTelefono.trim(), telefono_indicativo: crearIndicativo.dial, email: crearEmail.trim() || undefined }
       const params = new URLSearchParams()
       if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
       const res = await fetch(`/api/cotizador/clientes${params.size ? `?${params}` : ''}`, {
@@ -440,42 +440,24 @@ function ClientesContent() {
           {errorCrear && <p className="text-sm text-[#FF5E4B]">{errorCrear}</p>}
 
           {modoCrear === 'empresa' ? (
-            <>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">NIT</label>
-                <input value={crearNit} onChange={e => setCrearNit(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Ej. 900.123.456-1" />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Razón social</label>
-                <input value={crearRazonSocial} onChange={e => setCrearRazonSocial(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Nombre legal de la empresa" />
-              </div>
-            </>
+            <div className="flex flex-col gap-3">
+              <input value={crearNit} onChange={e => setCrearNit(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="NIT" />
+              <input value={crearRazonSocial} onChange={e => setCrearRazonSocial(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Razón social" />
+            </div>
           ) : (
-            <>
+            <div className="flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-(--text-secondary)">Nombre</label>
-                  <input value={crearNombre} onChange={e => setCrearNombre(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Nombre" />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-xs font-semibold text-(--text-secondary)">Apellido</label>
-                  <input value={crearApellido} onChange={e => setCrearApellido(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Apellido" />
-                </div>
+                <input value={crearNombre} onChange={e => setCrearNombre(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Nombre" />
+                <input value={crearApellido} onChange={e => setCrearApellido(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Apellido" />
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Celular</label>
-                <InputTelefono
-                  indicativo={crearIndicativo.dial}
-                  onChangeIndicativo={val => { const p = PAISES.find(x => x.dial === val); if (p) setCrearIndicativo(p) }}
-                  telefono={crearTelefono}
-                  onChangeTelefono={setCrearTelefono}
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-(--text-secondary)">Correo (opcional)</label>
-                <input value={crearEmail} onChange={e => setCrearEmail(e.target.value)} type="email" className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="correo@ejemplo.com" />
-              </div>
-            </>
+              <InputTelefono
+                indicativo={crearIndicativo.dial}
+                onChangeIndicativo={val => { const p = PAISES.find(x => x.dial === val); if (p) setCrearIndicativo(p) }}
+                telefono={crearTelefono}
+                onChangeTelefono={setCrearTelefono}
+              />
+              <input value={crearEmail} onChange={e => setCrearEmail(e.target.value)} type="email" className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Correo" />
+            </div>
           )}
         </div>
       </Modal>
