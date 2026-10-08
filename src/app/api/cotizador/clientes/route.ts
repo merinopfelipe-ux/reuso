@@ -8,7 +8,7 @@ const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
   email, pais, ciudad, direccion, direccion_notas, notas, empresa_cliente_id, created_at,
   es_contacto_real, duplicado_de_id,
-  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion, sector )
+  crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, nombres_comerciales, direccion, pais, ciudad, direccion_notas, sedes, sector )
 `
 
 // Lista/busca los contactos del CRM de esta empresa — base de /empresa/clientes.

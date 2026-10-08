@@ -193,7 +193,7 @@ function ClientesContent() {
       const key = c.empresa_cliente_id || `cliente-${c.id}`
       if (!empresasMap.has(key)) {
         empresasMap.set(key, {
-          id: c.id,
+          id: c.empresa_cliente_id || c.id,
           nit: c.identificacion || 'Sin NIT',
           razon_social: c.nombre,
           nombre_comercial: null,
