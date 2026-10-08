@@ -104,7 +104,7 @@ export function InputDireccion({ value, onChange, disabled, paisCodigo }: InputD
           opacity: disabled ? 0.6 : 1,
         }}
       />
-      {apiKeyMissing && (
+      {apiKeyMissing && process.env.NODE_ENV !== 'production' && (
         <p className="text-[10px] text-error">
           Falta configurar NEXT_PUBLIC_GOOGLE_MAPS_API_KEY en .env.local para usar el autocompletado de Maps.
         </p>

@@ -15,10 +15,12 @@ export function InputPrecio({
   value,
   onChange,
   className = '',
+  disabled,
 }: {
   value: string
   onChange: (v: string) => void
   className?: string
+  disabled?: boolean
 }) {
   const [focused, setFocused] = useState(false)
   const [tempVal, setTempVal] = useState(value)
@@ -31,7 +33,7 @@ export function InputPrecio({
   const displayVal = focused ? tempVal : (value ? formatEnteroMillones(Math.floor(parseFloat(value) || 0)) : '')
 
   return (
-    <div className={`flex items-center gap-1 rounded-lg px-2 ${className}`} style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
+    <div className={`flex items-center gap-1 rounded-lg px-2 border border-(--border) bg-(--bg-input) transition-colors focus-within:border-brand ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}>
       <span className="text-xs text-(--text-secondary) shrink-0 font-medium">$ </span>
       <input
         ref={inputRef}
@@ -78,6 +80,7 @@ export function InputPrecio({
         }}
         onBlur={() => setFocused(false)}
         placeholder="0"
+        disabled={disabled}
         style={{ textAlign: 'right', padding: '10px 2px', border: 'none', background: 'transparent', outline: 'none', color: (!value || (parseFloat(value) || 0) === 0) ? 'var(--text-secondary)' : 'var(--text-primary)', opacity: (!value || (parseFloat(value) || 0) === 0) ? 0.45 : 1, fontSize: 14, width: '100%', minWidth: 0, fontWeight: 600 }}
       />
     </div>
@@ -97,6 +100,7 @@ export function InputConUnidad({
 
   onBlur,
   className = '',
+  disabled,
 }: {
   value: string
   onChange: (v: string) => void
@@ -104,6 +108,7 @@ export function InputConUnidad({
   unidad: string
   paso?: string
   className?: string
+  disabled?: boolean
 }) {
   const [focused, setFocused] = useState(false)
   const [tempVal, setTempVal] = useState(value)
@@ -116,7 +121,7 @@ export function InputConUnidad({
   const displayVal = focused ? tempVal : (value ? formatNumero(parseFloat(value) || 0) : '')
 
   return (
-    <div className={`flex items-center gap-1.5 rounded-lg pl-2 pr-2.5 ${className}`} style={{ border: '1px solid var(--border)', background: 'var(--bg-input)' }}>
+    <div className={`flex items-center gap-1.5 rounded-lg pl-2 pr-2.5 border border-(--border) bg-(--bg-input) transition-colors focus-within:border-brand ${disabled ? 'opacity-60 cursor-not-allowed' : ''} ${className}`}>
       <input
         ref={inputRef}
         type="text"
@@ -179,6 +184,7 @@ export function InputConUnidad({
           onBlur?.()
         }}
         placeholder="0"
+        disabled={disabled}
         style={{ textAlign: 'right', padding: '10px 2px', border: 'none', background: 'transparent', outline: 'none', color: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 'var(--text-secondary)' : 'var(--text-primary)', opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1, fontSize: 14, width: '100%', minWidth: 0, flex: 1, fontWeight: 600 }}
       />
       <span className="text-xs text-(--text-secondary) shrink-0 font-medium whitespace-nowrap" style={{ opacity: (!value || (parseFloat(value.replace(',', '.')) || 0) === 0) ? 0.45 : 1 }}>{unidad}</span>
@@ -200,11 +206,13 @@ export function InputCantidadInsumo({
   onChange,
   unidad,
   className = '',
+  disabled,
 }: {
   value: number | string
   onChange: (v: number) => void
   unidad?: string
   className?: string
+  disabled?: boolean
 }) {
   const [focused, setFocused] = useState(false)
   const [texto, setTexto] = useState('')
@@ -228,7 +236,7 @@ export function InputCantidadInsumo({
 
   return (
     <div
-      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all focus-within:border-[#00827C] focus-within:opacity-100 ${
+      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border transition-all focus-within:border-brand focus-within:opacity-100 ${
         esCero
           ? 'border-(--border)  opacity-60'
           : 'border-(--border) bg-transparent opacity-100'
@@ -276,7 +284,8 @@ export function InputCantidadInsumo({
           }
         }}
         placeholder="0"
-        className={`flex-1 min-w-[20px] text-right text-sm outline-hidden border-none p-0 bg-transparent transition-opacity ${
+        disabled={disabled}
+        className={`flex-1 min-w-[20px] text-right text-sm outline-hidden border-none p-0 bg-transparent transition-opacity disabled:cursor-not-allowed ${
           esCero ? 'text-(--text-secondary) opacity-50 font-normal' : 'text-(--text-primary) font-semibold opacity-100'
         }`}
       />

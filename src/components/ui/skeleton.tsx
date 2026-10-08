@@ -6,7 +6,10 @@
 // grupo de rutas — no se inventa una animación nueva.
 
 export function Skeleton({ className = '', style }: { className?: string; style?: React.CSSProperties }) {
-  return <div className={`skeleton-shimmer ${className}`} style={{ height: 14, ...style }} />
+  // El alto por defecto va inline y ganaría a cualquier clase h-*, así que solo se
+  // aplica cuando quien llama no define su propio alto por style ni por className.
+  const defineAlto = style?.height !== undefined || /(^|\s)h-/.test(className)
+  return <div className={`skeleton-shimmer ${className}`} style={defineAlto ? style : { height: 14, ...style }} />
 }
 
 export function SkeletonCard({ lineas = 3, className = '' }: { lineas?: number; className?: string }) {

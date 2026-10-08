@@ -38,7 +38,7 @@ export function AccionesContacto({ telefono, whatsappUsuario, email }: AccionesC
         </a>
       )}
       {email && (
-        <a href={`mailto:${email}`} target="_blank" rel="noopener noreferrer" className={CLASE_ACCION}>
+        <a href={`mailto:${email}`} className={CLASE_ACCION}>
           <Envelope size={16} /> Enviar correo
         </a>
       )}

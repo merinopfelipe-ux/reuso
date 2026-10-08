@@ -66,6 +66,8 @@ export function Pagination({ page, totalPages, onPageChange, porPagina, onPorPag
           key={p}
           type="button"
           onClick={() => onPageChange(p)}
+          aria-label={`Página ${p}`}
+          aria-current={p === page ? 'page' : undefined}
           className="min-w-[30px] h-[30px] px-1.5 rounded-input text-sm font-bold hover:bg-(--bg-hover)"
           style={p === page
             ? { color: 'var(--color-brand)', border: '1.5px solid var(--color-brand)', background: 'var(--color-brand-light)' }

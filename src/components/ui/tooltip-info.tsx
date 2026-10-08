@@ -28,6 +28,7 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
   const [coords, setCoords] = useState<Coords | null>(null)
   const containerRef = useRef<HTMLSpanElement>(null)
   const tooltipRef = useRef<HTMLSpanElement>(null)
+  const abiertoPorTeclado = useRef(false)
 
   useEffect(() => {
     setMontado(true)
@@ -81,26 +82,33 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
     }
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') setActivo(false)
+      if (e.key === 'Escape') {
+        // En captura y deteniendo la propagación: con un tooltip abierto dentro de un Modal,
+        // Escape cierra solo el tooltip y un segundo Escape cierra el Modal.
+        e.stopPropagation()
+        setActivo(false)
+      }
     }
 
     window.addEventListener('scroll', handleScrollOResize, true)
     window.addEventListener('resize', handleScrollOResize)
     document.addEventListener('mousedown', handleClickAfuera)
     document.addEventListener('touchstart', handleClickAfuera)
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown, true)
 
     return () => {
       window.removeEventListener('scroll', handleScrollOResize, true)
       window.removeEventListener('resize', handleScrollOResize)
       document.removeEventListener('mousedown', handleClickAfuera)
       document.removeEventListener('touchstart', handleClickAfuera)
-      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keydown', handleKeyDown, true)
     }
   }, [activo, actualizarCoords])
 
   if (!texto) return null
 
+  // Fondo del tooltip: en día --text-primary es Negro Lurdes (#474747), porque check-backgrounds
+  // prohíbe el hex fijo como fondo. En noche sube a nivel 2 (--bg-input), nunca más oscuro que la página.
   return (
     <span
       ref={containerRef}
@@ -118,6 +126,33 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
         setActivo(true)
       }}
       onMouseLeave={() => setActivo(false)}
+      role="button"
+      tabIndex={0}
+      aria-expanded={activo}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          e.stopPropagation()
+          abiertoPorTeclado.current = true
+          const proximo = !activo
+          if (proximo) actualizarCoords()
+          setActivo(proximo)
+        }
+      }}
+      onFocus={(e) => {
+        if (e.currentTarget.matches(':focus-visible')) {
+          abiertoPorTeclado.current = true
+          actualizarCoords()
+          setActivo(true)
+        }
+      }}
+      onBlur={() => {
+        // Solo cierra si se abrió con teclado: con mouse, perder el foco al hacer clic en el propio tooltip no debe cerrarlo.
+        if (abiertoPorTeclado.current) {
+          abiertoPorTeclado.current = false
+          setActivo(false)
+        }
+      }}
       aria-label={texto}
     >
       <Question size={13} className="cursor-help opacity-70 hover:opacity-100 transition-opacity" sinAnimacion />
@@ -135,7 +170,7 @@ export function TooltipInfo({ texto, className, posicion = 'arriba', centrado = 
             zIndex: 99999,
             width: 'min(260px, calc(100vw - 32px))',
           }}
-          className={`pointer-events-auto rounded-xl bg-[#1e1e1e] border border-white/20 text-white px-3 py-2 text-[12px] font-medium leading-snug shadow-[0_12px_32px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-150 ${
+          className={`pointer-events-auto rounded-xl bg-(--text-primary) dark:bg-(--bg-input) border border-white/20 text-white px-3 py-2 text-[12px] font-medium leading-snug shadow-[0_12px_32px_rgba(71,71,71,0.5)] backdrop-blur-md transition-all duration-150 ${
             centrado ? 'text-center' : 'text-left'
           }`}
         >

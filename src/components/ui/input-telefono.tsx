@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { formatearTelefono } from '@/lib/formatters'
 import { validarTelefono } from '@/lib/telefono'
+import { contarDigitosAntes, posicionParaNDigitos } from '@/lib/formatted-input-cursor'
 import { Warning } from '@/components/ui/icons'
 
 interface InputTelefonoProps {
@@ -17,6 +18,7 @@ interface InputTelefonoProps {
   placeholder?: string
   permitirSinIndicativo?: boolean
   soloNumeros?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -39,9 +41,22 @@ export function InputTelefono({
   placeholder,
   permitirSinIndicativo = false,
   soloNumeros = true,
+  disabled,
 }: InputTelefonoProps) {
   const [displayVal, setDisplayVal] = useState('')
   const [tocado, setTocado] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Al reescribir el texto con formato, React manda el cursor al final: se devuelve
+  // junto al dígito que se estaba editando (mismo patrón que InputConUnidad).
+  function restaurarCursor(formateado: string, digitosAntes: number) {
+    requestAnimationFrame(() => {
+      const el = inputRef.current
+      if (!el || document.activeElement !== el) return
+      const pos = posicionParaNDigitos(formateado, digitosAntes)
+      el.setSelectionRange(pos, pos)
+    })
+  }
 
   useEffect(() => {
     if (!soloNumeros) {
@@ -66,6 +81,7 @@ export function InputTelefono({
         <div className="shrink-0 w-[110px] sm:w-[140px]">
           <SelectorPais
             modo="indicativo"
+            disabled={disabled}
             permitirSinIndicativo={permitirSinIndicativo}
             value={PAISES.find(p => p.dial === indicativo) || indicativo}
             onChange={(val: Pais | string) => {
@@ -80,24 +96,29 @@ export function InputTelefono({
           />
         </div>
         <input
+          ref={inputRef}
           type={soloNumeros ? 'tel' : 'text'}
           inputMode={soloNumeros ? 'tel' : 'text'}
           value={displayVal}
           required={required}
+          disabled={disabled}
           onChange={(e) => {
             if (!soloNumeros) {
               setDisplayVal(e.target.value)
               onChangeTelefono(e.target.value)
             } else {
+              const cursor = e.target.selectionStart ?? e.target.value.length
+              const digitosAntes = contarDigitosAntes(e.target.value, cursor)
               const raw = e.target.value.replace(/\D/g, '')
               const formatted = formatearTelefono(raw, indicativo)
               setDisplayVal(formatted)
               onChangeTelefono(raw) // Pasamos el valor sin formato al backend, solo digitos
+              restaurarCursor(formatted, digitosAntes)
             }
           }}
           onBlur={() => setTocado(true)}
           placeholder={placeholder ?? (!indicativo ? 'Celular o WhatsApp' : (indicativo === '+57' ? '(300) 123 4567' : '123 456 7890'))}
-          className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand flex-1"
+          className="w-full px-3.5 py-2.5 rounded-lg border text-sm transition-colors outline-hidden focus:border-brand flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
           style={{
             background: 'var(--surface, var(--bg-input))',
             borderColor: error ? 'var(--color-error)' : 'var(--border)',

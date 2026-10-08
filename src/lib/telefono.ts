@@ -184,11 +184,15 @@ export function separarTelefonoEIndicativo(valor?: string | null): { indicativo:
 /**
  * Devuelve la URL de wa.me para abrir un chat de WhatsApp.
  * Prioriza el usuario de WhatsApp si existe; si no, usa el número normalizado.
- * Retorna null si no hay forma de construir un enlace válido.
+ * Retorna null si no hay forma de construir un enlace válido. Sin indicativo
+ * de país (un fijo local de 7 dígitos, por ejemplo) wa.me abre un chat inválido,
+ * así que en ese caso no se genera enlace.
  */
 export function enlaceWhatsApp(telefono?: string | null, usuario?: string | null): string | null {
   const u = (usuario ?? '').trim().replace(/^@/, '')
   if (u) return `https://wa.me/${encodeURIComponent(u)}`
-  const d = normalizarTelefono(telefono ?? '').replace(/\D/g, '')
+  const normalizado = normalizarTelefono(telefono ?? '')
+  if (!normalizado.startsWith('+')) return null
+  const d = normalizado.replace(/\D/g, '')
   return d.length >= 7 ? `https://wa.me/${d}` : null
 }

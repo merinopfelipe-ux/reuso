@@ -11,6 +11,7 @@ interface SwitchOpcionesProps<T extends string> {
   valor: T | null
   onChange: (val: T) => void
   className?: string
+  ariaLabel?: string
 }
 
 /**
@@ -19,12 +20,12 @@ interface SwitchOpcionesProps<T extends string> {
  * elegir entre 2-3 opciones excluyentes con apariencia de switch — no crear
  * uno nuevo ad-hoc por pantalla, extender este si falta algo.
  */
-export function SwitchOpciones<T extends string>({ opciones, valor, onChange, className = '' }: SwitchOpcionesProps<T>) {
+export function SwitchOpciones<T extends string>({ opciones, valor, onChange, className = '', ariaLabel }: SwitchOpcionesProps<T>) {
   const idx = opciones.findIndex(o => o.valor === valor)
   const n = opciones.length
 
   return (
-    <div className={`relative flex w-full p-1 rounded-full bg-(--bg-input) border border-(--border) ${className}`}>
+    <div role="radiogroup" aria-label={ariaLabel} className={`relative flex w-full p-1 rounded-full bg-(--bg-input) border border-(--border) ${className}`}>
       {idx >= 0 && (
         <div
           className="absolute inset-y-1 rounded-full bg-brand shadow-xs transition-[left] duration-300 ease-out"
@@ -38,6 +39,8 @@ export function SwitchOpciones<T extends string>({ opciones, valor, onChange, cl
         <button
           key={o.valor}
           type="button"
+          role="radio"
+          aria-checked={valor === o.valor}
           onClick={() => onChange(o.valor)}
           className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-full text-xs font-semibold transition-colors ${
             valor === o.valor ? 'text-(--text-on-brand)' : 'text-(--text-secondary)'

@@ -19,7 +19,7 @@ export function Bandera({ codigo, alt = '', className = '', style }: BanderaProp
         width: 16,
         height: 11,
         borderRadius: '2px',
-        border: '1px solid rgba(0,0,0,0.15)',
+        border: '1px solid rgba(71,71,71,0.15)',
         ...style,
       }}
     />

@@ -569,7 +569,7 @@ export const RichTextEditor = forwardRef<RichTextEditorHandle, RichTextEditorPro
                   onClick={() => elegirColorResaltado(c.valor)}
                   title={c.nombre}
                   className="w-7 h-7 rounded-lg border border-(--border) cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
-                  style={{ background: c.valor === 'transparent' ? 'repeating-conic-gradient(#ddd 0% 25%, transparent 0% 50%) 50% / 8px 8px' : c.valor }}
+                  style={{ background: c.valor === 'transparent' ? 'repeating-conic-gradient(rgba(71,71,71,0.2) 0% 25%, transparent 0% 50%) 50% / 8px 8px' : c.valor }}
                 >
                   {colorActual === c.valor && <span className="w-1.5 h-1.5 rounded-full bg-(--text-primary)" />}
                 </button>

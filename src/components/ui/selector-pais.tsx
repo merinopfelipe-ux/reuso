@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { ChevronDown, Search } from '@/components/ui/icons'
+import { ChevronDown, Globe, Search } from '@/components/ui/icons'
 import { Bandera } from '@/components/ui/bandera'
 
 export interface Pais {
@@ -64,7 +64,7 @@ export function SelectorPais<T extends Pais | string | null>({
   const currentBandera = currentPaisObj ? (
     <Bandera codigo={currentPaisObj.codigo || ''} alt={currentPaisObj.nombre} className="mr-1.5 align-middle" />
   ) : (permitirSinIndicativo && !value && modo === 'indicativo' ? (
-    <span className="mr-1.5 align-middle text-sm">🌐</span>
+    <Globe size={14} className="mr-1.5 inline align-middle text-(--text-secondary)" sinAnimacion />
   ) : null)
 
   // Determinamos el texto a mostrar en el botón
@@ -152,7 +152,7 @@ export function SelectorPais<T extends Pais | string | null>({
                   }}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-base leading-none">🌐</span>
+                    <Globe size={16} className="text-(--text-secondary)" sinAnimacion />
                     <span>Sin indicativo</span>
                   </div>
                   <span className="text-xs text-(--text-secondary)">Ninguno</span>

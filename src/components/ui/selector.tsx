@@ -76,10 +76,12 @@ export function Selector({
       <button
         type="button"
         disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={abierto}
         onKeyDown={onKeyDownTrigger}
-        className={`w-full flex items-center justify-between gap-2 rounded-lg border outline-hidden transition-colors ${SIZES[tamano]} 
-          ${disabled ? 'opacity-50 cursor-not-allowed bg-(--bg-card)' : 'bg-(--bg-input) hover:bg-(--bg-card) cursor-pointer'} 
-          ${abierto ? 'border-brand shadow-[0_0_0_3px_var(--color-brand-alpha)]' : 'border-(--border)'}`}
+        className={`w-full flex items-center justify-between gap-2 rounded-lg border outline-hidden transition-colors ${SIZES[tamano]}
+          ${disabled ? 'opacity-50 cursor-not-allowed bg-(--bg-card)' : 'bg-(--bg-input) hover:bg-(--bg-card) cursor-pointer'}
+          ${abierto ? 'border-brand shadow-[0_0_0_3px_var(--color-brand-light)]' : 'border-(--border)'}`}
         style={style}
         onClick={() => setAbierto(a => !a)}
       >

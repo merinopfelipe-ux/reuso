@@ -29,7 +29,16 @@ export function SortTh({ col, sort, onToggle, children, align = 'left', style }:
 
   return (
     <th
+      scope="col"
+      aria-sort={active ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+      tabIndex={0}
       onClick={() => onToggle(col)}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onToggle(col)
+        }
+      }}
       className="group hover:bg-(--table-orden-hover)"
       style={{
         padding: '10px 16px',

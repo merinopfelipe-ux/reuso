@@ -858,6 +858,8 @@ function wrapIcon(LucideIcon: React.ComponentType<React.SVGProps<SVGSVGElement>>
       }
 
       const BaseIcon = usarAnimado ? AnimatedIcon! : LucideIcon
+      // Con animación el ref externo se ignora: el ícono animado expone
+      // {startAnimation, stopAnimation}, no el elemento SVG. Para obtener el SVG usa sinAnimacion.
       const iconRef = usarAnimado ? internalAnimatedRef : forwardedRef
 
       const fallbackClass = (!usarAnimado && !sinAnimacion) ? 'transition-transform duration-200 group-hover:scale-110 hover:scale-110' : ''
