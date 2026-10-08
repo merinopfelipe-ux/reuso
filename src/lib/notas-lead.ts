@@ -6,6 +6,7 @@ export interface NotaLead {
   texto: string
   fecha: string
   autor?: string
+  editadoEl?: string
 }
 
 export function parsearNotasLead(raw: string | null | undefined): NotaLead[] {
@@ -19,6 +20,7 @@ export function parsearNotasLead(raw: string | null | undefined): NotaLead[] {
           texto: String(item.texto || item.nota || ''),
           fecha: String(item.fecha || item.created_at || new Date().toISOString()),
           ...(item.autor ? { autor: String(item.autor) } : {}),
+          ...(item.editadoEl ? { editadoEl: String(item.editadoEl) } : {}),
         }))
         .filter(n => Boolean(n.texto.trim()))
     }
