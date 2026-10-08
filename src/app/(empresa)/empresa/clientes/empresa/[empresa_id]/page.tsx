@@ -59,6 +59,7 @@ interface ContactoEmpresa {
   email: string | null
   telefonos_extra: Array<{indicativo: string; numero: string}> | null
   correos_extra: string[] | null
+  es_contacto_real?: boolean
 }
 
 interface AtributoEmpresa { id: string; clave: string; valor: string | null }
@@ -118,6 +119,7 @@ function EmpresaClienteContent() {
   const [nuevoValorAtributo, setNuevoValorAtributo] = useState('')
   const [mostrandoFormAtributo, setMostrandoFormAtributo] = useState(false)
   const [mostrandoFormSede, setMostrandoFormSede] = useState(false)
+  const [mostrandoNotasDireccion, setMostrandoNotasDireccion] = useState(false)
 
   // Modal agregar contacto
   const [modalAgregarAbierto, setModalAgregarAbierto] = useState(false)
@@ -168,19 +170,19 @@ function EmpresaClienteContent() {
         setEmpPais(empRaw.pais ?? 'Colombia')
         setEmpCiudad(empRaw.ciudad ?? CIUDAD_DEFECTO)
         setEmpDireccion(empRaw.direccion ?? '')
-        setEmpDireccionNotas(empRaw.direccion_notas ?? '')
+        const notasDir = empRaw.direccion_notas ?? ''
+        setEmpDireccionNotas(notasDir)
+        if (notasDir) setMostrandoNotasDireccion(true)
         setSedes(empRaw.sedes ?? [])
 
-        const reales = listaRaw.filter(c => {
-          // Incluir contactos reales (es_contacto_real en la API puede no venir en este select reducido)
-          // El primer cliente siempre existe; los que tienen nombre real se consideran contactos
-          return true
-        })
+        const reales = listaRaw
         const primerId = reales[0]?.id ?? null
         setPrimerContactoId(primerId)
         setContactos(reales.map(c => ({
           id: c.id,
-          nombre: c.nombre ?? '',
+          // El contacto ancla (es_contacto_real=false) lleva el nombre de la empresa;
+          // se muestra vacío para no sugerir el nombre de la empresa en el campo de persona.
+          nombre: c.es_contacto_real === false ? '' : (c.nombre ?? ''),
           apellido: c.apellido ?? '',
           identificacion: c.identificacion ?? '',
           telefono: c.telefono ?? '',
@@ -256,6 +258,7 @@ function EmpresaClienteContent() {
 
   async function guardarEmpresa() {
     if (!primerContactoId) return
+    if (!nit.trim()) { setError('El NIT es necesario para guardar.'); return }
     setGuardando(true)
     setError(null)
     try {
@@ -476,8 +479,8 @@ function EmpresaClienteContent() {
             </div>
 
             {/* Dirección principal */}
-            <div className="border-t border-(--border) pt-3 mt-1">
-              <p className="text-xs font-semibold text-(--text-secondary) mb-3">Dirección principal</p>
+            <div className="border-t border-(--border) pt-2 mt-1">
+              <p className="text-xs font-semibold text-(--text-secondary) mb-2">Dirección principal</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
                   <span className={CLASE_ETIQUETA}>País</span>
@@ -498,28 +501,37 @@ function EmpresaClienteContent() {
                   ciudad={empCiudad}
                 />
               </div>
-              <div className="mt-3">
-                <CampoFormulario label="Notas sobre la dirección">
-                  <input value={empDireccionNotas} onChange={e => setEmpDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Torre, apto, referencia" />
-                </CampoFormulario>
+              {/* Notas sobre la dirección — colapsable */}
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => setMostrandoNotasDireccion(v => !v)}
+                  className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
+                >
+                  Notas sobre la dirección +
+                </button>
+                {mostrandoNotasDireccion && (
+                  <input
+                    value={empDireccionNotas}
+                    onChange={e => setEmpDireccionNotas(e.target.value)}
+                    className={`${CLASE_CAMPO} mt-1.5`}
+                    placeholder="Torre, apto, referencia"
+                  />
+                )}
               </div>
             </div>
 
             {/* Sedes */}
-            <div className="border-t border-(--border) pt-3 mt-1">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-xs font-semibold text-(--text-secondary)">Sedes adicionales</p>
-                <button
-                  type="button"
-                  onClick={() => setMostrandoFormSede(v => !v)}
-                  className="hover-pop p-1.5 rounded-lg bg-brand-light shrink-0"
-                  title="Agregar sede"
-                >
-                  <Plus size={14} className="text-brand" />
-                </button>
-              </div>
+            <div className="border-t border-(--border) pt-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setMostrandoFormSede(v => !v)}
+                className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
+              >
+                Sedes adicionales +
+              </button>
               {sedes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-2">
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {sedes.map((s, i) => (
                     <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
                       {s.nombre}
@@ -535,7 +547,7 @@ function EmpresaClienteContent() {
                 </div>
               )}
               {mostrandoFormSede && (
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-1.5">
                   <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
                   <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
                   <button
@@ -555,20 +567,16 @@ function EmpresaClienteContent() {
             </div>
 
             {/* Atributos personalizados */}
-            <div className="border-t border-(--border) pt-3 mt-1">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <p className="text-xs font-semibold text-(--text-secondary)">Atributos personalizados</p>
-                <button
-                  type="button"
-                  onClick={() => setMostrandoFormAtributo(v => !v)}
-                  className="hover-pop p-1.5 rounded-lg bg-brand-light shrink-0"
-                  title="Agregar atributo"
-                >
-                  <Plus size={14} className="text-brand" />
-                </button>
-              </div>
+            <div className="border-t border-(--border) pt-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setMostrandoFormAtributo(v => !v)}
+                className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
+              >
+                Atributos personalizados +
+              </button>
               {atributos.length > 0 && (
-                <div className="flex flex-col gap-2 mb-3">
+                <div className="flex flex-col gap-2 mt-1.5">
                   {atributos.map(a => (
                     <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
                       <span className="font-medium text-(--text-primary)">{a.clave}</span>
@@ -578,7 +586,7 @@ function EmpresaClienteContent() {
                 </div>
               )}
               {mostrandoFormAtributo && (
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-1.5">
                   <input value={nuevaClaveAtributo} onChange={e => setNuevaClaveAtributo(e.target.value)} placeholder="Clave" className={`${CLASE_CAMPO} flex-1`} />
                   <input value={nuevoValorAtributo} onChange={e => setNuevoValorAtributo(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
                   <button onClick={agregarAtributo} className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0" title="Guardar">
