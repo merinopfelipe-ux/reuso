@@ -39,6 +39,9 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
       subItems: [
         { href: '/admin/empresas', label: 'Empresas', grupo: 'Empresas' },
         { href: '/admin/leads', label: 'Leads' },
+        { href: '/empresa', label: 'Panel de empresa', grupo: 'Vista empresa' },
+        { href: '/empresa/equipo', label: 'Equipo' },
+        { href: '/empresa/configuracion', label: 'Configuración empresa' },
         { href: '/admin/categorias', label: 'Categorías', grupo: 'Catálogo' },
         { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
         { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
@@ -52,7 +55,8 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
         { href: '/empresa/clientes', label: 'Clientes' },
         { href: '/empresa/dpp', label: 'DPP', grupo: 'DPP' },
-        { href: '/admin/calculos', label: 'Cálculos', grupo: 'Plataforma' },
+        { href: '/admin/calculos', label: 'Cálculos admin', grupo: 'Plataforma' },
+        { href: '/empresa/calculos', label: 'Cálculos empresa' },
         { href: '/empresa/informes', label: 'Informes' },
         { href: '/empresa/metas', label: 'Metas' },
         { href: '/admin/reportes', label: 'Reportes' },
@@ -73,6 +77,7 @@ const NAV_ITEMS: Record<Rol, NavItem[]> = {
         { href: '/admin/legal', label: 'Documentos' },
         { href: '/admin/firmas', label: 'Firmas' },
         { href: '/admin/tickets', label: 'Soporte', grupo: 'Soporte' },
+        { href: '/settings', label: 'Ajustes' },
         { href: '/ayuda', label: 'Ayuda' },
       ]
     },
