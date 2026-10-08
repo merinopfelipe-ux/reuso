@@ -117,6 +117,7 @@ function EmpresaClienteContent() {
   const [nuevaClaveAtributo, setNuevaClaveAtributo] = useState('')
   const [nuevoValorAtributo, setNuevoValorAtributo] = useState('')
   const [mostrandoFormAtributo, setMostrandoFormAtributo] = useState(false)
+  const [mostrandoFormSede, setMostrandoFormSede] = useState(false)
 
   // Modal agregar contacto
   const [modalAgregarAbierto, setModalAgregarAbierto] = useState(false)
@@ -505,10 +506,20 @@ function EmpresaClienteContent() {
             </div>
 
             {/* Sedes */}
-            {sedes.length > 0 && (
-              <div className="border-t border-(--border) pt-3 mt-1">
-                <p className="text-xs font-semibold text-(--text-secondary) mb-2">Sedes adicionales</p>
-                <div className="flex flex-wrap gap-1.5">
+            <div className="border-t border-(--border) pt-3 mt-1">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <p className="text-xs font-semibold text-(--text-secondary)">Sedes adicionales</p>
+                <button
+                  type="button"
+                  onClick={() => setMostrandoFormSede(v => !v)}
+                  className="hover-pop p-1.5 rounded-lg bg-brand-light shrink-0"
+                  title="Agregar sede"
+                >
+                  <Plus size={14} className="text-brand" />
+                </button>
+              </div>
+              {sedes.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
                   {sedes.map((s, i) => (
                     <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
                       {s.nombre}
@@ -522,25 +533,25 @@ function EmpresaClienteContent() {
                     </span>
                   ))}
                 </div>
-              </div>
-            )}
-            <div className="border-t border-(--border) pt-3 mt-1">
-              <p className="text-xs font-semibold text-(--text-secondary) mb-2">Agregar sede</p>
-              <div className="flex gap-2">
-                <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
-                <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!nuevaSede.nombre.trim()) return
-                    setSedes(prev => [...prev, { nombre: nuevaSede.nombre.trim(), direccion: nuevaSede.direccion.trim() || undefined }])
-                    setNuevaSede({ nombre: '', direccion: '' })
-                  }}
-                  className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
-                >
-                  <Plus size={16} className="text-brand" />
-                </button>
-              </div>
+              )}
+              {mostrandoFormSede && (
+                <div className="flex gap-2 mt-2">
+                  <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
+                  <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!nuevaSede.nombre.trim()) return
+                      setSedes(prev => [...prev, { nombre: nuevaSede.nombre.trim(), direccion: nuevaSede.direccion.trim() || undefined }])
+                      setNuevaSede({ nombre: '', direccion: '' })
+                      setMostrandoFormSede(false)
+                    }}
+                    className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+                  >
+                    <Plus size={16} className="text-brand" />
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Atributos personalizados */}
