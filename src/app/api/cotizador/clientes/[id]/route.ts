@@ -14,38 +14,43 @@ const CLIENTE_SELECT = `
 // /empresa/clientes/[id]. El DPP es siempre opcional — un cliente puede
 // no tener ninguno.
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
-  if (!auth.ok) {
-    return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
+  try {
+    const params = await props.params;
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
+    }
+    const { empresa_id, adminClient } = auth
+
+    const { data: cliente, error } = await adminClient
+      .from('crm_clientes')
+      .select(CLIENTE_SELECT)
+      .eq('id', params.id)
+      .eq('empresa_id', empresa_id)
+      .maybeSingle()
+
+    if (error || !cliente) {
+      return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
+    }
+
+    const [{ data: cotizaciones }, { data: dppActivos }] = await Promise.all([
+      adminClient
+        .from('crm_cotizaciones')
+        .select('id, codigo_cotizacion, estado, total, created_at')
+        .eq('cliente_id', params.id)
+        .order('created_at', { ascending: false }),
+      adminClient
+        .from('dpp_activos')
+        .select('id, codigo_dpp, nombre, estado, created_at')
+        .eq('cliente_id', params.id)
+        .order('created_at', { ascending: false }),
+    ])
+
+    return NextResponse.json({ cliente, cotizaciones: cotizaciones ?? [], dpp_activos: dppActivos ?? [] })
+  } catch (err) {
+    console.error('[GET /api/cotizador/clientes/[id]]', err)
+    return NextResponse.json({ error: 'Error interno al consultar el cliente.' }, { status: 500 })
   }
-  const { empresa_id, adminClient } = auth
-
-  const { data: cliente, error } = await adminClient
-    .from('crm_clientes')
-    .select(CLIENTE_SELECT)
-    .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
-    .single()
-
-  if (error || !cliente) {
-    return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
-  }
-
-  const [{ data: cotizaciones }, { data: dppActivos }] = await Promise.all([
-    adminClient
-      .from('crm_cotizaciones')
-      .select('id, codigo_cotizacion, estado, total, created_at')
-      .eq('cliente_id', params.id)
-      .order('created_at', { ascending: false }),
-    adminClient
-      .from('dpp_activos')
-      .select('id, codigo_dpp, nombre, estado, created_at')
-      .eq('cliente_id', params.id)
-      .order('created_at', { ascending: false }),
-  ])
-
-  return NextResponse.json({ cliente, cotizaciones: cotizaciones ?? [], dpp_activos: dppActivos ?? [] })
 }
 
 const schema = z.object({

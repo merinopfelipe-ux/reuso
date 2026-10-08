@@ -20,49 +20,57 @@ const bodySchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+    if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
-  const { data: profile } = await supabase.from('profiles').select('rol, empresa_id').eq('user_id', user.id).single()
-  const rol = profile?.rol ?? 'usuario_libre'
+    const { data: profile } = await supabase.from('profiles').select('rol, empresa_id').eq('user_id', user.id).maybeSingle()
+    const rol = profile?.rol ?? 'usuario_libre'
 
-  const { searchParams } = new URL(request.url)
-  const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
-  const empresaIdFiltro = searchParams.get('empresa_id')
-  const clienteIdFiltro = searchParams.get('cliente_id')
+    const { searchParams } = new URL(request.url)
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
+    const empresaIdFiltro = searchParams.get('empresa_id')
+    const clienteIdFiltro = searchParams.get('cliente_id')
 
-  // super_admin ve TODOS los tickets de la plataforma (con nombre de
-  // empresa, para poder identificar de quién es cada uno), no solo los que
-  // él mismo creó — antes caía en la rama de "usuario", un gap real. El join
-  // a empresas(nombre) se pide siempre (barato) para no bifurcar el tipo de
-  // la query entre roles.
-  let query = supabase
-    .from('tickets')
-    .select('id, titulo, tipo, prioridad, estado, user_id, empresa_id, cliente_id, origen, created_at, updated_at, empresas(nombre)', { count: 'exact' })
-    .order('updated_at', { ascending: false })
-    .limit(limit)
+    // super_admin ve TODOS los tickets de la plataforma (con nombre de
+    // empresa, para poder identificar de quién es cada uno), no solo los que
+    // él mismo creó — antes caía en la rama de "usuario", un gap real. El join
+    // a empresas(nombre) se pide siempre (barato) para no bifurcar el tipo de
+    // la query entre roles.
+    let query = supabase
+      .from('tickets')
+      .select('id, titulo, tipo, prioridad, estado, user_id, empresa_id, cliente_id, origen, created_at, updated_at, empresas(nombre)', { count: 'exact' })
+      .order('updated_at', { ascending: false })
+      .limit(limit)
 
-  if (rol === 'super_admin') {
-    if (empresaIdFiltro) query = query.eq('empresa_id', empresaIdFiltro)
-  } else if ((rol === 'empresa_admin' || (rol === 'empleado' && clienteIdFiltro)) && profile?.empresa_id) {
-    // Ficha de un cliente CRM (/empresa/clientes/[id]): el historial es de
-    // TODA la empresa, no solo de los tickets que creó quien está mirando
-    // — un empleado también debe ver los tickets de ese cliente creados por
-    // otro empleado o por el empresa_admin.
-    query = query.eq('empresa_id', profile.empresa_id)
-  } else if (rol === 'empleado' || rol === 'usuario_libre') {
-    query = query.eq('user_id', user.id)
+    if (rol === 'super_admin') {
+      if (empresaIdFiltro) query = query.eq('empresa_id', empresaIdFiltro)
+    } else if ((rol === 'empresa_admin' || (rol === 'empleado' && clienteIdFiltro)) && profile?.empresa_id) {
+      // Ficha de un cliente CRM (/empresa/clientes/[id]): el historial es de
+      // TODA la empresa, no solo de los tickets que creó quien está mirando
+      // — un empleado también debe ver los tickets de ese cliente creados por
+      // otro empleado o por el empresa_admin.
+      query = query.eq('empresa_id', profile.empresa_id)
+    } else if (rol === 'empleado' || rol === 'usuario_libre') {
+      query = query.eq('user_id', user.id)
+    }
+
+    if (clienteIdFiltro) query = query.eq('cliente_id', clienteIdFiltro)
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('[GET /api/tickets]', error)
+      return NextResponse.json({ error: 'Error obteniendo tickets' }, { status: 500 })
+    }
+
+    return NextResponse.json({ data: data ?? [] })
+  } catch (err) {
+    console.error('[GET /api/tickets]', err)
+    return NextResponse.json({ error: 'Error obteniendo tickets' }, { status: 500 })
   }
-
-  if (clienteIdFiltro) query = query.eq('cliente_id', clienteIdFiltro)
-
-  const { data, error } = await query
-
-  if (error) return NextResponse.json({ error: 'Error obteniendo tickets' }, { status: 500 })
-
-  return NextResponse.json({ data })
 }
 
 export async function POST(request: NextRequest) {

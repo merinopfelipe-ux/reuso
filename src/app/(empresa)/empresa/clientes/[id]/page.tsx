@@ -158,45 +158,73 @@ function DetalleClienteContent() {
     if (!id) return
     async function cargar() {
       setCargando(true)
+      setError(null)
       try {
         const [resCliente, resAtributos, resTickets] = await Promise.all([
           fetch(conEmpresa(`/api/cotizador/clientes/${id}`)),
-          fetch(conEmpresa(`/api/crm/clientes/${id}/atributos`)),
-          fetch(conEmpresa(`/api/tickets?cliente_id=${id}`)),
+          fetch(conEmpresa(`/api/crm/clientes/${id}/atributos`)).catch(() => null),
+          fetch(conEmpresa(`/api/tickets?cliente_id=${id}`)).catch(() => null),
         ])
-        const dCliente = await resCliente.json()
-        const dAtributos = await resAtributos.json()
-        const dTickets = await resTickets.json()
-        if (dTickets.data) setTickets(dTickets.data)
-        if (dCliente.cliente) {
-          const c: ClienteDetalle = dCliente.cliente
-          setCliente(c)
-          setCotizaciones(dCliente.cotizaciones ?? [])
-          setDppActivos(dCliente.dpp_activos ?? [])
-          setNombre(c.nombre); setApellido(c.apellido ?? ''); setEmail(c.email ?? '')
-          setIdentificacion(c.identificacion ?? '')
-          setTelefono(c.telefono ?? ''); setTelefonoOriginal(c.telefono ?? '')
-          setTelefonoIndicativo(PAISES.find(p => p.dial === c.telefono_indicativo) ?? PAISES[0])
-          setPais(c.pais ?? 'Colombia')
-          setCiudad(c.ciudad ?? CIUDAD_DEFECTO); setDireccion(c.direccion ?? '')
-          setDireccionNotas(c.direccion_notas ?? '')
-          const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
-          if (emp) {
-            setRazonSocial(emp.razon_social); setNombreComercial(emp.nombre_comercial ?? ''); setSector(emp.sector ?? '')
-            const resHermanos = await fetch(conEmpresa(`/api/cotizador/clientes?q=&empresa_cliente_id=${emp.id}`))
+
+        const dCliente = await resCliente.json().catch(() => null)
+
+        if (!resCliente.ok || !dCliente?.cliente) {
+          if (resCliente.status === 401) {
+            setError(dCliente?.error ?? 'Tu sesión expiró o no ha iniciado. Inicia sesión para continuar.')
+          } else if (resCliente.status === 403) {
+            setError(dCliente?.error ?? 'No tienes permisos para ver este cliente.')
+          } else if (resCliente.status === 404) {
+            setError('Cliente no encontrado.')
+          } else {
+            setError(dCliente?.error ?? 'No se pudo cargar el cliente.')
+          }
+          return
+        }
+
+        const c: ClienteDetalle = dCliente.cliente
+        setCliente(c)
+        setCotizaciones(dCliente.cotizaciones ?? [])
+        setDppActivos(dCliente.dpp_activos ?? [])
+        setNombre(c.nombre ?? '')
+        setApellido(c.apellido ?? '')
+        setEmail(c.email ?? '')
+        setIdentificacion(c.identificacion ?? '')
+        setTelefono(c.telefono ?? '')
+        setTelefonoOriginal(c.telefono ?? '')
+        setTelefonoIndicativo(PAISES.find(p => p.dial === c.telefono_indicativo) ?? PAISES[0])
+        setPais(c.pais ?? 'Colombia')
+        setCiudad(c.ciudad ?? CIUDAD_DEFECTO)
+        setDireccion(c.direccion ?? '')
+        setDireccionNotas(c.direccion_notas ?? '')
+
+        const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
+        if (emp) {
+          setRazonSocial(emp.razon_social ?? '')
+          setNombreComercial(emp.nombre_comercial ?? '')
+          setSector(emp.sector ?? '')
+          const resHermanos = await fetch(conEmpresa(`/api/cotizador/clientes?q=&empresa_cliente_id=${emp.id}`)).catch(() => null)
+          if (resHermanos && resHermanos.ok) {
             const dHermanos = await resHermanos.json().catch(() => null)
-            if (dHermanos?.clientes) {
+            if (Array.isArray(dHermanos?.clientes)) {
               setOtrosContactos(
                 dHermanos.clientes.filter((h: ClienteDetalle) => h.es_contacto_real && h.id !== c.id)
               )
             }
           }
-        } else {
-          setError('Cliente no encontrado.')
         }
-        if (dAtributos.data) setAtributos(dAtributos.data)
-      } catch {
-        setError('No se pudo cargar el cliente. Intenta de nuevo.')
+
+        // Carga enriquecida opcional: no bloquea ni rompe la visualización del cliente
+        if (resAtributos && resAtributos.ok) {
+          const dAtributos = await resAtributos.json().catch(() => null)
+          if (Array.isArray(dAtributos?.data)) setAtributos(dAtributos.data)
+        }
+        if (resTickets && resTickets.ok) {
+          const dTickets = await resTickets.json().catch(() => null)
+          if (Array.isArray(dTickets?.data)) setTickets(dTickets.data)
+        }
+      } catch (err) {
+        console.error('[empresa/clientes/[id]] Error al cargar cliente:', err)
+        setError('No se pudo cargar el cliente. Revisa tu conexión o intenta de nuevo.')
       } finally {
         setCargando(false)
       }

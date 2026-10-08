@@ -6,24 +6,29 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 // imprevistos (ej. "Horario de entrega preferido") sin alterar el esquema
 // central de crm_clientes.
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
-  const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
-  if (!auth.ok) {
-    return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
+  try {
+    const params = await props.params;
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
+    }
+    const { empresa_id, adminClient } = auth
+
+    const { data: cliente } = await adminClient.from('crm_clientes').select('id').eq('id', params.id).eq('empresa_id', empresa_id).maybeSingle()
+    if (!cliente) return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
+
+    const { data, error } = await adminClient
+      .from('crm_clientes_atributos')
+      .select('id, clave, valor, updated_at')
+      .eq('cliente_id', params.id)
+      .order('clave')
+
+    if (error) return NextResponse.json({ error: 'Error al cargar los atributos.' }, { status: 500 })
+    return NextResponse.json({ data: data ?? [] })
+  } catch (err) {
+    console.error('[GET /api/crm/clientes/[id]/atributos]', err)
+    return NextResponse.json({ error: 'Error al cargar los atributos.' }, { status: 500 })
   }
-  const { empresa_id, adminClient } = auth
-
-  const { data: cliente } = await adminClient.from('crm_clientes').select('id').eq('id', params.id).eq('empresa_id', empresa_id).single()
-  if (!cliente) return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
-
-  const { data, error } = await adminClient
-    .from('crm_clientes_atributos')
-    .select('id, clave, valor, updated_at')
-    .eq('cliente_id', params.id)
-    .order('clave')
-
-  if (error) return NextResponse.json({ error: 'Error al cargar los atributos.' }, { status: 500 })
-  return NextResponse.json({ data })
 }
 
 const schema = z.object({
