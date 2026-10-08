@@ -13,6 +13,28 @@ import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle, DetalleGrid, DetalleColumna } from '@/components/ui/detalle-pagina'
 import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/campo-formulario'
 import { esNombreDeEmpresa } from '@/lib/es-nombre-empresa'
+import { HiloNotas } from '@/components/crm/hilo-notas'
+import { Selector } from '@/components/ui/selector'
+import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
+
+interface TicketResumen {
+  id: string
+  titulo: string
+  tipo: TipoTicket
+  estado: EstadoTicket
+  created_at: string
+}
+
+const TIPO_TICKET_LABELS: Record<TipoTicket, string> = {
+  duda: 'Duda general', bug: 'Problema técnico', solicitud: 'Solicitud', queja: 'Queja',
+}
+
+const ESTADO_TICKET_COLOR: Record<EstadoTicket, string> = {
+  abierto: 'text-brand bg-brand-light',
+  en_proceso: 'text-[#AD7C43] bg-[rgba(173,124,67,0.1)]',
+  resuelto: 'text-(--color-success-content) bg-[rgba(56,185,142,0.1)]',
+  cerrado: 'text-(--text-secondary) bg-(--bg-hover)',
+}
 
 interface EmpresaDetalle {
   id: string
@@ -81,6 +103,7 @@ function EmpresaClienteContent() {
   const [error, setError] = useState<string | null>(null)
 
   // Empresa editable state
+  const [nit, setNit] = useState('')
   const [razonSocial, setRazonSocial] = useState('')
   const [sector, setSector] = useState('')
   const [nombresComerciales, setNombresComerciales] = useState<string[]>([])
@@ -101,6 +124,15 @@ function EmpresaClienteContent() {
   const [nuevoIndicativo, setNuevoIndicativo] = useState<Pais>(PAISES[0])
   const [agregandoContacto, setAgregandoContacto] = useState(false)
   const [errorAgregar, setErrorAgregar] = useState<string | null>(null)
+
+  // Tickets
+  const [tickets, setTickets] = useState<TicketResumen[]>([])
+  const [mostrandoCrearTicket, setMostrandoCrearTicket] = useState(false)
+  const [creandoTicket, setCreandoTicket] = useState(false)
+  const [ticketTitulo, setTicketTitulo] = useState('')
+  const [ticketMensaje, setTicketMensaje] = useState('')
+  const [ticketTipo, setTicketTipo] = useState<TipoTicket>('duda')
+  const [errorTicket, setErrorTicket] = useState<string | null>(null)
 
   useEffect(() => {
     if (!empresa_id) return
@@ -128,6 +160,7 @@ function EmpresaClienteContent() {
           return
         }
         setEmpresa(empRaw)
+        setNit(empRaw.nit ?? '')
         setRazonSocial(empRaw.razon_social ?? '')
         setSector(empRaw.sector ?? '')
         setNombresComerciales(empRaw.nombres_comerciales ?? [])
@@ -142,7 +175,8 @@ function EmpresaClienteContent() {
           // El primer cliente siempre existe; los que tienen nombre real se consideran contactos
           return true
         })
-        setPrimerContactoId(reales[0]?.id ?? null)
+        const primerId = reales[0]?.id ?? null
+        setPrimerContactoId(primerId)
         setContactos(reales.map(c => ({
           id: c.id,
           nombre: c.nombre ?? '',
@@ -157,10 +191,17 @@ function EmpresaClienteContent() {
           errorGuardar: null,
         })))
 
-        const resAtributos = await fetch(conEmpresa(`/api/crm/empresas-clientes/${empresa_id}/atributos`)).catch(() => null)
+        const [resAtributos, resTickets] = await Promise.all([
+          fetch(conEmpresa(`/api/crm/empresas-clientes/${empresa_id}/atributos`)).catch(() => null),
+          primerId ? fetch(conEmpresa(`/api/tickets?cliente_id=${primerId}`)).catch(() => null) : Promise.resolve(null),
+        ])
         if (resAtributos?.ok) {
           const dAtributos = await resAtributos.json().catch(() => null)
           if (Array.isArray(dAtributos?.data)) setAtributos(dAtributos.data)
+        }
+        if (resTickets?.ok) {
+          const dTickets = await resTickets.json().catch(() => null)
+          if (Array.isArray(dTickets?.data)) setTickets(dTickets.data)
         }
       } catch (err) {
         console.error('[empresa/clientes/empresa/[empresa_id]] Error al cargar:', err)
@@ -221,6 +262,7 @@ function EmpresaClienteContent() {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          nit: nit || undefined,
           razon_social: razonSocial,
           sector: sector || null,
           nombres_comerciales: nombresComerciales,
@@ -244,6 +286,39 @@ function EmpresaClienteContent() {
       setError('Error de conexión. Intenta de nuevo.')
     } finally {
       setGuardando(false)
+    }
+  }
+
+  async function crearTicket() {
+    if (!primerContactoId || ticketTitulo.trim().length < 5 || ticketMensaje.trim().length < 10) {
+      setErrorTicket('El título y el mensaje son obligatorios (mínimo 5 y 10 caracteres).')
+      return
+    }
+    setCreandoTicket(true)
+    setErrorTicket(null)
+    try {
+      const res = await fetch(conEmpresa('/api/tickets'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          titulo: ticketTitulo.trim(),
+          tipo: ticketTipo,
+          prioridad: 'media',
+          mensaje_html: ticketMensaje.trim().replace(/\n/g, '<br>'),
+          cliente_id: primerContactoId,
+        }),
+      })
+      const d = await res.json()
+      if (!res.ok) { setErrorTicket(d.error ?? 'Error al crear el ticket.'); return }
+      setMostrandoCrearTicket(false)
+      setTicketTitulo(''); setTicketMensaje(''); setTicketTipo('duda')
+      const resTickets = await fetch(conEmpresa(`/api/tickets?cliente_id=${primerContactoId}`))
+      const dTickets = await resTickets.json()
+      if (dTickets.data) setTickets(dTickets.data)
+    } catch {
+      setErrorTicket('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setCreandoTicket(false)
     }
   }
 
@@ -332,8 +407,8 @@ function EmpresaClienteContent() {
   return (
     <DetallePagina>
       <EncabezadoDetalle
-        titulo={empresa.razon_social || 'Empresa'}
-        subtitulo={`NIT ${empresa.nit}`}
+        titulo={razonSocial || empresa.razon_social || 'Empresa'}
+        subtitulo={nit ? `NIT ${nit}` : undefined}
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
         textoVolver="Volver a clientes"
         meta="Empresa cliente"
@@ -343,8 +418,9 @@ function EmpresaClienteContent() {
         {/* Columna izquierda */}
         <DetalleColumna>
           <SeccionDetalle titulo="Datos de la empresa">
-            {/* NIT solo visible, no editable */}
-            <p className="text-xs text-(--text-secondary)">NIT {empresa.nit}</p>
+            <CampoFormulario label="NIT">
+              <input value={nit} onChange={e => setNit(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. 900123456-7" />
+            </CampoFormulario>
 
             <CampoFormulario label="Razón social">
               <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={CLASE_CAMPO} />
@@ -503,7 +579,7 @@ function EmpresaClienteContent() {
           </SeccionDetalle>
         </DetalleColumna>
 
-        {/* Columna derecha: contactos */}
+        {/* Columna derecha: contactos, tickets y notas */}
         <DetalleColumna>
           <SeccionDetalle
             titulo="Contactos"
@@ -533,6 +609,48 @@ function EmpresaClienteContent() {
               </div>
             )}
           </SeccionDetalle>
+
+          {/* Tickets de soporte */}
+          <SeccionDetalle
+            titulo="Tickets de soporte"
+            acciones={
+              <button
+                type="button"
+                onClick={() => setMostrandoCrearTicket(true)}
+                className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
+                style={{ color: 'var(--color-brand)' }}
+              >
+                <Plus size={14} sinAnimacion /> Nuevo
+              </button>
+            }
+          >
+            {tickets.length === 0 ? (
+              <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {tickets.map(t => (
+                  <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-sm font-semibold text-(--text-primary)">{t.titulo}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
+                        {t.estado.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-(--text-secondary)">{TIPO_TICKET_LABELS[t.tipo]}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SeccionDetalle>
+
+          {/* Notas privadas */}
+          {primerContactoId && (
+            <SeccionDetalle titulo="Notas privadas">
+              <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${primerContactoId}/notas`)} placeholder="Escribe una nota sobre esta empresa..." />
+            </SeccionDetalle>
+          )}
         </DetalleColumna>
       </DetalleGrid>
 
@@ -568,6 +686,33 @@ function EmpresaClienteContent() {
             placeholder="Celular"
           />
           <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={CLASE_CAMPO} placeholder="Correo (opcional)" type="email" />
+        </div>
+      </Modal>
+
+      <Modal
+        abierto={mostrandoCrearTicket}
+        onClose={() => !creandoTicket && setMostrandoCrearTicket(false)}
+        titulo="Nuevo ticket"
+        textoConfirmar={creandoTicket ? 'Creando...' : 'Crear ticket'}
+        onConfirmar={crearTicket}
+      >
+        <div className="flex flex-col gap-3">
+          {errorTicket && <p className="text-sm text-[#FF5E4B]">{errorTicket}</p>}
+          <input value={ticketTitulo} onChange={e => setTicketTitulo(e.target.value)} className={CLASE_CAMPO} placeholder="Título del ticket" />
+          <div className="flex flex-col gap-1">
+            <span className={CLASE_ETIQUETA}>Tipo</span>
+            <Selector
+              value={ticketTipo}
+              onChange={v => setTicketTipo(v as TipoTicket)}
+              opciones={Object.entries(TIPO_TICKET_LABELS).map(([value, label]) => ({ value, label }))}
+            />
+          </div>
+          <textarea
+            value={ticketMensaje}
+            onChange={e => setTicketMensaje(e.target.value)}
+            className={`${CLASE_CAMPO} min-h-[80px] resize-none`}
+            placeholder="Describe el problema o solicitud..."
+          />
         </div>
       </Modal>
     </DetallePagina>
