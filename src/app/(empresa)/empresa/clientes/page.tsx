@@ -2,11 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings, Plus } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { SkeletonLista } from '@/components/ui/skeleton'
+import { Modal } from '@/components/ui/modal'
+import { InputTelefono } from '@/components/ui/input-telefono'
+import { PAISES, type Pais } from '@/components/ui/selector-pais'
 
 interface EmpresaOpcion { id: string; nombre: string }
 
@@ -56,6 +59,18 @@ function ClientesContent() {
   const [cargando, setCargando] = useState(true)
   const [busqueda, setBusqueda] = useState('')
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'personas' | 'empresas'>('todos')
+
+  const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
+  const [modoCrear, setModoCrear] = useState<'empresa' | 'persona'>('empresa')
+  const [crearNit, setCrearNit] = useState('')
+  const [crearRazonSocial, setCrearRazonSocial] = useState('')
+  const [crearNombre, setCrearNombre] = useState('')
+  const [crearApellido, setCrearApellido] = useState('')
+  const [crearTelefono, setCrearTelefono] = useState('')
+  const [crearIndicativo, setCrearIndicativo] = useState<Pais>(PAISES[0])
+  const [crearEmail, setCrearEmail] = useState('')
+  const [creando, setCreando] = useState(false)
+  const [errorCrear, setErrorCrear] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/cotizador/empresas')
@@ -112,6 +127,40 @@ function ClientesContent() {
     return ruta
   }, [esSuperAdmin, empresaId])
 
+  async function crearCliente() {
+    setErrorCrear(null)
+    if (modoCrear === 'empresa' && (!crearNit.trim() || !crearRazonSocial.trim())) {
+      setErrorCrear('El NIT y la razón social son obligatorios.')
+      return
+    }
+    if (modoCrear === 'persona' && (!crearNombre.trim() || !crearTelefono.trim())) {
+      setErrorCrear('El nombre y el celular son obligatorios.')
+      return
+    }
+    setCreando(true)
+    try {
+      const body = modoCrear === 'empresa'
+        ? { tipo: 'empresa', nit: crearNit.trim(), razon_social: crearRazonSocial.trim() }
+        : { tipo: 'persona', nombre: crearNombre.trim(), apellido: crearApellido.trim() || undefined, telefono: crearTelefono.trim(), telefono_indicativo: crearIndicativo.dial, email: crearEmail.trim() || undefined }
+      const params = new URLSearchParams()
+      if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
+      const res = await fetch(`/api/cotizador/clientes${params.size ? `?${params}` : ''}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const d = await res.json()
+      if (!res.ok) { setErrorCrear(d.error ?? 'No se pudo crear el cliente.'); return }
+      setModalCrearAbierto(false)
+      setCrearNit(''); setCrearRazonSocial(''); setCrearNombre(''); setCrearApellido(''); setCrearTelefono(''); setCrearEmail('')
+      router.push(linkConEmpresa(`/empresa/clientes/${d.cliente.id}`))
+    } catch {
+      setErrorCrear('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setCreando(false)
+    }
+  }
+
   const tp = 'text-(--text-primary)'
   const ts = 'text-(--text-secondary)'
   const cardBg = 'bg-(--bg-card) border-(--border)'
@@ -156,7 +205,18 @@ function ClientesContent() {
   return (
     <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <AdminPageHeader titulo="Clientes" />
+        <AdminPageHeader
+          titulo="Clientes"
+          accion={(!esSuperAdmin || empresaId) ? (
+            <button
+              type="button"
+              onClick={() => { setErrorCrear(null); setModalCrearAbierto(true) }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90 transition-opacity"
+            >
+              <Plus size={16} sinAnimacion /> Nuevo cliente
+            </button>
+          ) : undefined}
+        />
 
         {esSuperAdmin && (
           <ContextoEmpresa
@@ -350,6 +410,75 @@ function ClientesContent() {
           </>
         ) : null}
       </div>
+
+      <Modal
+        abierto={modalCrearAbierto}
+        onClose={() => !creando && setModalCrearAbierto(false)}
+        titulo="Nuevo cliente"
+        textoConfirmar={creando ? 'Creando...' : 'Crear'}
+        onConfirmar={() => { if (!creando) crearCliente() }}
+      >
+        <div className="flex flex-col gap-4">
+          {/* Selector de tipo */}
+          <div className="flex gap-2 p-1 rounded-xl bg-(--bg-input) border border-(--border)">
+            {(['empresa', 'persona'] as const).map(tipo => (
+              <button
+                key={tipo}
+                type="button"
+                onClick={() => { setModoCrear(tipo); setErrorCrear(null) }}
+                className={`flex-1 py-1.5 rounded-[10px] text-sm font-semibold transition-all ${
+                  modoCrear === tipo
+                    ? 'bg-[var(--color-brand)] text-[var(--text-on-brand)] shadow-xs'
+                    : 'text-(--text-secondary) hover:text-(--text-primary)'
+                }`}
+              >
+                {tipo === 'empresa' ? 'Empresa' : 'Persona'}
+              </button>
+            ))}
+          </div>
+
+          {errorCrear && <p className="text-sm text-[#FF5E4B]">{errorCrear}</p>}
+
+          {modoCrear === 'empresa' ? (
+            <>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">NIT</label>
+                <input value={crearNit} onChange={e => setCrearNit(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Ej. 900.123.456-1" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">Razón social</label>
+                <input value={crearRazonSocial} onChange={e => setCrearRazonSocial(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Nombre legal de la empresa" />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-(--text-secondary)">Nombre</label>
+                  <input value={crearNombre} onChange={e => setCrearNombre(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Nombre" />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-(--text-secondary)">Apellido</label>
+                  <input value={crearApellido} onChange={e => setCrearApellido(e.target.value)} className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="Apellido" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">Celular</label>
+                <InputTelefono
+                  indicativo={crearIndicativo.dial}
+                  onChangeIndicativo={val => { const p = PAISES.find(x => x.dial === val); if (p) setCrearIndicativo(p) }}
+                  telefono={crearTelefono}
+                  onChangeTelefono={setCrearTelefono}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-(--text-secondary)">Correo (opcional)</label>
+                <input value={crearEmail} onChange={e => setCrearEmail(e.target.value)} type="email" className="rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full" placeholder="correo@ejemplo.com" />
+              </div>
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   )
 }
