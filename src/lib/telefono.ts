@@ -180,3 +180,15 @@ export function separarTelefonoEIndicativo(valor?: string | null): { indicativo:
   // Si no tiene '+' ni coincide con formato móvil colombiano, no forzar indicativo
   return { indicativo: '', numero: limpio }
 }
+
+/**
+ * Devuelve la URL de wa.me para abrir un chat de WhatsApp.
+ * Prioriza el usuario de WhatsApp si existe; si no, usa el número normalizado.
+ * Retorna null si no hay forma de construir un enlace válido.
+ */
+export function enlaceWhatsApp(telefono?: string | null, usuario?: string | null): string | null {
+  const u = (usuario ?? '').trim().replace(/^@/, '')
+  if (u) return `https://wa.me/${encodeURIComponent(u)}`
+  const d = normalizarTelefono(telefono ?? '').replace(/\D/g, '')
+  return d.length >= 7 ? `https://wa.me/${d}` : null
+}

@@ -8,6 +8,7 @@ import { AdminEmpresaClient } from './components/admin-empresa-client'
 import { CatalogoRestringidoEmpresaClient } from './components/catalogo-restringido-empresa-client'
 import { LineasEmpresaClient } from './components/lineas-empresa-client'
 import { NegociacionEmpresaClient } from './components/negociacion-empresa-client'
+import { SeccionDetalle } from '@/components/ui/detalle-pagina'
 import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
 
 export default async function EmpresaDetallePage(
@@ -169,7 +170,7 @@ export default async function EmpresaDetallePage(
   }))
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 w-full space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 w-full flex flex-col gap-5">
       <EstadoCuentaClient
         empresa={empresa}
         totalEmpleados={empleadosRes.count ?? 0}
@@ -183,37 +184,33 @@ export default async function EmpresaDetallePage(
 
       <AdminEmpresaClient empresaId={id} admins={adminsEmpresaRes.data ?? []} />
 
-      <div>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Módulos activos</h3>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+      <SeccionDetalle titulo="Módulos activos">
+        <p className="text-sm text-(--text-secondary) m-0">
           Qué partes de la plataforma puede usar esta empresa. Apagar un módulo bloquea de inmediato sus rutas para todos sus usuarios.
         </p>
         <ModulosEmpresaClient empresaId={id} modulos={modulosConActivo} />
-      </div>
+      </SeccionDetalle>
 
-      <div className="border-t pt-8" style={{ borderColor: 'var(--border)' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Líneas de Negocio (Industrias/Productos)</h3>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+      <SeccionDetalle titulo="Líneas de Negocio (Industrias/Productos)">
+        <p className="text-sm text-(--text-secondary) m-0">
           Habilita las verticales de negocio sobre las que operan los módulos habilitados arriba.
         </p>
         <LineasEmpresaClient empresaId={id} lineas={lineasConActivo} />
-      </div>
+      </SeccionDetalle>
 
-      <div className="border-t pt-8" style={{ borderColor: 'var(--border)' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Permisos de Insumos y Materiales Base</h3>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+      <SeccionDetalle titulo="Permisos de Insumos y Materiales Base">
+        <p className="text-sm text-(--text-secondary) m-0">
           Habilita qué materiales e insumos (creados por otras empresas o por la tuya) pueden usarse en los cálculos ambientales de esta empresa.
         </p>
         <CatalogoRestringidoEmpresaClient empresaId={id} />
-      </div>
+      </SeccionDetalle>
 
-      <div className="border-t pt-8 pb-10" style={{ borderColor: 'var(--border)' }}>
-        <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>Negociación de plan</h3>
-        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+      <SeccionDetalle titulo="Negociación de plan">
+        <p className="text-sm text-(--text-secondary) m-0">
           Precios y límites propios para esta empresa, distintos del plan global. Si no la necesitas, esta empresa sigue usando lo publicado en Planes normalmente.
         </p>
         <NegociacionEmpresaClient empresaId={id} />
-      </div>
+      </SeccionDetalle>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import ConfiguracionClient from '@/app/(empresa)/empresa/configuracion/components/configuracion-client'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
+import { SeccionDetalle } from '@/components/ui/detalle-pagina'
 
 export default async function DashboardEmpresaPage() {
   const supabase = await createClient()
@@ -29,13 +30,13 @@ export default async function DashboardEmpresaPage() {
   const nitBloqueado = Boolean(empresa.nit?.trim()) && perfil.rol !== 'super_admin'
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto' }}>
+    <div className="max-w-xl mx-auto px-4 py-6 flex flex-col gap-5">
       <AdminPageHeader
         titulo="Datos de tu empresa"
         subtitulo="Completa esta información para poder generar Informes y Pasaportes (DPP)."
         showBack
       />
-      <div style={{ background: 'var(--bg-card)', borderRadius: 16, border: '1px solid var(--border)', padding: 24 }}>
+      <SeccionDetalle>
         <ConfiguracionClient
           empresaId={empresa.id}
           nombre={empresa.nombre}
@@ -53,7 +54,7 @@ export default async function DashboardEmpresaPage() {
           sectorCiiuSecundarios={empresa.sector_ciiu_secundarios ?? []}
           nitBloqueado={nitBloqueado}
         />
-      </div>
+      </SeccionDetalle>
     </div>
   )
 }

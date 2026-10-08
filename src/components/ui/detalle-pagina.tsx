@@ -1,8 +1,10 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SkeletonLista } from '@/components/ui/skeleton'
+import { ArrowLeft } from '@/components/ui/icons'
 
 /**
  * Sistema de páginas de detalle — Calculadora de Reúso
@@ -75,6 +77,56 @@ export function SeccionDetalle({ titulo, acciones, children, className }: Seccio
       )}
       {children}
     </section>
+  )
+}
+
+// ── EncabezadoDetalle ─────────────────────────────────────────────
+
+interface EncabezadoDetalleProps {
+  titulo: string
+  /** Línea secundaria bajo el título (empresa, tipo, etc.). */
+  subtitulo?: string | null
+  /** Meta en el extremo derecho (fecha, código, etc.). */
+  meta?: string
+  /** Href estático para Volver. */
+  hrefVolver?: string
+  /** Callback para Volver cuando la ruta tiene params dinámicos. */
+  onVolver?: () => void
+  textoVolver?: string
+}
+
+/**
+ * Encabezado canónico de páginas de detalle: flecha volver + título + meta.
+ *
+ * Uso:
+ *   <EncabezadoDetalle
+ *     titulo="Felipe Merino"
+ *     subtitulo="Restauradora"
+ *     hrefVolver="/admin/leads"
+ *     textoVolver="Volver a contactos"
+ *     meta="Registrado el 7 de octubre de 2026"
+ *   />
+ */
+export function EncabezadoDetalle({ titulo, subtitulo, meta, hrefVolver, onVolver, textoVolver = 'Volver' }: EncabezadoDetalleProps) {
+  return (
+    <>
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        {hrefVolver && !onVolver ? (
+          <Link href={hrefVolver} className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
+            <ArrowLeft size={16} /> {textoVolver}
+          </Link>
+        ) : onVolver ? (
+          <button type="button" onClick={onVolver} className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
+            <ArrowLeft size={16} /> {textoVolver}
+          </button>
+        ) : null}
+        {meta && <span className="text-xs text-(--text-placeholder)">{meta}</span>}
+      </div>
+      <div>
+        <h1 className="text-2xl font-semibold text-(--text-primary) m-0">{titulo}</h1>
+        {subtitulo && <p className="text-sm text-(--text-secondary) mt-1 mb-0">{subtitulo}</p>}
+      </div>
+    </>
   )
 }
 

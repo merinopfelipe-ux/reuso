@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Plus } from '@/components/ui/icons'
+import { Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { HiloNotas } from '@/components/crm/hilo-notas'
 import { formatCOP, formatFecha } from '@/lib/format'
@@ -14,7 +14,9 @@ import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { Selector } from '@/components/ui/selector'
 import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
-import { DetallePagina, SeccionDetalle, PieDetalle } from '@/components/ui/detalle-pagina'
+import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle } from '@/components/ui/detalle-pagina'
+import { AccionesContacto } from '@/components/ui/acciones-contacto'
+import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/campo-formulario'
 
 interface TicketResumen {
   id: string
@@ -326,9 +328,6 @@ function DetalleClienteContent() {
     }
   }
 
-  const campo = 'rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full'
-  const etiqueta = 'text-xs font-semibold text-(--text-secondary)'
-
   if (cargando || !cliente) {
     return (
       <DetallePagina
@@ -344,64 +343,27 @@ function DetalleClienteContent() {
 
   return (
     <DetallePagina>
-      {/* Encabezado */}
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <button
-          onClick={() => router.push(conEmpresa('/empresa/clientes'))}
-          className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand"
-        >
-          <ArrowLeft size={16} /> Volver a clientes
-        </button>
-        <span className="text-xs text-(--text-placeholder)">
-          {cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
-        </span>
-      </div>
+      <EncabezadoDetalle
+        titulo={[nombre.trim(), apellido.trim()].filter(Boolean).join(' ') || 'Cliente'}
+        subtitulo={emp?.razon_social ?? undefined}
+        onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
+        textoVolver="Volver a clientes"
+        meta={cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
+      />
 
-      {/* Título */}
-      <div>
-        <h1 className="text-2xl font-semibold text-(--text-primary) m-0">
-          {[nombre.trim(), apellido.trim()].filter(Boolean).join(' ') || 'Cliente'}
-        </h1>
-        {emp && <p className="text-sm text-(--text-secondary) mt-1 mb-0">{emp.razon_social}</p>}
-      </div>
-
-      {/* Acciones rápidas */}
-      {(linkWa || email) && (
-        <div className="flex items-center gap-2 flex-wrap">
-          {linkWa && (
-            <a
-              href={linkWa}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
-            >
-              Escribir por WhatsApp
-            </a>
-          )}
-          {email && (
-            <a
-              href={`mailto:${email}`}
-              className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
-            >
-              Enviar correo
-            </a>
-          )}
-        </div>
-      )}
+      <AccionesContacto telefono={telCompleto} email={email} />
 
       {/* Empresa cliente (B2B) */}
       {emp && (
         <SeccionDetalle titulo={`Empresa cliente · NIT ${emp.nit}`}>
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Razón social</span>
-            <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={campo} />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Nombre comercial</span>
-            <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={campo} placeholder="Opcional" />
-          </label>
+          <CampoFormulario label="Razón social">
+            <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={CLASE_CAMPO} />
+          </CampoFormulario>
+          <CampoFormulario label="Nombre comercial">
+            <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" />
+          </CampoFormulario>
           <div className="flex flex-col gap-1">
-            <span className={etiqueta}>Actividad económica (CIIU)</span>
+            <span className={CLASE_ETIQUETA}>Actividad económica (CIIU)</span>
             <SelectorCiiu value={sector} onChange={setSector} />
           </div>
         </SeccionDetalle>
@@ -440,26 +402,22 @@ function DetalleClienteContent() {
       {/* Datos del contacto */}
       <SeccionDetalle titulo={emp ? 'Este contacto (opcional)' : 'Datos del contacto'}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Nombre</span>
-            <input value={nombre} onChange={e => setNombre(e.target.value)} className={campo} placeholder={emp ? 'Opcional' : undefined} />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Apellido</span>
-            <input value={apellido} onChange={e => setApellido(e.target.value)} className={campo} />
-          </label>
+          <CampoFormulario label="Nombre">
+            <input value={nombre} onChange={e => setNombre(e.target.value)} className={CLASE_CAMPO} placeholder={emp ? 'Opcional' : undefined} />
+          </CampoFormulario>
+          <CampoFormulario label="Apellido">
+            <input value={apellido} onChange={e => setApellido(e.target.value)} className={CLASE_CAMPO} />
+          </CampoFormulario>
           {cliente.tipo === 'persona' && (
-            <label className="flex flex-col gap-1">
-              <span className={etiqueta}>Cédula</span>
-              <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={campo} placeholder="Opcional" inputMode="numeric" />
-            </label>
+            <CampoFormulario label="Cédula">
+              <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" inputMode="numeric" />
+            </CampoFormulario>
           )}
-          <label className="flex flex-col gap-1">
-            <span className={etiqueta}>Correo</span>
-            <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={campo} />
-          </label>
+          <CampoFormulario label="Correo">
+            <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
+          </CampoFormulario>
           <div className="flex flex-col gap-1 sm:col-span-2">
-            <span className={etiqueta}>Celular</span>
+            <span className={CLASE_ETIQUETA}>Celular</span>
             <div className="flex gap-2">
               <SelectorPais value={telefonoIndicativo} onChange={setTelefonoIndicativo} />
               <input
@@ -467,7 +425,7 @@ function DetalleClienteContent() {
                 onChange={e => setTelefono(e.target.value.replace(/[^\d]/g, ''))}
                 placeholder="Número de celular"
                 inputMode="tel"
-                className={`${campo} flex-1`}
+                className={`${CLASE_CAMPO} flex-1`}
               />
             </div>
           </div>
@@ -478,22 +436,21 @@ function DetalleClienteContent() {
       <SeccionDetalle titulo="Dirección">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
-            <span className={etiqueta}>País</span>
+            <span className={CLASE_ETIQUETA}>País</span>
             <SelectorPais value={pais} onChange={setPais} />
           </div>
           <div className="flex flex-col gap-1">
-            <span className={etiqueta}>Ciudad</span>
+            <span className={CLASE_ETIQUETA}>Ciudad</span>
             <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
           </div>
         </div>
         <div className="flex flex-col gap-1">
-          <span className={etiqueta}>Dirección</span>
+          <span className={CLASE_ETIQUETA}>Dirección</span>
           <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
         </div>
-        <label className="flex flex-col gap-1">
-          <span className={etiqueta}>Notas sobre la dirección</span>
-          <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={campo} placeholder="Ej. torre, apto, punto de referencia" />
-        </label>
+        <CampoFormulario label="Notas sobre la dirección">
+          <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
+        </CampoFormulario>
       </SeccionDetalle>
 
       {/* Atributos personalizados */}
@@ -510,8 +467,8 @@ function DetalleClienteContent() {
           </div>
         )}
         <div className="flex gap-2">
-          <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${campo} flex-1`} />
-          <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${campo} flex-1`} />
+          <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${CLASE_CAMPO} flex-1`} />
+          <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
           <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
             <Plus size={16} className="text-[#00827C]" />
           </button>
@@ -623,7 +580,7 @@ function DetalleClienteContent() {
           {errorTicket && <p className="text-sm text-[#FF5E4B]">{errorTicket}</p>}
           <div>
             <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Asunto</label>
-            <input value={ticketTitulo} onChange={e => setTicketTitulo(e.target.value)} className={campo} placeholder="Describe brevemente el caso" />
+            <input value={ticketTitulo} onChange={e => setTicketTitulo(e.target.value)} className={CLASE_CAMPO} placeholder="Describe brevemente el caso" />
           </div>
           <div>
             <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Tipo</label>
@@ -639,7 +596,7 @@ function DetalleClienteContent() {
               value={ticketMensaje}
               onChange={e => setTicketMensaje(e.target.value)}
               rows={4}
-              className={`${campo} min-h-[80px]`}
+              className={`${CLASE_CAMPO} min-h-[80px]`}
               placeholder="Cuenta qué pasó con este cliente..."
             />
           </div>
@@ -671,8 +628,8 @@ function DetalleClienteContent() {
         <div className="flex flex-col gap-3">
           {errorAgregar && <p className="text-sm text-[#FF5E4B]">{errorAgregar}</p>}
           <div className="grid grid-cols-2 gap-3">
-            <input value={nuevoContacto.nombre} onChange={e => setNuevoContacto(p => ({ ...p, nombre: e.target.value }))} className={campo} placeholder="Nombre" />
-            <input value={nuevoContacto.apellido} onChange={e => setNuevoContacto(p => ({ ...p, apellido: e.target.value }))} className={campo} placeholder="Apellido" />
+            <input value={nuevoContacto.nombre} onChange={e => setNuevoContacto(p => ({ ...p, nombre: e.target.value }))} className={CLASE_CAMPO} placeholder="Nombre" />
+            <input value={nuevoContacto.apellido} onChange={e => setNuevoContacto(p => ({ ...p, apellido: e.target.value }))} className={CLASE_CAMPO} placeholder="Apellido" />
           </div>
           <div className="flex gap-2">
             <SelectorPais value={nuevoIndicativo} onChange={setNuevoIndicativo} />
@@ -681,10 +638,10 @@ function DetalleClienteContent() {
               onChange={e => setNuevoContacto(p => ({ ...p, telefono: e.target.value.replace(/[^\d]/g, '') }))}
               placeholder="Celular (opcional)"
               inputMode="tel"
-              className={`${campo} flex-1`}
+              className={`${CLASE_CAMPO} flex-1`}
             />
           </div>
-          <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={campo} placeholder="Correo (opcional)" type="email" />
+          <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={CLASE_CAMPO} placeholder="Correo (opcional)" type="email" />
         </div>
       </Modal>
     </DetallePagina>
