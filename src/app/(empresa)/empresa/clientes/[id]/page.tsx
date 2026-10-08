@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { ArrowLeft, Plus, Save } from '@/components/ui/icons'
-import { Button } from '@/components/ui/button'
+import { ArrowLeft, Plus } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { HiloNotas } from '@/components/crm/hilo-notas'
 import { formatCOP, formatFecha } from '@/lib/format'
@@ -15,7 +14,7 @@ import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { Selector } from '@/components/ui/selector'
 import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
-import { SkeletonLista } from '@/components/ui/skeleton'
+import { DetallePagina, SeccionDetalle, PieDetalle } from '@/components/ui/detalle-pagina'
 
 interface TicketResumen {
   id: string
@@ -329,21 +328,13 @@ function DetalleClienteContent() {
 
   const campo = 'rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full'
   const etiqueta = 'text-xs font-semibold text-(--text-secondary)'
-  const seccion = 'rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4'
 
-  if (cargando) {
+  if (cargando || !cliente) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        <SkeletonLista filas={3} />
-      </div>
-    )
-  }
-
-  if (!cliente) {
-    return (
-      <div className="max-w-3xl mx-auto px-4 py-10 flex items-center justify-center">
-        <p className="text-sm text-(--text-secondary)">{error ?? 'Cliente no encontrado.'}</p>
-      </div>
+      <DetallePagina
+        cargando={cargando}
+        errorFatal={!cargando ? (error ?? 'Cliente no encontrado.') : null}
+      />
     )
   }
 
@@ -352,7 +343,7 @@ function DetalleClienteContent() {
   const linkWa = telCompleto && telCompleto.length >= 7 ? `https://wa.me/${telCompleto}` : null
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
+    <DetallePagina>
       {/* Encabezado */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <button
@@ -400,8 +391,7 @@ function DetalleClienteContent() {
 
       {/* Empresa cliente (B2B) */}
       {emp && (
-        <section className={seccion}>
-          <h2 className="text-base font-semibold text-(--text-primary) m-0">Empresa cliente · NIT {emp.nit}</h2>
+        <SeccionDetalle titulo={`Empresa cliente · NIT ${emp.nit}`}>
           <label className="flex flex-col gap-1">
             <span className={etiqueta}>Razón social</span>
             <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={campo} />
@@ -414,18 +404,19 @@ function DetalleClienteContent() {
             <span className={etiqueta}>Actividad económica (CIIU)</span>
             <SelectorCiiu value={sector} onChange={setSector} />
           </div>
-        </section>
+        </SeccionDetalle>
       )}
 
       {/* Otros contactos de esta empresa */}
       {emp && (
-        <section className={seccion}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold text-(--text-primary) m-0">Otros contactos</h2>
+        <SeccionDetalle
+          titulo="Otros contactos"
+          acciones={
             <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
               + Agregar contacto
             </button>
-          </div>
+          }
+        >
           {otrosContactos.length === 0 ? (
             <p className="text-xs italic text-(--text-secondary)">Ningún otro contacto todavía.</p>
           ) : (
@@ -443,12 +434,11 @@ function DetalleClienteContent() {
               ))}
             </div>
           )}
-        </section>
+        </SeccionDetalle>
       )}
 
       {/* Datos del contacto */}
-      <section className={seccion}>
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">{emp ? 'Este contacto (opcional)' : 'Datos del contacto'}</h2>
+      <SeccionDetalle titulo={emp ? 'Este contacto (opcional)' : 'Datos del contacto'}>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
             <span className={etiqueta}>Nombre</span>
@@ -482,11 +472,10 @@ function DetalleClienteContent() {
             </div>
           </div>
         </div>
-      </section>
+      </SeccionDetalle>
 
       {/* Dirección */}
-      <section className={seccion}>
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">Dirección</h2>
+      <SeccionDetalle titulo="Dirección">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="flex flex-col gap-1">
             <span className={etiqueta}>País</span>
@@ -505,11 +494,10 @@ function DetalleClienteContent() {
           <span className={etiqueta}>Notas sobre la dirección</span>
           <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={campo} placeholder="Ej. torre, apto, punto de referencia" />
         </label>
-      </section>
+      </SeccionDetalle>
 
       {/* Atributos personalizados */}
-      <section className={seccion}>
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">Atributos personalizados</h2>
+      <SeccionDetalle titulo="Atributos personalizados">
         {atributos.length === 0 && <p className="text-xs italic text-(--text-secondary)">Sin atributos todavía.</p>}
         {atributos.length > 0 && (
           <div className="flex flex-col gap-2">
@@ -528,12 +516,11 @@ function DetalleClienteContent() {
             <Plus size={16} className="text-[#00827C]" />
           </button>
         </div>
-      </section>
+      </SeccionDetalle>
 
       {/* Historial de cotizaciones */}
       {cotizaciones.length > 0 && (
-        <section className={seccion}>
-          <h2 className="text-base font-semibold text-(--text-primary) m-0">Historial de cotizaciones</h2>
+        <SeccionDetalle titulo="Historial de cotizaciones">
           <div className="flex flex-col gap-2">
             {cotizaciones.map(c => {
               const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
@@ -555,13 +542,13 @@ function DetalleClienteContent() {
               )
             })}
           </div>
-        </section>
+        </SeccionDetalle>
       )}
 
       {/* Tickets de soporte */}
-      <section className={seccion}>
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-(--text-primary) m-0">Tickets de soporte</h2>
+      <SeccionDetalle
+        titulo="Tickets de soporte"
+        acciones={
           <button
             type="button"
             onClick={() => setMostrandoCrearTicket(true)}
@@ -570,7 +557,8 @@ function DetalleClienteContent() {
           >
             <Plus size={14} sinAnimacion /> Nuevo
           </button>
-        </div>
+        }
+      >
         {tickets.length === 0 ? (
           <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
         ) : (
@@ -591,12 +579,11 @@ function DetalleClienteContent() {
             ))}
           </div>
         )}
-      </section>
+      </SeccionDetalle>
 
       {/* Pasaportes DPP */}
       {dppActivos.length > 0 && (
-        <section className={seccion}>
-          <h2 className="text-base font-semibold text-(--text-primary) m-0">Pasaportes DPP</h2>
+        <SeccionDetalle titulo="Pasaportes DPP">
           <div className="flex flex-col gap-2">
             {dppActivos.map(a => (
               <button
@@ -609,27 +596,21 @@ function DetalleClienteContent() {
               </button>
             ))}
           </div>
-        </section>
+        </SeccionDetalle>
       )}
 
       {/* Notas privadas */}
-      <section className={seccion}>
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">Notas privadas</h2>
+      <SeccionDetalle titulo="Notas privadas">
         <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
-      </section>
-
-      {/* Error */}
-      {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
+      </SeccionDetalle>
 
       {/* Pie */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <Button onClick={intentarGuardar} loading={guardando} icon={<Save size={16} />}>
-          Guardar cambios
-        </Button>
-        <Button variant="secondary" onClick={() => router.push(conEmpresa('/empresa/clientes'))}>
-          Volver
-        </Button>
-      </div>
+      <PieDetalle
+        onGuardar={intentarGuardar}
+        guardando={guardando}
+        onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
+        extra={error ? <p className="text-sm text-[#FF5E4B]">{error}</p> : null}
+      />
       <Modal
         abierto={mostrandoCrearTicket}
         onClose={() => !creandoTicket && setMostrandoCrearTicket(false)}
@@ -706,6 +687,6 @@ function DetalleClienteContent() {
           <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={campo} placeholder="Correo (opcional)" type="email" />
         </div>
       </Modal>
-    </div>
+    </DetallePagina>
   )
 }

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search as MagnifyingGlass, User, Building2 as Buildings, ChevronRight as CaretRight, Info } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
-import { SelectorEmpresa } from '@/components/ui/selector-empresa'
+import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { SkeletonLista } from '@/components/ui/skeleton'
 
@@ -159,21 +159,17 @@ function ClientesContent() {
         <AdminPageHeader titulo="Clientes" />
 
         {esSuperAdmin && (
-          <div className="rounded-card border p-4 mb-4 flex items-center gap-3 bg-(--bg-card) border-(--border)">
-            <Buildings size={18} className="text-[#00827C] shrink-0" />
-            <div className="flex-1">
-              <p className={`text-xs font-semibold ${ts} mb-1`}>Viendo clientes de</p>
-              <SelectorEmpresa empresas={empresas} value={empresaId ?? ''} onChange={cambiarEmpresa} />
-            </div>
-          </div>
+          <ContextoEmpresa
+            empresas={empresas}
+            value={empresaId ?? ''}
+            onChange={cambiarEmpresa}
+            etiqueta="Viendo clientes de"
+            mensajeVacio="Selecciona una empresa arriba para ver sus clientes."
+            listo={!cargandoContexto}
+          />
         )}
 
-        {esSuperAdmin && !empresaId && !cargandoContexto ? (
-          <div className="rounded-card border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 flex items-center gap-2.5">
-            <Info size={18} className="text-[#59A6E4] shrink-0" />
-            <p className="text-sm text-[#59A6E4] font-medium">Selecciona una empresa arriba para ver sus clientes.</p>
-          </div>
-        ) : (
+        {(!esSuperAdmin || empresaId) ? (
           <>
             {/* Buscador + Filtro tipo */}
             <div className="space-y-3 mb-5">
@@ -352,7 +348,7 @@ function ClientesContent() {
               </div>
             )}
           </>
-        )}
+        ) : null}
       </div>
     </div>
   )

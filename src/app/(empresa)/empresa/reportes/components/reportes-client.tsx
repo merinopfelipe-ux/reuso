@@ -6,9 +6,9 @@ import { useTopLoader } from 'nextjs-toploader'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import {
   CircleDollarSign, Leaf, Truck, ShieldCheck,
-  Loader2 as CircleNotch, AlertCircle as WarningCircle, Building2 as Buildings, Info,
+  Loader2 as CircleNotch, AlertCircle as WarningCircle,
 } from '@/components/ui/icons'
-import { SelectorEmpresa } from '@/components/ui/selector-empresa'
+import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { formatCOP, formatNumero } from '@/lib/format'
 import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
 import type { ResultadoRentabilidad } from '@/lib/reportes/rentabilidad'
@@ -230,21 +230,16 @@ export function ReportesClient({ empresaNombre, cotizadorActivo }: Props) {
     <div>
       {/* Selector de empresa (solo super_admin) */}
       {esSuperAdmin && (
-        <div style={{ background: 'var(--bg-card)', border: `1px solid ${BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Buildings size={18} color={BRAND} style={{ flexShrink: 0 }} />
-          <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 11, color: TEXT_MED, display: 'block', marginBottom: 3, fontWeight: 600 }}>Reportando para</label>
-            <SelectorEmpresa empresas={empresasOpciones} value={empresaIdSeleccionada} onChange={setEmpresaIdSeleccionada} />
-          </div>
-        </div>
+        <ContextoEmpresa
+          empresas={empresasOpciones}
+          value={empresaIdSeleccionada}
+          onChange={setEmpresaIdSeleccionada}
+          etiqueta="Reportando para"
+          mensajeVacio="Elige una empresa arriba para ver y descargar sus reportes."
+        />
       )}
 
-      {esSuperAdmin && !empresaIdSeleccionada ? (
-        <div style={{ background: 'rgba(89,166,228,0.1)', border: '1px solid rgba(89,166,228,0.2)', borderRadius: 12, padding: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Info size={18} color="#59A6E4" style={{ flexShrink: 0 }} />
-          <p style={{ fontSize: 14, color: '#59A6E4', fontWeight: 500, margin: 0 }}>Elige una empresa arriba para ver y descargar sus reportes.</p>
-        </div>
-      ) : (
+      {(!esSuperAdmin || empresaIdSeleccionada) ? (
       <>
       {/* Filtro de período */}
       <div style={{ background: 'var(--bg-card)', border: `1px solid ${BORDER}`, borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', gap: 14, alignItems: 'flex-end', flexWrap: 'wrap' }}>
@@ -315,7 +310,7 @@ export function ReportesClient({ empresaNombre, cotizadorActivo }: Props) {
         <ReporteGobernanza resultado={datos.gobernanza} paramsUrl={paramsUrl} empresaNombre={nombreParaArchivos} />
       )}
       </>
-      )}
+      ) : null}
     </div>
   )
 }

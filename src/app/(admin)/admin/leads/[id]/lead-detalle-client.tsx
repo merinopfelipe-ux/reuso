@@ -10,6 +10,7 @@ import { InputTelefono } from '@/components/ui/input-telefono'
 import { useToast } from '@/components/toast-provider'
 import { normalizarTelefono, separarTelefonoEIndicativo } from '@/lib/telefono'
 import { parsearNotasLead, formatearFechaNota } from '@/lib/notas-lead'
+import { DetallePagina, SeccionDetalle, PieDetalle } from '@/components/ui/detalle-pagina'
 
 // WhatsApp abre un chat de dos maneras: por número (solo dígitos, con
 // indicativo y sin signos) o por nombre de usuario. Las dos usan wa.me.
@@ -130,7 +131,7 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const etiqueta = 'text-xs font-semibold text-(--text-secondary)'
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
+    <DetallePagina>
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <Link href="/admin/leads" className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
           <ArrowLeft size={16} /> Volver a contactos
@@ -170,8 +171,7 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         )}
       </div>
 
-      <section className="rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4">
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">Datos del contacto</h2>
+      <SeccionDetalle titulo="Datos del contacto">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
@@ -230,10 +230,9 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
           <span className={etiqueta}>Mensaje del prospecto</span>
           <textarea className={`${campo} min-h-[80px]`} value={form.mensaje} onChange={e => setForm(p => ({ ...p, mensaje: e.target.value }))} />
         </label>
-      </section>
+      </SeccionDetalle>
 
-      <section className="rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-2">
-        <h2 className="text-base font-semibold text-(--text-primary) m-0">Notas internas</h2>
+      <SeccionDetalle titulo="Notas internas">
         <p className="text-xs text-(--text-secondary) m-0">Solo las ve el equipo. El prospecto nunca las recibe.</p>
         <textarea
           className={`${campo} min-h-[96px]`}
@@ -263,16 +262,14 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         ) : (
           <p className="text-xs text-(--text-placeholder) m-0">Aún no hay notas. Agrega la primera.</p>
         )}
-      </section>
+      </SeccionDetalle>
 
-      <div className="flex items-center gap-3 flex-wrap">
-        <Button onClick={guardar} loading={guardando}>
-          {guardado ? <><CheckCircle size={16} /> Guardado</> : <><FloppyDisk size={16} /> Guardar cambios</>}
-        </Button>
-        <Link href="/admin/leads">
-          <Button variant="secondary">Volver</Button>
-        </Link>
-      </div>
-    </div>
+      <PieDetalle
+        onGuardar={guardar}
+        guardando={guardando}
+        textoGuardar={guardado ? 'Guardado' : 'Guardar cambios'}
+        hrefVolver="/admin/leads"
+      />
+    </DetallePagina>
   )
 }

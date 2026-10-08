@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { XCircle, ChevronRight as CaretRight, Buildings, Info, Square, SquareCheck, Trash } from '@/components/ui/icons'
+import { XCircle, ChevronRight as CaretRight, Square, SquareCheck, Trash } from '@/components/ui/icons'
 import { Share2 } from '@/components/ui/icons'
-import { SelectorEmpresa } from '@/components/ui/selector-empresa'
+import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { formatCOP, formatNumero, formatFecha, formatHora } from '@/lib/format'
@@ -391,20 +391,14 @@ function PanelCotizadorContent() {
     <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
         {esSuperAdmin && (
-          <div className={`rounded-card border p-4 mb-6 flex items-center gap-3 ${cardBg}`}>
-            <Buildings size={18} className="text-[#00827C] shrink-0" />
-            <div className="flex-1">
-              <p className={`text-xs font-semibold ${ts} mb-1`}>Cotizando para</p>
-              <SelectorEmpresa empresas={empresas} value={empresaId ?? ''} onChange={cambiarEmpresa} />
-            </div>
-          </div>
-        )}
-
-        {esSuperAdmin && !empresaId && !cargandoContexto && (
-          <div className="rounded-card border border-[#59A6E4]/20 bg-[#59A6E4]/10 p-4 mb-4 flex items-center gap-2.5">
-            <Info size={18} className="text-[#59A6E4] shrink-0" />
-            <p className="text-sm text-[#59A6E4] font-medium">Selecciona una empresa arriba para ver o crear sus cotizaciones.</p>
-          </div>
+          <ContextoEmpresa
+            empresas={empresas}
+            value={empresaId ?? ''}
+            onChange={cambiarEmpresa}
+            etiqueta="Cotizando para"
+            mensajeVacio="Selecciona una empresa arriba para ver o crear sus cotizaciones."
+            listo={!cargandoContexto}
+          />
         )}
 
         {(!esSuperAdmin || empresaId) && (
