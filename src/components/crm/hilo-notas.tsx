@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 import { Save as FloppyDisk } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
-import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
+import { WYSIWYG, type WYSIWYGHandle } from '@/components/ui/wysiwyg'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 import { displayName } from '@/lib/display-name'
@@ -30,7 +30,7 @@ function formatFechaHora(iso: string) {
  * (crm_cotizaciones_notas) y notas de cliente (crm_clientes_notas):
  * pasa `endpointBase` apuntando al endpoint GET/POST correspondiente.
  *
- * El editor es el RichTextEditor compartido (`src/components/ui/`). El HTML
+ * El editor es el WYSIWYG compartido (`src/components/ui/wysiwyg.tsx`). El HTML
  * se sanea con DOMPurify tanto al enviar como al mostrar cada nota (server
  * y cliente sanean por separado, ver NOTA_SANITIZE_CONFIG).
  */
@@ -39,7 +39,7 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
   const [enviando, setEnviando] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [zoomUrl, setZoomUrl] = useState<string | null>(null)
-  const editorRef = useRef<RichTextEditorHandle>(null)
+  const editorRef = useRef<WYSIWYGHandle>(null)
 
   useEffect(() => {
     fetch(endpointBase)
@@ -98,7 +98,7 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
         })}
       </div>
 
-      <RichTextEditor
+      <WYSIWYG
         ref={editorRef}
         placeholder={placeholder}
         onEnviar={enviarNota}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Users, Calculator, Sparkles, ChevronDown, CheckCircle, Power, RefreshCw, Save, Calendar, FileText, ClipboardList, Plus, Minus } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { PlanBadge, PLAN_CONFIG } from '@/components/admin/plan-badge'
-import { RichTextEditor, type RichTextEditorHandle } from '@/components/ui/rich-text-editor'
+import { WYSIWYG, type WYSIWYGHandle } from '@/components/ui/wysiwyg'
 import { formatCOP } from '@/lib/format'
 import type { Empresa, Plan } from '@/types'
 
@@ -104,7 +104,7 @@ export function EstadoCuentaClient({
 }: Props) {
   const router = useRouter()
   const [, startTransition] = useTransition()
-  const editorRef = useRef<RichTextEditorHandle>(null)
+  const editorRef = useRef<WYSIWYGHandle>(null)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
@@ -450,7 +450,7 @@ export function EstadoCuentaClient({
               )
             })}
           </div>
-          <RichTextEditor
+          <WYSIWYG
             ref={editorRef}
             initialHTML=""
             minHeightPx={60}
