@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Key, Loader2 as CircleNotch, Eye, EyeOff as EyeSlash, CheckCircle } from '@/components/ui/icons'
 import { createClient } from '@/lib/supabase/client'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OTPInput } from '@/components/otp-input'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
+
+const COOLDOWN_SEGUNDOS = 120
 
 // ── Constantes de estilo ────────────────────────────────────────────────────
 const BRAND = 'var(--color-brand)'
@@ -59,6 +62,10 @@ export default function RecuperarPage() {
   const [error, setError] = useState('')
   const [exito, setExito] = useState(false)
   const [isDark, setIsDark] = useState(false)
+  const [turnstileToken, setTurnstileToken] = useState('')
+  const [cooldown, setCooldown] = useState(0)
+  const turnstileRef = useRef<TurnstileInstance | null>(null)
+  const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
     const check = () => setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
@@ -68,26 +75,44 @@ export default function RecuperarPage() {
     return () => obs.disconnect()
   }, [])
 
+  useEffect(() => {
+    return () => { if (cooldownRef.current) clearInterval(cooldownRef.current) }
+  }, [])
+
   // ── Paso 1: solicitar código ──────────────────────────────────────────────
   async function handleSolicitarCodigo(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) { setError('Ingresa tu correo electrónico.'); return }
+    if (cooldown > 0) return
     setLoading(true)
     setError('')
 
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase())
+    const tokenParaEnviar = turnstileToken || 'skip'
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+      captchaToken: tokenParaEnviar !== 'skip' ? tokenParaEnviar : undefined,
+    })
 
     setLoading(false)
+    setTurnstileToken('')
+    turnstileRef.current?.reset()
 
     if (err) {
-      // Supabase no revela si el email existe - siempre mostrar avance por seguridad
-      // Solo mostramos error en casos técnicos reales
       const msg = err.message?.toLowerCase() ?? ''
       if (msg.includes('rate limit') || msg.includes('too many')) {
         setError('Demasiados intentos. Espera unos minutos e intenta de nuevo.')
         return
       }
     }
+
+    // Arrancar cooldown de 2 minutos
+    setCooldown(COOLDOWN_SEGUNDOS)
+    if (cooldownRef.current) clearInterval(cooldownRef.current)
+    cooldownRef.current = setInterval(() => {
+      setCooldown(prev => {
+        if (prev <= 1) { clearInterval(cooldownRef.current!); return 0 }
+        return prev - 1
+      })
+    }, 1000)
 
     // Siempre avanzar al paso 2 (no revelar si el email existe)
     setPaso('codigo')
@@ -201,7 +226,23 @@ export default function RecuperarPage() {
             />
           </div>
 
-          <BtnPrimario loading={loading} texto="Enviar código" isDark={isDark} />
+          {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
+              options={{ appearance: 'interaction-only' }}
+              onSuccess={(token) => setTurnstileToken(token)}
+              onExpire={() => setTurnstileToken('')}
+              onError={() => setTurnstileToken('')}
+            />
+          )}
+
+          <BtnPrimario
+            loading={loading}
+            texto={cooldown > 0 ? `Reenviar en ${cooldown}s` : 'Enviar código'}
+            disabled={cooldown > 0}
+            isDark={isDark}
+          />
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: TEXT_LIGHT }}>
@@ -349,19 +390,20 @@ function ErrorBox({ mensaje }: { mensaje: string }) {
   )
 }
 
-function BtnPrimario({ loading, texto, isDark }: { loading: boolean; texto: string; isDark: boolean }) {
+function BtnPrimario({ loading, texto, isDark, disabled }: { loading: boolean; texto: string; isDark: boolean; disabled?: boolean }) {
+  const bloqueado = loading || !!disabled
   return (
     <button
       type="submit"
-      disabled={loading}
+      disabled={bloqueado}
       style={{
         width: '100%', padding: '12px',
         borderRadius: 10,
-        background: loading ? 'var(--border)' : isDark ? '#D6F391' : 'var(--color-brand)',
-        color: loading ? 'var(--text-secondary)' : isDark ? '#474747' : '#ffffff',
+        background: bloqueado ? 'var(--border)' : isDark ? '#D6F391' : 'var(--color-brand)',
+        color: bloqueado ? 'var(--text-secondary)' : isDark ? '#474747' : '#ffffff',
         fontSize: 15, fontWeight: 600,
         border: 'none',
-        cursor: loading ? 'not-allowed' : 'pointer',
+        cursor: bloqueado ? 'not-allowed' : 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
         transition: 'background 0.2s',
       }}

@@ -647,7 +647,8 @@ function ToolbarCompleta({
   const popoverCard = 'absolute top-full left-0 mt-1 z-20 rounded-xl border border-(--border) bg-(--bg-card) shadow-lg'
 
   return (
-    <div className="flex flex-wrap items-center gap-1 px-1.5 py-1 border-b border-(--border) rounded-t-[11px] bg-(--bg-card)">
+    <div className="flex overflow-x-auto items-center gap-1 px-1.5 py-1 border-b border-(--border) rounded-t-[11px] bg-(--bg-card) scrollbar-none"
+      style={{ scrollbarWidth: 'none' }}>
       {/* ── Grupo 1: Historial ── */}
       <BotonToolbar
         icon={<Undo2 size={15} />}
