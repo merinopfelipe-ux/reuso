@@ -385,7 +385,7 @@ function ClientesContent() {
                                 <button
                                   key={contacto.id}
                                   type="button"
-                                  onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${contacto.id}`))}
+                                  onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
                                   className="w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors flex items-center justify-between gap-2"
                                 >
                                   <div className="flex items-center gap-2.5 min-w-0">
