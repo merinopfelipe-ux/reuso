@@ -17,6 +17,18 @@ export default async function EmpresaMetasPage() {
     .eq('user_id', user.id)
     .single()
 
+  // super_admin no tiene empresa_id propio: usa la empresa más reciente para QA/vista
+  if (!profile?.empresa_id && profile?.rol === 'super_admin') {
+    const { data: primera } = await supabase
+      .from('empresas')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    // Si hay empresa la obtenemos; si no, caerá en el guard de abajo
+    if (primera) (profile as Record<string, unknown>).empresa_id = primera.id
+  }
+
   if (!profile?.empresa_id) redirect('/dashboard')
 
   const esAdmin = profile.rol === 'empresa_admin' || profile.rol === 'super_admin'

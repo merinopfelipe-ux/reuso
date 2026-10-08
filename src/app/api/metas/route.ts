@@ -22,8 +22,18 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   // GET the user's company
-  const { data: profile } = await supabase.from('profiles').select('empresa_id').eq('user_id', user.id).single()
-  if (!profile?.empresa_id) {
+  const { data: profile } = await supabase.from('profiles').select('empresa_id, rol').eq('user_id', user.id).single()
+
+  let empresaId = profile?.empresa_id ?? null
+
+  // super_admin no tiene empresa_id propio: usa la empresa más reciente para QA/vista
+  if (!empresaId && profile?.rol === 'super_admin') {
+    const adminC = await createAdminClient()
+    const { data: primera } = await adminC.from('empresas').select('id').order('created_at', { ascending: false }).limit(1).maybeSingle()
+    if (primera) empresaId = primera.id
+  }
+
+  if (!empresaId) {
     return NextResponse.json({ error: 'Usuario no pertenece a ninguna empresa.' }, { status: 403 })
   }
 
@@ -33,7 +43,7 @@ export async function GET() {
   const { data: metas } = await adminClient
     .from('metas')
     .select('*')
-    .eq('empresa_id', profile.empresa_id)
+    .eq('empresa_id', empresaId)
     .order('created_at', { ascending: false })
 
   if (!metas) return NextResponse.json([])
@@ -95,21 +105,32 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
   const { data: profile } = await supabase.from('profiles').select('empresa_id, rol').eq('user_id', user.id).single()
-  if (!profile?.empresa_id || profile.rol !== 'empresa_admin') {
+  if (profile?.rol !== 'empresa_admin' && profile?.rol !== 'super_admin') {
     return NextResponse.json({ error: 'Solo los administradores de la empresa pueden crear metas.' }, { status: 403 })
+  }
+
+  const adminClient = await createAdminClient()
+  let empresaIdPost = profile?.empresa_id ?? null
+
+  // super_admin usa la empresa más reciente
+  if (!empresaIdPost && profile?.rol === 'super_admin') {
+    const { data: primera } = await adminClient.from('empresas').select('id').order('created_at', { ascending: false }).limit(1).maybeSingle()
+    if (primera) empresaIdPost = primera.id
+  }
+
+  if (!empresaIdPost) {
+    return NextResponse.json({ error: 'No hay ninguna empresa para asociar la meta.' }, { status: 403 })
   }
 
   const body = await req.json()
   const parsed = POST_SCHEMA.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const adminClient = await createAdminClient()
-  
   // Create goal
   const { data: newMeta, error } = await adminClient
     .from('metas')
     .insert({
-      empresa_id: profile.empresa_id,
+      empresa_id: empresaIdPost,
       ...parsed.data
     })
     .select()

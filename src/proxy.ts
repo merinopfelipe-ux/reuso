@@ -148,7 +148,7 @@ export async function proxy(request: NextRequest) {
 
     if (
       (pathname.startsWith('/empresa/equipo') || pathname.startsWith('/empresa/configuracion')) &&
-      rol !== 'empresa_admin'
+      rol !== 'empresa_admin' && rol !== 'super_admin'
     ) {
       return NextResponse.redirect(new URL(REDIRECT_BY_ROL[rol], request.url))
     }

@@ -136,6 +136,17 @@ export default async function EmpresaPage() {
     .eq('user_id', user.id)
     .single()
 
+  // super_admin no tiene empresa_id propio: usa la empresa más reciente para QA/vista
+  if (!perfil?.empresa_id && perfil?.rol === 'super_admin') {
+    const { data: primera } = await supabase
+      .from('empresas')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (primera) (perfil as Record<string, unknown>).empresa_id = primera.id
+  }
+
   if (!perfil?.empresa_id) redirect('/dashboard')
 
   const rol = (perfil.rol ?? 'empresa_admin') as Rol

@@ -21,11 +21,24 @@ export default async function EmpresaCalculosPage() {
     .single()
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
-  const empresa_id = perfil?.empresa_id ?? null
+  let empresa_id = perfil?.empresa_id ?? null
 
-  // Guard: solo empresa_admin (y empresa_admin en modo colaborador sigue siendo empresa_admin aquí)
+  // Guard: empresa_admin y super_admin; empleados y usuario_libre redirigen a /dashboard
   const modoEmpleado = (await cookies()).get('modo_empleado')?.value === '1'
-  if (rol !== 'empresa_admin' || modoEmpleado) redirect('/dashboard')
+  if (rol !== 'empresa_admin' && rol !== 'super_admin') redirect('/dashboard')
+  if (modoEmpleado && rol !== 'super_admin') redirect('/dashboard')
+
+  // super_admin no tiene empresa_id propio: usa la empresa más reciente para QA/vista
+  if (!empresa_id && rol === 'super_admin') {
+    const { data: primera } = await supabase
+      .from('empresas')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (primera) empresa_id = primera.id
+  }
+
   if (!empresa_id) redirect('/empresa')
 
   const adminClient = await createAdminClient()

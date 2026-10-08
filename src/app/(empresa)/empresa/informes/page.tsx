@@ -12,14 +12,26 @@ export default async function EmpresaInformesPage() {
 
   const { data: perfil } = await supabase
     .from('profiles')
-    .select('empresa_id')
+    .select('empresa_id, rol')
     .eq('user_id', user.id)
     .single()
 
-  if (!perfil?.empresa_id) redirect('/dashboard')
+  let empresaId = perfil?.empresa_id ?? null
+
+  // super_admin no tiene empresa_id propio: usa la empresa más reciente para QA/vista
+  if (!empresaId && perfil?.rol === 'super_admin') {
+    const { data: primera } = await supabase
+      .from('empresas')
+      .select('id')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (primera) empresaId = primera.id
+  }
+
+  if (!empresaId) redirect('/dashboard')
 
   const adminClient = await createAdminClient()
-  const empresaId = perfil.empresa_id
 
   const { data: informesData } = await adminClient
     .from('informes')
