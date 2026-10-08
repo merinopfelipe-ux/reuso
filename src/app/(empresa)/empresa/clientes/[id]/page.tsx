@@ -327,119 +327,149 @@ function DetalleClienteContent() {
     }
   }
 
-  const tp = 'text-(--text-primary)'
-  const ts = 'text-(--text-secondary)'
-  const cardBg = 'bg-(--bg-card) border-(--border)'
-  const inputSt = 'w-full px-3 py-2.5 rounded-xl border text-sm bg-(--bg-input) border-(--border) text-(--text-primary)'
+  const campo = 'rounded-xl border border-(--border) bg-(--bg-input) px-3 py-2 text-sm text-(--text-primary) outline-hidden focus:border-brand w-full'
+  const etiqueta = 'text-xs font-semibold text-(--text-secondary)'
+  const seccion = 'rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4'
 
   if (cargando) {
     return (
-      <div className="h-full min-h-[60vh] bg-(--bg-primary)">
-        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <SkeletonLista filas={3} />
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        <SkeletonLista filas={3} />
       </div>
     )
   }
 
   if (!cliente) {
     return (
-      <div className="h-full min-h-[60vh] flex items-center justify-center bg-(--bg-primary)">
-        <p className={ts}>{error ?? 'Cliente no encontrado.'}</p>
+      <div className="max-w-3xl mx-auto px-4 py-10 flex items-center justify-center">
+        <p className="text-sm text-(--text-secondary)">{error ?? 'Cliente no encontrado.'}</p>
       </div>
     )
   }
 
   const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
+  const telCompleto = telefono.trim() ? `${telefonoIndicativo.dial}${telefono}`.replace(/\D/g, '') : null
+  const linkWa = telCompleto && telCompleto.length >= 7 ? `https://wa.me/${telCompleto}` : null
 
   return (
-    <div className="pb-6 bg-(--bg-primary)">
-      <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={() => router.push(conEmpresa('/empresa/clientes'))} className="p-2 rounded-full hover-pop hover-press  transition-colors">
-            <ArrowLeft size={20} className={tp} />
-          </button>
-          <div className="flex-1 min-w-0">
-            <p className={`text-xs ${ts} truncate`}>{cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}</p>
-            <p className={`text-base font-semibold truncate ${tp}`}>{cliente.nombre} {cliente.apellido ?? ''}</p>
-          </div>
+    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
+      {/* Encabezado */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <button
+          onClick={() => router.push(conEmpresa('/empresa/clientes'))}
+          className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand"
+        >
+          <ArrowLeft size={16} /> Volver a clientes
+        </button>
+        <span className="text-xs text-(--text-placeholder)">
+          {cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
+        </span>
+      </div>
+
+      {/* Título */}
+      <div>
+        <h1 className="text-2xl font-semibold text-(--text-primary) m-0">
+          {[nombre.trim(), apellido.trim()].filter(Boolean).join(' ') || 'Cliente'}
+        </h1>
+        {emp && <p className="text-sm text-(--text-secondary) mt-1 mb-0">{emp.razon_social}</p>}
+      </div>
+
+      {/* Acciones rápidas */}
+      {(linkWa || email) && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {linkWa && (
+            <a
+              href={linkWa}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
+            >
+              Escribir por WhatsApp
+            </a>
+          )}
+          {email && (
+            <a
+              href={`mailto:${email}`}
+              className="inline-flex items-center gap-2 rounded-full border border-(--border) px-4 py-2 text-sm font-semibold text-(--text-primary) hover:border-brand"
+            >
+              Enviar correo
+            </a>
+          )}
         </div>
+      )}
 
-        {/* Mobile: una columna. Desde `lg`: dos columnas por defecto —
-            izquierda datos editables, derecha trazabilidad (cotizaciones,
-            DPP, notas) — mismo patrón de grid-cols-1 lg:grid-cols-2 que el
-            resto de pantallas nuevas de esta sesión. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
-        <div className="flex flex-col gap-4">
-        {/* Datos de empresa (B2B) — primero, es el cliente real */}
-        {emp && (
-          <div className={`rounded-card border p-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold mb-3 ${ts}`}>Empresa cliente · NIT {emp.nit}</p>
-            <div className="mb-3">
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Razón social</label>
-              <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={inputSt} />
-            </div>
-            <div className="mb-3">
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Nombre comercial</label>
-              <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={inputSt} placeholder="Opcional" />
-            </div>
-            <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Actividad económica (CIIU)</label>
-              <SelectorCiiu value={sector} onChange={setSector} />
-            </div>
+      {/* Empresa cliente (B2B) */}
+      {emp && (
+        <section className={seccion}>
+          <h2 className="text-base font-semibold text-(--text-primary) m-0">Empresa cliente · NIT {emp.nit}</h2>
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Razón social</span>
+            <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={campo} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Nombre comercial</span>
+            <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={campo} placeholder="Opcional" />
+          </label>
+          <div className="flex flex-col gap-1">
+            <span className={etiqueta}>Actividad económica (CIIU)</span>
+            <SelectorCiiu value={sector} onChange={setSector} />
           </div>
-        )}
+        </section>
+      )}
 
-        {/* Otros contactos de esta empresa + agregar uno nuevo */}
-        {emp && (
-          <div className={`rounded-card border p-4 ${cardBg}`}>
-            <div className="flex items-center justify-between mb-3">
-              <p className={`text-xs font-semibold ${ts}`}>Otros contactos de esta empresa</p>
-              <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
-                + Agregar contacto
-              </button>
-            </div>
-            {otrosContactos.length === 0 ? (
-              <p className={`text-xs italic ${ts}`}>Ningún otro contacto todavía.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {otrosContactos.map(h => (
-                  <button
-                    key={h.id}
-                    type="button"
-                    onClick={() => router.push(conEmpresa(`/empresa/clientes/${h.id}`))}
-                    className="w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors"
-                  >
-                    <p className={`text-xs font-semibold ${tp}`}>{h.nombre} {h.apellido ?? ''}</p>
-                    {h.telefono && <p className={`text-[11px] ${ts}`}>{formatTelefonoVista(h.telefono, h.telefono_indicativo)}</p>}
-                  </button>
-                ))}
-              </div>
-            )}
+      {/* Otros contactos de esta empresa */}
+      {emp && (
+        <section className={seccion}>
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-semibold text-(--text-primary) m-0">Otros contactos</h2>
+            <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
+              + Agregar contacto
+            </button>
           </div>
-        )}
-
-        {/* Datos del contacto actual — segundo, es opcional para B2B */}
-        <div className={`rounded-card border p-4 ${cardBg}`}>
-          <p className={`text-xs font-semibold mb-3 ${ts}`}>{emp ? 'Este contacto (opcional)' : 'Datos del contacto'}</p>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Nombre</label>
-              <input value={nombre} onChange={e => setNombre(e.target.value)} className={inputSt} placeholder={emp ? 'Opcional' : undefined} />
-            </div>
-            <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Apellido</label>
-              <input value={apellido} onChange={e => setApellido(e.target.value)} className={inputSt} />
-            </div>
-          </div>
-          {cliente.tipo === 'persona' && (
-            <div className="mb-3">
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Cédula</label>
-              <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={inputSt} placeholder="Opcional" inputMode="numeric" />
+          {otrosContactos.length === 0 ? (
+            <p className="text-xs italic text-(--text-secondary)">Ningún otro contacto todavía.</p>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              {otrosContactos.map(h => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => router.push(conEmpresa(`/empresa/clientes/${h.id}`))}
+                  className="w-full text-left p-2.5 rounded-xl bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors"
+                >
+                  <p className="text-xs font-semibold text-(--text-primary)">{h.nombre} {h.apellido ?? ''}</p>
+                  {h.telefono && <p className="text-[11px] text-(--text-secondary)">{formatTelefonoVista(h.telefono, h.telefono_indicativo)}</p>}
+                </button>
+              ))}
             </div>
           )}
-          <div className="mb-3">
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Celular</label>
+        </section>
+      )}
+
+      {/* Datos del contacto */}
+      <section className={seccion}>
+        <h2 className="text-base font-semibold text-(--text-primary) m-0">{emp ? 'Este contacto (opcional)' : 'Datos del contacto'}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Nombre</span>
+            <input value={nombre} onChange={e => setNombre(e.target.value)} className={campo} placeholder={emp ? 'Opcional' : undefined} />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Apellido</span>
+            <input value={apellido} onChange={e => setApellido(e.target.value)} className={campo} />
+          </label>
+          {cliente.tipo === 'persona' && (
+            <label className="flex flex-col gap-1">
+              <span className={etiqueta}>Cédula</span>
+              <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={campo} placeholder="Opcional" inputMode="numeric" />
+            </label>
+          )}
+          <label className="flex flex-col gap-1">
+            <span className={etiqueta}>Correo</span>
+            <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={campo} />
+          </label>
+          <div className="flex flex-col gap-1 sm:col-span-2">
+            <span className={etiqueta}>Celular</span>
             <div className="flex gap-2">
               <SelectorPais value={telefonoIndicativo} onChange={setTelefonoIndicativo} />
               <input
@@ -447,160 +477,159 @@ function DetalleClienteContent() {
                 onChange={e => setTelefono(e.target.value.replace(/[^\d]/g, ''))}
                 placeholder="Número de celular"
                 inputMode="tel"
-                className={`${inputSt} flex-1`}
+                className={`${campo} flex-1`}
               />
             </div>
           </div>
-          <div className="mb-3">
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Correo</label>
-            <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={inputSt} />
+        </div>
+      </section>
+
+      {/* Dirección */}
+      <section className={seccion}>
+        <h2 className="text-base font-semibold text-(--text-primary) m-0">Dirección</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1">
+            <span className={etiqueta}>País</span>
+            <SelectorPais value={pais} onChange={setPais} />
           </div>
-          <div className="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>País</label>
-              <SelectorPais value={pais} onChange={setPais} />
-            </div>
-            <div>
-              <label className={`text-xs font-semibold mb-1 block ${ts}`}>Ciudad</label>
-              <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
-            </div>
-          </div>
-          <div>
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Dirección</label>
-            <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
-          </div>
-          <div className="mt-3">
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Notas sobre la dirección</label>
-            <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={inputSt} placeholder="Ej. torre, apto, punto de referencia" />
+          <div className="flex flex-col gap-1">
+            <span className={etiqueta}>Ciudad</span>
+            <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
           </div>
         </div>
-
-        {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
-
-        <div className="flex justify-start">
-          <Button onClick={intentarGuardar} loading={guardando} size="sm" icon={<Save size={14} />}>
-            Guardar
-          </Button>
+        <div className="flex flex-col gap-1">
+          <span className={etiqueta}>Dirección</span>
+          <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
         </div>
-        {/* Atributos personalizados */}
-        <div className={`rounded-card border p-4 ${cardBg}`}>
-          <p className={`text-xs font-semibold mb-3 ${ts}`}>Atributos personalizados</p>
-          {atributos.length === 0 && <p className={`text-xs italic mb-3 ${ts}`}>Sin atributos todavía.</p>}
-          <div className="space-y-2 mb-3">
+        <label className="flex flex-col gap-1">
+          <span className={etiqueta}>Notas sobre la dirección</span>
+          <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={campo} placeholder="Ej. torre, apto, punto de referencia" />
+        </label>
+      </section>
+
+      {/* Atributos personalizados */}
+      <section className={seccion}>
+        <h2 className="text-base font-semibold text-(--text-primary) m-0">Atributos personalizados</h2>
+        {atributos.length === 0 && <p className="text-xs italic text-(--text-secondary)">Sin atributos todavía.</p>}
+        {atributos.length > 0 && (
+          <div className="flex flex-col gap-2">
             {atributos.map(a => (
               <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                <span className={`font-medium ${tp}`}>{a.clave}</span>
-                <span className={ts}>{a.valor ?? '—'}</span>
+                <span className="font-medium text-(--text-primary)">{a.clave}</span>
+                <span className="text-(--text-secondary)">{a.valor ?? '—'}</span>
               </div>
             ))}
           </div>
-          <div className="flex gap-2">
-            <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${inputSt} flex-1`} />
-            <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${inputSt} flex-1`} />
-            <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
-              <Plus size={16} className="text-[#00827C]" />
-            </button>
-          </div>
-        </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-        {/* Historial de cotizaciones — código, estado (mismo color que el
-            kanban), fecha y total, para que se pueda leer el recorrido sin
-            tener que abrir cada una. */}
-        {cotizaciones.length > 0 && (
-          <div className={`rounded-card border p-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold mb-3 ${ts}`}>Historial de cotizaciones</p>
-            <div className="space-y-2">
-              {cotizaciones.map(c => {
-                const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
-                return (
-                  <button
-                    key={c.id}
-                    onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
-                    className={`w-full text-left p-3 rounded-btn border transition-colors hover-pop ${cardBg} hover:bg-(--bg-hover)`}
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className={`text-sm font-semibold ${tp}`}>{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`text-xs ${ts}`}>{formatFecha(c.created_at)}</span>
-                      <span className={`text-sm font-bold whitespace-nowrap ${tp}`}>{formatCOP(c.total)}</span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
         )}
+        <div className="flex gap-2">
+          <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${campo} flex-1`} />
+          <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${campo} flex-1`} />
+          <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
+            <Plus size={16} className="text-[#00827C]" />
+          </button>
+        </div>
+      </section>
 
-        {/* Tickets de soporte relacionados con este cliente — la empresa
-            puede registrar un caso puntual sobre él y verlo aparecer aquí,
-            sin que tenga que buscarlo entre todos los tickets de /ayuda. */}
-        <div className={`rounded-card border p-4 ${cardBg}`}>
-          <div className="flex items-center justify-between mb-3">
-            <p className={`text-xs font-semibold ${ts}`}>Tickets de soporte</p>
-            <button
-              type="button"
-              onClick={() => setMostrandoCrearTicket(true)}
-              className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
-              style={{ color: 'var(--color-brand)' }}
-            >
-              <Plus size={14} sinAnimacion /> Nuevo
-            </button>
-          </div>
-          {tickets.length === 0 ? (
-            <p className={`text-xs italic ${ts}`}>Sin tickets todavía.</p>
-          ) : (
-            <div className="space-y-2">
-              {tickets.map(t => (
-                <div key={t.id} className={`p-3 rounded-btn border ${cardBg}`}>
+      {/* Historial de cotizaciones */}
+      {cotizaciones.length > 0 && (
+        <section className={seccion}>
+          <h2 className="text-base font-semibold text-(--text-primary) m-0">Historial de cotizaciones</h2>
+          <div className="flex flex-col gap-2">
+            {cotizaciones.map(c => {
+              const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
+                  className="w-full text-left p-3 rounded-xl border border-(--border) bg-(--bg-card) transition-colors hover:bg-(--bg-hover)"
+                >
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className={`text-sm font-semibold ${tp}`}>{t.titulo}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
-                      {t.estado.replace('_', ' ')}
-                    </span>
+                    <span className="text-sm font-semibold text-(--text-primary)">{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`text-xs ${ts}`}>{TIPO_TICKET_LABELS[t.tipo]}</span>
-                    <span className={`text-xs ${ts}`}>{formatFecha(t.created_at)}</span>
+                    <span className="text-xs text-(--text-secondary)">{formatFecha(c.created_at)}</span>
+                    <span className="text-sm font-bold whitespace-nowrap text-(--text-primary)">{formatCOP(c.total)}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Pasaportes DPP de los ítems de este cliente — siempre opcional, un
-            cliente puede no tener ninguno todavía. */}
-        {dppActivos.length > 0 && (
-          <div className={`rounded-card border p-4 ${cardBg}`}>
-            <p className={`text-xs font-semibold mb-3 ${ts}`}>Pasaportes DPP</p>
-            <div className="space-y-2">
-              {dppActivos.map(a => (
-                <button
-                  key={a.id}
-                  onClick={() => router.push(conEmpresa(`/empresa/dpp/${a.id}`))}
-                  className="w-full flex items-center justify-between gap-2 text-left hover-pop"
-                >
-                  <span className={`text-sm ${tp}`}>{a.nombre}</span>
-                  <span className={`text-xs ${ts}`}>{a.codigo_dpp}</span>
                 </button>
-              ))}
-            </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Tickets de soporte */}
+      <section className={seccion}>
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-(--text-primary) m-0">Tickets de soporte</h2>
+          <button
+            type="button"
+            onClick={() => setMostrandoCrearTicket(true)}
+            className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
+            style={{ color: 'var(--color-brand)' }}
+          >
+            <Plus size={14} sinAnimacion /> Nuevo
+          </button>
+        </div>
+        {tickets.length === 0 ? (
+          <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {tickets.map(t => (
+              <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-sm font-semibold text-(--text-primary)">{t.titulo}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
+                    {t.estado.replace('_', ' ')}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs text-(--text-secondary)">{TIPO_TICKET_LABELS[t.tipo]}</span>
+                  <span className="text-xs text-(--text-secondary)">{formatFecha(t.created_at)}</span>
+                </div>
+              </div>
+            ))}
           </div>
         )}
+      </section>
 
-        {/* Notas privadas del cliente */}
-        <div className={`rounded-card border p-4 ${cardBg}`}>
-          <p className={`text-xs font-semibold mb-3 ${ts}`}>Notas privadas</p>
-          <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
-        </div>
-        </div>
-        </div>
+      {/* Pasaportes DPP */}
+      {dppActivos.length > 0 && (
+        <section className={seccion}>
+          <h2 className="text-base font-semibold text-(--text-primary) m-0">Pasaportes DPP</h2>
+          <div className="flex flex-col gap-2">
+            {dppActivos.map(a => (
+              <button
+                key={a.id}
+                onClick={() => router.push(conEmpresa(`/empresa/dpp/${a.id}`))}
+                className="w-full flex items-center justify-between gap-2 text-left hover-pop p-2 rounded-xl hover:bg-(--bg-hover)"
+              >
+                <span className="text-sm text-(--text-primary)">{a.nombre}</span>
+                <span className="text-xs text-(--text-secondary)">{a.codigo_dpp}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Notas privadas */}
+      <section className={seccion}>
+        <h2 className="text-base font-semibold text-(--text-primary) m-0">Notas privadas</h2>
+        <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
+      </section>
+
+      {/* Error */}
+      {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
+
+      {/* Pie */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <Button onClick={intentarGuardar} loading={guardando} icon={<Save size={16} />}>
+          Guardar cambios
+        </Button>
+        <Button variant="secondary" onClick={() => router.push(conEmpresa('/empresa/clientes'))}>
+          Volver
+        </Button>
       </div>
-
       <Modal
         abierto={mostrandoCrearTicket}
         onClose={() => !creandoTicket && setMostrandoCrearTicket(false)}
@@ -612,11 +641,11 @@ function DetalleClienteContent() {
         <div className="flex flex-col gap-3">
           {errorTicket && <p className="text-sm text-[#FF5E4B]">{errorTicket}</p>}
           <div>
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Asunto</label>
-            <input value={ticketTitulo} onChange={e => setTicketTitulo(e.target.value)} className={inputSt} placeholder="Describe brevemente el caso" />
+            <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Asunto</label>
+            <input value={ticketTitulo} onChange={e => setTicketTitulo(e.target.value)} className={campo} placeholder="Describe brevemente el caso" />
           </div>
           <div>
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Tipo</label>
+            <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Tipo</label>
             <Selector
               value={ticketTipo}
               onChange={val => setTicketTipo(val as TipoTicket)}
@@ -624,12 +653,12 @@ function DetalleClienteContent() {
             />
           </div>
           <div>
-            <label className={`text-xs font-semibold mb-1 block ${ts}`}>Detalles</label>
+            <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Detalles</label>
             <textarea
               value={ticketMensaje}
               onChange={e => setTicketMensaje(e.target.value)}
               rows={4}
-              className={inputSt}
+              className={`${campo} min-h-[80px]`}
               placeholder="Cuenta qué pasó con este cliente..."
             />
           </div>
@@ -645,7 +674,7 @@ function DetalleClienteContent() {
         textoConfirmar={guardando ? 'Guardando...' : 'Sí, cambiarlo'}
         onConfirmar={guardar}
       >
-        <p className={`text-sm ${ts}`}>
+        <p className="text-sm text-(--text-secondary)">
           Vas a cambiar el celular de {nombre} {apellido}. Este número se usa para contactarlo por WhatsApp y hacerle seguimiento a sus cotizaciones.
         </p>
       </Modal>
@@ -661,8 +690,8 @@ function DetalleClienteContent() {
         <div className="flex flex-col gap-3">
           {errorAgregar && <p className="text-sm text-[#FF5E4B]">{errorAgregar}</p>}
           <div className="grid grid-cols-2 gap-3">
-            <input value={nuevoContacto.nombre} onChange={e => setNuevoContacto(p => ({ ...p, nombre: e.target.value }))} className={inputSt} placeholder="Nombre" />
-            <input value={nuevoContacto.apellido} onChange={e => setNuevoContacto(p => ({ ...p, apellido: e.target.value }))} className={inputSt} placeholder="Apellido" />
+            <input value={nuevoContacto.nombre} onChange={e => setNuevoContacto(p => ({ ...p, nombre: e.target.value }))} className={campo} placeholder="Nombre" />
+            <input value={nuevoContacto.apellido} onChange={e => setNuevoContacto(p => ({ ...p, apellido: e.target.value }))} className={campo} placeholder="Apellido" />
           </div>
           <div className="flex gap-2">
             <SelectorPais value={nuevoIndicativo} onChange={setNuevoIndicativo} />
@@ -671,10 +700,10 @@ function DetalleClienteContent() {
               onChange={e => setNuevoContacto(p => ({ ...p, telefono: e.target.value.replace(/[^\d]/g, '') }))}
               placeholder="Celular (opcional)"
               inputMode="tel"
-              className={`${inputSt} flex-1`}
+              className={`${campo} flex-1`}
             />
           </div>
-          <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={inputSt} placeholder="Correo (opcional)" type="email" />
+          <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={campo} placeholder="Correo (opcional)" type="email" />
         </div>
       </Modal>
     </div>
