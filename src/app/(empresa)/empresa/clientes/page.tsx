@@ -153,7 +153,13 @@ function ClientesContent() {
       if (!res.ok) { setErrorCrear(d.error ?? 'No se pudo crear el cliente.'); return }
       setModalCrearAbierto(false)
       setCrearNit(''); setCrearRazonSocial(''); setCrearNombre(''); setCrearApellido(''); setCrearTelefono(''); setCrearEmail('')
-      router.push(linkConEmpresa(`/empresa/clientes/${d.cliente.id}`))
+      // Navegar a la página de la empresa, no del contacto
+      const empClienteId = d.cliente.empresa_cliente_id
+      if (empClienteId) {
+        router.push(linkConEmpresa(`/empresa/clientes/empresa/${empClienteId}`))
+      } else {
+        router.push(linkConEmpresa(`/empresa/clientes/${d.cliente.id}`))
+      }
     } catch {
       setErrorCrear('Error de conexión. Intenta de nuevo.')
     } finally {
@@ -344,8 +350,12 @@ function ClientesContent() {
                           key={emp.id}
                           className="rounded-card border p-4 bg-(--bg-card) border-(--border) space-y-3"
                         >
-                          {/* Encabezado de la Empresa */}
-                          <div className="flex items-start justify-between gap-3">
+                          {/* Encabezado de la Empresa — clicable, navega a la página de la empresa */}
+                          <button
+                            type="button"
+                            onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
+                            className="w-full flex items-start justify-between gap-3 text-left hover:opacity-80 transition-opacity"
+                          >
                             <div className="flex items-center gap-3 min-w-0">
                               <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center shrink-0">
                                 <Buildings size={20} className="text-[#00827C]" />
@@ -363,7 +373,7 @@ function ClientesContent() {
                             <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#00827C]/10 text-[#00827C] shrink-0">
                               {emp.contactos.length} {emp.contactos.length === 1 ? 'contacto' : 'contactos'}
                             </span>
-                          </div>
+                          </button>
 
                           {/* Personas Vinculadas a esta Empresa */}
                           {emp.contactos.length > 0 && (

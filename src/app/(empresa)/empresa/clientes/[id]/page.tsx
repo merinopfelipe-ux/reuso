@@ -198,6 +198,13 @@ function DetalleClienteContent() {
         }
 
         const c: ClienteDetalle = dCliente.cliente
+
+        // Si es un contacto de empresa, redirigir a la página propia de la empresa
+        if (c.empresa_cliente_id) {
+          router.replace(conEmpresa(`/empresa/clientes/empresa/${c.empresa_cliente_id}`))
+          return
+        }
+
         setCliente(c)
         setCotizaciones(dCliente.cotizaciones ?? [])
         setDppActivos(dCliente.dpp_activos ?? [])
