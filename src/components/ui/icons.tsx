@@ -94,6 +94,15 @@ import {
   Lightbulb as Lucide_Lightbulb,
   Link as Lucide_Link,
   List as Lucide_List,
+  ListOrdered as Lucide_ListOrdered,
+  Unlink as Lucide_Unlink,
+  AlignLeft as Lucide_AlignLeft,
+  AlignCenter as Lucide_AlignCenter,
+  AlignRight as Lucide_AlignRight,
+  AlignJustify as Lucide_AlignJustify,
+  Strikethrough as Lucide_Strikethrough,
+  Maximize2 as Lucide_Maximize2,
+  Minimize2 as Lucide_Minimize2,
   Loader2 as Lucide_Loader2,
   Lock as Lucide_Lock,
   LockKeyhole as Lucide_LockKeyhole,
@@ -1171,6 +1180,15 @@ export const CheckCheck = /*#__PURE__*/ wrapIcon(Lucide_CheckCheck)
 export const Crosshair = /*#__PURE__*/ wrapIcon(Lucide_Crosshair)
 export const ScanSearch = /*#__PURE__*/ wrapIcon(Lucide_ScanSearch)
 export const Equal = /*#__PURE__*/ wrapIcon(Lucide_Equal)
+export const ListOrdered = /*#__PURE__*/ wrapIcon(Lucide_ListOrdered)
+export const Unlink = /*#__PURE__*/ wrapIcon(Lucide_Unlink)
+export const AlignLeft = /*#__PURE__*/ wrapIcon(Lucide_AlignLeft)
+export const AlignCenter = /*#__PURE__*/ wrapIcon(Lucide_AlignCenter)
+export const AlignRight = /*#__PURE__*/ wrapIcon(Lucide_AlignRight)
+export const AlignJustify = /*#__PURE__*/ wrapIcon(Lucide_AlignJustify)
+export const Strikethrough = /*#__PURE__*/ wrapIcon(Lucide_Strikethrough)
+export const Maximize2 = /*#__PURE__*/ wrapIcon(Lucide_Maximize2)
+export const Minimize2 = /*#__PURE__*/ wrapIcon(Lucide_Minimize2)
 
 // Export brand logos from brand-logos.tsx
 export {

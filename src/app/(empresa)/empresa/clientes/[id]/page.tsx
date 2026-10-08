@@ -10,12 +10,13 @@ import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
 import { InputDireccion } from '@/components/ui/input-direccion'
+import { InputTelefono } from '@/components/ui/input-telefono'
+import { InputDocumento } from '@/components/ui/input-documento'
 import { SelectorCiiu } from '@/components/ui/selector-ciiu'
 import { Selector } from '@/components/ui/selector'
 import { formatTelefonoVista } from '@/lib/telefono'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
-import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle } from '@/components/ui/detalle-pagina'
-import { AccionesContacto } from '@/components/ui/acciones-contacto'
+import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle, DetalleGrid, DetalleColumna } from '@/components/ui/detalle-pagina'
 import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/campo-formulario'
 
 interface TicketResumen {
@@ -366,8 +367,6 @@ function DetalleClienteContent() {
   }
 
   const emp = Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes
-  const telCompleto = telefono.trim() ? `${telefonoIndicativo.dial}${telefono}`.replace(/\D/g, '') : null
-
   return (
     <DetallePagina>
       <EncabezadoDetalle
@@ -378,215 +377,220 @@ function DetalleClienteContent() {
         meta={cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
       />
 
-      <AccionesContacto telefono={telCompleto} email={email} />
-
-      {/* Empresa cliente (B2B) */}
-      {emp && (
-        <SeccionDetalle titulo={`Empresa cliente · NIT ${emp.nit}`}>
-          <CampoFormulario label="Razón social">
-            <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={CLASE_CAMPO} />
-          </CampoFormulario>
-          <CampoFormulario label="Nombre comercial">
-            <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" />
-          </CampoFormulario>
-          <div className="flex flex-col gap-1">
-            <span className={CLASE_ETIQUETA}>Actividad económica (CIIU)</span>
-            <SelectorCiiu value={sector} onChange={setSector} />
-          </div>
-        </SeccionDetalle>
-      )}
-
-      {/* Otros contactos de esta empresa */}
-      {emp && (
-        <SeccionDetalle
-          titulo="Otros contactos"
-          acciones={
-            <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
-              + Agregar contacto
-            </button>
-          }
-        >
-          {otrosContactos.length === 0 ? (
-            <p className="text-xs italic text-(--text-secondary)">Ningún otro contacto todavía.</p>
-          ) : (
-            <div className="flex flex-col gap-1.5">
-              {otrosContactos.map(h => (
-                <button
-                  key={h.id}
-                  type="button"
-                  onClick={() => router.push(conEmpresa(`/empresa/clientes/${h.id}`))}
-                  className="w-full text-left p-2.5 rounded-xl bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors"
-                >
-                  <p className="text-xs font-semibold text-(--text-primary)">{h.nombre} {h.apellido ?? ''}</p>
-                  {h.telefono && <p className="text-[11px] text-(--text-secondary)">{formatTelefonoVista(h.telefono, h.telefono_indicativo)}</p>}
-                </button>
-              ))}
-            </div>
+      <DetalleGrid>
+        {/* Columna Izquierda: Información de Identidad, Contacto y Dirección */}
+        <DetalleColumna>
+          {/* Empresa cliente (B2B) */}
+          {emp && (
+            <SeccionDetalle titulo={`Empresa cliente · NIT ${emp.nit}`}>
+              <CampoFormulario label="Razón social">
+                <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={CLASE_CAMPO} />
+              </CampoFormulario>
+              <CampoFormulario label="Nombre comercial">
+                <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" />
+              </CampoFormulario>
+              <div className="flex flex-col gap-1">
+                <span className={CLASE_ETIQUETA}>Actividad económica (CIIU)</span>
+                <SelectorCiiu value={sector} onChange={setSector} />
+              </div>
+            </SeccionDetalle>
           )}
-        </SeccionDetalle>
-      )}
 
-      {/* Datos del contacto */}
-      <SeccionDetalle titulo={emp ? 'Este contacto (opcional)' : 'Datos del contacto'}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <CampoFormulario label="Nombre">
-            <input value={nombre} onChange={e => setNombre(e.target.value)} className={CLASE_CAMPO} placeholder={emp ? 'Opcional' : undefined} />
-          </CampoFormulario>
-          <CampoFormulario label="Apellido">
-            <input value={apellido} onChange={e => setApellido(e.target.value)} className={CLASE_CAMPO} />
-          </CampoFormulario>
-          {cliente.tipo === 'persona' && (
-            <CampoFormulario label="Cédula">
-              <input value={identificacion} onChange={e => setIdentificacion(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" inputMode="numeric" />
+          {/* Otros contactos de esta empresa */}
+          {emp && (
+            <SeccionDetalle
+              titulo="Otros contactos"
+              acciones={
+                <button type="button" onClick={() => setModalAgregarAbierto(true)} className="text-xs font-semibold" style={{ color: 'var(--color-brand)' }}>
+                  + Agregar contacto
+                </button>
+              }
+            >
+              {otrosContactos.length === 0 ? (
+                <p className="text-xs italic text-(--text-secondary)">Ningún otro contacto todavía.</p>
+              ) : (
+                <div className="flex flex-col gap-1.5">
+                  {otrosContactos.map(h => (
+                    <button
+                      key={h.id}
+                      type="button"
+                      onClick={() => router.push(conEmpresa(`/empresa/clientes/${h.id}`))}
+                      className="w-full text-left p-2.5 rounded-xl bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors"
+                    >
+                      <p className="text-xs font-semibold text-(--text-primary)">{h.nombre} {h.apellido ?? ''}</p>
+                      {h.telefono && <p className="text-[11px] text-(--text-secondary)">{formatTelefonoVista(h.telefono, h.telefono_indicativo)}</p>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </SeccionDetalle>
+          )}
+
+          {/* Datos del contacto */}
+          <SeccionDetalle titulo={emp ? 'Este contacto (opcional)' : 'Datos del contacto'}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <CampoFormulario label="Nombre">
+                <input value={nombre} onChange={e => setNombre(e.target.value)} className={CLASE_CAMPO} placeholder={emp ? 'Opcional' : undefined} />
+              </CampoFormulario>
+              <CampoFormulario label="Apellido">
+                <input value={apellido} onChange={e => setApellido(e.target.value)} className={CLASE_CAMPO} />
+              </CampoFormulario>
+              {cliente.tipo === 'persona' && (
+                <CampoFormulario label="Cédula">
+                  <InputDocumento value={identificacion} onChange={setIdentificacion} placeholder="Opcional" />
+                </CampoFormulario>
+              )}
+              <CampoFormulario label="Correo">
+                <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
+              </CampoFormulario>
+              <div className="flex flex-col gap-1 sm:col-span-2">
+                <span className={CLASE_ETIQUETA}>Celular</span>
+                <InputTelefono
+                  indicativo={telefonoIndicativo.dial}
+                  onChangeIndicativo={val => {
+                    const p = PAISES.find(item => item.dial === val)
+                    if (p) setTelefonoIndicativo(p)
+                  }}
+                  telefono={telefono}
+                  onChangeTelefono={setTelefono}
+                />
+              </div>
+            </div>
+          </SeccionDetalle>
+
+          {/* Dirección */}
+          <SeccionDetalle titulo="Dirección">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="flex flex-col gap-1">
+                <span className={CLASE_ETIQUETA}>País</span>
+                <SelectorPais value={pais} onChange={setPais} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className={CLASE_ETIQUETA}>Ciudad</span>
+                <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className={CLASE_ETIQUETA}>Dirección</span>
+              <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
+            </div>
+            <CampoFormulario label="Notas sobre la dirección">
+              <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
             </CampoFormulario>
-          )}
-          <CampoFormulario label="Correo">
-            <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
-          </CampoFormulario>
-          <div className="flex flex-col gap-1 sm:col-span-2">
-            <span className={CLASE_ETIQUETA}>Celular</span>
+          </SeccionDetalle>
+
+          {/* Atributos personalizados */}
+          <SeccionDetalle titulo="Atributos personalizados">
+            {atributos.length === 0 && <p className="text-xs italic text-(--text-secondary)">Sin atributos todavía.</p>}
+            {atributos.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {atributos.map(a => (
+                  <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="font-medium text-(--text-primary)">{a.clave}</span>
+                    <span className="text-(--text-secondary)">{a.valor ?? '—'}</span>
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex gap-2">
-              <SelectorPais value={telefonoIndicativo} onChange={setTelefonoIndicativo} />
-              <input
-                value={telefono}
-                onChange={e => setTelefono(e.target.value.replace(/[^\d]/g, ''))}
-                placeholder="Número de celular"
-                inputMode="tel"
-                className={`${CLASE_CAMPO} flex-1`}
-              />
-            </div>
-          </div>
-        </div>
-      </SeccionDetalle>
-
-      {/* Dirección */}
-      <SeccionDetalle titulo="Dirección">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1">
-            <span className={CLASE_ETIQUETA}>País</span>
-            <SelectorPais value={pais} onChange={setPais} />
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className={CLASE_ETIQUETA}>Ciudad</span>
-            <SelectorCiudad value={ciudad} onChange={setCiudad} pais={pais} conEmpresa={conEmpresa} />
-          </div>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className={CLASE_ETIQUETA}>Dirección</span>
-          <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
-        </div>
-        <CampoFormulario label="Notas sobre la dirección">
-          <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
-        </CampoFormulario>
-      </SeccionDetalle>
-
-      {/* Atributos personalizados */}
-      <SeccionDetalle titulo="Atributos personalizados">
-        {atributos.length === 0 && <p className="text-xs italic text-(--text-secondary)">Sin atributos todavía.</p>}
-        {atributos.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {atributos.map(a => (
-              <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                <span className="font-medium text-(--text-primary)">{a.clave}</span>
-                <span className="text-(--text-secondary)">{a.valor ?? '—'}</span>
-              </div>
-            ))}
-          </div>
-        )}
-        <div className="flex gap-2">
-          <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${CLASE_CAMPO} flex-1`} />
-          <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
-          <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
-            <Plus size={16} className="text-[#00827C]" />
-          </button>
-        </div>
-      </SeccionDetalle>
-
-      {/* Historial de cotizaciones */}
-      {cotizaciones.length > 0 && (
-        <SeccionDetalle titulo="Historial de cotizaciones">
-          <div className="flex flex-col gap-2">
-            {cotizaciones.map(c => {
-              const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
-                  className="w-full text-left p-3 rounded-xl border border-(--border) bg-(--bg-card) transition-colors hover:bg-(--bg-hover)"
-                >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-sm font-semibold text-(--text-primary)">{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-(--text-secondary)">{formatFecha(c.created_at)}</span>
-                    <span className="text-sm font-bold whitespace-nowrap text-(--text-primary)">{formatCOP(c.total)}</span>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </SeccionDetalle>
-      )}
-
-      {/* Tickets de soporte */}
-      <SeccionDetalle
-        titulo="Tickets de soporte"
-        acciones={
-          <button
-            type="button"
-            onClick={() => setMostrandoCrearTicket(true)}
-            className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
-            style={{ color: 'var(--color-brand)' }}
-          >
-            <Plus size={14} sinAnimacion /> Nuevo
-          </button>
-        }
-      >
-        {tickets.length === 0 ? (
-          <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {tickets.map(t => (
-              <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-sm font-semibold text-(--text-primary)">{t.titulo}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
-                    {t.estado.replace('_', ' ')}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-(--text-secondary)">{TIPO_TICKET_LABELS[t.tipo]}</span>
-                  <span className="text-xs text-(--text-secondary)">{formatFecha(t.created_at)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </SeccionDetalle>
-
-      {/* Pasaportes DPP */}
-      {dppActivos.length > 0 && (
-        <SeccionDetalle titulo="Pasaportes DPP">
-          <div className="flex flex-col gap-2">
-            {dppActivos.map(a => (
-              <button
-                key={a.id}
-                onClick={() => router.push(conEmpresa(`/empresa/dpp/${a.id}`))}
-                className="w-full flex items-center justify-between gap-2 text-left hover-pop p-2 rounded-xl hover:bg-(--bg-hover)"
-              >
-                <span className="text-sm text-(--text-primary)">{a.nombre}</span>
-                <span className="text-xs text-(--text-secondary)">{a.codigo_dpp}</span>
+              <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${CLASE_CAMPO} flex-1`} />
+              <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
+              <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
+                <Plus size={16} className="text-[#00827C]" />
               </button>
-            ))}
-          </div>
-        </SeccionDetalle>
-      )}
+            </div>
+          </SeccionDetalle>
+        </DetalleColumna>
 
-      {/* Notas privadas */}
-      <SeccionDetalle titulo="Notas privadas">
-        <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
-      </SeccionDetalle>
+        {/* Columna Derecha: Notas privadas, Historial, Tickets y Pasaportes */}
+        <DetalleColumna>
+          {/* Notas privadas */}
+          <SeccionDetalle titulo="Notas privadas">
+            <HiloNotas endpointBase={conEmpresa(`/api/crm/clientes/${id}/notas`)} placeholder="Escribe una nota sobre este cliente..." />
+          </SeccionDetalle>
+
+          {/* Historial de cotizaciones */}
+          {cotizaciones.length > 0 && (
+            <SeccionDetalle titulo="Historial de cotizaciones">
+              <div className="flex flex-col gap-2">
+                {cotizaciones.map(c => {
+                  const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
+                      className="w-full text-left p-3 rounded-xl border border-(--border) bg-(--bg-card) transition-colors hover:bg-(--bg-hover)"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-sm font-semibold text-(--text-primary)">{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-(--text-secondary)">{formatFecha(c.created_at)}</span>
+                        <span className="text-sm font-bold whitespace-nowrap text-(--text-primary)">{formatCOP(c.total)}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </SeccionDetalle>
+          )}
+
+          {/* Tickets de soporte */}
+          <SeccionDetalle
+            titulo="Tickets de soporte"
+            acciones={
+              <button
+                type="button"
+                onClick={() => setMostrandoCrearTicket(true)}
+                className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
+                style={{ color: 'var(--color-brand)' }}
+              >
+                <Plus size={14} sinAnimacion /> Nuevo
+              </button>
+            }
+          >
+            {tickets.length === 0 ? (
+              <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {tickets.map(t => (
+                  <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-sm font-semibold text-(--text-primary)">{t.titulo}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${ESTADO_TICKET_COLOR[t.estado]}`}>
+                        {t.estado.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-(--text-secondary)">{TIPO_TICKET_LABELS[t.tipo]}</span>
+                      <span className="text-xs text-(--text-secondary)">{formatFecha(t.created_at)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </SeccionDetalle>
+
+          {/* Pasaportes DPP */}
+          {dppActivos.length > 0 && (
+            <SeccionDetalle titulo="Pasaportes DPP">
+              <div className="flex flex-col gap-2">
+                {dppActivos.map(a => (
+                  <button
+                    key={a.id}
+                    onClick={() => router.push(conEmpresa(`/empresa/dpp/${a.id}`))}
+                    className="w-full flex items-center justify-between gap-2 text-left hover-pop p-2 rounded-xl hover:bg-(--bg-hover)"
+                  >
+                    <span className="text-sm text-(--text-primary)">{a.nombre}</span>
+                    <span className="text-xs text-(--text-secondary)">{a.codigo_dpp}</span>
+                  </button>
+                ))}
+              </div>
+            </SeccionDetalle>
+          )}
+        </DetalleColumna>
+      </DetalleGrid>
 
       {/* Pie */}
       <PieDetalle
@@ -658,16 +662,16 @@ function DetalleClienteContent() {
             <input value={nuevoContacto.nombre} onChange={e => setNuevoContacto(p => ({ ...p, nombre: e.target.value }))} className={CLASE_CAMPO} placeholder="Nombre" />
             <input value={nuevoContacto.apellido} onChange={e => setNuevoContacto(p => ({ ...p, apellido: e.target.value }))} className={CLASE_CAMPO} placeholder="Apellido" />
           </div>
-          <div className="flex gap-2">
-            <SelectorPais value={nuevoIndicativo} onChange={setNuevoIndicativo} />
-            <input
-              value={nuevoContacto.telefono}
-              onChange={e => setNuevoContacto(p => ({ ...p, telefono: e.target.value.replace(/[^\d]/g, '') }))}
-              placeholder="Celular (opcional)"
-              inputMode="tel"
-              className={`${CLASE_CAMPO} flex-1`}
-            />
-          </div>
+          <InputTelefono
+            indicativo={nuevoIndicativo.dial}
+            onChangeIndicativo={val => {
+              const p = PAISES.find(item => item.dial === val)
+              if (p) setNuevoIndicativo(p)
+            }}
+            telefono={nuevoContacto.telefono}
+            onChangeTelefono={val => setNuevoContacto(p => ({ ...p, telefono: val }))}
+            placeholder="Celular (opcional)"
+          />
           <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={CLASE_CAMPO} placeholder="Correo (opcional)" type="email" />
         </div>
       </Modal>

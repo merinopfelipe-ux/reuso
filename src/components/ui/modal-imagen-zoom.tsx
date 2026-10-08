@@ -35,7 +35,7 @@ export function ModalImagenZoom({ imagenUrl, onClose }: Props) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-9999 flex items-center justify-center p-4 md:p-8 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 backdrop-blur-xs animate-in fade-in duration-200"
       style={{ background: 'var(--overlay-zoom)' }}
       onClick={onClose}
     >

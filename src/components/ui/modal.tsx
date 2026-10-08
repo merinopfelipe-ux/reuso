@@ -100,11 +100,12 @@ export function Modal({
   if (!abierto || !mounted) return null
 
   const contenidoModal = (
-    <div className="fixed inset-0 z-9999 flex items-center justify-center p-4 sm:p-6 bg-[#474747]/60 backdrop-blur-xs animate-in fade-in duration-200" onMouseDown={e => { presionoEnFondo.current = e.target === e.currentTarget }} onClick={e => { if (presionoEnFondo.current && e.target === e.currentTarget) onClose() }}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-[#474747]/60 backdrop-blur-xs animate-in fade-in duration-200" onMouseDown={e => { presionoEnFondo.current = e.target === e.currentTarget }} onClick={e => { if (presionoEnFondo.current && e.target === e.currentTarget) onClose() }}>
       <div
         className={`relative w-full ${ancho === 'xl' ? 'max-w-3xl' : ancho === 'lg' ? 'max-w-2xl' : ancho === 'xs' ? 'max-w-xs' : 'max-w-sm'} max-h-[90vh] flex flex-col rounded-3xl overflow-hidden bg-(--bg-card) border border-(--border) shadow-2xl animate-in zoom-in-95 duration-150`}
         onClick={e => e.stopPropagation()}
         role="dialog"
+        aria-modal="true"
         aria-label={sinEncabezado && titulo ? titulo : undefined}
         aria-labelledby={sinEncabezado ? undefined : idTitulo}
         aria-describedby={!sinEncabezado && descripcion ? idDescripcion : undefined}
@@ -115,7 +116,7 @@ export function Modal({
           onClick={onClose}
           className={`rounded-full text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-hover) hover-pop transition-all cursor-pointer z-30 ${
             sinEncabezado
-              ? 'absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5 backdrop-blur-md border border-(--border) shadow-2xs'
+              ? 'absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5 bg-(--bg-card)/80 backdrop-blur-md border border-(--border) shadow-2xs'
               : 'absolute top-4 right-4 sm:top-5 sm:right-5 p-1.5'
           }`}
           aria-label="Cerrar modal"

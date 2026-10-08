@@ -31,25 +31,70 @@ interface DetallePaginaProps {
   cargando?: boolean
   /** Si hay un mensaje de error y no se puede mostrar nada más. */
   errorFatal?: string | null
+  /** Ancho máximo: 'ancho' (max-w-6xl, default para 2 columnas en tablet/desktop) o 'normal' (max-w-3xl). */
+  ancho?: 'normal' | 'ancho'
+  className?: string
 }
 
-export function DetallePagina({ children, cargando, errorFatal }: DetallePaginaProps) {
+export function DetallePagina({
+  children,
+  cargando,
+  errorFatal,
+  ancho = 'ancho',
+  className = '',
+}: DetallePaginaProps) {
+  const maxW = ancho === 'normal' ? 'max-w-3xl' : 'max-w-6xl'
   if (cargando) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className={`${maxW} mx-auto px-4 sm:px-6 py-6`}>
         <SkeletonLista filas={3} />
       </div>
     )
   }
   if (errorFatal) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-10 flex items-center justify-center">
+      <div className={`${maxW} mx-auto px-4 sm:px-6 py-10 flex items-center justify-center`}>
         <p className="text-sm text-(--text-secondary)">{errorFatal}</p>
       </div>
     )
   }
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col gap-5">
+    <div className={`${maxW} mx-auto px-4 sm:px-6 py-6 flex flex-col gap-5 ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+/**
+ * Cuadrícula canónica a dos columnas para tablet (md:) y computador (lg:/xl:).
+ * En móvil (<768px) apila automáticamente en una sola columna vertical.
+ */
+export function DetalleGrid({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`grid grid-cols-1 md:grid-cols-2 gap-5 items-start ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+/**
+ * Columna vertical para agrupar tarjetas dentro de DetalleGrid sin desfases de altura entre filas.
+ */
+export function DetalleColumna({
+  children,
+  className = '',
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`flex flex-col gap-5 ${className}`}>
       {children}
     </div>
   )
@@ -63,12 +108,20 @@ interface SeccionDetalleProps {
   acciones?: ReactNode
   children: ReactNode
   className?: string
+  ancho?: 'normal' | 'completo'
 }
 
-export function SeccionDetalle({ titulo, acciones, children, className }: SeccionDetalleProps) {
+export function SeccionDetalle({
+  titulo,
+  acciones,
+  children,
+  className = '',
+  ancho = 'normal',
+}: SeccionDetalleProps) {
   const tieneEncabezado = titulo || acciones
+  const colSpan = ancho === 'completo' ? 'md:col-span-2' : ''
   return (
-    <section className={`rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4 ${className ?? ''}`}>
+    <section className={`rounded-2xl border border-(--border) bg-(--bg-card) p-4 sm:p-5 flex flex-col gap-4 ${colSpan} ${className}`}>
       {tieneEncabezado && (
         <div className="flex items-center justify-between gap-3">
           {titulo && <h2 className="text-base font-semibold text-(--text-primary) m-0">{titulo}</h2>}
@@ -113,11 +166,11 @@ export function EncabezadoDetalle({ titulo, subtitulo, meta, hrefVolver, onVolve
       <div className="flex items-center justify-between gap-3 flex-wrap">
         {hrefVolver && !onVolver ? (
           <Link href={hrefVolver} className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
-            <ArrowLeft size={16} /> {textoVolver}
+            <ArrowLeft size={16} sinAnimacion /> {textoVolver}
           </Link>
         ) : onVolver ? (
           <button type="button" onClick={onVolver} className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
-            <ArrowLeft size={16} /> {textoVolver}
+            <ArrowLeft size={16} sinAnimacion /> {textoVolver}
           </button>
         ) : null}
         {meta && <span className="text-xs text-(--text-placeholder)">{meta}</span>}
@@ -153,7 +206,7 @@ export function PieDetalle({
   extra,
 }: PieDetalleProps) {
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className="flex items-center gap-3 flex-wrap pt-2">
       <Button onClick={onGuardar} loading={guardando}>
         {textoGuardar}
       </Button>
@@ -163,9 +216,9 @@ export function PieDetalle({
         </Button>
       )}
       {hrefVolver && !onVolver && (
-        <Link href={hrefVolver}>
-          <Button variant="secondary">Volver</Button>
-        </Link>
+        <Button href={hrefVolver} variant="secondary">
+          Volver
+        </Button>
       )}
       {extra}
     </div>
