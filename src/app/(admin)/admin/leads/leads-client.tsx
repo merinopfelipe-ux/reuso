@@ -1,5 +1,6 @@
 'use client'
 
+import { parsearNotasLead, type NotaLead } from '@/lib/notas-lead'
 import { useState, useTransition, useRef, useEffect, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
@@ -123,37 +124,6 @@ interface ContactoParseado {
   evento_nombre: string
   mensaje: string
   estado: EstadoLead
-}
-
-interface NotaLead {
-  id: string
-  texto: string
-  fecha: string
-}
-
-function parsearNotasLead(raw: string | null | undefined): NotaLead[] {
-  if (!raw || !raw.trim()) return []
-  try {
-    const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) {
-      return parsed
-        .map((item, idx) => ({
-          id: String(item.id || `nota-${idx}`),
-          texto: String(item.texto || item.nota || ''),
-          fecha: String(item.fecha || item.created_at || new Date().toISOString()),
-        }))
-        .filter(n => Boolean(n.texto.trim()))
-    }
-  } catch {
-    return [
-      {
-        id: 'legacy',
-        texto: raw.trim(),
-        fecha: new Date().toISOString(),
-      },
-    ]
-  }
-  return []
 }
 
 function formatearFechaLead(iso: string) {
@@ -719,29 +689,25 @@ export function LeadsClient({
   async function agregarNotaModal() {
     if (!nuevaNotaTexto.trim() || !leadEditando) return
     setGuardandoNota(true)
-    const nueva: NotaLead = {
-      id: crypto.randomUUID(),
-      texto: nuevaNotaTexto.trim(),
-      fecha: new Date().toISOString(),
-    }
-    const actualizadas = [nueva, ...notasModal]
-    setNotasModal(actualizadas)
-    setNuevaNotaTexto('')
-
+    const texto = nuevaNotaTexto.trim()
     try {
-      const serializado = JSON.stringify(actualizadas)
       const res = await fetch(`/api/admin/leads?id=${leadEditando.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notas: serializado }),
+        body: JSON.stringify({ nota_nueva: texto }),
       })
       if (res.ok) {
+        // El servidor firma la nota con fecha y usuario: se muestra lo que guardó.
+        const data = await res.json().catch(() => null)
+        const serializado: string | null = data?.notas ?? null
+        setNotasModal(parsearNotasLead(serializado))
+        setNuevaNotaTexto('')
         setLeads(ls => ls.map(l => (l.id === leadEditando.id ? { ...l, notas: serializado } : l)))
         setExitoNota(true)
         setTimeout(() => setExitoNota(false), 2000)
       }
     } catch {
-      // Si falla la red, la nota permanece en memoria del modal para guardarse al confirmar
+      // Si falla la red, el texto sigue en el cuadro para intentarlo de nuevo
     } finally {
       setGuardandoNota(false)
     }
@@ -2073,7 +2039,7 @@ export function LeadsClient({
                             {n.texto}
                           </span>
                           <span className="text-[10px] text-(--text-secondary)">
-                            {f.dia} · {f.hora}
+                            {f.dia} · {f.hora}{n.autor ? ` · ${n.autor}` : ''}
                           </span>
                         </div>
                         <button

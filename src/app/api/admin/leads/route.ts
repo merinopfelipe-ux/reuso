@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { normalizarTelefono } from '@/lib/telefono'
+import { parsearNotasLead } from '@/lib/notas-lead'
 import { z } from 'zod'
 
 const leadPatchSchema = z.object({
@@ -14,7 +15,9 @@ const leadPatchSchema = z.object({
   mensaje: z.string().max(2000).nullable().optional(),
   evento_nombre: z.string().trim().max(120).nullable().optional(),
   usuario_whatsapp: z.string().trim().max(60).optional().nullable(),
-  notas: z.string().trim().max(5000).optional().nullable(),
+  notas: z.string().trim().max(20000).optional().nullable(),
+  // Una nota nueva: el servidor la firma con la fecha y el usuario de la sesión.
+  nota_nueva: z.string().trim().min(1, 'Escribe la nota.').max(2000).optional(),
 })
 
 const leadPostSchema = z.object({
@@ -131,6 +134,16 @@ export async function PATCH(request: NextRequest) {
   // avisa claro en vez de fallar en silencio (ver abajo el manejo del error).
   if (parsed.data.usuario_whatsapp !== undefined) patchData.usuario_whatsapp = parsed.data.usuario_whatsapp?.replace(/^@/, '') || null
   if (parsed.data.notas !== undefined) patchData.notas = parsed.data.notas || null
+
+  if (parsed.data.nota_nueva) {
+    const [{ data: actual }, { data: perfil }] = await Promise.all([
+      guard.adminClient.from('leads').select('notas').eq('id', id).maybeSingle(),
+      guard.adminClient.from('profiles').select('nombre, apellido').eq('user_id', guard.user.id).maybeSingle(),
+    ])
+    const autor = [perfil?.nombre, perfil?.apellido].filter(Boolean).join(' ').trim() || 'Administración'
+    const nueva = { id: crypto.randomUUID(), texto: parsed.data.nota_nueva, fecha: new Date().toISOString(), autor }
+    patchData.notas = JSON.stringify([nueva, ...parsearNotasLead(actual?.notas)])
+  }
 
   const { data, error } = await guard.adminClient
     .from('leads')

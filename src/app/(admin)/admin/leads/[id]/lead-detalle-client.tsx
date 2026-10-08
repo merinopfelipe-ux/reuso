@@ -9,6 +9,7 @@ import { Selector } from '@/components/ui/selector'
 import { InputTelefono } from '@/components/ui/input-telefono'
 import { useToast } from '@/components/toast-provider'
 import { normalizarTelefono, separarTelefonoEIndicativo } from '@/lib/telefono'
+import { parsearNotasLead, formatearFechaNota } from '@/lib/notas-lead'
 
 // WhatsApp abre un chat de dos maneras: por número (solo dígitos, con
 // indicativo y sin signos) o por nombre de usuario. Las dos usan wa.me.
@@ -63,14 +64,37 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
     interes: lead.interes ?? '',
     evento_nombre: lead.evento_nombre ?? '',
     mensaje: lead.mensaje ?? '',
-    notas: lead.notas ?? '',
     estado: (ESTADOS.includes(lead.estado as EstadoLead) ? lead.estado : 'nuevo') as EstadoLead,
   })
+  const [notas, setNotas] = useState(() => parsearNotasLead(lead.notas))
+  const [nuevaNota, setNuevaNota] = useState('')
+  const [agregandoNota, setAgregandoNota] = useState(false)
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
 
   const telFinal = telefono.trim() ? (indicativo ? normalizarTelefono(`${indicativo} ${telefono}`) : telefono.trim()) : null
   const wa = enlaceWhatsApp(telFinal, form.usuario_whatsapp)
+
+  async function agregarNota() {
+    if (!nuevaNota.trim()) return
+    setAgregandoNota(true)
+    try {
+      const res = await fetch(`/api/admin/leads?id=${lead.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nota_nueva: nuevaNota }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error ?? 'No se pudo guardar la nota.')
+      setNotas(parsearNotasLead(data.notas))
+      setNuevaNota('')
+      toast.success('Nota guardada.')
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'No se pudo guardar la nota.')
+    } finally {
+      setAgregandoNota(false)
+    }
+  }
 
   async function guardar() {
     if (!form.nombre.trim()) {
@@ -212,11 +236,33 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         <h2 className="text-base font-semibold text-(--text-primary) m-0">Notas internas</h2>
         <p className="text-xs text-(--text-secondary) m-0">Solo las ve el equipo. El prospecto nunca las recibe.</p>
         <textarea
-          className={`${campo} min-h-[160px]`}
+          className={`${campo} min-h-[96px]`}
           placeholder="Qué se habló, próximos pasos, fecha del siguiente contacto..."
-          value={form.notas}
-          onChange={e => setForm(p => ({ ...p, notas: e.target.value }))}
+          value={nuevaNota}
+          onChange={e => setNuevaNota(e.target.value)}
         />
+        <div>
+          <Button onClick={agregarNota} loading={agregandoNota} disabled={!nuevaNota.trim()}>
+            Agregar nota
+          </Button>
+        </div>
+        {notas.length > 0 ? (
+          <div className="flex flex-col gap-2 mt-2">
+            {notas.map(n => {
+              const f = formatearFechaNota(n.fecha)
+              return (
+                <div key={n.id} className="rounded-xl border border-(--border) bg-(--bg-input)/50 p-3 flex flex-col gap-1">
+                  <span className="text-sm text-(--text-primary) whitespace-pre-wrap break-words leading-relaxed">{n.texto}</span>
+                  <span className="text-xs text-(--text-secondary)">
+                    {f.dia} · {f.hora}{n.autor ? ` · ${n.autor}` : ''}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-xs text-(--text-placeholder) m-0">Aún no hay notas. Agrega la primera.</p>
+        )}
       </section>
 
       <div className="flex items-center gap-3 flex-wrap">
