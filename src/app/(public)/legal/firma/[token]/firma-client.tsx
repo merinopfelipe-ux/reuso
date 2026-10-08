@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { SelectorPais, type Pais } from '@/components/ui/selector-pais'
 import { FirmaCanvas } from '@/components/legal/firma-canvas'
 import { SwitchOpciones } from '@/components/ui/switch-opciones'
+import { Selector } from '@/components/ui/selector'
 
 const inputSt = 'w-full px-4 py-2.5 rounded-xl border text-sm outline-hidden bg-(--bg-input) border-(--border) text-(--text-primary) transition-colors focus:border-brand'
 
@@ -271,18 +272,18 @@ export function FirmaTokenClient({ token, documentoLabel, invitacion }: { token:
             <label className={`text-xs font-semibold mb-1 block ${ts}`}>
               Documento <span className="text-[#FF5E4B]">*</span>
             </label>
-            <select
+            <Selector
               value={tipoDocumento}
-              onChange={e => setTipoDocumento(e.target.value)}
+              onChange={setTipoDocumento}
               disabled={!aceptado}
-              className={`${inputSt} py-2.5 cursor-pointer`}
-            >
-              <option value="" disabled>Selecciona un documento</option>
-              <option value="CC">Cédula (CC)</option>
-              <option value="CE">Cédula de Extranjería (CE)</option>
-              <option value="NIT">NIT</option>
-              <option value="Pasaporte">Pasaporte</option>
-            </select>
+              placeholder="Selecciona un documento"
+              opciones={[
+                { value: 'CC', label: 'Cédula (CC)' },
+                { value: 'CE', label: 'Cédula de Extranjería (CE)' },
+                { value: 'NIT', label: 'NIT' },
+                { value: 'Pasaporte', label: 'Pasaporte' },
+              ]}
+            />
           </div>
           <div className="sm:col-span-2">
             <label className={`text-xs font-semibold mb-1 block ${ts}`}>

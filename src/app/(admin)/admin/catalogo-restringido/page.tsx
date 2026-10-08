@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { TriangleAlert as Warning, X, Plus } from '@/components/ui/icons'
+import { Selector } from '@/components/ui/selector'
 import { SkeletonLista } from '@/components/ui/skeleton'
 import { formatFecha } from '@/lib/format'
 
@@ -159,15 +160,15 @@ function ItemRestringidoCard({ item, empresas, abierto, onToggle, onOtorgar, onR
               </div>
             ))}
           </div>
-          <div className="flex gap-2">
-            <select
-              value={seleccion}
-              onChange={e => setSeleccion(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-lg border border-(--border) bg-(--bg-input) text-sm text-(--text-primary)"
-            >
-              <option value="">Elige una empresa para compartir</option>
-              {empresasDisponibles.map(e => <option key={e.id} value={e.id}>{e.nombre}</option>)}
-            </select>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <Selector
+                value={seleccion}
+                onChange={setSeleccion}
+                placeholder="Elige una empresa para compartir"
+                opciones={empresasDisponibles.map(e => ({ value: e.id, label: e.nombre }))}
+              />
+            </div>
             <button
               onClick={() => { if (seleccion) { onOtorgar(seleccion); setSeleccion('') } }}
               className="hover-pop hover-press p-2 rounded-lg bg-brand-light shrink-0"

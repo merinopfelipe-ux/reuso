@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { Selector } from '@/components/ui/selector'
 import { HiloTicket } from './hilo-ticket'
 import { formatFecha } from '@/lib/format'
 
@@ -214,9 +215,11 @@ function ModalCrearTicket({ onClose, onCreado }: { onClose: () => void, onCreado
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Motivo / Tipo</label>
-            <select value={tipo} onChange={e => setTipo(e.target.value as TipoTicket)} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: `1px solid var(--border)`, outline: 'none', background: 'var(--bg-input)', color: 'var(--text-primary)', fontSize: 14 }}>
-              {Object.entries(TIPO_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </select>
+            <Selector
+              value={tipo}
+              onChange={v => setTipo(v as TipoTicket)}
+              opciones={Object.entries(TIPO_LABELS).map(([value, label]) => ({ value, label }))}
+            />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 }}>Detalles (opcional)</label>

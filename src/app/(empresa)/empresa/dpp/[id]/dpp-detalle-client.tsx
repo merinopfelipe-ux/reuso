@@ -33,24 +33,7 @@ const labelStyle: React.CSSProperties = {
   color: 'var(--text-primary)', marginBottom: 6, marginTop: 12,
 }
 const fieldStyle: React.CSSProperties = { marginBottom: 4 }
-const btnPrimaryStyle: React.CSSProperties = {
-  background: '#00827C', color: '#fff', border: 'none',
-  borderRadius: 10, padding: '11px 24px', fontSize: 14,
-  fontWeight: 700, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif",
-}
-const btnSecondaryStyle: React.CSSProperties = {
-  background: 'transparent', color: '#00827C',
-  border: '1.5px solid rgba(0,130,124,0.40)',
-  borderRadius: 10, padding: '10px 20px', fontSize: 14,
-  fontWeight: 600, cursor: 'pointer', fontFamily: "'Open Sans', sans-serif",
-  textDecoration: 'none', display: 'inline-flex', alignItems: 'center',
-}
-const btnGhostStyle: React.CSSProperties = {
-  background: 'transparent', color: 'var(--text-secondary)',
-  border: '1px solid var(--border)', borderRadius: 10,
-  padding: '10px 18px', fontSize: 14, fontWeight: 600,
-  cursor: 'pointer', fontFamily: "'Open Sans', sans-serif",
-}
+
 const errorBannerStyle: React.CSSProperties = {
   background: 'rgba(255,94,75,0.08)', border: '1px solid rgba(255,94,75,0.25)',
   borderRadius: 10, padding: '10px 14px', color: '#FF5E4B',
@@ -577,9 +560,9 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
         subtitulo={activo.codigo_dpp}
         showBack
         accion={
-          <a href={`/pasaporte/${activo.codigo_dpp}`} target="_blank" rel="noreferrer" style={btnSecondaryStyle}>
+          <Button variant="secondary" href={`/pasaporte/${activo.codigo_dpp}`} target="_blank" rel="noreferrer">
             Ve la versión pública ↗
-          </a>
+          </Button>
         }
       />
 
@@ -729,11 +712,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
           )}
 
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <a href={`/pasaporte/${activo.codigo_dpp}`} target="_blank" rel="noreferrer" style={btnSecondaryStyle}>
+            <Button variant="secondary" href={`/pasaporte/${activo.codigo_dpp}`} target="_blank" rel="noreferrer">
               Ve la versión pública ↗
-            </a>
+            </Button>
             {activo.qr_url ? (
-              <a href={activo.qr_url} download style={btnSecondaryStyle}>Descarga el QR</a>
+              <Button variant="secondary" href={activo.qr_url} download>Descarga el QR</Button>
             ) : (
               <span style={{ fontSize: 13, color: 'var(--text-secondary)', alignSelf: 'center' }}>El QR se genera al hacer el primer deploy público</span>
             )}
@@ -755,9 +738,9 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 </p>
               )}
             </div>
-            <button onClick={() => setShowModalCiclo(true)} style={btnPrimaryStyle}>
+            <Button onClick={() => setShowModalCiclo(true)}>
               Registra un ciclo
-            </button>
+            </Button>
           </div>
 
           {ciclos.length === 0 ? (
@@ -861,10 +844,10 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 </div>
                 {errorCiclo && <div style={errorBannerStyle}>{errorCiclo}</div>}
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20 }}>
-                  <button onClick={() => { setShowModalCiclo(false); setErrorCiclo(null) }} style={btnGhostStyle}>Cancelar</button>
-                  <button onClick={handleRegistrarCiclo} disabled={loadingCiclo} style={{ ...btnPrimaryStyle, opacity: loadingCiclo ? 0.7 : 1 }}>
-                    {loadingCiclo ? 'Registrando...' : 'Registra el ciclo'}
-                  </button>
+                  <Button variant="secondary" onClick={() => { setShowModalCiclo(false); setErrorCiclo(null) }}>Cancelar</Button>
+                  <Button onClick={handleRegistrarCiclo} loading={loadingCiclo}>
+                    Registra el ciclo
+                  </Button>
                 </div>
               </div>
             </div>
@@ -1006,9 +989,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
 
           {errorMetricas && <div style={errorBannerStyle}>{errorMetricas}</div>}
 
-          <button onClick={handleCalcularMetricas} disabled={loadingMetricas} style={{ ...btnPrimaryStyle, marginTop: 8, opacity: loadingMetricas ? 0.7 : 1 }}>
-            {loadingMetricas ? 'Calculando...' : 'Calcula las métricas'}
-          </button>
+          <div style={{ marginTop: 8 }}>
+            <Button onClick={handleCalcularMetricas} disabled={loadingMetricas} variant="primary">
+              {loadingMetricas ? 'Calculando...' : 'Calcula las métricas'}
+            </Button>
+          </div>
 
           {resultados && (
             <div style={{ marginTop: 32 }}>
@@ -1025,8 +1010,8 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               </div>
               <GraficaMetricas resultados={resultados} moneda={moneda} />
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <button onClick={handleDescargarReporteCFO} style={btnPrimaryStyle}>Descarga reporte CFO</button>
-                <button onClick={() => router.refresh()} style={btnSecondaryStyle as React.CSSProperties}>Actualizar vista</button>
+                <Button onClick={handleDescargarReporteCFO} variant="primary">Descarga reporte CFO</Button>
+                <Button onClick={() => router.refresh()} variant="secondary">Actualizar vista</Button>
               </div>
             </div>
           )}
@@ -1113,10 +1098,11 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
               </div>
             </div>
             {errorUpload && <div style={errorBannerStyle}>{errorUpload}</div>}
-            <button onClick={handleUpload} disabled={loadingUpload || !uploadFile}
-              style={{ ...btnPrimaryStyle, opacity: loadingUpload || !uploadFile ? 0.6 : 1, marginTop: 8 }}>
-              {loadingUpload ? 'Subiendo...' : 'Sube el documento'}
-            </button>
+            <div style={{ marginTop: 8 }}>
+              <Button onClick={handleUpload} disabled={loadingUpload || !uploadFile} variant="primary">
+                {loadingUpload ? 'Subiendo...' : 'Sube el documento'}
+              </Button>
+            </div>
           </div>
           {documentosList.length === 0 ? (
             <EmptyState icono={FileText} titulo="Sin documentos aún"
@@ -1135,7 +1121,7 @@ export function DppDetalleClient({ activo, ciclos, metricas, documentos }: Props
                 </div>
                 <DocEstadoBadge estado={doc.estado_ocr} />
                 {doc.estado_ocr === 'completado' && (
-                  <button onClick={() => setDocModalId(doc.id)} style={btnSecondaryStyle}>Ver resultados</button>
+                  <Button onClick={() => setDocModalId(doc.id)} variant="secondary" size="sm">Ver resultados</Button>
                 )}
               </div>
             ))

@@ -6,6 +6,7 @@ import { Filter as Funnel } from '@/components/ui/icons'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import { Pagination } from '@/components/ui/pagination'
+import { Selector } from '@/components/ui/selector'
 import { formatFecha as formatFechaBase } from '@/lib/format'
 import type { LogAuditoria } from '@/types'
 
@@ -62,10 +63,18 @@ export function LogsClient({ logs, total, page, pageSize, accionFiltro, desde, h
       {/* Filtros */}
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 16 }}>
         <Funnel size={15} style={{ color: 'var(--color-brand)' }} />
-        <select style={inputSt} value={accionFiltro} onChange={e => navegar({ accion: e.target.value, page: '1' })}>
-          <option value="">Todas las acciones</option>
-          {accionesDisponibles.map(a => <option key={a} value={a}>{a}</option>)}
-        </select>
+        <div style={{ minWidth: 200 }}>
+          <Selector
+            tamano="sm"
+            value={accionFiltro}
+            onChange={val => navegar({ accion: val, page: '1' })}
+            placeholder="Todas las acciones"
+            opciones={[
+              { value: '', label: 'Todas las acciones' },
+              ...accionesDisponibles.map(a => ({ value: a, label: a })),
+            ]}
+          />
+        </div>
         <input type="date" style={inputSt} value={desde}
           onChange={e => navegar({ desde: e.target.value, page: '1' })} title="Desde" />
         <input type="date" style={inputSt} value={hasta}
