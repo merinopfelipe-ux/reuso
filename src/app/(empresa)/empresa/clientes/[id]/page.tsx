@@ -44,6 +44,7 @@ interface EmpresaClienteDetalle {
   nit: string
   razon_social: string
   nombre_comercial: string | null
+  nombres_comerciales: string[] | null
   direccion: string | null
   sector: string | null
 }
@@ -64,6 +65,8 @@ interface ClienteDetalle {
   empresa_cliente_id: string | null
   es_contacto_real: boolean
   crm_empresas_clientes: EmpresaClienteDetalle | EmpresaClienteDetalle[] | null
+  telefonos_extra: Array<{ indicativo: string; numero: string }> | null
+  correos_extra: string[] | null
 }
 
 interface CotizacionResumen {
@@ -81,7 +84,7 @@ interface DppActivoResumen {
   estado: string
 }
 
-interface Atributo { id: string; clave: string; valor: string | null }
+interface AtributoEmpresa { id: string; clave: string; valor: string | null }
 
 // Mismos 7 estados y colores que ya usa /empresa/cotizador — nunca se
 // inventan colores nuevos para el mismo dato.
@@ -133,8 +136,14 @@ function DetalleClienteContent() {
   const [direccion, setDireccion] = useState('')
   const [direccionNotas, setDireccionNotas] = useState('')
   const [razonSocial, setRazonSocial] = useState('')
-  const [nombreComercial, setNombreComercial] = useState('')
   const [sector, setSector] = useState('')
+  const [nombresComerciales, setNombresComerciales] = useState<string[]>([])
+  const [nuevoNombreComercial, setNuevoNombreComercial] = useState('')
+  const [telefonosExtra, setTelefonosExtra] = useState<Array<{ indicativo: string; numero: string }>>([])
+  const [correosExtra, setCorreosExtra] = useState<string[]>([])
+  const [atributosEmpresa, setAtributosEmpresa] = useState<AtributoEmpresa[]>([])
+  const [nuevaClaveEmpresa, setNuevaClaveEmpresa] = useState('')
+  const [nuevoValorEmpresa, setNuevoValorEmpresa] = useState('')
 
   interface ContactoHermano { id: string; nombre: string; apellido: string | null; telefono: string | null; telefono_indicativo: string | null; email: string | null }
   const [otrosContactos, setOtrosContactos] = useState<ContactoHermano[]>([])
@@ -143,10 +152,6 @@ function DetalleClienteContent() {
   const [nuevoIndicativo, setNuevoIndicativo] = useState<Pais>(PAISES[0])
   const [agregandoContacto, setAgregandoContacto] = useState(false)
   const [errorAgregar, setErrorAgregar] = useState<string | null>(null)
-
-  const [atributos, setAtributos] = useState<Atributo[]>([])
-  const [nuevaClave, setNuevaClave] = useState('')
-  const [nuevoValor, setNuevoValor] = useState('')
 
   const [tickets, setTickets] = useState<TicketResumen[]>([])
   const [mostrandoCrearTicket, setMostrandoCrearTicket] = useState(false)
@@ -162,9 +167,8 @@ function DetalleClienteContent() {
       setCargando(true)
       setError(null)
       try {
-        const [resCliente, resAtributos, resTickets] = await Promise.all([
+        const [resCliente, resTickets] = await Promise.all([
           fetch(conEmpresa(`/api/cotizador/clientes/${id}`)),
-          fetch(conEmpresa(`/api/crm/clientes/${id}/atributos`)).catch(() => null),
           fetch(conEmpresa(`/api/tickets?cliente_id=${id}`)).catch(() => null),
         ])
 
@@ -198,12 +202,14 @@ function DetalleClienteContent() {
         setCiudad(c.ciudad ?? CIUDAD_DEFECTO)
         setDireccion(c.direccion ?? '')
         setDireccionNotas(c.direccion_notas ?? '')
+        setTelefonosExtra(c.telefonos_extra ?? [])
+        setCorreosExtra(c.correos_extra ?? [])
 
         const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
         if (emp) {
           setRazonSocial(emp.razon_social ?? '')
-          setNombreComercial(emp.nombre_comercial ?? '')
           setSector(emp.sector ?? '')
+          setNombresComerciales(emp.nombres_comerciales ?? [])
           const resHermanos = await fetch(conEmpresa(`/api/cotizador/clientes?q=&empresa_cliente_id=${emp.id}`)).catch(() => null)
           if (resHermanos && resHermanos.ok) {
             const dHermanos = await resHermanos.json().catch(() => null)
@@ -213,13 +219,14 @@ function DetalleClienteContent() {
               )
             }
           }
+          const resAtributosEmpresa = await fetch(conEmpresa(`/api/crm/empresas-clientes/${emp.id}/atributos`)).catch(() => null)
+          if (resAtributosEmpresa?.ok) {
+            const d = await resAtributosEmpresa.json().catch(() => null)
+            if (Array.isArray(d?.data)) setAtributosEmpresa(d.data)
+          }
         }
 
         // Carga enriquecida opcional: no bloquea ni rompe la visualización del cliente
-        if (resAtributos && resAtributos.ok) {
-          const dAtributos = await resAtributos.json().catch(() => null)
-          if (Array.isArray(dAtributos?.data)) setAtributos(dAtributos.data)
-        }
         if (resTickets && resTickets.ok) {
           const dTickets = await resTickets.json().catch(() => null)
           if (Array.isArray(dTickets?.data)) setTickets(dTickets.data)
@@ -250,9 +257,11 @@ function DetalleClienteContent() {
         body: JSON.stringify({
           nombre, apellido: apellido || null, identificacion: identificacion || null, email: email || null,
           telefono: telefono || null, telefono_indicativo: telefonoIndicativo.dial,
+          telefonos_extra: telefonosExtra,
+          correos_extra: correosExtra,
           pais: pais || null, ciudad: ciudad || null, direccion: direccion || null,
           direccion_notas: direccionNotas || null,
-          ...(emp ? { razon_social: razonSocial, nombre_comercial: nombreComercial || null, sector: sector || null } : {}),
+          ...(emp ? { razon_social: razonSocial, sector: sector || null, nombres_comerciales: nombresComerciales } : {}),
         }),
       })
       const d = await res.json()
@@ -314,20 +323,21 @@ function DetalleClienteContent() {
     }
   }
 
-  async function agregarAtributo() {
-    if (!id || !nuevaClave.trim()) return
-    const res = await fetch(conEmpresa(`/api/crm/clientes/${id}/atributos`), {
+  async function agregarAtributoEmpresa() {
+    const emp = cliente && (Array.isArray(cliente.crm_empresas_clientes) ? cliente.crm_empresas_clientes[0] : cliente.crm_empresas_clientes)
+    if (!emp || !nuevaClaveEmpresa.trim()) return
+    const res = await fetch(conEmpresa(`/api/crm/empresas-clientes/${emp.id}/atributos`), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clave: nuevaClave.trim(), valor: nuevoValor.trim() || undefined }),
+      body: JSON.stringify({ clave: nuevaClaveEmpresa.trim(), valor: nuevoValorEmpresa.trim() || undefined }),
     })
     const d = await res.json()
     if (res.ok && d.data) {
-      setAtributos(prev => {
+      setAtributosEmpresa(prev => {
         const sinDuplicado = prev.filter(a => a.clave !== d.data.clave)
         return [...sinDuplicado, d.data]
       })
-      setNuevaClave(''); setNuevoValor('')
+      setNuevaClaveEmpresa(''); setNuevoValorEmpresa('')
     }
   }
 
@@ -393,12 +403,62 @@ function DetalleClienteContent() {
               <CampoFormulario label="Razón social">
                 <input value={razonSocial} onChange={e => setRazonSocial(e.target.value)} className={CLASE_CAMPO} />
               </CampoFormulario>
-              <CampoFormulario label="Nombre comercial">
-                <input value={nombreComercial} onChange={e => setNombreComercial(e.target.value)} className={CLASE_CAMPO} placeholder="Opcional" />
+              <CampoFormulario label="Nombres comerciales" compuesto>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {nombresComerciales.map((nc, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
+                      {nc}
+                      <button type="button" onClick={() => setNombresComerciales(prev => prev.filter((_, j) => j !== i))} className="ml-0.5 hover:text-(--color-error)" title="Quitar">×</button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    value={nuevoNombreComercial}
+                    onChange={e => setNuevoNombreComercial(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        const v = nuevoNombreComercial.trim()
+                        if (v && !nombresComerciales.includes(v)) setNombresComerciales(prev => [...prev, v])
+                        setNuevoNombreComercial('')
+                      }
+                    }}
+                    className={`${CLASE_CAMPO} flex-1`}
+                    placeholder="Añadir nombre comercial y presionar Enter"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const v = nuevoNombreComercial.trim()
+                      if (v && !nombresComerciales.includes(v)) setNombresComerciales(prev => [...prev, v])
+                      setNuevoNombreComercial('')
+                    }}
+                    className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+                  ><Plus size={16} className="text-brand" /></button>
+                </div>
               </CampoFormulario>
               <div className="flex flex-col gap-1">
                 <span className={CLASE_ETIQUETA}>Actividad económica (CIIU)</span>
                 <SelectorCiiu value={sector} onChange={setSector} />
+              </div>
+              <div className="border-t border-(--border) pt-3 mt-1">
+                <p className="text-xs font-semibold text-(--text-secondary) mb-2">Atributos personalizados</p>
+                {atributosEmpresa.length > 0 && (
+                  <div className="flex flex-col gap-2 mb-3">
+                    {atributosEmpresa.map(a => (
+                      <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="font-medium text-(--text-primary)">{a.clave}</span>
+                        <span className="text-(--text-secondary)">{a.valor ?? '—'}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input value={nuevaClaveEmpresa} onChange={e => setNuevaClaveEmpresa(e.target.value)} placeholder="Clave" className={`${CLASE_CAMPO} flex-1`} />
+                  <input value={nuevoValorEmpresa} onChange={e => setNuevoValorEmpresa(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
+                  <button onClick={agregarAtributoEmpresa} className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0" title="Agregar"><Plus size={16} className="text-brand" /></button>
+                </div>
               </div>
             </SeccionDetalle>
           )}
@@ -450,6 +510,25 @@ function DetalleClienteContent() {
               <CampoFormulario label="Correo">
                 <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
               </CampoFormulario>
+              {correosExtra.map((c, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    value={c}
+                    onChange={e => setCorreosExtra(prev => prev.map((x, j) => j === i ? e.target.value : x))}
+                    type="email"
+                    className={`${CLASE_CAMPO} flex-1`}
+                    placeholder="Correo adicional"
+                  />
+                  <button type="button" onClick={() => setCorreosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setCorreosExtra(prev => [...prev, ''])}
+                className="text-xs font-semibold text-brand hover:underline"
+              >
+                + Agregar otro correo
+              </button>
               <div className="flex flex-col gap-1 sm:col-span-2">
                 <span className={CLASE_ETIQUETA}>Celular</span>
                 <InputTelefono
@@ -461,6 +540,29 @@ function DetalleClienteContent() {
                   telefono={telefono}
                   onChangeTelefono={setTelefono}
                 />
+              </div>
+              {telefonosExtra.map((t, i) => (
+                <div key={i} className="flex gap-2 items-center sm:col-span-2">
+                  <div className="flex-1">
+                    <InputTelefono
+                      indicativo={t.indicativo}
+                      onChangeIndicativo={val => setTelefonosExtra(prev => prev.map((x, j) => j === i ? { ...x, indicativo: val } : x))}
+                      telefono={t.numero}
+                      onChangeTelefono={val => setTelefonosExtra(prev => prev.map((x, j) => j === i ? { ...x, numero: val } : x))}
+                      placeholder="Celular adicional"
+                    />
+                  </div>
+                  <button type="button" onClick={() => setTelefonosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
+                </div>
+              ))}
+              <div className="sm:col-span-2">
+                <button
+                  type="button"
+                  onClick={() => setTelefonosExtra(prev => [...prev, { indicativo: telefonoIndicativo.dial, numero: '' }])}
+                  className="text-xs font-semibold text-brand hover:underline"
+                >
+                  + Agregar otro celular
+                </button>
               </div>
             </div>
           </SeccionDetalle>
@@ -486,27 +588,6 @@ function DetalleClienteContent() {
             </CampoFormulario>
           </SeccionDetalle>
 
-          {/* Atributos personalizados */}
-          <SeccionDetalle titulo="Atributos personalizados">
-            {atributos.length === 0 && <p className="text-xs italic text-(--text-secondary)">Sin atributos todavía.</p>}
-            {atributos.length > 0 && (
-              <div className="flex flex-col gap-2">
-                {atributos.map(a => (
-                  <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="font-medium text-(--text-primary)">{a.clave}</span>
-                    <span className="text-(--text-secondary)">{a.valor ?? '—'}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            <div className="flex gap-2">
-              <input value={nuevaClave} onChange={e => setNuevaClave(e.target.value)} placeholder="Clave (ej. Horario preferido)" className={`${CLASE_CAMPO} flex-1`} />
-              <input value={nuevoValor} onChange={e => setNuevoValor(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
-              <button onClick={agregarAtributo} className="hover-pop hover-press p-2.5 rounded-xl bg-[#00827C]/10 shrink-0" title="Agregar">
-                <Plus size={16} className="text-[#00827C]" />
-              </button>
-            </div>
-          </SeccionDetalle>
         </DetalleColumna>
 
         {/* Columna Derecha: Historial, Tickets, Pasaportes y Notas (siempre al final) */}
