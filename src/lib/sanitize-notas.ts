@@ -3,7 +3,7 @@
 // Solo etiquetas de formato de texto — nada estructural, ningún atributo
 // distinto a "style" (y DOMPurify limpia el CSS peligroso de ahí mismo).
 export const NOTA_SANITIZE_CONFIG = {
-  ALLOWED_TAGS: ['a', 'b', 'strong', 'i', 'em', 'u', 's', 'del', 'strike', 'span', 'mark', 'br'],
+  ALLOWED_TAGS: ['a', 'b', 'strong', 'i', 'em', 'u', 's', 'del', 'strike', 'span', 'mark', 'br', 'p', 'ul', 'ol', 'li', 'hr'],
   ALLOWED_ATTR: ['href', 'target', 'rel', 'class', 'style'],
 }
 

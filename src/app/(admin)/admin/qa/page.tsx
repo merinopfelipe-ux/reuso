@@ -83,7 +83,7 @@ function getRolesForTaskId(id: string, categoria: string): RolPrueba[] {
   
   // Panel Empresa
   if (categoria === 'Panel Empresa' || id.startsWith('emp-')) {
-    if (id === 'emp-05' || id === 'emp-06') return ['empresa_admin', 'empleado']
+    if (id === 'emp-05' || id === 'emp-06' || id === 'emp-16' || id === 'emp-17') return ['empresa_admin', 'empleado']
     return ['empresa_admin']
   }
   
@@ -976,15 +976,45 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
   },
 {
     id: 'emp-15', categoria: 'Panel Empresa', ruta: '/empresa/clientes/[id]', critica: false,
-    titulo: 'Ficha detallada del cliente y acuerdos comerciales',
-    descripcion: 'Revisa el perfil completo de un cliente específico, sus condiciones de servicio y las cotizaciones activas que tiene con tu empresa.',
+    titulo: 'Ficha detallada del cliente a dos columnas con componentes canónicos',
+    descripcion: 'Organiza la ficha comercial del cliente en computador y tablet a dos columnas con DetalleGrid y DetalleColumna, verificando los componentes canónicos de teléfono con banderas e indicativo (InputTelefono) y documento (InputDocumento).',
     pasos: [
-      'Haz clic sobre un cliente en el directorio.',
-      'Revisa sus datos de contacto y cotizaciones asociadas.',
-      'Actualiza notas comerciales o persona de contacto de ser necesario.'
+      'Haz clic sobre un cliente en el directorio /empresa/clientes.',
+      'Verifica que en computador y tablet la información se divida en dos columnas armoniosas sin traslapes.',
+      'Comprueba los campos de teléfono con selector de país y banderas, y el selector de documento.',
+      'Revisa el historial de cotizaciones, tickets asociados y pasaportes DPP.'
     ],
-    esperado: 'La ficha centraliza toda la información comercial de forma ordenada y fácil de consultar.',
+    esperado: 'La ficha centraliza la información comercial a dos columnas de forma ordenada y limpia con todos los componentes canónicos del sistema.',
     journeys: ['Admin Operativa', 'Directivo']
+  },
+{
+    id: 'emp-16', categoria: 'Panel Empresa', ruta: '/empresa/clientes/[id] | /empresa/cotizador/[id]', critica: true,
+    titulo: 'Editor WYSIWYG (Lexical): Formato enriquecido, paleta de marca y notas internas',
+    descripcion: 'Comprueba el editor WYSIWYG canónico basado en Lexical: barra de herramientas modular, paleta de colores de marca (#FBEEB8, #FBDCB4, #F3BBD3, #D6F391, #BFE3FA), negrita, cursiva, subrayado, tachado, aumento de tamaño (+2px), listas con viñetas y numeradas, enlaces interactivos con modal, líneas divisorias, emojis por categoría, atajos Markdown en vivo, barra flotante contextual sobre la selección, modo pantalla completa (Maximize / Esc) y contador dinámico de palabras y caracteres.',
+    pasos: [
+      'En la ficha de un cliente o cotización, abre la caja de notas internas.',
+      'Aplica formatos de texto: negrita (⌘B), cursiva (⌘I), subrayado (⌘U), tachado y aumento de tamaño de letra.',
+      'Selecciona texto y resáltalo usando los colores oficiales de la paleta corporativa.',
+      'Inserta una lista con viñetas, una lista numerada, un enlace mediante el diálogo modal y un divisor horizontal.',
+      'Prueba los atajos Markdown escribiendo "# ", "-", "* " y selecciona texto para verificar la barra flotante rápida.',
+      'Verifica el contador de palabras y caracteres en el pie del editor y prueba el modo pantalla completa.',
+      'Presiona Guardar y confirma que la nota se publique en el hilo sanitizada y formateada sin pérdida de estilos.'
+    ],
+    esperado: 'El editor WYSIWYG responde con fluidez en tiempo real, mantiene estrictamente la fuente del sistema de diseño y guarda notas enriquecidas sin pérdida de formato.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
+  },
+{
+    id: 'emp-17', categoria: 'Panel Empresa', ruta: '/empresa/clientes/[id] | /empresa/cotizador/[id]', critica: false,
+    titulo: 'Edición y eliminación de notas en el hilo CRM con trazabilidad temporal',
+    descripcion: 'Valida que cualquier nota interna publicada en el hilo pueda editarse directamente mediante el WYSIWYG cargando su contenido original y eliminarse de forma segura tras confirmación.',
+    pasos: [
+      'En el hilo de notas de un cliente o cotización, pulsa el botón de editar (lápiz) en una nota.',
+      'Modifica el texto en el editor WYSIWYG de edición y presiona Guardar.',
+      'Verifica que la nota se actualice inmediatamente mostrando la fecha y hora de edición (editado_at).',
+      'Pulsa el botón de eliminar (papelera), confirma la acción y verifica que la nota desaparezca del hilo.'
+    ],
+    esperado: 'La edición y eliminación de notas funcionan de forma reactiva sin recargar la pantalla, manteniendo la trazabilidad histórica de autor y fecha.',
+    journeys: ['Admin Operativa', 'Empleado', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════
@@ -1361,6 +1391,19 @@ const TAREAS_INICIALES: Omit<Tarea, 'estado' | 'notas' | 'roles'>[] = [
     ],
     esperado: 'El primer ítem guarda sin ese material y sin afectar a la categoría. El segundo ítem sigue teniendo el material disponible, con el mismo peso que tenía antes de guardar el primero.',
     journeys: ['Admin Operativa']
+  },
+  {
+    id: 'adm-33', categoria: 'Panel Admin', ruta: '/admin/leads/[id]', critica: false,
+    titulo: 'Ficha detallada del lead a dos columnas con notas comerciales WYSIWYG',
+    descripcion: 'Examina la ficha ejecutiva a dos columnas del contacto comercial en /admin/leads/[id] (datos del contacto a la izquierda e hilo de notas internas enriquecidas a la derecha).',
+    pasos: [
+      'Entra a /admin/leads y haz clic en un contacto interesado.',
+      'Confirma que la pantalla se distribuya a dos columnas en computador y tablet.',
+      'Verifica los componentes de teléfono con selector de país e información del lead.',
+      'Redacta una nota interna con el editor WYSIWYG, guarda y luego edítala comprobando que se registre editadoEl.'
+    ],
+    esperado: 'La ficha del lead organiza toda la información comercial a dos columnas y el hilo de notas registra la bitácora con formato enriquecido.',
+    journeys: ['Admin Operativa', 'Directivo']
   },
 
   // ══════════════════════════════════════════════════════════════════

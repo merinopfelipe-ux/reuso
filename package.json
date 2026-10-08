@@ -13,7 +13,7 @@
     "db:seed": "node --env-file=.env.local scripts/seed-ecosistema.mjs",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
-    "test:unit": "vitest run src/lib/calculos/ src/lib/reportes/",
+    "test:unit": "vitest run src/lib/",
     "test:rls": "node --env-file=.env.local ./node_modules/.bin/vitest run tests/rls --reporter=verbose",
     "pruebas": "bash scripts/run-pruebas.sh",
     "security:secrets": "gitleaks git --no-banner -c .gitleaks.toml",

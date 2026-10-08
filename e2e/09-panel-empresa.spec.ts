@@ -360,9 +360,46 @@ test.describe('empresa_admin', () => {
     }
   })
 
-  test('emp-15 - /empresa/clientes/[id] responde sin errores 500', async ({ page }) => {
-    // Es una ruta dinámica, así que con un fake ID devolverá 404 pero la UI de shell no crashea
-    const res = await page.goto('/empresa/clientes/fake-id', { waitUntil: 'domcontentloaded' })
-    expect(res?.status()).toBeLessThan(500)
+  test('emp-15 - ficha cliente a dos columnas con datos y notas carga correctamente', async ({ page }) => {
+    const empresaId = empresaIdEfimera()
+    const nombreUnico = `E2E Cliente Ficha ${Date.now()}`
+    const { data: cliente, error } = await supabaseAdmin
+      .from('crm_clientes')
+      .insert({ empresa_id: empresaId, tipo: 'persona', nombre: nombreUnico, telefono: '3001234567', es_contacto_real: true })
+      .select('id')
+      .single()
+    if (error || !cliente) throw new Error(`No se pudo sembrar el cliente de emp-15: ${error?.message}`)
+
+    try {
+      await page.goto(`/empresa/clientes/${cliente.id}`, { waitUntil: 'domcontentloaded' })
+      await expect(page.getByText(nombreUnico)).toBeVisible({ timeout: 15_000 })
+      await expect(page.getByText('Notas privadas')).toBeVisible()
+    } finally {
+      await supabaseAdmin.from('crm_clientes').delete().eq('id', cliente.id)
+    }
+  })
+
+  test('emp-16 - editor WYSIWYG en notas internas de cliente carga y permite escribir', async ({ page }) => {
+    const empresaId = empresaIdEfimera()
+    const nombreUnico = `E2E Cliente WYSIWYG ${Date.now()}`
+    const { data: cliente, error } = await supabaseAdmin
+      .from('crm_clientes')
+      .insert({ empresa_id: empresaId, tipo: 'persona', nombre: nombreUnico, telefono: '3001234567', es_contacto_real: true })
+      .select('id')
+      .single()
+    if (error || !cliente) throw new Error(`No se pudo sembrar el cliente de emp-16: ${error?.message}`)
+
+    try {
+      await page.goto(`/empresa/clientes/${cliente.id}`, { waitUntil: 'domcontentloaded' })
+      const editor = page.locator('div[contenteditable="true"]').first()
+      await expect(editor).toBeVisible({ timeout: 15_000 })
+      await editor.click()
+      await editor.fill('Nota de prueba automatizada QA WYSIWYG')
+      await page.getByRole('button', { name: /Guardar nota|Guardar/i }).first().click()
+      await expect(page.getByText('Nota de prueba automatizada QA WYSIWYG')).toBeVisible({ timeout: 10_000 })
+    } finally {
+      await supabaseAdmin.from('crm_clientes_notas').delete().eq('cliente_id', cliente.id)
+      await supabaseAdmin.from('crm_clientes').delete().eq('id', cliente.id)
+    }
   })
 })

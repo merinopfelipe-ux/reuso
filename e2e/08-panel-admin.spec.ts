@@ -479,6 +479,24 @@ test.describe('super_admin', () => {
 
     await supabaseAdmin.from('categorias').delete().eq('id', categoria.id)
   })
+
+  test('adm-33 - ficha de lead a dos columnas con notas internas WYSIWYG', async ({ page }) => {
+    const nombreLead = `E2E Lead Prueba ${Date.now()}`
+    const { data: lead, error } = await supabaseAdmin
+      .from('leads')
+      .insert({ nombre: nombreLead, email: `lead_${Date.now()}@prueba.com`, celular: '3009876543', empresa: 'Empresa Lead E2E' })
+      .select('id')
+      .single()
+    if (error || !lead) throw new Error(`No se pudo sembrar el lead: ${error?.message}`)
+
+    try {
+      await page.goto(`/admin/leads/${lead.id}`, { waitUntil: 'domcontentloaded' })
+      await expect(page.getByText(nombreLead)).toBeVisible({ timeout: 15_000 })
+      await expect(page.getByText('Notas internas')).toBeVisible()
+    } finally {
+      await supabaseAdmin.from('leads').delete().eq('id', lead.id)
+    }
+  })
 })
 
 test('adm-api - la API de admin rechaza a quien no tiene sesión', async ({ browser }) => {
