@@ -48,6 +48,54 @@ import { DetallePagina, SeccionDetalle, PieDetalle } from '@/components/ui/detal
 - `SeccionDetalle`: card `rounded-2xl border bg-(--bg-card)` con título y acciones opcionales.
 - `PieDetalle`: fila de botones Guardar + Volver. Prop `extra` para mensajes de error inline.
 
+### Encabezado de detalle: `EncabezadoDetalle` (mismo archivo)
+```tsx
+import { EncabezadoDetalle } from '@/components/ui/detalle-pagina'
+
+<EncabezadoDetalle
+  titulo="Felipe Merino"
+  subtitulo="Empresa cliente"
+  hrefVolver="/admin/leads"          // o onVolver={() => router.push(...)} para rutas con params
+  textoVolver="Volver a contactos"
+  meta="Registrado el 7 de octubre de 2026"
+/>
+```
+Nunca escribir el bloque de flecha + h1 + fecha a mano: existe este componente.
+
+### Campos de formulario: `src/components/ui/campo-formulario.tsx`
+```tsx
+import { CampoFormulario, CLASE_CAMPO, CLASE_ETIQUETA } from '@/components/ui/campo-formulario'
+
+// Dentro de un grid sm:grid-cols-2:
+<CampoFormulario label="Nombre">
+  <input className={CLASE_CAMPO} value={...} onChange={...} />
+</CampoFormulario>
+
+// Textarea que ocupa ambas columnas:
+<CampoFormulario label="Notas" ancho="completo">
+  <textarea className={`${CLASE_CAMPO} min-h-[80px]`} value={...} onChange={...} />
+</CampoFormulario>
+
+// Para campos con SelectorPais/SelectorCiudad (no admiten label como wrapper):
+<div className="flex flex-col gap-1">
+  <span className={CLASE_ETIQUETA}>País</span>
+  <SelectorPais value={pais} onChange={setPais} />
+</div>
+```
+`CLASE_CAMPO` y `CLASE_ETIQUETA` son constantes exportadas para usarlas donde no cabe `CampoFormulario` (inputs dentro de modales sin grid, etc.).
+
+### Acciones de contacto: `src/components/ui/acciones-contacto.tsx`
+```tsx
+import { AccionesContacto } from '@/components/ui/acciones-contacto'
+
+<AccionesContacto
+  telefono={form.telefono}           // número normalizado con indicativo
+  whatsappUsuario={form.usuario_whatsapp}  // sin @; tiene prioridad sobre teléfono
+  email={form.email}
+/>
+```
+Retorna `null` si no hay datos de contacto. Nunca copiar el bloque de botones WA/correo en una nueva página.
+
 ### Selector de empresa para super_admin: `src/components/ui/contexto-empresa.tsx`
 Para páginas de empresa donde el super_admin debe elegir empresa como paso previo:
 
