@@ -561,3 +561,14 @@ Se eliminaron todas las asimetrías que deformaban el pie de página interno del
   - En la columna de Nombre de la tabla de leads, se agregó la flecha lateral (`<CaretRight size={14} />`), siguiendo el patrón visual de la tabla de cotizaciones.
   - Al hacer clic en el nombre o la flecha, se abre directamente la ficha completa del lead (`/admin/leads/[id]`), con soporte para navegación SPA y apertura en nueva pestaña (`Cmd` / `Ctrl` + clic).
 
+### 3. Entregabilidad de Correos (Resend) y Modo Noche en Apple Mail
+- **Remitente Autenticado vs. Atención:**
+  - Los correos transaccionales salientes envían desde el dominio verificado y autenticado en SPF/DKIM (`notificaciones@calculadoradereuso.com` / `soporte@calculadoradereuso.com`), fijando `Reply-To: innovacion@lurdes.co`. De esta forma se garantiza el 100% de entregabilidad en bandejas de entrada sin rechazos DMARC, asegurando que cualquier respuesta del destinatario llegue directamente al buzón oficial de innovación.
+- **Modo Noche en Apple Mail (iOS / macOS):**
+  - Ajuste de estilos en línea, esquemas de color forzados y metaetiquetas `supported-color-schemes` en plantillas HTML (`src/lib/email.ts`) para evitar que el motor de Mail invierta colores produciendo ilegibilidad o cajas oscurecidas con texto invisible.
+
+### 4. Persistencia de Sesión al Validar Contraseña en Perfil
+- **Corrección en `src/app/api/profile/update-sensitive/route.ts`:**
+  - Al verificar la contraseña actual del usuario previo al cambio de credenciales o 2FA, el cliente temporal de Supabase ejecutaba `signOut()` sin argumentos. Por defecto en Supabase, esto cerraba **todas** las sesiones activas de la cuenta a nivel global, expulsando al usuario inmediatamente del navegador tras guardar cambios.
+  - Se configuró explícitamente `verificador.auth.signOut({ scope: 'local' })`, destruyendo únicamente la sesión volátil del cliente validador y manteniendo intacta la sesión activa en el navegador del usuario.
+
