@@ -28,6 +28,46 @@ Antes de escribir una nueva página de detalle o rediseñar una existente, leer 
 - Inputs de teléfono: siempre `<InputTelefono>` — nunca `<input type="tel">` suelto.
 - Selectores: siempre `<Selector>` — nunca `<select>` nativo.
 
+## Componentes canónicos — usar siempre, no reinventar
+
+### Páginas de detalle: `src/components/ui/detalle-pagina.tsx`
+Tres piezas para cualquier página de detalle (lead, cliente, DPP, cotización):
+
+```tsx
+import { DetallePagina, SeccionDetalle, PieDetalle } from '@/components/ui/detalle-pagina'
+
+<DetallePagina cargando={cargando} errorFatal={error}>
+  <SeccionDetalle titulo="Datos del contacto" acciones={<button>...</button>}>
+    {/* campos */}
+  </SeccionDetalle>
+  <PieDetalle onGuardar={guardar} guardando={guardando} hrefVolver="/lista" />
+</DetallePagina>
+```
+
+- `DetallePagina`: contenedor `max-w-3xl`, maneja estado cargando (skeleton) y error fatal.
+- `SeccionDetalle`: card `rounded-2xl border bg-(--bg-card)` con título y acciones opcionales.
+- `PieDetalle`: fila de botones Guardar + Volver. Prop `extra` para mensajes de error inline.
+
+### Selector de empresa para super_admin: `src/components/ui/contexto-empresa.tsx`
+Para páginas de empresa donde el super_admin debe elegir empresa como paso previo:
+
+```tsx
+import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
+
+{esSuperAdmin && (
+  <ContextoEmpresa
+    empresas={empresas}
+    value={empresaId ?? ''}
+    onChange={cambiarEmpresa}
+    etiqueta="Viendo clientes de"
+    mensajeVacio="Selecciona una empresa para ver sus clientes."
+    listo={!cargandoContexto}
+  />
+)}
+```
+
+Incluye el bloque selector (ícono + etiqueta + `SelectorEmpresa`) y el aviso azul de "elige una empresa" cuando no hay ninguna seleccionada. Nunca duplicar este bloque por página.
+
 ## Ejemplo de estructura mínima
 
 ```tsx
