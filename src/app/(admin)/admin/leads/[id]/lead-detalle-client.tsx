@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
 import { InputTelefono } from '@/components/ui/input-telefono'
@@ -9,6 +10,8 @@ import { normalizarTelefono, separarTelefonoEIndicativo } from '@/lib/telefono'
 import { DetallePagina, SeccionDetalle, PieDetalle, EncabezadoDetalle, DetalleGrid, DetalleColumna } from '@/components/ui/detalle-pagina'
 import { HiloNotas } from '@/components/crm/hilo-notas'
 import { CampoFormulario, CLASE_CAMPO } from '@/components/ui/campo-formulario'
+import { Modal } from '@/components/ui/modal'
+import { Trash } from '@/components/ui/icons'
 
 const ESTADOS = ['nuevo', 'contactado', 'convertido', 'descartado'] as const
 type EstadoLead = (typeof ESTADOS)[number]
@@ -37,6 +40,7 @@ const ETIQUETA_ESTADO: Record<string, string> = {
 
 export function LeadDetalleClient({ lead }: { lead: Lead }) {
   const { toast } = useToast()
+  const router = useRouter()
   const telSeparado = separarTelefonoEIndicativo(lead.telefono)
   const [indicativo, setIndicativo] = useState(telSeparado.indicativo)
   const [telefono, setTelefono] = useState(telSeparado.numero)
@@ -58,6 +62,8 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
   })
   const [guardando, setGuardando] = useState(false)
   const [guardado, setGuardado] = useState(false)
+  const [mostrandoEliminar, setMostrandoEliminar] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
 
   const telFinal = telefono.trim() ? (indicativo ? normalizarTelefono(`${indicativo} ${telefono}`) : telefono.trim()) : null
 
@@ -88,6 +94,25 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
       toast.error(e instanceof Error ? e.message : 'No se pudo guardar.')
     } finally {
       setGuardando(false)
+    }
+  }
+
+  async function eliminarLead() {
+    setEliminando(true)
+    try {
+      const res = await fetch(`/api/admin/leads?id=${lead.id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const d = await res.json().catch(() => null)
+        toast.error(d?.error ?? 'No se pudo eliminar.')
+        setMostrandoEliminar(false)
+        return
+      }
+      router.push('/admin/leads')
+    } catch {
+      toast.error('Error de conexión. Intenta de nuevo.')
+      setMostrandoEliminar(false)
+    } finally {
+      setEliminando(false)
     }
   }
 
@@ -173,6 +198,29 @@ export function LeadDetalleClient({ lead }: { lead: Lead }) {
         guardando={guardando}
         textoGuardar={guardado ? 'Guardado' : 'Guardar cambios'}
         hrefVolver="/admin/leads"
+        extra={
+          <div className="ml-auto flex items-center">
+            <button
+              type="button"
+              onClick={() => setMostrandoEliminar(true)}
+              className="inline-flex items-center gap-1.5 text-xs text-(--text-secondary) hover:text-[#FF5E4B] transition-colors"
+              style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+            >
+              <Trash size={13} sinAnimacion />
+              Eliminar contacto
+            </button>
+          </div>
+        }
+      />
+
+      <Modal
+        abierto={mostrandoEliminar}
+        onClose={() => !eliminando && setMostrandoEliminar(false)}
+        titulo="Eliminar contacto"
+        descripcion="Se elimina también el historial de notas. No se puede deshacer."
+        varianteConfirmar="error"
+        textoConfirmar={eliminando ? 'Eliminando...' : 'Eliminar'}
+        onConfirmar={eliminarLead}
       />
     </DetallePagina>
   )
