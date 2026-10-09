@@ -384,6 +384,7 @@ function ClientesContent() {
                                 </p>
                               </div>
                             </div>
+                            <CaretRight size={16} className={`${ts} shrink-0`} />
                           </button>
 
                           {/* Personas Vinculadas a esta Empresa */}
