@@ -108,6 +108,7 @@ export async function DELETE(request: NextRequest) {
       .from('crm_clientes')
       .select('id')
       .eq('empresa_cliente_id', id)
+      .eq('empresa_id', empresa_id)
     const contactoIds = (contactos ?? []).map(c => c.id)
 
     // Borrar cotizaciones de todos los contactos primero (sin ON DELETE CASCADE)
