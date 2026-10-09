@@ -831,6 +831,7 @@ function DetalleClienteContent() {
               type="button"
               onClick={() => setMostrandoEliminar(true)}
               className="inline-flex items-center gap-1.5 text-xs text-(--text-secondary) hover:text-[#FF5E4B] transition-colors"
+              style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
             >
               <Trash size={13} sinAnimacion />
               Eliminar contacto
