@@ -1,6 +1,6 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { SkeletonLista } from '@/components/ui/skeleton'
@@ -141,6 +141,8 @@ interface EncabezadoDetalleProps {
   subtitulo?: string | null
   /** Meta en el extremo derecho (fecha, código, etc.). */
   meta?: string
+  /** Elemento extra debajo del meta (ej. botón de acción secundaria). */
+  extraMeta?: React.ReactNode
   /** Href estático para Volver. */
   hrefVolver?: string
   /** Callback para Volver cuando la ruta tiene params dinámicos. */
@@ -160,10 +162,10 @@ interface EncabezadoDetalleProps {
  *     meta="Registrado el 7 de octubre de 2026"
  *   />
  */
-export function EncabezadoDetalle({ titulo, subtitulo, meta, hrefVolver, onVolver, textoVolver = 'Volver' }: EncabezadoDetalleProps) {
+export function EncabezadoDetalle({ titulo, subtitulo, meta, extraMeta, hrefVolver, onVolver, textoVolver = 'Volver' }: EncabezadoDetalleProps) {
   return (
     <>
-      <div className="flex items-center justify-between gap-3 flex-wrap">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
         {hrefVolver && !onVolver ? (
           <Link href={hrefVolver} className="inline-flex items-center gap-1.5 text-sm text-(--text-secondary) hover:text-brand">
             <ArrowLeft size={16} sinAnimacion /> {textoVolver}
@@ -173,7 +175,12 @@ export function EncabezadoDetalle({ titulo, subtitulo, meta, hrefVolver, onVolve
             <ArrowLeft size={16} sinAnimacion /> {textoVolver}
           </button>
         ) : null}
-        {meta && <span className="text-xs text-(--text-placeholder)">{meta}</span>}
+        {(meta || extraMeta) && (
+          <div className="flex flex-col items-end gap-1">
+            {meta && <span className="text-xs text-(--text-placeholder)">{meta}</span>}
+            {extraMeta}
+          </div>
+        )}
       </div>
       <div>
         <h1 className="text-2xl font-semibold text-(--text-primary) m-0">{titulo}</h1>

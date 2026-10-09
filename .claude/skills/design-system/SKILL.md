@@ -268,6 +268,43 @@ Referencia completa: `src/app/(public)/faq/faq-client.tsx`. Úsalo como base ant
 
 **Estados visuales consistentes en toda la página:** inactivo = plano y de bajo contraste; activo/abierto = borde + sombra + color de acento tomado directo de la paleta del sistema (nunca un color inventado para la sección). Cada cluster/categoría tiene su propio acento de color fijo (mismo criterio que un badge), consistente entre el filtro, el encabezado de sección y el estado abierto de sus acordeones.
 
+## Patrón "campo + botón para agregar más" (array de valores)
+
+Cuando el usuario dice **"agrega un +"** o **"permite agregar más"** en un campo, significa este patrón exacto — no inventar variantes:
+
+```tsx
+{/* Fila principal: input + botón + */}
+<div className="flex gap-2 items-center">
+  <div className="flex-1">
+    <InputTelefono ... />          {/* o <input type="email" className={`${CLASE_CAMPO} flex-1`} /> */}
+  </div>
+  <button
+    type="button"
+    onClick={() => setExtras(prev => [...prev, valorVacío])}
+    className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+    title="Agregar otro"
+  >
+    <Plus size={16} className="text-brand" />
+  </button>
+</div>
+
+{/* Entradas extra con × para quitar */}
+{extras.map((val, i) => (
+  <div key={i} className="flex gap-2 items-center">
+    <InputTelefono ... />   {/* o <input ... className={`${CLASE_CAMPO} flex-1`} /> */}
+    <button type="button" onClick={() => setExtras(prev => prev.filter((_, j) => j !== i))}
+      className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
+  </div>
+))}
+```
+
+**Reglas fijas:**
+- El botón `+` SIEMPRE es `hover-pop p-2.5 rounded-xl bg-brand-light` con `<Plus size={16} className="text-brand" />` — mismo estilo que "Nombres comerciales" y otros arrays del sistema.
+- Para celular: siempre `InputTelefono` (con indicativo), nunca un `<input type="tel">` suelto.
+- Para correo: `<input type="email" className={CLASE_CAMPO} />`.
+- Las entradas extra siempre tienen el `×` de quitar a la derecha, mismo patrón `p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)`.
+- Si el campo tiene chips de valores confirmados (ej. Nombres comerciales), el div de chips va **solo si hay elementos** (`{lista.length > 0 && <div className="flex flex-wrap gap-1.5 mb-2">...</div>}`). Nunca renderizar el div vacío — crea espacio extra visual.
+
 ## Reglas generales
 - **Toda descarga de datos SIEMPRE pregunta el formato: CSV, Excel y PDF** (en ese orden) — nunca un botón que descarga directo un solo formato. Única excepción: la cotización pública compartida con el cliente (`/cot/[token]`), que siempre es PDF sin preguntar, porque ahí no hay "datos tabulares" que exportar en otro formato, es el documento en sí. Dos patrones válidos según de dónde salen los datos: `BotonDescargar` (`src/components/boton-descargar.tsx`, para exports generados en un endpoint server-side, ya usado en usuarios/empresas) o un `Popover` con las 3 opciones sobre datos ya cargados en el cliente (`descargarCSV`/`descargarExcel`/`descargarPDFTabla` de `src/lib/csv/`, patrón usado en el Cotizador). Nunca inventes un tercer patrón.
 - **Los títulos de una card NUNCA llevan ícono al lado** (ej. `<User /> Datos del contacto`, `<Package /> Pasaportes DPP`) — solo el texto del título, sin `<div className="flex items-center gap-2">` envolviendo un ícono decorativo. Directriz explícita del usuario. Los íconos siguen siendo válidos en botones, badges, filas de dato individuales o acciones puntuales — la regla es específica del encabezado/título de una tarjeta.

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { Plus } from '@/components/ui/icons'
+import { Plus, FloppyDisk } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { SelectorPais, PAISES, type Pais } from '@/components/ui/selector-pais'
 import { SelectorCiudad, CIUDAD_DEFECTO } from '@/components/ui/selector-ciudad'
@@ -447,19 +447,21 @@ function EmpresaClienteContent() {
             </CampoFormulario>
 
             <CampoFormulario label="Nombres comerciales" compuesto>
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                {nombresComerciales.map((nc, i) => (
-                  <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
-                    {nc}
-                    <button
-                      type="button"
-                      onClick={() => setNombresComerciales(prev => prev.filter((_, j) => j !== i))}
-                      className="ml-0.5 hover:text-(--color-error)"
-                      title="Quitar"
-                    >×</button>
-                  </span>
-                ))}
-              </div>
+              {nombresComerciales.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {nombresComerciales.map((nc, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
+                      {nc}
+                      <button
+                        type="button"
+                        onClick={() => setNombresComerciales(prev => prev.filter((_, j) => j !== i))}
+                        className="ml-0.5 hover:text-(--color-error)"
+                        title="Quitar"
+                      >×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="flex gap-2">
                 <input
                   value={nuevoNombreComercial}
@@ -495,8 +497,8 @@ function EmpresaClienteContent() {
             </div>
 
             {/* Dirección principal */}
-            <div className="border-t border-(--border) pt-2 mt-1">
-              <p className="text-xs font-semibold text-(--text-secondary) mb-2">Dirección principal</p>
+            <div className="mt-1">
+              <p className="text-xs font-semibold text-(--text-primary) mb-2">Dirección principal</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
                   <span className={CLASE_ETIQUETA}>País</span>
@@ -507,7 +509,7 @@ function EmpresaClienteContent() {
                   <SelectorCiudad value={empCiudad} onChange={setEmpCiudad} pais={empPais} conEmpresa={conEmpresa} />
                 </div>
               </div>
-              <div className="flex flex-col gap-1 mt-3">
+              <div className="flex flex-col gap-1 mt-2">
                 <span className={CLASE_ETIQUETA}>Dirección</span>
                 <InputDireccion
                   value={empDireccion}
@@ -517,105 +519,106 @@ function EmpresaClienteContent() {
                   ciudad={empCiudad}
                 />
               </div>
-              {/* Notas sobre la dirección — colapsable */}
-              <div className="mt-2">
-                <button
-                  type="button"
-                  onClick={() => setMostrandoNotasDireccion(v => !v)}
-                  className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
-                >
-                  Notas sobre la dirección +
-                </button>
-                {mostrandoNotasDireccion && (
-                  <input
-                    value={empDireccionNotas}
-                    onChange={e => setEmpDireccionNotas(e.target.value)}
-                    className={`${CLASE_CAMPO} mt-1.5`}
-                    placeholder="Torre, apto, referencia"
-                  />
-                )}
-              </div>
-            </div>
-
-            {/* Sedes */}
-            <div className="border-t border-(--border) pt-2 mt-1">
-              <button
-                type="button"
-                onClick={() => setMostrandoFormSede(v => !v)}
-                className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
-              >
-                Sedes adicionales +
-              </button>
-              {sedes.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-1.5">
-                  {sedes.map((s, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
-                      {s.nombre}
-                      {s.direccion && <span className="text-(--text-secondary) font-normal ml-0.5">· {s.direccion}</span>}
-                      <button
-                        type="button"
-                        onClick={() => setSedes(prev => prev.filter((_, j) => j !== i))}
-                        className="ml-0.5 hover:text-(--color-error)"
-                        title="Quitar"
-                      >×</button>
-                    </span>
-                  ))}
-                </div>
-              )}
-              {mostrandoFormSede && (
-                <div className="flex gap-2 mt-1.5">
-                  <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
-                  <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
+              {/* Notas, Sedes y Atributos — agrupados sin bordes individuales */}
+              <div className="mt-2 flex flex-col gap-2">
+                {/* Notas sobre la dirección */}
+                <div>
                   <button
                     type="button"
-                    onClick={() => {
-                      if (!nuevaSede.nombre.trim()) return
-                      setSedes(prev => [...prev, { nombre: nuevaSede.nombre.trim(), direccion: nuevaSede.direccion.trim() || undefined }])
-                      setNuevaSede({ nombre: '', direccion: '' })
-                      setMostrandoFormSede(false)
-                    }}
-                    className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+                    onClick={() => setMostrandoNotasDireccion(v => !v)}
+                    className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
                   >
-                    <Plus size={16} className="text-brand" />
+                    Notas sobre la dirección +
                   </button>
+                  {mostrandoNotasDireccion && (
+                    <input
+                      value={empDireccionNotas}
+                      onChange={e => setEmpDireccionNotas(e.target.value)}
+                      className={`${CLASE_CAMPO} mt-1.5`}
+                      placeholder="Torre, apto, referencia"
+                    />
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Atributos personalizados */}
-            <div className="border-t border-(--border) pt-2 mt-1">
-              <button
-                type="button"
-                onClick={() => setMostrandoFormAtributo(v => !v)}
-                className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
-              >
-                Atributos personalizados +
-              </button>
-              {atributos.length > 0 && (
-                <div className="flex flex-col gap-2 mt-1.5">
-                  {atributos.map(a => (
-                    <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                      <span className="font-medium text-(--text-primary)">{a.clave}</span>
-                      <span className="text-(--text-secondary)">{a.valor ?? ''}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              {mostrandoFormAtributo && (
-                <div className="flex gap-2 mt-1.5">
-                  <input value={nuevaClaveAtributo} onChange={e => setNuevaClaveAtributo(e.target.value)} placeholder="Clave" className={`${CLASE_CAMPO} flex-1`} />
-                  <input value={nuevoValorAtributo} onChange={e => setNuevoValorAtributo(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
-                  <button onClick={agregarAtributo} className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0" title="Guardar">
-                    <Plus size={16} className="text-brand" />
+                {/* Sedes */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setMostrandoFormSede(v => !v)}
+                    className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
+                  >
+                    Sedes adicionales +
                   </button>
+                  {sedes.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {sedes.map((s, i) => (
+                        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-brand-light text-brand border border-brand/20">
+                          {s.nombre}
+                          {s.direccion && <span className="text-(--text-secondary) font-normal ml-0.5">· {s.direccion}</span>}
+                          <button
+                            type="button"
+                            onClick={() => setSedes(prev => prev.filter((_, j) => j !== i))}
+                            className="ml-0.5 hover:text-(--color-error)"
+                            title="Quitar"
+                          >×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {mostrandoFormSede && (
+                    <div className="flex gap-2 mt-1.5">
+                      <input value={nuevaSede.nombre} onChange={e => setNuevaSede(p => ({ ...p, nombre: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Nombre de la sede" />
+                      <input value={nuevaSede.direccion} onChange={e => setNuevaSede(p => ({ ...p, direccion: e.target.value }))} className={`${CLASE_CAMPO} flex-1`} placeholder="Dirección" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!nuevaSede.nombre.trim()) return
+                          setSedes(prev => [...prev, { nombre: nuevaSede.nombre.trim(), direccion: nuevaSede.direccion.trim() || undefined }])
+                          setNuevaSede({ nombre: '', direccion: '' })
+                          setMostrandoFormSede(false)
+                        }}
+                        className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+                      >
+                        <Plus size={16} className="text-brand" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              )}
+
+                {/* Atributos personalizados */}
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setMostrandoFormAtributo(v => !v)}
+                    className="text-xs font-semibold text-(--text-secondary) underline decoration-dotted"
+                  >
+                    Atributos personalizados +
+                  </button>
+                  {atributos.length > 0 && (
+                    <div className="flex flex-col gap-2 mt-1.5">
+                      {atributos.map(a => (
+                        <div key={a.id} className="flex items-center justify-between gap-2 text-sm">
+                          <span className="font-medium text-(--text-primary)">{a.clave}</span>
+                          <span className="text-(--text-secondary)">{a.valor ?? ''}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {mostrandoFormAtributo && (
+                    <div className="flex gap-2 mt-1.5">
+                      <input value={nuevaClaveAtributo} onChange={e => setNuevaClaveAtributo(e.target.value)} placeholder="Clave" className={`${CLASE_CAMPO} flex-1`} />
+                      <input value={nuevoValorAtributo} onChange={e => setNuevoValorAtributo(e.target.value)} placeholder="Valor" className={`${CLASE_CAMPO} flex-1`} />
+                      <button onClick={agregarAtributo} className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0" title="Guardar">
+                        <Plus size={16} className="text-brand" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </SeccionDetalle>
-        </DetalleColumna>
 
-        {/* Columna derecha: contactos, tickets y notas */}
-        <DetalleColumna>
+          {/* Contactos */}
           <SeccionDetalle
             titulo="Contactos"
             acciones={
@@ -644,10 +647,25 @@ function EmpresaClienteContent() {
               </div>
             )}
           </SeccionDetalle>
+        </DetalleColumna>
 
+        {/* Columna derecha: cotizaciones, tickets y notas */}
+        <DetalleColumna>
           {/* Historial de cotizaciones */}
-          {cotizaciones.length > 0 && (
-            <SeccionDetalle titulo="Historial de cotizaciones">
+          <SeccionDetalle
+            titulo="Historial de cotizaciones"
+            acciones={
+              <button
+                type="button"
+                onClick={() => router.push(conEmpresa('/empresa/cotizador/nueva'))}
+                className="flex items-center gap-1 text-xs font-semibold rounded-[6px] px-2 py-1 hover:bg-(--bg-hover)"
+                style={{ color: 'var(--color-brand)' }}
+              >
+                <Plus size={14} sinAnimacion /> Nueva
+              </button>
+            }
+          >
+            {cotizaciones.length > 0 && (
               <div className="flex flex-col gap-2">
                 {cotizaciones.map(c => {
                   const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
@@ -669,8 +687,8 @@ function EmpresaClienteContent() {
                   )
                 })}
               </div>
-            </SeccionDetalle>
-          )}
+            )}
+          </SeccionDetalle>
 
           {/* Tickets de soporte */}
           <SeccionDetalle
@@ -802,48 +820,32 @@ function ContactoCard({ contacto: c, onChange, onGuardar }: ContactoCardProps) {
         <CampoFormulario label="Apellido">
           <input value={c.apellido} onChange={e => onChange({ apellido: e.target.value })} className={CLASE_CAMPO} />
         </CampoFormulario>
-        <CampoFormulario label="Cédula (opcional)" compuesto>
-          <InputDocumento value={c.identificacion} onChange={val => onChange({ identificacion: val })} placeholder="Opcional" />
-        </CampoFormulario>
-        <CampoFormulario label="Correo">
-          <input value={c.email} onChange={e => onChange({ email: e.target.value })} type="email" className={CLASE_CAMPO} />
-        </CampoFormulario>
       </div>
-
-      {/* Correos extra */}
-      {c.correosExtra.map((correo, i) => (
-        <div key={i} className="flex gap-2 items-center">
-          <input
-            value={correo}
-            onChange={e => onChange({ correosExtra: c.correosExtra.map((x, j) => j === i ? e.target.value : x) })}
-            type="email"
-            className={`${CLASE_CAMPO} flex-1`}
-            placeholder="Correo adicional"
-          />
-          <button
-            type="button"
-            onClick={() => onChange({ correosExtra: c.correosExtra.filter((_, j) => j !== i) })}
-            className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)"
-            title="Quitar"
-          >×</button>
-        </div>
-      ))}
-      <button type="button" onClick={() => onChange({ correosExtra: [...c.correosExtra, ''] })} className="text-xs font-semibold text-brand hover:underline self-start">
-        + Agregar otro correo
-      </button>
 
       {/* Celular principal */}
       <div className="flex flex-col gap-1">
         <span className={CLASE_ETIQUETA}>Celular</span>
-        <InputTelefono
-          indicativo={c.telefonoIndicativo.dial}
-          onChangeIndicativo={val => {
-            const p = PAISES.find(item => item.dial === val)
-            if (p) onChange({ telefonoIndicativo: p })
-          }}
-          telefono={c.telefono}
-          onChangeTelefono={val => onChange({ telefono: val })}
-        />
+        <div className="flex gap-2 items-center">
+          <div className="flex-1">
+            <InputTelefono
+              indicativo={c.telefonoIndicativo.dial}
+              onChangeIndicativo={val => {
+                const p = PAISES.find(item => item.dial === val)
+                if (p) onChange({ telefonoIndicativo: p })
+              }}
+              telefono={c.telefono}
+              onChangeTelefono={val => onChange({ telefono: val })}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange({ telefonosExtra: [...c.telefonosExtra, { indicativo: c.telefonoIndicativo.dial, numero: '' }] })}
+            className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+            title="Agregar otro celular"
+          >
+            <Plus size={16} className="text-brand" />
+          </button>
+        </div>
       </div>
 
       {/* Celulares extra */}
@@ -866,13 +868,41 @@ function ContactoCard({ contacto: c, onChange, onGuardar }: ContactoCardProps) {
           >×</button>
         </div>
       ))}
-      <button
-        type="button"
-        onClick={() => onChange({ telefonosExtra: [...c.telefonosExtra, { indicativo: c.telefonoIndicativo.dial, numero: '' }] })}
-        className="text-xs font-semibold text-brand hover:underline self-start"
-      >
-        + Agregar otro celular
-      </button>
+
+      {/* Correo */}
+      <div className="flex flex-col gap-1">
+        <span className={CLASE_ETIQUETA}>Correo</span>
+        <div className="flex gap-2 items-center">
+          <input value={c.email} onChange={e => onChange({ email: e.target.value })} type="email" className={`${CLASE_CAMPO} flex-1`} />
+          <button
+            type="button"
+            onClick={() => onChange({ correosExtra: [...c.correosExtra, ''] })}
+            className="hover-pop p-2.5 rounded-xl bg-brand-light shrink-0"
+            title="Agregar otro correo"
+          >
+            <Plus size={16} className="text-brand" />
+          </button>
+        </div>
+      </div>
+
+      {/* Correos extra */}
+      {c.correosExtra.map((correo, i) => (
+        <div key={i} className="flex gap-2 items-center">
+          <input
+            value={correo}
+            onChange={e => onChange({ correosExtra: c.correosExtra.map((x, j) => j === i ? e.target.value : x) })}
+            type="email"
+            className={`${CLASE_CAMPO} flex-1`}
+            placeholder="Correo adicional"
+          />
+          <button
+            type="button"
+            onClick={() => onChange({ correosExtra: c.correosExtra.filter((_, j) => j !== i) })}
+            className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)"
+            title="Quitar"
+          >×</button>
+        </div>
+      ))}
 
       {c.errorGuardar && <p className="text-sm text-[#FF5E4B]">{c.errorGuardar}</p>}
       <div className="pt-1">
@@ -880,8 +910,9 @@ function ContactoCard({ contacto: c, onChange, onGuardar }: ContactoCardProps) {
           type="button"
           onClick={onGuardar}
           disabled={c.guardando || !!nombreError}
-          className="px-4 py-2 rounded-full text-sm font-semibold bg-[var(--color-brand)] text-[var(--text-on-brand)] hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand underline underline-offset-2 hover:opacity-70 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
         >
+          <FloppyDisk size={14} sinAnimacion />
           {c.guardando ? 'Guardando...' : 'Guardar contacto'}
         </button>
       </div>

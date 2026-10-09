@@ -107,6 +107,7 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
 
   return (
     <div>
+      {notas.length > 0 && (
       <div className="flex flex-col gap-2 mb-3">
         {notas.map(n => {
           const perfilAutor = Array.isArray(n.profiles) ? n.profiles[0] : n.profiles
@@ -195,6 +196,7 @@ export function HiloNotas({ endpointBase, placeholder = 'Escribe una nota intern
           )
         })}
       </div>
+      )}
 
       <WYSIWYG
         ref={editorRef}

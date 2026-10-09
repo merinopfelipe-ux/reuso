@@ -460,6 +460,21 @@ function DetalleClienteContent() {
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
         textoVolver="Volver a clientes"
         meta={cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
+        extraMeta={cliente.tipo === 'persona' && !emp ? (
+          <button
+            type="button"
+            onClick={() => {
+              setConvertirNit(identificacion || '')
+              setConvertirRazonSocial([nombre, apellido].filter(Boolean).join(' '))
+              setErrorConvertir(null)
+              setMostrandoConvertir(true)
+            }}
+            className="text-xs text-(--text-secondary) hover:text-brand"
+            style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+          >
+            Convertir en empresa
+          </button>
+        ) : undefined}
       />
 
       <DetalleGrid>
@@ -632,11 +647,6 @@ function DetalleClienteContent() {
               <CampoFormulario label="Apellido">
                 <input value={apellido} onChange={e => setApellido(e.target.value)} className={CLASE_CAMPO} />
               </CampoFormulario>
-              {cliente.tipo === 'persona' && (
-                <CampoFormulario label="Cédula">
-                  <InputDocumento value={identificacion} onChange={setIdentificacion} placeholder="Opcional" />
-                </CampoFormulario>
-              )}
               <div className="flex flex-col gap-1 sm:col-span-2">
                 <span className={CLASE_ETIQUETA}>Celular</span>
                 <InputTelefono
@@ -649,53 +659,14 @@ function DetalleClienteContent() {
                   onChangeTelefono={setTelefono}
                 />
               </div>
-              {telefonosExtra.map((t, i) => (
-                <div key={i} className="flex gap-2 items-center sm:col-span-2">
-                  <div className="flex-1">
-                    <InputTelefono
-                      indicativo={t.indicativo}
-                      onChangeIndicativo={val => setTelefonosExtra(prev => prev.map((x, j) => j === i ? { ...x, indicativo: val } : x))}
-                      telefono={t.numero}
-                      onChangeTelefono={val => setTelefonosExtra(prev => prev.map((x, j) => j === i ? { ...x, numero: val } : x))}
-                      placeholder="Celular adicional"
-                    />
-                  </div>
-                  <button type="button" onClick={() => setTelefonosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
-                </div>
-              ))}
-              <div className="sm:col-span-2">
-                <button
-                  type="button"
-                  onClick={() => setTelefonosExtra(prev => [...prev, { indicativo: telefonoIndicativo.dial, numero: '' }])}
-                  className="text-xs font-semibold text-brand hover:underline"
-                >
-                  + Agregar otro celular
-                </button>
-              </div>
+              {cliente.tipo === 'persona' && (
+                <CampoFormulario label="Cédula">
+                  <InputDocumento value={identificacion} onChange={setIdentificacion} placeholder="Opcional" />
+                </CampoFormulario>
+              )}
               <div className="flex flex-col gap-1 sm:col-span-2">
                 <span className={CLASE_ETIQUETA}>Correo</span>
                 <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
-              </div>
-              {correosExtra.map((c, i) => (
-                <div key={i} className="flex gap-2 items-center sm:col-span-2">
-                  <input
-                    value={c}
-                    onChange={e => setCorreosExtra(prev => prev.map((x, j) => j === i ? e.target.value : x))}
-                    type="email"
-                    className={`${CLASE_CAMPO} flex-1`}
-                    placeholder="Correo adicional"
-                  />
-                  <button type="button" onClick={() => setCorreosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
-                </div>
-              ))}
-              <div className="sm:col-span-2">
-                <button
-                  type="button"
-                  onClick={() => setCorreosExtra(prev => [...prev, ''])}
-                  className="text-xs font-semibold text-brand hover:underline"
-                >
-                  + Agregar otro correo
-                </button>
               </div>
             </div>
           </SeccionDetalle>
@@ -721,7 +692,7 @@ function DetalleClienteContent() {
                 <button
                   type="button"
                   onClick={() => setMostrandoNotasDireccion(true)}
-                  className="text-xs font-semibold text-brand hover:underline"
+                  className="text-xs font-semibold text-left text-(--text-primary)"
                   style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
                 >
                   Notas sobre la dirección +
@@ -829,26 +800,7 @@ function DetalleClienteContent() {
         onGuardar={intentarGuardar}
         guardando={guardando}
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
-        extra={
-          <div className="flex flex-col items-center gap-2">
-            {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
-            {cliente.tipo === 'persona' && !emp && (
-              <button
-                type="button"
-                onClick={() => {
-                  setConvertirNit(identificacion || '')
-                  setConvertirRazonSocial([nombre, apellido].filter(Boolean).join(' '))
-                  setErrorConvertir(null)
-                  setMostrandoConvertir(true)
-                }}
-                className="text-xs text-(--text-secondary) hover:text-brand"
-                style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
-              >
-                Convertir en empresa
-              </button>
-            )}
-          </div>
-        }
+        extra={error ? <p className="text-sm text-[#FF5E4B]">{error}</p> : undefined}
       />
       <Modal
         abierto={mostrandoCrearTicket}
