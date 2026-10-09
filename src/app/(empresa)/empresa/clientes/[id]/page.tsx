@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
-import { Plus } from '@/components/ui/icons'
+import { Plus, Trash } from '@/components/ui/icons'
 import { Modal } from '@/components/ui/modal'
 import { HiloNotas } from '@/components/crm/hilo-notas'
 import { formatCOP, formatFecha } from '@/lib/format'
@@ -825,14 +825,14 @@ function DetalleClienteContent() {
         guardando={guardando}
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
         extra={
-          <div className="flex flex-col items-center gap-1.5">
+          <div className="ml-auto flex flex-col items-end gap-1.5">
             {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
             <button
               type="button"
               onClick={() => setMostrandoEliminar(true)}
-              className="text-xs text-(--text-secondary) hover:text-[#FF5E4B] transition-colors"
-              style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+              className="inline-flex items-center gap-1.5 text-xs text-(--text-secondary) hover:text-[#FF5E4B] transition-colors"
             >
+              <Trash size={13} sinAnimacion />
               Eliminar contacto
             </button>
           </div>
