@@ -191,7 +191,7 @@ function ClientesContent() {
           contactos: []
         })
       }
-      if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
+      if (c.tipo === 'persona') empresasMap.get(key)!.contactos.push(c)
     } else if (c.empresa_cliente_id) {
       // Tiene empresa_cliente_id pero el join no devolvió datos (raro) —
       // usar el ID del FK para navegar correctamente.
@@ -206,7 +206,7 @@ function ClientesContent() {
           contactos: []
         })
       }
-      if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
+      if (c.tipo === 'persona') empresasMap.get(key)!.contactos.push(c)
     }
     // Si tipo='empresa' pero empresa_cliente_id es null → dato histórico,
     // se muestra en la sección de individuales (personasSueltas) abajo.
@@ -381,9 +381,6 @@ function ClientesContent() {
                                 </p>
                               </div>
                             </div>
-                            <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-[#00827C]/10 text-[#00827C] shrink-0">
-                              {emp.contactos.length} {emp.contactos.length === 1 ? 'contacto' : 'contactos'}
-                            </span>
                           </button>
 
                           {/* Personas Vinculadas a esta Empresa */}

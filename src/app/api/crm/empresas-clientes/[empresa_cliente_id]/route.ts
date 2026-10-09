@@ -32,7 +32,28 @@ export async function GET(
       return NextResponse.json({ error: 'Empresa cliente no encontrada.' }, { status: 404 })
     }
 
-    return NextResponse.json({ empresa: data })
+    // Cargar contactos de esta empresa para obtener sus cotizaciones
+    const { data: contactos } = await adminClient
+      .from('crm_clientes')
+      .select('id')
+      .eq('empresa_cliente_id', params.empresa_cliente_id)
+      .eq('empresa_id', empresa_id)
+
+    const contactIds = (contactos ?? []).map((c: { id: string }) => c.id)
+
+    let cotizaciones: Array<{ id: string; codigo_cotizacion: string; estado: string; total: number; created_at: string }> = []
+    if (contactIds.length > 0) {
+      const { data: cots } = await adminClient
+        .from('crm_cotizaciones')
+        .select('id, codigo_cotizacion, estado, total, created_at')
+        .in('cliente_id', contactIds)
+        .eq('empresa_id', empresa_id)
+        .order('created_at', { ascending: false })
+        .limit(30)
+      cotizaciones = cots ?? []
+    }
+
+    return NextResponse.json({ empresa: data, cotizaciones })
   } catch (err) {
     console.error('[GET /api/crm/empresas-clientes/[empresa_cliente_id]]', err)
     return NextResponse.json({ error: 'Error al cargar la empresa.' }, { status: 500 })

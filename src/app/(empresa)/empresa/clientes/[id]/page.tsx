@@ -139,6 +139,7 @@ function DetalleClienteContent() {
   const [ciudad, setCiudad] = useState(CIUDAD_DEFECTO)
   const [direccion, setDireccion] = useState('')
   const [direccionNotas, setDireccionNotas] = useState('')
+  const [mostrandoNotasDireccion, setMostrandoNotasDireccion] = useState(false)
   const [razonSocial, setRazonSocial] = useState('')
   const [sector, setSector] = useState('')
   const [nombresComerciales, setNombresComerciales] = useState<string[]>([])
@@ -219,6 +220,7 @@ function DetalleClienteContent() {
         setCiudad(c.ciudad ?? CIUDAD_DEFECTO)
         setDireccion(c.direccion ?? '')
         setDireccionNotas(c.direccion_notas ?? '')
+        if (c.direccion_notas) setMostrandoNotasDireccion(true)
         setTelefonosExtra(c.telefonos_extra ?? [])
         setCorreosExtra(c.correos_extra ?? [])
 
@@ -600,28 +602,6 @@ function DetalleClienteContent() {
                   <InputDocumento value={identificacion} onChange={setIdentificacion} placeholder="Opcional" />
                 </CampoFormulario>
               )}
-              <CampoFormulario label="Correo">
-                <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
-              </CampoFormulario>
-              {correosExtra.map((c, i) => (
-                <div key={i} className="flex gap-2 items-center">
-                  <input
-                    value={c}
-                    onChange={e => setCorreosExtra(prev => prev.map((x, j) => j === i ? e.target.value : x))}
-                    type="email"
-                    className={`${CLASE_CAMPO} flex-1`}
-                    placeholder="Correo adicional"
-                  />
-                  <button type="button" onClick={() => setCorreosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setCorreosExtra(prev => [...prev, ''])}
-                className="text-xs font-semibold text-brand hover:underline"
-              >
-                + Agregar otro correo
-              </button>
               <div className="flex flex-col gap-1 sm:col-span-2">
                 <span className={CLASE_ETIQUETA}>Celular</span>
                 <InputTelefono
@@ -657,6 +637,31 @@ function DetalleClienteContent() {
                   + Agregar otro celular
                 </button>
               </div>
+              <div className="flex flex-col gap-1 sm:col-span-2">
+                <span className={CLASE_ETIQUETA}>Correo</span>
+                <input value={email} onChange={e => setEmail(e.target.value)} type="email" className={CLASE_CAMPO} />
+              </div>
+              {correosExtra.map((c, i) => (
+                <div key={i} className="flex gap-2 items-center sm:col-span-2">
+                  <input
+                    value={c}
+                    onChange={e => setCorreosExtra(prev => prev.map((x, j) => j === i ? e.target.value : x))}
+                    type="email"
+                    className={`${CLASE_CAMPO} flex-1`}
+                    placeholder="Correo adicional"
+                  />
+                  <button type="button" onClick={() => setCorreosExtra(prev => prev.filter((_, j) => j !== i))} className="p-2 rounded-xl hover:bg-(--color-error)/10 text-(--color-error)" title="Quitar">×</button>
+                </div>
+              ))}
+              <div className="sm:col-span-2">
+                <button
+                  type="button"
+                  onClick={() => setCorreosExtra(prev => [...prev, ''])}
+                  className="text-xs font-semibold text-brand hover:underline"
+                >
+                  + Agregar otro correo
+                </button>
+              </div>
             </div>
           </SeccionDetalle>
 
@@ -677,9 +682,20 @@ function DetalleClienteContent() {
                 <span className={CLASE_ETIQUETA}>Dirección</span>
                 <InputDireccion value={direccion} onChange={setDireccion} paisCodigo={PAISES.find(p => p.nombre === pais)?.codigo} paisNombre={pais} ciudad={ciudad} />
               </div>
-              <CampoFormulario label="Notas sobre la dirección">
-                <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
-              </CampoFormulario>
+              {!mostrandoNotasDireccion ? (
+                <button
+                  type="button"
+                  onClick={() => setMostrandoNotasDireccion(true)}
+                  className="text-xs font-semibold text-brand hover:underline"
+                  style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+                >
+                  Notas sobre la dirección +
+                </button>
+              ) : (
+                <CampoFormulario label="Notas sobre la dirección">
+                  <input value={direccionNotas} onChange={e => setDireccionNotas(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. torre, apto, punto de referencia" />
+                </CampoFormulario>
+              )}
             </SeccionDetalle>
           )}
 
@@ -728,9 +744,7 @@ function DetalleClienteContent() {
               </button>
             }
           >
-            {tickets.length === 0 ? (
-              <p className="text-xs italic text-(--text-secondary)">Sin tickets todavía.</p>
-            ) : (
+            {tickets.length > 0 && (
               <div className="flex flex-col gap-2">
                 {tickets.map(t => (
                   <div key={t.id} className="p-3 rounded-xl border border-(--border) bg-(--bg-card)">

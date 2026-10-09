@@ -16,6 +16,8 @@ import { esNombreDeEmpresa } from '@/lib/es-nombre-empresa'
 import { HiloNotas } from '@/components/crm/hilo-notas'
 import { Selector } from '@/components/ui/selector'
 import type { TipoTicket, EstadoTicket } from '@/components/soporte/lista-tickets'
+import { formatCOP, formatFecha } from '@/lib/format'
+import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 
 interface TicketResumen {
   id: string
@@ -63,6 +65,23 @@ interface ContactoEmpresa {
 }
 
 interface AtributoEmpresa { id: string; clave: string; valor: string | null }
+
+interface CotizacionResumen {
+  id: string
+  codigo_cotizacion: string
+  estado: string
+  total: number
+  created_at: string
+}
+
+const ESTADOS_COTIZACION: Record<string, { label: string; color: string }> = {
+  por_cotizar: { label: 'Por cotizar', color: 'text-(--text-secondary) bg-(--bg-hover)' },
+  enviada: { label: 'Enviada', color: 'text-[#59A6E4] bg-[rgba(89,166,228,0.1)]' },
+  vista: { label: 'Vista', color: 'text-[#AD7C43] bg-[rgba(173,124,67,0.1)]' },
+  aceptada: { label: 'Aceptada', color: 'text-(--color-success-content) bg-[rgba(56,185,142,0.1)]' },
+  rechazada: { label: 'Rechazada', color: 'text-(--color-error) bg-[rgba(255,94,75,0.1)]' },
+  facturada: { label: 'Facturada', color: 'text-(--color-success-content) bg-[rgba(56,185,142,0.15)]' },
+}
 
 interface ContactoState {
   id: string
@@ -128,6 +147,9 @@ function EmpresaClienteContent() {
   const [agregandoContacto, setAgregandoContacto] = useState(false)
   const [errorAgregar, setErrorAgregar] = useState<string | null>(null)
 
+  // Cotizaciones
+  const [cotizaciones, setCotizaciones] = useState<CotizacionResumen[]>([])
+
   // Tickets
   const [tickets, setTickets] = useState<TicketResumen[]>([])
   const [mostrandoCrearTicket, setMostrandoCrearTicket] = useState(false)
@@ -151,6 +173,7 @@ function EmpresaClienteContent() {
           return
         }
         const empRaw: EmpresaDetalle = dEmpresa.empresa
+        if (Array.isArray(dEmpresa.cotizaciones)) setCotizaciones(dEmpresa.cotizaciones)
         setEmpresa(empRaw)
         setNit(empRaw.nit ?? '')
         setRazonSocial(empRaw.razon_social ?? '')
@@ -621,6 +644,33 @@ function EmpresaClienteContent() {
               </div>
             )}
           </SeccionDetalle>
+
+          {/* Historial de cotizaciones */}
+          {cotizaciones.length > 0 && (
+            <SeccionDetalle titulo="Historial de cotizaciones">
+              <div className="flex flex-col gap-2">
+                {cotizaciones.map(c => {
+                  const est = ESTADOS_COTIZACION[c.estado] ?? ESTADOS_COTIZACION['por_cotizar']
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => router.push(conEmpresa(`/empresa/cotizador/${c.id}`))}
+                      className="w-full text-left p-3 rounded-xl border border-(--border) bg-(--bg-card) transition-colors hover:bg-(--bg-hover)"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="text-sm font-semibold text-(--text-primary)">{formatCodigoCotizacion(c.codigo_cotizacion)}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ${est.color}`}>{est.label}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs text-(--text-secondary)">{formatFecha(c.created_at)}</span>
+                        <span className="text-sm font-bold whitespace-nowrap text-(--text-primary)">{formatCOP(c.total)}</span>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            </SeccionDetalle>
+          )}
 
           {/* Tickets de soporte */}
           <SeccionDetalle
