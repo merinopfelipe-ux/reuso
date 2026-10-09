@@ -448,7 +448,7 @@ function ClientesContent() {
                                   key={contacto.id}
                                   type="button"
                                   onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
-                                  className="w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors flex items-center justify-between gap-2"
+                                  className="group/contacto w-full text-left p-2.5 rounded-input bg-(--bg-input) border border-(--border) hover:bg-(--bg-hover) transition-colors flex items-center justify-between gap-2"
                                 >
                                   <div className="flex items-center gap-2.5 min-w-0">
                                     <div className="w-6 h-6 rounded-full bg-[#00827C]/10 flex items-center justify-center shrink-0">
@@ -458,8 +458,6 @@ function ClientesContent() {
                                       <span className="text-xs font-semibold text-(--text-primary) truncate">
                                         {contacto.nombre} {contacto.apellido ?? ''}
                                       </span>
-                                      {/* El teléfono nunca se parte ni se corta con "..." —
-                                          directriz explícita, regla general de la plataforma. */}
                                       {contacto.telefono && (
                                         <span className="text-[11px] text-(--text-secondary) whitespace-nowrap shrink-0">
                                           {formatTelefonoVista(contacto.telefono, contacto.telefono_indicativo)}
@@ -467,7 +465,7 @@ function ClientesContent() {
                                       )}
                                     </div>
                                   </div>
-                                  <CaretRight size={14} className="text-(--text-secondary) shrink-0" />
+                                  <CaretRight size={14} className="text-(--text-secondary) shrink-0 opacity-0 group-hover/contacto:opacity-100 transition-opacity" />
                                 </button>
                               ))}
                             </div>
