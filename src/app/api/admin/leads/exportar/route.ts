@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireSuperAdmin } from '@/lib/admin-guard'
+import { legiblesClientes } from '@/lib/crm/telefono-seguro'
 import { utils, write } from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -149,7 +150,7 @@ export async function GET(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: 'Error al obtener los leads.' }, { status: 500 })
 
-  const filas: FilaExport[] = (leads ?? []).map((l) => {
+  const filas: FilaExport[] = (await legiblesClientes(leads ?? [])).map((l) => {
     const partes = (l.nombre || '').trim().split(' ')
     const apellido = partes.length > 1 ? partes.pop()! : ''
     const nombre = partes.join(' ')

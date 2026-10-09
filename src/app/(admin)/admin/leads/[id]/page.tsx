@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { legibleCliente } from '@/lib/crm/telefono-seguro'
 import { LeadDetalleClient } from './lead-detalle-client'
 
 export const metadata: Metadata = { title: 'Contacto' }
@@ -22,5 +23,5 @@ export default async function LeadDetallePage({ params }: { params: Promise<{ id
   const { data: lead } = await adminClient.from('leads').select('*').eq('id', id).maybeSingle()
   if (!lead) notFound()
 
-  return <LeadDetalleClient lead={lead} />
+  return <LeadDetalleClient lead={await legibleCliente(lead)} />
 }

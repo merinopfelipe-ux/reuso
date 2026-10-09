@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { validarTelefono } from '@/lib/telefono'
+import { encryptSensitive } from '@/lib/encryption.server'
 import { waLink } from '@/lib/constants/contacto'
 import { getEventoActual } from '@/lib/eventos'
 import { enviarSeguimientoEvento, enviarAvisoLeadEvento } from '@/lib/email'
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     const empresaLimpia = empresa ? empresa.trim() : null
 
     const { error } = await admin.from('leads').insert([{
-      nombre, empresa: empresaLimpia, email: email || null, telefono: celular || null,
+      nombre, empresa: empresaLimpia, email: email || null, telefono: await encryptSensitive(celular || null),
       interes: 'Eventos', evento_nombre: evento?.nombre ?? null,
       mensaje: evento ? `Evento: ${evento.nombre}` : 'Evento sin nombre programado',
     }])

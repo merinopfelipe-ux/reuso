@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { normalizarTelefono } from '@/lib/telefono'
+import { encryptSensitive } from '@/lib/encryption.server'
+import { leerTelefono } from '@/lib/crm/telefono-seguro'
 import { z } from 'zod'
 
 const itemSchema = z.object({
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest) {
   const porUsuarioWa = new Map<string, string>()
   for (const l of existentes ?? []) {
     if (l.email) porEmail.set(l.email.trim().toLowerCase(), l.id)
-    const d = soloDigitos(l.telefono)
+    const d = soloDigitos(await leerTelefono(l.telefono))
     if (d.length >= 7) porTelefono.set(d, l.id)
     if (l.usuario_whatsapp) porUsuarioWa.set(l.usuario_whatsapp.trim().toLowerCase(), l.id)
   }
@@ -107,7 +109,7 @@ export async function POST(request: NextRequest) {
 
   let insertados = 0
   if (nuevas.length > 0) {
-    const { data, error } = await guard.adminClient.from('leads').insert(nuevas).select('id')
+    const { data, error } = await guard.adminClient.from('leads').insert(await Promise.all(nuevas.map(async (f) => ({ ...f, telefono: await encryptSensitive(f.telefono) })))).select('id')
     if (error) {
       return NextResponse.json({ error: 'Error al insertar los contactos en la base de datos.' }, { status: 500 })
     }
@@ -122,7 +124,7 @@ export async function POST(request: NextRequest) {
       const cambios = Object.fromEntries(
         Object.entries(fila).filter(([, v]) => v !== null && v !== '' && v !== undefined)
       )
-      const { error } = await guard.adminClient.from('leads').update(cambios).eq('id', id)
+      const { error } = await guard.adminClient.from('leads').update('telefono' in cambios ? { ...cambios, telefono: await encryptSensitive(cambios.telefono as string) } : cambios).eq('id', id)
       if (!error) actualizados++
     }
   }

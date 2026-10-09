@@ -4,6 +4,7 @@ export const metadata: Metadata = { title: 'Gestión de Leads' }
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { legiblesClientes } from '@/lib/crm/telefono-seguro'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { LeadsClient } from './leads-client'
 
@@ -37,7 +38,7 @@ export default async function AdminLeadsPage() {
         subtitulo="Prospectos capturados desde la web"
         showBack
       />
-      <LeadsClient leads={leads ?? []} eventos={eventos ?? []} />
+      <LeadsClient leads={await legiblesClientes(leads ?? [])} eventos={eventos ?? []} />
     </div>
   )
 }

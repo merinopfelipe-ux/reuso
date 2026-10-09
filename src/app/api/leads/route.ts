@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { normalizarTelefono } from '@/lib/telefono'
+import { encryptSensitive } from '@/lib/encryption.server'
 
 const leadSchema = z.object({
   nombre: z.string().min(1, 'El nombre es muy corto.'),
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const lead = {
       ...leadData,
       nombre: nombreCompleto,
-      telefono: leadData.telefono ? normalizarTelefono(leadData.telefono) : null,
+      telefono: leadData.telefono ? await encryptSensitive(normalizarTelefono(leadData.telefono)) : null,
     }
 
     const skipTurnstile = process.env.SKIP_TURNSTILE === 'true' || !turnstile_token || turnstile_token === 'skip'

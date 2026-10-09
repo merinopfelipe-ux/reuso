@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { normalizarTelefono } from '@/lib/telefono'
+import { encryptSensitive } from '@/lib/encryption.server'
 import { parsearNotasLead } from '@/lib/notas-lead'
 import { z } from 'zod'
 
@@ -76,7 +77,7 @@ export async function POST(request: NextRequest) {
     .insert({
       nombre: parsed.data.nombre,
       email: parsed.data.email || null,
-      telefono: parsed.data.telefono ? normalizarTelefono(parsed.data.telefono) : null,
+      telefono: parsed.data.telefono ? await encryptSensitive(normalizarTelefono(parsed.data.telefono)) : null,
       usuario_whatsapp: parsed.data.usuario_whatsapp?.replace(/^@/, '') || null,
       empresa: parsed.data.empresa || null,
       interes: parsed.data.interes || null,
@@ -124,7 +125,7 @@ export async function PATCH(request: NextRequest) {
   const patchData: Record<string, unknown> = {}
   if (parsed.data.nombre !== undefined) patchData.nombre = parsed.data.nombre
   if (parsed.data.email !== undefined) patchData.email = parsed.data.email === '' ? null : parsed.data.email
-  if (parsed.data.telefono !== undefined) patchData.telefono = parsed.data.telefono ? normalizarTelefono(parsed.data.telefono) : null
+  if (parsed.data.telefono !== undefined) patchData.telefono = parsed.data.telefono ? await encryptSensitive(normalizarTelefono(parsed.data.telefono)) : null
   if (parsed.data.empresa !== undefined) patchData.empresa = parsed.data.empresa
   if (parsed.data.interes !== undefined) patchData.interes = parsed.data.interes
   if (parsed.data.evento_nombre !== undefined) patchData.evento_nombre = parsed.data.evento_nombre
