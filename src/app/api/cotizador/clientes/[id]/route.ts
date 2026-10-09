@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
+import { guardarTelefono, guardarTelefonosExtra, legibleCliente, leerTelefono } from '@/lib/crm/telefono-seguro'
 
 const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
@@ -46,7 +47,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         .order('created_at', { ascending: false }),
     ])
 
-    return NextResponse.json({ cliente, cotizaciones: cotizaciones ?? [], dpp_activos: dppActivos ?? [] })
+    return NextResponse.json({ cliente: await legibleCliente(cliente), cotizaciones: cotizaciones ?? [], dpp_activos: dppActivos ?? [] })
   } catch (err) {
     console.error('[GET /api/cotizador/clientes/[id]]', err)
     return NextResponse.json({ error: 'Error interno al consultar el cliente.' }, { status: 500 })
@@ -95,7 +96,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
   const { data: actual } = await adminClient
     .from('crm_clientes')
-    .select('id, empresa_cliente_id')
+    .select('id, empresa_cliente_id, telefono, telefono_indicativo')
     .eq('id', params.id)
     .eq('empresa_id', empresa_id)
     .maybeSingle()
@@ -114,11 +115,16 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   }
   const { nit, razon_social, nombre_comercial, empresa_direccion, sector, nombres_comerciales, empresa_pais, empresa_ciudad, empresa_direccion_notas, empresa_sedes, telefonos_extra, correos_extra, ...contactoFields } = parsed.data
 
-  if (telefonos_extra !== undefined) (contactoFields as Record<string, unknown>).telefonos_extra = telefonos_extra
+  if (telefonos_extra !== undefined) (contactoFields as Record<string, unknown>).telefonos_extra = await guardarTelefonosExtra(telefonos_extra)
   if (correos_extra !== undefined) (contactoFields as Record<string, unknown>).correos_extra = correos_extra
 
   if (Object.keys(contactoFields).length > 0) {
     const limpio: Record<string, unknown> = { ...contactoFields, email: contactoFields.email || null }
+    if ('telefono' in contactoFields || 'telefono_indicativo' in contactoFields) {
+      const indicativo = contactoFields.telefono_indicativo ?? actual.telefono_indicativo
+      const numero = 'telefono' in contactoFields ? contactoFields.telefono : await leerTelefono(actual.telefono)
+      Object.assign(limpio, await guardarTelefono(indicativo, numero))
+    }
     // Si mandan nombre vacío en un contacto de empresa, vuelve a ser el
     // ancla autocompletada; si mandan un nombre real, se vuelve contacto
     // real. En B2C (sin empresa_cliente_id) el nombre vacío ya se rechazó
@@ -185,7 +191,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     return NextResponse.json({ error: 'Error al recargar el cliente.' }, { status: 500 })
   }
 
-  return NextResponse.json({ cliente })
+  return NextResponse.json({ cliente: await legibleCliente(cliente) })
 }
 
 export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {

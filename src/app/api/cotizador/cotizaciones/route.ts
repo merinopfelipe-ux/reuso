@@ -6,6 +6,7 @@ import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { checkLimiteCotizaciones } from '@/lib/plan-limits'
 import type { Plan } from '@/types'
+import { leerTelefono } from '@/lib/crm/telefono-seguro'
 
 interface CotizacionItem {
   id: string
@@ -89,6 +90,10 @@ export async function GET(request: NextRequest) {
   const cotizacionesRaw = ((data as unknown as CotizacionItem[]) ?? []).filter(
     (c) => (c.crm_muebles_cotizados?.length ?? 0) > 0
   )
+  for (const c of cotizacionesRaw) {
+    const cli = Array.isArray(c.crm_clientes) ? c.crm_clientes[0] : c.crm_clientes
+    if (cli) Object.assign(cli, { telefono: await leerTelefono(cli.telefono as string | null) })
+  }
   let cotizaciones = cotizacionesRaw
 
   // Búsqueda por código de cotización, nombre/apellido, celular o empresa

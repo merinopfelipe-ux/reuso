@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { validarTelefono } from '@/lib/telefono'
 import { esNombreDeEmpresa } from '@/lib/es-nombre-empresa'
+import { guardarTelefono, legibleCliente, legiblesClientes } from '@/lib/crm/telefono-seguro'
 
 const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     crm_empresas_clientes: { nit: string; razon_social: string } | { nit: string; razon_social: string }[] | null
   }
 
-  let clientes = (data ?? []) as unknown as ClienteRow[]
+  let clientes = await legiblesClientes((data ?? []) as unknown as ClienteRow[])
   if (tipoFiltro === 'persona' || tipoFiltro === 'empresa') {
     clientes = clientes.filter(c => c.tipo === tipoFiltro)
   }
@@ -185,7 +186,7 @@ export async function POST(request: NextRequest) {
       nombre: nombreFinal,
       apellido: d.apellido || null,
       identificacion: d.identificacion || null,
-      telefono: d.telefono || null,
+      ...(await guardarTelefono(d.telefono_indicativo, d.telefono)),
       telefono_indicativo: d.telefono_indicativo,
       email: d.email || null,
       pais: d.pais || null,
@@ -204,5 +205,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Error al crear el cliente. Intenta de nuevo.' }, { status: 500 })
   }
 
-  return NextResponse.json({ cliente }, { status: 201 })
+  return NextResponse.json({ cliente: await legibleCliente(cliente) }, { status: 201 })
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { validarTelefono } from '@/lib/telefono'
+import { guardarTelefono, legibleCliente, leerTelefono } from '@/lib/crm/telefono-seguro'
 
 const CLIENTE_SELECT = `
   id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo,
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     return NextResponse.json({ error: 'Error al verificar el contacto.' }, { status: 500 })
   }
   if (existente) {
-    return NextResponse.json({ cliente: existente }, { status: 200 })
+    return NextResponse.json({ cliente: await legibleCliente(existente) }, { status: 200 })
   }
 
   const raw = await request.json().catch(() => ({}))
@@ -72,14 +73,16 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     return NextResponse.json({ error: 'Datos inválidos.' }, { status: 400 })
   }
 
-  const telefono = original.telefono || parsed.data.telefono
-  const telefono_indicativo = original.telefono ? (original.telefono_indicativo ?? '+57') : parsed.data.telefono_indicativo
+  const telefonoOriginal = await leerTelefono(original.telefono)
+  const telefono = telefonoOriginal || parsed.data.telefono
+  const telefono_indicativo = telefonoOriginal ? (original.telefono_indicativo ?? '+57') : parsed.data.telefono_indicativo
   if (!telefono) {
     return NextResponse.json({ error: 'Este contacto no tiene celular — ingresa uno para crear el cliente B2C.' }, { status: 400 })
   }
   const errorTelefono = validarTelefono(telefono, telefono_indicativo)
   if (errorTelefono) return NextResponse.json({ error: errorTelefono }, { status: 400 })
 
+  const tel = await guardarTelefono(telefono_indicativo, telefono)
   const { data: nuevo, error } = await adminClient
     .from('crm_clientes')
     .insert({
@@ -90,7 +93,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       duplicado_de_id: original.id,
       nombre: original.nombre,
       apellido: original.apellido,
-      telefono,
+      ...tel,
       telefono_indicativo,
       email: original.email,
       pais: original.pais,
@@ -123,12 +126,12 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
         .eq('duplicado_de_id', original.id)
         .maybeSingle()
       if (ganadora) {
-        return NextResponse.json({ cliente: ganadora }, { status: 200 })
+        return NextResponse.json({ cliente: await legibleCliente(ganadora) }, { status: 200 })
       }
       return NextResponse.json({ error: 'Ya existe un cliente con ese celular.' }, { status: 409 })
     }
     return NextResponse.json({ error: 'Error al crear el cliente B2C.' }, { status: 500 })
   }
 
-  return NextResponse.json({ cliente: nuevo }, { status: 201 })
+  return NextResponse.json({ cliente: await legibleCliente(nuevo) }, { status: 201 })
 }

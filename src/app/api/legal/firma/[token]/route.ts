@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
 import { documentoFirmable } from '@/lib/firmas/documentos'
 import { enviarConfirmacionFirma } from '@/lib/email'
+import { encryptSensitive } from '@/lib/encryption.server'
 
 const schema = z.object({
   email: z.string().email('Ingresa un correo electrónico válido.').optional(),
@@ -147,7 +148,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ toke
         numero_identidad: docIdCompleto,
         email: emailDestino,
         indicativo: parsed.data.indicativo,
-        telefono: parsed.data.telefono,
+        telefono: await encryptSensitive(parsed.data.telefono),
         ip_address: ip,
         user_agent: userAgent,
         pdf_path: pdfPath,

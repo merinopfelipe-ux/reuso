@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { generarPDFCotizacion, fetchImageAsBase64 } from './generar-pdf-cotizacion'
+import { leerTelefono } from '@/lib/crm/telefono-seguro'
 
 // Construye el PDF de una cotización a partir de su id — usado tanto por la
 // descarga pública (token) como por la descarga autenticada desde /empresa,
@@ -48,7 +49,8 @@ export async function construirPdfCotizacion(cotizacionId: string, adminClient: 
   }
   const logoBase64 = logoUrl ? await fetchImageAsBase64(logoUrl).catch(() => null) : null
 
-  const telefonoDigits = cliente?.telefono?.replace(/\D/g, '') ?? ''
+  const telefonoPlano = await leerTelefono(cliente?.telefono ?? null)
+  const telefonoDigits = telefonoPlano?.replace(/\D/g, '') ?? ''
   const clienteTelefono = telefonoDigits
     ? telefonoDigits.length === 10
       ? `${cliente?.telefono_indicativo ?? '+57'} (${telefonoDigits.slice(0, 3)}) ${telefonoDigits.slice(3, 6)} ${telefonoDigits.slice(6)}`

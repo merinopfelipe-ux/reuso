@@ -6,6 +6,7 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
+import { leerTelefono, legiblesClientes } from '@/lib/crm/telefono-seguro'
 
 // Transporte e IVA nunca reciben descuento — se calculan aparte, ver
 // sql/044_cotizador_transporte_iva.sql y src/lib/cotizador/precio.ts (misma
@@ -127,7 +128,9 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     // contacto/ancla B2B) — usados por el modal "Enviar propuesta" para
     // elegir a quién mandar el correo en vez de escribir uno a ciegas.
     let contactosEmpresa: unknown[] = []
-    const clienteInfo = Array.isArray(cotizacion.crm_clientes) ? cotizacion.crm_clientes[0] : cotizacion.crm_clientes
+    const cliRaw = Array.isArray(cotizacion.crm_clientes) ? cotizacion.crm_clientes[0] : cotizacion.crm_clientes
+    if (cliRaw) Object.assign(cliRaw, { telefono: await leerTelefono(cliRaw.telefono as string | null) })
+    const clienteInfo = cliRaw
     if (clienteInfo?.empresa_cliente_id) {
       const { data: hermanos } = await adminClient
         .from('crm_clientes')
@@ -135,7 +138,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         .eq('empresa_cliente_id', clienteInfo.empresa_cliente_id)
         .eq('es_contacto_real', true)
         .order('created_at', { ascending: true })
-      contactosEmpresa = hermanos ?? []
+      contactosEmpresa = await legiblesClientes(hermanos ?? [])
     }
 
     return NextResponse.json({ cotizacion, contactos_empresa: contactosEmpresa })
@@ -281,6 +284,8 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     ip,
   })
 
+  const cliAct = Array.isArray(cotActualizada.crm_clientes) ? cotActualizada.crm_clientes[0] : cotActualizada.crm_clientes
+  if (cliAct) Object.assign(cliAct, { telefono: await leerTelefono(cliAct.telefono as string | null) })
   if (cotActualizada?.enlace_publico_token) {
     try {
       revalidatePath(`/cot/${cotActualizada.enlace_publico_token}`)
