@@ -171,16 +171,19 @@ function ClientesContent() {
   const ts = 'text-(--text-secondary)'
   const cardBg = 'bg-(--bg-card) border-(--border)'
 
-  // Agrupación de empresas y personas
+  // Agrupación de empresas y personas.
+  // Solo se mapea como empresa si tiene empresa_cliente_id (registro real en
+  // crm_empresas_clientes). Los contactos con tipo='empresa' pero sin ese FK
+  // son datos históricos — se tratan como individuales (van a /clientes/[id]).
   const empresasMap = new Map<string, EmpresaAgrupada>()
 
   clientes.forEach(c => {
     const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
-    if (emp && emp.nit) {
+    if (emp?.nit && emp?.id) {
       const key = emp.nit
       if (!empresasMap.has(key)) {
         empresasMap.set(key, {
-          id: emp.id || key,
+          id: emp.id,
           nit: emp.nit,
           razon_social: emp.razon_social,
           nombre_comercial: emp.nombre_comercial || null,
@@ -189,11 +192,13 @@ function ClientesContent() {
         })
       }
       if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
-    } else if (c.tipo === 'empresa' || c.empresa_cliente_id) {
-      const key = c.empresa_cliente_id || `cliente-${c.id}`
+    } else if (c.empresa_cliente_id) {
+      // Tiene empresa_cliente_id pero el join no devolvió datos (raro) —
+      // usar el ID del FK para navegar correctamente.
+      const key = c.empresa_cliente_id
       if (!empresasMap.has(key)) {
         empresasMap.set(key, {
-          id: c.empresa_cliente_id || c.id,
+          id: c.empresa_cliente_id,
           nit: c.identificacion || 'Sin NIT',
           razon_social: c.nombre,
           nombre_comercial: null,
@@ -203,10 +208,16 @@ function ClientesContent() {
       }
       if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
     }
+    // Si tipo='empresa' pero empresa_cliente_id es null → dato histórico,
+    // se muestra en la sección de individuales (personasSueltas) abajo.
   })
 
   const empresasLista = Array.from(empresasMap.values())
-  const personasTodas = clientes.filter(c => c.tipo === 'persona')
+  // Personas individuales: personas B2C + contactos históricos tipo='empresa'
+  // sin empresa_cliente_id (datos anteriores a crm_empresas_clientes).
+  const personasTodas = clientes.filter(c =>
+    c.tipo === 'persona' || (c.tipo === 'empresa' && !c.empresa_cliente_id && !(Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes)?.id)
+  )
 
   return (
     <div className="pb-6 bg-(--bg-primary)">
