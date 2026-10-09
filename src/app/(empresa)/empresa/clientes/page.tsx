@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings, Plus } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
-import { formatFecha } from '@/lib/format'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { SkeletonLista } from '@/components/ui/skeleton'
@@ -382,7 +381,6 @@ function ClientesContent() {
                                 </h3>
                                 <p className={`text-xs ${ts}`}>
                                   NIT {emp.nit.replace(/^NIT\s*/i, '')} {emp.direccion ? `· ${emp.direccion}` : ''}
-                                  {emp.created_at && <span className="ml-1">· Desde {formatFecha(emp.created_at)}</span>}
                                 </p>
                               </div>
                             </div>
