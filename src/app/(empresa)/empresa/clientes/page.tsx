@@ -193,7 +193,7 @@ function ClientesContent() {
           contactos: []
         })
       }
-      if (c.tipo === 'persona') empresasMap.get(key)!.contactos.push(c)
+      if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
     } else if (c.empresa_cliente_id) {
       // Tiene empresa_cliente_id pero el join no devolvió datos (raro) —
       // usar el ID del FK para navegar correctamente.
@@ -209,7 +209,7 @@ function ClientesContent() {
           contactos: []
         })
       }
-      if (c.tipo === 'persona') empresasMap.get(key)!.contactos.push(c)
+      if (c.es_contacto_real) empresasMap.get(key)!.contactos.push(c)
     }
     // Si tipo='empresa' pero empresa_cliente_id es null → dato histórico,
     // se muestra en la sección de individuales (personasSueltas) abajo.
@@ -368,7 +368,7 @@ function ClientesContent() {
                           <button
                             type="button"
                             onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
-                            className="w-full flex items-start justify-between gap-3 text-left hover:opacity-80 transition-opacity"
+                            className="w-full flex items-center justify-between gap-3 text-left hover:opacity-80 transition-opacity"
                           >
                             <div className="flex items-center gap-3 min-w-0">
                               <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center shrink-0">
