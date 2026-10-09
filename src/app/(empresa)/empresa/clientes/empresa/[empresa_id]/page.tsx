@@ -85,6 +85,7 @@ const ESTADOS_COTIZACION: Record<string, { label: string; color: string }> = {
 
 interface ContactoState {
   id: string
+  esNuevo?: boolean
   nombre: string
   apellido: string
   identificacion: string
@@ -96,6 +97,21 @@ interface ContactoState {
   guardando: boolean
   errorGuardar: string | null
 }
+
+const CONTACTO_VACIO = (): ContactoState => ({
+  id: '__nuevo__',
+  esNuevo: true,
+  nombre: '',
+  apellido: '',
+  identificacion: '',
+  telefono: '',
+  telefonoIndicativo: PAISES[0],
+  email: '',
+  telefonosExtra: [],
+  correosExtra: [],
+  guardando: false,
+  errorGuardar: null,
+})
 
 export default function EmpresaClientePage() {
   return (
@@ -199,7 +215,7 @@ function EmpresaClienteContent() {
           const listaRaw: Array<ContactoEmpresa> = dContactos?.clientes ?? []
           const primerId = listaRaw[0]?.id ?? null
           setPrimerContactoId(primerId)
-          setContactos(listaRaw.map(c => ({
+          const lista = listaRaw.map(c => ({
             id: c.id,
             nombre: c.es_contacto_real === false ? '' : (c.nombre ?? ''),
             apellido: c.apellido ?? '',
@@ -211,7 +227,8 @@ function EmpresaClienteContent() {
             correosExtra: c.correos_extra ?? [],
             guardando: false,
             errorGuardar: null,
-          })))
+          }))
+          setContactos(lista.length > 0 ? lista : [CONTACTO_VACIO()])
         }
 
         if (resAtributos?.ok) {
@@ -245,6 +262,44 @@ function EmpresaClienteContent() {
     }
     actualizarContacto(contactoId, { guardando: true, errorGuardar: null })
     try {
+      // Draft nuevo: crear vía POST en vez de actualizar
+      if (c.esNuevo) {
+        const res = await fetch(conEmpresa('/api/cotizador/clientes'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: 'persona',
+            empresa_cliente_id: empresa_id,
+            nombre: c.nombre.trim() || undefined,
+            apellido: c.apellido.trim() || undefined,
+            telefono: c.telefono.trim() || undefined,
+            telefono_indicativo: c.telefonoIndicativo.dial,
+            email: c.email.trim() || undefined,
+          }),
+        })
+        const d = await res.json().catch(() => null)
+        if (!res.ok) {
+          actualizarContacto(contactoId, { guardando: false, errorGuardar: d?.error ?? 'Error al guardar.' })
+          return
+        }
+        const nuevo: ContactoState = {
+          id: d.cliente.id,
+          nombre: d.cliente.nombre ?? '',
+          apellido: d.cliente.apellido ?? '',
+          identificacion: d.cliente.identificacion ?? '',
+          telefono: d.cliente.telefono ?? '',
+          telefonoIndicativo: PAISES.find(p => p.dial === d.cliente.telefono_indicativo) ?? PAISES[0],
+          email: d.cliente.email ?? '',
+          telefonosExtra: [],
+          correosExtra: [],
+          guardando: false,
+          errorGuardar: null,
+        }
+        setContactos(prev => prev.map(x => x.id === '__nuevo__' ? nuevo : x))
+        setPrimerContactoId(prev => prev ?? nuevo.id)
+        return
+      }
+
       const res = await fetch(conEmpresa(`/api/cotizador/clientes/${contactoId}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -439,7 +494,7 @@ function EmpresaClienteContent() {
         <DetalleColumna>
           <SeccionDetalle titulo="Datos de la empresa">
             <CampoFormulario label="NIT">
-              <input value={nit} onChange={e => setNit(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. 900123456-7" />
+              <InputDocumento value={nit} onChange={setNit} placeholder="Ej. 900.123.456-7" />
             </CampoFormulario>
 
             <CampoFormulario label="Razón social">
@@ -632,20 +687,16 @@ function EmpresaClienteContent() {
               </button>
             }
           >
-            {contactos.length === 0 ? (
-              <p className="text-xs italic text-(--text-secondary)">Agrega el primer contacto.</p>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {contactos.map(c => (
-                  <ContactoCard
-                    key={c.id}
-                    contacto={c}
-                    onChange={campos => actualizarContacto(c.id, campos)}
-                    onGuardar={() => guardarContacto(c.id)}
-                  />
-                ))}
-              </div>
-            )}
+            <div className="flex flex-col gap-4">
+              {contactos.map(c => (
+                <ContactoCard
+                  key={c.id}
+                  contacto={c}
+                  onChange={campos => actualizarContacto(c.id, campos)}
+                  onGuardar={() => guardarContacto(c.id)}
+                />
+              ))}
+            </div>
           </SeccionDetalle>
         </DetalleColumna>
 

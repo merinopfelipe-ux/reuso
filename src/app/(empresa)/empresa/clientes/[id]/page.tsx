@@ -164,6 +164,10 @@ function DetalleClienteContent() {
   const [agregandoContacto, setAgregandoContacto] = useState(false)
   const [errorAgregar, setErrorAgregar] = useState<string | null>(null)
 
+  // Eliminar cliente
+  const [mostrandoEliminar, setMostrandoEliminar] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
+
   // Modal convertir persona en empresa
   const [mostrandoConvertir, setMostrandoConvertir] = useState(false)
   const [convertirNit, setConvertirNit] = useState('')
@@ -442,6 +446,26 @@ function DetalleClienteContent() {
     }
   }
 
+  async function eliminarCliente() {
+    if (!id) return
+    setEliminando(true)
+    try {
+      const res = await fetch(conEmpresa(`/api/cotizador/clientes/${id}`), { method: 'DELETE' })
+      if (!res.ok) {
+        const d = await res.json().catch(() => null)
+        setError(d?.error ?? 'Error al eliminar.')
+        setMostrandoEliminar(false)
+        return
+      }
+      router.push(conEmpresa('/empresa/clientes'))
+    } catch {
+      setError('Error de conexión. Intenta de nuevo.')
+      setMostrandoEliminar(false)
+    } finally {
+      setEliminando(false)
+    }
+  }
+
   if (cargando || !cliente) {
     return (
       <DetallePagina
@@ -460,11 +484,11 @@ function DetalleClienteContent() {
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
         textoVolver="Volver a clientes"
         meta={cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
-        extraMeta={cliente.tipo === 'persona' && !emp ? (
+        extraMeta={!emp ? (
           <button
             type="button"
             onClick={() => {
-              setConvertirNit(identificacion || '')
+              setConvertirNit('')
               setConvertirRazonSocial([nombre, apellido].filter(Boolean).join(' '))
               setErrorConvertir(null)
               setMostrandoConvertir(true)
@@ -800,7 +824,19 @@ function DetalleClienteContent() {
         onGuardar={intentarGuardar}
         guardando={guardando}
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
-        extra={error ? <p className="text-sm text-[#FF5E4B]">{error}</p> : undefined}
+        extra={
+          <div className="flex flex-col items-center gap-1.5">
+            {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
+            <button
+              type="button"
+              onClick={() => setMostrandoEliminar(true)}
+              className="text-xs text-(--text-secondary) hover:text-[#FF5E4B] transition-colors"
+              style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+            >
+              Eliminar contacto
+            </button>
+          </div>
+        }
       />
       <Modal
         abierto={mostrandoCrearTicket}
@@ -901,6 +937,16 @@ function DetalleClienteContent() {
           </div>
         </div>
       </Modal>
+
+      <Modal
+        abierto={mostrandoEliminar}
+        onClose={() => !eliminando && setMostrandoEliminar(false)}
+        titulo="Eliminar contacto"
+        descripcion="Se eliminan también todas sus cotizaciones. No se puede deshacer."
+        varianteConfirmar="error"
+        textoConfirmar={eliminando ? 'Eliminando...' : 'Eliminar'}
+        onConfirmar={eliminarCliente}
+      />
     </DetallePagina>
   )
 }

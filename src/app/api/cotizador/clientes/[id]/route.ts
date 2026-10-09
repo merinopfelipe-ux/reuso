@@ -187,3 +187,46 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 
   return NextResponse.json({ cliente })
 }
+
+export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+  try {
+    const params = await props.params
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
+    }
+    const { empresa_id, adminClient } = auth
+
+    const { data: existe } = await adminClient
+      .from('crm_clientes')
+      .select('id')
+      .eq('id', params.id)
+      .eq('empresa_id', empresa_id)
+      .maybeSingle()
+    if (!existe) return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
+
+    // Cotizaciones no tienen ON DELETE CASCADE hacia crm_clientes — hay que borrarlas antes.
+    // Sus muebles_cotizados, notas y historial de estado se eliminan solos por FK cascade.
+    const { error: errCot } = await adminClient
+      .from('crm_cotizaciones')
+      .delete()
+      .eq('cliente_id', params.id)
+    if (errCot) {
+      console.error('[DELETE /api/cotizador/clientes/[id]] cotizaciones', errCot)
+      return NextResponse.json({ error: 'Error al eliminar cotizaciones.' }, { status: 500 })
+    }
+
+    // El cliente en sí. Sus notas y atributos se borran por FK cascade;
+    // tickets y dpp_activos quedan con cliente_id = NULL (SET NULL).
+    const { error } = await adminClient.from('crm_clientes').delete().eq('id', params.id)
+    if (error) {
+      console.error('[DELETE /api/cotizador/clientes/[id]]', error)
+      return NextResponse.json({ error: 'Error al eliminar el cliente.' }, { status: 500 })
+    }
+
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    console.error('[DELETE /api/cotizador/clientes/[id]]', err)
+    return NextResponse.json({ error: 'Error interno.' }, { status: 500 })
+  }
+}

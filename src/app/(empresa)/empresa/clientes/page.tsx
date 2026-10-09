@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings, Plus } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings, Plus, Trash } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
@@ -60,6 +60,9 @@ function ClientesContent() {
   const [cargando, setCargando] = useState(true)
   const [busqueda, setBusqueda] = useState('')
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'personas' | 'empresas'>('todos')
+
+  const [clienteAEliminar, setClienteAEliminar] = useState<{ id: string; nombre: string; esEmpresa?: boolean } | null>(null)
+  const [eliminando, setEliminando] = useState(false)
 
   const [modalCrearAbierto, setModalCrearAbierto] = useState(false)
   const [modoCrear, setModoCrear] = useState<'empresa' | 'persona'>('empresa')
@@ -222,6 +225,34 @@ function ClientesContent() {
     c.tipo === 'persona' || (c.tipo === 'empresa' && !c.empresa_cliente_id && !(Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes)?.id)
   )
 
+  async function eliminarCliente() {
+    if (!clienteAEliminar) return
+    setEliminando(true)
+    try {
+      let res: Response
+      if (clienteAEliminar.esEmpresa) {
+        const params = new URLSearchParams({ id: clienteAEliminar.id })
+        if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
+        res = await fetch(`/api/crm/empresas-clientes?${params}`, { method: 'DELETE' })
+        if (res.ok) {
+          // Quitar todos los clientes que estaban bajo esa empresa
+          setClientes(prev => prev.filter(c => c.empresa_cliente_id !== clienteAEliminar.id))
+          setClienteAEliminar(null)
+        }
+      } else {
+        const params = new URLSearchParams()
+        if (esSuperAdmin && empresaId) params.set('empresa_id', empresaId)
+        res = await fetch(`/api/cotizador/clientes/${clienteAEliminar.id}${params.size ? `?${params}` : ''}`, { method: 'DELETE' })
+        if (res.ok) {
+          setClientes(prev => prev.filter(c => c.id !== clienteAEliminar.id))
+          setClienteAEliminar(null)
+        }
+      }
+    } finally {
+      setEliminando(false)
+    }
+  }
+
   return (
     <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -326,23 +357,35 @@ function ClientesContent() {
                       {personasTodas.map(c => {
                         const emp = Array.isArray(c.crm_empresas_clientes) ? c.crm_empresas_clientes[0] : c.crm_empresas_clientes
                         return (
-                          <button
+                          <div
                             key={c.id}
-                            onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${c.id}`))}
-                            className={`w-full rounded-card border p-3.5 text-left transition-all flex items-center gap-3 bg-(--bg-card) border-(--border) hover:bg-(--bg-hover)`}
+                            className={`group w-full rounded-card border flex items-center bg-(--bg-card) border-(--border) hover:bg-(--bg-hover) transition-all`}
                           >
-                            <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">
-                              <User size={16} className="text-brand" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className={`text-sm font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
-                              <p className={`text-xs whitespace-nowrap overflow-visible ${ts}`}>
-                                {formatTelefonoVista(c.telefono, c.telefono_indicativo)}
-                                {emp ? ` · ${emp.razon_social} (NIT ${emp.nit.replace(/^NIT\s*/i, '')})` : ''}
-                              </p>
-                            </div>
-                            <CaretRight size={16} className={ts} />
-                          </button>
+                            <button
+                              onClick={() => router.push(linkConEmpresa(`/empresa/clientes/${c.id}`))}
+                              className="flex-1 min-w-0 flex items-center gap-3 p-3.5 text-left"
+                            >
+                              <div className="w-9 h-9 rounded-full bg-brand-light flex items-center justify-center shrink-0">
+                                <User size={16} className="text-brand" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-sm font-semibold truncate ${tp}`}>{c.nombre} {c.apellido ?? ''}</p>
+                                <p className={`text-xs whitespace-nowrap overflow-visible ${ts}`}>
+                                  {formatTelefonoVista(c.telefono, c.telefono_indicativo)}
+                                  {emp ? ` · ${emp.razon_social} (NIT ${emp.nit.replace(/^NIT\s*/i, '')})` : ''}
+                                </p>
+                              </div>
+                              <CaretRight size={16} className={ts} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setClienteAEliminar({ id: c.id, nombre: [c.nombre, c.apellido].filter(Boolean).join(' ') || 'este contacto' })}
+                              className="shrink-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity text-(--text-secondary) hover:text-[#FF5E4B]"
+                              title="Eliminar contacto"
+                            >
+                              <Trash size={15} sinAnimacion />
+                            </button>
+                          </div>
                         )
                       })}
                     </div>
@@ -362,30 +405,40 @@ function ClientesContent() {
                       {empresasLista.map(emp => (
                         <div
                           key={emp.id}
-                          className="rounded-card border p-4 bg-(--bg-card) border-(--border) space-y-3"
+                          className="group rounded-card border p-4 bg-(--bg-card) border-(--border) space-y-3"
                         >
-                          {/* Encabezado de la Empresa — clicable, navega a la página de la empresa */}
-                          <button
-                            type="button"
-                            onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
-                            className="w-full flex items-center justify-between gap-3 text-left hover:opacity-80 transition-opacity"
-                          >
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center shrink-0">
-                                <Buildings size={20} className="text-[#00827C]" />
+                          {/* Encabezado de la Empresa */}
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => router.push(linkConEmpresa(`/empresa/clientes/empresa/${emp.id}`))}
+                              className="flex-1 min-w-0 flex items-center justify-between gap-3 text-left hover:opacity-80 transition-opacity"
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-[#00827C]/10 flex items-center justify-center shrink-0">
+                                  <Buildings size={20} className="text-[#00827C]" />
+                                </div>
+                                <div className="min-w-0">
+                                  <h3 className={`text-sm font-bold truncate ${tp}`}>
+                                    {emp.razon_social}
+                                    {emp.nombre_comercial && <span className="font-normal text-xs text-(--text-secondary) ml-1.5">({emp.nombre_comercial})</span>}
+                                  </h3>
+                                  <p className={`text-xs ${ts}`}>
+                                    NIT {emp.nit.replace(/^NIT\s*/i, '')} {emp.direccion ? `· ${emp.direccion}` : ''}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="min-w-0">
-                                <h3 className={`text-sm font-bold truncate ${tp}`}>
-                                  {emp.razon_social}
-                                  {emp.nombre_comercial && <span className="font-normal text-xs text-(--text-secondary) ml-1.5">({emp.nombre_comercial})</span>}
-                                </h3>
-                                <p className={`text-xs ${ts}`}>
-                                  NIT {emp.nit.replace(/^NIT\s*/i, '')} {emp.direccion ? `· ${emp.direccion}` : ''}
-                                </p>
-                              </div>
-                            </div>
-                            <CaretRight size={16} className={`${ts} shrink-0`} />
-                          </button>
+                              <CaretRight size={16} className={`${ts} shrink-0`} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setClienteAEliminar({ id: emp.id, nombre: emp.nombre_comercial || emp.razon_social, esEmpresa: true })}
+                              className="shrink-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity text-(--text-secondary) hover:text-[#FF5E4B]"
+                              title="Eliminar empresa"
+                            >
+                              <Trash size={15} sinAnimacion />
+                            </button>
+                          </div>
 
                           {/* Personas Vinculadas a esta Empresa */}
                           {emp.contactos.length > 0 && (
@@ -429,6 +482,18 @@ function ClientesContent() {
           </>
         ) : null}
       </div>
+
+      <Modal
+        abierto={!!clienteAEliminar}
+        onClose={() => !eliminando && setClienteAEliminar(null)}
+        titulo={clienteAEliminar?.esEmpresa ? 'Eliminar empresa' : 'Eliminar contacto'}
+        descripcion={clienteAEliminar?.esEmpresa
+          ? 'Se eliminan también todos sus contactos y cotizaciones. No se puede deshacer.'
+          : 'Se eliminan también todas sus cotizaciones. No se puede deshacer.'}
+        varianteConfirmar="error"
+        textoConfirmar={eliminando ? 'Eliminando...' : 'Eliminar'}
+        onConfirmar={eliminarCliente}
+      />
 
       <Modal
         abierto={modalCrearAbierto}
