@@ -14,9 +14,7 @@ function getEncryptionBuffer() {
   const hexString = process.env.APP_DATA_ENCRYPTION_KEY
 
   if (!hexString || hexString.length < 32) {
-    console.warn("ADVERTENCIA DE SEGURIDAD: APP_DATA_ENCRYPTION_KEY es nula o menor de 32 caracteres. Usando llave de emergencia in-memory (sólo para que la app no colapse).")
-    ENCRYPTION_KEY = Buffer.from("emergency-32-chars-long-fallback", 'utf-8')
-    return ENCRYPTION_KEY
+    throw new Error('APP_DATA_ENCRYPTION_KEY ausente o menor de 32 caracteres.')
   }
 
   ENCRYPTION_KEY = Buffer.from(hexString.slice(0, 32), 'utf-8')
