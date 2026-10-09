@@ -389,10 +389,7 @@ function ClientesContent() {
 
                           {/* Personas Vinculadas a esta Empresa */}
                           {emp.contactos.length > 0 && (
-                            <div className="pt-2 border-t border-(--border) space-y-1.5">
-                              <p className="text-[10px] font-bold text-(--text-secondary) mb-1">
-                                Personas vinculadas
-                              </p>
+                            <div className="space-y-1.5">
                               {emp.contactos.map(contacto => (
                                 <button
                                   key={contacto.id}
