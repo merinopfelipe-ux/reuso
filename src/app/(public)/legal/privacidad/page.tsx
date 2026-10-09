@@ -41,7 +41,7 @@ const T = {
       {
         num: '02',
         titulo: 'Seguridad',
-        descripcion: 'Toda nuestra infraestructura cuenta con cifrado integral en tránsito y reposo, control de acceso por roles y registros auditables para mantener tus datos siempre protegidos.',
+        descripcion: 'Las conexiones viajan cifradas (HTTPS) y los datos se guardan cifrados en reposo en la infraestructura de nuestros proveedores, con control de acceso por roles y registros auditables.',
       },
       {
         num: '03',
@@ -53,7 +53,7 @@ const T = {
       titulo: 'Tus datos son tuyos.',
       cards: [
         { icono: 'Lock' as const, nombre: 'No vendemos datos', detalle: 'Nunca compartimos tu información con anunciantes ni brokers.' },
-        { icono: 'ShieldCheck' as const, nombre: 'Todo cifrado', detalle: 'Cada conexión usa HTTPS. Tu contraseña vive solo como hash en nuestros servidores.' },
+        { icono: 'ShieldCheck' as const, nombre: 'Conexión cifrada', detalle: 'Cada conexión usa HTTPS. Tu contraseña vive solo como hash en nuestros servidores.' },
         { icono: 'HandHeart' as const, nombre: 'Tú controlas', detalle: 'Rectifica, descarga o elimina tus datos en cualquier momento desde tu cuenta o por correo.' },
       ],
       cierre: 'Recopilamos lo mínimo para que el servicio funcione. Nada más.',

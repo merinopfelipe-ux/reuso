@@ -346,7 +346,7 @@ export default function DatosPage() {
             {
               num: '02',
               title: lang === 'ENG' ? 'Encrypted Storage' : 'Custodia Cifrada',
-              desc: lang === 'ENG' ? 'End-to-end encryption in transit and rest. Role-based isolated access.' : 'Cifrado integral en tránsito y reposo con aislamiento estricto por roles.',
+              desc: lang === 'ENG' ? 'Encryption in transit and at rest. Role-based isolated access.' : 'Cifrado en tránsito y en reposo, con acceso aislado por roles.',
               icon: ShieldCheck,
             },
             {
