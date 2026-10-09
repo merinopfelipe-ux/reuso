@@ -7,7 +7,6 @@ import { Download, ChatCircle, CreditCard, Calendar, Clock, ShieldCheck, Loader2
 import { DynamicIcon } from '@/components/ui/dynamic-icon'
 import { renderTextoSimple, conPuntoFinal } from '@/lib/cotizador/texto-simple'
 import { formatEnteroMillones } from '@/lib/format'
-import { formatTelefonoVista } from '@/lib/telefono'
 
 interface MuebleFactura {
   id: string
@@ -25,8 +24,6 @@ interface Props {
   clienteNombre: string
   clienteApellido: string | null
   clienteIdentificacion: string | null
-  clienteTelefono: string | null
-  clienteTelefonoIndicativo: string | null
   clienteDireccion: string | null
   clienteEmail?: string | null
   clienteTipo?: 'persona' | 'empresa' | null
@@ -104,7 +101,7 @@ function formatCOPConDecimalesOpcionales(n: number, permitirDecimales: boolean):
  */
 export function VistaCot({
   codigoCotizacion, fechaLarga, clienteNombre, clienteApellido, clienteIdentificacion,
-  clienteTelefono, clienteTelefonoIndicativo, clienteDireccion, clienteEmail, clienteTipo, esContactoReal = true,
+  clienteDireccion, clienteEmail, clienteTipo, esContactoReal = true,
   empresaRazonSocial, empresaNit, empresaDireccion, muebles,
   subtotal, descuentoActivo, descuento, descuentoTipo, transporteActivo, transporteValor,
   ivaActivo, ivaPorcentaje, validezActiva, fechaValidezLarga, observaciones,
@@ -126,7 +123,6 @@ export function VistaCot({
     iva_activo: ivaActivo, iva_porcentaje: ivaPorcentaje,
   })
   const transportePorLinea = transportePorItem({ transporte_activo: transporteActivo, transporte_valor: transporteValor }, muebles.length)
-  const telefonoFormateado = formatTelefonoVista(clienteTelefono, clienteTelefonoIndicativo)
 
   const esEmpresa = clienteTipo === 'empresa' || !!empresaRazonSocial
   const nombrePrincipal = esEmpresa
@@ -168,9 +164,6 @@ export function VistaCot({
           )}
           {nombreContacto && (
             <p className={`text-[14px] mt-0.5 ${ts}`}>{nombreContacto}</p>
-          )}
-          {telefonoFormateado && (
-            <p className={`text-[14px] mt-0.5 ${ts}`}>{telefonoFormateado}</p>
           )}
           {clienteEmail && (
             <p className={`text-[14px] mt-0.5 ${ts}`}>{clienteEmail}</p>

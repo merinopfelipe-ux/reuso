@@ -94,7 +94,7 @@ interface Cotizacion {
   crm_clientes: {
     tipo?: 'persona' | 'empresa' | null
     nombre: string; apellido: string | null; identificacion: string | null
-    telefono: string | null; telefono_indicativo: string | null; email: string | null
+    email: string | null
     direccion: string | null
     empresa_cliente_id?: string | null
     es_contacto_real?: boolean | null
@@ -609,8 +609,6 @@ export default function PropuestaClient({ cotizacion, muebles, token, aperturaId
                 clienteNombre={clienteNombre}
                 clienteApellido={cotizacion.crm_clientes?.apellido ?? null}
                 clienteIdentificacion={cotizacion.crm_clientes?.identificacion ?? null}
-                clienteTelefono={cotizacion.crm_clientes?.telefono ?? null}
-                clienteTelefonoIndicativo={cotizacion.crm_clientes?.telefono_indicativo ?? null}
                 clienteDireccion={cotizacion.crm_clientes?.direccion ?? null}
                 clienteEmail={cotizacion.crm_clientes?.email ?? null}
                 clienteTipo={cotizacion.crm_clientes?.tipo ?? (empInfo ? 'empresa' : 'persona')}

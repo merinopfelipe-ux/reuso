@@ -33,7 +33,7 @@ export default async function PropuestaPublicaPage(props: Props) {
       observaciones, fecha_apertura_cliente, veces_abierta,
       enlace_publico_token, created_at, updated_at, asesor_id,
       crm_clientes (
-        id, tipo, nombre, apellido, identificacion, telefono, telefono_indicativo, email, direccion, empresa_cliente_id, es_contacto_real,
+        id, tipo, nombre, apellido, identificacion, email, direccion, empresa_cliente_id, es_contacto_real,
         crm_empresas_clientes ( id, nit, razon_social, nombre_comercial, direccion )
       ),
       empresas (
@@ -122,8 +122,6 @@ export default async function PropuestaPublicaPage(props: Props) {
     nombre: string
     apellido: string | null
     identificacion: string | null
-    telefono: string | null
-    telefono_indicativo: string | null
     email: string | null
     direccion: string | null
     empresa_cliente_id?: string | null
