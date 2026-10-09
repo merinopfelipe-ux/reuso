@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getIp } from '@/lib/admin-guard'
+import { rateLimit } from '@/lib/rate-limit'
 import { buscarUbicacionPorIp } from '@/lib/geo-ip'
 
 // Registra en la misma trazabilidad de aperturas/descargas cuando alguien
@@ -15,12 +16,24 @@ export async function POST(request: NextRequest, props: { params: Promise<{ toke
     return NextResponse.json({ error: 'Medio inválido.' }, { status: 400 })
   }
 
+  const ipPeticion = getIp(request)
+  if (!(await rateLimit(`propuesta_compartir:${ipPeticion}`, 30, 60_000))) {
+    return NextResponse.json({ error: 'Demasiadas solicitudes. Intenta de nuevo en un minuto.' }, { status: 429 })
+  }
+
   const adminClient = await createAdminClient()
-  const { data: cot } = await adminClient
+  let { data: cot } = await adminClient
     .from('crm_cotizaciones')
     .select('id')
-    .or(`enlace_publico_token.eq.${params.token},codigo_cotizacion.eq.${params.token}`)
+    .eq('enlace_publico_token', params.token)
     .maybeSingle()
+  if (!cot) {
+    ({ data: cot } = await adminClient
+      .from('crm_cotizaciones')
+      .select('id')
+      .eq('codigo_cotizacion', params.token)
+      .maybeSingle())
+  }
 
   if (!cot) return NextResponse.json({ ok: true }) // no filtrar si el token existe
 

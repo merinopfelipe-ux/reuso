@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { construirPdfCotizacion } from '@/lib/pdf/construir-pdf-cotizacion'
 import { getIp } from '@/lib/admin-guard'
+import { rateLimit } from '@/lib/rate-limit'
 import { buscarUbicacionPorIp } from '@/lib/geo-ip'
 
 // Descarga pública del resumen básico de una cotización — el token en la
@@ -12,13 +13,24 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: NextRequest, props: { params: Promise<{ token: string }> }) {
   const params = await props.params;
+  const ipPeticion = getIp(request)
+  if (!(await rateLimit(`propuesta_pdf:${ipPeticion}`, 20, 60_000))) {
+    return NextResponse.json({ error: 'Demasiadas descargas. Intenta de nuevo en un minuto.' }, { status: 429 })
+  }
   const adminClient = await createAdminClient()
 
-  const { data: cot } = await adminClient
+  let { data: cot } = await adminClient
     .from('crm_cotizaciones')
     .select('id, codigo_cotizacion, updated_at')
-    .or(`enlace_publico_token.eq.${params.token},codigo_cotizacion.eq.${params.token}`)
-    .single()
+    .eq('enlace_publico_token', params.token)
+    .maybeSingle()
+  if (!cot) {
+    ({ data: cot } = await adminClient
+      .from('crm_cotizaciones')
+      .select('id, codigo_cotizacion, updated_at')
+      .eq('codigo_cotizacion', params.token)
+      .maybeSingle())
+  }
 
   if (!cot) return NextResponse.json({ error: 'Propuesta no encontrada.' }, { status: 404 })
 
