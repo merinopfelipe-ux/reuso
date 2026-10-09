@@ -164,6 +164,13 @@ function DetalleClienteContent() {
   const [agregandoContacto, setAgregandoContacto] = useState(false)
   const [errorAgregar, setErrorAgregar] = useState<string | null>(null)
 
+  // Modal convertir persona en empresa
+  const [mostrandoConvertir, setMostrandoConvertir] = useState(false)
+  const [convertirNit, setConvertirNit] = useState('')
+  const [convertirRazonSocial, setConvertirRazonSocial] = useState('')
+  const [convirtiendo, setConvirtiendo] = useState(false)
+  const [errorConvertir, setErrorConvertir] = useState<string | null>(null)
+
   const [tickets, setTickets] = useState<TicketResumen[]>([])
   const [mostrandoCrearTicket, setMostrandoCrearTicket] = useState(false)
   const [ticketTitulo, setTicketTitulo] = useState('')
@@ -404,6 +411,34 @@ function DetalleClienteContent() {
       setErrorTicket('Error de conexión. Intenta de nuevo.')
     } finally {
       setCreandoTicket(false)
+    }
+  }
+
+  async function convertirEnEmpresa() {
+    if (!id || !convertirNit.trim() || !convertirRazonSocial.trim()) {
+      setErrorConvertir('NIT y razón social son obligatorios.')
+      return
+    }
+    setConvirtiendo(true)
+    setErrorConvertir(null)
+    try {
+      const res = await fetch(conEmpresa('/api/crm/empresas-clientes'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nit: convertirNit.trim(),
+          razon_social: convertirRazonSocial.trim(),
+          cliente_id_vincular: id,
+        }),
+      })
+      const d = await res.json()
+      if (!res.ok) { setErrorConvertir(d.error ?? 'Error al convertir.'); return }
+      setMostrandoConvertir(false)
+      router.push(conEmpresa(`/empresa/clientes/empresa/${d.empresa_cliente_id}`))
+    } catch {
+      setErrorConvertir('Error de conexión. Intenta de nuevo.')
+    } finally {
+      setConvirtiendo(false)
     }
   }
 
@@ -794,7 +829,26 @@ function DetalleClienteContent() {
         onGuardar={intentarGuardar}
         guardando={guardando}
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
-        extra={error ? <p className="text-sm text-[#FF5E4B]">{error}</p> : null}
+        extra={
+          <div className="flex flex-col items-center gap-2">
+            {error && <p className="text-sm text-[#FF5E4B]">{error}</p>}
+            {cliente.tipo === 'persona' && !emp && (
+              <button
+                type="button"
+                onClick={() => {
+                  setConvertirNit(identificacion || '')
+                  setConvertirRazonSocial([nombre, apellido].filter(Boolean).join(' '))
+                  setErrorConvertir(null)
+                  setMostrandoConvertir(true)
+                }}
+                className="text-xs text-(--text-secondary) hover:text-brand"
+                style={{ textDecoration: 'underline dotted', textUnderlineOffset: '3px' }}
+              >
+                Convertir en empresa
+              </button>
+            )}
+          </div>
+        }
       />
       <Modal
         abierto={mostrandoCrearTicket}
@@ -870,6 +924,29 @@ function DetalleClienteContent() {
             placeholder="Celular (opcional)"
           />
           <input value={nuevoContacto.email} onChange={e => setNuevoContacto(p => ({ ...p, email: e.target.value }))} className={CLASE_CAMPO} placeholder="Correo (opcional)" type="email" />
+        </div>
+      </Modal>
+
+      <Modal
+        abierto={mostrandoConvertir}
+        onClose={() => !convirtiendo && setMostrandoConvertir(false)}
+        titulo="Convertir en empresa"
+        textoConfirmar={convirtiendo ? 'Convirtiendo...' : 'Convertir'}
+        onConfirmar={() => { if (!convirtiendo) convertirEnEmpresa() }}
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-(--text-secondary)">
+            Se creará una empresa cliente y este contacto quedará vinculado a ella.
+          </p>
+          {errorConvertir && <p className="text-sm text-[#FF5E4B]">{errorConvertir}</p>}
+          <div>
+            <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">NIT</label>
+            <input value={convertirNit} onChange={e => setConvertirNit(e.target.value)} className={CLASE_CAMPO} placeholder="Ej. 900123456" />
+          </div>
+          <div>
+            <label className="text-xs font-semibold mb-1 block text-(--text-secondary)">Razón social</label>
+            <input value={convertirRazonSocial} onChange={e => setConvertirRazonSocial(e.target.value)} className={CLASE_CAMPO} placeholder="Nombre legal de la empresa" />
+          </div>
         </div>
       </Modal>
     </DetallePagina>

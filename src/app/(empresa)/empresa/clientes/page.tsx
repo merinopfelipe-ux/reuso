@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Search as MagnifyingGlass, User, ChevronRight as CaretRight, Building2 as Buildings, Plus } from '@/components/ui/icons'
 import { formatTelefonoVista } from '@/lib/telefono'
+import { formatFecha } from '@/lib/format'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { SkeletonLista } from '@/components/ui/skeleton'
@@ -13,7 +14,7 @@ import { PAISES, type Pais } from '@/components/ui/selector-pais'
 
 interface EmpresaOpcion { id: string; nombre: string }
 
-interface EmpresaClienteResumen { id?: string; nit: string; razon_social: string; nombre_comercial?: string | null; direccion?: string | null }
+interface EmpresaClienteResumen { id?: string; nit: string; razon_social: string; nombre_comercial?: string | null; direccion?: string | null; created_at?: string | null }
 
 interface ClienteResumen {
   id: string
@@ -36,6 +37,7 @@ interface EmpresaAgrupada {
   razon_social: string
   nombre_comercial: string | null
   direccion: string | null
+  created_at: string | null
   contactos: ClienteResumen[]
 }
 
@@ -188,6 +190,7 @@ function ClientesContent() {
           razon_social: emp.razon_social,
           nombre_comercial: emp.nombre_comercial || null,
           direccion: emp.direccion || null,
+          created_at: emp.created_at || null,
           contactos: []
         })
       }
@@ -203,6 +206,7 @@ function ClientesContent() {
           razon_social: c.nombre,
           nombre_comercial: null,
           direccion: c.direccion || null,
+          created_at: null,
           contactos: []
         })
       }
@@ -378,6 +382,7 @@ function ClientesContent() {
                                 </h3>
                                 <p className={`text-xs ${ts}`}>
                                   NIT {emp.nit.replace(/^NIT\s*/i, '')} {emp.direccion ? `· ${emp.direccion}` : ''}
+                                  {emp.created_at && <span className="ml-1">· Desde {formatFecha(emp.created_at)}</span>}
                                 </p>
                               </div>
                             </div>
