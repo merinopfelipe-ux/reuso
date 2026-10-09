@@ -484,7 +484,7 @@ function DetalleClienteContent() {
         onVolver={() => router.push(conEmpresa('/empresa/clientes'))}
         textoVolver="Volver a clientes"
         meta={cliente.tipo === 'empresa' ? 'Cliente empresa' : 'Cliente persona'}
-        extraMeta={!emp ? (
+        extraMeta={cliente.tipo === 'persona' && !emp ? (
           <button
             type="button"
             onClick={() => {
