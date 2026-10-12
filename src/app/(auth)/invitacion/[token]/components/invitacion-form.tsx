@@ -43,7 +43,13 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
     const res = await fetch('/api/auth/registro-invitacion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, ...form, acepta_terminos: true, turnstile_token: turnstileToken || 'skip' }),
+      body: JSON.stringify({
+        token,
+        ...form,
+        ...(esEmpresaNueva ? {} : { nombre_empresa: undefined, nit: undefined, telefono: undefined, pais: undefined, ciudad: undefined }),
+        acepta_terminos: true,
+        turnstile_token: turnstileToken || 'skip',
+      }),
     })
     const data = await res.json()
 
