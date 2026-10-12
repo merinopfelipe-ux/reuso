@@ -254,10 +254,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={setTurnstileToken}
         onExpire={() => setTurnstileToken('')}
-        onError={() => {
-          setError('Error de verificación de seguridad. Intenta de nuevo.');
-          setTurnstileToken('');
-        }}
+        onError={() => setTurnstileToken('')}
         options={{ theme: 'auto' }}
       />
 
