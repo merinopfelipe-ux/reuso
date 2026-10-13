@@ -75,7 +75,7 @@ export function IntegracionChatwootClient({ empresaId }: { empresaId: string }) 
       <CampoFormulario label="Token de acceso de la API" hint="Se guarda cifrado. Vuelve a escribirlo cada vez que guardes.">
         <input className={CLASE_CAMPO} type="password" autoComplete="off" value={apiToken} onChange={e => setApiToken(e.target.value)} />
       </CampoFormulario>
-      <CampoFormulario label="Secreto del webhook" hint="Al menos 32 caracteres. Debe ser el mismo que pegues en Chatwoot. Se guarda cifrado.">
+      <CampoFormulario label="Secreto del webhook" hint="Al menos 20 caracteres. Debe ser el mismo que aparece en Chatwoot. Se guarda cifrado.">
         <input className={CLASE_CAMPO} type="password" autoComplete="off" value={webhookSecret} onChange={e => setWebhookSecret(e.target.value)} />
       </CampoFormulario>
       <label className="flex items-center gap-2 text-sm text-(--text-primary)">

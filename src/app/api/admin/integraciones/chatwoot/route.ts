@@ -9,7 +9,7 @@ const esquema = z.object({
   api_url: z.string().url().max(300),
   account_id: z.string().regex(/^\d{1,12}$/, 'El ID de cuenta debe ser solo números.'),
   api_token: z.string().min(8).max(300),
-  webhook_secret: z.string().min(32, 'El secreto del webhook debe tener al menos 32 caracteres.').max(200),
+  webhook_secret: z.string().min(20, 'El secreto del webhook debe tener al menos 20 caracteres.').max(200),
   activa: z.boolean(),
 })
 
