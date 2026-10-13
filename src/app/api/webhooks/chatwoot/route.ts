@@ -182,6 +182,8 @@ async function pedirTelefono(c: Contexto, contenido: string) {
   if (contactoId) await actualizarTelefonoContacto(c.integracion.config, contactoId, numero.e164)
   await registrarCliente(c, numero, c.b.sender?.name ?? '')
   await marcarDecidido(c.admin, claveReq)
+  const primerNombre = (c.b.sender?.name ?? '').trim().split(' ')[0]
+  await sendMessage(c.integracion.config, c.conv, `Gracias${primerNombre ? `, ${primerNombre}` : ''}. Ya registramos tu número para tu cotización.`, false)
 }
 
 async function registrarCliente(c: Contexto, telefono: { indicativo: string; numero: string }, nombreChatwoot: string) {
@@ -214,6 +216,6 @@ function extraerTelefono(texto: string): string {
   const limpio = texto.trim()
   const digitos = limpio.replace(/\D/g, '')
   if (limpio.startsWith('+')) return `+${digitos}`
-  if (digitos.length === 10) return `+57${digitos}`
-  return `+${digitos}`
+  if (digitos.startsWith('57') && digitos.length === 12) return `+${digitos}`
+  return `+57${digitos}`
 }
