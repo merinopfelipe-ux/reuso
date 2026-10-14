@@ -173,17 +173,6 @@ export default async function DashboardPage() {
   fechaHace14Dias.setDate(ahora.getDate() - 14)
   const primerDiaMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
 
-  // Módulos activos para esta empresa (filtra categorías de la calculadora)
-  let moduloIdsActivos: string[] | null = null
-  if (empresa_id) {
-    const { data: modEmpresa } = await adminClient
-      .from('modulos_empresas')
-      .select('modulo_id')
-      .eq('empresa_id', empresa_id)
-      .eq('activo', true)
-    moduloIdsActivos = (modEmpresa ?? []).map((m) => m.modulo_id)
-  }
-
   const [
     { count: totalObjetos },
     { data: informesData },
@@ -193,10 +182,21 @@ export default async function DashboardPage() {
     { data: calculosEmpresa },
     { data: co2Empresa },
     { count: calculosMesCount },
+    { data: empresaData },
   ] = await Promise.all([
     adminClient.from('calculos').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
     adminClient.from('informes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
-    (() => {
+    (async () => {
+      // Módulos activos de la empresa (filtra categorías de la calculadora)
+      let moduloIdsActivos: string[] | null = null
+      if (empresa_id) {
+        const { data: modEmpresa } = await adminClient
+          .from('modulos_empresas')
+          .select('modulo_id')
+          .eq('empresa_id', empresa_id)
+          .eq('activo', true)
+        moduloIdsActivos = (modEmpresa ?? []).map((m) => m.modulo_id)
+      }
       // usuario_libre (sin empresa) → todas las categorías
       // empresa con módulos asignados → filtrar; empresa sin módulos → vacío
       if (moduloIdsActivos !== null && moduloIdsActivos.length === 0) {
@@ -229,7 +229,22 @@ export default async function DashboardPage() {
         query = query.eq('user_id', user.id)
       }
 
-      return query
+      const res = await query
+
+      // Historial: añadir nombres de usuario para admin/empresa_admin
+      const crudo = res.data ?? []
+      if ((rol === 'super_admin' || rol === 'empresa_admin') && crudo.length > 0) {
+        const userIds = Array.from(new Set(crudo.map((c) => c.user_id).filter(Boolean)))
+        if (userIds.length > 0) {
+          const { data: profiles } = await adminClient
+            .from('profiles')
+            .select('user_id, nombre')
+            .in('user_id', userIds)
+          const usuariosMap = new Map((profiles ?? []).map((p) => [p.user_id, p.nombre]))
+          return { ...res, data: crudo.map((c) => ({ ...c, usuario_nombre: usuariosMap.get(c.user_id) ?? null })) }
+        }
+      }
+      return { ...res, data: crudo }
     })(),
     // Todos los cálculos del usuario en una sola lectura: totales, gráfica, donut y últimos 14 días
     adminClient
@@ -249,6 +264,10 @@ export default async function DashboardPage() {
     (rol === 'usuario_libre')
       ? adminClient.from('calculos').select('*', { count: 'exact', head: true }).eq('user_id', user.id).gte('fecha', primerDiaMes.toISOString())
       : Promise.resolve({ count: 0, data: null, error: null }),
+    // Nombre de la empresa para el encabezado
+    empresa_id
+      ? adminClient.from('empresas').select('nombre').eq('id', empresa_id).single()
+      : Promise.resolve({ data: null as { nombre: string } | null, error: null }),
   ])
 
   const co2Total = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
@@ -272,20 +291,7 @@ export default async function DashboardPage() {
 
   const nombresCategorias = categorias.map((c) => c.nombre)
 
-  // Historial: añadir nombres de usuario para admin/empresa_admin
-  const historialRaw = historialRes.data ?? []
-  let historialData = historialRaw
-  if (rol === 'super_admin' || rol === 'empresa_admin') {
-    const userIds = Array.from(new Set(historialRaw.map((c) => c.user_id).filter(Boolean)))
-    if (userIds.length > 0) {
-      const { data: profiles } = await adminClient
-        .from('profiles')
-        .select('user_id, nombre')
-        .in('user_id', userIds)
-      const usuariosMap = new Map((profiles ?? []).map((p) => [p.user_id, p.nombre]))
-      historialData = historialRaw.map((c) => ({ ...c, usuario_nombre: usuariosMap.get(c.user_id) ?? null }))
-    }
-  }
+  const historialData = historialRes.data ?? []
 
   const historialTotal = rol === 'usuario_libre'
     ? Math.min(historialRes.count ?? 0, 15)
@@ -303,12 +309,8 @@ export default async function DashboardPage() {
     ? calcularPosicionRanking(calculosEmpresa ?? [], user.id)
     : null
 
-  // Nombre de empresa del layout (disponible via perfil)
-  let nombreEmpresa: string | undefined
-  if (empresa_id) {
-    const { data: emp } = await adminClient.from('empresas').select('nombre').eq('id', empresa_id).single()
-    nombreEmpresa = emp?.nombre
-  }
+  // Nombre de empresa del layout (ya pedido en el lote paralelo)
+  const nombreEmpresa: string | undefined = empresaData?.nombre
 
   return (
     <div style={{ width: '100%' }}>
