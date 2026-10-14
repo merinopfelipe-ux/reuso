@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { XCircle, ChevronRight as CaretRight, Square, SquareCheck, Trash } from '@/components/ui/icons'
+import { XCircle, Trash, ExternalLink as ArrowSquareOut } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { Share2 } from '@/components/ui/icons'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { Button } from '@/components/ui/button'
@@ -12,7 +15,6 @@ import { formatTelefonoVista } from '@/lib/telefono'
 import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { SalesDashboard } from './components/sales-dashboard'
 import { ToolbarVistas, ColumnaHeaderMenu } from './components/toolbar-vistas'
-import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
 import { Pagination } from '@/components/ui/pagination'
 import { useVistas } from '@/lib/cotizador/use-vistas'
 import { aplicarFiltros, aplicarOrden, definicionDe, anchoColumna, alineacionColumna, type ClaveColumna } from '@/lib/cotizador/vistas'
@@ -496,13 +498,7 @@ function PanelCotizadorContent() {
                 <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                   <thead>
                     <tr className="bg-(--bg-table-header) text-brand">
-                      <th className={`px-1.5 xl:px-4 ${paddingY} w-10`}>
-                        <button type="button" onClick={toggleSeleccionarTodas} className="flex">
-                          {todasSeleccionadas
-                            ? <SquareCheck size={20} className="text-brand" sinAnimacion />
-                            : <Square size={20} className={ts} sinAnimacion />}
-                        </button>
-                      </th>
+                      <CasillaCabecera todas={todasSeleccionadas} algunas={seleccionadas.size > 0} onToggle={toggleSeleccionarTodas} />
                       {columnasVisibles.map(clave => (
                         <ColumnaHeaderMenu
                           key={clave}
@@ -514,6 +510,7 @@ function PanelCotizadorContent() {
                           densidad={densidad}
                         />
                       ))}
+                      <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
                     </tr>
                   </thead>
                   <tbody>
@@ -528,13 +525,7 @@ function PanelCotizadorContent() {
                         className={`hover:bg-(--bg-table-hover) ${idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'}`}
                         style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                       >
-                        <td className={`px-1.5 xl:px-4 ${paddingY}`} onClick={e => e.stopPropagation()}>
-                          <button type="button" onClick={() => toggleSeleccionada(c.id)} className="flex">
-                            {seleccionadas.has(c.id)
-                              ? <SquareCheck size={20} className="text-brand" sinAnimacion />
-                              : <Square size={20} className={ts} sinAnimacion />}
-                          </button>
-                        </td>
+                        <CasillaFila marcada={seleccionadas.has(c.id)} onToggle={() => toggleSeleccionada(c.id)} label={`Seleccionar cotización ${c.codigo_cotizacion ?? ""}`} />
                         {columnasVisibles.map((clave, colIdx) => {
                           const esColumnaActiva = clave === vistasHook.borrador.orden.campo
                           const alineacion = alineacionColumna(clave)
@@ -598,7 +589,6 @@ function PanelCotizadorContent() {
                                   <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                                     {renderCeldaColumna(clave, c)}
                                   </span>
-                                  <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                                 </span>
                               ) : clave === 'codigo_cotizacion' ? (
                                 // El "abrir" (>) va junto a Cotización también —
@@ -625,7 +615,6 @@ function PanelCotizadorContent() {
                                   <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                                     {renderCeldaColumna(clave, c)}
                                   </span>
-                                  <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                                 </span>
                               ) : (
                                 <span className={
@@ -656,6 +645,15 @@ function PanelCotizadorContent() {
                             </td>
                           )
                         })}
+                        <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                          <MenuFila
+                            label={`Acciones de la cotización ${c.codigo_cotizacion ?? ''}`}
+                            acciones={[
+                              { label: 'Abrir en nueva página', icono: <ArrowSquareOut size={13} />, href: linkConEmpresa(`/empresa/cotizador/${c.id}`) },
+                              { label: 'Eliminar cotización', icono: <Trash size={13} />, peligro: true, onClick: () => { setSeleccionadas(new Set([c.id])); setConfirmandoBorrado(true) } },
+                            ]}
+                          />
+                        </td>
                       </tr>
                     ))}
                   </tbody>

@@ -7,6 +7,7 @@ import { getIp } from '@/lib/admin-guard'
 import { checkLimiteDpp } from '@/lib/plan-limits'
 import { calcularHuellaManufactura } from '@/lib/calculos/lca'
 import type { Plan } from '@/types'
+import { carpetaArea } from '@/lib/storage/empresa-rutas'
 
 const schema = z.object({
   nombre: z.string().min(1, 'Completa el nombre del activo.').max(200),
@@ -140,6 +141,15 @@ export async function POST(request: NextRequest) {
   const profileResult = await adminClient.from('profiles').select('id').eq('user_id', user_id).single()
 
   const co2_manufactura_kg = calcularHuellaManufactura(composicion_json ?? [])
+
+  // La foto solo puede venir de la carpeta de imágenes de ESTA empresa.
+  if (imagen_url) {
+    const prefijo = carpetaArea(targetEmpresaId, 'dppImagenes') + '/'
+    const resto = imagen_url.startsWith(prefijo) ? imagen_url.slice(prefijo.length) : null
+    if (resto === null || resto === '' || resto.includes('/') || resto.includes('..')) {
+      return NextResponse.json({ error: 'La imagen no es válida para esta empresa.' }, { status: 400 })
+    }
+  }
 
   const nuevoActivo = {
     empresa_id: targetEmpresaId,

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { Upload, Save as FloppyDisk, CheckCircle } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { Selector } from '@/components/ui/selector'
@@ -84,16 +83,13 @@ export default function ConfiguracionClient({
   }
 
   async function subirLogo(file: File): Promise<string | null> {
-    const supabase = createClient()
-    const ext = file.name.split('.').pop() ?? 'png'
-    const path = `logos/${Date.now()}.${ext}`
-    const { error } = await supabase.storage.from('logos').upload(path, file, {
-      contentType: file.type,
-      upsert: false,
-    })
-    if (error) return null
-    const { data } = supabase.storage.from('logos').getPublicUrl(path)
-    return data.publicUrl
+    // El logo se sube por el servidor, a la carpeta de esta empresa.
+    const formData = new FormData()
+    formData.append('archivo', file)
+    const res = await fetch('/api/empresa/logo', { method: 'POST', body: formData })
+    if (!res.ok) return null
+    const data = await res.json().catch(() => null)
+    return data?.url ?? null
   }
 
   async function handleSubmit(e: React.FormEvent) {

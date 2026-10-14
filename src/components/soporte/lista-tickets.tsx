@@ -1,7 +1,10 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
-import { Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch } from '@/components/ui/icons'
+import { Plus, LifeBuoy as Lifebuoy, Loader2 as CircleNotch, Download, MessageSquare } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { Selector } from '@/components/ui/selector'
 import { HiloTicket } from './hilo-ticket'
 import { formatFecha } from '@/lib/format'
@@ -40,6 +43,28 @@ export function ListaTickets({ esAdmin }: Props) {
   const [tickets, setTickets] = useState<TicketRow[]>([])
   const [loading, setLoading] = useState(true)
   const [ticketAbierto, setTicketAbierto] = useState<TicketRow | null>(null)
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const todas = tickets.length > 0 && tickets.every(t => seleccion.has(t.id))
+  const algunas = tickets.some(t => seleccion.has(t.id))
+  const seleccionados = tickets.filter(t => seleccion.has(t.id))
+
+  function toggleTodas() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todas) tickets.forEach(t => siguiente.delete(t.id))
+      else tickets.forEach(t => siguiente.add(t.id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
   
   // Modal de creacion
   const [mostrandoCrear, setMostrandoCrear] = useState(false)
@@ -85,6 +110,20 @@ export function ListaTickets({ esAdmin }: Props) {
           )}
         </div>
 
+        <BarraSeleccion cantidad={seleccionados.length} singular="ticket" plural="tickets" femenino={false}>
+          <BotonDescargarCliente
+            data={seleccionados.map(t => ({
+              Asunto: t.titulo,
+              Tipo: TIPO_LABELS[t.tipo],
+              Estado: t.estado.replace('_', ' '),
+              Actualizado: formatFecha(t.updated_at),
+            }))}
+            nombre="tickets_seleccionados"
+            tituloPdf="Tickets seleccionados"
+            label="Exportar"
+            icon={<Download size={14} />}
+          />
+        </BarraSeleccion>
         <div className="overflow-x-auto border-t border-(--border)">
           {loading ? (
             <div style={{ padding: '60px 0', textAlign: 'center' }}>
@@ -99,9 +138,11 @@ export function ListaTickets({ esAdmin }: Props) {
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand">
+                  <CasillaCabecera todas={todas} algunas={algunas} onToggle={toggleTodas} />
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Asunto</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Actualizado</th>
+                  <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +156,7 @@ export function ListaTickets({ esAdmin }: Props) {
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
+                      <CasillaFila marcada={seleccion.has(ticket.id)} onToggle={() => toggleFila(ticket.id)} label={`Seleccionar ticket ${ticket.titulo}`} />
                       <td className="px-4 py-3 text-(--text-primary)">
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div>
@@ -136,6 +178,12 @@ export function ListaTickets({ esAdmin }: Props) {
                       </td>
                       <td className="px-4 py-3 text-center text-(--text-secondary) text-xs">
                         {formatFecha(ticket.updated_at)}
+                      </td>
+                      <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                        <MenuFila
+                          label={`Acciones de ${ticket.titulo}`}
+                          acciones={[{ label: 'Abrir ticket', icono: <MessageSquare size={13} />, onClick: () => setTicketAbierto(ticket) }]}
+                        />
                       </td>
                     </tr>
                   )

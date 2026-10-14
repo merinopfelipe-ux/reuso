@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { dppAuthCheck } from '@/lib/dpp/auth-check'
 import { pdfATexto } from '@/lib/pdf-to-txt'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 const TIPOS_PERMITIDOS = ['application/pdf', 'image/jpeg', 'image/png'] as const
 const MAX_BYTES = 10 * 1024 * 1024 // 10 MB
@@ -90,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const storagePath = `dpp/ingestas/${activo.empresa_id}/${activo_id}/${baseTimestamp}_${storedNombreSanitizado}`
+  const storagePath = rutaEmpresa(activo.empresa_id, 'dppIngestas', `${baseTimestamp}_${storedNombreSanitizado}`, activo_id)
 
   const { error: uploadError } = await adminClient.storage
     .from('dpp')

@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto'
 import DOMPurify from 'isomorphic-dompurify'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 // Logo vectorial de una empresa (día/noche, header de la cotización pública)
 // + su derivado raster para el PDF (jsPDF no soporta SVG). Ver skill
@@ -45,19 +46,21 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   const svgLimpio = DOMPurify.sanitize(svgTexto, { USE_PROFILES: { svg: true, svgFilters: false } })
 
   const empresaId = params.id
-  const carpeta = `logos-admin/${empresaId}/${randomUUID()}`
+  const base = randomUUID()
+  const rutaSvg = rutaEmpresa(empresaId, 'logoAdmin', `${base}.svg`)
+  const rutaPng = rutaEmpresa(empresaId, 'logoAdmin', `${base}.png`)
 
   const [subidaSvg, subidaPng] = await Promise.all([
-    guard.adminClient.storage.from('logos').upload(`${carpeta}.svg`, svgLimpio, { contentType: 'image/svg+xml', upsert: false }),
-    guard.adminClient.storage.from('logos').upload(`${carpeta}.png`, pngBuffer, { contentType: 'image/png', upsert: false }),
+    guard.adminClient.storage.from('logos').upload(rutaSvg, svgLimpio, { contentType: 'image/svg+xml', upsert: false }),
+    guard.adminClient.storage.from('logos').upload(rutaPng, pngBuffer, { contentType: 'image/png', upsert: false }),
   ])
 
   if (subidaSvg.error || subidaPng.error) {
     return NextResponse.json({ error: 'Error al subir el logo. Intenta de nuevo.' }, { status: 500 })
   }
 
-  const logo_svg_url = guard.adminClient.storage.from('logos').getPublicUrl(`${carpeta}.svg`).data.publicUrl
-  const logo_propuesta_url = guard.adminClient.storage.from('logos').getPublicUrl(`${carpeta}.png`).data.publicUrl
+  const logo_svg_url = guard.adminClient.storage.from('logos').getPublicUrl(rutaSvg).data.publicUrl
+  const logo_propuesta_url = guard.adminClient.storage.from('logos').getPublicUrl(rutaPng).data.publicUrl
 
   const { data, error } = await guard.supabase
     .from('empresas')

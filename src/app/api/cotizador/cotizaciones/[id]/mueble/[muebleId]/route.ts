@@ -6,6 +6,7 @@ import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { calcularCotizacionPorItem } from '@/lib/cotizador/motor-cotizacion'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 // Edita el snapshot POR UNIDAD de una línea ya agregada a una cotización.
 // Esto NUNCA escribe en items/item_servicios/item_insumos — es exclusivo de
@@ -192,7 +193,7 @@ export async function PATCH(
     imagen_url = null
   } else if (parsed.data.imagen_base64) {
     const buffer = Buffer.from(parsed.data.imagen_base64, 'base64')
-    const nombreArchivo = `cotizador/${empresa_id}/${randomUUID()}.webp`
+    const nombreArchivo = rutaEmpresa(empresa_id, 'cotizador', `${randomUUID()}.webp`)
     const { error: uploadError } = await adminClient.storage
       .from('cotizador')
       .upload(nombreArchivo, buffer, { contentType: parsed.data.mime_type ?? 'image/webp', upsert: false })

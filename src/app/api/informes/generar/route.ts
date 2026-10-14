@@ -8,6 +8,7 @@ import { checkLimiteInformes } from '@/lib/plan-limits'
 import type { Plan } from '@/types'
 import crypto from 'crypto'
 import { rateLimit } from '@/lib/rate-limit'
+import { rutaEmpresa, rutaInformeUsuario } from '@/lib/storage/empresa-rutas'
 
 // ── Validación ───────────────────────────────────────────────────
 const schema = z.object({
@@ -181,9 +182,10 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Subir a Supabase Storage (primero) ────────────────────────
-  const carpeta = esDocumentoEmpresa ? `empresa/${empresaId}` : `usuario/${user.id}`
   const fileName = `informe_${codigoUUID}.pdf`
-  const storagePath = `informes/${carpeta}/${fileName}`
+  const storagePath = esDocumentoEmpresa && empresaId
+    ? rutaEmpresa(empresaId, 'informes', fileName)
+    : rutaInformeUsuario(user.id, fileName)
 
   const { error: storageError } = await adminClient.storage
     .from('documentos')

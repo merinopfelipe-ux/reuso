@@ -18,7 +18,7 @@ type ButtonComoEnlace = ButtonComunProps & Omit<React.AnchorHTMLAttributes<HTMLA
 
 export type ButtonProps = ButtonComoBoton | ButtonComoEnlace
 
-const BASE = 'inline-flex items-center justify-center gap-2 rounded-full font-bold transition-all duration-300 hover-pop hover-press disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap'
+const BASE = 'inline-flex items-center justify-center gap-2 rounded-lg font-bold transition-all duration-300 hover-pop hover-press disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap'
 
 const SIZES: Record<ButtonSize, string> = {
   lg: 'px-6 py-3.5 sm:px-7 sm:py-4 text-base font-bold shadow-[0_8px_32px_rgba(0,130,124,0.3)] hover:-translate-y-1 hover:scale-105 active:scale-95',

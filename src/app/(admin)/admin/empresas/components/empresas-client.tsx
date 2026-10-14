@@ -2,7 +2,10 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronDown, UserPlus as UsersPlus } from '@/components/ui/icons'
+import { ExternalLink as ArrowSquareOut, Search as MagnifyingGlass, ChevronDown, UserPlus as UsersPlus, Power, Download } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { PlanBadge } from '@/components/admin/plan-badge'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
@@ -37,6 +40,73 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
   const [abiertoPlan, setAbiertoPlan] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
   const { sorted: empresasOrdenadas, sort, toggleSort } = useSortable(empresas as unknown as Record<string, unknown>[])
+
+  // Selección en grupo: solo las filas de la página actual.
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const [confirmarActiva, setConfirmarActiva] = useState<boolean | null>(null)
+  const [aplicando, setAplicando] = useState(false)
+  const [errorGrupo, setErrorGrupo] = useState('')
+
+  const empresasPagina = empresasOrdenadas as unknown as EmpresaStat[]
+  const idsPagina = empresasPagina.map(e => e.id)
+  const todasPagina = idsPagina.length > 0 && idsPagina.every(id => seleccion.has(id))
+  const algunasPagina = idsPagina.some(id => seleccion.has(id))
+  // Solo cuentan las filas visibles: una selección de otra página no se aplica aquí.
+  const seleccionados = idsPagina.filter(id => seleccion.has(id))
+
+  function toggleTodas() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todasPagina) idsPagina.forEach(id => siguiente.delete(id))
+      else idsPagina.forEach(id => siguiente.add(id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
+
+  // Cambia el estado activa de varias empresas con el PATCH que ya existe.
+  async function cambiarActiva(ids: string[], activa: boolean) {
+    setAplicando(true)
+    setErrorGrupo('')
+    const resultados = await Promise.all(
+      ids.map(id =>
+        fetch(`/api/admin/empresas/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activa }),
+        })
+          .then(r => r.ok)
+          .catch(() => false)
+      )
+    )
+    const fallidas = resultados.filter(ok => !ok).length
+    setAplicando(false)
+    setConfirmarActiva(null)
+    setSeleccion(new Set())
+    if (fallidas > 0) setErrorGrupo(`No se pudieron cambiar ${fallidas} de ${ids.length} empresas.`)
+    startTransition(() => router.refresh())
+  }
+
+  function filasSeleccionadas() {
+    return empresasPagina
+      .filter(e => seleccionados.includes(e.id))
+      .map(e => ({
+        Empresa: e.nombre,
+        Plan: e.plan,
+        Sector: e.sector ?? '',
+        Empleados: e.total_empleados,
+        'CO₂ (kg)': e.total_co2,
+        Estado: e.activa ? 'Activa' : 'Inactiva',
+      }))
+  }
 
   const [modalInvitar, setModalInvitar] = useState(false)
   const [invitarForm, setInvitarForm] = useState({ email: '', plan: 'lab' as 'lab' | 'impulso' | 'ilimitado', nombre: '' })
@@ -83,7 +153,8 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
     if (params.search) sp.set('search', params.search)
     if (params.plan) sp.set('plan', params.plan)
     if (params.page && params.page !== '1') sp.set('page', params.page)
-    if (params.pageSize && params.pageSize !== '25') sp.set('pageSize', params.pageSize)
+    const ps = params.pageSize !== undefined ? params.pageSize : String(pageSize)
+    if (ps && ps !== '25') sp.set('pageSize', ps)
     startTransition(() => router.push(`/admin/empresas?${sp.toString()}`))
   }
 
@@ -173,6 +244,23 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
         </div>
       </div>
 
+      <BarraSeleccion cantidad={seleccionados.length} singular="empresa" plural="empresas">
+        <BotonDescargarCliente
+          data={filasSeleccionadas()}
+          nombre="empresas_seleccionadas"
+          tituloPdf="Empresas seleccionadas"
+          label="Exportar"
+          icon={<Download size={14} />}
+        />
+        <button type="button" onClick={() => setConfirmarActiva(true)} className="text-sm font-semibold px-3 py-1.5 bg-transparent text-brand transition-opacity duration-200 hover:opacity-50">
+          Activar
+        </button>
+        <button type="button" onClick={() => setConfirmarActiva(false)} className="text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50">
+          Desactivar
+        </button>
+      </BarraSeleccion>
+      {errorGrupo && <p className="text-sm m-0 text-error">{errorGrupo}</p>}
+
       <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start', flexWrap: 'wrap' }}>
         {/* Tabla */}
         <div className="flex-1 min-w-0 rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
@@ -180,6 +268,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand">
+                  <CasillaCabecera todas={todasPagina} algunas={algunasPagina} onToggle={toggleTodas} />
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Empresa</SortTh>
                   <SortTh col="plan" sort={sort} onToggle={toggleSort}>Plan</SortTh>
                   <SortTh col="sector" sort={sort} onToggle={toggleSort}>Sector</SortTh>
@@ -191,7 +280,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
               </thead>
               <tbody>
                 {empresasOrdenadas.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-brand)' }}>No hay empresas registradas.</td></tr>
+                  <tr><td colSpan={8} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--color-brand)' }}>No hay empresas registradas.</td></tr>
                 )}
                 {(empresasOrdenadas as unknown as EmpresaStat[]).map((emp, idx) => (
                   <tr key={emp.id}
@@ -204,6 +293,7 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                       cursor: 'pointer'
                     }}
                   >
+                    <CasillaFila marcada={seleccion.has(emp.id)} onToggle={() => toggleFila(emp.id)} label={`Seleccionar ${emp.nombre}`} />
                     <td className="px-4 py-3 text-(--text-primary)">{emp.nombre}</td>
                     <td className="px-4 py-3"><PlanBadge plan={emp.plan} /></td>
                     <td className="px-4 py-3 text-(--text-secondary)">{emp.sector ?? '-'}</td>
@@ -224,9 +314,13 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                      <a href={`/admin/empresas/${emp.id}`} title="Ver estado de cuenta" style={{ color: 'var(--color-brand)', display: 'inline-flex', alignItems: 'center' }}>
-                        <ArrowSquareOut size={14} sinAnimacion />
-                      </a>
+                      <MenuFila
+                        label={`Acciones de ${emp.nombre}`}
+                        acciones={[
+                          { label: 'Abrir en nueva página', icono: <ArrowSquareOut size={14} sinAnimacion />, href: `/admin/empresas/${emp.id}` },
+                          { label: emp.activa ? 'Desactivar' : 'Activar', icono: <Power size={14} sinAnimacion />, onClick: () => cambiarActiva([emp.id], !emp.activa), peligro: emp.activa },
+                        ]}
+                      />
                     </td>
                   </tr>
                 ))}
@@ -256,6 +350,20 @@ export function EmpresasClient({ empresas, total, page, pageSize, search, planFi
           </div>
         </div>
       </div>
+
+      <Modal
+        abierto={confirmarActiva !== null}
+        onClose={() => !aplicando && setConfirmarActiva(null)}
+        titulo={confirmarActiva ? 'Activar empresas' : 'Desactivar empresas'}
+        descripcion={`${seleccionados.length} ${seleccionados.length === 1 ? 'empresa seleccionada' : 'empresas seleccionadas'}`}
+        varianteConfirmar={confirmarActiva ? 'brand' : 'error'}
+        textoConfirmar={aplicando ? 'Aplicando...' : confirmarActiva ? 'Activar' : 'Desactivar'}
+        onConfirmar={() => confirmarActiva !== null && cambiarActiva(seleccionados, confirmarActiva)}
+      >
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Puedes volver a cambiar el estado de estas empresas en cualquier momento.
+        </p>
+      </Modal>
 
       <Modal
         abierto={modalInvitar}

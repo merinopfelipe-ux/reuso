@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { Button } from '@/components/ui/button'
 import { Plus, Send as PaperPlaneTilt, Download } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { SkeletonLista } from '@/components/ui/skeleton'
 import { EstadoFirmaBadge, estadoFirmaEfectivo } from '@/components/firmas/estado-firma-badge'
 import { documentoLabel } from '@/lib/firmas/documentos-meta'
@@ -31,8 +34,9 @@ export default function FirmasPage() {
   const router = useRouter()
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([])
   const [cargando, setCargando] = useState(true)
-  const [reenviando, setReenviando] = useState<string | null>(null)
   const [mensaje, setMensaje] = useState<string | null>(null)
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const [reenviandoGrupo, setReenviandoGrupo] = useState(false)
 
   function cargar() {
     setCargando(true)
@@ -45,7 +49,6 @@ export default function FirmasPage() {
   useEffect(() => { cargar() }, [])
 
   async function reenviar(id: string) {
-    setReenviando(id)
     setMensaje(null)
     try {
       const res = await fetch(`/api/admin/firmas/${id}/reenviar`, { method: 'POST' })
@@ -55,9 +58,57 @@ export default function FirmasPage() {
       cargar()
     } catch {
       setMensaje('Error de conexión al reenviar.')
-    } finally {
-      setReenviando(null)
     }
+  }
+
+  const todas = solicitudes.length > 0 && solicitudes.every(s => seleccion.has(s.id))
+  const algunas = solicitudes.some(s => seleccion.has(s.id))
+  const seleccionadas = solicitudes.filter(s => seleccion.has(s.id))
+  const reenviables = seleccionadas.filter(s => estadoFirmaEfectivo(s.estado, s.expira_at) !== 'firmado')
+
+  function toggleTodas() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todas) solicitudes.forEach(s => siguiente.delete(s.id))
+      else solicitudes.forEach(s => siguiente.add(s.id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
+
+  // Reenvía en grupo: un POST por solicitud pendiente, con el endpoint existente.
+  async function reenviarGrupo() {
+    if (reenviables.length === 0) return
+    setReenviandoGrupo(true)
+    setMensaje(null)
+    const resultados = await Promise.all(
+      reenviables.map(s =>
+        fetch(`/api/admin/firmas/${s.id}/reenviar`, { method: 'POST' }).then(r => r.ok).catch(() => false)
+      )
+    )
+    const fallidos = resultados.filter(ok => !ok).length
+    setReenviandoGrupo(false)
+    setSeleccion(new Set())
+    setMensaje(fallidos > 0 ? `No se pudieron reenviar ${fallidos} de ${reenviables.length} solicitudes.` : 'Enlaces reenviados correctamente.')
+    cargar()
+  }
+
+  function filasSeleccionadas() {
+    return seleccionadas.map(s => ({
+      Destinatario: s.nombre,
+      Email: s.email,
+      Documento: documentoLabel(s.tipo_documento),
+      Estado: estadoFirmaEfectivo(s.estado, s.expira_at),
+      Enviado: formatFecha(s.created_at),
+    }))
   }
 
   async function descargarPdf(id: string) {
@@ -92,16 +143,26 @@ export default function FirmasPage() {
           <p className={`text-sm ${ts}`}>Aún no has enviado ninguna solicitud de firma.</p>
         </div>
       ) : (
+        <>
+        <BarraSeleccion cantidad={seleccionadas.length} singular="solicitud" plural="solicitudes" femenino={false}>
+          <BotonDescargarCliente data={filasSeleccionadas()} nombre="firmas_seleccionadas" tituloPdf="Solicitudes de firma seleccionadas" label="Exportar" icon={<Download size={14} />} />
+          {reenviables.length > 0 && (
+            <button type="button" onClick={reenviarGrupo} disabled={reenviandoGrupo} className="text-sm font-semibold px-3 py-1.5 bg-transparent text-brand transition-opacity duration-200 hover:opacity-50 disabled:opacity-50">
+              {reenviandoGrupo ? 'Reenviando...' : 'Reenviar'}
+            </button>
+          )}
+        </BarraSeleccion>
         <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand">
+                  <CasillaCabecera todas={todas} algunas={algunas} onToggle={toggleTodas} />
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Destinatario</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Documento</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Estado</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Enviado</th>
-                  <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Acciones</th>
+                  <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
                 </tr>
               </thead>
               <tbody>
@@ -115,6 +176,7 @@ export default function FirmasPage() {
                       }`}
                       style={{ borderTop: index > 0 ? '1px solid var(--border)' : 'none' }}
                     >
+                      <CasillaFila marcada={seleccion.has(s.id)} onToggle={() => toggleFila(s.id)} label={`Seleccionar ${s.nombre}`} />
                       <td className="px-4 py-3">
                         <p className={`font-semibold ${tp}`}>{s.nombre}</p>
                         <p className={`text-xs ${ts}`}>{s.email} · {s.numero_identidad}</p>
@@ -122,19 +184,14 @@ export default function FirmasPage() {
                       <td className={`px-4 py-3 ${tp}`}>{documentoLabel(s.tipo_documento)}</td>
                       <td className="px-4 py-3"><EstadoFirmaBadge estado={s.estado} expiraAt={s.expira_at} /></td>
                       <td className={`px-4 py-3 text-xs text-center ${ts}`}>{formatFecha(s.created_at)}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          {efectivo !== 'firmado' && (
-                            <Button size="sm" variant="secondary" loading={reenviando === s.id} icon={<PaperPlaneTilt size={13} />} onClick={() => reenviar(s.id)}>
-                              Reenviar
-                            </Button>
-                          )}
-                          {s.pdf_path && (
-                            <Button size="sm" variant="secondary" icon={<Download size={13} />} onClick={() => descargarPdf(s.id)}>
-                              PDF
-                            </Button>
-                          )}
-                        </div>
+                      <td className="px-1 py-3 text-center">
+                        <MenuFila
+                          label={`Acciones de ${s.nombre}`}
+                          acciones={[
+                            ...(efectivo !== 'firmado' ? [{ label: 'Reenviar', icono: <PaperPlaneTilt size={13} />, onClick: () => reenviar(s.id) }] : []),
+                            ...(s.pdf_path ? [{ label: 'Descargar PDF', icono: <Download size={13} />, onClick: () => descargarPdf(s.id) }] : []),
+                          ]}
+                        />
                       </td>
                     </tr>
                   )
@@ -143,6 +200,7 @@ export default function FirmasPage() {
             </table>
           </div>
         </div>
+        </>
       )}
     </div>
   )

@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { randomUUID } from 'crypto'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 // Imagen de la sección "¿Por qué elegirnos?" de la cotización pública. Ver
 // skill `seguridad-reuso` → "Subida de archivos de un tercero": el cliente ya
@@ -34,8 +35,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
 
   const empresaId = params.id
   const ext = parsed.data.mime.split('/')[1]
-  const carpetaEmpresa = `por-que-elegirnos/${empresaId}`
-  const nombreArchivo = `${carpetaEmpresa}/${randomUUID()}.${ext}`
+  const carpetaEmpresa = carpetaArea(empresaId, 'logoPorQueElegirnos')
+  const nombreArchivo = rutaEmpresa(empresaId, 'logoPorQueElegirnos', `${randomUUID()}.${ext}`)
 
   // Limpieza automática: Eliminar imágenes anteriores de esta empresa para ahorrar espacio en Storage
   try {

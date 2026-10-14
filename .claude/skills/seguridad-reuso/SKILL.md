@@ -198,3 +198,9 @@ Cuatro capas gratuitas, sin plataformas de pago. Antes de asumir que alguna no e
 4. **Aislamiento RLS multi-tenant** — `tests/rls/multi-tenant-isolation.test.ts` (`npm run test:rls`), crea 2 empresas/usuarios reales, inicia sesión real con la anon key y prueba que Empresa B no puede leer/listar/editar/borrar datos de Empresa A vía RLS directo (no UI). Complementa, no reemplaza, `e2e/06-aislamiento-usuarios.spec.ts` (ese prueba aislamiento a nivel de aplicación/Playwright).
 
 `npm run security:sast` corre sobre TODO el repo (no solo `src/`) — ya tiene `.semgrepignore` para `.email-previews/` (falso positivo conocido: `{{ .ConfirmationURL }}` es variable de plantilla de Supabase Auth, no input de usuario) y el `cooldown` de `.github/dependabot.yml` (protección anti supply-chain) ya está resuelto. `npm run security:sast` da 0 hallazgos (verificado 2026-08-07): el de `encryption.server.ts` (GCM sin `authTagLength` explícito) ya se corrigió, con `authTagLength: 16` en `createCipheriv`/`createDecipheriv` — verificado backward-compatible (datos cifrados antes del fix siguen descifrando bien, sin migración de datos).
+
+## Storage por empresa (regla vigente, 2026-10-14)
+- Todo archivo de empresa va en `empresas/<empresaId>/<área>/...`. Las rutas y las áreas están solo en `src/lib/storage/empresa-rutas.ts`. No escribas rutas de empresa a mano.
+- Al subir un archivo de empresa, el servidor elige la ruta (con el id de la sesión); el navegador no manda rutas de Storage a guardar.
+- Una fila (p. ej. `dpp_activos.imagen_url`) solo acepta rutas de su empresa: la validación está en `activos/crear` y en `empresa/config` (logo).
+- Borrar una empresa: archivos primero (con verificación), base después en una transacción, cuentas al final. Ver `proyectos/almacenamiento-por-empresa.md` en el Vault.

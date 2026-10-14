@@ -2,9 +2,11 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Calculator, TriangleAlert as Warning } from '@/components/ui/icons'
+import { Calculator, TriangleAlert as Warning, Download } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { Modal } from '@/components/ui/modal'
-import { Button } from '@/components/ui/button'
 import { formatFecha, formatNumero } from '@/lib/format'
 
 const C = {
@@ -37,8 +39,76 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
   const [error, setError] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [filtroEstado, setFiltroEstado] = useState<'todos' | 'activo' | 'anulado'>('todos')
+  // Selección en grupo: solo filas visibles. Anular en grupo aplica el mismo motivo a todas.
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const [anulandoGrupo, setAnulandoGrupo] = useState(false)
+  const [errorGrupo, setErrorGrupo] = useState('')
 
   const filtrados = filtroEstado === 'todos' ? calculos : calculos.filter(c => (c.estado ?? 'activo') === filtroEstado)
+
+  const todasPagina = filtrados.length > 0 && filtrados.every(c => seleccion.has(c.id))
+  const algunasPagina = filtrados.some(c => seleccion.has(c.id))
+  const seleccionados = filtrados.filter(c => seleccion.has(c.id))
+  const seleccionadosActivos = seleccionados.filter(c => (c.estado ?? 'activo') === 'activo')
+
+  function toggleTodas() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todasPagina) filtrados.forEach(c => siguiente.delete(c.id))
+      else filtrados.forEach(c => siguiente.add(c.id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
+
+  function filasSeleccionadas() {
+    return seleccionados.map(c => ({
+      Fecha: formatFecha(c.fecha),
+      Usuario: c.profiles ? `${c.profiles.nombre}${c.profiles.apellido ? ` ${c.profiles.apellido}` : ''}` : '-',
+      Empresa: c.empresas?.nombre ?? '',
+      'CO₂eq (kg)': c.total_co2,
+      'Agua (m³)': c.total_agua / 1000,
+      Estado: (c.estado ?? 'activo') === 'activo' ? 'Activo' : 'Anulado',
+    }))
+  }
+
+  // Anula varios cálculos con un PATCH por cálculo y el mismo motivo.
+  async function anularGrupo() {
+    if (motivo.trim().length < 5) {
+      setError('El motivo debe tener al menos 5 caracteres.')
+      return
+    }
+    setGuardando(true); setError('')
+    const ids = seleccionadosActivos.map(c => c.id)
+    const resultados = await Promise.all(
+      ids.map(id =>
+        fetch(`/api/admin/calculos?id=${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ motivo_anulacion: motivo }),
+        })
+          .then(r => r.ok)
+          .catch(() => false)
+      )
+    )
+    const exitosos = new Set(ids.filter((_, i) => resultados[i]))
+    setCalculos(prev => prev.map(c => (exitosos.has(c.id) ? { ...c, estado: 'anulado', motivo_anulacion: motivo } : c)))
+    const fallidos = ids.length - exitosos.size
+    setGuardando(false)
+    setAnulandoGrupo(false)
+    setMotivo('')
+    setSeleccion(new Set())
+    if (fallidos > 0) setErrorGrupo(`No se pudieron anular ${fallidos} de ${ids.length} cálculos.`)
+    startTransition(() => router.refresh())
+  }
 
   async function confirmarAnulacion() {
     if (!anulando || motivo.trim().length < 5) {
@@ -86,18 +156,39 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
           <p style={{ fontSize: 15, fontWeight: 600, color: C.dark }}>Sin resultados</p>
         </div>
       ) : (
+        <>
+        <BarraSeleccion cantidad={seleccionados.length} singular="cálculo" plural="cálculos" femenino={false}>
+          <BotonDescargarCliente
+            data={filasSeleccionadas()}
+            nombre="calculos_seleccionados"
+            tituloPdf="Cálculos seleccionados"
+            label="Exportar"
+            icon={<Download size={14} />}
+          />
+          {seleccionadosActivos.length > 0 && (
+            <button
+              type="button"
+              onClick={() => { setMotivo(''); setError(''); setAnulandoGrupo(true) }}
+              className="text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
+            >
+              Anular
+            </button>
+          )}
+        </BarraSeleccion>
+        {errorGrupo && <p className="text-sm m-0 mb-3 text-error">{errorGrupo}</p>}
         <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand">
+                  <CasillaCabecera todas={todasPagina} algunas={algunasPagina} onToggle={toggleTodas} />
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Fecha</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Usuario</th>
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
                   <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">CO₂eq</th>
                   <th className="px-4 py-2.5 text-right font-semibold whitespace-nowrap">Agua</th>
                   <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Estado</th>
-                  <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Acción</th>
+                  <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
                 </tr>
               </thead>
               <tbody>
@@ -111,6 +202,7 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none', opacity: activo ? 1 : 0.55 }}
                   >
+                    <CasillaFila marcada={seleccion.has(c.id)} onToggle={() => toggleFila(c.id)} label={`Seleccionar cálculo de ${formatFecha(c.fecha)}`} />
                     <td className="px-4 py-3 whitespace-nowrap text-(--text-secondary) text-center">
                       {formatFecha(c.fecha)}
                     </td>
@@ -127,13 +219,11 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
                         <span title={c.motivo_anulacion ?? ''} style={{ padding: '2px 8px', borderRadius: 100, fontSize: 11, fontWeight: 700, background: 'rgba(255,94,75,0.10)', color: '#CC3C2A', cursor: 'help' }}>Anulado</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      {activo && (
-                        <Button variant="danger" size="sm" icon={<Warning size={11} />}
-                          onClick={() => { setAnulando(c.id); setMotivo(''); setError('') }}>
-                          Anular
-                        </Button>
-                      )}
+                    <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                      <MenuFila
+                        label={`Acciones del cálculo de ${formatFecha(c.fecha)}`}
+                        acciones={activo ? [{ label: 'Anular cálculo', icono: <Warning size={13} />, peligro: true, onClick: () => { setAnulando(c.id); setMotivo(''); setError('') } }] : []}
+                      />
                     </td>
                   </tr>
                 )
@@ -142,7 +232,32 @@ export function CalculosAdminClient({ calculos: inicial, total }: { calculos: Ca
             </table>
           </div>
         </div>
+        </>
       )}
+
+      {/* Modal anulación en grupo */}
+      <Modal
+        abierto={anulandoGrupo}
+        onClose={() => !guardando && setAnulandoGrupo(false)}
+        titulo="Anular cálculos seleccionados"
+        descripcion={`Se anularán ${seleccionadosActivos.length} ${seleccionadosActivos.length === 1 ? 'cálculo activo' : 'cálculos activos'} con el mismo motivo.`}
+        textoCancelar="Cancelar"
+        textoConfirmar={guardando ? 'Anulando...' : 'Confirmar anulación'}
+        varianteConfirmar="error"
+        onCancelar={() => setAnulandoGrupo(false)}
+        onConfirmar={anularGrupo}
+      >
+        <div>
+          <textarea
+            value={motivo}
+            onChange={e => setMotivo(e.target.value)}
+            placeholder="Describe el motivo de anulación..."
+            rows={3}
+            style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: `1px solid ${C.border}`, fontSize: 13, color: C.dark, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+          />
+          {error && <p style={{ fontSize: 12, color: C.error, marginTop: 6 }}>{error}</p>}
+        </div>
+      </Modal>
 
       {/* Modal anulación */}
       <Modal

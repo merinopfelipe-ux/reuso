@@ -248,7 +248,7 @@ export default function AdminStatusPage() {
             href="/status"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full border  text-brand  transition-colors hover-pop"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg border  text-brand  transition-colors hover-pop"
           >
             <Pulse size={16} />
             Ver página pública ↗
@@ -426,7 +426,7 @@ export default function AdminStatusPage() {
                           <button
                             onClick={() => handleUpdateEstado(i.id, 'monitoreando')}
                             disabled={actionLoading != null}
-                            className="px-3 py-1 rounded-full bg-[#00827C]/10 hover:bg-[#00827C]/20 text-[#00827C] text-xs font-semibold transition-colors disabled:opacity-50"
+                            className="px-3 py-1 rounded-lg bg-[#00827C]/10 hover:bg-[#00827C]/20 text-[#00827C] text-xs font-semibold transition-colors disabled:opacity-50"
                           >
                             Marcar Monitoreo
                           </button>
@@ -434,7 +434,7 @@ export default function AdminStatusPage() {
                         <button
                           onClick={() => handleUpdateEstado(i.id, 'resuelto')}
                           disabled={actionLoading != null}
-                          className="px-3 py-1 rounded-full bg-[#38B98E]/10 hover:bg-[#38B98E]/20 text-[#38B98E] text-xs font-semibold transition-colors disabled:opacity-50"
+                          className="px-3 py-1 rounded-lg bg-[#38B98E]/10 hover:bg-[#38B98E]/20 text-[#38B98E] text-xs font-semibold transition-colors disabled:opacity-50"
                         >
                           Marcar Resuelto
                         </button>

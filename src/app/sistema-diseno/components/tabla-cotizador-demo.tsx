@@ -17,7 +17,8 @@ import { formatCOP, formatNumero, formatFecha, formatHora } from '@/lib/format'
 import { formatCodigoCotizacion } from '@/lib/cotizador/format-codigo'
 import { formatTelefonoVista } from '@/lib/telefono'
 import { Pagination } from '@/components/ui/pagination'
-import { SquareCheck, Square, CaretRight, Trash, Share2 } from '@/components/ui/icons'
+import { SquareCheck, Square, Trash, Share2 } from '@/components/ui/icons'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
 import { Modal } from '@/components/ui/modal'
 
@@ -433,6 +434,7 @@ export function TablaCotizadorDemo() {
                     densidad={densidad}
                   />
                 ))}
+                <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
               </tr>
             </thead>
             <tbody>
@@ -468,14 +470,12 @@ export function TablaCotizadorDemo() {
                             <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                               {renderCeldaColumna(clave, c)}
                             </span>
-                            <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                           </span>
                         ) : clave === 'codigo_cotizacion' ? (
                           <span className={`flex items-center gap-1 xl:gap-2 cursor-pointer ${alineacion === 'text-center' ? 'justify-center mx-auto' : ''}`}>
                             <span className={`${margen} ${anchoColumna(clave).celda} line-clamp-2 wrap-break-word`}>
                               {renderCeldaColumna(clave, c)}
                             </span>
-                            <CaretRight size={14} className={`${ts} shrink-0`} sinAnimacion />
                           </span>
                         ) : (
                           <span className={
@@ -491,6 +491,14 @@ export function TablaCotizadorDemo() {
                       </td>
                     )
                   })}
+                  <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                    <MenuFila
+                      label={`Acciones de la cotización ${formatCodigoCotizacion(c.codigo_cotizacion)}`}
+                      acciones={[
+                        { label: 'Eliminar cotización', icono: <Trash size={13} />, peligro: true, onClick: () => { setSeleccionadas(new Set([c.id])); setConfirmandoBorrado(true) } },
+                      ]}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
-import { Calendar, Filter as Funnel, X, Search as MagnifyingGlass, Loader2 as CircleNotch, Leaf, Droplet as Drop, ShieldCheck, Link as LinkIcon } from '@/components/ui/icons'
+import { Calendar, Filter as Funnel, X, Search as MagnifyingGlass, Loader2 as CircleNotch, Leaf, Droplet as Drop, ShieldCheck, Link as LinkIcon, Download } from '@/components/ui/icons'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { BotonDescargar } from '@/components/boton-descargar'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
 import { Pagination } from '@/components/ui/pagination'
@@ -72,6 +75,8 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
   const esUsuarioLibre = rol === 'usuario_libre'
   const mostrarUsuario = rol === 'super_admin' || rol === 'empresa_admin'
   const [detalleAbierto, setDetalleAbierto] = useState<CalculoFila | null>(null)
+  // Selección en grupo: solo las filas visibles en la página actual.
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -82,6 +87,28 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
   const [pageSize, setPageSize] = useState(() => parseInt(searchParams.get('limit') ?? '25'))
   const [page, setPage] = useState(() => parseInt(searchParams.get('page') ?? '1'))
   const { sorted: sortedData, sort, toggleSort } = useSortable(data as unknown as Record<string, unknown>[])
+  const filasVisibles = sortedData as unknown as CalculoFila[]
+  const todasVisibles = filasVisibles.length > 0 && filasVisibles.every(c => seleccion.has(c.id))
+  const algunasVisibles = filasVisibles.some(c => seleccion.has(c.id))
+  const seleccionadosList = filasVisibles.filter(c => seleccion.has(c.id))
+
+  function toggleTodasVisibles() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todasVisibles) filasVisibles.forEach(c => siguiente.delete(c.id))
+      else filasVisibles.forEach(c => siguiente.add(c.id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
   const [desde, setDesde] = useState(() => searchParams.get('desde') ?? '')
   const [hasta, setHasta] = useState(() => searchParams.get('hasta') ?? '')
   const [categoria, setCategoria] = useState(() => searchParams.get('categoria') ?? '')
@@ -97,10 +124,13 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
   function sincronizarURL(params: {
     page?: number; desde?: string; hasta?: string
     categoria?: string; search?: string; empresa_id?: string
+    limit?: number
   }) {
     const sp = new URLSearchParams()
     const p = params.page ?? page
     if (p > 1) sp.set('page', String(p))
+    const lim = params.limit ?? pageSize
+    if (lim !== 25) sp.set('limit', String(lim))
     const d = params.desde ?? desde
     if (d) sp.set('desde', d)
     const h = params.hasta ?? hasta
@@ -116,10 +146,10 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
   }
 
   const fetchHistorial = useCallback(
-    async (newPage: number, newDesde: string, newHasta: string, newCategoria: string, newSearch: string, newEmpresa: string) => {
+    async (newPage: number, newDesde: string, newHasta: string, newCategoria: string, newSearch: string, newEmpresa: string, customLimit?: number) => {
       const params = new URLSearchParams()
       params.set('page', String(newPage))
-      params.set('limit', String(pageSize))
+      params.set('limit', String(customLimit ?? pageSize))
       if (newDesde) params.set('desde', newDesde)
       if (newHasta) params.set('hasta', newHasta)
       if (newCategoria) params.set('categoria', newCategoria)
@@ -190,19 +220,20 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
   const cambiarPagina = useCallback(
     (nueva: number) => {
       setPage(nueva)
-      sincronizarURL({ page: nueva })
+      sincronizarURL({ page: nueva, limit: pageSize })
       startTransition(() => {
-        fetchHistorial(nueva, desde, hasta, categoria, busqueda, empresaFiltro)
+        fetchHistorial(nueva, desde, hasta, categoria, busqueda, empresaFiltro, pageSize)
       })
     },
-    [desde, hasta, categoria, busqueda, empresaFiltro, fetchHistorial] // eslint-disable-line react-hooks/exhaustive-deps
+    [desde, hasta, categoria, busqueda, empresaFiltro, pageSize, fetchHistorial]
   )
 
   function cambiarPageSize(nuevo: number) {
     setPageSize(nuevo)
     setPage(1)
+    sincronizarURL({ page: 1, limit: nuevo })
     startTransition(() => {
-      fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro)
+      fetchHistorial(1, desde, hasta, categoria, busqueda, empresaFiltro, nuevo)
     })
   }
 
@@ -373,6 +404,20 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
       )}
 
       {/* Tabla */}
+      <BarraSeleccion cantidad={seleccionadosList.length} singular="cálculo" plural="cálculos" femenino={false}>
+        <BotonDescargarCliente
+          data={seleccionadosList.map(c => ({
+            Fecha: formatFecha(c.fecha),
+            ...(mostrarUsuario ? { Usuario: c.usuario_nombre ?? '' } : {}),
+            Objetos: resumenItems(c.detalle_json),
+            'CO₂ eq evitado (kg)': c.total_co2,
+          }))}
+          nombre="calculos_seleccionados"
+          tituloPdf="Cálculos seleccionados"
+          label="Exportar"
+          icon={<Download size={14} />}
+        />
+      </BarraSeleccion>
       <div className="overflow-x-auto border-t border-(--border)">
         {data.length === 0 ? (
           <div style={{ padding: '40px 20px', textAlign: 'center', color: TEXT_MED }}>
@@ -384,12 +429,14 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand">
+                  <CasillaCabecera todas={todasVisibles} algunas={algunasVisibles} onToggle={toggleTodasVisibles} />
                   <SortTh col="fecha" sort={sort} onToggle={toggleSort} align="center">Fecha</SortTh>
                   {mostrarUsuario && (
                     <SortTh col="usuario_nombre" sort={sort} onToggle={toggleSort}>Usuario</SortTh>
                   )}
                   <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Objetos</th>
                   <SortTh col="total_co2" sort={sort} onToggle={toggleSort} align="right">CO₂ eq evitado</SortTh>
+                  <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
                 </tr>
               </thead>
               <tbody>
@@ -403,6 +450,7 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
+                      <CasillaFila marcada={seleccion.has(c.id)} onToggle={() => toggleFila(c.id)} label={`Seleccionar cálculo de ${formatFecha(c.fecha)}`} />
                       <td className="px-4 py-3 whitespace-nowrap text-(--text-secondary) text-center">
                         {formatFecha(c.fecha)}
                       </td>
@@ -418,6 +466,12 @@ export function HistorialCalculos({ calculos: inicial, total: totalInicial, rol,
                       </td>
                       <td className="px-4 py-3 font-semibold text-brand text-right whitespace-nowrap">
                         {formatNumero(c.total_co2, { unidad: 'kg' })}
+                      </td>
+                      <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                        <MenuFila
+                          label={`Acciones del cálculo de ${formatFecha(c.fecha)}`}
+                          acciones={[{ label: 'Ver detalle', icono: <Leaf size={13} />, onClick: () => setDetalleAbierto(c) }]}
+                        />
                       </td>
                     </tr>
                   )

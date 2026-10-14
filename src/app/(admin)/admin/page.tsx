@@ -89,7 +89,7 @@ export default async function AdminPage() {
             ¡Juntos recuperamos el planeta!
           </p>
         </div>
-        <Link href="/admin/sistema" className="flex items-center gap-1.5 rounded-full border border-(--border) px-4 py-2 text-[13px] font-semibold text-brand bg-(--bg-card) no-underline">
+        <Link href="/admin/sistema" className="flex items-center gap-1.5 rounded-lg border border-(--border) px-4 py-2 text-[13px] font-semibold text-brand bg-(--bg-card) no-underline">
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#38B98E', display: 'inline-block' }}></span>
           Estado de sistemas
         </Link>

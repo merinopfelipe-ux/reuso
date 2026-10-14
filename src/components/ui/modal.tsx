@@ -17,6 +17,8 @@ export interface UnifiedModalProps {
   varianteConfirmar?: 'error' | 'brand'
   onConfirmar?: () => void
   onCancelar?: () => void
+  // Desactiva el botón de confirmar (por ejemplo, hasta escribir un nombre para confirmar).
+  confirmarDeshabilitado?: boolean
   children?: React.ReactNode
   // 'xs' (max-w-xs) para popups muy compactos, 'sm' (default, max-w-sm) para confirmaciones simples.
   // 'lg' (max-w-2xl) para formularios con más de un campo o layout de dos columnas, 'xl' (max-w-3xl) para modales amplios.
@@ -55,6 +57,7 @@ export function Modal({
   varianteConfirmar = 'brand',
   onConfirmar,
   onCancelar,
+  confirmarDeshabilitado = false,
   children,
   ancho = 'sm',
   tituloCentrado = false,
@@ -176,6 +179,7 @@ export function Modal({
                 variant={varianteConfirmar === 'error' ? 'danger' : 'primary'}
                 size="sm"
                 onClick={onConfirmar}
+                disabled={confirmarDeshabilitado}
               >
                 {textoConfirmar}
               </Button>

@@ -9,6 +9,7 @@ import { CatalogoRestringidoEmpresaClient } from './components/catalogo-restring
 import { LineasEmpresaClient } from './components/lineas-empresa-client'
 import { NegociacionEmpresaClient } from './components/negociacion-empresa-client'
 import { IntegracionChatwootClient } from './components/integracion-chatwoot-client'
+import { EliminarEmpresaClient } from './components/eliminar-empresa-client'
 import { SeccionDetalle } from '@/components/ui/detalle-pagina'
 import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
 
@@ -218,6 +219,10 @@ export default async function EmpresaDetallePage(
           Conecta la bandeja de Chatwoot de esta empresa para que los mensajes de WhatsApp, Instagram y Facebook lleguen al CRM.
         </p>
         <IntegracionChatwootClient empresaId={id} />
+      </SeccionDetalle>
+
+      <SeccionDetalle titulo="Zona de peligro">
+        <EliminarEmpresaClient empresaId={id} nombre={empresa.nombre} />
       </SeccionDetalle>
     </div>
   )

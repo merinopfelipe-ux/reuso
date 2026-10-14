@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { Lucide } from '@/components/ui/lucide-all'
 import * as Phosphor from '@phosphor-icons/react'
-import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Check, MagnifyingGlass, Square, SquareCheck } from '@/components/ui/icons'
+import { ChevronRight as CaretRight, Plus, Power, Pencil, Copy, Folder, EllipsisVertical as DotsThree, Leaf, CircleDollarSign, Trash, Lock, LockOpen, Sparkles, Loader2, ExternalLink, BrushCleaning, Download, Check, MagnifyingGlass, } from '@/components/ui/icons'
 import { SortTh } from '@/components/sort-th'
 import type { SortState } from '@/lib/use-sortable'
 import { Selector } from '@/components/ui/selector'
@@ -14,6 +14,9 @@ import { Modal, ModalConfirmarSalida } from '@/components/ui/modal'
 import { IconPicker } from '@/components/admin/icon-picker'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import type { CategoriaConEsquemaBase, ItemConDimensiones, Modulo } from '@/types'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { formatNumero, formatCOP } from '@/lib/format'
 import { TooltipInfo } from '@/components/ui/tooltip-info'
 
@@ -23,9 +26,9 @@ const inputSt: React.CSSProperties = {
   border: '1px solid var(--border)', background: 'var(--bg-input)',
   color: 'var(--text-primary)', fontSize: 14, outline: 'none', boxSizing: 'border-box',
 }
-const btnPrimario = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full bg-brand text-(--text-on-brand) text-sm font-semibold hover-pop hover-press'
-const btnSecundario = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
-const btnChico = 'inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
+const btnPrimario = 'inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-brand text-(--text-on-brand) text-sm font-semibold hover-pop hover-press'
+const btnSecundario = 'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
+const btnChico = 'inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg bg-(--bg-card) border border-(--border) text-(--text-secondary) text-xs font-semibold shadow-2xs hover-pop hover-press cursor-pointer transition-all'
 const labelSt = 'block text-xs font-semibold text-(--text-secondary) mb-1.5'
 const labelSeccion = 'block text-xs font-bold text-(--text-primary) mb-2.5'
 
@@ -783,6 +786,32 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
 
   function refrescar() { startTransition(() => router.refresh()) }
 
+  // Activar o desactivar varios ítems: un PATCH por ítem con el endpoint existente.
+  async function cambiarActivaGrupo(activo: boolean) {
+    const ids = itemsAqui.filter(it => seleccionados.has(it.id)).map(it => it.id)
+    if (ids.length === 0) return
+    await Promise.all(
+      ids.map(id =>
+        fetch(`/api/admin/items/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ activo }),
+        }).catch(() => null)
+      )
+    )
+    setSeleccionados(new Set())
+    refrescar()
+  }
+
+  function filasItemsSeleccionados() {
+    return itemsConCalculos.filter(it => seleccionados.has(it.id)).map(it => ({
+      Nombre: it.nombre,
+      'CO₂ (kg)': it.totalCo2,
+      'Precio (COP)': it.precioTotal,
+      Estado: it.activo === false ? 'Inactivo' : 'Activo',
+    }))
+  }
+
   function irANodo(id: string | null) {
     setTargetLoading(id ? 'nodo:' + id : 'back')
     startTransition(() => {
@@ -1258,32 +1287,38 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
               </div>
 
               {/* Barra de acción masiva de selección */}
-              {seleccionados.size > 0 && (
-                <div className="flex items-center justify-between rounded-btn border  bg-brand-light px-4 py-2.5">
-                  <span className="text-xs font-semibold text-brand">
-                    {seleccionados.size} {seleccionados.size === 1 ? 'ítem seleccionado' : 'ítems seleccionados'}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setSeleccionados(new Set())}
-                      className="text-xs font-medium px-2.5 py-1 text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
-                    >
-                      Deseleccionar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setItemsAEliminar(itemsAqui.filter(it => seleccionados.has(it.id)))
-                        setErrorEliminarItems('')
-                      }}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-(--bg-card) border border-(--border) text-error transition-opacity duration-200 hover:opacity-50 cursor-pointer shadow-2xs"
-                    >
-                      <Trash size={14} sinAnimacion /> Eliminar
-                    </button>
-                  </div>
-                </div>
-              )}
+              <BarraSeleccion cantidad={itemsAqui.filter(it => seleccionados.has(it.id)).length} singular="ítem" plural="ítems" femenino={false}>
+                <button
+                  type="button"
+                  onClick={() => setSeleccionados(new Set())}
+                  className="text-sm font-medium px-2.5 py-1.5 bg-transparent text-(--text-secondary) hover:text-(--text-primary) transition-opacity duration-200"
+                >
+                  Deseleccionar
+                </button>
+                <BotonDescargarCliente
+                  data={filasItemsSeleccionados()}
+                  nombre="items_seleccionados"
+                  tituloPdf="Ítems seleccionados"
+                  label="Exportar"
+                  icon={<Download size={14} />}
+                />
+                <button type="button" onClick={() => cambiarActivaGrupo(true)} className="text-sm font-semibold px-3 py-1.5 bg-transparent text-brand transition-opacity duration-200 hover:opacity-50">
+                  Activar
+                </button>
+                <button type="button" onClick={() => cambiarActivaGrupo(false)} className="text-sm font-semibold px-3 py-1.5 bg-transparent text-(--text-secondary) transition-opacity duration-200 hover:opacity-50">
+                  Desactivar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setItemsAEliminar(itemsAqui.filter(it => seleccionados.has(it.id)))
+                    setErrorEliminarItems('')
+                  }}
+                  className="text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
+                >
+                  Eliminar
+                </button>
+              </BarraSeleccion>
 
               {/* Tabla Canónica del Sistema de Diseño con SortTh y Zebra */}
               <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
@@ -1291,18 +1326,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                   <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
                     <thead>
                       <tr className="bg-(--bg-table-header) text-brand">
-                        <th className="px-3 py-2.5 w-10 text-center">
-                          <button
-                            type="button"
-                            onClick={toggleSeleccionarTodas}
-                            className="inline-flex items-center justify-center cursor-pointer"
-                            title={todasSeleccionadas ? 'Deseleccionar todos' : 'Seleccionar todos'}
-                          >
-                            {todasSeleccionadas
-                              ? <SquareCheck size={18} className="text-brand" sinAnimacion />
-                              : <Square size={18} className="text-(--text-secondary) opacity-60 hover:opacity-100 transition-opacity" sinAnimacion />}
-                          </button>
-                        </th>
+                        <CasillaCabecera todas={todasSeleccionadas} algunas={itemsAqui.some(it => seleccionados.has(it.id))} onToggle={toggleSeleccionarTodas} />
                         <SortTh col="nombre" sort={sortItems} onToggle={toggleSortItems}>
                           Nombre
                         </SortTh>
@@ -1337,18 +1361,7 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                           style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                           onClick={() => abrirItem(it.id)}
                         >
-                          <td className="px-3 py-3 text-center" onClick={e => e.stopPropagation()}>
-                            <button
-                              type="button"
-                              onClick={() => toggleSeleccionado(it.id)}
-                              className="inline-flex items-center justify-center cursor-pointer"
-                              title={seleccionados.has(it.id) ? 'Deseleccionar ítem' : 'Seleccionar ítem'}
-                            >
-                              {seleccionados.has(it.id)
-                                ? <SquareCheck size={18} className="text-brand" sinAnimacion />
-                                : <Square size={18} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" sinAnimacion />}
-                            </button>
-                          </td>
+                          <CasillaFila marcada={seleccionados.has(it.id)} onToggle={() => toggleSeleccionado(it.id)} label={`Seleccionar ${it.nombre}`} />
                           <td className="px-4 py-3 text-(--text-primary)">
                             <span className={`inline-flex items-center gap-1.5 font-medium ${isPending && targetLoading === 'item:' + it.id ? 'opacity-50' : ''}`}>
                               {it.visibilidad === 'restringido' && <Lock size={12} className="text-brand shrink-0" />}
@@ -1363,25 +1376,31 @@ export function CategoriasClient({ categorias, items, modulos }: { categorias: C
                           <td className="px-4 py-3 text-right text-(--text-primary) whitespace-nowrap">
                             {formatCOP(it.precioTotal)}
                           </td>
-                          <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
-                            <MenuTresPuntos
-                              activa={it.activo !== false}
-                              visibilidad={it.visibilidad ?? 'global'}
-                              onEditar={() => abrirItem(it.id)}
-                              onDuplicar={() => setItemParaDuplicar(it)}
-                              onToggleActiva={async () => {
-                                await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activo: it.activo === false }) })
-                                refrescar()
-                              }}
-                              onToggleVisibilidad={async () => {
-                                const nueva = it.visibilidad === 'restringido' ? 'global' : 'restringido'
-                                await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibilidad: nueva }) })
-                                refrescar()
-                              }}
-                              onEliminar={() => {
-                                setItemsAEliminar([it])
-                                setErrorEliminarItems('')
-                              }}
+                          <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                            <MenuFila
+                              label={`Acciones de ${it.nombre}`}
+                              acciones={[
+                                { label: 'Editar', icono: <Pencil size={13} />, onClick: () => abrirItem(it.id) },
+                                { label: 'Duplicar', icono: <Copy size={13} />, onClick: () => setItemParaDuplicar(it) },
+                                {
+                                  label: it.activo !== false ? 'Desactivar' : 'Activar',
+                                  icono: <Power size={13} />,
+                                  onClick: async () => {
+                                    await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ activo: it.activo === false }) })
+                                    refrescar()
+                                  },
+                                },
+                                {
+                                  label: it.visibilidad === 'restringido' ? 'Volver a visibilidad global' : 'Restringir visibilidad',
+                                  icono: it.visibilidad === 'restringido' ? <LockOpen size={13} /> : <Lock size={13} />,
+                                  onClick: async () => {
+                                    const nueva = it.visibilidad === 'restringido' ? 'global' : 'restringido'
+                                    await fetch(`/api/admin/items/${it.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibilidad: nueva }) })
+                                    refrescar()
+                                  },
+                                },
+                                { label: 'Eliminar', icono: <Trash size={13} />, peligro: true, onClick: () => { setItemsAEliminar([it]); setErrorEliminarItems('') } },
+                              ]}
                             />
                           </td>
                         </tr>
@@ -1591,7 +1610,7 @@ function BadgeRolConservacion({
       type="button"
       onClick={handleToggle}
       title="Haz clic para alternar entre 'Se conserva' y 'Se reemplaza'"
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold shrink-0 select-none shadow-2xs transition-transform active:scale-95 cursor-pointer border ${
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-semibold shrink-0 select-none shadow-2xs transition-transform active:scale-95 cursor-pointer border ${
         esConserva
           ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
           : 'bg-amber-500/15 border-amber-500/30 text-amber-800 dark:text-amber-200'
@@ -2199,7 +2218,7 @@ function ModalDuplicarItemCiudad({
                     key={c}
                     type="button"
                     onClick={() => aplicarCiudad(c, false)}
-                    className={`px-2.5 py-1 text-xs rounded-full border transition-all cursor-pointer ${
+                    className={`px-2.5 py-1 text-xs rounded-lg border transition-all cursor-pointer ${
                       esActiva
                         ? 'bg-brand text-white border-transparent font-bold'
                         : 'bg-(--bg-input) border-(--border) text-(--text-secondary) hover:border-brand'
@@ -3325,7 +3344,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           <button
                             type="button"
                             onClick={() => setFilaAbierta(null)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                           >
                             <Check size={13} /> Guardar
                           </button>
@@ -3410,7 +3429,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>
@@ -3516,7 +3535,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                         <button
                           type="button"
                           onClick={() => setFilaAbierta(null)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                         >
                           <Check size={13} /> Guardar
                         </button>
@@ -3619,7 +3638,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>
@@ -3776,7 +3795,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                           <button
                             type="button"
                             onClick={() => setFilaAbierta(null)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                           >
                             <Check size={13} /> Guardar
                           </button>
@@ -3899,7 +3918,7 @@ function PanelItemValores({ item, categoria, itemsCategoria = [], onGuardado, on
                             <button
                               type="button"
                               onClick={() => setFilaAbierta(null)}
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-brand text-white hover:opacity-90 shadow-2xs transition-all cursor-pointer"
                             >
                               <Check size={13} /> Guardar
                             </button>

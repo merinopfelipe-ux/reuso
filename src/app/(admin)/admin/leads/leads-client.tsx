@@ -12,19 +12,18 @@ import {
   Download,
   Upload,
   Plus,
-  DotsThree,
   Check,
   ChevronDown,
   Search as MagnifyingGlass,
-  Square,
-  SquareCheck,
   Calendar,
   X,
   FileText,
   ArrowSquareOut,
-  CaretRight,
 } from '@/components/ui/icons'
 import { WhatsappLogo } from '@/components/ui/whatsapp-logo'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { Selector } from '@/components/ui/selector'
@@ -278,6 +277,10 @@ export function LeadsClient({
   // ── Selección múltiple para borrado en grupo ──
   const [seleccionados, setSeleccionados] = useState<Set<string>>(new Set())
   const [modalEliminarGrupo, setModalEliminarGrupo] = useState(false)
+  const [modalEstadoGrupo, setModalEstadoGrupo] = useState(false)
+  const [estadoGrupo, setEstadoGrupo] = useState<EstadoLead>('contactado')
+  const [aplicandoEstado, setAplicandoEstado] = useState(false)
+  const [errorEstadoGrupo, setErrorEstadoGrupo] = useState('')
   const [eliminandoGrupo, setEliminandoGrupo] = useState(false)
   const [errorEliminarGrupo, setErrorEliminarGrupo] = useState('')
 
@@ -488,6 +491,47 @@ export function LeadsClient({
   }
 
   // ── Cambiar estado rápido ──
+  // ── Cambiar estado en grupo: un PATCH por prospecto (el endpoint trabaja por id) ──
+  async function cambiarEstadoGrupo() {
+    if (seleccionados.size === 0) return
+    setAplicandoEstado(true)
+    setErrorEstadoGrupo('')
+    const ids = Array.from(seleccionados)
+    const resultados = await Promise.all(
+      ids.map(id =>
+        fetch(`/api/admin/leads?id=${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: estadoGrupo }),
+        })
+          .then(r => r.ok)
+          .catch(() => false)
+      )
+    )
+    const exitosos = new Set(ids.filter((_, i) => resultados[i]))
+    setLeads(ls => ls.map(l => (exitosos.has(l.id) ? { ...l, estado: estadoGrupo } : l)))
+    setAplicandoEstado(false)
+    setModalEstadoGrupo(false)
+    setSeleccionados(new Set())
+    const fallidos = ids.length - exitosos.size
+    if (fallidos > 0) setErrorEstadoGrupo(`No se pudieron cambiar ${fallidos} de ${ids.length} prospectos.`)
+    startTransition(() => router.refresh())
+  }
+
+  // Filas exportables: solo los prospectos seleccionados.
+  function filasSeleccionadasParaExportar() {
+    return leads
+      .filter(l => seleccionados.has(l.id))
+      .map(l => ({
+        Nombre: l.nombre ?? '',
+        Empresa: l.empresa ?? '',
+        Email: l.email ?? '',
+        Teléfono: l.telefono ?? '',
+        Interés: l.interes ?? '',
+        Estado: configEstado(l.estado).label,
+      }))
+  }
+
   async function cambiarEstado(id: string, nuevoEstado: EstadoLead) {
     setCambiando(id)
     const prev = leads.find(l => l.id === id)?.estado
@@ -1157,34 +1201,43 @@ export function LeadsClient({
         </div>
       )}
 
-      {/* ── Barra de Selección Masiva (Borrado en Grupo) ── */}
-      {seleccionados.size > 0 && (
-        <div className="flex items-center justify-between rounded-xl border border-brand/20 bg-brand-light px-4 py-2.5 shadow-2xs">
-          <span className="text-xs font-semibold text-brand">
-            {seleccionados.size} {seleccionados.size === 1 ? 'prospecto seleccionado' : 'prospectos seleccionados'}
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setSeleccionados(new Set())}
-              className="text-xs font-medium px-2.5 py-1 text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
-            >
-              Deseleccionar
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setErrorEliminarGrupo('')
-                setModalEliminarGrupo(true)
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-(--bg-card) border border-(--border) text-error hover:opacity-80 transition-opacity cursor-pointer shadow-2xs"
-            >
-              <Trash2 size={13} />
-              <span>Eliminar seleccionados</span>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ── Barra de acciones en grupo: exportar, cambiar estado y eliminar ── */}
+      <BarraSeleccion cantidad={seleccionados.size} singular="prospecto" plural="prospectos" femenino={false}>
+        <button
+          type="button"
+          onClick={() => setSeleccionados(new Set())}
+          className="text-sm font-medium px-2.5 py-1.5 bg-transparent text-(--text-secondary) hover:text-(--text-primary) transition-opacity duration-200"
+        >
+          Deseleccionar
+        </button>
+        <BotonDescargarCliente
+          data={filasSeleccionadasParaExportar()}
+          nombre="prospectos_seleccionados"
+          tituloPdf="Prospectos seleccionados"
+          label="Exportar"
+          icon={<Download size={14} />}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            setErrorEstadoGrupo('')
+            setModalEstadoGrupo(true)
+          }}
+          className="text-sm font-semibold px-3 py-1.5 bg-transparent text-brand transition-opacity duration-200 hover:opacity-50"
+        >
+          Cambiar estado
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setErrorEliminarGrupo('')
+            setModalEliminarGrupo(true)
+          }}
+          className="text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
+        >
+          Eliminar
+        </button>
+      </BarraSeleccion>
 
       {/* ── Tabla Canónica del Sistema de Diseño ── */}
       {filtrados.length === 0 ? (
@@ -1224,21 +1277,7 @@ export function LeadsClient({
             <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
               <thead>
                 <tr className="bg-(--bg-table-header) text-brand border-b border-(--border)">
-                  {/* Checkbox para seleccionar todos en la página actual */}
-                  <th className="px-1.5 py-2 w-8 text-center">
-                    <button
-                      type="button"
-                      onClick={toggleSeleccionarTodos}
-                      className="inline-flex items-center justify-center cursor-pointer"
-                      title={todosSeleccionados ? 'Deseleccionar todos en esta página' : 'Seleccionar todos en esta página'}
-                    >
-                      {todosSeleccionados ? (
-                        <SquareCheck size={16} className="text-brand" />
-                      ) : (
-                        <Square size={16} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
-                      )}
-                    </button>
-                  </th>
+                  <CasillaCabecera todas={todosSeleccionados} algunas={filtradosPaginados.some(l => seleccionados.has(l.id))} onToggle={toggleSeleccionarTodos} />
                   <SortTh col="nombre" sort={sort} onToggle={toggleSort} style={{ padding: '7px 8px', fontSize: '15px', minWidth: '100px', maxWidth: '130px' }}>
                     Nombre
                   </SortTh>
@@ -1276,21 +1315,7 @@ export function LeadsClient({
                       }`}
                       style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                     >
-                      {/* Checkbox de selección individual */}
-                      <td className="px-1.5 py-2 text-center align-top w-8" onClick={e => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => toggleSeleccionado(lead.id)}
-                          className="inline-flex items-center justify-center cursor-pointer"
-                          title={estaSeleccionado ? 'Deseleccionar prospecto' : 'Seleccionar prospecto'}
-                        >
-                          {estaSeleccionado ? (
-                            <SquareCheck size={16} className="text-brand" />
-                          ) : (
-                            <Square size={16} className="text-(--text-secondary) opacity-50 hover:opacity-100 transition-opacity" />
-                          )}
-                        </button>
-                      </td>
+                      <CasillaFila marcada={estaSeleccionado} onToggle={() => toggleSeleccionado(lead.id)} label={`Seleccionar ${lead.nombre ?? "prospecto"}`} />
 
                       {/* Nombre completo: flecha (CaretRight) igual a cotizaciones para abrir la ficha completa */}
                       <td
@@ -1323,11 +1348,6 @@ export function LeadsClient({
                           >
                             {lead.nombre || <span className="opacity-40 font-normal">(sin nombre)</span>}
                           </span>
-                          <CaretRight
-                            size={14}
-                            className="text-(--text-secondary) opacity-60 group-hover:opacity-100 group-hover:text-brand transition-all shrink-0"
-                            sinAnimacion
-                          />
                         </a>
                       </td>
 
@@ -1462,15 +1482,24 @@ export function LeadsClient({
 
                       {/* Menú de 3 puntos VERTICALES del sistema de diseño (DotsThree) Portal-based */}
                       <td className="px-1 py-2 text-center whitespace-nowrap align-top w-8">
-                        <MenuTresPuntosLead
-                          leadId={lead.id}
-                          tieneTelefono={Boolean(lead.telefono && lead.telefono.trim().length >= 7)}
-                          onEditar={() => abrirEdicion(lead)}
-                          onWhatsApp={() => abrirWhatsApp(lead)}
-                          onEliminar={() => {
-                            setErrorEliminarIndividual('')
-                            setLeadAEliminar(lead)
-                          }}
+                        <MenuFila
+                          label={`Acciones de ${lead.nombre ?? 'este prospecto'}`}
+                          acciones={[
+                            { label: 'Abrir en nueva página', icono: <ArrowSquareOut size={13} />, href: `/admin/leads/${lead.id}` },
+                            { label: 'Editar información', icono: <Pencil size={13} />, onClick: () => abrirEdicion(lead) },
+                            ...(lead.telefono && lead.telefono.trim().length >= 7
+                              ? [{ label: 'Enviar WhatsApp', icono: <WhatsappLogo size={13} />, onClick: () => abrirWhatsApp(lead) }]
+                              : []),
+                            {
+                              label: 'Eliminar prospecto',
+                              icono: <Trash2 size={13} />,
+                              peligro: true,
+                              onClick: () => {
+                                setErrorEliminarIndividual('')
+                                setLeadAEliminar(lead)
+                              },
+                            },
+                          ]}
                         />
                       </td>
                     </tr>
@@ -1501,6 +1530,28 @@ export function LeadsClient({
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Modal: cambiar estado en grupo ── */}
+      {modalEstadoGrupo && (
+        <Modal
+          abierto={modalEstadoGrupo}
+          onClose={() => !aplicandoEstado && setModalEstadoGrupo(false)}
+          titulo="Cambiar estado"
+          descripcion={`${seleccionados.size} ${seleccionados.size === 1 ? 'prospecto seleccionado' : 'prospectos seleccionados'}`}
+          textoConfirmar={aplicandoEstado ? 'Aplicando...' : 'Aplicar'}
+          textoCancelar="Cancelar"
+          varianteConfirmar="brand"
+          onConfirmar={cambiarEstadoGrupo}
+          onCancelar={() => setModalEstadoGrupo(false)}
+        >
+          <Selector
+            value={estadoGrupo}
+            onChange={val => setEstadoGrupo(val as EstadoLead)}
+            opciones={ESTADOS.map(e => ({ value: e, label: configEstado(e).label }))}
+          />
+          {errorEstadoGrupo && <p className="text-xs text-error font-medium">{errorEstadoGrupo}</p>}
+        </Modal>
       )}
 
       {/* ── Modal de Confirmación: Eliminar en Grupo ── */}
@@ -2168,134 +2219,3 @@ function EstadoDropdownLead({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Menú de 3 Puntos VERTICALES Oficiales (DotsThree) con createPortal
-// ─────────────────────────────────────────────────────────────────────────────
-function MenuTresPuntosLead({
-  leadId,
-  tieneTelefono = false,
-  onEditar,
-  onWhatsApp,
-  onEliminar,
-}: {
-  leadId: string
-  tieneTelefono?: boolean
-  onEditar: () => void
-  onWhatsApp: () => void
-  onEliminar: () => void
-}) {
-  const [abierto, setAbierto] = useState(false)
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
-  const btnRef = useRef<HTMLButtonElement>(null)
-
-  function toggle(e: React.MouseEvent) {
-    e.stopPropagation()
-    if (!abierto && btnRef.current) {
-      const rect = btnRef.current.getBoundingClientRect()
-      const abrirArriba = window.innerHeight - rect.bottom < 160
-      setCoords({
-        top: abrirArriba ? rect.top - 135 : rect.bottom + 4,
-        left: Math.max(8, Math.min(window.innerWidth - 180, rect.right - 176)),
-      })
-      setAbierto(true)
-    } else {
-      setAbierto(false)
-    }
-  }
-
-  return (
-    <>
-      <button
-        ref={btnRef}
-        type="button"
-        onClick={toggle}
-        title="Acciones"
-        className="p-1 rounded-lg border border-transparent hover:border-(--border) hover:bg-(--bg-table-hover) inline-flex items-center justify-center text-(--text-secondary) hover:text-(--text-primary) transition-colors cursor-pointer"
-      >
-        <DotsThree size={16} />
-      </button>
-
-      {abierto && coords && typeof document !== 'undefined' && createPortal(
-        <>
-          <div
-            className="fixed inset-0"
-            style={{ zIndex: 9998 }}
-            onClick={e => {
-              e.stopPropagation()
-              setAbierto(false)
-            }}
-          />
-          <div
-            className="fixed rounded-xl border border-(--border) bg-(--bg-card) shadow-2xl p-1 overflow-hidden flex flex-col text-left"
-            style={{
-              top: coords.top,
-              left: coords.left,
-              width: '176px',
-              zIndex: 9999,
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Ficha completa, en una pestaña aparte: deja agregar notas sin
-                perder los filtros ni el scroll de la lista. */}
-            <a
-              href={`/admin/leads/${leadId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setAbierto(false)}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
-            >
-              <ArrowSquareOut size={13} className="text-brand shrink-0" />
-              <span>Abrir ficha completa</span>
-            </a>
-
-            {/* Editar */}
-            <button
-              type="button"
-              onClick={() => {
-                setAbierto(false)
-                onEditar()
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
-            >
-              <Pencil size={13} className="text-brand shrink-0" />
-              <span>Editar información</span>
-            </button>
-
-            {/* Enviar WhatsApp (solo si tiene teléfono registrado) */}
-            {tieneTelefono && (
-              <button
-                type="button"
-                onClick={() => {
-                  setAbierto(false)
-                  onWhatsApp()
-                }}
-                className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-(--text-primary) hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
-              >
-                <WhatsappLogo
-                  size={13}
-                  className="text-(--text-secondary) shrink-0"
-                />
-                <span>Enviar WhatsApp</span>
-              </button>
-            )}
-
-            <div className="h-px my-1 bg-(--border)" />
-
-            {/* Eliminar */}
-            <button
-              type="button"
-              onClick={() => {
-                setAbierto(false)
-                onEliminar()
-              }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-error hover:bg-(--bg-table-hover) cursor-pointer transition-colors"
-            >
-              <Trash2 size={13} className="shrink-0" />
-              <span>Eliminar prospecto</span>
-            </button>
-          </div>
-        </>,
-        document.body
-      )}
-    </>
-  )
-}

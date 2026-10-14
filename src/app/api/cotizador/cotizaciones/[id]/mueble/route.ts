@@ -7,6 +7,7 @@ import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { calcularCotizacionPorItem } from '@/lib/cotizador/motor-cotizacion'
 import { servicioSchema, insumoSchema, materialSchema } from '@/lib/schemas/dimensiones.schema'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 const schema = z.object({
   item_id: z.uuid(),
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   // Upload de imagen a Storage si viene en base64 y no hay una ya subida
   if (imagen_base64 && !imagen_url) {
     const buffer = Buffer.from(imagen_base64, 'base64')
-    const nombreArchivo = `cotizador/${empresa_id}/${randomUUID()}.webp`
+    const nombreArchivo = rutaEmpresa(empresa_id, 'cotizador', `${randomUUID()}.webp`)
     const { data: uploadData, error: uploadError } = await adminClient.storage
       .from('cotizador')
       .upload(nombreArchivo, buffer, { contentType: mime_type, upsert: false })

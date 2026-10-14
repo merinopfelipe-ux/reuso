@@ -596,7 +596,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
 
                   <div className="mt-2.5">
                     <span className="text-xs font-semibold text-(--text-secondary) mr-2">Encuadre:</span>
-                    <div className="inline-flex items-center rounded-full border border-(--border) p-0.5">
+                    <div className="inline-flex items-center rounded-lg border border-(--border) p-0.5">
                       {([
                         { valor: 'top', etiqueta: 'Arriba' },
                         { valor: 'center', etiqueta: 'Centro' },
@@ -606,7 +606,7 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                           key={op.valor}
                           type="button"
                           onClick={() => setImagenPosicion(op.valor)}
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${imagenPosicion === op.valor ? 'bg-[#00827C] text-white' : 'text-(--text-secondary)'}`}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${imagenPosicion === op.valor ? 'bg-[#00827C] text-white' : 'text-(--text-secondary)'}`}
                         >
                           {op.etiqueta}
                         </button>
@@ -657,13 +657,13 @@ export function MarcaEmpresaClient({ empresa }: Props) {
                   <div className="flex gap-2 mb-2">
                     <button
                       onClick={() => setImagenModo('url')}
-                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'url' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border ${imagenModo === 'url' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
                     >
                       <LinkIcon size={13} /> Usar URL
                     </button>
                     <button
                       onClick={() => setImagenModo('subir')}
-                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border ${imagenModo === 'subir' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
+                      className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border ${imagenModo === 'subir' ? 'bg-[#00827C]/10 border-[#00827C]/30 text-[#00827C]' : 'border-(--border) text-(--text-secondary)'}`}
                     >
                       <Upload size={13} /> Subir archivo
                     </button>

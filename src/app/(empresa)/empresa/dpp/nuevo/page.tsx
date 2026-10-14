@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { AdminPageHeader } from '@/components/admin/admin-page-header'
 import { useToast } from '@/components/toast-provider'
 import { Button } from '@/components/ui/button'
-import { createClient } from '@/lib/supabase/client'
 import { comprimirImagenBase64, comprimirImagenWebP, recortarImagenBase64, boundingBoxEsUtil, type BoundingBox } from '@/lib/image-compress'
 import { TarjetaGrupoFotos, type GrupoPendiente, type FotoCola, type ModoAnalisis } from '@/app/(empresa)/empresa/cotizador/nueva/components/tarjeta-grupo-fotos'
 import { DppItemCard, type ItemDppPendiente, type MaterialDpp } from './components/dpp-item-card'
@@ -262,15 +261,12 @@ export default function NuevoActivoDppPage() {
     try {
       const blob = await fetch(item.imagenPreview).then(r => r.blob())
       const webp = await comprimirImagenWebP(blob, { calidad: 0.85 })
-      const supabase = createClient()
-      // `item._uiKey` en el path evita colisiones si dos confirmaciones caen
-      // en el mismo milisegundo (doble clic, dos pestañas) — con
-      // `upsert: false` una colisión haría fallar el upload en silencio.
-      const path = `dpp/imagenes/${item._uiKey}-${Date.now()}.webp`
-      const { data: uploadData } = await supabase.storage
-        .from('dpp')
-        .upload(path, webp, { contentType: 'image/webp', upsert: false })
-      if (uploadData) imagen_url = uploadData.path
+      // La foto se sube por el servidor, a la carpeta de esta empresa.
+      const formData = new FormData()
+      formData.append('archivo', webp, `${item._uiKey}.webp`)
+      const res = await fetch('/api/dpp/imagenes', { method: 'POST', body: formData })
+      const subida = await res.json().catch(() => ({}))
+      if (res.ok && subida.path) imagen_url = subida.path
       else fallóImagen = true
     } catch {
       // No bloquea la creación del DPP si falla solo la imagen.

@@ -54,6 +54,16 @@ export async function PATCH(request: NextRequest) {
 
   const adminClient = await createAdminClient()
 
+  if (typeof updates.logo_url === 'string') {
+    const { data: actual } = await adminClient.from('empresas').select('logo_url').eq('id', perfil.empresa_id).maybeSingle()
+    const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/logos/empresas/${perfil.empresa_id}/logos/empresa/`
+    const esSuyo = updates.logo_url.startsWith(base)
+    const esElActual = actual?.logo_url === updates.logo_url
+    if (!esSuyo && !esElActual) {
+      return NextResponse.json({ error: 'El logo debe subirse desde esta pantalla.' }, { status: 400 })
+    }
+  }
+
   if (typeof updates.nit !== 'undefined') {
     const { data: empresaActual } = await adminClient
       .from('empresas')

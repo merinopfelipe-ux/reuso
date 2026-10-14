@@ -310,7 +310,7 @@ export function EstadoCuentaClient({
               type="button"
               onClick={() => setMenuPlanAbierto(v => !v)}
               disabled={guardandoPlan}
-              className="flex items-center gap-2 p-1.5 rounded-full border transition-all cursor-pointer text-left hover:bg-(--bg-hover)"
+              className="flex items-center gap-2 p-1.5 rounded-lg border transition-all cursor-pointer text-left hover:bg-(--bg-hover)"
               style={{
                 background: 'var(--bg-card)',
                 borderColor: 'var(--border)',

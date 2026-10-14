@@ -5,12 +5,13 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTopLoader } from 'nextjs-toploader'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import {
-  CircleDollarSign, Leaf, Truck, ShieldCheck,
+  CircleDollarSign, Leaf, Truck, ShieldCheck, Download,
   Loader2 as CircleNotch, AlertCircle as WarningCircle,
 } from '@/components/ui/icons'
 import { ContextoEmpresa } from '@/components/ui/contexto-empresa'
 import { formatCOP, formatNumero } from '@/lib/format'
 import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
 import type { ResultadoRentabilidad } from '@/lib/reportes/rentabilidad'
 import type { ResultadoMitigacion } from '@/lib/reportes/mitigacion'
 import type { ResultadoLogistica } from '@/lib/reportes/logistica'
@@ -67,15 +68,45 @@ function Card({ children }: { children: React.ReactNode }) {
 }
 
 function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | number)[][] }) {
+  // Selección por fila (índice). Exporta solo las filas marcadas.
+  const [seleccion, setSeleccion] = useState<Set<number>>(new Set())
   if (filas.length === 0) {
     return <p style={{ padding: '20px 0', fontSize: 13, color: TEXT_MED, textAlign: 'center' }}>Sin datos en este período.</p>
   }
+  const todas = filas.every((_, idx) => seleccion.has(idx))
+  const algunas = filas.some((_, idx) => seleccion.has(idx))
+  const seleccionadas = filas.map((fila, idx) => ({ fila, idx })).filter(({ idx }) => seleccion.has(idx))
+
+  function toggleTodas() {
+    setSeleccion(todas ? new Set() : new Set(filas.map((_, idx) => idx)))
+  }
+
+  function toggleFila(idx: number) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(idx)) siguiente.delete(idx)
+      else siguiente.add(idx)
+      return siguiente
+    })
+  }
+
   return (
+    <>
+    <BarraSeleccion cantidad={seleccionadas.length} singular="fila" plural="filas">
+      <BotonDescargarCliente
+        data={seleccionadas.map(({ fila }) => Object.fromEntries(columnas.map((c, i) => [c, fila[i] ?? ''])))}
+        nombre="reporte_seleccion"
+        tituloPdf="Reporte: filas seleccionadas"
+        label="Exportar"
+        icon={<Download size={14} />}
+      />
+    </BarraSeleccion>
     <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr className="bg-(--bg-table-header) text-brand">
+              <CasillaCabecera todas={todas} algunas={algunas} onToggle={toggleTodas} />
               {columnas.map((c, i) => (
                 <th key={c} className={`px-4 py-2.5 font-semibold whitespace-nowrap ${i === 0 ? 'text-left' : 'text-right'}`}>
                   {c}
@@ -90,6 +121,7 @@ function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | numbe
                 className={`transition-colors duration-150 hover:bg-(--bg-table-hover) ${idx % 2 === 1 ? 'bg-(--bg-zebra)' : 'bg-(--bg-card)'}`}
                 style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
               >
+                <CasillaFila marcada={seleccion.has(idx)} onToggle={() => toggleFila(idx)} label={`Seleccionar fila ${idx + 1}`} />
                 {fila.map((v, i) => (
                   <td key={i} className={`px-4 py-3 text-(--text-primary) ${i === 0 ? 'text-left' : 'text-right whitespace-nowrap'}`}>
                     {v}
@@ -101,6 +133,7 @@ function Tabla({ columnas, filas }: { columnas: string[]; filas: (string | numbe
         </table>
       </div>
     </div>
+    </>
   )
 }
 

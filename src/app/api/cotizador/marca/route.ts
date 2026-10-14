@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
+import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
 
 // Valida número de WhatsApp: código de país + 7-15 dígitos, sin espacios ni guiones
 const whatsappRegex = /^\d{7,15}$/
@@ -72,7 +73,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'El logo no puede superar 2 MB.' }, { status: 400 })
     }
     const ext = logo_mime === 'image/svg+xml' ? 'svg' : logo_mime.split('/')[1]
-    const nombreArchivo = `propuesta-logos/${empresa_id}/${randomUUID()}.${ext}`
+    const nombreArchivo = rutaEmpresa(empresa_id, 'logoPropuesta', `${randomUUID()}.${ext}`)
     const { data: uploadData, error: uploadError } = await adminClient.storage
       .from('logos')
       .upload(nombreArchivo, buffer, { contentType: logo_mime, upsert: false })

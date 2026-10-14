@@ -2,7 +2,10 @@
 
 import { useState, useTransition, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search as MagnifyingGlass, PlusCircle, KeyRound, Trash } from '@/components/ui/icons'
+import { Search as MagnifyingGlass, PlusCircle, KeyRound, Trash, Download } from '@/components/ui/icons'
+import { BotonDescargarCliente } from '@/components/boton-descargar-cliente'
+import { CasillaCabecera, CasillaFila, BarraSeleccion } from '@/components/tabla/seleccion'
+import { MenuFila } from '@/components/tabla/menu-fila'
 import { BotonDescargar } from '@/components/boton-descargar'
 import { SortTh } from '@/components/sort-th'
 import { useSortable } from '@/lib/use-sortable'
@@ -55,11 +58,15 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   const [formNuevo, setFormNuevo] = useState(EMPTY_FORM)
   const [creando, setCreando] = useState(false)
   const [errorModal, setErrorModal] = useState('')
-  const [restableciendo, setRestableciendo] = useState<string | null>(null)
-  const [restablecido, setRestablecido] = useState<string | null>(null)
+  const [aviso, setAviso] = useState('')
   const [usuarioAEliminar, setUsuarioAEliminar] = useState<PerfilRow | null>(null)
   const [eliminando, setEliminando] = useState(false)
   const [errorEliminar, setErrorEliminar] = useState('')
+  // Selección en grupo: solo filas visibles, y nunca la propia cuenta.
+  const [seleccion, setSeleccion] = useState<Set<string>>(new Set())
+  const [confirmarEliminarGrupo, setConfirmarEliminarGrupo] = useState(false)
+  const [eliminandoGrupo, setEliminandoGrupo] = useState(false)
+  const [errorGrupo, setErrorGrupo] = useState('')
   const { sorted: usuariosOrdenados, sort, toggleSort } = useSortable(usuarios as unknown as Record<string, unknown>[])
 
   const totalPages = Math.ceil(total / pageSize)
@@ -73,7 +80,8 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
     if (params.search) sp.set('search', params.search)
     if (params.rol) sp.set('rol', params.rol)
     if (params.page && params.page !== '1') sp.set('page', params.page)
-    if (params.pageSize && params.pageSize !== '25') sp.set('pageSize', params.pageSize)
+    const ps = params.pageSize !== undefined ? params.pageSize : String(pageSize)
+    if (ps && ps !== '25') sp.set('pageSize', ps)
     startTransition(() => router.push(`/admin/usuarios?${sp.toString()}`))
   }
 
@@ -97,13 +105,64 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
   }
 
   async function restablecerPassword(userId: string) {
-    setRestableciendo(userId)
+    setAviso('')
     const res = await fetch(`/api/admin/usuarios/${userId}/restablecer-password`, { method: 'POST' })
-    setRestableciendo(null)
-    if (res.ok) {
-      setRestablecido(userId)
-      setTimeout(() => setRestablecido(null), 3000)
-    }
+    setAviso(res.ok ? 'Correo para restablecer la contraseña enviado.' : 'No se pudo enviar el correo de restablecimiento.')
+  }
+
+  const usuariosPagina = usuariosOrdenados as unknown as PerfilRow[]
+  const idsPagina = usuariosPagina.map(u => u.user_id)
+  const seleccionables = usuariosPagina.filter(u => u.user_id !== currentUserId)
+  const todasPagina = seleccionables.length > 0 && seleccionables.every(u => seleccion.has(u.user_id))
+  const algunasPagina = seleccionables.some(u => seleccion.has(u.user_id))
+  const seleccionados = usuariosPagina.filter(u => seleccion.has(u.user_id) && u.user_id !== currentUserId)
+
+  function toggleTodas() {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (todasPagina) idsPagina.forEach(id => siguiente.delete(id))
+      else seleccionables.forEach(u => siguiente.add(u.user_id))
+      return siguiente
+    })
+  }
+
+  function toggleFila(id: string) {
+    setSeleccion(prev => {
+      const siguiente = new Set(prev)
+      if (siguiente.has(id)) siguiente.delete(id)
+      else siguiente.add(id)
+      return siguiente
+    })
+  }
+
+  // Borrado en grupo: un DELETE por usuario, con el mismo endpoint del borrado individual.
+  async function eliminarGrupo() {
+    if (seleccionados.length === 0) return
+    setEliminandoGrupo(true)
+    setErrorGrupo('')
+    const resultados = await Promise.all(
+      seleccionados.map(u =>
+        fetch(`/api/admin/usuarios/${u.user_id}`, { method: 'DELETE' })
+          .then(r => r.ok)
+          .catch(() => false)
+      )
+    )
+    const fallidos = resultados.filter(ok => !ok).length
+    setEliminandoGrupo(false)
+    setConfirmarEliminarGrupo(false)
+    setSeleccion(new Set())
+    if (fallidos > 0) setErrorGrupo(`No se pudieron eliminar ${fallidos} de ${seleccionados.length} usuarios.`)
+    startTransition(() => router.refresh())
+  }
+
+  function filasSeleccionadas() {
+    return seleccionados.map(u => ({
+      Nombre: u.nombre ?? '',
+      Email: u.email ?? '',
+      Empresa: getNombreEmpresa(u.empresas),
+      Rol: ROL_LABEL[u.rol as Rol] ?? u.rol,
+      Registro: formatFecha(u.created_at),
+    }))
   }
 
   async function eliminarUsuario() {
@@ -266,24 +325,43 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
         </>
       </Modal>
 
+      <BarraSeleccion cantidad={seleccionados.length} singular="usuario" plural="usuarios" femenino={false}>
+        <BotonDescargarCliente
+          data={filasSeleccionadas()}
+          nombre="usuarios_seleccionados"
+          tituloPdf="Usuarios seleccionados"
+          label="Exportar"
+          icon={<Download size={14} />}
+        />
+        <button
+          type="button"
+          onClick={() => { setErrorGrupo(''); setConfirmarEliminarGrupo(true) }}
+          className="text-sm font-semibold px-3 py-1.5 bg-transparent text-error transition-opacity duration-200 hover:opacity-50"
+        >
+          Eliminar
+        </button>
+      </BarraSeleccion>
+      {errorGrupo && <p className="text-sm m-0 text-error">{errorGrupo}</p>}
+      {aviso && <p className="text-sm m-0 text-(--text-secondary)">{aviso}</p>}
+
       {/* Tabla */}
       <div className="rounded-card border border-(--border) bg-(--bg-card) overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm" style={{ borderCollapse: 'collapse' }}>
             <thead>
               <tr className="bg-(--bg-table-header) text-brand">
+                <CasillaCabecera todas={todasPagina} algunas={algunasPagina} onToggle={toggleTodas} />
                 <SortTh col="nombre" sort={sort} onToggle={toggleSort}>Nombre</SortTh>
                 <SortTh col="email" sort={sort} onToggle={toggleSort}>Email</SortTh>
                 <th className="px-4 py-2.5 text-left font-semibold whitespace-nowrap">Empresa</th>
                 <SortTh col="rol" sort={sort} onToggle={toggleSort}>Rol</SortTh>
                 <SortTh col="created_at" sort={sort} onToggle={toggleSort} align="center">Registro</SortTh>
-                <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Acceso</th>
-                <th className="px-4 py-2.5 text-center font-semibold whitespace-nowrap">Eliminar</th>
+                <th className="px-1 py-2.5 w-8" aria-label="Acciones" />
               </tr>
             </thead>
             <tbody>
               {usuariosOrdenados.length === 0 && (
-                <tr><td colSpan={7} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                <tr><td colSpan={8} style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                   {search ? 'Sin resultados para esa búsqueda.' : 'No hay usuarios registrados.'}
                 </td></tr>
               )}
@@ -296,6 +374,7 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                     }`}
                     style={{ borderTop: idx > 0 ? '1px solid var(--border)' : 'none' }}
                   >
+                    <CasillaFila marcada={seleccion.has(u.user_id)} onToggle={() => toggleFila(u.user_id)} label={`Seleccionar ${u.nombre || u.email}`} />
                     <td className="px-4 py-3 text-(--text-primary)">
                       <div className="flex items-center gap-2">
                         <span>{u.nombre || '-'}</span>
@@ -312,35 +391,16 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
                       />
                     </td>
                     <td className="px-4 py-3 text-(--text-secondary) text-center">{formatFecha(u.created_at)}</td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); restablecerPassword(u.user_id) }}
-                        disabled={restableciendo === u.user_id}
-                        title="Enviar correo para restablecer contraseña"
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 10px', borderRadius: 6,
-                          fontSize: 11, fontWeight: 600, border: '1px solid var(--border)', background: 'var(--bg-input)',
-                          color: restablecido === u.user_id ? 'var(--color-brand)' : 'var(--text-secondary)',
-                          cursor: restableciendo === u.user_id ? 'not-allowed' : 'pointer',
-                          opacity: restableciendo === u.user_id ? 0.5 : 1,
-                        }}
-                      >
-                        <KeyRound size={12} sinAnimacion />
-                        {restablecido === u.user_id ? 'Correo enviado' : 'Restablecer'}
-                      </button>
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); setUsuarioAEliminar(u); setErrorEliminar('') }}
-                        disabled={u.user_id === currentUserId}
-                        title={u.user_id === currentUserId ? 'No puedes eliminar tu propia cuenta' : 'Eliminar usuario'}
-                        className={`inline-flex items-center gap-1.5 text-sm font-semibold px-2 py-1 bg-transparent transition-opacity duration-200 ${u.user_id === currentUserId ? 'text-(--text-secondary) opacity-50 cursor-not-allowed' : 'text-error hover:opacity-50'}`}
-                      >
-                        <Trash size={15} sinAnimacion />
-                        Eliminar
-                      </button>
+                    <td className="px-1 py-3 text-center" onClick={e => e.stopPropagation()}>
+                      <MenuFila
+                        label={`Acciones de ${u.nombre || u.email}`}
+                        acciones={[
+                          { label: 'Restablecer contraseña', icono: <KeyRound size={13} />, onClick: () => restablecerPassword(u.user_id) },
+                          ...(u.user_id !== currentUserId
+                            ? [{ label: 'Eliminar usuario', icono: <Trash size={13} />, peligro: true, onClick: () => { setUsuarioAEliminar(u); setErrorEliminar('') } }]
+                            : []),
+                        ]}
+                      />
                     </td>
                   </tr>
                 )
@@ -368,6 +428,23 @@ export function UsuariosClient({ usuarios, total, page, pageSize, search, rolFil
           </div>
         </div>
       </div>
+
+      <Modal
+        abierto={confirmarEliminarGrupo}
+        onClose={() => !eliminandoGrupo && setConfirmarEliminarGrupo(false)}
+        titulo="Eliminar usuarios"
+        icono={<Trash size={22} />}
+        colorIcono="var(--color-error)"
+        textoConfirmar={eliminandoGrupo ? 'Eliminando...' : 'Eliminar de verdad'}
+        textoCancelar="Cancelar"
+        varianteConfirmar="error"
+        onConfirmar={eliminarGrupo}
+        onCancelar={() => setConfirmarEliminarGrupo(false)}
+      >
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          Vas a eliminar por completo a {seleccionados.length} {seleccionados.length === 1 ? 'usuario' : 'usuarios'}. Esta acción no se puede deshacer.
+        </p>
+      </Modal>
 
       <Modal
         abierto={!!usuarioAEliminar}
