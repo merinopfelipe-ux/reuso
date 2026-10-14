@@ -6,7 +6,6 @@ import {
   agregarAdministrador,
   crearCuentaChat,
   crearUsuarioChat,
-  pedirRestablecer,
 } from '@/lib/chatwoot-plataforma'
 
 const schema = z.object({ habilitado: z.boolean() })
@@ -49,12 +48,14 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   // Quien administra la empresa es quien entra al chat.
   const { data: admin } = await guard.adminClient
     .from('profiles')
-    .select('nombre, apellido, email')
+    .select('user_id, nombre, apellido')
     .eq('empresa_id', empresa.id)
     .eq('rol', 'empresa_admin')
     .limit(1)
     .maybeSingle()
-  if (!admin?.email) {
+  // Correo de la cuenta de acceso (verificado), el mismo con el que luego entra al chat.
+  const correo = admin ? (await guard.adminClient.auth.admin.getUserById(admin.user_id)).data.user?.email : undefined
+  if (!admin || !correo) {
     return NextResponse.json(
       { error: 'La empresa no tiene un administrador con correo. Asígnalo antes de activar el chat.' },
       { status: 400 }
@@ -69,10 +70,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       await guard.adminClient.from('empresas').update({ chat_account_id: cuentaId }).eq('id', empresa.id)
     }
 
-    const nombre = [admin.nombre, admin.apellido].filter(Boolean).join(' ') || admin.email
-    const usuarioId = await crearUsuarioChat({ nombre, email: admin.email })
+    const nombre = [admin.nombre, admin.apellido].filter(Boolean).join(' ') || correo
+    const usuarioId = await crearUsuarioChat({ nombre, email: correo })
     await agregarAdministrador(cuentaId, usuarioId)
-    await pedirRestablecer(admin.email)
 
     await guard.adminClient.from('empresas').update({ chat_habilitado: true }).eq('id', empresa.id)
     await logAuditoria(guard.adminClient, {

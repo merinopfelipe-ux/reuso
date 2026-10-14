@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
-import { menuPorRol, configMovil, URL_CHAT_BASE, urlChatCuenta, type Entrada } from './navegacion'
+import { menuPorRol, configMovil, URL_CHAT_BASE, URL_CHAT_EMPRESA, type Entrada } from './navegacion'
 import type { Rol } from '@/types'
 
 const ROLES: Rol[] = ['super_admin', 'empresa_admin', 'empleado', 'usuario_libre']
@@ -57,14 +57,13 @@ describe('menú: estructura por rol', () => {
     expect(menuPorRol('super_admin').at(-1)?.label).toBe('Chat')
 
     expect(chatDe('empresa_admin')).toBeUndefined()
-    const cuenta = urlChatCuenta(7)
-    expect(cuenta).toBe(`${URL_CHAT_BASE}/app/accounts/7/dashboard`)
-    const deEmpresa = menuPorRol('empresa_admin', cuenta)
+    const deEmpresa = menuPorRol('empresa_admin', URL_CHAT_EMPRESA)
     expect(deEmpresa.at(-1)?.label).toBe('Chat')
-    expect(deEmpresa.at(-1)?.href).toBe(cuenta)
+    expect(deEmpresa.at(-1)?.href).toBe(URL_CHAT_EMPRESA)
+    expect(deEmpresa.at(-1)?.externa).toBe(true)
 
-    expect(chatDe('empleado', cuenta)).toBeUndefined()
-    expect(chatDe('usuario_libre', cuenta)).toBeUndefined()
+    expect(chatDe('empleado', URL_CHAT_EMPRESA)).toBeUndefined()
+    expect(chatDe('usuario_libre', URL_CHAT_EMPRESA)).toBeUndefined()
   })
 
   it('no repite un mismo enlace dentro del menú de un rol', () => {

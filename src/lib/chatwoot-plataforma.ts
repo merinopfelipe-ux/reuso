@@ -19,14 +19,14 @@ function configuracion(): { base: string; token: string } {
   return { base, token }
 }
 
-async function enviar(ruta: string, cuerpo: unknown): Promise<Record<string, unknown>> {
+async function llamar(metodo: 'GET' | 'POST', ruta: string, cuerpo?: unknown): Promise<Record<string, unknown>> {
   const { base, token } = configuracion()
   const res = await fetchConTimeout(
     `${base}${ruta}`,
     {
-      method: 'POST',
+      method: metodo,
       headers: { 'Content-Type': 'application/json', api_access_token: token },
-      body: JSON.stringify(cuerpo),
+      ...(cuerpo !== undefined ? { body: JSON.stringify(cuerpo) } : {}),
     },
     TIMEOUT_MS
   )
@@ -42,7 +42,7 @@ function idDe(respuesta: Record<string, unknown>, contexto: string): number {
 
 // Cuenta nueva para la empresa. Devuelve su id.
 export async function crearCuentaChat(nombre: string): Promise<number> {
-  const r = await enviar('/platform/api/v1/accounts', { name: nombre })
+  const r = await llamar('POST', '/platform/api/v1/accounts', { name: nombre })
   return idDe(r, 'crear cuenta')
 }
 
@@ -50,11 +50,11 @@ export async function crearCuentaChat(nombre: string): Promise<number> {
 // Chatwoot, Chatwoot devuelve ese mismo usuario.
 //
 // La contraseña es aleatoria: Chatwoot exige una para crear el usuario, pero
-// nadie la conoce ni se guarda. La persona fija la suya con el correo de
-// "restablecer contraseña" (ver pedirRestablecer).
+// nadie la conoce ni se guarda. La persona no la necesita: entra con el enlace
+// de acceso directo (ver enlaceDeAcceso).
 export async function crearUsuarioChat(datos: { nombre: string; email: string }): Promise<number> {
   const contrasenaTemporal = randomBytes(24).toString('base64url') + 'Aa1!'
-  const r = await enviar('/platform/api/v1/users', {
+  const r = await llamar('POST', '/platform/api/v1/users', {
     name: datos.nombre,
     email: datos.email,
     password: contrasenaTemporal,
@@ -64,24 +64,21 @@ export async function crearUsuarioChat(datos: { nombre: string; email: string })
 
 // Agrega al usuario a la cuenta como administrador.
 export async function agregarAdministrador(cuentaId: number, usuarioId: number): Promise<void> {
-  await enviar(`/platform/api/v1/accounts/${cuentaId}/account_users`, {
+  await llamar('POST', `/platform/api/v1/accounts/${cuentaId}/account_users`, {
     user_id: usuarioId,
     role: 'administrator',
   })
 }
 
-// Envía el correo de "restablecer contraseña" de Chatwoot. Es el mismo correo
-// que sale desde la pantalla de inicio de sesión: la persona elige su contraseña.
-export async function pedirRestablecer(email: string): Promise<void> {
+// Enlace de acceso directo de un solo uso: abre Chatwoot con la sesión ya
+// iniciada, sin pedir contraseña. Se genera en el momento del clic y la persona
+// es redirigida de inmediato, el enlace nunca se muestra ni se guarda.
+export async function enlaceDeAcceso(usuarioId: number): Promise<string> {
   const { base } = configuracion()
-  const res = await fetchConTimeout(
-    `${base}/auth/password`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    },
-    TIMEOUT_MS
-  )
-  if (!res.ok) throw new ChatwootError(`Chatwoot respondió ${res.status} al pedir restablecer`)
+  const r = await llamar('GET', `/platform/api/v1/users/${usuarioId}/login`)
+  const url = r.url
+  if (typeof url !== 'string') throw new ChatwootError('Respuesta sin enlace de acceso')
+  // El enlace debe apuntar a la misma Chatwoot. Si no, algo está mal configurado.
+  if (new URL(url).origin !== new URL(base).origin) throw new ChatwootError('El enlace de acceso apunta a otro sitio')
+  return url
 }

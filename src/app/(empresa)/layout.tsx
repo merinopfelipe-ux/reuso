@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
 import { ModuloBloqueadoBanner } from '@/components/modulo-bloqueado-banner'
 import { displayName } from '@/lib/display-name'
-import { urlChatCuenta } from '@/lib/navegacion'
+import { URL_CHAT_EMPRESA } from '@/lib/navegacion'
 import type { Rol } from '@/types'
 
 export default async function EmpresaLayout({
@@ -40,7 +40,7 @@ export default async function EmpresaLayout({
   // Chat propio de la empresa, si el super admin lo activó (ficha de la empresa).
   const empresaPerfil = Array.isArray(perfil?.empresas) ? perfil?.empresas[0] : perfil?.empresas
   const chatUrl = empresaPerfil?.chat_habilitado && empresaPerfil.chat_account_id != null
-    ? urlChatCuenta(empresaPerfil.chat_account_id)
+    ? URL_CHAT_EMPRESA
     : null
 
   // Se ha eliminado la restricción (whitelist) que bloqueaba al super_admin.

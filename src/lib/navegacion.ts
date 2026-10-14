@@ -24,10 +24,9 @@ import type { Rol } from '@/types'
 // Dirección de Chatwoot. Se lee del entorno para poder cambiarla sin tocar código.
 export const URL_CHAT_BASE = (process.env.NEXT_PUBLIC_CHATWOOT_URL ?? 'https://chat.calculadoradereuso.com').replace(/\/$/, '')
 
-// Chat propio de una empresa: su cuenta dentro de Chatwoot.
-export function urlChatCuenta(cuentaId: number): string {
-  return `${URL_CHAT_BASE}/app/accounts/${cuentaId}/dashboard`
-}
+// Chat propio de una empresa: esta ruta de la calculadora la lleva directo a su
+// cuenta en Chatwoot con la sesión ya iniciada (acceso directo, sin contraseña).
+export const URL_CHAT_EMPRESA = '/api/chat/entrar'
 
 export interface SubItem {
   href: string

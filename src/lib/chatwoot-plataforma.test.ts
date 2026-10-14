@@ -3,7 +3,7 @@ import {
   crearCuentaChat,
   crearUsuarioChat,
   agregarAdministrador,
-  pedirRestablecer,
+  enlaceDeAcceso,
   ChatwootError,
 } from './chatwoot-plataforma'
 
@@ -63,11 +63,18 @@ describe('cliente de plataforma de Chatwoot', () => {
     expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ user_id: 7, role: 'administrator' })
   })
 
-  it('pide el correo de restablecer contraseña sin token de plataforma', async () => {
-    simular([respuesta({ message: 'ok' })])
-    await pedirRestablecer('ana@ejemplo.test')
-    expect(llamadas[0].url).toBe('https://chat.ejemplo.test/auth/password')
-    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ email: 'ana@ejemplo.test' })
+  it('pide el enlace de acceso directo del usuario', async () => {
+    simular([respuesta({ url: 'https://chat.ejemplo.test/app/login?email=ana%40ejemplo.test&sso_auth_token=abc' })])
+    const url = await enlaceDeAcceso(7)
+    expect(url).toContain('sso_auth_token=abc')
+    expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/users/7/login')
+    expect(llamadas[0].init.method).toBe('GET')
+    expect((llamadas[0].init.headers as Record<string, string>).api_access_token).toBe('token-de-prueba')
+  })
+
+  it('rechaza un enlace de acceso que apunta a otro sitio', async () => {
+    simular([respuesta({ url: 'https://otro-sitio.test/app/login?sso_auth_token=abc' })])
+    await expect(enlaceDeAcceso(7)).rejects.toBeInstanceOf(ChatwootError)
   })
 
   it('si Chatwoot responde error, lanza ChatwootError', async () => {

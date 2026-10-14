@@ -36,7 +36,7 @@ export function ChatEmpresaClient({ empresaId, habilitado: inicial }: { empresaI
           : 'Chat inactivo. La empresa no ve Chat en su menú.'}
       </p>
       <p className="text-sm text-(--text-secondary) m-0">
-        Al activarlo, quien administra la empresa recibe un correo para crear su contraseña.
+        Quien administra la empresa entra con un clic desde su menú, sin crear otra contraseña.
       </p>
       <div>
         <Button
