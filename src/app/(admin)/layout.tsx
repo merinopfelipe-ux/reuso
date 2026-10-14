@@ -19,12 +19,20 @@ export default async function AdminLayout({
 
   const adminClient = await createAdminClient()
 
-  // Perfil y Rol
-  const { data: perfil } = await supabase
-    .from('profiles')
-    .select('nombre, apellido, apodo, rol, avatar_color, avatar_text')
-    .eq('user_id', user.id)
-    .single()
+  // Perfil, rol y última visita no dependen entre sí: se piden a la vez.
+  const [{ data: perfil }, { data: logs }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('nombre, apellido, apodo, rol, avatar_color, avatar_text')
+      .eq('user_id', user.id)
+      .single(),
+    adminClient
+      .from('logs_auditoria')
+      .select('created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(2),
+  ])
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
   if (rol !== 'super_admin') redirect('/dashboard')
@@ -34,14 +42,7 @@ export default async function AdminLayout({
   const head = await headers()
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
 
-  // Última visita (segundo log más reciente del usuario)
-  const { data: logs } = await adminClient
-    .from('logs_auditoria')
-    .select('created_at')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(2)
-
+  // Última visita (segundo log más reciente, ya pedido arriba)
   const lastVisitRaw = logs && logs.length > 1 ? logs[1].created_at : logs?.[0]?.created_at || new Date().toISOString()
   const lastVisitFormatted = new Date(lastVisitRaw).toLocaleString('es-CO', {
     timeZone: 'America/Bogota',
