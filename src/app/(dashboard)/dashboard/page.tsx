@@ -187,18 +187,15 @@ export default async function DashboardPage() {
 
   const [
     { count: totalObjetos },
-    { data: co2Data },
     { data: informesData },
     { data: categoriasData },
     historialRes,
     { data: calculosGrafica },
-    { data: calculos14Dias },
     { data: calculosEmpresa },
     { data: co2Empresa },
     { count: calculosMesCount },
   ] = await Promise.all([
     adminClient.from('calculos').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
-    adminClient.from('calculos').select('total_co2, total_agua').eq('user_id', user.id),
     adminClient.from('informes').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
     (() => {
       // usuario_libre (sin empresa) → todas las categorías
@@ -235,18 +232,12 @@ export default async function DashboardPage() {
 
       return query
     })(),
-    // Todos los cálculos para gráfica de línea + donut
+    // Todos los cálculos del usuario en una sola lectura: totales, gráfica, donut y últimos 14 días
     adminClient
       .from('calculos')
-      .select('fecha, total_co2, detalle_json')
+      .select('fecha, total_co2, total_agua, detalle_json')
       .eq('user_id', user.id)
       .order('fecha', { ascending: true }),
-    // Últimos 14 días para indicadores semanales
-    adminClient
-      .from('calculos')
-      .select('fecha, total_co2, total_agua')
-      .eq('user_id', user.id)
-      .gte('fecha', fechaHace14Dias.toISOString()),
     // Cálculos de empresa para ranking (solo si pertenece a empresa)
     empresa_id
       ? adminClient.from('calculos').select('user_id, total_co2').eq('empresa_id', empresa_id)
@@ -261,8 +252,8 @@ export default async function DashboardPage() {
       : Promise.resolve({ count: 0, data: null, error: null }),
   ])
 
-  const co2Total = (co2Data ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
-  const aguaTotal = (co2Data ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
+  const co2Total = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
+  const aguaTotal = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
   const arboles = Math.round(co2Total / 8.0)
   const informes = (informesData ?? []) as Informe[]
 
@@ -304,7 +295,7 @@ export default async function DashboardPage() {
   // Agregaciones para dashboard
   const serieMensual12 = agruparPorMes12(calculosGrafica ?? [])
   const donutPersonal = calcularDonutPersonal(calculosGrafica ?? [])
-  const { semanaActual, semanaAnterior } = calcularVentanas(calculos14Dias ?? [], fechaHace7Dias, fechaHace14Dias)
+  const { semanaActual, semanaAnterior } = calcularVentanas((calculosGrafica ?? []).filter((c) => new Date(c.fecha) >= fechaHace14Dias), fechaHace7Dias, fechaHace14Dias)
   const indicadorCO2 = calcularIndicador(semanaActual.co2, semanaAnterior.co2)
   const indicadorAgua = calcularIndicador(semanaActual.agua, semanaAnterior.agua)
   const indicadorObjetos = calcularIndicador(semanaActual.objetos, semanaAnterior.objetos)

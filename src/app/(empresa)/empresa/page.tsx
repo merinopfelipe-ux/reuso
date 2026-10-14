@@ -164,7 +164,6 @@ export default async function EmpresaPage() {
 
   const [
     { count: totalEmpleados },
-    { data: co2Data },
     { data: informesData },
     { data: categoriasData },
     historialRes,
@@ -173,7 +172,6 @@ export default async function EmpresaPage() {
     { data: perfilesEmpresa },
   ] = await Promise.all([
     adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', empresaId),
-    adminClient.from('calculos').select('total_co2, total_agua').eq('empresa_id', empresaId),
     adminClient.from('informes').select('id, tipo, user_id, empresa_id, fecha_inicio, fecha_fin, co2_total, agua_total, pdf_url, codigo_verificacion, metadata_json, created_at').eq('empresa_id', empresaId).order('created_at', { ascending: false }).limit(20),
     (() => {
       if (moduloIdsActivos.length === 0) return Promise.resolve({ data: null, error: null })
@@ -192,12 +190,13 @@ export default async function EmpresaPage() {
       .order('fecha', { ascending: false })
       .range(0, 14),
     adminClient.from('empresas').select('plan, nombre, nit, telefono, pais, ciudad').eq('id', empresaId).single(),
-    adminClient.from('calculos').select('fecha, total_co2, user_id, detalle_json').eq('empresa_id', empresaId).order('fecha', { ascending: true }),
+    // Una sola lectura de los cálculos de la empresa: sirve para los totales y para las gráficas.
+    adminClient.from('calculos').select('fecha, total_co2, total_agua, user_id, detalle_json').eq('empresa_id', empresaId).order('fecha', { ascending: true }),
     adminClient.from('profiles').select('user_id, nombre').eq('empresa_id', empresaId),
   ])
 
-  const co2Total = (co2Data ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
-  const aguaTotal = (co2Data ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
+  const co2Total = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
+  const aguaTotal = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
   const plan = (empresaData?.plan ?? 'free') as Plan
   const limites = await obtenerLimitesEfectivos(empresaId, plan)
 
