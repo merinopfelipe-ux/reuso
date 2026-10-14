@@ -3,141 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import {
-  Home as House,
-  Package,
-  Building2 as Buildings,
-  LayoutGrid as SquaresFour,
-  Menu,
-  X,
-  IdCard as IdentificationCard,
-  ClipboardList,
-  History as ClockCounterClockwise,
-  Calculator,
-  Users,
-  TrendingUp as TrendUp,
-  ChatCircle,
-} from '@/components/ui/icons'
+import { Menu, X } from '@/components/ui/icons'
+import { configMovil } from '@/lib/navegacion'
 import type { Rol } from '@/types'
-
-interface DrawerItem {
-  href: string
-  label: string
-  grupo?: string
-  external?: boolean
-}
-
-interface QuickItem {
-  href: string
-  label: string
-  icon: React.ElementType
-  external?: boolean
-}
-
-interface MobileConfig {
-  quickItems: QuickItem[]
-  drawerItems: DrawerItem[]
-}
-
-function getConfig(rol: Rol): MobileConfig {
-  switch (rol) {
-    case 'super_admin':
-      return {
-        quickItems: [
-          { href: '/admin', label: 'Resumen', icon: SquaresFour },
-          { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
-          { href: '/admin/empresas', label: 'Empresas', icon: Buildings },
-          { href: '/admin/leads', label: 'Leads', icon: Users },
-          { href: 'https://chat.calculadoradereuso.com', label: 'Chat', icon: ChatCircle, external: true },
-        ],
-        drawerItems: [
-          { href: '/admin', label: 'Resumen', grupo: 'Principal' },
-          { href: '/admin/empresas', label: 'Empresas' },
-          { href: '/admin/leads', label: 'Leads' },
-          { href: '/admin/categorias', label: 'Categorías', grupo: 'Catálogo' },
-          { href: '/admin/catalogo-pendientes', label: 'Pendientes' },
-          { href: '/admin/catalogo-restringido', label: 'Restringido' },
-          { href: '/admin/modulos', label: 'Módulos' },
-          { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'CRM' },
-          { href: '/empresa/clientes', label: 'Clientes' },
-          { href: '/admin/calculos', label: 'Cálculos', grupo: 'Plataforma' },
-          { href: '/admin/reportes', label: 'Reportes' },
-          { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Monitoreo' },
-          { href: '/admin/logs', label: 'Auditoría' },
-          { href: '/admin/alertas', label: 'Alertas' },
-          { href: '/admin/qa', label: 'QA' },
-          { href: '/admin/status', label: 'Estado' },
-          { href: '/admin/configuracion', label: 'Configuración', grupo: 'Contenido' },
-          { href: '/admin/contenido', label: 'Contenido' },
-          { href: '/admin/plantillas', label: 'Plantillas' },
-          { href: '/admin/legal', label: 'Documentos' },
-          { href: '/admin/firmas', label: 'Firmas' },
-          { href: '/admin/planes', label: 'Planes' },
-          { href: 'https://chat.calculadoradereuso.com', label: 'Chat', grupo: 'Soporte', external: true },
-          { href: '/admin/tickets', label: 'Tickets' },
-          { href: '/ayuda', label: 'Ayuda' },
-        ],
-      }
-    case 'empresa_admin':
-      return {
-        quickItems: [
-          { href: '/empresa', label: 'Inicio', icon: House },
-          { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
-          { href: '/empresa/dpp', label: 'DPP', icon: IdentificationCard },
-          { href: '/empresa/calculos', label: 'Cálculos', icon: Calculator },
-        ],
-        drawerItems: [
-          { href: '/empresa', label: 'Perfil', grupo: 'Empresa' },
-          { href: '/empresa/equipo', label: 'Equipo' },
-          { href: '/empresa/calculos', label: 'Cálculos', grupo: 'Medir' },
-          { href: '/empresa/metas', label: 'Metas' },
-          { href: '/empresa/informes', label: 'Informes' },
-          { href: '/empresa/reportes', label: 'Reportes' },
-          { href: '/empresa/dpp', label: 'DPP', grupo: 'Productos' },
-          { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'CRM' },
-          { href: '/empresa/clientes', label: 'Clientes' },
-          { href: '/settings', label: 'Ajustes', grupo: 'Cuenta' },
-          { href: '/empresa/soporte', label: 'Soporte' },
-        ],
-      }
-    case 'empleado':
-      return {
-        quickItems: [
-          { href: '/dashboard', label: 'Inicio', icon: House },
-          { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
-          { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
-          { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
-        ],
-        drawerItems: [
-          { href: '/dashboard', label: 'Inicio', grupo: 'Principal' },
-          { href: '/dashboard/objetos', label: 'Calcular' },
-          { href: '/dashboard/historial', label: 'Historial' },
-          { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'CRM' },
-          { href: '/empresa/clientes', label: 'Clientes' },
-          { href: '/settings', label: 'Ajustes', grupo: 'Cuenta' },
-          { href: '/dashboard/soporte', label: 'Soporte' },
-        ],
-      }
-    default:
-      return {
-        quickItems: [
-          { href: '/dashboard', label: 'Inicio', icon: House },
-          { href: '/dashboard/objetos', label: 'Calcular', icon: Package },
-          { href: '/dashboard/historial', label: 'Historial', icon: ClockCounterClockwise },
-          { href: '/empresa/nueva', label: 'Planes', icon: TrendUp },
-        ],
-        drawerItems: [
-          { href: '/dashboard', label: 'Inicio', grupo: 'Principal' },
-          { href: '/dashboard/objetos', label: 'Calcular' },
-          { href: '/dashboard/historial', label: 'Historial' },
-          { href: '/dashboard?modulo_bloqueado=cotizador', label: 'Cotizador', grupo: 'CRM' },
-          { href: '/empresa/nueva', label: 'Planes', grupo: 'Cuenta' },
-          { href: '/settings', label: 'Ajustes' },
-          { href: '/dashboard/soporte', label: 'Soporte' },
-        ],
-      }
-  }
-}
 
 interface MobileBottomNavProps {
   rol: Rol
@@ -163,7 +31,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
     setDrawerOpen(false)
   }, [pathname])
 
-  const { quickItems, drawerItems } = getConfig(rol)
+  const { rapidos: quickItems, cajon: drawerItems } = configMovil(rol)
 
   const brandColor = isDark ? '#D6F391' : '#00827C'
   const inactiveColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(71,71,71,0.5)'
@@ -221,7 +89,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           pointerEvents: 'auto',
         }}>
           {quickItems.map((item) => {
-            const active = !item.external && isActive(item.href)
+            const active = item.hrefs.some(isActive)
 
             const itemStyle: React.CSSProperties = {
               display: 'flex',
@@ -256,22 +124,6 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                 )}
               </>
             )
-
-            if (item.external) {
-              return (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={item.label}
-                  title={item.label}
-                  style={itemStyle}
-                >
-                  {content}
-                </a>
-              )
-            }
 
             return (
               <Link
@@ -359,7 +211,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
             className="mobile-nav-drawer-scroll"
           >
             {drawerItems.map((item, idx) => {
-              const active = !item.external && isActive(item.href)
+              const active = !item.externa && isActive(item.href)
               const showGrupo = item.grupo && item.grupo !== drawerItems[idx - 1]?.grupo
 
               const linkStyle: React.CSSProperties = {
@@ -389,7 +241,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                       {item.grupo}
                     </div>
                   )}
-                  {item.external ? (
+                  {item.externa ? (
                     <a
                       href={item.href}
                       target="_blank"

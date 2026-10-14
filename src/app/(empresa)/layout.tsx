@@ -39,12 +39,17 @@ export default async function EmpresaLayout({
   // Se ha eliminado la restricción (whitelist) que bloqueaba al super_admin.
   // Ahora puede navegar libremente por cualquier ruta operativa de /empresa
   // (la protección estricta de rutas prohibidas se delega al middleware central).
-  if (rol !== 'empresa_admin' && rol !== 'super_admin') redirect('/dashboard')
+  // El empleado entra solo a Cotizador, Clientes y DPP. Los módulos de cada
+  // uno los revisa src/proxy.ts: sin plan, lo manda al aviso de "pasar de plan".
+  const head = await headers()
+  const ruta = head.get('x-pathname') ?? ''
+  const RUTAS_EMPLEADO = ['/empresa/cotizador', '/empresa/clientes', '/empresa/dpp']
+  const entraEmpleado = rol === 'empleado' && RUTAS_EMPLEADO.some((r) => ruta === r || ruta.startsWith(r + '/'))
+  if (rol !== 'empresa_admin' && rol !== 'super_admin' && !entraEmpleado) redirect('/dashboard')
 
   const nombre = displayName(perfil ?? { nombre: user.email })
 
   // Datos técnicos para Footer
-  const head = await headers()
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
 
   // Última visita (logs ya viene de la consulta en paralelo de arriba)

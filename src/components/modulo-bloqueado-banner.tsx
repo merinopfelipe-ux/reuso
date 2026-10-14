@@ -10,18 +10,22 @@ import { Modal } from '@/components/ui/modal'
 // silencio como pasaba antes (el query param existía pero nada lo leía).
 // Un solo componente para los 3 casos, cambia solo el texto según el valor.
 
-const COPY: Record<string, { titulo: string; descripcion: string }> = {
+// ejemplo: 2 o 3 líneas inventadas, muy cortas, solo para mostrar qué se ve con el módulo.
+const COPY: Record<string, { titulo: string; descripcion: string; ejemplo: string[] }> = {
   cotizador: {
     titulo: 'Cotizador Inteligente no está en tu plan',
     descripcion: 'Sube una foto y la IA identifica el mueble, calcula el precio y el CO2 evitado por unidad, automático.',
+    ejemplo: ['Mesa de comedor restaurada', 'Cliente de ejemplo', 'Total: $ 1.250.000'],
   },
   dpp: {
     titulo: 'Pasaporte Digital de Producto no está en tu plan',
     descripcion: 'Cada pieza restaurada lleva su historia completa, trazable de principio a fin.',
+    ejemplo: ['Silla restaurada, ciclo 2', 'Historia completa y trazable'],
   },
   calculo: {
     titulo: 'Cálculo de huella no está en tu plan',
     descripcion: 'Mide el CO2 y el agua que evitas cada vez que reutilizas un objeto.',
+    ejemplo: ['Estantería reutilizada', 'CO₂ y agua evitados, estimados'],
   },
 }
 
@@ -45,7 +49,14 @@ function ModuloBloqueadoBannerInner() {
       descripcion={copy.descripcion}
       textoConfirmar="Ver planes"
       onConfirmar={() => router.push('/empresa/nueva')}
-    />
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 13, color: 'var(--text-secondary)' }}>
+        <span style={{ fontWeight: 700 }}>Ejemplo ilustrativo: no son datos reales</span>
+        {copy.ejemplo.map((linea) => (
+          <span key={linea}>{linea}</span>
+        ))}
+      </div>
+    </Modal>
   )
 }
 

@@ -189,6 +189,8 @@ import {
   ZoomIn as Lucide_ZoomIn,
 } from 'lucide-react'
 import { motion, useAnimation, type Variants, type Transition } from 'motion/react'
+import { PottedPlant as PhosphorPottedPlant } from '@phosphor-icons/react'
+import { wrapPhosphorIcon } from '@/components/ui/brand-logos'
 
 /**
  * SISTEMA DE DISEÑO — HUB CENTRAL DE ICONOGRAFÍA UNIFICADA
@@ -990,6 +992,8 @@ export const Tree = /*#__PURE__*/ wrapIcon(Lucide_Trees)
 export const Trees = /*#__PURE__*/ wrapIcon(Lucide_Trees)
 export const TreePine = /*#__PURE__*/ wrapIcon(Lucide_TreePine)
 export const Sprout = /*#__PURE__*/ wrapIcon(Lucide_Sprout)
+// Maceta con planta (Phosphor): ícono de la sección Informes.
+export const PottedPlant = /*#__PURE__*/ wrapPhosphorIcon(PhosphorPottedPlant)
 export const Car = /*#__PURE__*/ wrapIcon(Lucide_Car)
 export const Upload = /*#__PURE__*/ wrapIcon(Lucide_Upload)
 export const FloppyDisk = /*#__PURE__*/ wrapIcon(Lucide_Save)

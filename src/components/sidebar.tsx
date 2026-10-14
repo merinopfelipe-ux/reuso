@@ -6,168 +6,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Users, ChevronRight as CaretRight, IdCard as IdentificationCard, ChatCircle } from '@/components/ui/icons'
+import { LogOut as SignOut, ChevronRight as CaretRight } from '@/components/ui/icons'
+import { menuPorRol, type Entrada, type SubItem } from '@/lib/navegacion'
 import type { Rol } from '@/types'
-
-interface SubItem {
-  href: string
-  label: string
-  // Encabezado visual dentro del flyout (ej. "CRM", "Sistema") que agrupa
-  // varios subItems consecutivos bajo un mismo título, igual al patrón de
-  // categorías de un mega-menú. Solo se pinta cuando cambia respecto al
-  // subItem anterior, así que items seguidos del mismo grupo no lo repiten.
-  grupo?: string
-}
-
-interface NavItem {
-  href?: string
-  label: string
-  icon: React.ElementType
-  subItems?: SubItem[]
-}
-
-// Máximo 4 ítems de primer nivel por rol (mobile-first: es lo que se ve
-// estético en 375px), agrupando el resto adentro con subtítulos por grupo —
-// decidido con el usuario 2026-09-01, opciones elegidas por rol abajo.
-const NAV_ITEMS: Record<Rol, NavItem[]> = {
-  // Opción B: Inicio · Gestión · CRM · Sistema
-  super_admin: [
-    { href: '/admin', label: 'Resumen', icon: SquaresFour },
-    {
-      label: 'Gestión',
-      icon: Buildings,
-      subItems: [
-        { href: '/admin/empresas', label: 'Empresas', grupo: 'Empresas' },
-        { href: '/admin/leads', label: 'Leads' },
-        { href: '/empresa', label: 'Panel de empresa', grupo: 'Vista empresa' },
-        { href: '/empresa/equipo', label: 'Equipo' },
-        { href: '/empresa/configuracion', label: 'Configuración empresa' },
-        { href: '/admin/categorias', label: 'Categorías', grupo: 'Catálogo' },
-        { href: '/admin/catalogo-pendientes', label: 'Catálogo pendientes' },
-        { href: '/admin/catalogo-restringido', label: 'Catálogo restringido' },
-        { href: '/admin/modulos', label: 'Módulos' },
-      ]
-    },
-    {
-      label: 'CRM',
-      icon: Users,
-      subItems: [
-        { href: '/empresa/cotizador', label: 'Cotizaciones', grupo: 'Cotizador' },
-        { href: '/empresa/clientes', label: 'Clientes' },
-        { href: '/empresa/dpp', label: 'DPP', grupo: 'DPP' },
-        { href: '/admin/calculos', label: 'Cálculos admin', grupo: 'Plataforma' },
-        { href: '/empresa/calculos', label: 'Cálculos empresa' },
-        { href: '/empresa/informes', label: 'Informes' },
-        { href: '/empresa/metas', label: 'Metas' },
-        { href: '/admin/reportes', label: 'Reportes' },
-      ]
-    },
-    {
-      label: 'Sistema',
-      icon: Gear,
-      subItems: [
-        { href: '/admin/usuarios', label: 'Usuarios', grupo: 'Monitoreo' },
-        { href: '/admin/logs', label: 'Auditoría' },
-        { href: '/admin/alertas', label: 'Alertas' },
-        { href: '/admin/qa', label: 'QA' },
-        { href: '/admin/status', label: 'Estado' },
-        { href: '/admin/configuracion', label: 'Configuración', grupo: 'Contenido' },
-        { href: '/admin/contenido', label: 'Contenido' },
-        { href: '/admin/plantillas', label: 'Plantillas' },
-        { href: '/admin/legal', label: 'Documentos' },
-        { href: '/admin/firmas', label: 'Firmas' },
-        { href: '/admin/tickets', label: 'Soporte', grupo: 'Soporte' },
-        { href: '/settings', label: 'Ajustes' },
-        { href: '/ayuda', label: 'Ayuda' },
-      ]
-    },
-  ],
-  // Opción C: Empresa · Medir · DPP · CRM
-  empresa_admin: [
-    {
-      label: 'Empresa',
-      icon: Buildings,
-      subItems: [
-        { href: '/empresa', label: 'Perfil' },
-        { href: '/empresa/equipo', label: 'Equipo' },
-        { href: '/settings', label: 'Ajustes', grupo: 'Cuenta' },
-        { href: '/empresa/soporte', label: 'Soporte' },
-      ]
-    },
-    {
-      label: 'Medir',
-      icon: Target,
-      subItems: [
-        { href: '/empresa/calculos', label: 'Cálculos' },
-        { href: '/empresa/metas', label: 'Metas' },
-        { href: '/empresa/informes', label: 'Informes' },
-        { href: '/empresa/reportes', label: 'Reportes' },
-      ]
-    },
-    { href: '/empresa/dpp', label: 'DPP', icon: IdentificationCard },
-    {
-      label: 'CRM',
-      icon: Users,
-      subItems: [
-        { href: '/empresa/cotizador', label: 'Cotizaciones' },
-        { href: '/empresa/clientes', label: 'Clientes' },
-      ]
-    },
-  ],
-  // Opción B: Calcular (con Inicio adentro) · CRM · Ajustes
-  empleado: [
-    {
-      label: 'Calcular',
-      icon: Package,
-      subItems: [
-        { href: '/dashboard', label: 'Inicio' },
-        { href: '/dashboard/objetos', label: 'Calcular' },
-        { href: '/dashboard/historial', label: 'Historial' },
-      ]
-    },
-    {
-      label: 'CRM',
-      icon: Users,
-      subItems: [
-        { href: '/empresa/cotizador', label: 'Cotizaciones' },
-        { href: '/empresa/clientes', label: 'Clientes' },
-      ]
-    },
-    {
-      label: 'Ajustes',
-      icon: Gear,
-      subItems: [
-        { href: '/settings', label: 'Ajustes' },
-        { href: '/dashboard/soporte', label: 'Soporte' },
-      ]
-    },
-  ],
-  // Opción B: Inicio · Calcular · CRM (upsell real, no link muerto) · Ajustes
-  usuario_libre: [
-    { href: '/dashboard', label: 'Inicio', icon: House },
-    {
-      label: 'Calcular',
-      icon: Package,
-      subItems: [
-        { href: '/dashboard/objetos', label: 'Calcular' },
-        { href: '/dashboard/historial', label: 'Historial' },
-      ]
-    },
-    // No es un link muerto: usuario_libre no tiene el módulo, así que abre el
-    // banner de "no está en tu plan" (ModuloBloqueadoBanner) en vez de un
-    // href="#" que no llevaba a ningún lado.
-    { href: '/dashboard?modulo_bloqueado=cotizador', label: 'CRM', icon: Users },
-    {
-      label: 'Ajustes',
-      icon: Gear,
-      subItems: [
-        { href: '/settings', label: 'Ajustes' },
-        { href: '/dashboard/soporte', label: 'Soporte' },
-        { href: '/empresa/nueva', label: 'Planes' },
-      ]
-    },
-  ],
-}
 
 interface SidebarProps {
   rol: Rol
@@ -182,7 +23,7 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
   const router = useRouter()
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [leaveTimeout, setLeaveTimeout] = useState<NodeJS.Timeout | null>(null)
-  const navItems: NavItem[] = NAV_ITEMS[rol] || []
+  const navItems: Entrada[] = menuPorRol(rol)
 
   async function handleLogout() {
     // El navegador puede fallar esta solicitud por razones ajenas al código
@@ -286,6 +127,40 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
 
       <nav style={{ flex: 1, padding: '100px 0 24px 0', display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', overflowX: 'visible', position: 'relative' }} className="no-scrollbar">
         {navItems.map((item, idx) => {
+          if (item.externa && item.href) {
+            return (
+              <div key={idx} style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${item.label} en una nueva pestaña`}
+                  onClick={() => { if (isMobile) setIsExpanded(false) }}
+                  className="clean-item-nav"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 16,
+                    width: 'calc(100% - 12px)', height: 50, padding: '0 18px', cursor: 'pointer',
+                    position: 'relative', textDecoration: 'none',
+                    transition: 'background 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, color 0.25s ease',
+                    alignSelf: 'flex-end', marginLeft: 12, borderLeft: 'none',
+                    borderRadius: '16px 0 0 16px',
+                    background: 'transparent',
+                    boxShadow: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="hover-pop">
+                    <item.icon size={20} color="currentColor" strokeWidth={2} />
+                  </div>
+                  {isExpanded && (
+                    <span style={{ fontSize: '14px', fontWeight: 400, color: 'currentColor', whiteSpace: 'nowrap' }}>
+                      {item.label}
+                    </span>
+                  )}
+                </a>
+              </div>
+            )
+          }
           const isRootPath = item.href === '/admin' || item.href === '/empresa' || item.href === '/dashboard' || item.href === '/'
           const isDirectActive = item.href && item.href !== '#' && (
             isRootPath ? pathname === item.href : (pathname === item.href || pathname.startsWith(item.href + '/'))
@@ -359,38 +234,6 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             </div>
           )
         })}
-        {rol === 'super_admin' && (
-          <div style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
-            <a
-              href="https://chat.calculadoradereuso.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Abrir el chat en una nueva pestaña"
-              onClick={() => { if (isMobile) setIsExpanded(false) }}
-              className="clean-item-nav"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 16,
-                width: 'calc(100% - 12px)', height: 50, padding: '0 18px', cursor: 'pointer',
-                position: 'relative', textDecoration: 'none',
-                transition: 'background 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, color 0.25s ease',
-                alignSelf: 'flex-end', marginLeft: 12, borderLeft: 'none',
-                borderRadius: '16px 0 0 16px',
-                background: 'transparent',
-                boxShadow: 'none',
-                color: 'inherit',
-              }}
-            >
-              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="hover-pop">
-                <ChatCircle size={20} color="currentColor" strokeWidth={2} />
-              </div>
-              {isExpanded && (
-                <span style={{ fontSize: '14px', fontWeight: 400, color: 'currentColor', whiteSpace: 'nowrap' }}>
-                  Chat
-                </span>
-              )}
-            </a>
-          </div>
-        )}
       </nav>
 
 
