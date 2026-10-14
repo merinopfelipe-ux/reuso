@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Download } from '@/components/ui/icons'
 import { descargarCSV } from '@/lib/csv/descargar-csv'
-import { descargarExcel } from '@/lib/csv/descargar-excel'
-import { descargarPDFTabla } from '@/lib/csv/descargar-pdf-tabla'
 import { createPortal } from 'react-dom'
 
 type Formato = 'csv' | 'xlsx' | 'pdf'
@@ -100,10 +98,15 @@ export function BotonDescargarCliente({ data, nombre, tituloPdf, label, disabled
     if (formato === 'csv') {
       descargarCSV(dataToExport, nombre)
     } else if (formato === 'xlsx') {
+      // Excel y PDF pesan más de 1 MB: se cargan solo cuando alguien los pide.
+      const { descargarExcel } = await import('@/lib/csv/descargar-excel')
       descargarExcel(dataToExport, nombre)
     } else if (formato === 'pdf') {
       if (onDescargarPdf) onDescargarPdf()
-      else descargarPDFTabla(dataToExport, nombre, tituloPdf ?? nombre)
+      else {
+        const { descargarPDFTabla } = await import('@/lib/csv/descargar-pdf-tabla')
+        descargarPDFTabla(dataToExport, nombre, tituloPdf ?? nombre)
+      }
     }
   }
 

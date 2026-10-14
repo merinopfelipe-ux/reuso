@@ -90,10 +90,16 @@ export async function GET(request: NextRequest) {
   const cotizacionesRaw = ((data as unknown as CotizacionItem[]) ?? []).filter(
     (c) => (c.crm_muebles_cotizados?.length ?? 0) > 0
   )
-  for (const c of cotizacionesRaw) {
+  // Descifrado en paralelo y una sola vez por valor: varias cotizaciones suelen ser del mismo cliente.
+  const descifrados = new Map<string, Promise<string | null>>()
+  await Promise.all(cotizacionesRaw.map(async (c) => {
     const cli = Array.isArray(c.crm_clientes) ? c.crm_clientes[0] : c.crm_clientes
-    if (cli) Object.assign(cli, { telefono: await leerTelefono(cli.telefono as string | null) })
-  }
+    if (!cli) return
+    const cifrado = cli.telefono as string | null
+    const clave = cifrado ?? ''
+    if (!descifrados.has(clave)) descifrados.set(clave, leerTelefono(cifrado))
+    Object.assign(cli, { telefono: await descifrados.get(clave) })
+  }))
   let cotizaciones = cotizacionesRaw
 
   // Búsqueda por código de cotización, nombre/apellido, celular o empresa
