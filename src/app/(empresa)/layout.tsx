@@ -24,7 +24,7 @@ export default async function EmpresaLayout({
   const [{ data: perfil }, { data: logs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('nombre, apellido, apodo, rol, empresa_id, avatar_color, avatar_text, empresas(chat_habilitado, chat_account_id)')
+      .select('nombre, apellido, apodo, rol, empresa_id, avatar_color, avatar_text')
       .eq('user_id', user.id)
       .single(),
     adminClient
@@ -38,10 +38,17 @@ export default async function EmpresaLayout({
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
 
   // Chat propio de la empresa, si el super admin lo activó (ficha de la empresa).
-  const empresaPerfil = Array.isArray(perfil?.empresas) ? perfil?.empresas[0] : perfil?.empresas
-  const chatUrl = empresaPerfil?.chat_habilitado && empresaPerfil.chat_account_id != null
-    ? URL_CHAT_EMPRESA
-    : null
+  // Si la migración 153 aún no está aplicada, la consulta falla y el chat no aparece:
+  // no rompe el resto del panel.
+  let chatUrl: string | null = null
+  if (rol === 'empresa_admin' && perfil?.empresa_id) {
+    const { data: chat } = await adminClient
+      .from('empresas')
+      .select('chat_habilitado, chat_account_id')
+      .eq('id', perfil.empresa_id)
+      .maybeSingle()
+    if (chat?.chat_habilitado && chat.chat_account_id != null) chatUrl = URL_CHAT_EMPRESA
+  }
 
   // Se ha eliminado la restricción (whitelist) que bloqueaba al super_admin.
   // Ahora puede navegar libremente por cualquier ruta operativa de /empresa
