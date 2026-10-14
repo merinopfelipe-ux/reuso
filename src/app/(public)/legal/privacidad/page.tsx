@@ -83,7 +83,7 @@ const T = {
       titulo: 'Con quién compartimos tus datos',
       intro: 'No vendemos tu información personal. Solo la compartimos con:',
       items: [
-        { fuerte: 'Proveedores de tecnología:', texto: ' Supabase (base de datos y autenticación), Vercel (hosting). Actúan como encargados del tratamiento bajo acuerdos de confidencialidad.' },
+        { fuerte: 'Proveedores de tecnología:', texto: ' Supabase (base de datos y autenticación), Vercel (hosting). Actúan como encargados del tratamiento bajo acuerdos de confidencialidad. Nuestra base de datos y nuestros servidores están en la Unión Europea (Irlanda), por lo que el tratamiento implica una transferencia internacional de datos.' },
         { fuerte: 'Herramientas de Analítica y Marketing:', texto: ' Google Analytics (análisis de tráfico y marketing) y Hotjar (mapas de calor y comportamiento). Se usan para mejorar la plataforma y entender la interacción de los usuarios.' },
         { fuerte: 'Autoridades:', texto: ' cuando la ley colombiana o una orden judicial lo exija.' },
       ],
@@ -193,7 +193,7 @@ const T = {
       titulo: 'Who we share your data with',
       intro: 'We do not sell your personal information. We only share it with:',
       items: [
-        { fuerte: 'Technology providers:', texto: ' Supabase (database and authentication), Vercel (hosting). They act as data processors under confidentiality agreements.' },
+        { fuerte: 'Technology providers:', texto: ' Supabase (database and authentication), Vercel (hosting). They act as data processors under confidentiality agreements. Our database and servers are in the European Union (Ireland), so processing involves an international data transfer.' },
         { fuerte: 'Analytics and Marketing tools:', texto: ' Google Analytics (traffic analysis and marketing) and Hotjar (heatmaps and behavior). They are used to improve the platform and understand user interaction.' },
         { fuerte: 'Authorities:', texto: ' when Colombian law or a court order requires it.' },
       ],
