@@ -3,8 +3,8 @@
 // entrada aquí la cambia en los dos.
 //
 // Estructura fija para todos los roles: Resumen · Cotizador · DPP · Informes · Sistema.
-// Chat solo lo ve el super admin: hoy no se ofrece a las empresas. Cuando se
-// elijan empresas y se les cree su chat, se les mostrará a esas empresas.
+// Chat lo ven el super admin y las empresas con chat activo (lo activa el super
+// admin en la ficha de la empresa). Quien administra esa empresa es quien lo usa.
 //
 // Si un módulo no está en el plan, la entrada sigue visible: lleva al aviso
 // "no está en tu plan" (ver modulo-bloqueado-banner.tsx), que pide pasar de plan.
@@ -21,7 +21,13 @@ import {
 } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
-export const URL_CHAT = 'https://chat.calculadoradereuso.com'
+// Dirección de Chatwoot. Se lee del entorno para poder cambiarla sin tocar código.
+export const URL_CHAT_BASE = (process.env.NEXT_PUBLIC_CHATWOOT_URL ?? 'https://chat.calculadoradereuso.com').replace(/\/$/, '')
+
+// Chat propio de una empresa: su cuenta dentro de Chatwoot.
+export function urlChatCuenta(cuentaId: number): string {
+  return `${URL_CHAT_BASE}/app/accounts/${cuentaId}/dashboard`
+}
 
 export interface SubItem {
   href: string
@@ -55,7 +61,7 @@ export interface ItemCajon {
   externa?: boolean
 }
 
-const CHAT: Entrada = { label: 'Chat', icon: ChatCircle, href: URL_CHAT, externa: true }
+const chatEntrada = (href: string): Entrada => ({ label: 'Chat', icon: ChatCircle, href, externa: true })
 
 const COTIZADOR: Entrada = {
   label: 'Cotizador',
@@ -191,12 +197,16 @@ const SISTEMA_LIBRE: Entrada = {
 const COTIZADOR_BLOQUEADO: Entrada = { label: 'Cotizador', icon: ClipboardList, href: '/dashboard?modulo_bloqueado=cotizador' }
 const DPP_BLOQUEADO: Entrada = { label: 'DPP', icon: IdentificationCard, href: '/dashboard?modulo_bloqueado=dpp' }
 
-export function menuPorRol(rol: Rol): Entrada[] {
+// chatUrl: dirección del chat de la empresa (null si no tiene chat activo).
+// El super admin siempre tiene Chat; si no se indica, va a la raíz de Chatwoot.
+export function menuPorRol(rol: Rol, chatUrl?: string | null): Entrada[] {
+  const chat = rol === 'super_admin' ? (chatUrl ?? URL_CHAT_BASE) : rol === 'empresa_admin' ? (chatUrl ?? null) : null
+  const conChat = (entradas: Entrada[]) => (chat ? [...entradas, chatEntrada(chat)] : entradas)
   switch (rol) {
     case 'super_admin':
-      return [RESUMEN_ADMIN, COTIZADOR, DPP, INFORMES_ADMIN, SISTEMA_ADMIN, CHAT]
+      return conChat([RESUMEN_ADMIN, COTIZADOR, DPP, INFORMES_ADMIN, SISTEMA_ADMIN])
     case 'empresa_admin':
-      return [RESUMEN_EMPRESA, COTIZADOR, DPP, INFORMES_EMPRESA, SISTEMA_EMPRESA]
+      return conChat([RESUMEN_EMPRESA, COTIZADOR, DPP, INFORMES_EMPRESA, SISTEMA_EMPRESA])
     case 'empleado':
       return [RESUMEN_PERSONAL, COTIZADOR, DPP, INFORMES_PERSONAL, SISTEMA_EMPLEADO]
     default:
@@ -205,8 +215,8 @@ export function menuPorRol(rol: Rol): Entrada[] {
 }
 
 // Vista del celular: 5 accesos rápidos en la barra y el resto en el cajón.
-export function configMovil(rol: Rol): { rapidos: ItemRapido[]; cajon: ItemCajon[] } {
-  const entradas = menuPorRol(rol)
+export function configMovil(rol: Rol, chatUrl?: string | null): { rapidos: ItemRapido[]; cajon: ItemCajon[] } {
+  const entradas = menuPorRol(rol, chatUrl)
 
   const rapidos: ItemRapido[] = entradas
     .filter((e) => !e.externa)

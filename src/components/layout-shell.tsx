@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation'
 import type { Rol } from '@/types'
 
 interface LayoutShellProps {
+  chatUrl?: string | null
   children: React.ReactNode
   nombre: string
   rol: Rol
@@ -21,7 +22,7 @@ interface LayoutShellProps {
   lastVisit?: string
 }
 
-export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, avatarText, ip, lastVisit }: LayoutShellProps) {
+export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, avatarText, ip, lastVisit, chatUrl }: LayoutShellProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
@@ -70,6 +71,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
         {/* Sidebar Ultra-Glass (Oculto en móvil mediante CSS) */}
         <Sidebar
           rol={rol}
+          chatUrl={chatUrl}
           isExpanded={isExpanded}
           setIsExpanded={setIsExpanded}
           isMobile={isMobile}
@@ -110,7 +112,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
         </div>
       </div>
       {/* Menú Sticky Inferior en Móvil */}
-      {isMobile && <MobileBottomNav rol={rol} />}
+      {isMobile && <MobileBottomNav rol={rol} chatUrl={chatUrl} />}
     </div>
   )
 }

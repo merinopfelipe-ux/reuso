@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
-import { menuPorRol, configMovil, URL_CHAT, type Entrada } from './navegacion'
+import { menuPorRol, configMovil, URL_CHAT_BASE, urlChatCuenta, type Entrada } from './navegacion'
 import type { Rol } from '@/types'
 
 const ROLES: Rol[] = ['super_admin', 'empresa_admin', 'empleado', 'usuario_libre']
@@ -41,21 +41,30 @@ function rutasDeMenu(entradas: Entrada[]): string[] {
 const sinQuery = (href: string) => href.split('?')[0]
 
 describe('menú: estructura por rol', () => {
-  it('muestra Resumen, Cotizador, DPP, Informes y Sistema; solo el admin tiene Chat', () => {
+  it('muestra Resumen, Cotizador, DPP, Informes y Sistema para todos los roles', () => {
     for (const rol of ROLES) {
       const etiquetas = menuPorRol(rol).map((e) => e.label)
-      const esperado = ['Resumen', 'Cotizador', 'DPP', 'Informes', 'Sistema']
-      expect(etiquetas.slice(0, 5)).toEqual(esperado)
-      if (rol === 'super_admin') {
-        expect(etiquetas).toEqual([...esperado, 'Chat'])
-        const chat = menuPorRol(rol).find((e) => e.label === 'Chat')
-        expect(chat?.href).toBe(URL_CHAT)
-        expect(chat?.externa).toBe(true)
-      } else {
-        expect(etiquetas).toEqual(esperado)
-        expect(menuPorRol(rol).some((e) => e.externa)).toBe(false)
-      }
+      expect(etiquetas.slice(0, 5)).toEqual(['Resumen', 'Cotizador', 'DPP', 'Informes', 'Sistema'])
     }
+  })
+
+  it('Chat: el super admin siempre lo ve; la empresa solo con cuenta activa; el empleado nunca', () => {
+    const chatDe = (rol: Rol, chatUrl?: string | null) => menuPorRol(rol, chatUrl).find((e) => e.label === 'Chat')
+
+    const admin = chatDe('super_admin')
+    expect(admin?.href).toBe(URL_CHAT_BASE)
+    expect(admin?.externa).toBe(true)
+    expect(menuPorRol('super_admin').at(-1)?.label).toBe('Chat')
+
+    expect(chatDe('empresa_admin')).toBeUndefined()
+    const cuenta = urlChatCuenta(7)
+    expect(cuenta).toBe(`${URL_CHAT_BASE}/app/accounts/7/dashboard`)
+    const deEmpresa = menuPorRol('empresa_admin', cuenta)
+    expect(deEmpresa.at(-1)?.label).toBe('Chat')
+    expect(deEmpresa.at(-1)?.href).toBe(cuenta)
+
+    expect(chatDe('empleado', cuenta)).toBeUndefined()
+    expect(chatDe('usuario_libre', cuenta)).toBeUndefined()
   })
 
   it('no repite un mismo enlace dentro del menú de un rol', () => {

@@ -9,9 +9,10 @@ import type { Rol } from '@/types'
 
 interface MobileBottomNavProps {
   rol: Rol
+  chatUrl?: string | null
 }
 
-export function MobileBottomNav({ rol }: MobileBottomNavProps) {
+export function MobileBottomNav({ rol, chatUrl }: MobileBottomNavProps) {
   const pathname = usePathname()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [isDark, setIsDark] = useState(false)
@@ -31,7 +32,7 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
     setDrawerOpen(false)
   }, [pathname])
 
-  const { rapidos: quickItems, cajon: drawerItems } = configMovil(rol)
+  const { rapidos: quickItems, cajon: drawerItems } = configMovil(rol, chatUrl)
 
   const brandColor = isDark ? '#D6F391' : '#00827C'
   const inactiveColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(71,71,71,0.5)'

@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
 import { ModuloBloqueadoBanner } from '@/components/modulo-bloqueado-banner'
 import { displayName } from '@/lib/display-name'
+import { urlChatCuenta } from '@/lib/navegacion'
 import type { Rol } from '@/types'
 
 export default async function EmpresaLayout({
@@ -23,7 +24,7 @@ export default async function EmpresaLayout({
   const [{ data: perfil }, { data: logs }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('nombre, apellido, apodo, rol, empresa_id, avatar_color, avatar_text')
+      .select('nombre, apellido, apodo, rol, empresa_id, avatar_color, avatar_text, empresas(chat_habilitado, chat_account_id)')
       .eq('user_id', user.id)
       .single(),
     adminClient
@@ -35,6 +36,12 @@ export default async function EmpresaLayout({
   ])
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol
+
+  // Chat propio de la empresa, si el super admin lo activó (ficha de la empresa).
+  const empresaPerfil = Array.isArray(perfil?.empresas) ? perfil?.empresas[0] : perfil?.empresas
+  const chatUrl = empresaPerfil?.chat_habilitado && empresaPerfil.chat_account_id != null
+    ? urlChatCuenta(empresaPerfil.chat_account_id)
+    : null
 
   // Se ha eliminado la restricción (whitelist) que bloqueaba al super_admin.
   // Ahora puede navegar libremente por cualquier ruta operativa de /empresa
@@ -69,6 +76,7 @@ export default async function EmpresaLayout({
     <LayoutShell
       nombre={nombre}
       rol={rol}
+      chatUrl={chatUrl}
       avatarColor={perfil?.avatar_color ?? undefined}
       avatarText={perfil?.avatar_text ?? undefined}
       ip={ip}

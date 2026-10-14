@@ -16,14 +16,15 @@ interface SidebarProps {
   setIsExpanded: (expanded: boolean) => void
   isMobile: boolean
   empresaId?: string | null
+  chatUrl?: string | null
 }
 
-export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarProps) {
+export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile, chatUrl }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [leaveTimeout, setLeaveTimeout] = useState<NodeJS.Timeout | null>(null)
-  const navItems: Entrada[] = menuPorRol(rol)
+  const navItems: Entrada[] = menuPorRol(rol, chatUrl)
 
   async function handleLogout() {
     // El navegador puede fallar esta solicitud por razones ajenas al código
