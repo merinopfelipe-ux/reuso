@@ -3,7 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 export interface EventoActual { id: string; nombre: string; fecha_inicio: string; fecha_fin: string | null }
 
 // Fecha de hoy en Colombia (YYYY-MM-DD), sin depender de la zona del servidor.
-export function hoyColombia(): string {
+function hoyColombia(): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date())
 }
 

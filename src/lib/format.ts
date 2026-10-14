@@ -25,7 +25,7 @@ export function formatEnteroMillones(n: number): string {
   return `${sign}${millonesFormateado}'${milesFormateado}`
 }
 
-export function formatEnteroPuntos(n: number): string {
+function formatEnteroPuntos(n: number): string {
   const abs = Math.abs(n)
   const sign = n < 0 ? '-' : ''
   return sign + abs.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
@@ -196,10 +196,3 @@ export function formatHora(
   return `${hora}:${minuto} ${periodo}`
 }
 
-/**
- * Fecha actual en formato ISO 'YYYY-MM-DD' en GMT-5 (America/Bogota),
- * independiente de la zona horaria del servidor o del navegador.
- */
-export function hoyGMT5(): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE_DEFAULT }).format(new Date())
-}

@@ -58,21 +58,3 @@ export async function puedeAccederModulo(
   return modUsuario.activo === true
 }
 
-/**
- * Versión ligera para middleware: consulta directa sin abstracción extra.
- * Retorna false en cualquier error (fail-safe).
- */
-export async function puedeAccederModuloMW(
-  userId: string,
-  empresaId: string | null,
-  rol: string,
-  clave: ClaveMódulo
-): Promise<boolean> {
-  if (rol === 'super_admin') return true
-  if (!empresaId) return false
-  try {
-    return await puedeAccederModulo(userId, empresaId, rol, clave)
-  } catch {
-    return false
-  }
-}
