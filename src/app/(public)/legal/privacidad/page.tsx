@@ -90,7 +90,7 @@ const T = {
     },
     seguridad: {
       titulo: 'Seguridad',
-      texto: 'Protegemos tu información con cifrado de datos en tránsito y en reposo, control de acceso por roles específicos y registros de actividad con integridad criptográfica. Ningún empleado tiene acceso a tus contraseñas.',
+      texto: 'Protegemos tu información con cifrado de datos en tránsito y en reposo, control de acceso por roles específicos y registros de actividad con integridad criptográfica. Ningún empleado tiene acceso a tus contraseñas. Los registros de actividad, que incluyen copias de los cambios hechos en perfiles, cálculos e informes, se conservan 2 meses y luego se eliminan automáticamente.',
     },
     derechos: {
       titulo: 'Tus derechos',
@@ -200,7 +200,7 @@ const T = {
     },
     seguridad: {
       titulo: 'Security',
-      texto: 'We protect your information with data encryption in transit and at rest, role-based access control, and activity logs with cryptographic integrity. No employee has access to your passwords.',
+      texto: 'We protect your information with data encryption in transit and at rest, role-based access control, and activity logs with cryptographic integrity. No employee has access to your passwords. Activity records, which include copies of changes made to profiles, calculations and reports, are kept for 2 months and then deleted automatically.',
     },
     derechos: {
       titulo: 'Your rights',
