@@ -44,7 +44,7 @@ describe('menú: estructura por rol', () => {
   it('muestra Resumen, Cotizador, DPP, Informes y Sistema para todos los roles', () => {
     for (const rol of ROLES) {
       const etiquetas = menuPorRol(rol).map((e) => e.label)
-      expect(etiquetas.slice(0, 5)).toEqual(['Resumen', 'Cotizador', 'DPP', 'Informes', 'Sistema'])
+      expect(etiquetas.slice(0, 5)).toEqual(['Resumen', 'DPP', 'Cotizador', 'Informes', 'Sistema'])
     }
   })
 
@@ -124,7 +124,7 @@ describe('menú del celular', () => {
     for (const rol of ROLES) {
       const { rapidos } = configMovil(rol)
       expect(rapidos.length).toBeLessThanOrEqual(5)
-      expect(rapidos.map((r) => r.label)).toEqual(['Resumen', 'Cotizador', 'DPP', 'Informes', 'Sistema'])
+      expect(rapidos.map((r) => r.label)).toEqual(['Resumen', 'DPP', 'Cotizador', 'Informes', 'Sistema'])
     }
   })
 

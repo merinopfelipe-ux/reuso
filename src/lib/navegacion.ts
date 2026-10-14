@@ -203,13 +203,13 @@ export function menuPorRol(rol: Rol, chatUrl?: string | null): Entrada[] {
   const conChat = (entradas: Entrada[]) => (chat ? [...entradas, chatEntrada(chat)] : entradas)
   switch (rol) {
     case 'super_admin':
-      return conChat([RESUMEN_ADMIN, COTIZADOR, DPP, INFORMES_ADMIN, SISTEMA_ADMIN])
+      return conChat([RESUMEN_ADMIN, DPP, COTIZADOR, INFORMES_ADMIN, SISTEMA_ADMIN])
     case 'empresa_admin':
-      return conChat([RESUMEN_EMPRESA, COTIZADOR, DPP, INFORMES_EMPRESA, SISTEMA_EMPRESA])
+      return conChat([RESUMEN_EMPRESA, DPP, COTIZADOR, INFORMES_EMPRESA, SISTEMA_EMPRESA])
     case 'empleado':
-      return [RESUMEN_PERSONAL, COTIZADOR, DPP, INFORMES_PERSONAL, SISTEMA_EMPLEADO]
+      return [RESUMEN_PERSONAL, DPP, COTIZADOR, INFORMES_PERSONAL, SISTEMA_EMPLEADO]
     default:
-      return [RESUMEN_PERSONAL, COTIZADOR_BLOQUEADO, DPP_BLOQUEADO, INFORMES_PERSONAL, SISTEMA_LIBRE]
+      return [RESUMEN_PERSONAL, DPP_BLOQUEADO, COTIZADOR_BLOQUEADO, INFORMES_PERSONAL, SISTEMA_LIBRE]
   }
 }
 
