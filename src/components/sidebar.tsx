@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Users, ChevronRight as CaretRight, IdCard as IdentificationCard } from '@/components/ui/icons'
+import { LayoutGrid as SquaresFour, Building2 as Buildings, Package, Settings as Gear, Home as House, LogOut as SignOut, Target, Users, ChevronRight as CaretRight, IdCard as IdentificationCard, ChatCircle } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
 interface SubItem {
@@ -359,6 +359,32 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
             </div>
           )
         })}
+        {rol === 'super_admin' && (
+          <a
+            href="https://chat.calculadoradereuso.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir el chat en una nueva pestaña"
+            title="Chat"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              height: 44,
+              padding: isExpanded ? '0 14px' : '0',
+              justifyContent: isExpanded ? 'flex-start' : 'center',
+              borderRadius: 14,
+              color: isDark ? '#D6F391' : '#006B66',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+            }}
+            className="hover-slide-r"
+          >
+            <ChatCircle size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 700, opacity: isExpanded ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }}>Chat</span>
+          </a>
+        )}
       </nav>
 
 

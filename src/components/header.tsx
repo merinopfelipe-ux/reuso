@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { Menu, Search as MagnifyingGlass, User, Building2 as Buildings, Calculator, UserCheck, Settings as Gear, LogOut as SignOut } from '@/components/ui/icons'
+import { Menu, Search as MagnifyingGlass, User, Building2 as Buildings, Calculator, UserCheck, Settings as Gear, LogOut as SignOut, ChatCircle } from '@/components/ui/icons'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { CampanaDropdown } from './alertas/campana-dropdown'
@@ -289,6 +289,20 @@ export function Header({ nombre, rol, nombreEmpresa, avatarColor, avatarText, is
         {isMobile ? (
           /* DISEÑO MÓVIL V9.1: BÚSQUEDA, AYUDA, NOTIFICACIONES, USUARIO (Orden de derecha a izquierda) */
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {/* Chat (solo super_admin), nueva pestaña, un poco más grande que el resto */}
+            {rol === 'super_admin' && (
+              <a
+                href="https://chat.calculadoradereuso.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Abrir el chat en una nueva pestaña"
+                style={{ ...circleButtonStyle, width: 44, height: 44, textDecoration: 'none' }}
+                className="icon-circle hover-pop hover-press"
+              >
+                <ChatCircle size={24} />
+              </a>
+            )}
+
             {/* 4. Búsqueda (Izquierda del grupo móvil) */}
             <button
               onClick={() => setIsSearchMobileOpen(!isSearchMobileOpen)}
