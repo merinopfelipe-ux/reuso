@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Panel de impacto' }
 
+import { Suspense, cache } from 'react'
 import { redirect } from 'next/navigation'
 import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -123,6 +124,201 @@ function calcularDonut(calculos: { detalle_json: unknown }[]): ItemDonut[] {
     .sort((a, b) => b.co2 - a.co2)
 }
 
+// ── Datos compartidos entre secciones ────────────────────────────
+// React.cache evita repetir la misma consulta cuando dos secciones la necesitan.
+
+const obtenerEmpresa = cache(async (empresaId: string) => {
+  const adminClient = await createAdminClient()
+  const { data } = await adminClient
+    .from('empresas')
+    .select('plan, nombre, nit, telefono, pais, ciudad')
+    .eq('id', empresaId)
+    .single()
+  return data
+})
+
+const obtenerCalculosEmpresa = cache(async (empresaId: string) => {
+  const adminClient = await createAdminClient()
+  const { data } = await adminClient
+    .from('calculos')
+    .select('fecha, total_co2, total_agua, user_id, detalle_json')
+    .eq('empresa_id', empresaId)
+    .order('fecha', { ascending: true })
+  return data ?? []
+})
+
+const obtenerInformes = cache(async (empresaId: string) => {
+  const adminClient = await createAdminClient()
+  const { data } = await adminClient
+    .from('informes')
+    .select('id, tipo, user_id, empresa_id, fecha_inicio, fecha_fin, co2_total, agua_total, pdf_url, codigo_verificacion, metadata_json, created_at')
+    .eq('empresa_id', empresaId)
+    .order('created_at', { ascending: false })
+    .limit(20)
+  const informes = data ?? []
+  const conUrls = await Promise.all(
+    informes.map(async (c) => {
+      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
+        const { data: firmada } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
+        return { ...c, pdf_url: firmada?.signedUrl ?? null }
+      }
+      return c
+    })
+  )
+  return { total: informes.length, conUrls }
+})
+
+const obtenerNombresEquipo = cache(async (empresaId: string) => {
+  const adminClient = await createAdminClient()
+  const { data } = await adminClient.from('profiles').select('user_id, nombre').eq('empresa_id', empresaId)
+  return data ?? []
+})
+
+// ── Secciones (cada una llega apenas termina, sin esperar a las demás) ──
+
+function FallbackBloque({ alto }: { alto: number }) {
+  return <div className="skeleton-shimmer w-full rounded-2xl mb-5" style={{ height: alto }} />
+}
+
+async function BannerEmpresa({ empresaId }: { empresaId: string }) {
+  const empresa = await obtenerEmpresa(empresaId)
+  return (
+    <BannerDatosPendientes
+      nit={empresa?.nit ?? null}
+      telefono={empresa?.telefono ?? null}
+      pais={empresa?.pais ?? null}
+      ciudad={empresa?.ciudad ?? null}
+      hrefCompletar="/empresa/configuracion"
+    />
+  )
+}
+
+async function ResumenEmpresa({ empresaId }: { empresaId: string }) {
+  const adminClient = await createAdminClient()
+  const [{ count: totalEmpleados }, calculos, informes, perfilesEmpresa] = await Promise.all([
+    adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', empresaId),
+    obtenerCalculosEmpresa(empresaId),
+    obtenerInformes(empresaId),
+    obtenerNombresEquipo(empresaId),
+  ])
+
+  const co2Total = calculos.reduce((s, c) => s + (c.total_co2 ?? 0), 0)
+  const aguaTotal = calculos.reduce((s, c) => s + (c.total_agua ?? 0), 0)
+  const nombresMap = new Map(perfilesEmpresa.map((p) => [p.user_id, p.nombre]))
+  const serieMensual = agruparPorMes(calculos)
+  const ranking = calcularRanking(calculos, nombresMap)
+  const donut = calcularDonut(calculos)
+
+  return (
+    <>
+      {/* KPIs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 28 }}>
+        <KpiCard titulo="CO₂ eq evitado" valor={co2Total.toFixed(2)} unidad="kg" icono={Leaf} color="#00827C" />
+        <KpiCard titulo="Agua ahorrada" valor={aguaTotal.toLocaleString('es-CO')} unidad="L" icono={Drop} color="#59A6E4" />
+        <KpiCard titulo="Miembros del equipo" valor={String(totalEmpleados ?? 0)} icono={Users} color="#38B98E" />
+        <KpiCard titulo="Informes generados" valor={String(informes.total)} icono={Medal} color="#AD7C43" />
+      </div>
+
+      {/* Gráfica mensual */}
+      <SectionCard titulo="CO₂ eq evitado - últimos 6 meses">
+        <GraficaCO2Mensual data={serieMensual} />
+      </SectionCard>
+
+      {/* Ranking + Donut */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 20 }}>
+        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px' }}>
+            Ranking del equipo
+          </h2>
+          <RankingEmpleados data={ranking} />
+        </div>
+        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
+          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px' }}>
+            Materiales reutilizados
+          </h2>
+          <DonutCategorias data={donut} />
+        </div>
+      </div>
+    </>
+  )
+}
+
+async function CalculadoraEmpresa({ empresaId, rol }: { empresaId: string; rol: Rol }) {
+  const adminClient = await createAdminClient()
+
+  // Módulos activos de la empresa para filtrar categorías
+  const { data: modEmpresa } = await adminClient
+    .from('modulos_empresas')
+    .select('modulo_id')
+    .eq('empresa_id', empresaId)
+    .eq('activo', true)
+  const moduloIdsActivos = (modEmpresa ?? []).map((m) => m.modulo_id)
+
+  const [{ data: categoriasData }, historialRes] = await Promise.all([
+    moduloIdsActivos.length === 0
+      ? Promise.resolve({ data: null })
+      : adminClient
+          .from('categorias')
+          .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, parent_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, agua_por_unidad, factor_rentabilidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
+          .eq('activa', true)
+          .eq('items.activo', true)
+          .in('modulo_id', moduloIdsActivos)
+          .order('orden', { ascending: true }),
+    adminClient
+      .from('calculos')
+      .select('id, user_id, empresa_id, fecha, total_co2, total_agua, detalle_json, created_at', { count: 'exact' })
+      .eq('empresa_id', empresaId)
+      .order('fecha', { ascending: false })
+      .range(0, 14),
+  ])
+
+  const categorias = (categoriasData ?? []).map((cat) => ({
+    ...cat,
+    items: Array.isArray(cat.items) ? cat.items : [],
+  }))
+  const nombresCategorias = categorias.map((c) => c.nombre)
+
+  // Enriquecer historial con nombres (reutiliza la lista del equipo, sin otra consulta)
+  const historialRaw = historialRes.data ?? []
+  const nombresMap = new Map((await obtenerNombresEquipo(empresaId)).map((p) => [p.user_id, p.nombre]))
+  const historialData = historialRaw.map((c) => ({ ...c, usuario_nombre: nombresMap.get(c.user_id) ?? null }))
+
+  return (
+    <>
+      {/* Calculadora */}
+      {categorias.length > 0 && (
+        <Calculadora categorias={categorias} rol={rol} />
+      )}
+
+      {/* Historial */}
+      <HistorialCalculos
+        calculos={historialData as Parameters<typeof HistorialCalculos>[0]['calculos']}
+        total={historialRes.count ?? 0}
+        rol={rol}
+        categorias={nombresCategorias}
+      />
+    </>
+  )
+}
+
+async function InformesEmpresa({ empresaId }: { empresaId: string }) {
+  const informes = await obtenerInformes(empresaId)
+  return (
+    <PanelInformes
+      informes={informes.conUrls as Parameters<typeof PanelInformes>[0]['informes']}
+      empresaId={empresaId}
+      modo="empresa"
+    />
+  )
+}
+
+async function ExportarEmpresa({ empresaId }: { empresaId: string }) {
+  const empresa = await obtenerEmpresa(empresaId)
+  const plan = (empresa?.plan ?? 'free') as Plan
+  const limites = await obtenerLimitesEfectivos(empresaId, plan)
+  return <BotonExportarCSV plan={plan} incluyeExcelCSV={limites.incluye_excel_csv} />
+}
+
 // ── Page ─────────────────────────────────────────────────────────
 
 export default async function EmpresaPage() {
@@ -150,92 +346,9 @@ export default async function EmpresaPage() {
 
   const rol = (perfil.rol ?? 'empresa_admin') as Rol
   const saludo = displayName(perfil ?? {})
-  const adminClient = await createAdminClient()
   const empresaId = perfil.empresa_id
 
-  // Módulos activos de la empresa para filtrar categorías
-  const { data: modEmpresa } = await adminClient
-    .from('modulos_empresas')
-    .select('modulo_id')
-    .eq('empresa_id', empresaId)
-    .eq('activo', true)
-  const moduloIdsActivos = (modEmpresa ?? []).map((m) => m.modulo_id)
-
-  const [
-    { count: totalEmpleados },
-    { data: informesData },
-    { data: categoriasData },
-    historialRes,
-    { data: empresaData },
-    { data: calculosGrafica },
-    { data: perfilesEmpresa },
-  ] = await Promise.all([
-    adminClient.from('profiles').select('*', { count: 'exact', head: true }).eq('empresa_id', empresaId),
-    adminClient.from('informes').select('id, tipo, user_id, empresa_id, fecha_inicio, fecha_fin, co2_total, agua_total, pdf_url, codigo_verificacion, metadata_json, created_at').eq('empresa_id', empresaId).order('created_at', { ascending: false }).limit(20),
-    (() => {
-      if (moduloIdsActivos.length === 0) return Promise.resolve({ data: null, error: null })
-      return adminClient
-        .from('categorias')
-        .select('id, nombre, icono_lucide, descripcion, activa, orden, modulo_id, parent_id, created_at, items(id, categoria_id, nombre, descripcion, peso_kg, co2_por_unidad, agua_por_unidad, factor_rentabilidad, icono_lucide, activo, orden, origen_fuente, detalle_fuente, nivel_confianza, created_at)')
-        .eq('activa', true)
-        .eq('items.activo', true)
-        .in('modulo_id', moduloIdsActivos)
-        .order('orden', { ascending: true })
-    })(),
-    adminClient
-      .from('calculos')
-      .select('id, user_id, empresa_id, fecha, total_co2, total_agua, detalle_json, created_at', { count: 'exact' })
-      .eq('empresa_id', empresaId)
-      .order('fecha', { ascending: false })
-      .range(0, 14),
-    adminClient.from('empresas').select('plan, nombre, nit, telefono, pais, ciudad').eq('id', empresaId).single(),
-    // Una sola lectura de los cálculos de la empresa: sirve para los totales y para las gráficas.
-    adminClient.from('calculos').select('fecha, total_co2, total_agua, user_id, detalle_json').eq('empresa_id', empresaId).order('fecha', { ascending: true }),
-    adminClient.from('profiles').select('user_id, nombre').eq('empresa_id', empresaId),
-  ])
-
-  const co2Total = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_co2 ?? 0), 0)
-  const aguaTotal = (calculosGrafica ?? []).reduce((s, c) => s + (c.total_agua ?? 0), 0)
-  const plan = (empresaData?.plan ?? 'free') as Plan
-  const limites = await obtenerLimitesEfectivos(empresaId, plan)
-
-  const categorias = (categoriasData ?? []).map((cat) => ({
-    ...cat,
-    items: Array.isArray(cat.items) ? cat.items : [],
-  }))
-
-  const nombresCategorias = categorias.map((c) => c.nombre)
-
-  // Enriquecer historial con nombres
-  const historialRaw = historialRes.data ?? []
-  const userIds = Array.from(new Set(historialRaw.map((c) => c.user_id).filter(Boolean)))
-  let historialData = historialRaw
-  if (userIds.length > 0) {
-    const { data: profiles } = await adminClient
-      .from('profiles')
-      .select('user_id, nombre')
-      .in('user_id', userIds)
-    const usuariosMap = new Map((profiles ?? []).map((p) => [p.user_id, p.nombre]))
-    historialData = historialRaw.map((c) => ({ ...c, usuario_nombre: usuariosMap.get(c.user_id) ?? null }))
-  }
-
-  // Datos para gráficas
-  const nombresMap = new Map((perfilesEmpresa ?? []).map((p) => [p.user_id, p.nombre]))
-  const todosCalculos = calculosGrafica ?? []
-  const serieMensual = agruparPorMes(todosCalculos)
-  const ranking = calcularRanking(todosCalculos, nombresMap)
-  const donut = calcularDonut(todosCalculos)
-
-  const informesDataConUrls = await Promise.all(
-    (informesData ?? []).map(async (c) => {
-      if (c.pdf_url && !c.pdf_url.startsWith('http')) {
-        const { data } = await adminClient.storage.from('documentos').createSignedUrl(c.pdf_url, 3600)
-        return { ...c, pdf_url: data?.signedUrl ?? null }
-      }
-      return c
-    })
-  )
-
+  // El saludo sale de inmediato. Cada sección llega apenas termina su consulta.
   return (
     <div className="pb-6 bg-(--bg-primary)">
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -248,69 +361,31 @@ export default async function EmpresaPage() {
         </p>
       </div>
 
-      <BannerDatosPendientes
-        nit={empresaData?.nit ?? null}
-        telefono={empresaData?.telefono ?? null}
-        pais={empresaData?.pais ?? null}
-        ciudad={empresaData?.ciudad ?? null}
-        hrefCompletar="/empresa/configuracion"
-      />
+      <Suspense fallback={null}>
+        <BannerEmpresa empresaId={empresaId} />
+      </Suspense>
 
-      {/* KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12, marginBottom: 28 }}>
-        <KpiCard titulo="CO₂ eq evitado" valor={co2Total.toFixed(2)} unidad="kg" icono={Leaf} color="#00827C" />
-        <KpiCard titulo="Agua ahorrada" valor={aguaTotal.toLocaleString('es-CO')} unidad="L" icono={Drop} color="#59A6E4" />
-        <KpiCard titulo="Miembros del equipo" valor={String(totalEmpleados ?? 0)} icono={Users} color="#38B98E" />
-        <KpiCard titulo="Informes generados" valor={String(informesData?.length ?? 0)} icono={Medal} color="#AD7C43" />
-      </div>
-
-      {/* Gráfica mensual */}
-      <SectionCard titulo="CO₂ eq evitado - últimos 6 meses">
-        <GraficaCO2Mensual data={serieMensual} />
-      </SectionCard>
-
-      {/* Ranking + Donut */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 20 }}>
-        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px' }}>
-            Ranking del equipo
-          </h2>
-          <RankingEmpleados data={ranking} />
-        </div>
-        <div className="backdrop-blur-xl" style={{ background: 'color-mix(in srgb, var(--bg-card) 60%, transparent)', border: '1px solid var(--border-light)', borderRadius: '2rem', padding: 24, boxShadow: '0 8px 32px rgba(0, 130, 124, 0.05)' }}>
-          <h2 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)', margin: '0 0 16px' }}>
-            Materiales reutilizados
-          </h2>
-          <DonutCategorias data={donut} />
-        </div>
-      </div>
+      <Suspense fallback={<FallbackBloque alto={420} />}>
+        <ResumenEmpresa empresaId={empresaId} />
+      </Suspense>
 
       {/* Metas Ambientales */}
       <ListaMetas esAdmin={rol === 'empresa_admin' || rol === 'super_admin'} />
 
-      {/* Calculadora */}
-      {categorias.length > 0 && (
-        <Calculadora categorias={categorias} rol={rol} />
-      )}
-
-      {/* Historial */}
-      <HistorialCalculos
-        calculos={historialData as Parameters<typeof HistorialCalculos>[0]['calculos']}
-        total={historialRes.count ?? 0}
-        rol={rol}
-        categorias={nombresCategorias}
-      />
+      <Suspense fallback={<FallbackBloque alto={360} />}>
+        <CalculadoraEmpresa empresaId={empresaId} rol={rol} />
+      </Suspense>
 
       {/* Documentos */}
-      <PanelInformes
-        informes={informesDataConUrls as Parameters<typeof PanelInformes>[0]['informes']}
-        empresaId={empresaId}
-        modo="empresa"
-      />
+      <Suspense fallback={<FallbackBloque alto={200} />}>
+        <InformesEmpresa empresaId={empresaId} />
+      </Suspense>
 
       {/* Exportar CSV */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12, marginBottom: 32 }}>
-        <BotonExportarCSV plan={plan} incluyeExcelCSV={limites.incluye_excel_csv} />
+        <Suspense fallback={null}>
+          <ExportarEmpresa empresaId={empresaId} />
+        </Suspense>
       </div>
       </div>
     </div>
