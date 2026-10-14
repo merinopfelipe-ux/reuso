@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 export const metadata: Metadata = { title: 'Panel admin' }
 
-import { createClient } from '@/lib/supabase/server'
+import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { Users, Buildings, Calculator, Leaf } from '@/components/ui/icons'
@@ -13,8 +13,7 @@ import { formatFecha, formatNumero } from '@/lib/format'
 import { ActivityChart } from './diferidos'
 
 export default async function AdminPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { supabase, user } = await obtenerUsuario()
   if (!user) redirect('/login')
 
   const { data: perfilAdmin } = await supabase

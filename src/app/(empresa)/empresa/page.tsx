@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Panel de impacto' }
 
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Calculadora } from '@/components/calculadora/calculadora'
 import { HistorialCalculos } from '@/components/calculadora/historial-calculos'
@@ -126,8 +126,7 @@ function calcularDonut(calculos: { detalle_json: unknown }[]): ItemDonut[] {
 // ── Page ─────────────────────────────────────────────────────────
 
 export default async function EmpresaPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { supabase, user } = await obtenerUsuario()
   if (!user) redirect('/login')
 
   const { data: perfil } = await supabase

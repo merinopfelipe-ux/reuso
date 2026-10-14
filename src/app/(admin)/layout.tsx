@@ -1,7 +1,7 @@
 import '../globals.css'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
 import { displayName } from '@/lib/display-name'
@@ -12,8 +12,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { supabase, user } = await obtenerUsuario()
 
   if (!user) redirect('/login')
 

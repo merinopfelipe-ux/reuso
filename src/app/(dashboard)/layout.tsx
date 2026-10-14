@@ -1,7 +1,7 @@
 import '../globals.css'
 import { redirect } from 'next/navigation'
 import { headers, cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
 import { ModuloBloqueadoBanner } from '@/components/modulo-bloqueado-banner'
@@ -13,8 +13,7 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { supabase, user } = await obtenerUsuario()
 
   if (!user) redirect('/login')
 

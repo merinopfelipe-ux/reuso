@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Mi impacto' }
 
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { obtenerUsuario } from '@/lib/supabase/usuario'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { PanelInformes } from '@/components/informes/panel-informes'
 import { CalculadoraConHistorial } from '@/components/calculadora/calculadora-con-historial'
@@ -151,8 +151,7 @@ function SectionCard({ titulo, children }: { titulo: string; children: React.Rea
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { supabase, user } = await obtenerUsuario()
   if (!user) redirect('/login')
 
   const adminClient = await createAdminClient()
