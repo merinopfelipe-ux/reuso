@@ -385,7 +385,6 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                       fontWeight: 700,
                       color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(71,71,71,0.45)',
                       letterSpacing: '0.06em',
-                      textTransform: 'uppercase',
                     }}>
                       {item.grupo}
                     </div>
