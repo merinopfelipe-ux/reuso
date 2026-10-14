@@ -19,5 +19,5 @@ export async function GET() {
     return NextResponse.json({ error: 'Error al cargar empresas.' }, { status: 500 })
   }
 
-  return NextResponse.json({ empresas: empresas ?? [] })
+  return NextResponse.json({ empresas: empresas ?? [], default_empresa_id: auth.empresa_id })
 }

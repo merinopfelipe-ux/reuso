@@ -39,7 +39,7 @@ const schema = z.object({
 
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
   if (!auth.ok) {
     return NextResponse.json(
       {
@@ -52,16 +52,20 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       { status: auth.status }
     )
   }
-  const { user_id, empresa_id, adminClient } = auth
+  const { user_id, empresa_id: authEmpresaId, adminClient } = auth
   const ip = getIp(request)
 
-  // Verificar que la cotización existe y pertenece a esta empresa
-  const { data: cotizacion, error: fetchError } = await adminClient
+  // Verificar que la cotización existe y pertenece a esta empresa (o es super_admin)
+  let queryCot = adminClient
     .from('crm_cotizaciones')
-    .select('id, subtotal, descuento, borrador_iniciado_at')
+    .select('id, empresa_id, subtotal, descuento, borrador_iniciado_at')
     .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
-    .maybeSingle()
+
+  if (auth.rol !== 'super_admin') {
+    queryCot = queryCot.eq('empresa_id', authEmpresaId)
+  }
+
+  const { data: cotizacion, error: fetchError } = await queryCot.maybeSingle()
 
   if (fetchError) {
     console.error('[POST /api/cotizador/cotizaciones/[id]/mueble]', fetchError)
@@ -70,6 +74,8 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   if (!cotizacion) {
     return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
   }
+
+  const empresa_id = cotizacion.empresa_id || authEmpresaId
 
   const raw = await request.json().catch(() => null)
   const parsed = schema.safeParse(raw)

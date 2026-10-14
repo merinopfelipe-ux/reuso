@@ -184,8 +184,11 @@ function PanelCotizadorContent() {
           setEsSuperAdmin(true)
           setEmpresas(d.empresas)
           if (!searchParams.get('empresa_id') && d.empresas.length > 0) {
+            const preferida = (d.default_empresa_id && d.empresas.some((e: EmpresaOpcion) => e.id === d.default_empresa_id))
+              ? d.default_empresa_id
+              : d.empresas[0].id
             const params = new URLSearchParams(searchParams)
-            params.set('empresa_id', d.empresas[0].id)
+            params.set('empresa_id', preferida)
             router.replace(`/empresa/cotizador?${params}`)
           }
         }

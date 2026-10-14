@@ -73,7 +73,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
   // (bug real reportado, repetido varias veces). Ahora siempre se responde
   // JSON válido, incluso ante lo inesperado.
   try {
-    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
     if (!auth.ok) {
       return NextResponse.json(
         {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     }
     const { empresa_id, adminClient } = auth
 
-    const { data: cotizacion, error } = await adminClient
+    let queryCot = adminClient
       .from('crm_cotizaciones')
       .select(`
         id, codigo_cotizacion, estado, subtotal, descuento_activo, descuento, descuento_tipo, total,
@@ -112,8 +112,12 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
         )
       `)
       .eq('id', params.id)
-      .eq('empresa_id', empresa_id)
-      .maybeSingle()
+
+    if (auth.rol !== 'super_admin') {
+      queryCot = queryCot.eq('empresa_id', empresa_id)
+    }
+
+    const { data: cotizacion, error } = await queryCot.maybeSingle()
 
     if (error) {
       console.error('[GET /api/cotizador/cotizaciones/[id]]', error)
@@ -150,7 +154,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
 
 export async function PATCH(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
   if (!auth.ok) {
     return NextResponse.json(
       {
@@ -166,12 +170,16 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   const { user_id, empresa_id, adminClient } = auth
   const ip = getIp(request)
 
-  const { data: cotActual, error: fetchError } = await adminClient
+  let queryCotActual = adminClient
     .from('crm_cotizaciones')
-    .select('id, estado, subtotal, descuento, total')
+    .select('id, empresa_id, estado, subtotal, descuento, total')
     .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
-    .maybeSingle()
+
+  if (auth.rol !== 'super_admin') {
+    queryCotActual = queryCotActual.eq('empresa_id', empresa_id)
+  }
+
+  const { data: cotActual, error: fetchError } = await queryCotActual.maybeSingle()
 
   if (fetchError) {
     console.error('[PATCH /api/cotizador/cotizaciones/[id]]', fetchError)
@@ -196,12 +204,16 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   // vendedor, no una restricción de secuencia del sistema.
 
   if (parsed.data.cliente_id) {
-    const { data: clienteDueño } = await adminClient
+    let queryCliente = adminClient
       .from('crm_clientes')
       .select('id')
       .eq('id', parsed.data.cliente_id)
-      .eq('empresa_id', empresa_id)
-      .maybeSingle()
+
+    if (auth.rol !== 'super_admin') {
+      queryCliente = queryCliente.eq('empresa_id', empresa_id)
+    }
+
+    const { data: clienteDueño } = await queryCliente.maybeSingle()
     if (!clienteDueño) {
       return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
     }
@@ -215,11 +227,16 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     actualizar.observaciones = DOMPurify.sanitize(actualizar.observaciones, NOTA_SANITIZE_CONFIG)
   }
 
-  const { error } = await adminClient
+  let queryUpdate = adminClient
     .from('crm_cotizaciones')
     .update(actualizar)
     .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
+
+  if (auth.rol !== 'super_admin') {
+    queryUpdate = queryUpdate.eq('empresa_id', empresa_id)
+  }
+
+  const { error } = await queryUpdate
 
   if (error) {
     console.error('[PATCH /api/cotizador/cotizaciones/[id]] error update:', error)
@@ -234,7 +251,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
     await adminClient.rpc('recalcular_totales_cotizacion', { p_cotizacion_id: params.id }).single()
   }
 
-  const { data: cotActualizada, error: fetchFinalError } = await adminClient
+  let queryReload = adminClient
     .from('crm_cotizaciones')
     .select(`
       id, codigo_cotizacion, estado, subtotal, descuento_activo, descuento, descuento_tipo, total,
@@ -258,8 +275,12 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       )
     `)
     .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
-    .single()
+
+  if (auth.rol !== 'super_admin') {
+    queryReload = queryReload.eq('empresa_id', empresa_id)
+  }
+
+  const { data: cotActualizada, error: fetchFinalError } = await queryReload.maybeSingle()
 
   if (fetchFinalError || !cotActualizada) {
     console.error('[PATCH /api/cotizador/cotizaciones/[id]] error reload:', fetchFinalError)
@@ -303,7 +324,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
 // ella, así que un solo DELETE aquí limpia todo.
 export async function DELETE(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
   if (!auth.ok) {
     return NextResponse.json(
       {
@@ -319,12 +340,16 @@ export async function DELETE(request: NextRequest, props: { params: Promise<{ id
   const { user_id, empresa_id, adminClient } = auth
   const ip = getIp(request)
 
-  const { data: cot } = await adminClient
+  let queryCot = adminClient
     .from('crm_cotizaciones')
-    .select('id, codigo_cotizacion')
+    .select('id, codigo_cotizacion, empresa_id')
     .eq('id', params.id)
-    .eq('empresa_id', empresa_id)
-    .maybeSingle()
+
+  if (auth.rol !== 'super_admin') {
+    queryCot = queryCot.eq('empresa_id', empresa_id)
+  }
+
+  const { data: cot } = await queryCot.maybeSingle()
   if (!cot) return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
 
   const { error } = await adminClient.from('crm_cotizaciones').delete().eq('id', params.id)

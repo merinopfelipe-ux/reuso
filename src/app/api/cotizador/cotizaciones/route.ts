@@ -199,27 +199,33 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // El cliente debe pertenecer a esta empresa (adminClient usa service role
-  // y no aplica RLS: sin este chequeo, cualquier UUID de cliente de OTRA
-  // empresa se podría vincular a esta cotización).
-  const { data: clienteDueño } = await adminClient
+  // El cliente debe pertenecer a esta empresa (o el usuario es super_admin)
+  let queryCliente = adminClient
     .from('crm_clientes')
-    .select('id, tipo')
+    .select('id, tipo, empresa_id')
     .eq('id', parsed.data.cliente_id)
-    .eq('empresa_id', empresa_id)
-    .maybeSingle()
+
+  if (auth.rol !== 'super_admin') {
+    queryCliente = queryCliente.eq('empresa_id', empresa_id)
+  }
+
+  const { data: clienteDueño } = await queryCliente.maybeSingle()
   if (!clienteDueño) {
     return NextResponse.json({ error: 'Cliente no encontrado.' }, { status: 404 })
   }
+
+  const cotizacionEmpresaId = (auth.rol === 'super_admin' && clienteDueño.empresa_id)
+    ? clienteDueño.empresa_id
+    : empresa_id
 
   // Límite de cotizaciones/mes por plan (sql/118) — mismo patrón que
   // checkLimiteCalculos/checkLimiteInformes.
   const { data: empresaPlan } = await adminClient
     .from('empresas')
     .select('plan')
-    .eq('id', empresa_id)
+    .eq('id', cotizacionEmpresaId)
     .single()
-  const errorLimite = await checkLimiteCotizaciones(empresa_id, (empresaPlan?.plan ?? 'free') as Plan)
+  const errorLimite = await checkLimiteCotizaciones(cotizacionEmpresaId, (empresaPlan?.plan ?? 'free') as Plan)
   if (errorLimite) {
     return NextResponse.json({ error: errorLimite }, { status: 429 })
   }
@@ -242,7 +248,7 @@ export async function POST(request: NextRequest) {
   const { data: cotizacion, error } = await adminClient
     .from('crm_cotizaciones')
     .insert({
-      empresa_id,
+      empresa_id: cotizacionEmpresaId,
       asesor_id: user_id,
       codigo_cotizacion,
       estado: 'por_cotizar',
@@ -251,7 +257,7 @@ export async function POST(request: NextRequest) {
       // puede desactivar igual, esto es solo el punto de partida.
       iva_activo: clienteDueño.tipo === 'empresa',
     })
-    .select('id, codigo_cotizacion, estado, created_at')
+    .select('id, codigo_cotizacion, estado, created_at, empresa_id')
     .single()
 
   if (error || !cotizacion) {

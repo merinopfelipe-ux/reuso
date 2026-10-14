@@ -62,7 +62,8 @@ export type CotizadorAuthResult =
 
 export async function cotizadorAuthCheck(
   request: NextRequest,
-  rolesPermitidos: string[]
+  rolesPermitidos: string[],
+  options?: { optionalEmpresaParaSuperAdmin?: boolean }
 ): Promise<CotizadorAuthResult> {
   const base = await dppAuthCheck(rolesPermitidos)
   if (!base.ok) return base
@@ -71,6 +72,7 @@ export async function cotizadorAuthCheck(
   const empresaOverride = request.nextUrl.searchParams.get('empresa_id')
   if (!empresaOverride) {
     if (base.empresa_id) return base
+    if (options?.optionalEmpresaParaSuperAdmin) return { ...base, empresa_id: '' }
     return { ok: false, status: 400 }
   }
 
@@ -79,7 +81,10 @@ export async function cotizadorAuthCheck(
     .select('id')
     .eq('id', empresaOverride)
     .single()
-  if (!empresa) return { ok: false, status: 400 }
+  if (!empresa) {
+    if (options?.optionalEmpresaParaSuperAdmin) return { ...base, empresa_id: '' }
+    return { ok: false, status: 400 }
+  }
 
   return { ...base, empresa_id: empresaOverride }
 }

@@ -360,30 +360,36 @@ export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile }: SidebarPro
           )
         })}
         {rol === 'super_admin' && (
-          <a
-            href="https://chat.calculadoradereuso.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Abrir el chat en una nueva pestaña"
-            title="Chat"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              height: 44,
-              padding: isExpanded ? '0 14px' : '0',
-              justifyContent: isExpanded ? 'flex-start' : 'center',
-              borderRadius: 14,
-              color: isDark ? '#D6F391' : '#006B66',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-            }}
-            className="hover-slide-r"
-          >
-            <ChatCircle size={22} strokeWidth={2.5} color="currentColor" style={{ flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 700, opacity: isExpanded ? 1 : 0, transition: 'opacity 0.4s ease 0.1s' }}>Chat</span>
-          </a>
+          <div style={{ position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column' }}>
+            <a
+              href="https://chat.calculadoradereuso.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Abrir el chat en una nueva pestaña"
+              onClick={() => { if (isMobile) setIsExpanded(false) }}
+              className="clean-item-nav"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 16,
+                width: 'calc(100% - 12px)', height: 50, padding: '0 18px', cursor: 'pointer',
+                position: 'relative', textDecoration: 'none',
+                transition: 'background 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease, color 0.25s ease',
+                alignSelf: 'flex-end', marginLeft: 12, borderLeft: 'none',
+                borderRadius: '16px 0 0 16px',
+                background: 'transparent',
+                boxShadow: 'none',
+                color: 'inherit',
+              }}
+            >
+              <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="hover-pop">
+                <ChatCircle size={20} color="currentColor" strokeWidth={2} />
+              </div>
+              {isExpanded && (
+                <span style={{ fontSize: '14px', fontWeight: 400, color: 'currentColor', whiteSpace: 'nowrap' }}>
+                  Chat
+                </span>
+              )}
+            </a>
+          </div>
         )}
       </nav>
 

@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
   // — nunca dejar que una excepción no prevista devuelva algo que no sea
   // JSON, o el frontend no puede ni mostrar el error real ni reintentar.
   try {
-    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
     if (!auth.ok) {
       return NextResponse.json(
         {
@@ -22,13 +22,17 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
     }
     const { empresa_id, adminClient } = auth
 
-    // Verificar que la cotización pertenece a la empresa
-    const { data: cot, error: fetchError } = await adminClient
+    // Verificar que la cotización pertenece a la empresa (o es super_admin)
+    let queryCot = adminClient
       .from('crm_cotizaciones')
       .select('id')
       .eq('id', params.id)
-      .eq('empresa_id', empresa_id)
-      .maybeSingle()
+
+    if (auth.rol !== 'super_admin') {
+      queryCot = queryCot.eq('empresa_id', empresa_id)
+    }
+
+    const { data: cot, error: fetchError } = await queryCot.maybeSingle()
 
     if (fetchError) {
       console.error('[GET /api/cotizador/cotizaciones/[id]/muebles]', fetchError)

@@ -16,6 +16,7 @@ import {
   Calculator,
   Users,
   TrendingUp as TrendUp,
+  ChatCircle,
 } from '@/components/ui/icons'
 import type { Rol } from '@/types'
 
@@ -23,12 +24,14 @@ interface DrawerItem {
   href: string
   label: string
   grupo?: string
+  external?: boolean
 }
 
 interface QuickItem {
   href: string
   label: string
   icon: React.ElementType
+  external?: boolean
 }
 
 interface MobileConfig {
@@ -45,6 +48,7 @@ function getConfig(rol: Rol): MobileConfig {
           { href: '/empresa/cotizador', label: 'Cotizador', icon: ClipboardList },
           { href: '/admin/empresas', label: 'Empresas', icon: Buildings },
           { href: '/admin/leads', label: 'Leads', icon: Users },
+          { href: 'https://chat.calculadoradereuso.com', label: 'Chat', icon: ChatCircle, external: true },
         ],
         drawerItems: [
           { href: '/admin', label: 'Resumen', grupo: 'Principal' },
@@ -69,7 +73,8 @@ function getConfig(rol: Rol): MobileConfig {
           { href: '/admin/legal', label: 'Documentos' },
           { href: '/admin/firmas', label: 'Firmas' },
           { href: '/admin/planes', label: 'Planes' },
-          { href: '/admin/tickets', label: 'Soporte', grupo: 'Soporte' },
+          { href: 'https://chat.calculadoradereuso.com', label: 'Chat', grupo: 'Soporte', external: true },
+          { href: '/admin/tickets', label: 'Tickets' },
           { href: '/ayuda', label: 'Ayuda' },
         ],
       }
@@ -161,83 +166,86 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
   const { quickItems, drawerItems } = getConfig(rol)
 
   const brandColor = isDark ? '#D6F391' : '#00827C'
-  const inactiveColor = isDark ? 'rgba(255,255,255,0.5)' : 'rgba(71,71,71,0.45)'
+  const inactiveColor = isDark ? 'rgba(255,255,255,0.55)' : 'rgba(71,71,71,0.5)'
 
   const isActive = (href: string) => {
+    if (href.startsWith('http')) return false
     const isRoot = href === '/admin' || href === '/empresa' || href === '/dashboard'
     return isRoot ? pathname === href : (pathname === href || pathname.startsWith(href + '/'))
   }
 
   const glassPill: React.CSSProperties = {
-    backdropFilter: 'blur(16px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(16px) saturate(180%)',
+    backdropFilter: 'blur(18px) saturate(190%)',
+    WebkitBackdropFilter: 'blur(18px) saturate(190%)',
     background: isDark
-      ? 'rgba(71,71,71,0.45)'
-      : 'rgba(255,255,255,0.55)',
+      ? 'rgba(71,71,71,0.55)'
+      : 'rgba(255,255,255,0.65)',
     border: isDark
-      ? '1.5px solid rgba(255,255,255,0.12)'
-      : '1.5px solid rgba(0,130,124,0.08)',
+      ? '1.5px solid rgba(255,255,255,0.14)'
+      : '1.5px solid rgba(0,130,124,0.1)',
     boxShadow: isDark
-      ? '0 4px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08)'
-      : '0 4px 30px rgba(0,130,124,0.07), inset 0 1px 0 rgba(255,255,255,0.7)',
+      ? '0 6px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+      : '0 6px 32px rgba(0,130,124,0.09), inset 0 1px 0 rgba(255,255,255,0.85)',
   }
 
   const activePillBg = isDark
-    ? 'rgba(214,243,145,0.15)'
-    : 'rgba(0,130,124,0.1)'
+    ? 'rgba(214,243,145,0.16)'
+    : 'rgba(0,130,124,0.12)'
 
   return (
     <>
       <div style={{
         position: 'fixed',
-        bottom: 16,
-        left: 16,
-        right: 16,
+        bottom: 'max(18px, env(safe-area-inset-bottom, 18px))',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 'calc(100% - 32px)',
+        maxWidth: 520,
         zIndex: 10000,
         display: 'flex',
         alignItems: 'center',
-        gap: 10,
+        gap: 12,
         pointerEvents: 'none',
       }}>
-        {/* PILL — 4 accesos directos */}
+        {/* PILL — accesos directos */}
         <nav key={pathname} style={{
           ...glassPill,
           flex: 1,
-          height: 60,
+          height: 66,
           borderRadius: 9999,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 4px',
-          gap: 2,
+          padding: '0 6px',
+          gap: 4,
           pointerEvents: 'auto',
         }}>
           {quickItems.map((item) => {
-            const active = isActive(item.href)
-            return (
-              <Link
-                key={item.href + (active ? '-on' : '-off')}
-                href={item.href}
-                onClick={() => setDrawerOpen(false)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: active ? 6 : 0,
-                  padding: active ? '8px 12px' : '8px 10px',
-                  borderRadius: 9999,
-                  background: active ? activePillBg : 'transparent',
-                  color: active ? brandColor : inactiveColor,
-                  textDecoration: 'none',
-                  whiteSpace: 'nowrap',
-                  flex: active ? '1 1 auto' : '0 0 auto',
-                  minWidth: 0,
-                }}
-              >
-                <item.icon size={20} strokeWidth={active ? 2.5 : 2} />
+            const active = !item.external && isActive(item.href)
+
+            const itemStyle: React.CSSProperties = {
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: active ? 6 : 0,
+              padding: active ? '10px 14px' : '10px 8px',
+              borderRadius: 9999,
+              background: active ? activePillBg : 'transparent',
+              color: active ? brandColor : inactiveColor,
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              flex: active ? '1 1 auto' : '0 0 auto',
+              minWidth: 0,
+              cursor: 'pointer',
+              transition: 'all 0.25s cubic-bezier(0.22,1,0.36,1)',
+            }
+
+            const content = (
+              <>
+                <item.icon size={23} strokeWidth={active ? 2.5 : 2} />
                 {active && (
                   <span style={{
-                    fontSize: 12,
+                    fontSize: 13.5,
                     fontWeight: 700,
                     letterSpacing: '0.01em',
                     overflow: 'hidden',
@@ -246,6 +254,35 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
                     {item.label}
                   </span>
                 )}
+              </>
+            )
+
+            if (item.external) {
+              return (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.label}
+                  title={item.label}
+                  style={itemStyle}
+                >
+                  {content}
+                </a>
+              )
+            }
+
+            return (
+              <Link
+                key={item.href + (active ? '-on' : '-off')}
+                href={item.href}
+                onClick={() => setDrawerOpen(false)}
+                aria-label={item.label}
+                title={item.label}
+                style={itemStyle}
+              >
+                {content}
               </Link>
             )
           })}
@@ -256,8 +293,8 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           onClick={() => setDrawerOpen(!drawerOpen)}
           style={{
             ...glassPill,
-            width: 52,
-            height: 52,
+            width: 66,
+            height: 66,
             borderRadius: '50%',
             flexShrink: 0,
             display: 'flex',
@@ -272,8 +309,8 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           aria-label={drawerOpen ? 'Cerrar menú' : 'Abrir menú'}
         >
           {drawerOpen
-            ? <X size={24} strokeWidth={2.5} />
-            : <Menu size={24} strokeWidth={2} />}
+            ? <X size={28} strokeWidth={2.5} />
+            : <Menu size={28} strokeWidth={2.2} />}
         </button>
       </div>
 
@@ -295,19 +332,21 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
           <div
             style={{
               position: 'fixed',
-              bottom: 88,
-              left: 16,
-              right: 16,
+              bottom: 'calc(max(18px, env(safe-area-inset-bottom, 18px)) + 78px)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: 'calc(100% - 32px)',
+              maxWidth: 520,
               maxHeight: '70vh',
               overflowY: 'auto',
               zIndex: 9999,
-              borderRadius: 24,
-              padding: '12px 6px 16px',
+              borderRadius: 26,
+              padding: '14px 8px 18px',
               backdropFilter: 'blur(24px) saturate(200%)',
               WebkitBackdropFilter: 'blur(24px) saturate(200%)',
               background: isDark
-                ? 'rgba(71,71,71,0.75)'
-                : 'rgba(255,255,255,0.8)',
+                ? 'rgba(71,71,71,0.78)'
+                : 'rgba(255,255,255,0.88)',
               border: isDark
                 ? '1.5px solid rgba(255,255,255,0.12)'
                 : '1.5px solid rgba(0,130,124,0.08)',
@@ -320,50 +359,65 @@ export function MobileBottomNav({ rol }: MobileBottomNavProps) {
             className="mobile-nav-drawer-scroll"
           >
             {drawerItems.map((item, idx) => {
-              const active = isActive(item.href)
+              const active = !item.external && isActive(item.href)
               const showGrupo = item.grupo && item.grupo !== drawerItems[idx - 1]?.grupo
+
+              const linkStyle: React.CSSProperties = {
+                display: 'flex',
+                alignItems: 'center',
+                padding: '14px 18px',
+                margin: '2px 6px',
+                borderRadius: 14,
+                fontSize: 15,
+                fontWeight: active ? 700 : 500,
+                color: active ? brandColor : (isDark ? '#FFFFFF' : '#474747'),
+                textDecoration: 'none',
+                background: active ? activePillBg : 'transparent',
+                transition: 'background 0.2s ease',
+              }
 
               return (
                 <div key={item.href + idx}>
                   {showGrupo && (
                     <div style={{
-                      padding: idx === 0 ? '6px 16px 4px' : '14px 16px 4px',
-                      fontSize: 11,
+                      padding: idx === 0 ? '8px 18px 6px' : '16px 18px 6px',
+                      fontSize: 12,
                       fontWeight: 700,
-                      color: isDark ? 'rgba(255,255,255,0.35)' : 'rgba(71,71,71,0.4)',
+                      color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(71,71,71,0.45)',
                       letterSpacing: '0.06em',
+                      textTransform: 'uppercase',
                     }}>
                       {item.grupo}
                     </div>
                   )}
-                  <Link
-                    href={item.href}
-                    onClick={() => setDrawerOpen(false)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '13px 16px',
-                      margin: '1px 6px',
-                      borderRadius: 14,
-                      fontSize: 14,
-                      fontWeight: active ? 700 : 500,
-                      color: active ? brandColor : (isDark ? '#FFFFFF' : '#474747'),
-                      textDecoration: 'none',
-                      background: active ? activePillBg : 'transparent',
-                      transition: 'background 0.2s ease',
-                    }}
-                  >
-                    <span>{item.label}</span>
-                    {active && (
-                      <div style={{
-                        marginLeft: 'auto',
-                        width: 5,
-                        height: 5,
-                        borderRadius: '50%',
-                        background: brandColor,
-                      }} />
-                    )}
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setDrawerOpen(false)}
+                      style={linkStyle}
+                    >
+                      <span>{item.label}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      onClick={() => setDrawerOpen(false)}
+                      style={linkStyle}
+                    >
+                      <span>{item.label}</span>
+                      {active && (
+                        <div style={{
+                          marginLeft: 'auto',
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          background: brandColor,
+                        }} />
+                      )}
+                    </Link>
+                  )}
                 </div>
               )
             })}

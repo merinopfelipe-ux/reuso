@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { X, SendHorizontal as PaperPlaneRight, Loader2 as CircleNotch, Info } from '@/components/ui/icons'
 import { ModalImagenZoom } from '@/components/ui/modal-imagen-zoom'
+import DOMPurify from 'isomorphic-dompurify'
 import type { EstadoTicket, PrioridadTicket } from './lista-tickets'
 
 interface Mensaje {
@@ -161,7 +162,7 @@ export function HiloTicket({ ticketId, esAdmin, onClose }: Props) {
                         const target = e.target as HTMLElement
                         if (target.tagName === 'IMG') setZoomUrl((target as HTMLImageElement).src)
                       }}
-                      dangerouslySetInnerHTML={{ __html: m.mensaje_html }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.mensaje_html) }}
                     />
                     <span style={{ fontSize: 10, color: 'rgba(0,130,124,0.5)', marginTop: 4 }}>
                       {new Date(m.created_at).toLocaleTimeString('es-CO', { timeZone: 'America/Bogota', hour: '2-digit', minute: '2-digit' })}

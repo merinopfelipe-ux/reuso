@@ -67,7 +67,10 @@ updates:
       day: "monday"
       time: "06:00"
       timezone: "America/Bogota"
+    cooldown:
+      default-days: 7
     labels:
       - "dependencies"
     commit-message:
       prefix: "ci(deps)"
+

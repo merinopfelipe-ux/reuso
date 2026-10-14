@@ -295,47 +295,65 @@ function DetalleCotizacionContent() {
     // propia sección cuando llegan. Antes las 3 peticiones iban juntas en un
     // solo Promise.all y toda la pantalla se quedaba en blanco hasta que las
     // 3 terminaran, aunque la cotización ya estuviera lista hace rato (bug
-    // real reportado: "da la apariencia de ser un sistema muy lento").
+    interface CotizacionDetalleResponse {
+      cotizacion?: Cotizacion
+      contactos_empresa?: ContactoEmpresa[]
+      error?: string
+    }
+
     async function intentarCotizacion() {
-      const res = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}`), { cache: 'no-store' })
-      const d = await res.json()
-      return { res, d }
+      try {
+        const res = await fetch(conEmpresa(`/api/cotizador/cotizaciones/${id}`), { cache: 'no-store' })
+        let d: CotizacionDetalleResponse | null = null
+        try {
+          d = (await res.json()) as CotizacionDetalleResponse
+        } catch {
+          d = { error: res.ok ? 'Respuesta inesperada del servidor.' : `Error del servidor (${res.status}).` }
+        }
+        return { res, d }
+      } catch (err) {
+        console.error('[intentarCotizacion] Error de conexión:', err)
+        return null
+      }
     }
 
     async function cargarCotizacion() {
       setCargando(true)
       try {
-        // Primer intento en su propio try — si lanza (ej. respuesta que no
-        // era JSON válido), antes eso saltaba derecho al catch de afuera sin
-        // pasar por el reintento (bug real: el reintento nunca se
-        // ejecutaba en ese caso exacto). Ahora un fallo en el primer
-        // intento, sea por excepción o por !ok, activa igual el segundo.
-        let resultado: Awaited<ReturnType<typeof intentarCotizacion>> | null = null
+        // Primer intento en su propio try — si falla, se reintenta tras breve espera.
+        let resultado: Awaited<ReturnType<typeof intentarCotizacion>> = null
         try {
           resultado = await intentarCotizacion()
         } catch { /* se reintenta abajo */ }
 
         if (!resultado || !resultado.res.ok) {
           await new Promise(r => setTimeout(r, 700))
-          resultado = await intentarCotizacion()
+          try {
+            resultado = await intentarCotizacion()
+          } catch { /* manejado abajo */ }
+        }
+
+        if (!resultado) {
+          setError('No se pudo conectar con el servidor. Verifica tu conexión e intenta de nuevo.')
+          return
         }
 
         const { res, d } = resultado
         // Mostrar siempre el motivo real que dio el backend (401/400/404/500)
-        // en vez de asumir "no encontrada" para cualquier falla — antes esto
-        // ocultaba el error verdadero (permiso, empresa incorrecta, etc.).
+        // en vez de ocultarlo con un error genérico.
         if (!res.ok) {
-          setError(d.error ?? 'No se pudo cargar la cotización.')
+          setError(d?.error ?? 'No se pudo cargar la cotización.')
           return
         }
-        if (d.cotizacion) {
+        if (d?.cotizacion) {
           setCot(d.cotizacion)
           sincronizarDetallesInputs(d.cotizacion)
           const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin
           setEnlace(`${base}/cot/${d.cotizacion.enlace_publico_token ?? d.cotizacion.codigo_cotizacion}`)
         }
-        if (d.contactos_empresa) setContactosEmpresa(d.contactos_empresa)
-      } catch {
+        if (d?.contactos_empresa) setContactosEmpresa(d.contactos_empresa)
+      } catch (err) {
+        console.error('[cargarCotizacion] Error inesperado:', err)
         setError('No se pudieron cargar los datos de la cotización. Intenta de nuevo.')
       } finally { setCargando(false) }
     }
@@ -557,7 +575,7 @@ function DetalleCotizacionContent() {
     setEnvioGratisMostrarGaleriaInput(c.envio_gratis_mostrar_galeria ?? true)
     setEnvioGratisMostrarListaInput(c.envio_gratis_mostrar_lista ?? true)
 
-    setDestacadosInput(c.destacados_json ?? [])
+    setDestacadosInput(Array.isArray(c.destacados_json) ? c.destacados_json : [])
   }
 
   function abrirEditarDetalles() {

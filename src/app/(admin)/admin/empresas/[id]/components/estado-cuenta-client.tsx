@@ -12,6 +12,7 @@ const WYSIWYG = dynamic(() => import('@/components/ui/wysiwyg').then(m => ({ def
   loading: () => <div className="rounded-xl border border-(--border) bg-(--bg-input) animate-pulse" style={{ minHeight: 120 }} />,
 })
 import { formatCOP } from '@/lib/format'
+import DOMPurify from 'isomorphic-dompurify'
 import type { Empresa, Plan } from '@/types'
 
 interface HistorialPlanEntry {
@@ -446,7 +447,7 @@ export function EstadoCuentaClient({
                 <div key={n.id} className="rounded-xl p-2.5 bg-(--bg-input)">
                   <div
                     className="text-[13px] font-normal wrap-break-word whitespace-pre-wrap text-(--text-primary)"
-                    dangerouslySetInnerHTML={{ __html: n.nota }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(n.nota) }}
                   />
                   <p className="text-[10px] mt-1 text-(--text-secondary)">
                     {autorLimpio}{fechaTexto ? ` · ${fechaTexto}` : ''}

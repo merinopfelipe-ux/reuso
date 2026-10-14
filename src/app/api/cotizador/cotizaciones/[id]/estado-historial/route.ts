@@ -10,18 +10,22 @@ export async function GET(request: NextRequest, props: { params: Promise<{ id: s
   // misma pantalla — nunca dejar que una excepción no prevista devuelva algo
   // que no sea JSON.
   try {
-    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+    const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
     if (!auth.ok) {
       return NextResponse.json({ error: auth.status === 401 ? 'Inicia sesión para continuar.' : 'Sin permiso.' }, { status: auth.status === 400 ? 401 : auth.status })
     }
     const { empresa_id, adminClient } = auth
 
-    const { data: cot } = await adminClient
+    let queryCot = adminClient
       .from('crm_cotizaciones')
       .select('id')
       .eq('id', params.id)
-      .eq('empresa_id', empresa_id)
-      .maybeSingle()
+
+    if (auth.rol !== 'super_admin') {
+      queryCot = queryCot.eq('empresa_id', empresa_id)
+    }
+
+    const { data: cot } = await queryCot.maybeSingle()
     if (!cot) return NextResponse.json({ error: 'Cotización no encontrada.' }, { status: 404 })
 
     const { data, error } = await adminClient

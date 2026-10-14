@@ -18,6 +18,7 @@
     "pruebas": "bash scripts/run-pruebas.sh",
     "security:secrets": "gitleaks git --no-banner -c .gitleaks.toml",
     "security:sast": "semgrep scan --config=p/security-audit --config=p/owasp-top-ten --config=p/react --config=p/nextjs --config=p/typescript --config=p/javascript --metrics=off",
+    "security:themes": "node scripts/audit-temas-seguridad.mjs",
     "prepare": "node .husky/install.mjs",
     "qa:auto": "node scripts/qa-automatico.mjs",
     "qa:seed": "node --env-file=.env.local scripts/sembrar-datos-qa.mjs",

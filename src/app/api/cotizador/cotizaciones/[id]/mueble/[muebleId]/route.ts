@@ -69,7 +69,7 @@ export async function PATCH(
   props: { params: Promise<{ id: string; muebleId: string }> }
 ) {
   const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
   if (!auth.ok) {
     return NextResponse.json(
       {
@@ -91,13 +91,17 @@ export async function PATCH(
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos.' }, { status: 400 })
   }
 
-  const { data: mueble, error: fetchError } = await adminClient
+  let queryMueble = adminClient
     .from('crm_muebles_cotizados')
     .select('id, cotizacion_id, empresa_id, item_id, titulo, descripcion, tipo_mueble, cantidad, factor_rentabilidad, materiales_json, servicios_json, insumos_json, peso_estandar_kg, peso_foto_sugerido_kg, co2_evitado_kg, agua_evitada_l, oculto, imagen_url')
     .eq('id', params.muebleId)
     .eq('cotizacion_id', params.id)
-    .eq('empresa_id', empresa_id)
-    .single()
+
+  if (auth.rol !== 'super_admin') {
+    queryMueble = queryMueble.eq('empresa_id', empresa_id)
+  }
+
+  const { data: mueble, error: fetchError } = await queryMueble.maybeSingle()
 
   if (fetchError || !mueble) {
     return NextResponse.json({ error: 'Mueble cotizado no encontrado.' }, { status: 404 })
@@ -269,7 +273,7 @@ export async function DELETE(
   props: { params: Promise<{ id: string; muebleId: string }> }
 ) {
   const params = await props.params;
-  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'])
+  const auth = await cotizadorAuthCheck(request, ['empresa_admin', 'empleado'], { optionalEmpresaParaSuperAdmin: true })
   if (!auth.ok) {
     return NextResponse.json(
       {
@@ -285,12 +289,17 @@ export async function DELETE(
   const { user_id, empresa_id, adminClient } = auth
   const ip = getIp(request)
 
-  const { error } = await adminClient
+  let queryDelete = adminClient
     .from('crm_muebles_cotizados')
     .delete()
     .eq('id', params.muebleId)
     .eq('cotizacion_id', params.id)
-    .eq('empresa_id', empresa_id)
+
+  if (auth.rol !== 'super_admin') {
+    queryDelete = queryDelete.eq('empresa_id', empresa_id)
+  }
+
+  const { error } = await queryDelete
 
   if (error) {
     console.error('[DELETE /api/cotizador/cotizaciones/[id]/mueble/[muebleId]]', error)
