@@ -8,7 +8,7 @@ import { AdminEmpresaClient } from './components/admin-empresa-client'
 import { CatalogoRestringidoEmpresaClient } from './components/catalogo-restringido-empresa-client'
 import { LineasEmpresaClient } from './components/lineas-empresa-client'
 import { NegociacionEmpresaClient } from './components/negociacion-empresa-client'
-import { IntegracionChatwootClient } from './components/integracion-chatwoot-client'
+import { Button } from '@/components/ui/button'
 import { EliminarEmpresaClient } from './components/eliminar-empresa-client'
 import { ChatEmpresaClient } from './components/chat-empresa-client'
 import { SeccionDetalle } from '@/components/ui/detalle-pagina'
@@ -215,11 +215,15 @@ export default async function EmpresaDetallePage(
         <NegociacionEmpresaClient empresaId={id} />
       </SeccionDetalle>
 
-      <SeccionDetalle titulo="Mensajería (Chatwoot)">
+      <SeccionDetalle titulo="Integraciones">
         <p className="text-sm text-(--text-secondary) m-0">
-          Conecta la bandeja de Chatwoot de esta empresa para que los mensajes de WhatsApp, Instagram y Facebook lleguen al CRM.
+          Conexiones con servicios externos de esta empresa, como la captura de teléfonos desde Chatwoot.
         </p>
-        <IntegracionChatwootClient empresaId={id} />
+        <div>
+          <Button variant="secondary" size="sm" href={`/admin/empresas/${id}/integraciones`}>
+            Configurar integraciones
+          </Button>
+        </div>
       </SeccionDetalle>
 
       <SeccionDetalle titulo="Chat de la empresa">
