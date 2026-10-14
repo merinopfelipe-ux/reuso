@@ -11,6 +11,7 @@ import { NegociacionEmpresaClient } from './components/negociacion-empresa-clien
 import { Button } from '@/components/ui/button'
 import { EliminarEmpresaClient } from './components/eliminar-empresa-client'
 import { ChatEmpresaClient } from './components/chat-empresa-client'
+import { InvitacionesPendientesClient } from './components/invitaciones-pendientes-client'
 import { SeccionDetalle } from '@/components/ui/detalle-pagina'
 import type { Plan, ModuloConActivo, LineaNegocioConActivo } from '@/types'
 
@@ -125,6 +126,13 @@ export default async function EmpresaDetallePage(
 
   const logsEmpresa = logsRes.data ?? []
 
+  const { data: invitacionesPendientes } = await adminClient
+    .from('invitaciones')
+    .select('id, email, rol_asignado, expires_at')
+    .eq('empresa_id', id)
+    .eq('estado', 'pendiente')
+    .order('created_at', { ascending: false })
+
   // Resolver nombres de admins en logs
   const adminIds = Array.from(new Set(logsEmpresa.map((l) => l.user_id).filter(Boolean)))
   let adminsMap = new Map<string, { nombreCompleto: string; rol: string }>()
@@ -224,6 +232,10 @@ export default async function EmpresaDetallePage(
             Configurar integraciones
           </Button>
         </div>
+      </SeccionDetalle>
+
+      <SeccionDetalle titulo="Invitaciones pendientes">
+        <InvitacionesPendientesClient empresaId={id} invitaciones={invitacionesPendientes ?? []} />
       </SeccionDetalle>
 
       <SeccionDetalle titulo="Chat de la empresa">
