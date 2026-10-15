@@ -5,6 +5,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { normalizarTelefono } from '@/lib/telefono'
 import { encryptSensitive } from '@/lib/encryption.server'
+import { logAuditoria } from '@/lib/audit'
 
 const leadSchema = z.object({
   nombre: z.string().min(1, 'El nombre es muy corto.'),
@@ -14,6 +15,12 @@ const leadSchema = z.object({
   empresa: z.string().optional(),
   interes: z.string().optional(),
   mensaje: z.string().min(5, 'Por favor escribe un mensaje más detallado.').max(1000),
+  acepto_terminos: z.literal(true, {
+    message: 'Debes aceptar los Términos y Condiciones.',
+  }),
+  acepto_privacidad: z.literal(true, {
+    message: 'Debes autorizar la Política de Privacidad.',
+  }),
   // Honeypot: campo invisible en el formulario real, si llega con contenido
   // es un bot. turnstile_token: verificación fail-open (ver /lib/turnstile).
   sitio_web: z.string().optional(),
@@ -38,7 +45,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { sitio_web, turnstile_token, apellido, ...leadData } = result.data
+    const { sitio_web, turnstile_token, apellido, acepto_terminos, acepto_privacidad, ...leadData } = result.data
 
     // Honeypot lleno → es un bot. Respondemos éxito falso para no revelarle
     // que fue detectado (no insertamos nada).
@@ -76,8 +83,22 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Nota: Aquí se podría integrar Resend para enviar notificación al admin
-    // pero por ahora lo dejamos solo en BD como "todo lo gratis".
+    // Carga de la prueba SIC (Accountability - Art. 9 Ley 1581 de 2012)
+    try { await logAuditoria(adminClient, {
+      user_id: null,
+      accion: 'consentimiento_legal_lead',
+      detalle: {
+        lead_id: data.id,
+        email: lead.email,
+        terminos_aceptados: true,
+        privacidad_aceptada: true,
+        version_terminos: '2026-09-05',
+        version_privacidad: '2026-09-05',
+        user_agent: request.headers.get('user-agent') ?? 'unknown',
+        timestamp_utc: new Date().toISOString(),
+      },
+      ip,
+    }) } catch (auditErr) { console.error('[leads] log de consentimiento:', auditErr) }
 
     return NextResponse.json({ ok: true, id: data.id })
   } catch {

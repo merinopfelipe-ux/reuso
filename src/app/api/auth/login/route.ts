@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import type { Rol } from '@/types'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logAuditoria } from '@/lib/audit'
 
 async function checkRateLimit(ip: string, accion: string, max: number, windowMs: number): Promise<boolean> {
   try {
@@ -45,6 +46,8 @@ const bodySchema = z.object({
   password: z.string().min(1),
   turnstile_token: z.string().optional(),
   acepta_legal: z.boolean().optional(),
+  acepta_terminos: z.boolean().optional(),
+  acepta_privacidad: z.boolean().optional(),
 })
 
 async function verifyTurnstile(token: string, ip: string): Promise<boolean> {
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { email, password, turnstile_token, acepta_legal } = parsed.data
+  const { email, password, turnstile_token, acepta_legal, acepta_terminos, acepta_privacidad } = parsed.data
 
   // Rate limit y Turnstile en paralelo
   const skipRateLimit = process.env.SKIP_RATE_LIMIT === 'true'
@@ -126,11 +129,35 @@ export async function POST(request: NextRequest) {
     .single()
 
   // Registrar aceptación de compromisos legales si el usuario la confirmó
-  if (acepta_legal) {
+  if (acepta_legal || (acepta_terminos && acepta_privacidad)) {
+    const ahoraIso = new Date().toISOString()
     await supabase
       .from('profiles')
-      .update({ legal_aceptado_en: new Date().toISOString() })
+      .update({
+        legal_aceptado_en: ahoraIso,
+        acepta_terminos_at: ahoraIso,
+      })
       .eq('user_id', data.user.id)
+
+    // Carga de la prueba SIC (Accountability): IP, timestamp UTC, versión y user agent
+    try {
+      const adminClient = await createAdminClient()
+      await logAuditoria(adminClient, {
+        user_id: data.user.id,
+        accion: 'consentimiento_legal_login',
+        detalle: {
+          terminos_aceptados: Boolean(acepta_terminos ?? acepta_legal),
+          privacidad_aceptada: Boolean(acepta_privacidad ?? acepta_legal),
+          version_terminos: '2026-09-05',
+          version_privacidad: '2026-09-05',
+          user_agent: request.headers.get('user-agent') ?? 'unknown',
+          timestamp_utc: ahoraIso,
+        },
+        ip,
+      })
+    } catch (auditErr) {
+      console.error('[login] Error al registrar log de auditoría legal:', auditErr)
+    }
   }
 
   const rol = (perfil?.rol ?? 'usuario_libre') as Rol

@@ -6,12 +6,14 @@ import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { enviarNotificacionTicket, enviarConfirmacionConsultaLegal } from '@/lib/email'
 import DOMPurify from 'isomorphic-dompurify'
+import { logAuditoria } from '@/lib/audit'
 
 const schema = z.object({
   nombre: z.string().min(2).max(100),
   email: z.string().email(),
   tipo: z.string().min(2).max(100),
   mensaje: z.string().min(10).max(2000),
+  acepto_datos: z.literal(true),
   sitio_web: z.string().optional(),
   turnstile_token: z.string().optional(),
 })
@@ -89,6 +91,23 @@ export async function POST(req: NextRequest) {
       mensaje_html: mensajeHtml,
       es_admin: false,
     })
+
+  // Carga de la prueba SIC (Accountability - Art. 9 Ley 1581 de 2012)
+  try { await logAuditoria(adminClient, {
+    user_id: user?.id ?? null,
+    accion: 'consentimiento_legal_duda',
+    detalle: {
+      ticket_id: ticket.id,
+      numero_caso: numeroCaso,
+      email,
+      tipo,
+      privacidad_aceptada: true,
+      version_privacidad: '2026-09-05',
+      user_agent: req.headers.get('user-agent') ?? 'unknown',
+      timestamp_utc: new Date().toISOString(),
+    },
+    ip,
+  }) } catch (auditErr) { console.error('[dudas] log de consentimiento:', auditErr) }
 
   if (msgError) {
     console.error('Error insertando mensaje en ticket legal:', msgError)

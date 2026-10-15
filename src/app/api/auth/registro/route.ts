@@ -4,6 +4,7 @@ import { encryptSensitive } from '@/lib/encryption.server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sincronizarContactoLoops } from '@/lib/loops'
 import { enviarConfirmacionRegistro } from '@/lib/email'
+import { logAuditoria } from '@/lib/audit'
 
 async function checkRateLimit(ip: string, accion: string, max: number, windowMs: number): Promise<boolean> {
   try {
@@ -56,6 +57,7 @@ const bodySchema = z
     password_confirm: z.string(),
     turnstile_token: z.string().optional(),
     acepta_terminos: z.literal(true),
+    acepta_privacidad: z.literal(true),
     // Campos de perfil (paso 2)
     sector: z.string().max(255).optional(),
     frecuencia_reuso: z.string().max(20).optional(),
@@ -170,6 +172,23 @@ export async function POST(request: NextRequest) {
 
   const emailOtp = linkData?.properties?.email_otp ?? null
   const actionLink = linkData?.properties?.action_link ?? `${appUrl}/confirmar-email?email=${encodeURIComponent(email)}`
+
+  // Carga de la prueba SIC (Accountability - Art. 9 Ley 1581 de 2012)
+  if (linkData?.user?.id) {
+    try { await logAuditoria(adminSupabase, {
+      user_id: linkData.user.id,
+      accion: 'consentimiento_legal_registro',
+      detalle: {
+        terminos_aceptados: true,
+        privacidad_aceptada: true,
+        version_terminos: '2026-09-05',
+        version_privacidad: '2026-09-05',
+        user_agent: request.headers.get('user-agent') ?? 'unknown',
+        timestamp_utc: legal_aceptado_en,
+      },
+      ip,
+    }) } catch (auditErr) { console.error('[registro] log de consentimiento:', auditErr) }
+  }
 
   // Enviar correo transaccional de confirmación con diseño oficial, OTP y botón directo
   await enviarConfirmacionRegistro(email, {

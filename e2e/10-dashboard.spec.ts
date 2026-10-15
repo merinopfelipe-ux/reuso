@@ -275,7 +275,8 @@ test('dash-08 - un empleado completa los datos de su empresa en /dashboard/empre
   await page.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
   await page.locator('#email').fill(email)
   await page.locator('#password').fill(password)
-  await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+  await page.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+  await page.getByRole('button', { name: /autorizar política de privacidad/i }).click()
   await page.getByRole('button', { name: /ingresar|sign in/i }).click()
   await page.waitForURL(/\/dashboard/, { timeout: 60_000 })
 

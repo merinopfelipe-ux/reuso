@@ -19,6 +19,8 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
 
   const [indicativo, setIndicativo] = useState('+57')
   const [telefono, setTelefono] = useState('')
+  const [aceptoTerminos, setAceptoTerminos] = useState(false)
+  const [aceptoPrivacidad, setAceptoPrivacidad] = useState(false)
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -40,8 +42,14 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError(null)
+
+    if (!aceptoTerminos || !aceptoPrivacidad) {
+      setError('Debes aceptar los Términos y Condiciones y autorizar la Política de Privacidad para continuar.')
+      return
+    }
+
+    setLoading(true)
 
     try {
       const nombreCompleto = [formData.nombre.trim(), formData.apellido.trim()].filter(Boolean).join(' ')
@@ -53,6 +61,8 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
           nombre: nombreCompleto,
           apellido: formData.apellido.trim(),
           telefono: telefono ? `${indicativo} ${telefono}`.trim() : null,
+          acepto_terminos: aceptoTerminos,
+          acepto_privacidad: aceptoPrivacidad,
           turnstile_token: turnstileToken || 'skip',
         }),
       })
@@ -210,6 +220,41 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
           />
         </div>
 
+        {/* Consentimiento expreso e informado previo (Ley 1581 de 2012 / Circular Única SIC) */}
+        <div className="flex flex-col gap-2.5 pt-1">
+          <label className="flex items-start gap-2.5 text-xs text-[#474747] dark:text-white/80 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              required
+              checked={aceptoTerminos}
+              onChange={(e) => setAceptoTerminos(e.target.checked)}
+              className="mt-0.5 rounded border-[#00827C]/30 text-[#00827C] focus:ring-[#00827C] accent-[#00827C] dark:accent-[#D6F391] shrink-0"
+            />
+            <span>
+              Acepto los{' '}
+              <a href="/legal/terminos" target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
+                Términos y Condiciones
+              </a>{' '}
+              del servicio.
+            </span>
+          </label>
+          <label className="flex items-start gap-2.5 text-xs text-[#474747] dark:text-white/80 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              required
+              checked={aceptoPrivacidad}
+              onChange={(e) => setAceptoPrivacidad(e.target.checked)}
+              className="mt-0.5 rounded border-[#00827C]/30 text-[#00827C] focus:ring-[#00827C] accent-[#00827C] dark:accent-[#D6F391] shrink-0"
+            />
+            <span>
+              Autorizo el tratamiento de mis datos personales de acuerdo con la{' '}
+              <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
+                Política de Privacidad
+              </a>.
+            </span>
+          </label>
+        </div>
+
         {error && (
           <p className="text-xs font-semibold text-red-500 m-0">{error}</p>
         )}
@@ -217,7 +262,7 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
         <button
           disabled={loading}
           type="submit"
-          className={`mt-2 w-full py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
+          className={`mt-1 w-full py-3 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 ${
             loading ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02]'
           } bg-[#00827C] dark:bg-[#D6F391] text-white dark:text-[#474747]`}>
           {loading ? (
@@ -229,17 +274,6 @@ export function LeadsForm({ initialPlan }: LeadsFormProps = {}) {
             </>
           )}
         </button>
-
-        <p className="text-[11px] text-center text-(--text-placeholder) m-0 mt-1">
-          Al enviar, aceptas nuestra{' '}
-          <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
-            Política de Privacidad
-          </a>{' '}
-          y{' '}
-          <a href="/legal/terminos" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#00827C] dark:hover:text-[#D6F391]">
-            Términos y Condiciones
-          </a>.
-        </p>
       </form>
     </div>
   )

@@ -54,6 +54,10 @@ const TF = {
     mensaje_label: 'Mensaje',
     mensaje_placeholder: 'Describe tu consulta con el mayor detalle posible...',
     error_campos: 'Completa todos los campos para continuar.',
+    privacidad_label_pre: 'Autorizo el tratamiento de mis datos personales según la',
+    privacidad_link: 'política de privacidad',
+    privacidad_label_post: 'exclusivamente para la atención y respuesta de esta consulta legal.',
+    error_privacidad: 'Debes autorizar el tratamiento de tus datos para enviar la consulta.',
     error_envio: 'Algo salió mal. Intenta de nuevo o escríbenos a innovacion@lurdes.co.',
     enviando: 'Enviando...',
     enviar: 'Enviar consulta',
@@ -71,6 +75,10 @@ const TF = {
     mensaje_label: 'Message',
     mensaje_placeholder: 'Describe your query in as much detail as possible...',
     error_campos: 'Please complete all fields to continue.',
+    privacidad_label_pre: 'I authorize the processing of my personal data per the',
+    privacidad_link: 'privacy policy',
+    privacidad_label_post: 'solely to respond to this legal enquiry.',
+    error_privacidad: 'You must authorize data processing to submit the enquiry.',
     error_envio: 'Something went wrong. Try again or email us at innovacion@lurdes.co.',
     enviando: 'Sending...',
     enviar: 'Send enquiry',
@@ -90,6 +98,7 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
     email: '',
     tipo: '',
     mensaje: '',
+    acepto_datos: false,
     // Honeypot anti-bots: invisible para una persona real (ver JSX).
     sitio_web: '',
   })
@@ -128,13 +137,17 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
       setError(tf.error_campos)
       return
     }
+    if (!form.acepto_datos) {
+      setError(tf.error_privacidad)
+      return
+    }
     setError('')
     setEnviando(true)
     try {
       const res = await fetch('/api/legal/dudas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, turnstile_token: turnstileToken || 'skip' }),
+        body: JSON.stringify({ ...form, acepto_datos: true, turnstile_token: turnstileToken || 'skip' }),
       })
       const cuerpo = await res.json().catch(() => null)
       if (!res.ok) {
@@ -260,6 +273,28 @@ export function DudasForm({ lang = 'ES' }: DudasFormProps) {
           style={{ ...inputStyle, resize: 'vertical' }}
         />
       </div>
+
+      <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: 13, color: 'var(--text-secondary)' }}>
+        <input
+          type="checkbox"
+          required
+          checked={form.acepto_datos}
+          onChange={(e) => setForm((prev) => ({ ...prev, acepto_datos: e.target.checked }))}
+          style={{ marginTop: 2, accentColor: 'var(--color-brand)' }}
+        />
+        <span>
+          {tf.privacidad_label_pre}{' '}
+          <a
+            href="/legal/privacidad"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--color-brand)', fontWeight: 600, textDecoration: 'underline' }}
+          >
+            {tf.privacidad_link}
+          </a>{' '}
+          {tf.privacidad_label_post}
+        </span>
+      </label>
 
       {error && (
         <p style={{ color: 'var(--color-error)', fontSize: 13, margin: 0 }}>

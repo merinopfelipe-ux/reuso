@@ -33,7 +33,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     const _cred1 = credencialesEfimeras('usuario_libre')
     await page.locator('#email').fill(_cred1.email)
     await page.locator('#password').fill(_cred1.password)
-    await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+    await page.getByRole('button', { name: /autorizar política de privacidad/i }).click()
     
     await Promise.all([
       page.waitForURL(/.*\/dashboard.*/),
@@ -51,7 +52,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     
     await page.locator('#email').fill('inexistente_qa@reuso.com')
     await page.locator('#password').fill('wrongpass123')
-    await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+    await page.getByRole('button', { name: /autorizar política de privacidad/i }).click()
     await page.getByRole('button', { name: /ingresar|sign in/i }).click()
     
     await expect(page.getByText('Credenciales incorrectas. Verifica tu email y contraseña.')).toBeVisible()
@@ -88,7 +90,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     // El checkbox real es visual con Lucide icons dentro de un label.
     await page.getByText(/Recuérdame/i).first().click()
     await page.locator('#password').fill('TestReuso2024!')
-    await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+    await page.getByRole('button', { name: /autorizar política de privacidad/i }).click()
     
     await page.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page.waitForTimeout(1000)
@@ -189,7 +192,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     const _cred1 = credencialesEfimeras('usuario_libre')
     await page.locator('#email').fill(_cred1.email)
     await page.locator('#password').fill(_cred1.password)
-    await page.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+    await page.getByRole('button', { name: /autorizar política de privacidad/i }).click()
     await page.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page.waitForURL(/.*\/dashboard.*/)
     
@@ -257,7 +261,8 @@ test.describe('Autenticación (auth-01 a auth-12)', () => {
     await page1.locator('button', { hasText: /Solo esenciales|Essential only/ }).first().click({ timeout: 5000 }).catch(() => {})
     await page1.locator('#email').fill(email)
     await page1.locator('#password').fill(password)
-    await page1.getByRole('button', { name: /aceptar términos legales/i }).click()
+    await page1.getByRole('button', { name: /aceptar términos y condiciones/i }).click()
+    await page1.getByRole('button', { name: /autorizar política de privacidad/i }).click()
     await page1.getByRole('button', { name: /ingresar|sign in/i }).click()
     await page1.waitForURL(/.*\/dashboard.*/, { timeout: 60_000 })
     
