@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle } from '@/components/ui/icons'
+import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle, Camera } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {
@@ -24,6 +24,7 @@ const T = {
       { href: '/legal/ptee', titulo: 'Programa de Ética (PTEE)', descripcion: 'Programa anticorrupción, antisoborno transnacional y código ético de Grupo MLP S.A.S.' },
       { href: '/legal/sagrilaft', titulo: 'Política SAGRILAFT', descripcion: 'Autocontrol y gestión del riesgo integral de LA/FT/FPADM y debida diligencia.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
+      { href: '/legal/activos-y-licencias', titulo: 'Bancos de Imágenes y Licencias', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales de la plataforma.' },
     ],
   },
   ENG: {
@@ -42,6 +43,7 @@ const T = {
       { href: '/legal/ptee', titulo: 'Ethics Program (PTEE)', descripcion: 'Anti-corruption, anti-bribery program, and corporate code of conduct.' },
       { href: '/legal/sagrilaft', titulo: 'SAGRILAFT Policy', descripcion: 'Prevention and control of money laundering and terrorist financing risks.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
+      { href: '/legal/activos-y-licencias', titulo: 'Image Banks & Asset Licenses', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
     ],
   },
 }
@@ -57,6 +59,7 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
   '/legal/ptee': Scale,
   '/legal/sagrilaft': ClipboardList,
   '/legal/ia': IaIcon,
+  '/legal/activos-y-licencias': Camera,
 }
 
 export default function LegalIndexPage() {

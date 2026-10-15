@@ -27,7 +27,7 @@ const T = {
       { href: '/legal/reglamento', label: 'Reglamento de Uso' },
     ],
     intro:
-      'Bienvenido a la Calculadora de Reúso, plataforma en línea ubicada en calculadoradereuso.com, propiedad de Grupo MLP S.A.S., empresa constituida bajo las leyes de la República de Colombia, con domicilio en Medellín, Antioquia. Lee estas condiciones antes de usar la plataforma. Al iniciar sesión, registrarte o acceder a la calculadora, confirmas que las aceptas en su totalidad y que celebras un contrato legalmente vinculante con Grupo MLP S.A.S.',
+      'Bienvenido a la Calculadora de Reúso. La plataforma está en calculadoradereuso.com y pertenece a Grupo MLP S.A.S., una empresa constituida en Colombia con sede en Medellín, Antioquia. Lee estas condiciones antes de usar la plataforma. Al iniciar sesión, registrarte o entrar a la calculadora, aceptas estas condiciones y firmas un contrato legal con Grupo MLP S.A.S.',
     definicionesTitle: 'Definiciones',
     definiciones: [
       {
@@ -49,25 +49,25 @@ const T = {
     ],
     aceptacionTitle: 'Aceptación',
     aceptacion:
-      'Al usar la calculadora aceptas estos términos y la política de privacidad y tratamiento de datos. Si decides no aceptarlos, debes cesar de inmediato el uso de la plataforma. Estos términos constituyen un contrato legal vinculante entre tú y Grupo MLP S.A.S. También podemos actualizar estos términos y notificarte por correo electrónico o mediante aviso en la plataforma.',
+      'Al usar la calculadora, aceptas estos términos y la política de privacidad. Si no estás de acuerdo, deja de usar la plataforma. Estos términos son un contrato legal entre tú y Grupo MLP S.A.S. Podemos actualizarlos y te avisaremos por correo o con un aviso dentro de la plataforma.',
     aceptacionLinkLabel: 'política de privacidad y tratamiento de datos',
     servicioTitle: 'Servicio y funcionamiento',
     servicio1:
-      'La Calculadora de Reúso es una plataforma en línea que permite registrar objetos reutilizados y obtener una estimación verificada del CO₂ equivalente evitado. Puedes generar informes por rango de fecha, cada uno con código de verificación único y QR verificable en calculadoradereuso.com/verificar.',
+      'La Calculadora de Reúso te ayuda a registrar los objetos que reutilizas y a calcular cuánto CO₂ equivalente evitas. Puedes generar informes por rango de fechas. Cada informe tiene un código único y un QR para verificarlo en calculadoradereuso.com/verificar.',
     servicio2:
-      'Las estimaciones se basan en factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Constituyen una herramienta de comunicación ambiental y difieren de una auditoría ambiental oficial.',
+      'Los cálculos usan factores de emisión reconocidos internacionalmente y se expresan en kilogramos de CO₂ equivalente (kg CO₂e). Son una herramienta de comunicación ambiental. No reemplazan una auditoría ambiental oficial.',
     servicio3:
       'El alcance del servicio disponible varía según el plan contratado (Explora, Circular Lab, Impulso Sostenible o Impacto Ilimitado). Para conocer los límites de cada plan, consulta el',
     servicioLinkLabel: 'Reglamento de Uso',
     servicio4Title: 'Independencia y fuentes:',
     servicio4:
-      'Los cálculos son desarrollos basados en metodologías globales fiables. La calculadora es totalmente autónoma y no cuenta con afiliación, patrocinio ni aval oficial por parte de las fuentes.',
+      'Los cálculos se basan en metodologías reconocidas a nivel mundial. La calculadora es independiente: no tiene afiliación, patrocinio ni aval oficial de las fuentes que usa.',
     servicio5Title: 'Carácter estimativo:',
     servicio5:
-      'Los puntajes e indicadores son aproximaciones matemáticas basadas en los datos ingresados. Sirven como guía para evaluar el desempeño circular en múltiples ciclos de uso y no se garantizan como cifras exactas, certificaciones ambientales ni auditorías vinculantes.',
+      'Los puntajes e indicadores son aproximaciones matemáticas con base en los datos que ingresas. Te ayudan a evaluar tu desempeño circular a lo largo de varios ciclos de uso. No son certificaciones ambientales ni auditorías.',
     cuentaTitle: 'Creación de cuenta',
     cuenta1:
-      'Puedes registrarte como persona natural o como organización. Las organizaciones designan un administrador que puede invitar a otros usuarios mediante enlace de invitación. El registro requiere nombre completo, correo electrónico y contraseña. Las organizaciones deben proporcionar además razón social y NIT.',
+      'Puedes registrarte como persona natural o como organización. Si eres organización, tu administrador puede invitar a otras personas con un enlace. Para registrarte necesitas tu nombre completo, correo electrónico y una contraseña. Las organizaciones también deben dar su razón social y su NIT.',
     cuenta2:
       'Eres responsable de la veracidad de la información que suministras y de la confidencialidad de tus credenciales. La plataforma se destina exclusivamente a personas mayores de edad conforme a la legislación colombiana.',
     obligacionesTitle: 'Obligaciones',
@@ -92,23 +92,25 @@ const T = {
     ],
     licenciaTitle: 'Licencia de uso',
     licencia:
-      'Te otorgamos una licencia limitada, personal, intransferible y revocable para acceder y usar la plataforma conforme a estos términos. No adquieres ningún derecho sobre el código fuente, diseño, metodología de cálculo, marcas ni ningún otro elemento de la plataforma. La plataforma incorpora software de terceros licenciados a Grupo MLP S.A.S. bajo sus respectivas condiciones.',
+      'Te damos una licencia limitada, personal, intransferible y revocable para usar la plataforma según estos términos. No obtienes derechos sobre el código fuente, el diseño, la metodología de cálculo, las marcas ni otros elementos de la plataforma. La plataforma usa software y activos visuales de terceros, licenciados a Grupo MLP S.A.S. según sus propias condiciones.',
+    licenciaActivosTexto: 'Para conocer el detalle y alcance de las licencias comerciales aplicables a fotografía, iconografía y activos visuales, consulta',
+    licenciaActivosLink: 'Bancos de Imágenes y Licencias de Activos',
     propiedadTitle: 'Propiedad intelectual',
     propiedad:
-      'Todos los derechos de propiedad intelectual sobre la plataforma, su diseño, código fuente, metodología de cálculo, factores de emisión, marcas y contenidos pertenecen a Grupo MLP S.A.S. Queda absolutamente prohibida la reproducción, distribución, modificación, extracción o cualquier forma de uso de estos activos sin autorización escrita. Para un detalle completo de las restricciones de uso de la información, consulta el',
+      'Grupo MLP S.A.S. es dueño de todos los derechos sobre la plataforma: su diseño, código fuente, metodología de cálculo, factores de emisión, marcas y contenidos. No puedes reproducir, distribuir, modificar ni extraer estos elementos sin autorización escrita. Para conocer las restricciones de uso de la información, consulta el',
     propiedadLinkLabel: 'acuerdo de confidencialidad',
     responsabilidadTitle: 'Limitación de responsabilidad',
     responsabilidad1:
-      'No somos responsables por daños directos, indirectos o consecuentes derivados del uso o la imposibilidad de uso de la plataforma. Los valores de CO₂e son estimados con base en factores reconocidos internacionalmente y difieren de una auditoría ambiental oficial. Asumes de forma exclusiva el riesgo de tu uso.',
+      'No somos responsables de daños directos, indirectos o consecuentes que surjan por usar la plataforma o por no poder usarla. Los valores de CO₂e son estimados con factores reconocidos internacionalmente y no reemplazan una auditoría ambiental oficial. Tú asumes el riesgo de tu uso.',
     responsabilidad2:
       'Tampoco somos responsables del contenido de sitios web de terceros a los que la plataforma pueda enlazar. El acceso a dichos sitios se realiza bajo tu exclusiva responsabilidad.',
     leyTitle: 'Ley aplicable y resolución de controversias',
     ley1:
-      'Estos términos se rigen por las leyes de la República de Colombia, incluyendo la Ley 1266 de 2008, la Ley 1480 de 2011 (Estatuto del Consumidor) y la Ley 1581 de 2012 (protección de datos personales). Para usuarios en la Unión Europea, aplica también el Reglamento General de Protección de Datos (RGPD). Para residentes en California (EE. UU.), aplica la California Consumer Privacy Act (CCPA). Ante cualquier controversia, las partes agotan primero una instancia de negociación directa y, de persistir la controversia, se someten al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
+      'Estos términos se rigen por las leyes de Colombia, incluidas la Ley 1266 de 2008, la Ley 1480 de 2011 (Estatuto del Consumidor) y la Ley 1581 de 2012 (protección de datos personales). Si estás en la Unión Europea, también aplica el Reglamento General de Protección de Datos (RGPD). Si resides en California (EE. UU.), aplica la California Consumer Privacy Act (CCPA). Si surge una diferencia, primero intentamos resolverla de forma directa. Si no se resuelve, el caso va al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
     ley2: 'Ante cualquier duda, comunícate con nosotros en',
     ley3: '. Respondemos en un plazo de 10 a 15 días hábiles.',
     transparenciaTexto:
-      'Grupo MLP S.A.S. construyó la Calculadora de Reúso mediante modelos de Inteligencia Artificial. Utilizamos herramientas de IA para optimizar el código y procesar los factores de emisión. Dado que estos sistemas pueden generar imprecisiones técnicas, monitoreamos constantemente la plataforma para mejorar la calidad de los cálculos ambientales.',
+      'Construimos la Calculadora de Reúso con ayuda de herramientas de inteligencia artificial, para optimizar el código y procesar los factores de emisión. Estos sistemas pueden cometer errores técnicos. Por eso revisamos la plataforma con frecuencia para mejorar la calidad de los cálculos ambientales.',
     transparenciaLink: 'Lee nuestra política de uso de IA →',
   },
   ENG: {
@@ -199,7 +201,9 @@ const T = {
     ],
     licenciaTitle: 'License of use',
     licencia:
-      'We grant you a limited, personal, non-transferable and revocable license to access and use the platform in accordance with these terms. You do not acquire any rights to the source code, design, calculation methodology, trademarks or any other element of the platform. The platform incorporates third-party software licensed to Grupo MLP S.A.S. under their respective terms.',
+      'We grant you a limited, personal, non-transferable and revocable license to access and use the platform in accordance with these terms. You do not acquire any rights to the source code, design, calculation methodology, trademarks or any other element of the platform. The platform incorporates third-party software and visual assets licensed to Grupo MLP S.A.S. under their respective terms.',
+    licenciaActivosTexto: 'To review the details and commercial scope of licenses for stock photography, iconography, and visual assets, see',
+    licenciaActivosLink: 'Image Banks & Asset Licenses',
     propiedadTitle: 'Intellectual property',
     propiedad:
       'All intellectual property rights in the platform, its design, source code, calculation methodology, emission factors, trademarks and content belong to Grupo MLP S.A.S. Reproduction, distribution, modification, extraction or any form of use of these assets without written authorization is strictly prohibited. For full details of the information use restrictions, see the',
@@ -344,6 +348,16 @@ export default function TerminosPage() {
 
       <h2 id="licencia" style={h2}>{t.licenciaTitle}</h2>
       <p style={p}>{t.licencia}</p>
+      <p style={p}>
+        {t.licenciaActivosTexto}{' '}
+        <Link
+          href="/legal/activos-y-licencias"
+          style={{ color: 'var(--color-brand)', fontWeight: 600 }}
+        >
+          {t.licenciaActivosLink}
+        </Link>
+        .
+      </p>
 
       <h2 id="propiedad" style={h2}>{t.propiedadTitle}</h2>
       <p style={p}>

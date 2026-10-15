@@ -48,6 +48,7 @@ const ALL_LEGAL_PAGES = {
     { href: '/legal/sagrilaft', label: 'Política SAGRILAFT', descripcion: 'Prevención de lavado de activos y financiación del terrorismo.' },
     { href: '/legal/ia', label: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos IA para construir la plataforma y calcular CO₂.' },
     { href: '/legal/medicion', label: 'Metodología de Cálculo', descripcion: 'Cómo estimamos el CO₂e evitado de manera inmutable y verificable.' },
+    { href: '/legal/activos-y-licencias', label: 'Bancos de Imágenes y Licencias', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales.' },
   ],
   ENG: [
     { href: '/legal/terminos', label: 'Terms and Conditions', descripcion: 'Rules for using the platform, rights, and obligations.' },
@@ -60,6 +61,7 @@ const ALL_LEGAL_PAGES = {
     { href: '/legal/sagrilaft', label: 'SAGRILAFT Policy', descripcion: 'Anti-money laundering and counter-terrorist financing compliance.' },
     { href: '/legal/ia', label: 'Artificial Intelligence Use', descripcion: 'How we use AI to build the platform and calculate CO₂.' },
     { href: '/legal/medicion', label: 'Calculation Methodology', descripcion: 'How we estimate avoided CO₂e immutably and verifiably.' },
+    { href: '/legal/activos-y-licencias', label: 'Asset Licenses & Stock Images', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
   ]
 }
 

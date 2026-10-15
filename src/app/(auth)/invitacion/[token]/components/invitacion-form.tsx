@@ -19,7 +19,7 @@ const BRAND = 'var(--color-brand)'
 export default function InvitacionForm({ token, email, empresaNombre, rolAsignado, esEmpresaNueva }: Props) {
   const router = useRouter()
   const [form, setForm] = useState({
-    nombre: '', password: '', password_confirm: '', acepta_terminos: false,
+    nombre: '', password: '', password_confirm: '', acepta_terminos: false, acepta_privacidad: false,
     nombre_empresa: '', nit: '', telefono: '', pais: '', ciudad: '',
   })
   const [showPass, setShowPass] = useState(false)
@@ -36,7 +36,10 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (form.password !== form.password_confirm) { setError('Las contraseñas no coinciden.'); return }
+    if (!form.acepta_terminos || !form.acepta_privacidad) {
+      setError('Debes aceptar los Términos y Condiciones y autorizar la Política de Privacidad.')
+      return
+    }
     setLoading(true)
     setError('')
 
@@ -48,6 +51,7 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         ...form,
         ...(esEmpresaNueva ? {} : { nombre_empresa: undefined, nit: undefined, telefono: undefined, pais: undefined, ciudad: undefined }),
         acepta_terminos: true,
+        acepta_privacidad: true,
         turnstile_token: turnstileToken || 'skip',
       }),
     })
@@ -240,21 +244,42 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
         )}
       </div>
 
-      <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: 14 }}>
-        <input
-          type="checkbox"
-          name="acepta_terminos"
-          checked={form.acepta_terminos}
-          onChange={handleChange}
-          required
-          style={{ marginTop: 2, accentColor: BRAND }}
-        />
-        <span style={{ color: 'var(--text-secondary)' }}>
-          Acepto los{' '}
-          <span style={{ color: BRAND, fontWeight: 600 }}>términos y condiciones</span>
-          {' '}de Calculadora de Reúso
-        </span>
-      </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: 13 }}>
+          <input
+            type="checkbox"
+            name="acepta_terminos"
+            checked={form.acepta_terminos}
+            onChange={handleChange}
+            required
+            style={{ marginTop: 2, accentColor: BRAND }}
+          />
+          <span style={{ color: 'var(--text-secondary)' }}>
+            Acepto los{' '}
+            <a href="/legal/terminos" target="_blank" rel="noopener noreferrer" style={{ color: BRAND, fontWeight: 600, textDecoration: 'underline' }}>
+              términos y condiciones
+            </a>{' '}
+            de Calculadora de Reúso
+          </span>
+        </label>
+
+        <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: 13 }}>
+          <input
+            type="checkbox"
+            name="acepta_privacidad"
+            checked={form.acepta_privacidad}
+            onChange={handleChange}
+            required
+            style={{ marginTop: 2, accentColor: BRAND }}
+          />
+          <span style={{ color: 'var(--text-secondary)' }}>
+            Autorizo el tratamiento de mis datos personales según la{' '}
+            <a href="/legal/privacidad" target="_blank" rel="noopener noreferrer" style={{ color: BRAND, fontWeight: 600, textDecoration: 'underline' }}>
+              política de privacidad
+            </a>
+          </span>
+        </label>
+      </div>
 
       <Turnstile
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}

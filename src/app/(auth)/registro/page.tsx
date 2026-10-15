@@ -233,9 +233,10 @@ export default function RegistroPage() {
         apodo: apodo || undefined,
         email,
         telefono: telefono ? `${indicativo} ${telefono}` : undefined,
-        password,
+        password: password,
         password_confirm: passwordConfirm,
         acepta_terminos: true,
+        acepta_privacidad: true,
         sector,
         frecuencia_reuso: frecuencia,
         motivacion: motivaciones.join(', '),
@@ -1021,7 +1022,7 @@ export default function RegistroPage() {
               ))}
 
               <a
-                href={modalDoc === 'terminos' ? '/legal' : '/legal/datos'}
+                href={modalDoc === 'terminos' ? '/legal/terminos' : '/legal/privacidad'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover-slide-r"

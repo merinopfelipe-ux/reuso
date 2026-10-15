@@ -31,9 +31,15 @@ const T = {
     olvidaste:  '¿Olvidaste tu contraseña?',
     legalPre:   'Al acceder, acepto los',
     legalLink:  'términos legales',
+    aceptaTerminosPre: 'Acepto los',
+    terminosLink: 'términos y condiciones',
+    aceptaPrivacidadPre: 'Autorizo el tratamiento de mis datos personales según la',
+    privacidadLink: 'política de privacidad',
     ingresar:   'Ingresar',
     verificando:'Verificando...',
-    errorLegal: 'Debes aceptar los términos para ingresar.',
+    errorLegal: 'Debes aceptar los términos y la política de privacidad para ingresar.',
+    errorTerminos: 'Debes aceptar los términos y condiciones para continuar.',
+    errorPrivacidad: 'Debes autorizar la política de privacidad para continuar.',
     errorServer:'Error interno del servidor. Contacta a soporte.',
     errorDatos: 'Credenciales incorrectas. Verifica tu email y contraseña.',
     errorCorreo:'Completa el correo electrónico.',
@@ -60,9 +66,15 @@ const T = {
     olvidaste:  'Forgot your password?',
     legalPre:   'By signing in, I accept the',
     legalLink:  'legal terms',
+    aceptaTerminosPre: 'I accept the',
+    terminosLink: 'terms and conditions',
+    aceptaPrivacidadPre: 'I authorize the processing of my personal data per the',
+    privacidadLink: 'privacy policy',
     ingresar:   'Sign in',
     verificando:'Verifying...',
-    errorLegal: 'You must accept the terms to continue.',
+    errorLegal: 'You must accept the terms and privacy policy to continue.',
+    errorTerminos: 'You must accept the terms and conditions to continue.',
+    errorPrivacidad: 'You must authorize the privacy policy to continue.',
     errorServer:'Internal server error. Contact support.',
     errorDatos: 'Check your credentials and try again.',
     errorCorreo:'Complete your email address.',
@@ -122,8 +134,10 @@ export default function LoginPage() {
   const [turnstileToken, setTurnstileToken] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [aceptaLegal, setAceptaLegal] = useState(false)
-  const [legalError, setLegalError] = useState(false)
+  const [aceptaTerminos, setAceptaTerminos] = useState(false)
+  const [aceptaPrivacidad, setAceptaPrivacidad] = useState(false)
+  const [terminosError, setTerminosError] = useState(false)
+  const [privacidadError, setPrivacidadError] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [passError, setPassError] = useState(false)
   const [recordarme, setRecordarme] = useState(false)
@@ -183,12 +197,14 @@ export default function LoginPage() {
     setError('')
     setEmailError(false)
     setPassError(false)
-    setLegalError(false)
+    setTerminosError(false)
+    setPrivacidadError(false)
 
     let hasError = false
     if (!email) { setEmailError(true); hasError = true }
     if (!password) { setPassError(true); hasError = true }
-    if (!aceptaLegal) { setLegalError(true); hasError = true }
+    if (!aceptaTerminos) { setTerminosError(true); hasError = true }
+    if (!aceptaPrivacidad) { setPrivacidadError(true); hasError = true }
     if (hasError) return
 
     // Guardar o borrar el correo según "Recuérdame"
@@ -205,7 +221,14 @@ export default function LoginPage() {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, turnstile_token: tokenParaEnviar, acepta_legal: aceptaLegal }),
+      body: JSON.stringify({
+        email,
+        password,
+        turnstile_token: tokenParaEnviar,
+        acepta_legal: true,
+        acepta_terminos: true,
+        acepta_privacidad: true,
+      }),
     })
     let data;
     try {
@@ -420,33 +443,67 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {/* Checkbox legal (pre-marcado) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 select-none px-1">
-                <button
-                  type="button"
-                  onClick={() => { setAceptaLegal(!aceptaLegal); setLegalError(false) }}
-                  className="shrink-0 flex items-center focus:outline-hidden hover-pop hover-press"
-                  aria-label="Aceptar términos legales"
-                >
-                  {aceptaLegal
-                    ? <CheckSquare size={18} className="text-brand" />
-                    : <Square size={18} className={`transition-colors ${legalError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
-                  }
-                </button>
-                <span className="text-sm font-medium text-secondary">
-                  {T[idioma].legalPre}{' '}
-                  <Link href="/legal" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">
-                    {T[idioma].legalLink}
-                  </Link>
-                  .
-                </span>
+            {/* Consentimiento legal independiente y desmarcado por defecto (Ley 1581 / SIC) */}
+            <div className="flex flex-col gap-2.5">
+              {/* Casilla 1: Términos y Condiciones */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-start gap-2 select-none px-1">
+                  <button
+                    type="button"
+                    id="checkbox-terminos"
+                    onClick={() => { setAceptaTerminos(!aceptaTerminos); setTerminosError(false) }}
+                    className="shrink-0 mt-0.5 flex items-center focus:outline-hidden hover-pop hover-press"
+                    aria-label="Aceptar términos y condiciones"
+                  >
+                    {aceptaTerminos
+                      ? <CheckSquare size={18} className="text-brand" />
+                      : <Square size={18} className={`transition-colors ${terminosError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
+                    }
+                  </button>
+                  <span className="text-xs sm:text-sm font-medium text-secondary leading-snug">
+                    {T[idioma].aceptaTerminosPre}{' '}
+                    <Link href="/legal/terminos" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-semibold">
+                      {T[idioma].terminosLink}
+                    </Link>
+                    .
+                  </span>
+                </div>
+                {terminosError && (
+                  <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
+                    {T[idioma].errorTerminos}
+                  </p>
+                )}
               </div>
-              {legalError && (
-                <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
-                  {T[idioma].errorLegal}
-                </p>
-              )}
+
+              {/* Casilla 2: Política de Privacidad y Tratamiento de Datos */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-start gap-2 select-none px-1">
+                  <button
+                    type="button"
+                    id="checkbox-privacidad"
+                    onClick={() => { setAceptaPrivacidad(!aceptaPrivacidad); setPrivacidadError(false) }}
+                    className="shrink-0 mt-0.5 flex items-center focus:outline-hidden hover-pop hover-press"
+                    aria-label="Autorizar política de privacidad"
+                  >
+                    {aceptaPrivacidad
+                      ? <CheckSquare size={18} className="text-brand" />
+                      : <Square size={18} className={`transition-colors ${privacidadError ? 'text-error' : 'text-secondary hover:text-primary'}`} />
+                    }
+                  </button>
+                  <span className="text-xs sm:text-sm font-medium text-secondary leading-snug">
+                    {T[idioma].aceptaPrivacidadPre}{' '}
+                    <Link href="/legal/privacidad" target="_blank" rel="noopener noreferrer" className="text-brand hover:underline font-semibold">
+                      {T[idioma].privacidadLink}
+                    </Link>
+                    .
+                  </span>
+                </div>
+                {privacidadError && (
+                  <p className="text-xs font-semibold px-1" style={{ color: isDark ? '#FF9B9B' : 'var(--color-error-content, #CC3C2A)' }}>
+                    {T[idioma].errorPrivacidad}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Botón principal */}

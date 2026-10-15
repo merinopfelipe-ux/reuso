@@ -24,24 +24,24 @@ const T = {
       { id: 'vigencia', label: 'Vigencia' },
     ],
     transparencia: {
-      texto: 'En la Calculadora de Reúso protegemos tu información con el mayor rigor. Los modelos de Inteligencia Artificial que asisten en el procesamiento de datos NO utilizan tus datos personales para entrenarse ni los comparten con terceros ajenos a la operación del sistema. Empleamos tus registros exclusivamente para calcular y medir el impacto ambiental generado.',
+      texto: 'En la Calculadora de Reúso cuidamos tus datos. Usamos modelos de inteligencia artificial para procesarlos, pero no usamos tus datos personales para entrenarlos ni los compartimos con terceros fuera de la operación de la plataforma. Usamos tus registros solo para calcular y medir el impacto ambiental.',
       link: 'Lee nuestra política de uso de IA →',
     },
-    resumen: 'Solo recopilamos los datos necesarios para prestarte el servicio. No los vendemos. Puedes solicitar en cualquier momento que los actualicemos, rectifiquemos o eliminemos. Si eres de Europa, aplica el RGPD y tienes derechos adicionales como la portabilidad y el derecho al olvido. Si eres de EE. UU. (California), aplica la CCPA. En Colombia aplica la Ley 1581.',
-    intro: 'Respetamos tu privacidad y nos comprometemos a proteger la información que registras en la plataforma. Esta política explica cómo recopilamos, almacenamos, usamos y divulgamos tus datos. Para un detalle completo del marco legal, consulta la',
+    resumen: 'Solo pedimos los datos necesarios para darte el servicio. No los vendemos. Puedes pedirnos en cualquier momento que los actualicemos, corrijamos o borremos. Si estás en Europa, tienes derechos adicionales, como llevarte tus datos a otro servicio y el derecho al olvido. Si estás en California (EE. UU.), aplica la CCPA. En Colombia aplica la Ley 1581.',
+    intro: 'Nos importa tu privacidad. Esta política explica qué datos recogemos, cómo los guardamos, cómo los usamos y con quién los compartimos. Para ver el marco legal completo, consulta la',
     introLink: 'política de tratamiento de datos personales',
-    pilaresTitulo: 'Principios de Privacidad de Reúso',
-    pilaresIntro: 'Tus datos desempeñan un papel clave para impulsar soluciones circulares y transparentes. Estamos comprometidos con la claridad, la protección rigurosa y la soberanía de tu información en cada cálculo y reporte que generas.',
+    pilaresTitulo: 'Principios de privacidad de la Calculadora de Reúso',
+    pilaresIntro: 'Tus datos son importantes para nuestras soluciones circulares. Nos comprometemos a ser claros y a protegerlos bien en cada cálculo e informe que generas.',
     pilares: [
       {
         num: '01',
         titulo: 'Transparencia',
-        descripcion: 'Te decimos con total claridad qué datos recopilamos, cómo estimamos el impacto ambiental y cómo utilizamos la información para prestarte el servicio sin letra pequeña.',
+        descripcion: 'Te explicamos de forma sencilla qué datos recogemos, cómo estimamos el impacto ambiental y cómo usamos esa información para darte el servicio.',
       },
       {
         num: '02',
         titulo: 'Seguridad',
-        descripcion: 'Las conexiones viajan cifradas (HTTPS) y los datos se guardan cifrados en reposo en la infraestructura de nuestros proveedores, con control de acceso por roles y registros auditables.',
+        descripcion: 'Tu información viaja cifrada (HTTPS) y se guarda cifrada en los servidores de nuestros proveedores. Solo entra quien tiene permiso, y los accesos quedan registrados.',
       },
       {
         num: '03',
@@ -84,13 +84,13 @@ const T = {
       intro: 'No vendemos tu información personal. Solo la compartimos con:',
       items: [
         { fuerte: 'Proveedores de tecnología:', texto: ' Supabase (base de datos y autenticación), Vercel (hosting). Actúan como encargados del tratamiento bajo acuerdos de confidencialidad. Nuestra base de datos y nuestros servidores están en la Unión Europea (Irlanda), por lo que el tratamiento implica una transferencia internacional de datos.' },
-        { fuerte: 'Herramientas de Analítica y Marketing:', texto: ' Google Analytics (análisis de tráfico y marketing) y Hotjar (mapas de calor y comportamiento). Se usan para mejorar la plataforma y entender la interacción de los usuarios.' },
+        { fuerte: 'Herramientas de Analítica y Marketing:', texto: ' Google Analytics (análisis de tráfico y marketing) y Microsoft Clarity (mapas de calor y comportamiento). Se usan para mejorar la plataforma y entender la interacción de los usuarios.' },
         { fuerte: 'Autoridades:', texto: ' cuando la ley colombiana o una orden judicial lo exija.' },
       ],
     },
     seguridad: {
       titulo: 'Seguridad',
-      texto: 'Protegemos tu información con cifrado de datos en tránsito y en reposo, control de acceso por roles específicos y registros de actividad con integridad criptográfica. Ningún empleado tiene acceso a tus contraseñas. Los registros de actividad, que incluyen copias de los cambios hechos en perfiles, cálculos e informes, se conservan 2 meses y luego se eliminan automáticamente.',
+      texto: 'Protegemos tu información con cifrado al enviarla y al guardarla, con permisos según el rol y con registros de actividad. Ningún empleado tiene acceso a tus contraseñas. Los registros de actividad, que incluyen copias de los cambios en perfiles, cálculos e informes, se guardan 2 meses y luego se borran solos.',
     },
     derechos: {
       titulo: 'Tus derechos',
@@ -113,7 +113,7 @@ const T = {
     },
     vigencia: {
       titulo: 'Vigencia y actualizaciones',
-      texto: 'Esta política entra en vigor desde su publicación. Podemos actualizarla en cualquier momento y te notificamos por correo electrónico o mediante aviso en la plataforma. El uso continuado tras la notificación implica la aceptación de los cambios.',
+      texto: 'Esta política entra en vigor cuando la publicamos. Podemos actualizarla y te avisaremos por correo o con un aviso en la plataforma. Si sigues usando la plataforma después del aviso, aceptas los cambios.',
     },
     leeTabien: [
       { href: '/legal/datos', label: 'Tratamiento de Datos' },
@@ -194,7 +194,7 @@ const T = {
       intro: 'We do not sell your personal information. We only share it with:',
       items: [
         { fuerte: 'Technology providers:', texto: ' Supabase (database and authentication), Vercel (hosting). They act as data processors under confidentiality agreements. Our database and servers are in the European Union (Ireland), so processing involves an international data transfer.' },
-        { fuerte: 'Analytics and Marketing tools:', texto: ' Google Analytics (traffic analysis and marketing) and Hotjar (heatmaps and behavior). They are used to improve the platform and understand user interaction.' },
+        { fuerte: 'Analytics and Marketing tools:', texto: ' Google Analytics (traffic analysis and marketing) and Microsoft Clarity (heatmaps and behavior). They are used to improve the platform and understand user interaction.' },
         { fuerte: 'Authorities:', texto: ' when Colombian law or a court order requires it.' },
       ],
     },
