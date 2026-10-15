@@ -69,7 +69,7 @@ const T = {
     s3: [
       'Lucide Icons (lucide-react): Biblioteca de íconos vectoriales licenciada bajo ISC License (altamente permisiva y compatible con MIT), autorizando su compilación, adaptación y distribución en aplicaciones comerciales.',
       'Phosphor Icons (@phosphor-icons/react): Biblioteca de iconografía licenciada bajo MIT License, permitiendo su integración y renderizado sin restricciones de regalías.',
-      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek solo cuando el dispositivo del visitante ya la tiene instalada, como Mac y iPhone. Seravek fue creada por Eric Olson, y su licencia la distribuye Process Type Foundry (https://fonts.adobe.com/fonts/seravek). Tenemos su licencia a través de una suscripción paga de Adobe Creative Cloud. Nuestro sitio no la carga desde ningún servidor,. En los demás equipos se usa la fuente del sistema.',
+      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek solo cuando el dispositivo del visitante ya la tiene instalada, como Mac y iPhone. Seravek fue creada por Eric Olson, y su licencia la distribuye Process Type Foundry (https://fonts.adobe.com/fonts/seravek). Tenemos su licencia a través de una suscripción paga de Adobe Creative Cloud. Nuestro sitio no la carga desde ningún servidor. En los demás equipos se usa la fuente del sistema.',
     ],
     s4Title: '4. Activos Exclusivos y Titularidad de Grupo MLP S.A.S.',
     s4: [
