@@ -6,7 +6,7 @@ const T = {
   ES: {
     titulo: 'Bancos de Imágenes, Iconografía y Licencias de Activos',
     breadcrumb: 'Bancos de Imágenes y Licencias',
-    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics), iconografía y tipografía en Calculadora de Reúso.',
+    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash), iconografía y tipografía en Calculadora de Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Marco de Propiedad Intelectual' },
       { id: 'bancos-imagenes', label: 'Bancos de Imágenes Gratuitos' },
@@ -64,19 +64,12 @@ const T = {
         permisos: 'Uso personal y comercial, sin pagar ni pedir permiso. No es obligatorio dar crédito.',
         restricciones: 'No hay que presentarse como autor de la foto. No se pueden usar con fines ilegales, inmorales ni para dañar la imagen de personas.',
       },
-      {
-        nombre: 'Kaboompics',
-        licencia: 'Kaboompics Free License',
-        url: 'https://kaboompics.com/page/terms-of-use',
-        permisos: 'Pendiente de verificar. Su página oficial no respondió en la última revisión.',
-        restricciones: 'Antes de usar una foto de Kaboompics, lee sus términos en el enlace oficial.',
-      },
     ],
     s3Title: '3. Licencias de Iconografía y Fuentes Tipográficas',
     s3: [
       'Lucide Icons (lucide-react): Biblioteca de íconos vectoriales licenciada bajo ISC License (altamente permisiva y compatible con MIT), autorizando su compilación, adaptación y distribución en aplicaciones comerciales.',
       'Phosphor Icons (@phosphor-icons/react): Biblioteca de iconografía licenciada bajo MIT License, permitiendo su integración y renderizado sin restricciones de regalías.',
-      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek cuando el dispositivo la trae, como en Mac y iPhone. No distribuimos Seravek. En los demás equipos se usa la fuente del sistema.',
+      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek en los dispositivos que la tienen instalada, como Mac y iPhone. Seravek es una fuente comercial de Process Type Foundry. No la distribuimos. En los demás equipos se usa la fuente del sistema.',
     ],
     s4Title: '4. Activos Exclusivos y Titularidad de Grupo MLP S.A.S.',
     s4: [
@@ -98,7 +91,7 @@ const T = {
   ENG: {
     titulo: 'Image Banks, Iconography, and Asset Licenses',
     breadcrumb: 'Asset Licenses and Image Banks',
-    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics), iconography, and fonts in Reúso.',
+    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash), iconography, and fonts in Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Intellectual Property Framework' },
       { id: 'bancos-imagenes', label: 'Stock Image Banks' },
@@ -156,19 +149,12 @@ const T = {
         permisos: 'Personal and commercial use, without paying or asking permission. Attribution is not required.',
         restricciones: 'Do not present yourself as the author of the photo. Do not use them for illegal or immoral purposes, or to harm the image of people.',
       },
-      {
-        nombre: 'Kaboompics',
-        licencia: 'Kaboompics Free License',
-        url: 'https://kaboompics.com/page/terms-of-use',
-        permisos: 'Pending verification. Its official page did not respond during the last review.',
-        restricciones: 'Before using a Kaboompics photo, read its terms at the official link.',
-      },
     ],
     s3Title: '3. Iconography and Typographic Licenses',
     s3: [
       'Lucide Icons (lucide-react): Open-source vector library under the ISC License (permissive and MIT-compatible), authorizing inclusion and modification in commercial software.',
       'Phosphor Icons (@phosphor-icons/react): Open-source icon family licensed under MIT License, granting royalty-free integration.',
-      'Typography: we use Open Sans, an open-source font distributed under the SIL Open Font License (OFL 1.1), which allows free display in browsers and documents. Headings use Seravek when the device has it, such as Mac and iPhone. We do not distribute Seravek. Other devices use the system font.',
+      'Typography: we use Open Sans, an open-source font distributed under the SIL Open Font License (OFL 1.1), which allows free display in browsers and documents. Headings use Seravek on devices that have it installed, such as Mac and iPhone. Seravek is a commercial typeface from Process Type Foundry. We do not distribute it. Other devices use the system font.',
     ],
     s4Title: '4. Proprietary Assets and Exclusive Ownership',
     s4: [
