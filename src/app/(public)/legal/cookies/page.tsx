@@ -80,7 +80,7 @@ const T = {
       { ley: 'CCPA (California, EE. UU.)', texto: 'Los residentes de California tienen derecho a saber qué datos se recopilan, a oponerse a su venta (no vendemos datos) y a solicitar su eliminación.' },
       { ley: 'Ley 1581 de 2012 y Decreto 1377/2013 (Colombia)', texto: 'Rige el tratamiento de datos personales en Colombia. Incluye el derecho a conocer, actualizar, rectificar y suprimir la información. Aplica a todos nuestros usuarios colombianos.' },
     ],
-    resumen: 'Usamos tres tipos de cookies: esenciales (siempre activas, imprescindibles), funcionales (opcionales, mejoran tu experiencia) y analíticas (opcionales, estadísticas anónimas). Aplica al dominio calculadoradereuso.com y a sus accesos redirigidos (creuso.app). No vendemos datos ni rastreamos tu actividad fuera de Reúso. Puedes gestionar tus preferencias en cualquier momento.',
+    resumen: 'Usamos tres tipos de cookies: esenciales (siempre activas, imprescindibles), funcionales (opcionales, mejoran tu experiencia) y analíticas (opcionales, estadísticas anónimas). Aplica al dominio calculadoradereuso.com y a sus accesos redirigidos (creuso.app). No vendemos datos ni rastreamos tu actividad fuera de Calculadora de Reúso. Puedes gestionar tus preferencias en cualquier momento.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Política de Privacidad', descripcion: 'Qué datos recopilamos y cómo los protegemos.' },
       { href: '/legal/ia', label: 'Uso de IA', descripcion: 'Cómo usamos inteligencia artificial en la plataforma.' },
@@ -157,7 +157,7 @@ const T = {
       { ley: 'CCPA (California, USA)', texto: 'California residents have the right to know what data is collected, to opt out of its sale (we do not sell data), and to request its deletion.' },
       { ley: 'Law 1581 of 2012 and Decree 1377/2013 (Colombia)', texto: 'Governs personal data processing in Colombia. Includes the right to know, update, correct and delete information. Applies to all our Colombian users.' },
     ],
-    resumen: 'We use three types of cookies: essential (always active, indispensable), functional (optional, improve your experience) and analytics (optional, anonymous statistics). Applies to calculadoradereuso.com and its redirecting entry points (creuso.app). We do not sell data or track your activity outside Reúso. You can manage your preferences at any time.',
+    resumen: 'We use three types of cookies: essential (always active, indispensable), functional (optional, improve your experience) and analytics (optional, anonymous statistics). Applies to calculadoradereuso.com and its redirecting entry points (creuso.app). We do not sell data or track your activity outside Calculadora de Reúso. You can manage your preferences at any time.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'What data we collect and how we protect it.' },
       { href: '/legal/ia', label: 'AI Use', descripcion: 'How we use artificial intelligence in the platform.' },

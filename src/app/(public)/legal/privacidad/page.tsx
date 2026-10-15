@@ -83,10 +83,15 @@ const T = {
       titulo: 'Con quién compartimos tus datos',
       intro: 'No vendemos tu información personal. Solo la compartimos con:',
       items: [
-        { fuerte: 'Proveedores de tecnología:', texto: ' Supabase (base de datos y autenticación), Vercel (hosting). Actúan como encargados del tratamiento bajo acuerdos de confidencialidad. Nuestra base de datos y nuestros servidores están en la Unión Europea (Irlanda), por lo que el tratamiento implica una transferencia internacional de datos.' },
-        { fuerte: 'Herramientas de Analítica y Marketing:', texto: ' Google Analytics (análisis de tráfico y marketing) y Microsoft Clarity (mapas de calor y comportamiento). Se usan para mejorar la plataforma y entender la interacción de los usuarios.' },
+        { fuerte: 'Infraestructura:', texto: ' Supabase (base de datos, autenticación y archivos) y Vercel (alojamiento). Actúan como encargados del tratamiento bajo acuerdos de confidencialidad. Nuestra base de datos y nuestros servidores están en la Unión Europea (Irlanda), por lo que el tratamiento implica una transferencia internacional de datos.' },
+        { fuerte: 'Inteligencia artificial:', texto: ' Google Gemini, OpenRouter y Groq procesan las fotos y los textos que envías solo cuando usas una función de IA (Cotizador o ingesta de DPP). Usamos el plan de pago de Google Gemini, que según sus términos no usa tus prompts ni sus respuestas para mejorar sus productos. OpenRouter no usa tus datos para entrenar modelos, pero los proveedores de modelos a los que enruta las peticiones sí podrían hacerlo según sus propias políticas. Groq trata los datos según su acuerdo de servicios y su anexo de tratamiento de datos (DPA).' },
+        { fuerte: 'Correo y comunicaciones:', texto: ' Resend (envío de correos del servicio) y Loops (comunicaciones de la plataforma). Cuando eliminas tu cuenta, también te damos de baja en Loops.' },
+        { fuerte: 'Seguridad del acceso:', texto: ' Cloudflare Turnstile verifica que una persona real, y no un programa, inicie sesión, se registre o envíe un formulario. Se rige por la política de privacidad de Cloudflare y su anexo para Turnstile.' },
+        { fuerte: 'Chat y atención:', texto: ' Chatwoot, con el que atendemos tus consultas y el chat de tu empresa.' },
+        { fuerte: 'Herramientas de Analítica y Marketing:', texto: ' Google Analytics y Microsoft Clarity (mapas de calor y comportamiento), además de Vercel Analytics y Speed Insights (rendimiento y tráfico). Se usan para mejorar la plataforma y entender la interacción de los usuarios.' },
         { fuerte: 'Autoridades:', texto: ' cuando la ley colombiana o una orden judicial lo exija.' },
       ],
+      descargo: 'Trabajamos con estas plataformas para prestarte el servicio. Enviamos a cada una solo los datos que necesita para cumplir su función, y somos transparentes sobre cuáles usamos. Cada proveedor trata la información que recibe bajo sus propias políticas. Lo que un tercero haga con esos datos fuera de nuestro control no es responsabilidad de la Calculadora de Reúso ni de Grupo MLP S.A.S. Te recomendamos leer las políticas de cada proveedor en su sitio oficial.',
     },
     seguridad: {
       titulo: 'Seguridad',
@@ -140,7 +145,7 @@ const T = {
     resumen: 'We only ask for the data we need to provide the service. We do not sell it. You can ask us at any time to update, correct, or delete it. If you are in Europe, you have additional rights, such as taking your data to another service and the right to be forgotten. If you are in California (USA), the CCPA applies.',
     intro: 'We care about your privacy. This policy explains what data we collect, how we store it, how we use it, and with whom we share it. For the full legal framework, see the',
     introLink: 'personal data processing policy',
-    pilaresTitulo: 'Reúso Privacy Principles',
+    pilaresTitulo: 'Calculadora de Reúso Privacy Principles',
     pilaresIntro: 'Your data matters for our circular solutions. We commit to being clear and to protecting it well in every calculation and report you generate.',
     pilares: [
       {
@@ -193,10 +198,15 @@ const T = {
       titulo: 'Who we share your data with',
       intro: 'We do not sell your personal information. We only share it with:',
       items: [
-        { fuerte: 'Technology providers:', texto: ' Supabase (database and authentication), Vercel (hosting). They act as data processors under confidentiality agreements. Our database and servers are in the European Union (Ireland), so processing involves an international data transfer.' },
-        { fuerte: 'Analytics and Marketing tools:', texto: ' Google Analytics (traffic analysis and marketing) and Microsoft Clarity (heatmaps and behavior). They are used to improve the platform and understand user interaction.' },
+        { fuerte: 'Infrastructure:', texto: ' Supabase (database, authentication and files) and Vercel (hosting). They act as data processors under confidentiality agreements. Our database and servers are in the European Union (Ireland), so processing involves an international data transfer.' },
+        { fuerte: 'Artificial intelligence:', texto: ' Google Gemini, OpenRouter and Groq process the photos and text you submit only when you use an AI feature (quoting tool or DPP ingestion). We use the paid plan of Google Gemini, which under its terms does not use your prompts or responses to improve its products. OpenRouter does not use your inputs for model training, but the model providers it routes requests to may do so under their own policies. Groq handles data under its services agreement and its Data Processing Addendum (DPA).' },
+        { fuerte: 'Email and communications:', texto: ' Resend (service emails) and Loops (platform communications). When you delete your account, we also remove you from Loops.' },
+        { fuerte: 'Access security:', texto: ' Cloudflare Turnstile verifies that a real person, not a program, signs in, registers or submits a form. It is governed by the Cloudflare privacy policy and its Turnstile addendum.' },
+        { fuerte: 'Chat and support:', texto: ' Chatwoot, which we use to handle your inquiries and your company chat.' },
+        { fuerte: 'Analytics and Marketing tools:', texto: ' Google Analytics and Microsoft Clarity (heatmaps and behavior), plus Vercel Analytics and Speed Insights (performance and traffic). They are used to improve the platform and understand user interaction.' },
         { fuerte: 'Authorities:', texto: ' when Colombian law or a court order requires it.' },
       ],
+      descargo: 'We work with these platforms to deliver the service. We send each one only the data it needs to perform its function, and we are transparent about which ones we use. Each provider handles the information it receives under its own policies. What a third party does with that data outside our control is not the responsibility of the Calculadora de Reúso or Grupo MLP S.A.S. We recommend reading each provider policy on its official site.',
     },
     seguridad: {
       titulo: 'Security',
@@ -340,6 +350,7 @@ export default function PrivacidadPage() {
           </li>
         ))}
       </ul>
+      <p style={p}>{t.conQuien.descargo}</p>
 
       <h2 id="seguridad" style={h2}>{t.seguridad.titulo}</h2>
       <p style={p}>{t.seguridad.texto}</p>

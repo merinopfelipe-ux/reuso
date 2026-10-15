@@ -103,7 +103,7 @@ const T = {
     responsabilidad1:
       'No somos responsables de daños directos, indirectos o consecuentes que surjan por usar la plataforma o por no poder usarla. Los valores de CO₂e son estimados con factores reconocidos internacionalmente y no reemplazan una auditoría ambiental oficial. Tú asumes el riesgo de tu uso.',
     responsabilidad2:
-      'Tampoco somos responsables del contenido de sitios web de terceros a los que la plataforma pueda enlazar. El acceso a dichos sitios se realiza bajo tu exclusiva responsabilidad.',
+      'Tampoco somos responsables del contenido de sitios web de terceros a los que la plataforma pueda enlazar. El acceso a dichos sitios se realiza bajo tu exclusiva responsabilidad. Trabajamos con otras plataformas para prestar el servicio y les enviamos solo los datos que necesitan. Lo que un tercero haga con esa información fuera de nuestro control no es responsabilidad de la Calculadora de Reúso ni de Grupo MLP S.A.S.',
     leyTitle: 'Ley aplicable y resolución de controversias',
     ley1:
       'Estos términos se rigen por las leyes de Colombia, incluidas la Ley 1266 de 2008, la Ley 1480 de 2011 (Estatuto del Consumidor) y la Ley 1581 de 2012 (protección de datos personales). Si estás en la Unión Europea, también aplica el Reglamento General de Protección de Datos (RGPD). Si resides en California (EE. UU.), aplica la California Consumer Privacy Act (CCPA). Si surge una diferencia, primero intentamos resolverla de forma directa. Si no se resuelve, el caso va al Tribunal de Arbitramento del Centro de Conciliación, Arbitraje y Amigable Composición de Medellín.',
@@ -149,7 +149,7 @@ const T = {
       },
       {
         term: 'Platform:',
-        desc: 'the website and its applications, under the Reuse Calculator brand, owned by Grupo MLP S.A.S.',
+        desc: 'the website and its applications, under the Calculadora de Reúso brand, owned by Grupo MLP S.A.S.',
       },
       {
         term: 'Grupo MLP S.A.S.:',
@@ -212,7 +212,7 @@ const T = {
     responsabilidad1:
       'We are not liable for direct, indirect, or consequential damages arising from using the platform or being unable to use it. CO₂e values are estimates based on internationally recognized factors and do not replace an official environmental audit. You take on the risk of your use.',
     responsabilidad2:
-      'We are also not responsible for the content of third-party websites to which the platform may link. Access to such sites is at your sole risk.',
+      'We are also not responsible for the content of third-party websites to which the platform may link. Access to such sites is at your sole risk. We work with other platforms to deliver the service and send them only the data they need. What a third party does with that information outside our control is not the responsibility of the Calculadora de Reúso or Grupo MLP S.A.S.',
     leyTitle: 'Applicable law and dispute resolution',
     ley1:
       'These terms are governed by the laws of the Republic of Colombia, including Law 1266 of 2008, Law 1480 of 2011 (Consumer Statute) and Law 1581 of 2012 (personal data protection). For users in the European Union, the General Data Protection Regulation (GDPR) also applies. For residents of California (USA), the California Consumer Privacy Act (CCPA) applies. In the event of any dispute, the parties shall first exhaust a direct negotiation stage and, if the dispute persists, submit to the Arbitration Tribunal of the Conciliation, Arbitration and Friendly Composition Center of Medellín.',

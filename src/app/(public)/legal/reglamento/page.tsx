@@ -141,7 +141,7 @@ const T = {
       { href: '/legal/privacidad', label: 'Privacy Policy' },
     ],
     intro:
-      'The Reuse Calculator, located at calculadoradereuso.com, is owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, headquartered in Medellín, Antioquia. By registering or accessing the platform you confirm that you accept these terms in full and that you enter into a legally binding contract with Grupo MLP S.A.S.',
+      'The Calculadora de Reúso, located at calculadoradereuso.com, is owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, headquartered in Medellín, Antioquia. By registering or accessing the platform you confirm that you accept these terms in full and that you enter into a legally binding contract with Grupo MLP S.A.S.',
     h_definiciones: 'Definitions',
     def_servicio_label: 'Service:',
     def_servicio:
@@ -150,7 +150,7 @@ const T = {
     def_usuario: 'any natural or legal person who accesses or uses the platform.',
     def_plataforma_label: 'Platform:',
     def_plataforma:
-      'the website and its applications, under the Reuse Calculator brand, owned by Grupo MLP S.A.S.',
+      'the website and its applications, under the Calculadora de Reúso brand, owned by Grupo MLP S.A.S.',
     def_grupo_label: 'Grupo MLP S.A.S.:',
     def_grupo:
       'the company that owns and is responsible for the platform, data processing, and intellectual property of all associated developments.',
@@ -165,7 +165,7 @@ const T = {
       '. If you choose not to accept them, you must immediately stop using the platform.',
     h_servicio: 'Service and operation',
     servicio_p1:
-      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the equivalent CO₂ avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable on the platform.',
+      'The Calculadora de Reúso is an online platform that lets you register reused objects and obtain a verified estimate of the equivalent CO₂ avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable on the platform.',
     servicio_p2_pre: 'We deliver all platform results as a technical reference ',
     servicio_p2_bold1: 'estimation',
     servicio_p2_mid: ' based on internationally recognised emission factors, to guide your environmental communication.',

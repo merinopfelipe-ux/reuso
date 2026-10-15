@@ -61,7 +61,7 @@ const T = {
       { id: 'impacto', label: 'What changes' },
       { id: 'retirar', label: 'Withdraw consent' },
     ],
-    resumen: 'Manage the cookies you enable on the Reuse Calculator. We keep essential cookies always active. You decide whether to enable functional and analytical cookies. Change your preferences at any time.',
+    resumen: 'Manage the cookies you enable in the Calculadora de Reúso. We keep essential cookies always active. You decide whether to enable functional and analytical cookies. Change your preferences at any time.',
     leeTabien: [
       { href: '/legal/cookies', label: 'Cookie Policy', descripcion: 'Full description of all the cookies we use.' },
     ],

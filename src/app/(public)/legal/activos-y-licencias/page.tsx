@@ -6,7 +6,7 @@ const T = {
   ES: {
     titulo: 'Bancos de Imágenes, Iconografía y Licencias de Activos',
     breadcrumb: 'Bancos de Imágenes y Licencias',
-    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash), iconografía y tipografía en Calculadora de Reúso.',
+    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics), iconografía y tipografía en Calculadora de Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Marco de Propiedad Intelectual' },
       { id: 'bancos-imagenes', label: 'Bancos de Imágenes Gratuitos' },
@@ -20,20 +20,63 @@ const T = {
       'Nos comprometemos a que todos los recursos visuales, fotográficos, tipográficos e infográficos incorporados en nuestra plataforma cuentan con autorización de uso comercial, licencias abiertas permisivas o corresponden a creaciones originales de nuestro equipo.',
     ],
     s2Title: '2. Bancos de Imágenes Gratuitos Autorizados para Uso Comercial',
-    s2Intro: 'Para ilustrar casos de estudio y la ambientación de la landing, la plataforma usa fotografías de Unsplash, que permite su uso comercial sin costo de regalías:',
+    s2Intro: 'Estos son los bancos de imágenes cuyas licencias revisamos. Hoy usamos fotos de Unsplash en la landing. Los demás quedan revisados para uso futuro, con su enlace oficial:',
     bancos: [
       {
         nombre: 'Unsplash',
         licencia: 'Unsplash License',
-        permisos: 'Uso comercial y no comercial libre a nivel mundial. No requiere atribución obligatoria.',
-        restricciones: 'Prohibida la venta de fotos sin modificaciones sustanciales o competir directamente como repositorio de imágenes.',
+        url: 'https://unsplash.com/license',
+        permisos: 'Uso comercial y no comercial, gratuito y en todo el mundo. No es obligatorio dar crédito, aunque se agradece.',
+        restricciones: 'No se pueden vender las fotos sin cambios importantes, ni usarlas para crear un servicio que compita con Unsplash.',
+      },
+      {
+        nombre: 'Pexels',
+        licencia: 'Pexels License',
+        url: 'https://www.pexels.com/license/',
+        permisos: 'Uso comercial gratuito, con cambios o sin ellos. No es obligatorio dar crédito.',
+        restricciones: 'No se pueden vender copias sin cambios, ni publicarlas en otras plataformas de fotos, ni usarlas como marca. Tampoco insinuar respaldo de personas o marcas.',
+      },
+      {
+        nombre: 'Pixabay',
+        licencia: 'Pixabay Content License',
+        url: 'https://pixabay.com/service/license-summary/',
+        permisos: 'Uso comercial y editorial gratuito. No es obligatorio dar crédito.',
+        restricciones: 'No se puede vender ni distribuir el contenido por separado sin un aporte creativo propio, ni usarlo como marca.',
+      },
+      {
+        nombre: 'Negative Space',
+        licencia: 'Creative Commons Zero (CC0 1.0)',
+        url: 'https://negativespace.co/',
+        permisos: 'Uso personal y comercial, sin pagar ni pedir permiso. No es obligatorio dar crédito.',
+        restricciones: 'Sin limitaciones de derechos. No hay que presentarse como autor de la foto.',
+      },
+      {
+        nombre: 'Picjumbo',
+        licencia: 'Picjumbo Free License',
+        url: 'https://picjumbo.com/faq-and-terms/',
+        permisos: 'Uso comercial, también en trabajos de clientes. No es obligatorio dar crédito, aunque se agradece.',
+        restricciones: 'No se pueden revender las fotos. Se pueden incluir en plantillas o diseños vendidos, pero no como archivos de imagen. Algunas fotos no tienen autorización de modelo.',
+      },
+      {
+        nombre: 'Shotstash',
+        licencia: 'Licencia CC0 de Shotstash',
+        url: 'https://shotstash.com/license/',
+        permisos: 'Uso personal y comercial, sin pagar ni pedir permiso. No es obligatorio dar crédito.',
+        restricciones: 'No hay que presentarse como autor de la foto. No se pueden usar con fines ilegales, inmorales ni para dañar la imagen de personas.',
+      },
+      {
+        nombre: 'Kaboompics',
+        licencia: 'Kaboompics Free License',
+        url: 'https://kaboompics.com/page/terms-of-use',
+        permisos: 'Pendiente de verificar. Su página oficial no respondió en la última revisión.',
+        restricciones: 'Antes de usar una foto de Kaboompics, lee sus términos en el enlace oficial.',
       },
     ],
     s3Title: '3. Licencias de Iconografía y Fuentes Tipográficas',
     s3: [
       'Lucide Icons (lucide-react): Biblioteca de íconos vectoriales licenciada bajo ISC License (altamente permisiva y compatible con MIT), autorizando su compilación, adaptación y distribución en aplicaciones comerciales.',
       'Phosphor Icons (@phosphor-icons/react): Biblioteca de iconografía licenciada bajo MIT License, permitiendo su integración y renderizado sin restricciones de regalías.',
-      'Fuentes Tipográficas: Empleamos tipografías open-source (familias Inter y Outfit) distribuidas bajo la SIL Open Font License (OFL 1.1), garantizando su libre visualización digital en navegadores y documentos oficiales.',
+      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek cuando el dispositivo la trae, como en Mac y iPhone. No distribuimos Seravek. En los demás equipos se usa la fuente del sistema.',
     ],
     s4Title: '4. Activos Exclusivos y Titularidad de Grupo MLP S.A.S.',
     s4: [
@@ -55,7 +98,7 @@ const T = {
   ENG: {
     titulo: 'Image Banks, Iconography, and Asset Licenses',
     breadcrumb: 'Asset Licenses and Image Banks',
-    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash), iconography, and fonts in Reúso.',
+    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics), iconography, and fonts in Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Intellectual Property Framework' },
       { id: 'bancos-imagenes', label: 'Stock Image Banks' },
@@ -74,15 +117,58 @@ const T = {
       {
         nombre: 'Unsplash',
         licencia: 'Unsplash License',
-        permisos: 'Worldwide free commercial and non-commercial license without mandatory attribution.',
-        restricciones: 'Photos may not be sold without substantial alteration or used to replicate competing image repositories.',
+        url: 'https://unsplash.com/license',
+        permisos: 'Commercial and non-commercial use, free and worldwide. Attribution is not required, although it is appreciated.',
+        restricciones: 'Photos may not be sold without significant changes, nor used to build a service that competes with Unsplash.',
+      },
+      {
+        nombre: 'Pexels',
+        licencia: 'Pexels License',
+        url: 'https://www.pexels.com/license/',
+        permisos: 'Free commercial use, with or without changes. Attribution is not required.',
+        restricciones: 'Unaltered copies may not be sold, nor published on other photo platforms, nor used as a trademark. Do not imply endorsement by people or brands.',
+      },
+      {
+        nombre: 'Pixabay',
+        licencia: 'Pixabay Content License',
+        url: 'https://pixabay.com/service/license-summary/',
+        permisos: 'Free commercial and editorial use. Attribution is not required.',
+        restricciones: 'Content may not be sold or distributed on its own without your own creative input, nor used as a trademark.',
+      },
+      {
+        nombre: 'Negative Space',
+        licencia: 'Creative Commons Zero (CC0 1.0)',
+        url: 'https://negativespace.co/',
+        permisos: 'Personal and commercial use, without paying or asking permission. Attribution is not required.',
+        restricciones: 'No rights restrictions. Do not present yourself as the author of the photo.',
+      },
+      {
+        nombre: 'Picjumbo',
+        licencia: 'Picjumbo Free License',
+        url: 'https://picjumbo.com/faq-and-terms/',
+        permisos: 'Commercial use, including client work. Attribution is not required, although it is appreciated.',
+        restricciones: 'Photos may not be resold. They may be included in templates or designs that are sold, but not as image files. Some photos lack model release.',
+      },
+      {
+        nombre: 'Shotstash',
+        licencia: 'Shotstash CC0 License',
+        url: 'https://shotstash.com/license/',
+        permisos: 'Personal and commercial use, without paying or asking permission. Attribution is not required.',
+        restricciones: 'Do not present yourself as the author of the photo. Do not use them for illegal or immoral purposes, or to harm the image of people.',
+      },
+      {
+        nombre: 'Kaboompics',
+        licencia: 'Kaboompics Free License',
+        url: 'https://kaboompics.com/page/terms-of-use',
+        permisos: 'Pending verification. Its official page did not respond during the last review.',
+        restricciones: 'Before using a Kaboompics photo, read its terms at the official link.',
       },
     ],
     s3Title: '3. Iconography and Typographic Licenses',
     s3: [
       'Lucide Icons (lucide-react): Open-source vector library under the ISC License (permissive and MIT-compatible), authorizing inclusion and modification in commercial software.',
       'Phosphor Icons (@phosphor-icons/react): Open-source icon family licensed under MIT License, granting royalty-free integration.',
-      'Typography: Typography assets (Inter and Outfit families) are licensed under SIL Open Font License (OFL 1.1), ensuring free digital rendering across browsers and exports.',
+      'Typography: we use Open Sans, an open-source font distributed under the SIL Open Font License (OFL 1.1), which allows free display in browsers and documents. Headings use Seravek when the device has it, such as Mac and iPhone. We do not distribute Seravek. Other devices use the system font.',
     ],
     s4Title: '4. Proprietary Assets and Exclusive Ownership',
     s4: [
@@ -158,7 +244,7 @@ export default function ActivosYLicenciasPage() {
                     fontFamily: 'monospace',
                   }}
                 >
-                  {banco.licencia}
+                  {banco.licencia}{banco.url ? <> · <a href={banco.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-brand)' }}>{banco.url}</a></> : null}
                 </span>
               </div>
               <p style={{ ...p, fontSize: 13, margin: 0, color: 'var(--text-secondary)' }}>
