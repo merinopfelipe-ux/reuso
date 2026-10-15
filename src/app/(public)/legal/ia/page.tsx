@@ -38,7 +38,9 @@ const T = {
     s4Title: 'Lo que la IA no hace en Reúso',
     s4: [
       'Para ser transparentes, detallamos lo que nuestros sistemas de IA no hacen:',
-      '- No se entrenan con tus datos personales. Los registros de usuarios, cálculos e informes no se usan como datos de entrenamiento para ningún modelo.',
+      '- No entrenamos modelos propios con tus datos. Los registros de usuarios, cálculos e informes no se usan para entrenar modelos.',
+      '- Evita escribir datos personales en los campos de texto del cotizador, porque ese texto se envía al proveedor de IA.',
+      '- Los proveedores de IA deben cumplir sus propias condiciones. Su uso de los datos depende del plan que contratamos con cada uno.',
       '- No comparten datos con terceros no autorizados. La información que procesa la IA opera dentro de los mismos límites de confidencialidad que el resto del sistema.',
       '- No toman decisiones autónomas sobre usuarios. La IA no determina acceso, precios, planes ni sanciones. Esas decisiones son siempre humanas.',
       '- No generan perfiles de comportamiento. No usamos IA para crear perfiles publicitarios ni para inferir características sensibles de los usuarios.',
@@ -51,7 +53,7 @@ const T = {
     s6: [
       'Los sistemas de IA pueden generar imprecisiones o resultados inesperados. Ningún sistema automatizado es infalible.',
       'Los cálculos de impacto ambiental que ofrece la plataforma constituyen una estimación técnica referencial basada en factores internacionales. Entregamos todos los resultados como referencia y no reemplazan auditorías ambientales oficiales ni certificaciones.',
-      'Grupo MLP S.A.S. monitorea continuamente la plataforma para detectar y corregir errores. Al usar la plataforma aceptas que los resultados son orientativos y que la responsabilidad de su interpretación recae en el usuario.',
+      'Revisamos la plataforma con frecuencia para detectar y corregir errores. Al usarla aceptas que los resultados son orientativos y que tú decides cómo interpretarlos.',
     ],
     s7Title: 'Tus derechos y cómo contactarnos',
     s7Intro: 'Si tienes preguntas sobre cómo usamos la IA en Reúso, cómo afecta al tratamiento de tus datos o quieres ejercer cualquier derecho reconocido por el RGPD (UE), la CCPA (California) o la Ley 1581 de 2012 (Colombia), escríbenos:',
@@ -100,7 +102,9 @@ const T = {
     s4Title: 'What AI does not do at Reúso',
     s4: [
       'To be transparent, we detail what our AI systems do not do:',
-      '- They are not trained on your personal data. User records, calculations, and reports are not used as training data for any model.',
+      '- We do not train our own models with your data. User records, calculations, and reports are not used to train models.',
+      '- Avoid writing personal data in the text fields of the quoting tool, because that text is sent to the AI provider.',
+      '- AI providers must follow their own terms. How they use the data depends on the plan we contract with each one.',
       '- They do not share data with unauthorized third parties. Information processed by AI operates within the same confidentiality boundaries as the rest of the system.',
       '- They do not make autonomous decisions about users. AI does not determine access, pricing, plans, or penalties. Those decisions are always made by humans.',
       '- They do not create behavioral profiles. We do not use AI to create advertising profiles or to infer sensitive characteristics about users.',
@@ -113,14 +117,14 @@ const T = {
     s6: [
       'AI systems can produce inaccuracies or unexpected results. No automated system is infallible.',
       'The environmental impact calculations provided by the platform represent a technical reference estimation based on international factors. We deliver all results as a reference and they do not replace official environmental audits or certifications.',
-      'Grupo MLP S.A.S. continuously monitors the platform to detect and correct errors. By using the platform you accept that results are indicative and that responsibility for their interpretation rests with the user.',
+      'We review the platform often to detect and correct errors. By using it you accept that results are indicative and that you decide how to interpret them.',
     ],
     s7Title: 'Your rights and how to contact us',
     s7Intro: 'If you have questions about how we use AI at Reúso, how it affects the processing of your data, or you wish to exercise any right recognized by the GDPR (EU), the CCPA (California), or Law 1581 of 2012 (Colombia), write to us:',
     s7Correo: 'innovacion@lurdes.co',
     s7FormLabel: 'Legal enquiry form',
     s7Respuesta: 'We respond within 10 to 15 business days.',
-    resumen: 'We use AI to build the platform and structure the calculation factors. Never to train models with your data or to make automated decisions about you. All AI output goes through human review before reaching production.',
+    resumen: 'We use AI to build the platform and structure the calculation factors. We do not train our own models with your data.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy', descripcion: 'What data we collect and how we protect it.' },
       { href: '/legal/datos', label: 'Data Processing', descripcion: 'Your rights and how to exercise them.' },

@@ -6,7 +6,7 @@ const T = {
   ES: {
     titulo: 'Bancos de Imágenes, Iconografía y Licencias de Activos',
     breadcrumb: 'Bancos de Imágenes y Licencias',
-    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics, Stocksnap), iconografía y tipografía en Calculadora de Reúso.',
+    meta: 'Información legal sobre las licencias comerciales de bancos de imágenes gratuitos (Unsplash), iconografía y tipografía en Calculadora de Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Marco de Propiedad Intelectual' },
       { id: 'bancos-imagenes', label: 'Bancos de Imágenes Gratuitos' },
@@ -16,59 +16,17 @@ const T = {
     ],
     s1Title: '1. Marco de Propiedad Intelectual y Cumplimiento Normativo',
     s1: [
-      'Grupo MLP S.A.S. (NIT 901.832.079-1) diseña y opera la Calculadora de Reúso en estricto cumplimiento de la Decisión Andina 351 de 1993, la Ley 23 de 1982, la Ley 44 de 1993 de la República de Colombia y los tratados internacionales suscritos ante la Organización Mundial de la Propiedad Intelectual (OMPI).',
+      'Grupo MLP S.A.S. (NIT 901.832.079-1) diseña y opera la Calculadora de Reúso de acuerdo con la Decisión Andina 351 de 1993, la Ley 23 de 1982, la Ley 44 de 1993 de la República de Colombia y los tratados internacionales suscritos ante la Organización Mundial de la Propiedad Intelectual (OMPI).',
       'Nos comprometemos a que todos los recursos visuales, fotográficos, tipográficos e infográficos incorporados en nuestra plataforma cuentan con autorización de uso comercial, licencias abiertas permisivas o corresponden a creaciones originales de nuestro equipo.',
     ],
     s2Title: '2. Bancos de Imágenes Gratuitos Autorizados para Uso Comercial',
-    s2Intro: 'Para ilustrar casos de estudio, ambientación de la interfaz y módulos pedagógicos de economía circular, la plataforma utiliza activos provenientes de bancos de fotografía con licencias permisivas para uso comercial sin costo de regalías:',
+    s2Intro: 'Para ilustrar casos de estudio y la ambientación de la landing, la plataforma usa fotografías de Unsplash, que permite su uso comercial sin costo de regalías:',
     bancos: [
       {
         nombre: 'Unsplash',
         licencia: 'Unsplash License',
         permisos: 'Uso comercial y no comercial libre a nivel mundial. No requiere atribución obligatoria.',
         restricciones: 'Prohibida la venta de fotos sin modificaciones sustanciales o competir directamente como repositorio de imágenes.',
-      },
-      {
-        nombre: 'Pexels',
-        licencia: 'Pexels License',
-        permisos: 'Uso comercial gratuito, modificación y adaptación permitidas en aplicaciones web y marketing.',
-        restricciones: 'Prohibido vender copias idénticas inalteradas o presentar a personas identificables de manera ofensiva o difamatoria.',
-      },
-      {
-        nombre: 'Pixabay',
-        licencia: 'Pixabay Content License',
-        permisos: 'Autorización amplia para fines comerciales y editoriales en soportes físicos y digitales.',
-        restricciones: 'Prohibida la redistribución masiva o comercialización directa de los archivos originales de stock.',
-      },
-      {
-        nombre: 'Negative Space',
-        licencia: 'Creative Commons Zero (CC0 1.0 Universal)',
-        permisos: 'Dedicación plena al dominio público mundial. Uso comercial ilimitado sin requerimiento de atribución ni pago de regalías.',
-        restricciones: 'Sin restricciones de derechos patrimoniales de autor bajo el estándar internacional CC0.',
-      },
-      {
-        nombre: 'Picjumbo',
-        licencia: 'Picjumbo Free Commercial License',
-        permisos: 'Uso comercial permitido en sitios web corporativos, plantillas digitales, aplicaciones y material promocional.',
-        restricciones: 'Prohibida la reventa de las imágenes y la redistribución de colecciones sin permiso expreso del autor.',
-      },
-      {
-        nombre: 'Shotstash',
-        licencia: 'Shotstash License for Creative Professionals',
-        permisos: 'Libre para proyectos personales y comerciales sin requerir atribución forzosa.',
-        restricciones: 'Queda prohibida la redistribución del archivo fuente como producto de stock independiente.',
-      },
-      {
-        nombre: 'Kaboompics',
-        licencia: 'Kaboompics Free License',
-        permisos: 'Uso comercial libre en páginas web, redes sociales, interfaces y publicaciones digitales.',
-        restricciones: 'No se permite revender las fotografías en su estado digital original sin agregación de valor sustancial.',
-      },
-      {
-        nombre: 'Stocksnap',
-        licencia: 'Creative Commons Zero (CC0 1.0 Universal)',
-        permisos: 'Fotografías bajo Dominio Público (CC0), aptas para cualquier tipo de explotación comercial lícita.',
-        restricciones: 'No sujetas a monopolios de derechos de autor patrimoniales.',
       },
     ],
     s3Title: '3. Licencias de Iconografía y Fuentes Tipográficas',
@@ -97,7 +55,7 @@ const T = {
   ENG: {
     titulo: 'Image Banks, Iconography, and Asset Licenses',
     breadcrumb: 'Asset Licenses and Image Banks',
-    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash, Pexels, Pixabay, Negative Space, Picjumbo, Shotstash, Kaboompics, Stocksnap), iconography, and fonts in Reúso.',
+    meta: 'Legal disclosure regarding commercial licenses for free image banks (Unsplash), iconography, and fonts in Reúso.',
     secciones: [
       { id: 'cumplimiento', label: 'Intellectual Property Framework' },
       { id: 'bancos-imagenes', label: 'Stock Image Banks' },
@@ -118,48 +76,6 @@ const T = {
         licencia: 'Unsplash License',
         permisos: 'Worldwide free commercial and non-commercial license without mandatory attribution.',
         restricciones: 'Photos may not be sold without substantial alteration or used to replicate competing image repositories.',
-      },
-      {
-        nombre: 'Pexels',
-        licencia: 'Pexels License',
-        permisos: 'Free commercial use, modification, and deployment across web platforms and marketing.',
-        restricciones: 'Unaltered copies cannot be resold. Recognizable people cannot be depicted in an offensive or defamatory manner.',
-      },
-      {
-        nombre: 'Pixabay',
-        licencia: 'Pixabay Content License',
-        permisos: 'Broad authorization for commercial and editorial usage across digital and print media.',
-        restricciones: 'Direct redistribution or bulk stock reselling is strictly prohibited.',
-      },
-      {
-        nombre: 'Negative Space',
-        licencia: 'Creative Commons Zero (CC0 1.0 Universal)',
-        permisos: 'Worldwide public domain dedication with unrestricted commercial exploitation.',
-        restricciones: 'No copyright restrictions apply under international CC0 standards.',
-      },
-      {
-        nombre: 'Picjumbo',
-        licencia: 'Picjumbo Free Commercial License',
-        permisos: 'Permitted in corporate websites, digital templates, web applications, and marketing collaterals.',
-        restricciones: 'Reselling or unbundled distribution is prohibited.',
-      },
-      {
-        nombre: 'Shotstash',
-        licencia: 'Shotstash Creative License',
-        permisos: 'Free for personal and commercial projects without mandatory credit.',
-        restricciones: 'Source files may not be repackaged and sold as independent stock.',
-      },
-      {
-        nombre: 'Kaboompics',
-        licencia: 'Kaboompics Free License',
-        permisos: 'Free commercial use across web pages, applications, and social media.',
-        restricciones: 'Raw digital files cannot be redistributed or resold as standalone stock.',
-      },
-      {
-        nombre: 'Stocksnap',
-        licencia: 'Creative Commons Zero (CC0 1.0 Universal)',
-        permisos: 'Dedicated Public Domain (CC0) photography, free for commercial utilization.',
-        restricciones: 'Unrestricted global usage.',
       },
     ],
     s3Title: '3. Iconography and Typographic Licenses',
