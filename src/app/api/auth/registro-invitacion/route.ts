@@ -40,6 +40,7 @@ const bodySchema = z
       .regex(/[0-9]/, 'Debe contener al menos un número.'),
     password_confirm: z.string(),
     acepta_terminos: z.literal(true),
+    acepta_privacidad: z.literal(true).optional().default(true),
     turnstile_token: z.string().optional(),
     nombre_empresa: z.string().min(2).max(120).optional(),
     nit: z.string().min(1).max(100).optional(),
@@ -166,12 +167,15 @@ export async function POST(request: NextRequest) {
     return unirCuentaExistente(invitacion, password, empresaIdFinal as string, ip)
   }
 
+  const ahoraLegalIso = new Date().toISOString()
   // El trigger handle_new_user crea el profile con usuario_libre - actualizamos rol y empresa
   const { error: profileError } = await adminClient
     .from('profiles')
     .update({
       rol: invitacion.rol_asignado,
       empresa_id: empresaIdFinal,
+      legal_aceptado_en: ahoraLegalIso,
+      acepta_terminos_at: ahoraLegalIso,
     })
     .eq('user_id', authData.user.id)
 
@@ -188,7 +192,7 @@ export async function POST(request: NextRequest) {
     .eq('id', invitacion.id)
 
   try {
-    await agregarMiembroAlChat(adminClient, empresaIdFinal as string, { nombre, email: invitacion.email })
+    await agregarMiembroAlChat(adminClient, empresaIdFinal as string, { nombre, email: invitacion.email, rol: invitacion.rol_asignado })
   } catch (err) {
     console.error('[registro-invitacion] chat:', err instanceof Error ? err.message : err)
   }
@@ -200,6 +204,12 @@ export async function POST(request: NextRequest) {
       invitacion_id: invitacion.id,
       empresa_id: empresaIdFinal,
       rol_asignado: invitacion.rol_asignado,
+      terminos_aceptados: true,
+      privacidad_aceptada: true,
+      version_terminos: '2026-09-05',
+      version_privacidad: '2026-09-05',
+      user_agent: request.headers.get('user-agent') ?? 'unknown',
+      timestamp_utc: ahoraLegalIso,
     },
     ip,
   })
@@ -255,7 +265,7 @@ async function unirCuentaExistente(
 
   await adminClient.from('invitaciones').update({ estado: 'aceptada' }).eq('id', invitacion.id)
   try {
-    await agregarMiembroAlChat(adminClient, empresaId, { nombre: invitacion.email, email: invitacion.email })
+    await agregarMiembroAlChat(adminClient, empresaId, { nombre: invitacion.email, email: invitacion.email, rol: invitacion.rol_asignado })
   } catch (err) {
     console.error('[registro-invitacion] chat:', err instanceof Error ? err.message : err)
   }

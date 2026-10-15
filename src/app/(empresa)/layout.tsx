@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { LayoutShell } from '@/components/layout-shell'
 import { ModuloBloqueadoBanner } from '@/components/modulo-bloqueado-banner'
 import { displayName } from '@/lib/display-name'
+import { puedeAccederModulo } from '@/lib/permisos/modulos'
 import { URL_CHAT_EMPRESA } from '@/lib/navegacion'
 import type { Rol } from '@/types'
 
@@ -63,6 +64,14 @@ export default async function EmpresaLayout({
 
   const nombre = displayName(perfil ?? { nombre: user.email })
 
+  // Empleado: el menú solo muestra Cotizador y DPP si su empresa le da ese módulo.
+  const modulosEmpleado = rol === 'empleado' && perfil?.empresa_id
+    ? {
+        cotizador: await puedeAccederModulo(user.id, perfil.empresa_id, 'empleado', 'cotizador_crm'),
+        dpp: await puedeAccederModulo(user.id, perfil.empresa_id, 'empleado', 'dpp'),
+      }
+    : undefined
+
   // Datos técnicos para Footer
   const ip = head.get('x-forwarded-for')?.split(',')[0] || head.get('x-real-ip') || '127.0.0.1'
 
@@ -84,6 +93,7 @@ export default async function EmpresaLayout({
       nombre={nombre}
       rol={rol}
       chatUrl={chatUrl}
+      modulosEmpleado={modulosEmpleado}
       avatarColor={perfil?.avatar_color ?? undefined}
       avatarText={perfil?.avatar_text ?? undefined}
       ip={ip}

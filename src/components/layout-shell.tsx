@@ -11,6 +11,7 @@ import type { Rol } from '@/types'
 
 interface LayoutShellProps {
   chatUrl?: string | null
+  modulosEmpleado?: { cotizador: boolean; dpp: boolean }
   children: React.ReactNode
   nombre: string
   rol: Rol
@@ -22,7 +23,7 @@ interface LayoutShellProps {
   lastVisit?: string
 }
 
-export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, avatarText, ip, lastVisit, chatUrl }: LayoutShellProps) {
+export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, avatarText, ip, lastVisit, chatUrl, modulosEmpleado }: LayoutShellProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
@@ -72,6 +73,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
         <Sidebar
           rol={rol}
           chatUrl={chatUrl}
+          modulosEmpleado={modulosEmpleado}
           isExpanded={isExpanded}
           setIsExpanded={setIsExpanded}
           isMobile={isMobile}
@@ -112,7 +114,7 @@ export function LayoutShell({ children, nombre, rol, empresaId, avatarColor, ava
         </div>
       </div>
       {/* Menú Sticky Inferior en Móvil */}
-      {isMobile && <MobileBottomNav rol={rol} chatUrl={chatUrl} />}
+      {isMobile && <MobileBottomNav rol={rol} chatUrl={chatUrl} modulosEmpleado={modulosEmpleado} />}
     </div>
   )
 }

@@ -80,10 +80,10 @@ export async function crearUsuarioChat(datos: { nombre: string; email: string })
 }
 
 // Hace agente al usuario en la cuenta. Si ya es miembro, Chatwoot actualiza su rol.
-export async function asignarAgente(cuentaId: number, usuarioId: number): Promise<void> {
+export async function asignarAgente(cuentaId: number, usuarioId: number, rol: 'agent' | 'administrator' = 'agent'): Promise<void> {
   await llamar('POST', `/platform/api/v1/accounts/${cuentaId}/account_users`, {
     user_id: usuarioId,
-    role: 'agent',
+    role: rol,
   })
 }
 

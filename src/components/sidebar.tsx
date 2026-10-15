@@ -17,14 +17,15 @@ interface SidebarProps {
   isMobile: boolean
   empresaId?: string | null
   chatUrl?: string | null
+  modulosEmpleado?: { cotizador: boolean; dpp: boolean }
 }
 
-export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile, chatUrl }: SidebarProps) {
+export function Sidebar({ rol, isExpanded, setIsExpanded, isMobile, chatUrl, modulosEmpleado }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null)
   const [leaveTimeout, setLeaveTimeout] = useState<NodeJS.Timeout | null>(null)
-  const navItems: Entrada[] = menuPorRol(rol, chatUrl)
+  const navItems: Entrada[] = menuPorRol(rol, chatUrl, modulosEmpleado)
 
   async function handleLogout() {
     // El navegador puede fallar esta solicitud por razones ajenas al código

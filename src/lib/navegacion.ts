@@ -199,7 +199,19 @@ const DPP_BLOQUEADO: Entrada = { label: 'DPP', icon: IdentificationCard, href: '
 // chatUrl: dirección del chat de la empresa (null si no tiene chat activo).
 // Super admin: en el panel de admin (chatUrl sin indicar) ve su Chat, a la raíz de
 // Chatwoot. Dentro de una empresa no lo ve, así que las vistas de empresa pasan null.
-export function menuPorRol(rol: Rol, chatUrl?: string | null): Entrada[] {
+// modulos: solo para el empleado. Si su empresa no le da el módulo, la entrada no aparece.
+export interface ModulosEmpleado { cotizador: boolean; dpp: boolean }
+
+export function menuPorRol(rol: Rol, chatUrl?: string | null, modulos?: ModulosEmpleado): Entrada[] {
+  if (rol === 'empleado' && modulos) {
+    return [
+      RESUMEN_PERSONAL,
+      ...(modulos.dpp ? [DPP] : []),
+      ...(modulos.cotizador ? [COTIZADOR] : []),
+      INFORMES_PERSONAL,
+      SISTEMA_EMPLEADO,
+    ]
+  }
   const chat =
     rol === 'super_admin' ? (chatUrl === undefined ? URL_CHAT_BASE : chatUrl) :
     rol === 'empresa_admin' ? (chatUrl ?? null) : null
@@ -217,8 +229,8 @@ export function menuPorRol(rol: Rol, chatUrl?: string | null): Entrada[] {
 }
 
 // Vista del celular: 5 accesos rápidos en la barra y el resto en el cajón.
-export function configMovil(rol: Rol, chatUrl?: string | null): { rapidos: ItemRapido[]; cajon: ItemCajon[] } {
-  const entradas = menuPorRol(rol, chatUrl)
+export function configMovil(rol: Rol, chatUrl?: string | null, modulos?: ModulosEmpleado): { rapidos: ItemRapido[]; cajon: ItemCajon[] } {
+  const entradas = menuPorRol(rol, chatUrl, modulos)
 
   const rapidos: ItemRapido[] = entradas
     .filter((e) => !e.externa)

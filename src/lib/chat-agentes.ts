@@ -19,12 +19,12 @@ async function cuentaDeEmpresa(admin: AdminClient, empresaId: string): Promise<{
 export async function agregarMiembroAlChat(
   admin: AdminClient,
   empresaId: string,
-  miembro: { nombre: string; email: string }
+  miembro: { nombre: string; email: string; rol?: string }
 ): Promise<void> {
   const { cuenta, activo } = await cuentaDeEmpresa(admin, empresaId)
   if (!activo || cuenta == null) return
   const usuarioId = await crearUsuarioChat({ nombre: miembro.nombre || miembro.email, email: miembro.email })
-  await asignarAgente(cuenta, usuarioId)
+  await asignarAgente(cuenta, usuarioId, miembro.rol === 'empresa_admin' ? 'administrator' : 'agent')
 }
 
 // Un miembro sale del chat cuando sale de la empresa.
@@ -61,7 +61,7 @@ export async function sincronizarAgentesEmpresa(
     try {
       const nombre = [m.nombre, m.apellido].filter(Boolean).join(' ') || (m.email as string)
       const usuarioId = await crearUsuarioChat({ nombre, email: m.email as string })
-      if (activo) await asignarAgente(cuenta, usuarioId)
+      if (activo) await asignarAgente(cuenta, usuarioId, m.rol === 'empresa_admin' ? 'administrator' : 'agent')
       else await quitarAgente(cuenta, usuarioId)
     } catch (err) {
       console.error('[chat-agentes]', m.email, err instanceof Error ? err.message : err)
