@@ -3,6 +3,8 @@ import {
   crearCuentaChat,
   crearUsuarioChat,
   asignarAgente,
+  configurarCuentaChat,
+  FUNCIONES_CUENTA_BASE,
   quitarAgente,
   enlaceDeAcceso,
   ChatwootError,
@@ -62,6 +64,17 @@ describe('cliente de plataforma de Chatwoot', () => {
     await asignarAgente(42, 7)
     expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/accounts/42/account_users')
     expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ user_id: 7, role: 'agent' })
+  })
+
+  it('configura la cuenta en español con las funciones de la cuenta base', async () => {
+    simular([respuesta({ id: 42 })])
+    await configurarCuentaChat(42)
+    expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/accounts/42')
+    expect(llamadas[0].init.method).toBe('PATCH')
+    const cuerpo = JSON.parse(String(llamadas[0].init.body))
+    expect(cuerpo.locale).toBe('es')
+    expect(Object.keys(cuerpo.features).sort()).toEqual([...FUNCIONES_CUENTA_BASE].sort())
+    expect(Object.values(cuerpo.features).every((v) => v === true)).toBe(true)
   })
 
   it('quita al usuario de la cuenta con DELETE', async () => {

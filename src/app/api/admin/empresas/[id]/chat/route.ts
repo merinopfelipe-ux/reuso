@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
-import { crearCuentaChat } from '@/lib/chatwoot-plataforma'
+import { configurarCuentaChat, crearCuentaChat } from '@/lib/chatwoot-plataforma'
 import { sincronizarAgentesEmpresa } from '@/lib/chat-agentes'
 
 const schema = z.object({ habilitado: z.boolean() })
@@ -63,6 +63,9 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       cuentaId = await crearCuentaChat(empresa.nombre)
       await guard.adminClient.from('empresas').update({ chat_account_id: cuentaId }).eq('id', empresa.id)
     }
+
+    // Idioma español y funciones de la cuenta base (se repite en cada activación: es idempotente).
+    await configurarCuentaChat(cuentaId)
 
     await guard.adminClient.from('empresas').update({ chat_habilitado: true }).eq('id', empresa.id)
     const { total, fallos } = await sincronizarAgentesEmpresa(guard.adminClient, empresa.id, true)

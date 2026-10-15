@@ -19,7 +19,7 @@ function configuracion(): { base: string; token: string } {
   return { base, token }
 }
 
-async function llamar(metodo: 'GET' | 'POST' | 'DELETE', ruta: string, cuerpo?: unknown): Promise<Record<string, unknown>> {
+async function llamar(metodo: 'GET' | 'POST' | 'PATCH' | 'DELETE', ruta: string, cuerpo?: unknown): Promise<Record<string, unknown>> {
   const { base, token } = configuracion()
   const res = await fetchConTimeout(
     `${base}${ruta}`,
@@ -38,6 +38,22 @@ function idDe(respuesta: Record<string, unknown>, contexto: string): number {
   const id = respuesta.id
   if (typeof id !== 'number') throw new ChatwootError(`Respuesta sin id en ${contexto}`)
   return id
+}
+
+// Funciones activas en la cuenta base de Chatwoot (la de la calculadora).
+// Son de pago en Chatwoot Enterprise: la licencia cubre su uso.
+export const FUNCIONES_CUENTA_BASE = [
+  'agent_management', 'api_and_webhooks', 'auto_resolve_conversations', 'canned_responses',
+  'channel_email', 'channel_facebook', 'channel_instagram', 'channel_tiktok', 'channel_website',
+  'chatwoot_v4', 'crm_integration', 'custom_attributes', 'custom_reply_domain', 'data_import',
+  'inbox_management', 'integrations', 'labels', 'macros', 'reports', 'team_management',
+  'voice_recorder', 'whatsapp_campaign',
+]
+
+// Deja la cuenta en español y con las mismas funciones que la cuenta base.
+export async function configurarCuentaChat(cuentaId: number): Promise<void> {
+  const funciones = Object.fromEntries(FUNCIONES_CUENTA_BASE.map((f) => [f, true]))
+  await llamar('PATCH', `/platform/api/v1/accounts/${cuentaId}`, { locale: 'es', features: funciones })
 }
 
 // Cuenta nueva para la empresa. Devuelve su id.
