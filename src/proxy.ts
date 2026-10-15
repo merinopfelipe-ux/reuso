@@ -129,6 +129,7 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith('/empresa/equipo') ||
       pathname.startsWith('/empresa/configuracion') ||
       pathname.startsWith('/empresa/cotizador') ||
+      pathname.startsWith('/empresa/clientes') ||
       pathname.startsWith('/empresa/dpp') ||
       esRutaCalculo
     )
@@ -161,6 +162,16 @@ export async function proxy(request: NextRequest) {
       if (!tiene) {
         const destino = rol === 'usuario_libre' || rol === 'empleado' ? '/dashboard' : '/empresa'
         const url = new URL(destino, request.url)
+        url.searchParams.set('modulo_bloqueado', 'cotizador')
+        return NextResponse.redirect(url)
+      }
+    }
+
+    // Clientes forma parte del Cotizador: el empleado solo entra si su empresa tiene ese módulo.
+    if (pathname.startsWith('/empresa/clientes') && rol === 'empleado') {
+      const tiene = await verificarAccesoModulo(supabase, user.id, empresaId, rol, 'cotizador_crm')
+      if (!tiene) {
+        const url = new URL('/dashboard', request.url)
         url.searchParams.set('modulo_bloqueado', 'cotizador')
         return NextResponse.redirect(url)
       }
