@@ -230,7 +230,10 @@ async function unirCuentaExistente(
   }
 
   const adminClient = await createAdminClient()
-  const { data: perfil } = await adminClient.from('profiles').select('empresa_id').eq('user_id', sesion.user.id).maybeSingle()
+  const { data: perfil } = await adminClient.from('profiles').select('empresa_id, rol').eq('user_id', sesion.user.id).maybeSingle()
+  if (perfil?.rol === 'super_admin') {
+    return NextResponse.json({ error: 'Esta cuenta no puede unirse a una empresa por invitación. Contacta soporte.' }, { status: 409 })
+  }
   if (perfil?.empresa_id) {
     return NextResponse.json({ error: 'Esta cuenta ya pertenece a otra empresa. Contacta soporte.' }, { status: 409 })
   }
