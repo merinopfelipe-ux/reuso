@@ -134,29 +134,29 @@ const T = {
       { id: 'vigencia', label: 'Validity' },
     ],
     transparencia: {
-      texto: 'At Calculadora de Reúso we protect your information with the utmost rigor. The Artificial Intelligence models that assist in data processing do NOT use your personal data for training, nor do they share it with third parties outside the operation of the system. We use your records exclusively to calculate and certify the environmental impact generated.',
+      texto: 'At the Calculadora de Reúso we take care of your data. We use artificial intelligence models to process it, but we do not use your personal data to train them, and we do not share it with third parties outside the operation of the platform. We use your records only to calculate and measure environmental impact.',
       link: 'Read our AI usage policy →',
     },
-    resumen: 'We only collect the data necessary to provide you with the service. We do not sell it. You can request at any time that we update, correct or delete it. If you are in Europe, the GDPR applies and you have additional rights such as portability and the right to be forgotten. If you are in the US (California), the CCPA applies. In Colombia, Law 1581 applies.',
-    intro: 'We respect your privacy and are committed to protecting the information you register on the platform. This policy explains how we collect, store, use and disclose your data. For full details on the legal framework, see the',
+    resumen: 'We only ask for the data we need to provide the service. We do not sell it. You can ask us at any time to update, correct, or delete it. If you are in Europe, you have additional rights, such as taking your data to another service and the right to be forgotten. If you are in California (USA), the CCPA applies.',
+    intro: 'We care about your privacy. This policy explains what data we collect, how we store it, how we use it, and with whom we share it. For the full legal framework, see the',
     introLink: 'personal data processing policy',
     pilaresTitulo: 'Reúso Privacy Principles',
-    pilaresIntro: 'Your data plays a key role in driving circular and transparent solutions. We are committed to clarity, rigorous protection, and data sovereignty across every calculation and report you generate.',
+    pilaresIntro: 'Your data matters for our circular solutions. We commit to being clear and to protecting it well in every calculation and report you generate.',
     pilares: [
       {
         num: '01',
         titulo: 'Transparency',
-        descripcion: 'We clearly inform you what data we collect, how we estimate environmental impact, and how information is processed without fine print.',
+        descripcion: 'We explain in plain terms what data we collect, how we estimate environmental impact, and how we use that information to provide the service.',
       },
       {
         num: '02',
         titulo: 'Security',
-        descripcion: 'Our entire infrastructure features end-to-end encryption in transit and at rest, role-based access control, and auditable logs to keep your data secure.',
+        descripcion: 'Your connections are encrypted (HTTPS), and your data is stored encrypted on the servers of our providers, with role-based access control and audit logs.',
       },
       {
         num: '03',
         titulo: 'Control & Choice',
-        descripcion: 'Your data is yours. You have direct tools to access, rectify, export, or permanently delete your information whenever you choose.',
+        descripcion: 'Your data belongs to you. You have direct tools to access, correct, export, or permanently delete your information whenever you want.',
       },
     ],
     privacyFirst: {
@@ -200,7 +200,7 @@ const T = {
     },
     seguridad: {
       titulo: 'Security',
-      texto: 'We protect your information with data encryption in transit and at rest, role-based access control, and activity logs with cryptographic integrity. No employee has access to your passwords. Activity records, which include copies of changes made to profiles, calculations and reports, are kept for 2 months and then deleted automatically.',
+      texto: 'We protect your information by encrypting it in transit and at rest, with role-based permissions and activity logs. No employee has access to your passwords. Activity records, including copies of changes to profiles, calculations and reports, are kept for 2 months and then deleted automatically.',
     },
     derechos: {
       titulo: 'Your rights',
@@ -223,7 +223,7 @@ const T = {
     },
     vigencia: {
       titulo: 'Validity and updates',
-      texto: 'This policy takes effect from its publication. We may update it at any time and will notify you by email or via a notice on the platform. Continued use after notification implies acceptance of the changes.',
+      texto: 'This policy takes effect when we publish it. We may update it, and we will notify you by email or with a notice on the platform. If you keep using the platform after the notice, you accept the changes.',
     },
     leeTabien: [
       { href: '/legal/datos', label: 'Data Processing' },

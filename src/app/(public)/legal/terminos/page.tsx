@@ -129,14 +129,14 @@ const T = {
       { id: 'ley', label: 'Applicable law' },
     ],
     resumen:
-      'By registering or using the Reuse Calculator you accept these conditions. Here we define the terms of use and our policies. Most importantly, you must not copy, replicate, or extract the calculation methodology. We protect your data under Law 1581 (Colombia). If you reside in Europe, the GDPR applies. If you reside in California, the CCPA applies.',
+      'By registering or using the Calculadora de Reúso, you accept these terms. Here we set out the rules of use and our policies. Most importantly, do not copy, replicate, or extract the calculation methodology. We protect your data under Law 1581 (Colombia). If you live in Europe, we apply the GDPR. If you live in California, we apply the CCPA.',
     leeTabien: [
       { href: '/legal/privacidad', label: 'Privacy Policy' },
       { href: '/legal/datos', label: 'Data Processing' },
       { href: '/legal/reglamento', label: 'Usage Rules' },
     ],
     intro:
-      'Welcome to the Reuse Calculator, an online platform at calculadoradereuso.com, owned by Grupo MLP S.A.S., a company incorporated under the laws of the Republic of Colombia, with registered office in Medellín, Antioquia. Please read these terms before using the platform. By logging in, registering or accessing the calculator, you confirm your full acceptance and enter into a legally binding contract with Grupo MLP S.A.S.',
+      'Welcome to the Calculadora de Reúso. The platform is at calculadoradereuso.com and belongs to Grupo MLP S.A.S., a company incorporated in Colombia with its office in Medellín, Antioquia. Please read these terms before using the platform. By signing in, registering, or entering the calculator, you accept these terms and enter into a legal contract with Grupo MLP S.A.S.',
     definicionesTitle: 'Definitions',
     definiciones: [
       {
@@ -158,25 +158,25 @@ const T = {
     ],
     aceptacionTitle: 'Acceptance',
     aceptacion:
-      'By using the calculator you accept these terms and the privacy and data processing policy. If you choose not to accept them, you must immediately stop using the platform. These terms constitute a legally binding contract between you and Grupo MLP S.A.S. We may also update these terms and notify you by email or via a notice on the platform.',
+      'By using the calculator, you accept these terms and the privacy and data processing policy. If you do not agree, stop using the platform. These terms are a legal contract between you and Grupo MLP S.A.S. We may update them, and we will notify you by email or with a notice on the platform.',
     aceptacionLinkLabel: 'privacy and data processing policy',
     servicioTitle: 'Service and operation',
     servicio1:
-      'The Reuse Calculator is an online platform that lets you register reused objects and obtain a verified estimate of the CO₂ equivalent avoided. You can generate date-range reports, each with a unique verification code and a QR verifiable at calculadoradereuso.com/verificar.',
+      'The Calculadora de Reúso helps you record the objects you reuse and calculate how much CO₂ equivalent you avoid. You can generate reports by date range. Each report has a unique code and a QR code to verify it at calculadoradereuso.com/verificar.',
     servicio2:
-      'Estimates are based on internationally recognized emission factors and are expressed in kilograms of CO₂ equivalent (kg CO₂e). They are an environmental communication tool and differ from an official environmental audit.',
+      'Calculations use internationally recognized emission factors and are expressed in kilograms of CO₂ equivalent (kg CO₂e). They are an environmental communication tool. They do not replace an official environmental audit.',
     servicio3:
       'The scope of the available service varies according to the contracted plan (Explora, Circular Lab, Impulso Sostenible or Impacto Ilimitado). To learn the limits of each plan, see the',
     servicioLinkLabel: 'Usage Rules',
     servicio4Title: 'Independence and sources:',
     servicio4:
-      'The calculations are developments based on reliable global methodologies. The calculator is completely autonomous and has no affiliation, sponsorship or official endorsement from the sources.',
+      'Calculations are based on methodologies recognized worldwide. The calculator is independent: it has no affiliation, sponsorship, or official endorsement from the sources it uses.',
     servicio5Title: 'Estimative nature:',
     servicio5:
-      'The scores and indicators are mathematical approximations based on the entered data. They serve as a guide to evaluate circular performance across multiple reuse cycles and are not guaranteed as exact figures, environmental certifications or binding audits.',
+      'Scores and indicators are mathematical approximations based on the data you enter. They help you evaluate your circular performance over several reuse cycles. They are not environmental certifications or audits.',
     cuentaTitle: 'Account creation',
     cuenta1:
-      'You can register as an individual or as an organization. Organizations designate an administrator who can invite other users via an invitation link. Registration requires full name, email address and password. Organizations must also provide legal name and tax ID.',
+      'You can register as an individual or as an organization. If you are an organization, your administrator can invite other people with an invitation link. To register you need your full name, email address, and a password. Organizations must also provide their legal name and tax ID (NIT).',
     cuenta2:
       'You are responsible for the accuracy of the information you provide and for keeping your credentials confidential. The platform is intended exclusively for adults in accordance with Colombian law.',
     obligacionesTitle: 'Obligations',
@@ -201,7 +201,7 @@ const T = {
     ],
     licenciaTitle: 'License of use',
     licencia:
-      'We grant you a limited, personal, non-transferable and revocable license to access and use the platform in accordance with these terms. You do not acquire any rights to the source code, design, calculation methodology, trademarks or any other element of the platform. The platform incorporates third-party software and visual assets licensed to Grupo MLP S.A.S. under their respective terms.',
+      'We give you a limited, personal, non-transferable, and revocable license to use the platform under these terms. You do not get any rights to the source code, design, calculation methodology, trademarks, or other elements of the platform. The platform uses third-party software and visual assets, licensed to Grupo MLP S.A.S. under their own terms.',
     licenciaActivosTexto: 'To review the details and commercial scope of licenses for stock photography, iconography, and visual assets, see',
     licenciaActivosLink: 'Image Banks & Asset Licenses',
     propiedadTitle: 'Intellectual property',
@@ -210,7 +210,7 @@ const T = {
     propiedadLinkLabel: 'confidentiality agreement',
     responsabilidadTitle: 'Limitation of liability',
     responsabilidad1:
-      'We are not liable for direct, indirect or consequential damages arising from the use or inability to use the platform. CO₂e values are estimated based on internationally recognized factors and differ from an official environmental audit. You assume exclusive risk of your use.',
+      'We are not liable for direct, indirect, or consequential damages arising from using the platform or being unable to use it. CO₂e values are estimates based on internationally recognized factors and do not replace an official environmental audit. You take on the risk of your use.',
     responsabilidad2:
       'We are also not responsible for the content of third-party websites to which the platform may link. Access to such sites is at your sole risk.',
     leyTitle: 'Applicable law and dispute resolution',
@@ -219,7 +219,7 @@ const T = {
     ley2: 'For any questions, contact us at',
     ley3: '. We respond within 10 to 15 business days.',
     transparenciaTexto:
-      'Grupo MLP S.A.S. built the Reuse Calculator using Artificial Intelligence models. We use AI tools to optimize code and process emission factors. Since these systems may generate technical inaccuracies, we constantly monitor the platform to ensure the accuracy of environmental calculations.',
+      'We built the Calculadora de Reúso with artificial intelligence tools, to optimize code and process emission factors. These systems can make technical errors. That is why we review the platform often to improve the quality of environmental calculations.',
     transparenciaLink: 'Read our AI use policy →',
   },
 }

@@ -203,6 +203,11 @@ export function LegalPageLayout({
             {children}
           </div>
 
+          {/* Enlace al índice con todos los documentos legales del sitio */}
+          <p style={{ marginTop: 32, fontSize: 14, color: 'var(--text-secondary)' }}>
+            <a href="/legal" style={{ color: 'var(--color-brand)', fontWeight: 600 }}>Ver información legal del sitio</a>
+          </p>
+
           {/* Aceptación opcional */}
           {requiresAccept && (
             <div style={{ marginTop: 40 }}>
