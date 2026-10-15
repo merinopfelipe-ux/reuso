@@ -34,7 +34,7 @@ const T = {
     },
     prefBtnText: 'Cambiar mis preferencias de cookies',
     s1Title: 'Qué son las cookies y ámbito de aplicación',
-    s1: 'Las cookies son pequeños archivos de texto que un sitio web almacena en tu dispositivo al visitarlo. Permiten que el sitio recuerde información entre páginas y sesiones: que estás autenticado, tus preferencias de interfaz o si ya tomaste una decisión sobre el uso de cookies. Esta política aplica tanto al dominio principal calculadoradereuso.com y a su subdominio de chat, chat.calculadoradereuso.com. creuso.app es un acortador de enlaces general, un proyecto aparte que solo redirige a la página de destino. En nuestras pruebas no establece cookies.',
+    s1: 'Las cookies son pequeños archivos de texto que un sitio web almacena en tu dispositivo al visitarlo. Permiten que el sitio recuerde información entre páginas y sesiones: que estás autenticado, tus preferencias de interfaz o si ya tomaste una decisión sobre el uso de cookies. Esta política aplica tanto al dominio principal calculadoradereuso.com y a su subdominio de chat, chat.calculadoradereuso.com. creuso.app es un acortador de enlaces general, un proyecto aparte que solo redirige a la página de destino. reuso.lurdes.co es otro dominio nuestro que solo sirve para acortar enlaces y redirige a la plataforma. En nuestras pruebas, ninguno de los dos establece cookies.',
     s2Title: '1. Cookies esenciales',
     s2Desc: 'Estas cookies son necesarias para que el sitio funcione. Se activan automáticamente cuando usas la plataforma. No puedes desactivarlas sin que el sitio deje de funcionar. No requieren tu consentimiento (RGPD Art. 5(3) / Directiva ePrivacy). Aplican a calculadoradereuso.com y a su subdominio de chat, chat.calculadoradereuso.com.',
     s2Rows: [
@@ -111,7 +111,7 @@ const T = {
     },
     prefBtnText: 'Change my cookie preferences',
     s1Title: 'What are cookies and scope of application',
-    s1: 'Cookies are small text files that a website stores on your device when you visit it. They allow the site to remember information between pages and sessions: that you are logged in, your interface preferences, or whether you have already made a choice about cookie use. This policy applies to our main domain calculadoradereuso.com and its chat subdomain, chat.calculadoradereuso.com. creuso.app is a separate, general-purpose link shortener. It only redirects visitors to the destination page. In our tests it did not set any cookies.',
+    s1: 'Cookies are small text files that a website stores on your device when you visit it. They allow the site to remember information between pages and sessions: that you are logged in, your interface preferences, or whether you have already made a choice about cookie use. This policy applies to our main domain calculadoradereuso.com and its chat subdomain, chat.calculadoradereuso.com. creuso.app is a separate, general-purpose link shortener. It only redirects visitors to the destination page. reuso.lurdes.co is another domain of ours that only serves to shorten links and redirects to the platform. In our tests, neither of them sets any cookies.',
     s2Title: '1. Essential cookies',
     s2Desc: 'These cookies are necessary for the site to function. They are activated automatically when you use the platform. You cannot disable them without causing the site to stop working. They do not require your consent (GDPR Art. 5(3) / ePrivacy Directive). They apply to calculadoradereuso.com and its chat subdomain, chat.calculadoradereuso.com.',
     s2Rows: [
