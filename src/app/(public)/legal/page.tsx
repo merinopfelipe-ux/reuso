@@ -23,8 +23,8 @@ const T = {
       { href: '/legal/medicion', titulo: 'Metodología de Medición', descripcion: 'Cómo entregamos la estimación de CO₂ eq evitado y la huella hídrica de cada reúso.' },
       { href: '/legal/ptee', titulo: 'Programa de Ética (PTEE)', descripcion: 'Programa anticorrupción, antisoborno transnacional y código ético de Grupo MLP S.A.S.' },
       { href: '/legal/sagrilaft', titulo: 'Política SAGRILAFT', descripcion: 'Autocontrol y gestión del riesgo integral de LA/FT/FPADM y debida diligencia.' },
+      { href: '/legal/activos-y-licencias', titulo: 'Bancos de Imágenes, Iconografía y Licencias de Activos', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales de la plataforma.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
-      { href: '/legal/activos-y-licencias', titulo: 'Bancos de Imágenes y Licencias', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales de la plataforma.' },
     ],
   },
   ENG: {
@@ -42,8 +42,8 @@ const T = {
       { href: '/legal/medicion', titulo: 'Measurement Methodology', descripcion: 'How we provide the estimation of avoided CO₂ eq and the water footprint of each reuse.' },
       { href: '/legal/ptee', titulo: 'Ethics Program (PTEE)', descripcion: 'Anti-corruption, anti-bribery program, and corporate code of conduct.' },
       { href: '/legal/sagrilaft', titulo: 'SAGRILAFT Policy', descripcion: 'Prevention and control of money laundering and terrorist financing risks.' },
+      { href: '/legal/activos-y-licencias', titulo: 'Image Banks, Iconography, and Asset Licenses', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
-      { href: '/legal/activos-y-licencias', titulo: 'Image Banks & Asset Licenses', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
     ],
   },
 }

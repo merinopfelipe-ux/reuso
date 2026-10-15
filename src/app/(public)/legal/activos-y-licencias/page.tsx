@@ -10,7 +10,8 @@ const T = {
     secciones: [
       { id: 'cumplimiento', label: 'Marco de Propiedad Intelectual' },
       { id: 'bancos-imagenes', label: 'Bancos de Imágenes Gratuitos' },
-      { id: 'iconografia', label: 'Iconografía y Fuentes' },
+      { id: 'iconografia', label: 'Licencias de iconografía' },
+      { id: 'tipografia', label: 'Fuentes tipográficas' },
       { id: 'propiedad-propia', label: 'Activos Exclusivos de Grupo MLP' },
       { id: 'notice-takedown', label: 'Notificación y Retiro' },
     ],
@@ -19,7 +20,7 @@ const T = {
       'Grupo MLP S.A.S. (NIT 901.832.079-1) diseña y opera la Calculadora de Reúso de acuerdo con la Decisión Andina 351 de 1993, la Ley 23 de 1982, la Ley 44 de 1993 de la República de Colombia y los tratados internacionales suscritos ante la Organización Mundial de la Propiedad Intelectual (OMPI).',
       'Nos comprometemos a que todos los recursos visuales, fotográficos, tipográficos e infográficos incorporados en nuestra plataforma cuentan con autorización de uso comercial, licencias abiertas permisivas o corresponden a creaciones originales de nuestro equipo.',
     ],
-    s2Title: '2. Bancos de Imágenes Gratuitos Autorizados para Uso Comercial',
+    s2Title: '2. Bancos de imágenes',
     s2Intro: 'Estos son los bancos de imágenes cuyas licencias revisamos. Hoy usamos fotos de Unsplash en la landing. Los demás quedan revisados para uso futuro, con su enlace oficial:',
     bancos: [
       {
@@ -65,13 +66,17 @@ const T = {
         restricciones: 'No hay que presentarse como autor de la foto. No se pueden usar con fines ilegales, inmorales ni para dañar la imagen de personas.',
       },
     ],
-    s3Title: '3. Licencias de Iconografía y Fuentes Tipográficas',
-    s3: [
-      'Lucide Icons (lucide-react): Biblioteca de íconos vectoriales licenciada bajo ISC License (altamente permisiva y compatible con MIT), autorizando su compilación, adaptación y distribución en aplicaciones comerciales.',
-      'Phosphor Icons (@phosphor-icons/react): Biblioteca de iconografía licenciada bajo MIT License, permitiendo su integración y renderizado sin restricciones de regalías.',
-      'Tipografía: usamos Open Sans, una fuente de código abierto distribuida bajo la SIL Open Font License (OFL 1.1), que permite mostrarla libremente en navegadores y documentos. Los títulos usan Seravek solo cuando el dispositivo del visitante ya la tiene instalada, como Mac y iPhone. Seravek fue creada por Eric Olson, y su licencia la distribuye Process Type Foundry (https://fonts.adobe.com/fonts/seravek). Tenemos su licencia a través de una suscripción paga de Adobe Creative Cloud. Nuestro sitio no la carga desde ningún servidor. En los demás equipos se usa la fuente del sistema.',
+    s3Title: '3. Licencias de iconografía',
+    iconos: [
+      { nombre: 'Lucide (lucide-react)', licencia: 'ISC License', url: 'https://lucide.dev', permisos: 'Uso comercial, con modificación y distribución dentro de aplicaciones comerciales. Es compatible con MIT.', restricciones: 'Conservar el aviso de copyright y de licencia en las copias que se distribuyan.' },
+      { nombre: 'Phosphor (@phosphor-icons/react)', licencia: 'MIT License', url: 'https://phosphoricons.com', permisos: 'Uso comercial sin pagar regalías, con integración y modificación.', restricciones: 'Conservar el aviso de copyright y de licencia en las copias que se distribuyan.' },
     ],
-    s4Title: '4. Activos Exclusivos y Titularidad de Grupo MLP S.A.S.',
+    s3bTitle: '4. Fuentes tipográficas',
+    tipos: [
+      { nombre: 'Open Sans', licencia: 'SIL Open Font License (OFL 1.1)', url: 'http://scripts.sil.org/OFL', permisos: 'Uso libre para mostrarla en navegadores y documentos, también en proyectos comerciales.', restricciones: 'No venderla por sí sola. Conservar el aviso de licencia al redistribuir los archivos de la fuente.' },
+      { nombre: 'Seravek', licencia: 'Adobe Fonts (Process Type Foundry)', url: 'https://fonts.adobe.com/fonts/seravek', permisos: 'Creada por Eric Olson. Tenemos su licencia a través de una suscripción paga de Adobe Creative Cloud.', restricciones: 'No la distribuimos. Nuestro sitio no la carga desde ningún servidor.' },
+    ],
+    s4Title: '5. Activos Exclusivos y Titularidad de Grupo MLP S.A.S.',
     s4: [
       'Pertenecen exclusivamente a Grupo MLP S.A.S. todos los derechos de propiedad intelectual sobre:',
       '- La identidad de marca, logotipos, eslóganes y signos distintivos de la Calculadora de Reúso.',
@@ -79,7 +84,7 @@ const T = {
       '- El modelo matemático, algoritmos de estimación de CO₂ eq evitado y metodología inmutable de factores de emisión.',
       '- La estructura, diagramación y diseño gráfico de los Pasaportes Digitales de Producto (DPP) y reportes ejecutivos generados.',
     ],
-    s5Title: '5. Procedimiento de Notificación y Retiro (Notice and Takedown)',
+    s5Title: '6. Procedimiento de Notificación y Retiro (Notice and Takedown)',
     s5: [
       'Grupo MLP S.A.S. actúa con diligencia preventiva ante cualquier reclamación legítima de derechos de autor.',
       'Si consideras que algún contenido o imagen incorporada vulnera tus derechos de propiedad intelectual, comunícate a:',
@@ -95,7 +100,8 @@ const T = {
     secciones: [
       { id: 'cumplimiento', label: 'Intellectual Property Framework' },
       { id: 'bancos-imagenes', label: 'Stock Image Banks' },
-      { id: 'iconografia', label: 'Iconography and Typography' },
+      { id: 'iconografia', label: 'Iconography licenses' },
+      { id: 'tipografia', label: 'Typographic fonts' },
       { id: 'propiedad-propia', label: 'Exclusive Proprietary Assets' },
       { id: 'notice-takedown', label: 'Notice and Takedown' },
     ],
@@ -104,7 +110,7 @@ const T = {
       'Grupo MLP S.A.S. (Tax ID 901.832.079-1) designs and operates the Calculadora de Reúso under Andean Decision 351 of 1993, Colombian Law 23 of 1982, and WIPO international conventions.',
       'We ensure that every visual, photographic, and iconographic asset deployed throughout our platform carries commercial clearance, permissive open-source licensing, or represents original proprietary work.',
     ],
-    s2Title: '2. Permissive Free Image Banks for Commercial Use',
+    s2Title: '2. Image banks',
     s2Intro: 'To illustrate case studies, UI graphics, and circular economy learning materials, our platform relies on image repositories operating under royalty-free commercial licenses:',
     bancos: [
       {
@@ -150,13 +156,17 @@ const T = {
         restricciones: 'Do not present yourself as the author of the photo. Do not use them for illegal or immoral purposes, or to harm the image of people.',
       },
     ],
-    s3Title: '3. Iconography and Typographic Licenses',
-    s3: [
-      'Lucide Icons (lucide-react): Open-source vector library under the ISC License (permissive and MIT-compatible), authorizing inclusion and modification in commercial software.',
-      'Phosphor Icons (@phosphor-icons/react): Open-source icon family licensed under MIT License, granting royalty-free integration.',
-      'Typography: we use Open Sans, an open-source font distributed under the SIL Open Font License (OFL 1.1), which allows free display in browsers and documents. Headings use Seravek only when the device of the visitor already has it installed, such as Mac and iPhone. Seravek was created by Eric Olson, and its license is distributed by Process Type Foundry (https://fonts.adobe.com/fonts/seravek). We hold its license through a paid Adobe Creative Cloud subscription. Our site does not load it from any server. Other devices use the system font.',
+    s3Title: '3. Iconography licenses',
+    iconos: [
+      { nombre: 'Lucide (lucide-react)', licencia: 'ISC License', url: 'https://lucide.dev', permisos: 'Commercial use, with modification and distribution inside commercial applications. Compatible with MIT.', restricciones: 'Keep the copyright and license notice in the copies you distribute.' },
+      { nombre: 'Phosphor (@phosphor-icons/react)', licencia: 'MIT License', url: 'https://phosphoricons.com', permisos: 'Commercial use without royalties, with integration and modification.', restricciones: 'Keep the copyright and license notice in the copies you distribute.' },
     ],
-    s4Title: '4. Proprietary Assets and Exclusive Ownership',
+    s3bTitle: '4. Typographic fonts',
+    tipos: [
+      { nombre: 'Open Sans', licencia: 'SIL Open Font License (OFL 1.1)', url: 'http://scripts.sil.org/OFL', permisos: 'Free use to display it in browsers and documents, including commercial projects.', restricciones: 'Do not sell it on its own. Keep the license notice when redistributing the font files.' },
+      { nombre: 'Seravek', licencia: 'Adobe Fonts (Process Type Foundry)', url: 'https://fonts.adobe.com/fonts/seravek', permisos: 'Created by Eric Olson. We hold its license through a paid Adobe Creative Cloud subscription.', restricciones: 'We do not distribute it. Our site does not load it from any server.' },
+    ],
+    s4Title: '5. Proprietary Assets and Exclusive Ownership',
     s4: [
       'Grupo MLP S.A.S. retains exclusive ownership over:',
       '- Distinctive trademarks, logos, emblems, and slogans of Reúso.',
@@ -164,7 +174,7 @@ const T = {
       '- Mathematical emission modeling, calculation algorithms, and immutable emission factor snapshots.',
       '- Layout, design, and formatting of Digital Product Passports (DPP) and generated environmental reports.',
     ],
-    s5Title: '5. Notice and Takedown Procedure',
+    s5Title: '6. Notice and Takedown Procedure',
     s5: [
       'Grupo MLP S.A.S. complies proactively with intellectual property enforcement requests.',
       'If you believe any content on the platform infringes upon your copyright, please notify us at:',
@@ -173,6 +183,52 @@ const T = {
     s5FormLabel: 'Official Legal Query Form',
     s5Plazo: 'We will assess your claim and take appropriate measures within five (5) business days.',
   },
+}
+
+function TarjetasLicencia({ items }: { items: { nombre: string; licencia: string; url?: string; permisos: string; restricciones: string }[] }) {
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginTop: 16, marginBottom: 24 }}>
+      {items.map((item, i) => (
+        <div
+          key={i}
+          style={{
+            padding: '16px 20px',
+            borderRadius: 12,
+            border: '1px solid var(--border)',
+            background: 'var(--bg-card)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
+              {item.nombre}
+            </span>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                padding: '2px 8px',
+                borderRadius: 999,
+                background: 'var(--color-brand-light)',
+                color: 'var(--color-brand)',
+                fontFamily: 'monospace',
+              }}
+            >
+              {item.licencia}{item.url ? <> · <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-brand)' }}>{item.url}</a></> : null}
+            </span>
+          </div>
+          <p style={{ ...p, fontSize: 13, margin: 0, color: 'var(--text-secondary)' }}>
+            <strong>Alcance comercial:</strong> {item.permisos}
+          </p>
+          <p style={{ ...p, fontSize: 12, margin: 0, color: 'var(--text-muted)' }}>
+            <strong>Límites:</strong> {item.restricciones}
+          </p>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export default function ActivosYLicenciasPage() {
@@ -201,57 +257,19 @@ export default function ActivosYLicenciasPage() {
         <h2 style={h2}>{t.s2Title}</h2>
         <p style={p}>{t.s2Intro}</p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16, marginTop: 16, marginBottom: 24 }}>
-          {t.bancos.map((banco, i) => (
-            <div
-              key={i}
-              style={{
-                padding: '16px 20px',
-                borderRadius: 12,
-                border: '1px solid var(--border)',
-                background: 'var(--bg-card)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>
-                  {banco.nombre}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 700,
-                    padding: '2px 8px',
-                    borderRadius: 999,
-                    background: 'var(--color-brand-light)',
-                    color: 'var(--color-brand)',
-                    fontFamily: 'monospace',
-                  }}
-                >
-                  {banco.licencia}{banco.url ? <> · <a href={banco.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--color-brand)' }}>{banco.url}</a></> : null}
-                </span>
-              </div>
-              <p style={{ ...p, fontSize: 13, margin: 0, color: 'var(--text-secondary)' }}>
-                <strong>Alcance comercial:</strong> {banco.permisos}
-              </p>
-              <p style={{ ...p, fontSize: 12, margin: 0, color: 'var(--text-muted)' }}>
-                <strong>Límites:</strong> {banco.restricciones}
-              </p>
-            </div>
-          ))}
-        </div>
+        <TarjetasLicencia items={t.bancos} />
       </section>
 
       {/* 3. Iconografía */}
       <section id="iconografia">
         <h2 style={h2}>{t.s3Title}</h2>
-        {t.s3.map((item, i) => (
-          <p key={i} style={p}>
-            {item}
-          </p>
-        ))}
+        <TarjetasLicencia items={t.iconos} />
+      </section>
+
+      {/* 4. Tipografía */}
+      <section id="tipografia">
+        <h2 style={h2}>{t.s3bTitle}</h2>
+        <TarjetasLicencia items={t.tipos} />
       </section>
 
       {/* 4. Propiedad de Grupo MLP */}
