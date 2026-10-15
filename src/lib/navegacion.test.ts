@@ -51,6 +51,7 @@ describe('menú: estructura por rol', () => {
   it('Chat: el super admin siempre lo ve; la empresa solo con cuenta activa; el empleado nunca', () => {
     const chatDe = (rol: Rol, chatUrl?: string | null) => menuPorRol(rol, chatUrl).find((e) => e.label === 'Chat')
 
+    expect(chatDe('super_admin', null)).toBeUndefined()
     const admin = chatDe('super_admin')
     expect(admin?.href).toBe(URL_CHAT_BASE)
     expect(admin?.externa).toBe(true)

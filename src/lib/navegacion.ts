@@ -197,9 +197,12 @@ const COTIZADOR_BLOQUEADO: Entrada = { label: 'Cotizador', icon: ClipboardList, 
 const DPP_BLOQUEADO: Entrada = { label: 'DPP', icon: IdentificationCard, href: '/dashboard?modulo_bloqueado=dpp' }
 
 // chatUrl: dirección del chat de la empresa (null si no tiene chat activo).
-// El super admin siempre tiene Chat; si no se indica, va a la raíz de Chatwoot.
+// Super admin: en el panel de admin (chatUrl sin indicar) ve su Chat, a la raíz de
+// Chatwoot. Dentro de una empresa no lo ve, así que las vistas de empresa pasan null.
 export function menuPorRol(rol: Rol, chatUrl?: string | null): Entrada[] {
-  const chat = rol === 'super_admin' ? (chatUrl ?? URL_CHAT_BASE) : rol === 'empresa_admin' ? (chatUrl ?? null) : null
+  const chat =
+    rol === 'super_admin' ? (chatUrl === undefined ? URL_CHAT_BASE : chatUrl) :
+    rol === 'empresa_admin' ? (chatUrl ?? null) : null
   const conChat = (entradas: Entrada[]) => (chat ? [...entradas, chatEntrada(chat)] : entradas)
   switch (rol) {
     case 'super_admin':

@@ -47,10 +47,12 @@ export async function sincronizarAgentesEmpresa(
   activo: boolean
 ): Promise<{ total: number; fallos: string[] }> {
   const { cuenta } = await cuentaDeEmpresa(admin, empresaId)
+  // Los super admin no son agentes de la empresa: su acceso al chat es el del panel de admin.
   const { data: miembros } = await admin
     .from('profiles')
-    .select('nombre, apellido, email')
+    .select('nombre, apellido, email, rol')
     .eq('empresa_id', empresaId)
+    .neq('rol', 'super_admin')
   const conCorreo = (miembros ?? []).filter((m) => m.email)
   if (cuenta == null) return { total: conCorreo.length, fallos: conCorreo.map((m) => m.email as string) }
 
