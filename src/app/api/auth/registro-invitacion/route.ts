@@ -156,13 +156,13 @@ export async function POST(request: NextRequest) {
 
   if (createError || !authData.user) {
     if (empresaCreadaId) await adminClient.from('empresas').delete().eq('id', empresaCreadaId)
-    if (createError?.message?.includes('already registered')) {
-      return NextResponse.json(
-        { error: 'Este email ya tiene una cuenta registrada.' },
-        { status: 409 }
-      )
+    const yaExiste = /already (been )?registered|already exists/i.test(createError?.message ?? '')
+    if (!yaExiste) {
+      return NextResponse.json({ error: 'Error al crear la cuenta. Intenta de nuevo.' }, { status: 500 })
     }
-    return NextResponse.json({ error: 'Error al crear la cuenta. Intenta de nuevo.' }, { status: 500 })
+    // Cuenta ya existente: se une a la empresa solo si la persona demuestra la contraseña actual
+    // y su cuenta no pertenece a otra empresa.
+    return unirCuentaExistente(invitacion, password, empresaIdFinal as string, ip)
   }
 
   // El trigger handle_new_user crea el profile con usuario_libre - actualizamos rol y empresa
@@ -207,4 +207,48 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ ok: true })
+}
+
+// Une una cuenta que ya existe a la empresa de la invitación.
+// Exige la contraseña actual (no se cambia ni se revela nada) y que la cuenta no tenga empresa.
+async function unirCuentaExistente(
+  invitacion: { id: string; email: string; rol_asignado: string },
+  password: string,
+  empresaId: string,
+  ip: string
+) {
+  const { createClient: crearClienteSimple } = await import('@supabase/supabase-js')
+  const anon = crearClienteSimple(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+  const { data: sesion, error: loginError } = await anon.auth.signInWithPassword({ email: invitacion.email, password })
+  if (loginError || !sesion.user) {
+    return NextResponse.json(
+      { error: 'Ya existe una cuenta con este correo. Escribe la contraseña de esa cuenta para unirte a la empresa.' },
+      { status: 409 }
+    )
+  }
+
+  const adminClient = await createAdminClient()
+  const { data: perfil } = await adminClient.from('profiles').select('empresa_id').eq('user_id', sesion.user.id).maybeSingle()
+  if (perfil?.empresa_id) {
+    return NextResponse.json({ error: 'Esta cuenta ya pertenece a otra empresa. Contacta soporte.' }, { status: 409 })
+  }
+
+  const { error: profileError } = await adminClient
+    .from('profiles')
+    .update({ rol: invitacion.rol_asignado, empresa_id: empresaId })
+    .eq('user_id', sesion.user.id)
+  if (profileError) {
+    return NextResponse.json({ error: 'Error al asignar el perfil. Contacta soporte.' }, { status: 500 })
+  }
+
+  await adminClient.from('invitaciones').update({ estado: 'aceptada' }).eq('id', invitacion.id)
+  await logAuditoria(adminClient, {
+    user_id: sesion.user.id,
+    accion: 'invitacion_aceptada',
+    detalle: { invitacion_id: invitacion.id, empresa_id: empresaId, rol_asignado: invitacion.rol_asignado, cuenta_existente: true },
+    ip,
+  })
+  return NextResponse.json({ ok: true, cuenta_existente: true })
 }

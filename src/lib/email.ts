@@ -157,7 +157,7 @@ function emailPlantilla({
           <tr>
             <td align="center" style="padding:0 0 32px;text-align:center;">
               <a href="https://calculadoradereuso.com" target="_blank" rel="noopener noreferrer" style="text-decoration:none;display:inline-block;" title="Calculadora de Reúso">
-                <img src="https://calculadoradereuso.com/logo-completo.svg" alt="Calculadora de Reúso" width="148" height="41" style="display:block;margin:0 auto;max-width:148px;height:auto;border:0;outline:none;" />
+                <img src="https://calculadoradereuso.com/logo-completo.png" alt="Calculadora de Reúso" width="148" height="41" style="display:block;margin:0 auto;max-width:148px;height:auto;border:0;outline:none;" />
               </a>
             </td>
           </tr>
