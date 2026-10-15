@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit } from '@/lib/rate-limit'
-import { agregarAdministrador, crearUsuarioChat, enlaceDeAcceso } from '@/lib/chatwoot-plataforma'
+import { asignarAgente, crearUsuarioChat, enlaceDeAcceso } from '@/lib/chatwoot-plataforma'
 
 // Entrada al chat de la empresa con un clic. Quien administra una empresa con
 // chat activo pulsa Chat en su menú, esta ruta pide a Chatwoot un enlace de
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     // Si la persona ya existe en Chatwoot se reutiliza, y si es nueva se crea:
     // así, si cambia quien administra la empresa, el nuevo entra sin pasos extra.
     const usuarioId = await crearUsuarioChat({ nombre, email: user.email })
-    await agregarAdministrador(empresa.chat_account_id, usuarioId)
+    await asignarAgente(empresa.chat_account_id, usuarioId)
     return NextResponse.redirect(await enlaceDeAcceso(usuarioId))
   } catch (err) {
     console.error('[chat/entrar]', err instanceof Error ? err.message : err)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { quitarMiembroDelChat } from '@/lib/chat-agentes'
 
 async function getPerfilYEmpresa(supabase: Awaited<ReturnType<typeof createClient>>) {
   const { data: { user } } = await supabase.auth.getUser()
@@ -26,7 +27,7 @@ export async function DELETE(_: Request, props: { params: Promise<{ id: string }
 
   const { data: miembro } = await adminClient
     .from('profiles')
-    .select('id, empresa_id, rol')
+    .select('id, empresa_id, rol, nombre, apellido, email')
     .eq('id', params.id)
     .single()
 
@@ -44,6 +45,14 @@ export async function DELETE(_: Request, props: { params: Promise<{ id: string }
     .eq('id', params.id)
 
   if (error) return NextResponse.json({ error: 'No se pudo remover al miembro.' }, { status: 500 })
+
+  if (miembro.empresa_id && miembro.email) {
+    try {
+      await quitarMiembroDelChat(adminClient, miembro.empresa_id, { nombre: [miembro.nombre, miembro.apellido].filter(Boolean).join(' '), email: miembro.email })
+    } catch (err) {
+      console.error('[miembros] no se pudo quitar del chat:', err instanceof Error ? err.message : err)
+    }
+  }
 
   return NextResponse.json({ ok: true })
 }

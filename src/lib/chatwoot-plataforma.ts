@@ -19,7 +19,7 @@ function configuracion(): { base: string; token: string } {
   return { base, token }
 }
 
-async function llamar(metodo: 'GET' | 'POST', ruta: string, cuerpo?: unknown): Promise<Record<string, unknown>> {
+async function llamar(metodo: 'GET' | 'POST' | 'DELETE', ruta: string, cuerpo?: unknown): Promise<Record<string, unknown>> {
   const { base, token } = configuracion()
   const res = await fetchConTimeout(
     `${base}${ruta}`,
@@ -31,7 +31,7 @@ async function llamar(metodo: 'GET' | 'POST', ruta: string, cuerpo?: unknown): P
     TIMEOUT_MS
   )
   if (!res.ok) throw new ChatwootError(`Chatwoot respondió ${res.status} en ${ruta}`)
-  return (await res.json()) as Record<string, unknown>
+  return (await res.json().catch(() => ({}))) as Record<string, unknown>
 }
 
 function idDe(respuesta: Record<string, unknown>, contexto: string): number {
@@ -42,7 +42,8 @@ function idDe(respuesta: Record<string, unknown>, contexto: string): number {
 
 // Cuenta nueva para la empresa. Devuelve su id.
 export async function crearCuentaChat(nombre: string): Promise<number> {
-  const r = await llamar('POST', '/platform/api/v1/accounts', { name: nombre })
+  // Idioma por defecto español: Chatwoot ya lo trae traducido.
+  const r = await llamar('POST', '/platform/api/v1/accounts', { name: nombre, locale: 'es' })
   return idDe(r, 'crear cuenta')
 }
 
@@ -62,11 +63,18 @@ export async function crearUsuarioChat(datos: { nombre: string; email: string })
   return idDe(r, 'crear usuario')
 }
 
-// Agrega al usuario a la cuenta como administrador.
-export async function agregarAdministrador(cuentaId: number, usuarioId: number): Promise<void> {
+// Hace agente al usuario en la cuenta. Si ya es miembro, Chatwoot actualiza su rol.
+export async function asignarAgente(cuentaId: number, usuarioId: number): Promise<void> {
   await llamar('POST', `/platform/api/v1/accounts/${cuentaId}/account_users`, {
     user_id: usuarioId,
-    role: 'administrator',
+    role: 'agent',
+  })
+}
+
+// Quita al usuario de la cuenta.
+export async function quitarAgente(cuentaId: number, usuarioId: number): Promise<void> {
+  await llamar('DELETE', `/platform/api/v1/accounts/${cuentaId}/account_users/destroy`, {
+    user_id: usuarioId,
   })
 }
 

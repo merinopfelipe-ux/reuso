@@ -2,16 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
-import {
-  agregarAdministrador,
-  crearCuentaChat,
-  crearUsuarioChat,
-} from '@/lib/chatwoot-plataforma'
+import { crearCuentaChat } from '@/lib/chatwoot-plataforma'
+import { sincronizarAgentesEmpresa } from '@/lib/chat-agentes'
 
 const schema = z.object({ habilitado: z.boolean() })
 
-// Activa o quita el chat de una empresa. Quitarlo no borra la cuenta de
-// Chatwoot: solo oculta la entrada del menú.
+// Activa, sincroniza o quita el chat de una empresa.
+// - habilitado: true → crea la cuenta si no existe y pone a todos los miembros como agentes.
+//   Si el chat ya estaba activo, sirve para sincronizar a quien se haya sumado.
+// - habilitado: false → saca a todos los miembros de la cuenta. La cuenta se conserva.
 export async function POST(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params
   const guard = await requireSuperAdmin(request)
@@ -35,29 +34,24 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   const ip = getIp(request)
 
   if (!habilitado) {
+    const { fallos } = await sincronizarAgentesEmpresa(guard.adminClient, empresa.id, false)
     await guard.adminClient.from('empresas').update({ chat_habilitado: false }).eq('id', empresa.id)
     await logAuditoria(guard.adminClient, {
       user_id: guard.user.id,
       accion: 'quitar_chat_empresa',
-      detalle: { empresa_id: empresa.id, chat_account_id: empresa.chat_account_id },
+      detalle: { empresa_id: empresa.id, chat_account_id: empresa.chat_account_id, fallos },
       ip,
     })
-    return NextResponse.json({ chat_habilitado: false, chat_account_id: empresa.chat_account_id })
+    return NextResponse.json({ chat_habilitado: false, chat_account_id: empresa.chat_account_id, fallos })
   }
 
-  // Quien administra la empresa es quien entra al chat.
-  const { data: admin } = await guard.adminClient
+  const { data: miembros } = await guard.adminClient
     .from('profiles')
-    .select('user_id, nombre, apellido')
+    .select('user_id')
     .eq('empresa_id', empresa.id)
-    .eq('rol', 'empresa_admin')
-    .limit(1)
-    .maybeSingle()
-  // Correo de la cuenta de acceso (verificado), el mismo con el que luego entra al chat.
-  const correo = admin ? (await guard.adminClient.auth.admin.getUserById(admin.user_id)).data.user?.email : undefined
-  if (!admin || !correo) {
+  if (!miembros || miembros.length === 0) {
     return NextResponse.json(
-      { error: 'La empresa no tiene un administrador con correo. Asígnalo antes de activar el chat.' },
+      { error: 'La empresa no tiene miembros. Agrega a alguien antes de activar el chat.' },
       { status: 400 }
     )
   }
@@ -70,18 +64,15 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       await guard.adminClient.from('empresas').update({ chat_account_id: cuentaId }).eq('id', empresa.id)
     }
 
-    const nombre = [admin.nombre, admin.apellido].filter(Boolean).join(' ') || correo
-    const usuarioId = await crearUsuarioChat({ nombre, email: correo })
-    await agregarAdministrador(cuentaId, usuarioId)
-
     await guard.adminClient.from('empresas').update({ chat_habilitado: true }).eq('id', empresa.id)
+    const { total, fallos } = await sincronizarAgentesEmpresa(guard.adminClient, empresa.id, true)
     await logAuditoria(guard.adminClient, {
       user_id: guard.user.id,
       accion: 'activar_chat_empresa',
-      detalle: { empresa_id: empresa.id, chat_account_id: cuentaId },
+      detalle: { empresa_id: empresa.id, chat_account_id: cuentaId, agentes: total, fallos },
       ip,
     })
-    return NextResponse.json({ chat_habilitado: true, chat_account_id: cuentaId })
+    return NextResponse.json({ chat_habilitado: true, chat_account_id: cuentaId, agentes: total, fallos })
   } catch (err) {
     console.error('[admin/empresas/chat]', empresa.id, err instanceof Error ? err.message : err)
     return NextResponse.json(

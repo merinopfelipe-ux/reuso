@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   crearCuentaChat,
   crearUsuarioChat,
-  agregarAdministrador,
+  asignarAgente,
+  quitarAgente,
   enlaceDeAcceso,
   ChatwootError,
 } from './chatwoot-plataforma'
@@ -44,7 +45,7 @@ describe('cliente de plataforma de Chatwoot', () => {
     expect(id).toBe(42)
     expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/accounts')
     expect((llamadas[0].init.headers as Record<string, string>).api_access_token).toBe('token-de-prueba')
-    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ name: 'Lurdes' })
+    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ name: 'Lurdes', locale: 'es' })
   })
 
   it('crea el usuario con una contraseña aleatoria que nadie recibe', async () => {
@@ -56,11 +57,19 @@ describe('cliente de plataforma de Chatwoot', () => {
     expect(cuerpo.password.length).toBeGreaterThanOrEqual(30)
   })
 
-  it('agrega al administrador con rol administrador', async () => {
+  it('asigna al usuario como agente', async () => {
     simular([respuesta({ id: 1 })])
-    await agregarAdministrador(42, 7)
+    await asignarAgente(42, 7)
     expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/accounts/42/account_users')
-    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ user_id: 7, role: 'administrator' })
+    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ user_id: 7, role: 'agent' })
+  })
+
+  it('quita al usuario de la cuenta con DELETE', async () => {
+    simular([respuesta({})])
+    await quitarAgente(42, 7)
+    expect(llamadas[0].url).toBe('https://chat.ejemplo.test/platform/api/v1/accounts/42/account_users/destroy')
+    expect(llamadas[0].init.method).toBe('DELETE')
+    expect(JSON.parse(String(llamadas[0].init.body))).toEqual({ user_id: 7 })
   })
 
   it('pide el enlace de acceso directo del usuario', async () => {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logAuditoria } from '@/lib/audit'
+import { agregarMiembroAlChat } from '@/lib/chat-agentes'
 import { createHash, randomBytes } from 'crypto'
 import { rateLimit } from '@/lib/rate-limit'
 import { sincronizarContactoLoops } from '@/lib/loops'
@@ -186,6 +187,12 @@ export async function POST(request: NextRequest) {
     .update({ estado: 'aceptada' })
     .eq('id', invitacion.id)
 
+  try {
+    await agregarMiembroAlChat(adminClient, empresaIdFinal as string, { nombre, email: invitacion.email })
+  } catch (err) {
+    console.error('[registro-invitacion] chat:', err instanceof Error ? err.message : err)
+  }
+
   await logAuditoria(adminClient, {
     user_id: authData.user.id,
     accion: 'invitacion_aceptada',
@@ -247,6 +254,11 @@ async function unirCuentaExistente(
   }
 
   await adminClient.from('invitaciones').update({ estado: 'aceptada' }).eq('id', invitacion.id)
+  try {
+    await agregarMiembroAlChat(adminClient, empresaId, { nombre: invitacion.email, email: invitacion.email })
+  } catch (err) {
+    console.error('[registro-invitacion] chat:', err instanceof Error ? err.message : err)
+  }
   await logAuditoria(adminClient, {
     user_id: sesion.user.id,
     accion: 'invitacion_aceptada',

@@ -9,9 +9,11 @@ export function ChatEmpresaClient({ empresaId, habilitado: inicial }: { empresaI
   const [habilitado, setHabilitado] = useState(inicial)
   const [guardando, setGuardando] = useState(false)
   const [error, setError] = useState('')
+  const [aviso, setAviso] = useState('')
 
   async function cambiar(nuevo: boolean) {
     setError('')
+    setAviso('')
     setGuardando(true)
     const res = await fetch(`/api/admin/empresas/${empresaId}/chat`, {
       method: 'POST',
@@ -25,6 +27,9 @@ export function ChatEmpresaClient({ empresaId, habilitado: inicial }: { empresaI
       return
     }
     setHabilitado(data.chat_habilitado === true)
+    if (nuevo && typeof data.agentes === 'number') {
+      setAviso(`Agentes sincronizados: ${data.agentes}.${data.fallos?.length ? ` Revisar: ${data.fallos.join(', ')}.` : ''}`)
+    }
     router.refresh()
   }
 
@@ -36,11 +41,16 @@ export function ChatEmpresaClient({ empresaId, habilitado: inicial }: { empresaI
           : 'Chat inactivo. La empresa no ve Chat en su menú.'}
       </p>
       <p className="text-sm text-(--text-secondary) m-0">
-        Quien administra la empresa entra con un clic desde su menú, sin crear otra contraseña.
+        Cada miembro de la empresa es agente del chat mientras el chat esté activo. Entra con un clic desde su menú, sin contraseña nueva.
       </p>
-      <div>
+      <div className="flex flex-wrap gap-2">
+        {habilitado && (
+          <Button variant="primary" size="sm" loading={guardando} onClick={() => cambiar(true)}>
+            Sincronizar agentes
+          </Button>
+        )}
         <Button
-          variant={habilitado ? 'secondary' : 'primary'}
+          variant="secondary"
           size="sm"
           loading={guardando}
           onClick={() => cambiar(!habilitado)}
@@ -48,6 +58,7 @@ export function ChatEmpresaClient({ empresaId, habilitado: inicial }: { empresaI
           {habilitado ? 'Quitar chat' : 'Activar chat'}
         </Button>
       </div>
+      {aviso && <p className="text-sm m-0 text-(--text-secondary)">{aviso}</p>}
       {error && <p className="text-sm m-0 text-error">{error}</p>}
     </div>
   )
