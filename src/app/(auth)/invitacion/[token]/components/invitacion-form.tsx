@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { Eye, EyeOff as EyeSlash, CheckCircle, Loader2 as CircleNotch, Leaf } from '@/components/ui/icons'
+import { Eye, EyeOff as EyeSlash, CheckCircle, Loader2 as CircleNotch } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 
 interface Props {
@@ -275,7 +275,6 @@ export default function InvitacionForm({ token, email, empresaNombre, rolAsignad
       </Button>
 
       <p style={{ textAlign: 'center', fontSize: 13, color: 'var(--text-secondary)', margin: 0 }}>
-        <Leaf size={13} style={{ verticalAlign: 'middle', marginRight: 4, color: BRAND }} />
         © Grupo MLP S.A.S.
       </p>
     </form>
