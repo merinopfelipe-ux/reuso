@@ -18,6 +18,7 @@ Si necesitas espacio para algo nuevo e importante, comprime o elimina otra líne
 | `email-design` | Antes de crear o modificar cualquier correo (Resend o Supabase Auth). |
 | `dominios-datos` | Antes de crear una tabla nueva o escribir un cálculo/query que mezcle Costos, Cálculo Ambiental o DPP. |
 | `seo-rendimiento` | Antes de tocar o medir una página index/follow (`/`, `/faq`). Lighthouse/PageSpeed 100 móvil y escritorio, errores comunes. |
+| `green-coding` | Antes de escribir o modificar CUALQUIER código y antes de publicar una cifra ambiental. Presupuestos de peso medidos, cómo medir y regla anti-greenwashing. |
 Si vas a documentar un hecho nuevo del negocio/diseño/seguridad, escríbelo en la skill correspondiente, no aquí.
 
 ## COLORES — DOS TOKENS SAGRADOS (detalle completo en skill `design-system`)
@@ -46,6 +47,7 @@ Empresas o personas con negocio en **restauración**, **diseño interior** o **p
 8) **Turnstile siempre fail-open**: nunca bloquea al usuario. Frontend no exige `turnstileToken` para habilitar submit. Backend: token vacío → se omite la verificación y se continúa. Solo se rechaza si el token llega Y falla contra Cloudflare.
 9) **Loading.tsx por grupo de rutas**: cada grupo `(auth)/(dashboard)/(empresa)/(admin)` tiene su propio `loading.tsx` en la RAÍZ del grupo, con skeleton mobile-first que muestra la forma real del contenido (no un spinner genérico). Nunca lo pongas en una carpeta literal fuera del grupo de rutas — ahí Next.js no lo ejecuta nunca (bug real ya corregido, no lo repitas).
 10) **Solo páginas públicas (sin sesión) usan `<ProteccionPublica>`**: envuelve su contenido con `src/components/proteccion-publica.tsx` (bloquea copiar/cortar/pegar/seleccionar texto/clic derecho/arrastrar imágenes), sin que el usuario lo pida cada vez. Única excepción interna: dentro de una casilla real de formulario (input/textarea) sí se permite copiar/cortar/pegar, o se rompe pegar contraseñas desde un gestor. NUNCA en `(dashboard)/(empresa)/(admin)` ni en ninguna ruta autenticada. Excepción de página completa: `/sistema-diseno`.
+11) **Green Coding universal**: todo código cumple la skill `green-coding` (presupuestos de peso, sin trabajo evitable). Ninguna cifra ambiental se publica sin valor, método, fecha, fuente y rótulo Medido, Estimado o Meta. Prohibido inventar datos o citar compensaciones sin certificado.
 
 ## SEGURIDAD — MÍNIMAS INQUEBRANTABLES (detalle en skill `seguridad-reuso`)
 - Nunca `dangerouslySetInnerHTML` con datos de usuario sin `DOMPurify.sanitize()` antes del INSERT.
