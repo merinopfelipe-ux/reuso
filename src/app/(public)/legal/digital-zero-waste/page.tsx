@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 // sus valores no se pueden usar desde un componente de servidor.
 const h2: React.CSSProperties = { fontSize: 18, fontWeight: 700, marginTop: 40, marginBottom: 12, color: 'var(--text-primary)' }
 const p: React.CSSProperties = { marginBottom: 16, lineHeight: 1.85 }
-const th: React.CSSProperties = { textAlign: 'left', padding: '10px 12px', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)' }
+const th: React.CSSProperties = { textAlign: 'left', padding: '10px 6px', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', borderBottom: '1px solid var(--border)' }
 const thN: React.CSSProperties = { ...th, textAlign: 'right' }
-const td: React.CSSProperties = { padding: '10px 12px', fontSize: 14, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-light)' }
+const td: React.CSSProperties = { padding: '10px 6px', fontSize: 13, color: 'var(--text-primary)', borderBottom: '1px solid var(--border-light)' }
 const tdN: React.CSSProperties = { ...td, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }
 const caja: React.CSSProperties = { overflowX: 'auto', border: '1px solid var(--border)', borderRadius: 12, background: 'var(--bg-card)', marginBottom: 12 }
 const nota: React.CSSProperties = { ...p, fontSize: 13, color: 'var(--text-secondary)' }
@@ -47,6 +47,7 @@ export default function ZeroWasteDigitalPage() {
         { id: 'verificar', label: 'Cómo verificarlo' },
       ]}
       resumen={`Medimos el peso de nuestras páginas públicas y los bytes que se podrían evitar. Hoy el promedio evitable es ${fmt(r.promedioKB)} KB por página (medido el ${fecha}). La meta es llegar a 0 KB en ${r.cierre.anio}, con un hito cada dos años. Cada cifra lleva su fecha, su método y un rótulo: Medido, Estimado o Meta.`}
+      fechaActualizacion={fecha}
       hideResumen={false}
     >
       <p style={p}>
@@ -58,7 +59,7 @@ export default function ZeroWasteDigitalPage() {
         Medimos las páginas públicas con dos herramientas. La primera cuenta los bytes que viajan por la red al abrir la página por primera vez. La segunda es Lighthouse, que además calcula cuántos de esos bytes se podrían evitar, por ejemplo código que se descarga y nunca se ejecuta.
       </p>
       <div style={caja}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <caption style={{ captionSide: 'top', textAlign: 'left', padding: '12px 12px 4px', fontSize: 13, color: 'var(--text-secondary)' }}>
             Medición del {fecha}
           </caption>
@@ -66,7 +67,7 @@ export default function ZeroWasteDigitalPage() {
             <tr>
               <th style={th}>Página</th>
               <th style={thN}>Transferido (KB)</th>
-              <th style={thN}>Peso total Lighthouse (KB)</th>
+              <th style={thN}>Lighthouse total (KB)</th>
               <th style={thN}>Evitable (KB)</th>
             </tr>
           </thead>
@@ -96,20 +97,20 @@ export default function ZeroWasteDigitalPage() {
         Medimos un solo indicador: los <strong>KB evitables por página</strong>, promedio de las seis páginas de la línea base. La ruta baja en línea recta desde la base medida hasta 0 en {r.cierre.anio}, con un hito cada dos años. Grupo MLP S.A.S. fijó estas metas el {fechaLarga(METAS.fijadas)}. Un hito se marcará como cumplido solo cuando la medición lo confirme.
       </p>
       <div style={caja}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 420 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
               <th style={th}>Año</th>
               <th style={th}>Avance</th>
-              <th style={thN}>KB evitables por página</th>
+              <th style={thN}>KB por página</th>
               <th style={th}>Estado</th>
             </tr>
           </thead>
           <tbody>
-            {[{ anio: METAS.base.anio, kb: METAS.base.evitableKBPorPagina, estado: 'Línea base medida' }, ...METAS.hitos.map((h) => ({ anio: h.anio, kb: h.evitableKBPorPagina, estado: h.anio === r.cierre.anio ? 'Meta de cierre, pendiente' : 'Meta, pendiente' }))].map((fila) => (
+            {[{ anio: METAS.base.anio, kb: METAS.base.evitableKBPorPagina, estado: 'Base medida' }, ...METAS.hitos.map((h) => ({ anio: h.anio, kb: h.evitableKBPorPagina, estado: h.anio === r.cierre.anio ? 'Cierre' : 'Meta' }))].map((fila) => (
               <tr key={fila.anio}>
                 <td style={td}>{fila.anio}</td>
-                <td style={{ ...td, width: '40%' }}>
+                <td style={{ ...td, width: '32%' }}>
                   <div style={{ height: 10, borderRadius: 999, background: 'var(--bg-hover)' }} aria-hidden="true">
                     <div style={{ height: 10, borderRadius: 999, background: 'var(--color-brand)', width: `${Math.round((fila.kb / METAS.base.evitableKBPorPagina) * 100)}%` }} />
                   </div>
@@ -130,7 +131,7 @@ export default function ZeroWasteDigitalPage() {
         Esta cifra es una estimación, no una medición de nuestros servidores. Usa el modelo Sustainable Web Design versión 4: la energía es el peso transferido en GB por 0,194 kWh (operacional) o por 0,300 kWh (con energía incorporada de los equipos), y las emisiones son esa energía por 494 g CO₂e/kWh, el promedio mundial con datos de Ember de 2022. Corresponde a la primera visita, sin caché.
       </p>
       <div style={caja}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 420 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'auto' }}>
           <thead>
             <tr>
               <th style={th}>Página</th>
