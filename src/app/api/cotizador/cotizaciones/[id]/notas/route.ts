@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
     .insert({
       cotizacion_id: params.id,
       user_id,
-      nota: DOMPurify.sanitize(parsed.data.nota, NOTA_SANITIZE_CONFIG),
+      nota: await sanitizarHtml(parsed.data.nota, NOTA_SANITIZE_CONFIG),
     })
     .select('id, nota, created_at, user_id')
     .single()

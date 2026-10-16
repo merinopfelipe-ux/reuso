@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { enviarNotificacionTicket } from '@/lib/email'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { rateLimit } from '@/lib/rate-limit'
 import { getIp } from '@/lib/admin-guard'
 
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Insertar el mensaje fundacional del ticket en el hilo de chat
     const emailSafe = email.replace(/[<>&"]/g, (c) => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]!))
-    const mensajeHtml = DOMPurify.sanitize(
+    const mensajeHtml = await sanitizarHtml(
       `<p><strong>Reportado por el visitante:</strong> ${emailSafe}</p><p>${descripcion.replace(/\n/g, '<br/>')}</p>`
     )
     const { error: msgError } = await adminClient

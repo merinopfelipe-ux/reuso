@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { logAuditoria } from '@/lib/audit'
 import { getIp } from '@/lib/admin-guard'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { leerTelefono, legiblesClientes } from '@/lib/crm/telefono-seguro'
 
 // Transporte e IVA nunca reciben descuento — se calculan aparte, ver
@@ -224,7 +224,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
   // saneó el cliente, se vuelve a sanear aquí antes del UPDATE (se muestra
   // con dangerouslySetInnerHTML en la propuesta pública).
   if (typeof actualizar.observaciones === 'string') {
-    actualizar.observaciones = DOMPurify.sanitize(actualizar.observaciones, NOTA_SANITIZE_CONFIG)
+    actualizar.observaciones = await sanitizarHtml(actualizar.observaciones, NOTA_SANITIZE_CONFIG)
   }
 
   let queryUpdate = adminClient

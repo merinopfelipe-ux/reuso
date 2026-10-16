@@ -3,7 +3,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { enviarNotificacionTicket } from '@/lib/email'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 
 const bodySchema = z.object({
   titulo: z.string().min(5).max(100),
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Datos de ticket inválidos' }, { status: 400 })
 
   const { titulo, tipo, prioridad, empresa_id_pqr, cliente_id, empresa_cliente_id } = parsed.data
-  const mensaje_html = DOMPurify.sanitize(parsed.data.mensaje_html)
+  const mensaje_html = await sanitizarHtml(parsed.data.mensaje_html)
 
   const { data: profile } = await supabase.from('profiles').select('rol, empresa_id, nombre, email').eq('user_id', user.id).single()
 

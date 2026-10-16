@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 import { emailBase } from '@/lib/email'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 
 export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
   const params = await props.params;
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
       ticket_id: params.id,
       user_id: user.id,
       es_admin: isSuper,
-      mensaje_html: DOMPurify.sanitize(parsed.data.mensaje_html)
+      mensaje_html: await sanitizarHtml(parsed.data.mensaje_html)
     })
     .select('id')
     .single()

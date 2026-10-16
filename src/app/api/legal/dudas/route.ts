@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { rateLimit } from '@/lib/rate-limit'
 import { verifyTurnstile } from '@/lib/turnstile'
 import { enviarNotificacionTicket, enviarConfirmacionConsultaLegal } from '@/lib/email'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { logAuditoria } from '@/lib/audit'
 
 const schema = z.object({
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
   const nombreSafe = nombre.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
   const emailSafe = email.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
   const tipoSafe = tipo.replace(/[<>&"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[c]!))
-  const mensajeHtml = DOMPurify.sanitize(
+  const mensajeHtml = await sanitizarHtml(
     `<p><strong>Caso asignado:</strong> ${numeroCaso}</p>` +
     `<p><strong>Remitente:</strong> ${nombreSafe} (&lt;<a href="mailto:${emailSafe}">${emailSafe}</a>&gt;)</p>` +
     `<p><strong>Tipo de consulta:</strong> ${tipoSafe}</p>` +

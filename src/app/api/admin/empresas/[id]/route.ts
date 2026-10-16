@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { patchEmpresaSchema } from '@/lib/schemas/empresa.schema'
@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest, props: { params: Promise<{ id:
       const feed = JSON.parse(datos.notas_admin)
       if (Array.isArray(feed)) {
         datos.notas_admin = JSON.stringify(
-          feed.map((n) => ({ ...n, nota: DOMPurify.sanitize(String(n?.nota ?? ''), NOTA_SANITIZE_CONFIG) }))
+          await Promise.all(feed.map(async (n) => ({ ...n, nota: await sanitizarHtml(String(n?.nota ?? ''), NOTA_SANITIZE_CONFIG) })))
         )
       }
     } catch {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { randomUUID } from 'crypto'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { requireSuperAdmin, getIp } from '@/lib/admin-guard'
 import { logAuditoria } from '@/lib/audit'
 import { rutaEmpresa, carpetaArea } from '@/lib/storage/empresa-rutas'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   if (!svgTexto.trim().startsWith('<') || !svgTexto.includes('<svg')) {
     return NextResponse.json({ error: 'El archivo no es un SVG válido.' }, { status: 400 })
   }
-  const svgLimpio = DOMPurify.sanitize(svgTexto, { USE_PROFILES: { svg: true, svgFilters: false } })
+  const svgLimpio = await sanitizarHtml(svgTexto, { USE_PROFILES: { svg: true, svgFilters: false } })
 
   const empresaId = params.id
   const base = randomUUID()

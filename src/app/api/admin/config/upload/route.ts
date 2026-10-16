@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin } from '@/lib/admin-guard'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 
 const MIME_PERMITIDOS = ['image/png', 'image/jpeg', 'image/svg+xml']
 const MAX_BYTES = 2 * 1024 * 1024 // 2MB
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     if (text.toLowerCase().includes('<svg')) {
       fileIsValid = true
       // DOMPurify elimina scripts, eventos inline y javascript: - más robusto que regex
-      const sanitized = DOMPurify.sanitize(text, { USE_PROFILES: { svg: true, svgFilters: true } })
+      const sanitized = await sanitizarHtml(text, { USE_PROFILES: { svg: true, svgFilters: true } })
       uploadData = new TextEncoder().encode(sanitized)
     }
   }

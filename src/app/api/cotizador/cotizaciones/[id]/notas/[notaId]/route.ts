@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { cotizadorAuthCheck } from '@/lib/dpp/auth-check'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
 
@@ -40,7 +40,7 @@ export async function PATCH(request: NextRequest, props: Params) {
   const { data: nota, error } = await adminClient
     .from('crm_cotizaciones_notas')
     .update({
-      nota: DOMPurify.sanitize(parsed.data.nota, NOTA_SANITIZE_CONFIG),
+      nota: await sanitizarHtml(parsed.data.nota, NOTA_SANITIZE_CONFIG),
       editado_at: new Date().toISOString(),
     })
     .eq('id', notaId)

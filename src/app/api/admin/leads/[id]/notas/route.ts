@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizarHtml } from '@/lib/sanitizar-html'
 import { requireSuperAdmin } from '@/lib/admin-guard'
 import { parsearNotasLead } from '@/lib/notas-lead'
 import { NOTA_SANITIZE_CONFIG } from '@/lib/sanitize-notas'
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest, props: { params: Promise<{ id: 
   const autor = [perfil?.nombre, perfil?.apellido].filter(Boolean).join(' ').trim() || 'Administración'
   const nueva = {
     id: crypto.randomUUID(),
-    texto: DOMPurify.sanitize(parsed.data.nota, NOTA_SANITIZE_CONFIG),
+    texto: await sanitizarHtml(parsed.data.nota, NOTA_SANITIZE_CONFIG),
     fecha: new Date().toISOString(),
     autor,
   }
