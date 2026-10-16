@@ -81,6 +81,7 @@
   "overrides": {
     "next": {
       "postcss": "^8.5.28"
-    }
+    },
+    "jsdom": "26.1.0"
   }
 }
