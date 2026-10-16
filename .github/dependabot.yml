@@ -57,6 +57,9 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # jsdom 27 o superior no carga en Vercel (ERR_REQUIRE_ESM por @exodus/bytes). Fijado en package.json con overrides.
+      - dependency-name: "jsdom"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
 

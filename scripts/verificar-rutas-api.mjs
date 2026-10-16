@@ -14,23 +14,31 @@ if (!/^https?:\/\//.test(base)) {
   process.exit(2)
 }
 
-const RAIZ = join(process.cwd(), 'src', 'app', 'api')
+const RAIZ_APP = join(process.cwd(), 'src', 'app')
+const RAIZ = join(RAIZ_APP, 'api')
 const ID = '00000000-0000-4000-8000-000000000000'
 
-function rutas(dir) {
+function rutas(dir, archivo = 'route.ts') {
   return readdirSync(dir).flatMap((nombre) => {
     const ruta = join(dir, nombre)
-    if (statSync(ruta).isDirectory()) return rutas(ruta)
-    return nombre === 'route.ts' ? [ruta] : []
+    if (statSync(ruta).isDirectory()) return rutas(ruta, archivo)
+    return nombre === archivo ? [ruta] : []
   })
 }
 
-const urls = rutas(RAIZ).map((archivo) => {
-  const partes = relative(RAIZ, archivo).split(sep).slice(0, -1)
+function aUrl(raiz, archivo, prefijo) {
+  const partes = relative(raiz, archivo).split(sep).slice(0, -1)
     .filter((p) => !/^\(.*\)$/.test(p))
     .map((p) => (p.startsWith('[') ? ID : p))
-  return `${base}/api/${partes.join('/')}`.replace(/\/$/, '')
-})
+  return `${base}${prefijo}${partes.join('/')}`.replace(/\/$/, '') || base
+}
+// Las páginas también cuentan: un componente de cliente que importa algo pesado
+// se ejecuta en el servidor al generar la página, y puede caerse igual que una ruta.
+const paginas = rutas(RAIZ_APP, 'page.tsx').filter((a) => !a.startsWith(RAIZ + sep))
+const urls = [...new Set([
+  ...rutas(RAIZ).map((a) => aUrl(RAIZ, a, '/api/')),
+  ...paginas.map((a) => aUrl(RAIZ_APP, a, '/')),
+])]
 
 const fallos = []
 let i = 0
