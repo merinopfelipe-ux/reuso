@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { LegalHeader } from '@/components/legal/legal-header'
 import { LegalScrollButton } from '@/components/legal/legal-scroll-button'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
-import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle, Camera } from '@/components/ui/icons'
+import { FileText, Shield, Database, Cookie, Lock, Scale, Calculator, BookOpen, ClipboardList, MessageSquare as ChatCircle, Camera, Leaf } from '@/components/ui/icons'
 import { IaIcon } from '@/components/ui/icons'
 
 const T = {
@@ -25,6 +25,7 @@ const T = {
       { href: '/legal/sagrilaft', titulo: 'Política SAGRILAFT', descripcion: 'Autocontrol y gestión del riesgo integral de LA/FT/FPADM y debida diligencia.' },
       { href: '/legal/activos-y-licencias', titulo: 'Bancos de Imágenes, Iconografía y Licencias de Activos', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales de la plataforma.' },
       { href: '/legal/ia', titulo: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos inteligencia artificial para optimizar el reúso y procesar datos.' },
+      { href: '/legal/digital-zero-waste', titulo: 'Zero Waste Digital 2035', descripcion: 'Peso medido de nuestras páginas públicas, lo que se puede evitar y metas cada dos años hasta llegar a cero en 2035.' },
     ],
   },
   ENG: {
@@ -44,6 +45,7 @@ const T = {
       { href: '/legal/sagrilaft', titulo: 'SAGRILAFT Policy', descripcion: 'Prevention and control of money laundering and terrorist financing risks.' },
       { href: '/legal/activos-y-licencias', titulo: 'Image Banks, Iconography, and Asset Licenses', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
       { href: '/legal/ia', titulo: 'Artificial Intelligence Use', descripcion: 'How we use artificial intelligence to optimize reuse and process data.' },
+      { href: '/legal/digital-zero-waste', titulo: 'Digital Zero Waste 2035', descripcion: 'Measured weight of our public pages, what can be avoided, and goals every two years down to zero in 2035.' },
     ],
   },
 }
@@ -60,6 +62,7 @@ const ICONOS: Record<string, React.ComponentType<{ size?: number | string; color
   '/legal/sagrilaft': ClipboardList,
   '/legal/ia': IaIcon,
   '/legal/activos-y-licencias': Camera,
+  '/legal/digital-zero-waste': Leaf,
 }
 
 export default function LegalIndexPage() {

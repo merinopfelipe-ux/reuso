@@ -25,7 +25,7 @@ Aplica a TODO código nuevo o modificado. Primero se evita el desperdicio, despu
 |---|---|---|
 | Peso de página | Cada página pública tiene tope en `scripts/presupuesto-verde.json`. El tope solo baja | `npm run verde:medir -- https://calculadoradereuso.com` |
 | JavaScript | Sin librerías pesadas en la primera carga de rutas públicas (gráficos, editores, jsdom). Carga diferida con `import()` | `js_kb` de la herramienta y Lighthouse |
-| Terceros | GA y Clarity solo con consentimiento. Todo script externo nuevo exige justificación escrita y carga diferida | Revisar `layout.tsx` y `microsoft-clarity.tsx` |
+| Terceros | Clarity solo se carga con consentimiento. Google Analytics carga siempre pero sin cookies hasta que se acepta (Consent Mode v2). Vercel Analytics y Speed Insights no usan cookies. Todo script externo nuevo exige justificación escrita y carga diferida | `google-analytics.tsx` y `layout.tsx` |
 | Imágenes | `next/image`, WebP, dimensiones declaradas, carga diferida. AVIF está desactivado a propósito por GHSA-2xp9-vwfh-vxw4, no activarlo | `next.config.mjs` |
 | Fuentes | Open Sans propia con `font-display: swap`. Nunca una fuente que se descargue donde no hace falta | Skill `seo-rendimiento` |
 | Caché | Páginas públicas con ISR. Lecturas no personales con cabeceras de caché. `no-store` solo con motivo escrito | Revisar `revalidate` y `cache:` en el cambio |

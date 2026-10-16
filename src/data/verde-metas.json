@@ -1,0 +1,15 @@
+{
+  "fijadas": "2026-10-16",
+  "fijadasPor": "Grupo MLP S.A.S.",
+  "indicador": "KB evitables por página, promedio de las páginas de la línea base",
+  "paginasLineaBase": ["/", "/faq", "/login", "/registro", "/legal", "/legal/privacidad"],
+  "base": { "anio": 2026, "evitableKBPorPagina": 135.0, "medidoEl": "2026-10-16" },
+  "regla": "Línea recta desde la base medida hasta 0 en 2035, con un hito cada dos años.",
+  "hitos": [
+    { "anio": 2027, "evitableKBPorPagina": 120 },
+    { "anio": 2029, "evitableKBPorPagina": 90 },
+    { "anio": 2031, "evitableKBPorPagina": 60 },
+    { "anio": 2033, "evitableKBPorPagina": 30 },
+    { "anio": 2035, "evitableKBPorPagina": 0 }
+  ]
+}

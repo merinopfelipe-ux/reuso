@@ -49,6 +49,7 @@ const ALL_LEGAL_PAGES = {
     { href: '/legal/ia', label: 'Uso de Inteligencia Artificial', descripcion: 'Cómo usamos IA para construir la plataforma y calcular CO₂.' },
     { href: '/legal/medicion', label: 'Metodología de Cálculo', descripcion: 'Cómo estimamos el CO₂e evitado de manera inmutable y verificable.' },
     { href: '/legal/activos-y-licencias', label: 'Bancos de Imágenes y Licencias', descripcion: 'Licencias comerciales de fotografía, iconografía y activos visuales.' },
+    { href: '/legal/digital-zero-waste', label: 'Zero Waste Digital 2035', descripcion: 'Peso medido de las páginas públicas y metas hasta cero en 2035.' },
   ],
   ENG: [
     { href: '/legal/terminos', label: 'Terms and Conditions', descripcion: 'Rules for using the platform, rights, and obligations.' },
@@ -62,6 +63,7 @@ const ALL_LEGAL_PAGES = {
     { href: '/legal/ia', label: 'Artificial Intelligence Use', descripcion: 'How we use AI to build the platform and calculate CO₂.' },
     { href: '/legal/medicion', label: 'Calculation Methodology', descripcion: 'How we estimate avoided CO₂e immutably and verifiably.' },
     { href: '/legal/activos-y-licencias', label: 'Asset Licenses & Stock Images', descripcion: 'Commercial licenses for stock photography, iconography, and visual assets.' },
+    { href: '/legal/digital-zero-waste', label: 'Digital Zero Waste 2035', descripcion: 'Measured weight of public pages and goals down to zero in 2035.' },
   ]
 }
 

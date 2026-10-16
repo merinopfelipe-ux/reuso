@@ -1,0 +1,113 @@
+{
+  "fecha": "2026-10-16",
+  "url": "https://calculadoradereuso.com",
+  "metodo": {
+    "transferencia": "Bytes transferidos por la red, comprimidos (curl sin --compressed). Piso: HTML y recursos enlazados en el HTML. Una carga por página.",
+    "lighthouse": "Lighthouse 12.8.2, móvil, red simulada, una corrida por página. Peso total y suma de los ahorros potenciales que Lighthouse calcula por separado (puede contar dos veces un mismo byte).",
+    "energia": "Estimación con Sustainable Web Design v4: 0,194 kWh/GB operacional, 0,300 kWh/GB con energía incorporada, 494 g CO2e/kWh promedio mundial (Ember 2022). No es una medición del servidor."
+  },
+  "paginas": [
+    {
+      "ruta": "/",
+      "transferidoKB": 476.9,
+      "jsKB": 380,
+      "recursos": 22,
+      "co2gOperacional": 0.044,
+      "co2gConEnergiaIncorporada": 0.067,
+      "lighthouse": {
+        "pesoKB": 451.8,
+        "evitableKB": 66.3,
+        "detalle": {
+          "unused-javascript": 52.6,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 0.91
+      }
+    },
+    {
+      "ruta": "/faq",
+      "transferidoKB": 429.4,
+      "jsKB": 349,
+      "recursos": 20,
+      "co2gOperacional": 0.039,
+      "co2gConEnergiaIncorporada": 0.061,
+      "lighthouse": {
+        "pesoKB": 450,
+        "evitableKB": 108.2,
+        "detalle": {
+          "unused-javascript": 94.5,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 1
+      }
+    },
+    {
+      "ruta": "/login",
+      "transferidoKB": 469.7,
+      "jsKB": 412,
+      "recursos": 23,
+      "co2gOperacional": 0.043,
+      "co2gConEnergiaIncorporada": 0.066,
+      "lighthouse": {
+        "pesoKB": 2231,
+        "evitableKB": 213.4,
+        "detalle": {
+          "unused-javascript": 199,
+          "legacy-javascript": 14.3
+        },
+        "rendimiento": 0.91
+      }
+    },
+    {
+      "ruta": "/registro",
+      "transferidoKB": 414.6,
+      "jsKB": 361,
+      "recursos": 22,
+      "co2gOperacional": 0.038,
+      "co2gConEnergiaIncorporada": 0.059,
+      "lighthouse": {
+        "pesoKB": 511.9,
+        "evitableKB": 204,
+        "detalle": {
+          "unused-javascript": 190.3,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 0.91
+      }
+    },
+    {
+      "ruta": "/legal",
+      "transferidoKB": 419.9,
+      "jsKB": 345,
+      "recursos": 20,
+      "co2gOperacional": 0.038,
+      "co2gConEnergiaIncorporada": 0.059,
+      "lighthouse": {
+        "pesoKB": 521.6,
+        "evitableKB": 108.6,
+        "detalle": {
+          "unused-javascript": 94.9,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 1
+      }
+    },
+    {
+      "ruta": "/legal/privacidad",
+      "transferidoKB": 429.7,
+      "jsKB": 351,
+      "recursos": 21,
+      "co2gOperacional": 0.039,
+      "co2gConEnergiaIncorporada": 0.061,
+      "lighthouse": {
+        "pesoKB": 482.6,
+        "evitableKB": 109.4,
+        "detalle": {
+          "unused-javascript": 95.7,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 1
+      }
+    }
+  ]
+}

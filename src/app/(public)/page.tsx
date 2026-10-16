@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import LandingClient, { type PlanPrecioReal, type CategoriaComparativa } from './landing-client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { GOOGLE_BUSINESS_URL } from '@/lib/constants/contacto'
+import { resumenVerde, fmt, fechaLarga } from '@/lib/verde'
 
 
 // ISR de 5 minutos — no force-dynamic, esta es una página pública y
@@ -289,6 +290,16 @@ function construirSchemas(planes: PlanPrecioReal[], whatsappNumero: string | und
 export default async function LandingPage() {
   const { planes, whatsappNumero, faqItems, comparativaCategorias } = await obtenerDatosReales()
   const schemas = construirSchemas(planes, whatsappNumero)
+  // Cifras de Zero Waste digital: salen de src/data (medición y metas), ya formateadas aquí para no
+  // llevar los JSON al bundle del cliente.
+  const v = resumenVerde()
+  const zeroWaste = {
+    fecha: fechaLarga(v.fecha),
+    paginas: v.paginas,
+    promedioKB: fmt(v.promedioKB),
+    proxima: { anio: v.proxima.anio, kb: fmt(v.proxima.kb, 0) },
+    cierre: { anio: v.cierre.anio, kb: fmt(v.cierre.kb, 0) },
+  }
   return (
     <>
       {schemas.map((schema, i) => (
@@ -298,7 +309,7 @@ export default async function LandingPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      <LandingClient planesPrecios={planes} whatsappNumero={whatsappNumero} faqItems={faqItems} comparativaCategorias={comparativaCategorias} />
+      <LandingClient planesPrecios={planes} whatsappNumero={whatsappNumero} faqItems={faqItems} comparativaCategorias={comparativaCategorias} zeroWaste={zeroWaste} />
     </>
   )
 }

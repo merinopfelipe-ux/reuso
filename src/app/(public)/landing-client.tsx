@@ -1176,7 +1176,16 @@ export const COMPARATIVA_DEFAULT: CategoriaComparativa[] = [
   },
 ]
 
+export interface ZeroWasteResumen {
+  fecha: string
+  paginas: number
+  promedioKB: string
+  proxima: { anio: number; kb: string }
+  cierre: { anio: number; kb: string }
+}
+
 interface LandingClientProps {
+  zeroWaste?: ZeroWasteResumen
   planesPrecios?: PlanPrecioReal[]
   whatsappNumero?: string
   faqItems?: { pregunta: string; respuesta: string }[]
@@ -1184,7 +1193,7 @@ interface LandingClientProps {
 }
 
 // ─── Página principal ─────────────────────────────────────────────────────────
-export default function LandingClient({ planesPrecios, whatsappNumero, faqItems, comparativaCategorias }: LandingClientProps) {
+export default function LandingClient({ planesPrecios, whatsappNumero, faqItems, comparativaCategorias, zeroWaste }: LandingClientProps) {
   const router = useRouter()
   const [activeCategory, setActiveCategory] = useState<CatKey>('mobiliario')
   const [currency, setCurrency] = useState<keyof typeof CURRENCIES>('COP')
@@ -2890,6 +2899,55 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
           </div>
         </section>
       </Suspense>
+
+      {/* ── CUADRO ZERO WASTE DIGITAL (cifras reales de src/data, ver skill green-coding) ── */}
+      {zeroWaste && (
+        <section id="zero-waste" className="scroll-mt-[74px] md:scroll-mt-[74px] lg:scroll-mt-[82px] pt-2 pb-6 sm:pb-10 md:pb-12 px-4 sm:px-6">
+          <m.div
+            data-reveal initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: '-30px' }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-6xl mx-auto"
+          >
+            <div className={`rounded-4xl border p-6 sm:p-8 md:p-10 shadow-lg ${isDark ? 'bg-[#525252] border-white/10' : 'bg-white border-[#00827C]/15'}`}>
+              <div className="flex items-center gap-2 mb-3">
+                <Leaf size={18} className="text-[#38B98E]" />
+                <span className="text-sm sm:text-base font-semibold tracking-normal text-[#38B98E]">Zero Waste digital a 2035</span>
+              </div>
+              <h2 className={`text-[24px] md:text-[28px] font-semibold leading-snug tracking-tight mb-3 ${tp}`}>
+                Medimos el desperdicio de nuestras páginas y lo llevamos a cero en {zeroWaste.cierre.anio}
+              </h2>
+              <p className={`text-sm sm:text-base font-medium leading-relaxed max-w-3xl mb-6 ${ts}`}>
+                Cada página que abres descarga bytes que a veces no se usan. Los medimos con Lighthouse, publicamos la cifra con su fecha y fijamos metas cada dos años hasta llegar a cero.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                {[
+                  { valor: `${zeroWaste.promedioKB} KB`, etiqueta: 'Evitables por página hoy', rotulo: 'Medido', nota: `Promedio de ${zeroWaste.paginas} páginas, medido el ${zeroWaste.fecha}` },
+                  { valor: `${zeroWaste.proxima.kb} KB`, etiqueta: `Meta ${zeroWaste.proxima.anio}`, rotulo: 'Meta', nota: 'Primer hito, cada dos años' },
+                  { valor: `${zeroWaste.cierre.kb} KB`, etiqueta: `Cierre en ${zeroWaste.cierre.anio}`, rotulo: 'Meta', nota: 'Cero KB evitables por página' },
+                ].map((d, i) => (
+                  <div key={i} className={`rounded-2xl border p-4 ${isDark ? 'bg-[#474747] border-white/10' : 'bg-white border-[#474747]/10'}`}>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className={`text-sm font-semibold ${ts}`}>{d.etiqueta}</span>
+                      <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${isDark ? 'bg-[#D6F391]/15 text-[#D6F391]' : 'bg-[#00827C]/10 text-[#00827C]'}`}>{d.rotulo}</span>
+                    </div>
+                    <div className={`text-3xl font-semibold tabular-nums ${tp}`}>{d.valor}</div>
+                    <div className={`text-xs mt-1 ${ts}`}>{d.nota}</div>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href="/legal/digital-zero-waste"
+                className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
+              >
+                Ver la medición completa
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </m.div>
+        </section>
+      )}
 
       {/* ── SECCIÓN 9 - FAQ (AL FINAL) ─────────────────────────────────────── */}
       <div className={`w-full max-w-6xl mx-auto h-px bg-linear-to-r/srgb from-transparent ${isDark ? 'via-white/10' : ''} to-transparent`} />
