@@ -2939,7 +2939,7 @@ export default function LandingClient({ planesPrecios, whatsappNumero, faqItems,
               </div>
               <Link
                 href="/legal/digital-zero-waste"
-                className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
+                className={`inline-flex min-h-[44px] items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90 ${isDark ? 'bg-[#D6F391] text-[#474747]' : 'bg-[#00827C] text-white'}`}
               >
                 Ver la medición completa
                 <ArrowRight size={16} />

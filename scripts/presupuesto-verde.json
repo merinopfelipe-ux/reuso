@@ -1,11 +1,26 @@
 {
   "nota": "Tope de KB transferidos por la red (piso de la primera carga). Línea base medida el 2026-10-16 con npm run verde:medir, más 5 %. Solo se pueden BAJAR.",
   "paginas": {
-    "/": { "maxKB": 500 },
-    "/faq": { "maxKB": 450 },
-    "/login": { "maxKB": 495 },
-    "/registro": { "maxKB": 435 },
-    "/legal": { "maxKB": 440 },
-    "/legal/privacidad": { "maxKB": 450 }
+    "/": {
+      "maxKB": 500
+    },
+    "/faq": {
+      "maxKB": 450
+    },
+    "/login": {
+      "maxKB": 495
+    },
+    "/registro": {
+      "maxKB": 435
+    },
+    "/legal": {
+      "maxKB": 440
+    },
+    "/legal/privacidad": {
+      "maxKB": 450
+    },
+    "/legal/digital-zero-waste": {
+      "maxKB": 450
+    }
   }
 }

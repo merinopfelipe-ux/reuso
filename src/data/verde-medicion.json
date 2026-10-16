@@ -9,33 +9,33 @@
   "paginas": [
     {
       "ruta": "/",
-      "transferidoKB": 476.9,
-      "jsKB": 380,
+      "transferidoKB": 478.5,
+      "jsKB": 381,
       "recursos": 22,
       "co2gOperacional": 0.044,
-      "co2gConEnergiaIncorporada": 0.067,
+      "co2gConEnergiaIncorporada": 0.068,
       "lighthouse": {
-        "pesoKB": 451.8,
+        "pesoKB": 453.9,
         "evitableKB": 66.3,
         "detalle": {
           "unused-javascript": 52.6,
           "legacy-javascript": 13.7
         },
-        "rendimiento": 0.91
+        "rendimiento": 1
       }
     },
     {
       "ruta": "/faq",
-      "transferidoKB": 429.4,
-      "jsKB": 349,
+      "transferidoKB": 429.6,
+      "jsKB": 350,
       "recursos": 20,
       "co2gOperacional": 0.039,
       "co2gConEnergiaIncorporada": 0.061,
       "lighthouse": {
-        "pesoKB": 450,
-        "evitableKB": 108.2,
+        "pesoKB": 451.1,
+        "evitableKB": 110.3,
         "detalle": {
-          "unused-javascript": 94.5,
+          "unused-javascript": 96.6,
           "legacy-javascript": 13.7
         },
         "rendimiento": 1
@@ -43,50 +43,50 @@
     },
     {
       "ruta": "/login",
-      "transferidoKB": 469.7,
+      "transferidoKB": 469.9,
       "jsKB": 412,
       "recursos": 23,
       "co2gOperacional": 0.043,
       "co2gConEnergiaIncorporada": 0.066,
       "lighthouse": {
-        "pesoKB": 2231,
-        "evitableKB": 213.4,
+        "pesoKB": 2125.4,
+        "evitableKB": 214.5,
         "detalle": {
-          "unused-javascript": 199,
+          "unused-javascript": 200.2,
           "legacy-javascript": 14.3
         },
-        "rendimiento": 0.91
+        "rendimiento": 0.92
       }
     },
     {
       "ruta": "/registro",
-      "transferidoKB": 414.6,
+      "transferidoKB": 414.8,
       "jsKB": 361,
       "recursos": 22,
       "co2gOperacional": 0.038,
       "co2gConEnergiaIncorporada": 0.059,
       "lighthouse": {
-        "pesoKB": 511.9,
-        "evitableKB": 204,
+        "pesoKB": 510.9,
+        "evitableKB": 204.2,
         "detalle": {
-          "unused-javascript": 190.3,
+          "unused-javascript": 190.6,
           "legacy-javascript": 13.7
         },
-        "rendimiento": 0.91
+        "rendimiento": 0.92
       }
     },
     {
       "ruta": "/legal",
-      "transferidoKB": 419.9,
+      "transferidoKB": 420.5,
       "jsKB": 345,
       "recursos": 20,
       "co2gOperacional": 0.038,
       "co2gConEnergiaIncorporada": 0.059,
       "lighthouse": {
-        "pesoKB": 521.6,
-        "evitableKB": 108.6,
+        "pesoKB": 523.2,
+        "evitableKB": 109.3,
         "detalle": {
-          "unused-javascript": 94.9,
+          "unused-javascript": 95.6,
           "legacy-javascript": 13.7
         },
         "rendimiento": 1
@@ -94,16 +94,33 @@
     },
     {
       "ruta": "/legal/privacidad",
-      "transferidoKB": 429.7,
+      "transferidoKB": 430,
       "jsKB": 351,
       "recursos": 21,
       "co2gOperacional": 0.039,
       "co2gConEnergiaIncorporada": 0.061,
       "lighthouse": {
-        "pesoKB": 482.6,
-        "evitableKB": 109.4,
+        "pesoKB": 483.9,
+        "evitableKB": 110,
         "detalle": {
-          "unused-javascript": 95.7,
+          "unused-javascript": 96.3,
+          "legacy-javascript": 13.7
+        },
+        "rendimiento": 1
+      }
+    },
+    {
+      "ruta": "/legal/digital-zero-waste",
+      "transferidoKB": 426.3,
+      "jsKB": 346,
+      "recursos": 20,
+      "co2gOperacional": 0.039,
+      "co2gConEnergiaIncorporada": 0.06,
+      "lighthouse": {
+        "pesoKB": 480,
+        "evitableKB": 115.9,
+        "detalle": {
+          "unused-javascript": 102.2,
           "legacy-javascript": 13.7
         },
         "rendimiento": 1

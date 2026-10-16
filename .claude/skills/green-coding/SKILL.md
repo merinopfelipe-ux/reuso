@@ -38,7 +38,7 @@ Aplica a TODO código nuevo o modificado. Primero se evita el desperdicio, despu
 | Correos | Livianos, sin imágenes pesadas ni seguimiento innecesario | Skill `email-design` |
 
 ## 3. Presupuestos vigentes
-Línea base medida el 2026-10-16 con bytes transferidos por la red (piso: HTML y recursos enlazados en el HTML). CO2 estimado con SWD v4, primera visita sin caché, rango entre operacional y con energía incorporada.
+Línea base medida el 2026-10-16 (la página `/legal/digital-zero-waste` se midió ese mismo día, ya publicada) con bytes transferidos por la red (piso: HTML y recursos enlazados en el HTML). CO2 estimado con SWD v4, primera visita sin caché, rango entre operacional y con energía incorporada.
 
 | Ruta | KB medidos | Tope | CO2 estimado (g por visita) |
 |---|---|---|---|
@@ -48,6 +48,7 @@ Línea base medida el 2026-10-16 con bytes transferidos por la red (piso: HTML y
 | `/registro` | 415 | 435 | 0,038 a 0,059 |
 | `/legal` | 420 | 440 | 0,038 a 0,059 |
 | `/legal/privacidad` | 430 | 450 | 0,039 a 0,061 |
+| `/legal/digital-zero-waste` | 426 | 450 | 0,039 a 0,060 |
 
 Trinquete: cuando una página baje de peso, se baja su tope en el mismo commit. Subir un tope solo con justificación escrita y aprobación de Felipe. La herramienta no ve lo que se carga después (fragmentos diferidos, datos, terceros tras el consentimiento). Para el peso completo se usa Lighthouse desde el widget de PageSpeed de `/admin/qa`.
 
