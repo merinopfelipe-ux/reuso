@@ -36,7 +36,7 @@
     "@lexical/rich-text": "^0.52.0",
     "@lexical/selection": "^0.52.0",
     "@lucide/lab": "^0.7.0",
-    "@marsidev/react-turnstile": "^1.6.1",
+    "@marsidev/react-turnstile": "^1.6.2",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
@@ -58,7 +58,7 @@
     "resend": "^6.32.1",
     "svix": "^2.8.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
-    "zod": "^4.6.5"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
@@ -73,10 +73,10 @@
     "eslint-config-next": "^16.4.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.6.0",
-    "postcss": "^8.5.29",
+    "postcss": "^8.5.30",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.4"
   },
   "overrides": {
     "next": {
